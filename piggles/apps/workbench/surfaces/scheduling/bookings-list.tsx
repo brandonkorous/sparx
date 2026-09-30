@@ -9,7 +9,7 @@
 // so it earns a table: each column answers a different question scanned across.
 // The one the list is really FOR is WHEN, so it leads and sorts the list.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Badge,
@@ -22,8 +22,10 @@ import {
 import { Table } from '../../components/table';
 import { faCalendarClock, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
+import { parseBookingStatus, STATUS_OPTIONS } from './bookings-list-filters';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { DownloadButton } from '../../components/download-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -50,16 +52,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-const STATUS_OPTIONS: { value: BookingStatus | ''; label: string }[] = [
-  { value: '', label: 'Any status' },
-  { value: 'requested', label: 'Awaiting confirmation' },
-  { value: 'confirmed', label: 'Confirmed' },
-  { value: 'in_progress', label: 'In progress' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Canceled' },
-  { value: 'no_show', label: 'Did not turn up' },
-];
-
 const TYPE_OPTIONS: { value: BookingType | ''; label: string }[] = [
   { value: '', label: 'Every kind' },
   { value: 'appointment', label: 'Appointments' },
@@ -72,7 +64,11 @@ const PAGE_SIZE = 50;
 
 export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<BookingStatus | ''>('');
+  // Seeded from the address so "3 bookings need confirming" opens on those
+  // three. Read ONCE: after the first render the picker owns it.
+  const [status, setStatus] = useState<BookingStatus | ''>(() =>
+    parseBookingStatus(ctx.params.status)
+  );
   const [type, setType] = useState<BookingType | ''>('');
   const [order, setOrder] = useState<BookingOrder>('desc');
   const [page, setPage] = useState(0);
@@ -90,6 +86,15 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = data?.items ?? [];
   const total = data?.total;
   const hasFilters = Boolean(search.trim() || status || type);
+
+  // Params make a distinct pane, so a narrowed one opens as a SECOND tab beside
+  // any "Bookings" already open. It says which it is, in the picker's own words,
+  // following the picker rather than the address.
+  useEffect(() => {
+    const base = surfaceTitle('scheduling.bookings.list') ?? 'Bookings';
+    const chosen = STATUS_OPTIONS.find((option) => option.value === status);
+    ctx.setTitle(status === '' || !chosen ? base : `${base} · ${chosen.label.toLowerCase()}`);
+  }, [ctx, status]);
 
   const open = (booking: Booking, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('scheduling.bookings.detail', { id: booking.id }, { target: targetFor(event) });
@@ -112,7 +117,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Booking list controls"
+        label="Bookings controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -183,6 +188,14 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <option value="desc">Most recent first</option>
               <option value="asc">Soonest first</option>
             </NativeSelect>
+            {/* Every booking as a spreadsheet, times in each booking's own zone.
+                The marketing site promises a business can take its records
+                with it. */}
+            <DownloadButton
+              label="Export"
+              filename="bookings-export.csv"
+              path="/v1/export/bookings?take=10000"
+            />
           </>
         }
         // Nothing here rides the `filters` slot, so the whole question — the

@@ -80,7 +80,7 @@ import { Questions } from './questions';
 // It also carried a "Three doors. One Piggles." section explaining why the
 // product has three domains. That is OUR problem; nobody arrives wondering
 // about it. Section 5 answers what somebody actually worries about after being
-// shown fifteen apps — "do I have to set all that up?" — and every line of it is
+// shown every app — "do I have to set all that up?" — and every line of it is
 // something the account app genuinely does today (STATUS.md, "Onboarding").
 
 export function HomePage() {

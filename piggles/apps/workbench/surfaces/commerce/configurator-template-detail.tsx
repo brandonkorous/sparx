@@ -59,14 +59,17 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { MoneyCentsInput } from '../../components/money-input';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
+  deltaLabel,
   formatCents,
   productErrorMessage,
+  ruleSentence,
   useConfiguratorPreview,
+  type ConfiguratorAddOn,
   type ConfiguratorChoice,
   type ConfiguratorOption,
   type ConfiguratorOptionType,
@@ -143,11 +146,6 @@ function statusMeaning(status: string): { label: string; tone: Tone; detail: str
   };
 }
 
-function deltaLabel(cents: number | undefined, currency: string): string | null {
-  if (cents === undefined || cents === 0) return null;
-  return cents > 0 ? `+${formatCents(cents, currency)}` : `−${formatCents(-cents, currency)}`;
-}
-
 function mintKey(label: string, taken: string[]): string {
   const base =
     label
@@ -161,59 +159,6 @@ function mintKey(label: string, taken: string[]): string {
   return `${base}_${String(n)}`;
 }
 
-/** One rule as a plain-English sentence, against the LABELS not the keys. */
-function ruleSentence(
-  rule: ConfiguratorRule,
-  options: ConfiguratorOption[],
-  currency: string
-): string {
-  const labelOf = (key: string) => options.find((o) => o.key === key)?.label ?? key;
-  const answerOf = (optionKey: string, choiceKey: string) =>
-    options.find((o) => o.key === optionKey)?.choices.find((c) => c.key === choiceKey)?.label ??
-    choiceKey;
-
-  const conditions = rule.conditions.map((condition) => {
-    const question = labelOf(condition.optionKey);
-    const values = Array.isArray(condition.value)
-      ? condition.value.map((v) => answerOf(condition.optionKey, v)).join(' or ')
-      : answerOf(condition.optionKey, String(condition.value));
-    switch (condition.op) {
-      case 'not_in':
-        return `${question} is not ${values}`;
-      case 'gt':
-        return `${question} is more than ${values}`;
-      case 'lt':
-        return `${question} is less than ${values}`;
-      default:
-        return `${question} is ${values}`;
-    }
-  });
-
-  const actions = rule.actions.map((action) => {
-    switch (action.kind) {
-      case 'require':
-        return `${labelOf(action.optionKey)} must be answered`;
-      case 'hide':
-        return `${labelOf(action.optionKey)} is not asked`;
-      case 'show_only_choices':
-        return `${labelOf(action.optionKey)} only offers ${action.choiceKeys
-          .map((key) => answerOf(action.optionKey, key))
-          .join(', ')}`;
-      case 'price_adjust':
-        return `the price changes by ${deltaLabel(action.deltaCents, currency) ?? 'nothing'}${
-          action.label ? ` (${action.label})` : ''
-        }`;
-      case 'add_addon':
-        return `an extra is added to the order`;
-      default:
-        return `it is refused: “${action.message}”`;
-    }
-  });
-
-  const joiner = rule.match === 'any' ? ' or ' : ' and ';
-  return `When ${conditions.join(joiner)}, ${actions.join(' and ')}.`;
-}
-
 /* ── Draft ──────────────────────────────────────────────────────────────── */
 
 interface Draft {
@@ -225,8 +170,11 @@ interface Draft {
   status: 'draft' | 'active' | 'archived';
   options: ConfiguratorOption[];
   rules: ConfiguratorRule[];
-  /** Carried whole and sent back untouched — this editor does not build add-ons. */
-  addOns: ConfiguratorAddOnInput[];
+  /** Carried whole and sent back untouched — this editor does not build add-ons.
+   *  Held in the SHAPE THE SERVER SENT, names and all, because the rule
+   *  sentences below name the extra a rule adds. Mapped down to the wire
+   *  shape at save time (issue 797). */
+  addOns: ConfiguratorAddOn[];
 }
 
 function toDraft(template: ConfiguratorTemplate): Draft {
@@ -240,11 +188,7 @@ function toDraft(template: ConfiguratorTemplate): Draft {
       template.status === 'active' || template.status === 'archived' ? template.status : 'draft',
     options: template.options,
     rules: template.rules,
-    addOns: template.addOns.map((a) => ({
-      variantId: a.variantId,
-      defaultIncluded: a.defaultIncluded,
-      ...(a.priceOverrideCents === undefined ? {} : { priceOverrideCents: a.priceOverrideCents }),
-    })),
+    addOns: template.addOns,
   };
 }
 
@@ -260,6 +204,16 @@ function newDraft(productId: string, productTitle: string): Draft {
     rules: [],
     addOns: [],
   };
+}
+
+/** The add-ons as the server wants them back: names are ours to read, not
+ *  ours to send. */
+function addOnInputs(addOns: readonly ConfiguratorAddOn[]): ConfiguratorAddOnInput[] {
+  return addOns.map((a) => ({
+    variantId: a.variantId,
+    defaultIncluded: a.defaultIncluded,
+    ...(a.priceOverrideCents === undefined ? {} : { priceOverrideCents: a.priceOverrideCents }),
+  }));
 }
 
 function fingerprint(draft: Draft): string {
@@ -450,7 +404,7 @@ function Editor({
           description: draft.description.trim() === '' ? null : draft.description.trim(),
           options,
           rules: draft.rules,
-          addOns: draft.addOns,
+          addOns: addOnInputs(draft.addOns),
         },
         {
           onSuccess: (created) => {
@@ -475,7 +429,7 @@ function Editor({
         status: draft.status,
         options,
         rules: draft.rules,
-        addOns: draft.addOns,
+        addOns: addOnInputs(draft.addOns),
       },
       {
         onSuccess: () => {
@@ -706,7 +660,9 @@ function Editor({
                 >
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <Text className="font-semibold">{rule.name}</Text>
-                    <Text className="text-sm">{ruleSentence(rule, draft.options, currency)}</Text>
+                    <Text className="text-sm">
+                      {ruleSentence(rule, draft.options, currency, draft.addOns)}
+                    </Text>
                   </div>
                   <Button
                     size="sm"
@@ -769,12 +725,19 @@ function ChoiceRow({
   onChange: (next: ConfiguratorChoice) => void;
   onRemove: () => void;
 }) {
-  const deltaText =
-    choice.priceDeltaCents === undefined ? '' : String((choice.priceDeltaCents / 100).toFixed(2));
+  // What is wrong with the amount as typed, or null. Held here rather than on
+  // the draft because it is a fact about the KEYSTROKES, not about the answer:
+  // it goes away the moment the text reads again, and it must never be saved.
+  const [priceProblem, setPriceProblem] = useState<string | null>(null);
 
   return (
     <div className="border-base-300 flex flex-wrap items-end gap-2 border-b py-2 last:border-b-0">
-      <div className="min-w-0 flex-1">
+      {/* The row WRAPS rather than crushing the answer. It used to be min-w-0,
+          so in a docked pane the fixed w-32 price box kept all 128px and the
+          answer collapsed to about 64: "Three initials, hand stitched" read as
+          "Three initials," while five digits of price sat in twice the room
+          (issue 803). A floor here is what makes flex-wrap actually wrap. */}
+      <div className="min-w-40 flex-1">
         <Field>
           <FieldLabel>Answer</FieldLabel>
           <FieldControl
@@ -797,13 +760,16 @@ function ChoiceRow({
           <FieldLabel>Adds to price</FieldLabel>
           <FieldControl
             render={
-              <MoneyTextInput
-                color="module"
+              <MoneyCentsInput
+                // The field itself carries the refusal, so it is visible while
+                // the caret is in it rather than only in the line below.
+                color={priceProblem === null ? 'module' : 'error'}
                 size="sm"
                 aria-label="Adds to price"
-                text={deltaText}
-                onTextChange={(text) => {
-                  onChange({ ...choice, priceDeltaCents: moneyCents(text) ?? undefined });
+                cents={choice.priceDeltaCents}
+                onCentsChange={(reading) => {
+                  onChange({ ...choice, priceDeltaCents: reading.cents });
+                  setPriceProblem(reading.problem);
                 }}
               />
             }
@@ -821,7 +787,11 @@ function ChoiceRow({
       >
         <Icon glyph={faTrashCan} className="size-4" aria-hidden />
       </Button>
-      {deltaLabel(choice.priceDeltaCents, currency) === null ? null : (
+      {/* Across the whole row, not inside the amount's own column: the column is
+          eight characters wide and a sentence set in it is a word per line. */}
+      {priceProblem !== null ? (
+        <Text className="text-danger w-full text-sm">{priceProblem}</Text>
+      ) : deltaLabel(choice.priceDeltaCents, currency) === null ? null : (
         <Text className="w-full text-sm">
           Choosing this changes the price by {deltaLabel(choice.priceDeltaCents, currency)}.
         </Text>
@@ -868,7 +838,6 @@ function QuestionCard({
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             disabled={index === 0}
             aria-label="Ask this question earlier"
@@ -882,7 +851,6 @@ function QuestionCard({
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             disabled={index === total - 1}
             aria-label="Ask this question later"
@@ -1310,7 +1278,7 @@ function ProductPicker({ onPick }: { onPick: (product: ProductRow) => void }) {
             >
               <span className="min-w-0 flex-1 font-medium">{product.title}</span>
               {product.status === 'archived' ? (
-                <Badge color="neutral" variant="soft" size="sm">
+                <Badge variant="soft" size="sm">
                   Retired
                 </Badge>
               ) : product.status === 'draft' ? (

@@ -12,7 +12,7 @@ import { COLUMN, targetFor } from './reports-shared';
 import type { ReportQueries, ReportRange } from './reports-queries';
 import { Headline, HealthCard, LocationsCard } from './reports-value';
 import { UncostedNotice } from './reports-uncosted';
-import { AgeingCard, DeadStockCard } from './reports-ageing';
+import { AgingCard, DeadStockCard } from './reports-aging';
 import { ShrinkageCard } from './reports-shrinkage';
 import { CostOfGoodsCard, TurnoverCard } from './reports-movement';
 import { AsOfCard } from './reports-asof';
@@ -68,7 +68,7 @@ function Ageing({ ctx, q, currency, locationName }: Omit<BlockProps, 'data'>) {
 
   return (
     <>
-      <AgeingCard report={q.aging.data} currency={currency} locationName={locationName} />
+      <AgingCard report={q.aging.data} currency={currency} locationName={locationName} />
       {/* "Everything has sold recently enough" is false for a shop where nothing
           has sold at all — and after the dead-stock window started being applied
           to never-sold lines too, that shop is exactly who lands here. The aging

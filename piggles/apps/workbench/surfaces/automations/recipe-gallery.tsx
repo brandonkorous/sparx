@@ -260,7 +260,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Recipe library controls"
+        label="Ready-made automations controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -277,6 +277,8 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
             {joined.length > 0 ? `${String(onCount)} of ${String(joined.length)} on` : ''}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         controls={
           <div className="ml-auto w-40 shrink-0">
             <Select

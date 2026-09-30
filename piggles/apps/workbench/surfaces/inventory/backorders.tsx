@@ -9,7 +9,7 @@
 //
 // ── Undated first, and that is the whole design ───────────────────────────
 //
-// The default sort puts commitments NOBODY CAN PUT A DATE ON at the top, ahead
+// The default sort puts what NOBODY CAN PUT A DATE ON at the top, ahead
 // of overdue ones. That looks backwards until you ask what a person does with
 // each: an overdue row needs chasing, and somebody is probably already on it —
 // an undated row means a customer has been told nothing at all, and the fix is a
@@ -92,7 +92,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
           title="Could not load the queue"
-          description="This is a problem reaching the server, not a finding about your commitments. Try again in a moment."
+          description="This is a problem reaching the server, not a finding about who is waiting. Try again in a moment."
         />
       );
     }
@@ -107,7 +107,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             neverPromised
               ? 'Nobody has ever waited on stock'
               : lens === 'undated'
-                ? 'Every commitment has a date'
+                ? 'Everyone waiting has a date'
                 : lens === 'overdue'
                   ? 'Nothing is past its promised date'
                   : 'Nobody is waiting on stock'
@@ -118,9 +118,9 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             // platform have never taken one, and it reads to them as a clean
             // bill of health on a shop that has not opened.
             neverPromised
-              ? 'Nothing has ever had to wait for stock. A commitment appears here the moment you take an order the shelf cannot cover.'
+              ? 'Nothing has ever had to wait for stock. Somebody appears here the moment you take an order the shelf cannot cover.'
               : lens === 'waiting'
-                ? 'Every order you have taken was covered by stock on the shelf. A commitment appears here the moment one is not.'
+                ? 'Every order you have taken was covered by stock on the shelf. Somebody appears here the moment one is not.'
                 : 'Nothing matches this view. Try “Everything” to see the full history.'
           }
         />
@@ -214,7 +214,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Backorder controls"
+        label="Waiting for stock controls"
         status={
           <Text className="text-sm">
             {unitsOutstanding > 0
@@ -229,7 +229,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             // Off when nothing has ever waited. Pressed on an empty queue it
-            // answered "Every commitment already carries the best date
+            // answered "Everything owed already carries the best date
             // available" — true of nothing, and it reads to somebody who has
             // never taken such an order as though they had some.
             // [[feedback_never_present_absence_as_measurement]]
@@ -237,7 +237,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             title={
               neverPromised
                 ? 'Nothing is waiting on stock, so there are no dates to check'
-                : 'Ask every open commitment for its best arrival date again'
+                : 'Ask again for the best arrival date on everything still owed'
             }
             onClick={() => {
               refresh.mutate(undefined, {
@@ -250,8 +250,13 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                           : 'Nothing changed',
                       description:
                         result.stillUndated > 0
-                          ? `${plural(result.stillUndated, 'commitment', 'commitments')} still have no date anybody can give. Those need a purchase order raised.`
-                          : 'Every commitment already carries the best date available.',
+                          ? // The verb and the pronoun agree with the count, not just the
+                            // noun. `plural` was doing the noun and the rest of the
+                            // sentence stayed written for a crowd: "1 item owed still
+                            // have no date anybody can give. Those need an order
+                            // raising." [[feedback_a_fix_leaves_its_neighbour_behind]]
+                            `${plural(result.stillUndated, 'item owed', 'items owed')} still ${result.stillUndated === 1 ? 'has' : 'have'} no date anybody can give. ${result.stillUndated === 1 ? 'That one needs' : 'Those need'} an order raising with a supplier.`
+                          : 'Everything owed already carries the best date available.',
                       type: result.stillUndated > 0 ? 'info' : 'success',
                     });
                   });
@@ -276,7 +281,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
           <NativeSelect
             size="sm"
             className="max-w-48 shrink"
-            aria-label="Which commitments"
+            aria-label="Which ones to show"
             value={lens}
             onChange={(event) => {
               setLens(event.target.value as Lens);
@@ -310,7 +315,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertTitle>
             <AlertDescription>
               Nobody has told them anything, because nothing here knows when more is coming. Raising
-              a purchase order with an expected arrival is what turns this into a date, and
+              an order to a supplier with an expected arrival is what turns this into a date, and
               “Re-check dates” picks it up the moment you do.
             </AlertDescription>
           </AlertContent>
@@ -321,7 +326,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
         <Alert color="warning">
           <AlertContent>
             <AlertTitle>
-              {plural(overdueCount, 'commitment is', 'commitments are')} past the date you gave
+              {plural(overdueCount, 'item owed is', 'items owed are')} past the date you gave
             </AlertTitle>
             <AlertDescription>
               Each was promised a date that has now gone by. Chase the order behind it, or give a

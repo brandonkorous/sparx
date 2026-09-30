@@ -37,6 +37,18 @@ describe('the counts on "what needs you"', () => {
     expect(q).not.toHaveProperty('status');
   });
 
+  it('asks the chat question of the unread flag, not of the status column', () => {
+    // The same mistake as the invoice one above, on the next row down. `open` is
+    // a stored word meaning "not resolved", so a conversation answered an hour
+    // ago counted as something waiting for a person — and the badge said 1 over
+    // a thread that had already been replied to.
+    const q = SOURCES.messages.query as Record<string, unknown>;
+    expect(q.unread).toBe(true);
+    // As an absence too: `status` narrows first, so adding `unread` beside it
+    // would still have counted answered threads that happened to be open.
+    expect(q).not.toHaveProperty('status');
+  });
+
   it('asks for one row, because only the total is wanted', () => {
     // Fifty rows of JSON to display one integer, on every count, on every load.
     //

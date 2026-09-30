@@ -8,8 +8,8 @@ export const SUPPLY_EVENTS: readonly WebhookEventDef[] = [
 
   {
     key: 'inventory.purchase_order.late',
-    label: 'Supplier order late',
-    description: 'A purchase order passes the date the supplier promised it, and has not arrived.',
+    label: 'What they are sending is late',
+    description: 'An order to a supplier passes the date they promised it, and has not arrived.',
     group: 'Supply',
   },
   {

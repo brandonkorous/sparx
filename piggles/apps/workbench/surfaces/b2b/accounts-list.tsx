@@ -1,15 +1,20 @@
 'use client';
 
-// The trade accounts list — the businesses you supply.
+// Wholesale customers — the businesses you supply.
 //
-// An account carries several facts a person scans across to tell one from
-// another — who it is, what tier they're on, how much of their credit they've
-// used, and whether they're open for orders — so this is a real table whose
+// One carries several facts a person scans across to tell them apart — who it
+// is, what wholesale group they are in, how much of their credit they have
+// used, and whether they are open for orders — so this is a real table whose
 // columns disclose with @container as the pane widens.
 //
-// A "trade account" is a business that buys from you on agreed prices and terms,
-// not card at checkout. The empty state says exactly that, because the audience
-// runs a business, not a CRM.
+// A wholesale customer is a business that buys from you on agreed prices and
+// terms, not card at checkout. The empty state says exactly that, because the
+// audience runs a business, not a CRM.
+//
+// The pane called them "trade accounts" while the rail's + said "Add a
+// wholesale customer" — one action with two names, which is what
+// `PIGGLES_CREATE_LABELS` exists to stop, and it only ever reached the rail.
+// "Account" is also Money's word in this console. Issue 740.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -31,6 +36,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { accountState, formatCents, useAccounts, type AccountRow } from './accounts-data';
+import { creditStanding } from '../../lib/credit-standing';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -86,7 +92,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'Add a trade account',
+    label: 'Add a wholesale customer',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -95,12 +101,12 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Trade account controls"
+        label="Wholesale customers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search trade accounts"
+              aria-label="Search wholesale customers"
               placeholder="Company name or tax number…"
               value={search}
               onValueChange={(next) => {
@@ -116,7 +122,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a trade account. Hold Shift to open alongside, Alt for a new window"
+            title="Add a wholesale customer. Hold Shift to open alongside, Alt for a new window"
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -127,7 +133,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="w-44 shrink-0">
             <Select
               size="sm"
-              aria-label="Show which accounts"
+              aria-label="Show which customers"
               value={filter}
               items={FILTERS.map((entry) => ({ value: entry.value, label: entry.label }))}
               onValueChange={(next) => {
@@ -167,8 +173,8 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
-            title="Could not load your trade accounts"
-            description="This is a problem reaching the server. Your accounts are unaffected. Nothing has been lost."
+            title="Could not load your wholesale customers"
+            description="This is a problem reaching the server. Your customers are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -178,13 +184,13 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,
-              title: 'No accounts match that',
-              description: 'Try a different word, or switch back to All to see every account.',
+              title: 'No wholesale customers match that',
+              description: 'Try a different word, or switch back to All to see every one of them.',
             }}
             firstRun={{
-              title: 'No trade accounts yet',
+              title: 'No wholesale customers yet',
               description:
-                'A trade account is a business you supply on agreed prices and terms (a garage, a builder, a reseller) rather than a shopper paying card at checkout. Add your first one to give them their own prices and let their people order.',
+                'A wholesale customer is a business you supply on agreed prices and terms, like a shop that stocks what you make, rather than a shopper paying by card at checkout. Add your first one to give them their own prices and let their people order.',
               action: createFirst,
             }}
           />
@@ -193,7 +199,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <th>Company</th>
-                <th className="hidden @lg:table-cell">Price tier</th>
+                <th className="hidden @lg:table-cell">Wholesale group</th>
                 <th className="hidden text-right @xl:table-cell">Credit used</th>
                 <th className="text-right">Standing</th>
               </tr>
@@ -235,6 +241,31 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
+/**
+ * What this account owes, and whether it may still order on terms.
+ *
+ * This guarded on `creditLimitCents > 0` and had two branches, so an account at
+ * a zero limit printed "No credit set" and the outstanding balance went on the
+ * floor. One company in the dev database is exactly there, owing $1,193.
+ *
+ * "No credit set" was also the wrong reading of the zero. The checkout works out
+ * `creditLimit - creditUsed` and refuses anything larger, so a zero is not an
+ * absent ceiling, it is a closed door: no order on terms gets through. The
+ * Customers app drew the same record from the other side and printed
+ * "$1,193.00 of $0.00 used"; lib/credit-standing.ts is the one place that now
+ * decides which of the three things is true.
+ */
+function creditLine(row: AccountRow): string {
+  switch (creditStanding(row.creditLimitCents, row.creditUsedCents)) {
+    case 'limit':
+      return `${formatCents(row.creditUsedCents)} of ${formatCents(row.creditLimitCents)}`;
+    case 'owing':
+      return `${formatCents(row.creditUsedCents)} owed, no more on terms`;
+    default:
+      return 'Cannot order on terms';
+  }
+}
+
 function AccountTableRow({
   row,
   onOpen,
@@ -260,15 +291,11 @@ function AccountTableRow({
       <td className="font-medium">
         <span className="block">{row.companyName}</span>
         <Text as="span" className="text-sm @lg:hidden">
-          {row.pricingTierName ?? 'No tier'}
+          {row.pricingTierName ?? 'No group'}
         </Text>
       </td>
       <td className="hidden @lg:table-cell">{row.pricingTierName ?? '—'}</td>
-      <td className="hidden text-right text-sm tabular-nums @xl:table-cell">
-        {row.creditLimitCents > 0
-          ? `${formatCents(row.creditUsedCents)} of ${formatCents(row.creditLimitCents)}`
-          : 'No credit set'}
-      </td>
+      <td className="hidden text-right text-sm tabular-nums @xl:table-cell">{creditLine(row)}</td>
       <td className="text-right">
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}

@@ -5,7 +5,7 @@
 // ONE gate, shared by the rail and the panel that opens either list up. The rail
 // used to test `listed` and the module by hand and never asked
 // `productHidesSurface`, so a surface Piggles does not have could still get in by
-// being favourited or simply opened once — which is how "Modules" came to sit
+// being favorited or simply opened once — which is how "Modules" came to sit
 // under Recent on a product with no module pricing. Two callers reading the same
 // hook is what stops that returning through the second one.
 
@@ -19,8 +19,8 @@ import {
 } from '@/lib/surfaces/use-visible-nav';
 
 export interface ShortcutSurfaces {
-  favourites: SurfaceDefinition[];
-  /** Favourites are already pinned above, so showing them again here is noise. */
+  favorites: SurfaceDefinition[];
+  /** Favorites are already pinned above, so showing them again here is noise. */
   recents: SurfaceDefinition[];
 }
 
@@ -38,19 +38,19 @@ export function useShortcutSurfaces(): ShortcutSurfaces {
       return definition;
     };
 
-    const favouriteSurfaces = (favorites ?? [])
+    const favoriteSurfaces = (favorites ?? [])
       .map((favorite) => resolve(favorite.actionId))
       .filter((definition): definition is SurfaceDefinition => definition !== null);
 
-    const favouriteKeys = new Set(favouriteSurfaces.map((definition) => definition.key));
+    const favoriteKeys = new Set(favoriteSurfaces.map((definition) => definition.key));
 
     return {
-      favourites: favouriteSurfaces,
+      favorites: favoriteSurfaces,
       recents: (recents ?? [])
         .map((recent) => resolve(recent.actionId))
         .filter(
           (definition): definition is SurfaceDefinition =>
-            definition !== null && !favouriteKeys.has(definition.key)
+            definition !== null && !favoriteKeys.has(definition.key)
         ),
     };
   }, [favorites, recents, reachable, known]);

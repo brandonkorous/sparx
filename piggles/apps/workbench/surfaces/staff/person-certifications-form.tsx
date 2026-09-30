@@ -19,6 +19,7 @@ import {
 
 import { afterPaneChange } from '../../lib/defer';
 import { staffErrorMessage, useSaveCertification } from './data';
+import { DayInput } from '../../components/day-input';
 
 export function NewCertificationForm({
   staffMemberId,
@@ -99,11 +100,10 @@ export function NewCertificationForm({
           <FieldLabel>Expires</FieldLabel>
           <FieldControl
             render={
-              <Input
-                type="date"
+              <DayInput
                 value={expiresOn}
-                onChange={(event) => {
-                  setExpiresOn(event.target.value);
+                onValueChange={(value) => {
+                  setExpiresOn(value);
                 }}
               />
             }

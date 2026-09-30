@@ -1,10 +1,10 @@
 'use client';
 
-// The two moves on an order that cannot be taken back: giving money back, and
-// calling it off.
+// The moves on an order that cannot be taken back: giving money back, calling it
+// off, and taking a payment off that never came in.
 //
-// Both are the same four parts — a confirm, a yield, a mutation, a toast — and
-// all four have to agree about what is being done and what it costs. Kept
+// All three are the same four parts — a confirm, a yield, a mutation, a toast —
+// and all four have to agree about what is being done and what it costs. Kept
 // together, and away from the pane's markup, so the wording and the guard read
 // as one thing.
 
@@ -17,9 +17,12 @@ import {
   orderErrorMessage,
   useCancelOrder,
   useRefundOrder,
+  useTakePaymentOff,
   type Order,
+  type OrderPayment,
 } from './data';
 import type { RefundWords } from './refund-words';
+import { takeOffWords } from './payment-undo';
 
 /**
  * An order's irreversible actions, with the mutations behind them.
@@ -51,6 +54,7 @@ export function useOrderRisk(orderId: string) {
   const confirm = useConfirm();
   const cancel = useCancelOrder(orderId);
   const refund = useRefundOrder(orderId);
+  const takeOff = useTakePaymentOff(orderId);
 
   const askToRefund = async (order: Order, amount: number, says: RefundWords) => {
     const currency = order.currency;
@@ -127,5 +131,48 @@ export function useOrderRisk(orderId: string) {
     });
   };
 
-  return { cancel, refund, askToRefund, askToCancel };
+  /**
+   * A payment written down by mistake, coming back off.
+   *
+   * Reads as a third irreversible act rather than an undo, because it is one: the
+   * server refuses to un-take-off a row, and the figure it corrects is the one the
+   * shop's takings are counted from. The dialog's own words live in
+   * `payment-undo.ts`, next to the rule for when this is offered at all.
+   */
+  const askToTakeOff = async (order: Order, payment: OrderPayment) => {
+    const amount = formatMoney(payment.amount, payment.currency);
+    const says = takeOffWords({ amount, orderNumber: order.orderNumber });
+    const ok = await confirm({
+      title: says.title,
+      description: says.confirm,
+      confirmLabel: `Take ${amount} off`,
+      cancelLabel: 'Leave it as it is',
+      color: 'danger',
+    });
+    if (!ok) return;
+    // Same yield as the two above: let the confirm's own close commit finish
+    // before this pane re-renders underneath it. See lib/defer.ts.
+    await deferTick();
+    takeOff.mutate(payment.id, {
+      onSuccess: () => {
+        toast.add({
+          title: `${amount} taken off order ${order.orderNumber}`,
+          description: says.done,
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not take this payment off',
+          description: orderErrorMessage(
+            error,
+            'No money was moved and nothing was changed on the order.'
+          ),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  return { cancel, refund, takeOff, askToRefund, askToCancel, askToTakeOff };
 }

@@ -144,7 +144,9 @@ export function AppPanel({
   ) => {
     const create = surface.createSurface;
     if (!create) return;
-    controller.open(create, { id: 'new' }, { target: targetFor(event) });
+    // `id: 'new'` first, so a row that declares params can say which door this
+    // is without having to restate the one thing every create surface needs.
+    controller.open(create, { id: 'new', ...surface.createParams }, { target: targetFor(event) });
     if (!pinned) onDismiss();
   };
 

@@ -85,11 +85,12 @@ export function placingWords(
   if (!rule) {
     return {
       description:
-        'This sends the order and locks it. You will not be able to change the items or ' +
-        'quantities afterwards. As the goods arrive you book them in under Receiving.',
+        'This places the order and locks it. You will not be able to change the items or ' +
+        'quantities afterwards. Nothing is sent to the supplier for you: print the order ' +
+        'or pass it on yourself. As the goods arrive you book them in under Receiving.',
       confirmLabel: 'Place the order',
       toastTitle: `${order.number} placed`,
-      toastDescription: `It has gone to ${order.supplierName ?? 'the supplier'}.`,
+      toastDescription: `Print it or pass it on to ${order.supplierName ?? 'the supplier'}.`,
     };
   }
   return {

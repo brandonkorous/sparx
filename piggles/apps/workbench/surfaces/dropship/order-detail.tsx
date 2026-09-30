@@ -52,6 +52,10 @@ import {
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
+/** Registry module for this surface, so its waiting and failed states wear the
+ *  brand's own artwork for this app rather than the generic mark. */
+const MODULE = 'dropship';
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -91,7 +95,7 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [suppliers.data, order]);
 
   useEffect(() => {
-    if (order) ctx.setTitle(supplierName ? `${supplierName} order` : 'Supplier order');
+    if (order) ctx.setTitle(supplierName ? `${supplierName} order` : 'What they are sending');
   }, [ctx, order, supplierName]);
 
   if (isError) {
@@ -100,8 +104,9 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             error={error}
-            noun="supplier order"
-            title="Could not load this supplier order"
+            noun="order"
+            module={MODULE}
+            title="Could not load what they are sending"
             description="This is a problem reaching the server, or the order no longer exists. Nothing has been changed."
             onRetry={() => {
               void refetch();
@@ -112,8 +117,16 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
+  // Inside the shell and inside a card, like every other state in this console.
+  // A bare <PaneWaiting> has no pane background and no content region round it.
   if (isPending || !order) {
-    return <PaneWaiting />;
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneWaiting module={MODULE} />
+        </Card>
+      </div>
+    );
   }
 
   const state = orderState(order.status);
@@ -151,7 +164,7 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier order actions"
+        label="What they are sending actions"
         refresh={
           <RefreshButton
             isFetching={isFetching || suppliers.isFetching}
@@ -172,7 +185,6 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <Button
               size="sm"
               variant="outline"
-              color="neutral"
               className="ml-auto shrink-0"
               // Children arrive via silica's `render` composition; the a11y rule
               // reads the source anchor and cannot see them.
@@ -251,7 +263,15 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection title="Progress">
             <div className="flex flex-col gap-3">
-              <FactRow label="Reached the supplier">
+              {/* `createdAt` is when this ROW was made here, with `status`
+                  defaulting to `pending` — so it records that we decided to send
+                  the order, not that anybody received it. Labelled "Reached the
+                  supplier", it asserted the supplier had it at the exact moment
+                  nothing had been sent, and sat directly above "Sent to the
+                  supplier: Not yet". The two rows contradicted each other on
+                  every pending order.
+                  [[feedback_never_present_absence_as_measurement]] */}
+              <FactRow label="Lined up to send">
                 <Timestamp value={order.createdAt} format="absolute" />
               </FactRow>
               <FactRow label="Sent to the supplier">

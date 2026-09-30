@@ -368,7 +368,7 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
           module={MODULE}
           icon={<Icon glyph={faTags} className="size-6" aria-hidden />}
           title="This product has no versions to price"
-          description="Every product is sold as at least one version, and that is what carries a price. Add one on the Variants tab and its price will appear here."
+          description="Every product is sold as at least one version, and that is what carries a price. Add one on the Versions tab and its price will appear here."
         />
       </Card>
     );
@@ -523,12 +523,12 @@ function TradePriceLists({
   return (
     <FormSection
       title="Prices for your trade customers"
-      description="A price list is a set of prices for particular customers: a wholesale sheet, a distributor's rates. These are set up on the price list itself, and shown here so you can see what this product costs on each. Anything on a list overrides the prices above for the customers it covers."
+      description="A special price is a set of prices for particular customers: a wholesale sheet, a distributor's rates. These are set up on the price itself, and shown here so you can see what this product costs on each. Anything set there overrides the prices above for the customers it covers."
     >
       {query.isError ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Text className="text-sm">
-            Your trade price lists could not be read just now. Nothing about them has changed.
+            Your special prices could not be read just now. Nothing about them has changed.
           </Text>
           <Button
             size="sm"
@@ -545,8 +545,8 @@ function TradePriceLists({
         <PaneWaiting />
       ) : lists.length === 0 ? (
         <Text className="text-sm">
-          This product is not on any trade price list yet. Every customer pays the prices above
-          until you add it to one.
+          This product is not on any special price yet. Every customer pays the prices above until
+          you add it to one.
         </Text>
       ) : (
         <div className="flex flex-col gap-4">

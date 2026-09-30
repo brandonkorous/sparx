@@ -50,19 +50,18 @@ export function DiscountLimitFields({ draft, set }: LimitFieldsProps) {
           <FieldLabel>Minimum number of items</FieldLabel>
           <FieldControl
             render={
-              <div className="max-w-[8rem]">
-                <Input
-                  color="module"
-                  type="number"
-                  min={0}
-                  inputMode="numeric"
-                  value={draft.minItems}
-                  placeholder="0"
-                  onChange={(event) => {
-                    set('minItems', event.target.value);
-                  }}
-                />
-              </div>
+              <Input
+                className="max-w-[8rem]"
+                color="module"
+                type="number"
+                min={0}
+                inputMode="numeric"
+                value={draft.minItems}
+                placeholder="0"
+                onChange={(event) => {
+                  set('minItems', event.target.value);
+                }}
+              />
             }
           />
         </Field>

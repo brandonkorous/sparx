@@ -58,8 +58,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 function attributeLabel(type: ProductType): string {
   const n = type.attributeSchema.fields.length;
-  if (n === 0) return 'No attributes';
-  return `${String(n)} ${n === 1 ? 'attribute' : 'attributes'}`;
+  if (n === 0) return 'No details';
+  return `${String(n)} ${n === 1 ? 'detail' : 'details'}`;
 }
 
 export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -98,12 +98,12 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Product type list controls"
+        label="Kinds of product controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search product types"
+              aria-label="Search kinds of product"
               placeholder="Name or id…"
               value={search}
               onValueChange={setSearch}
@@ -111,7 +111,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'New type',
+          label: 'New kind of product',
           icon: faPlus,
           onClick: create,
           title: 'Define a new kind of product. Hold Shift to open alongside, Alt for a new window',
@@ -152,7 +152,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Card className="flex-1">
             <EmptyState
               icon={<Icon glyph={faShapes} className="size-6" aria-hidden />}
-              title="Could not load your product types"
+              title="Could not load your kinds of product"
               description="This is a problem reaching the server. Nothing you have defined is affected."
               actions={
                 <Button
@@ -182,7 +182,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 description: 'Try a different search, or switch the filter back to All.',
               }}
               firstRun={{
-                title: 'No product types yet',
+                title: 'No kinds of product yet',
                 description:
                   'Define the extra details a kind of product carries (fabric and care for clothing, ingredients for food, specs for electronics) so every product of that kind is described the same way.',
                 actions: (
@@ -194,7 +194,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Icon glyph={faPlus} className="size-4" aria-hidden />
-                    New type
+                    New kind of product
                   </Button>
                 ),
               }}
@@ -203,21 +203,21 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (
           <div className="flex w-full flex-col gap-6">
             <TypeGroup
-              title="Your types"
-              description="The kinds of product you defined. Open one to change its attributes."
+              title="Your kinds of product"
+              description="The kinds of product you defined. Open one to change the details it carries."
               types={custom}
               emptyHint={
                 kind === 'built_in'
                   ? null
-                  : 'You have not defined any of your own yet. Use “New type” above, or open a built-in and edit it to start your own copy.'
+                  : 'You have not defined any of your own yet. Use “New kind of product” above, or open a built-in and edit it to start your own copy.'
               }
               onOpen={open}
             />
             <TypeGroup
-              title="Built-in types"
+              title="Built-in kinds of product"
               description={productCopy(
                 'commerce.productTypes.builtIn',
-                'Shared types that come with Piggles. Open one to use it as-is, or edit it to keep your own copy with the attributes you want.'
+                'Kinds of product that come with Piggles. Open one to use it as-is, or edit it to keep your own copy with the details you want.'
               )}
               types={builtIn}
               emptyHint={null}
@@ -268,8 +268,8 @@ function TypeGroup({ title, description, types, emptyHint, onOpen }: TypeGroupPr
                   because it is the one a person reads: `key` is the machine
                   name for the type, and a technical id is the last thing a
                   narrow pane should spend its width on. */}
-              <th className="hidden @sm:table-cell">Attributes</th>
-              <th className="hidden @lg:table-cell">Key</th>
+              <th className="hidden @sm:table-cell">Details</th>
+              <th className="hidden @lg:table-cell">Id</th>
             </tr>
           </thead>
           <tbody>

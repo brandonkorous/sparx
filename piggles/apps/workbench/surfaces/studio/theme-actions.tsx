@@ -85,7 +85,7 @@ function RenameField({ row, onDone }: { row: ThemeRow; onDone: () => void }) {
         if (name && name !== row.name) {
           // `draft` is the look as it stands — a rename must not also roll its
           // colors back to whatever was published.
-          void saveTheme.mutateAsync({ id: row.id, name, theme: row.draft });
+          saveTheme.mutate({ id: row.id, name, theme: row.draft });
         }
       }}
       onKeyDown={(event) => {

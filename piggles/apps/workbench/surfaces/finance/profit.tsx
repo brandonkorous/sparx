@@ -222,7 +222,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Profit controls"
+        label="Controls for what you kept"
         primary={
           <Button
             size="sm"

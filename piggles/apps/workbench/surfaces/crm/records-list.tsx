@@ -22,6 +22,7 @@ import { faPlus, faTable } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneEmpty } from '../../components/pane-empty';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu';
@@ -33,6 +34,28 @@ import { RowOpenHint } from '../../components/row-open-hint';
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
 const MODULE = 'crm';
+
+/**
+ * A BUILT-IN OBJECT HAS ITS OWN SCREEN, AND THIS IS NOT IT.
+ *
+ * `crm_records` holds tenant-invented objects only. Addressed with a built-in
+ * key — `/crm/records/contact` — this pane drew a working, permanently empty
+ * list: "No customers yet · 0 in total", on a shop with forty of them, under a
+ * sentence telling her she had made the idea up herself. Every word of it was
+ * false, and the fact that makes it false was already on the record the pane
+ * had fetched: `kind: 'builtin'`.
+ * [[feedback_fetched_but_never_rendered]] [[feedback_never_present_absence_as_measurement]]
+ *
+ * Keyed to the four in `BUILTIN_OBJECT_KEYS`. A key with no entry here still
+ * gets the refusal, just without a way through, because being sent nowhere is
+ * better than being told a number that is not true.
+ */
+const BUILTIN_SCREEN: Record<string, string> = {
+  contact: 'crm.customers.list',
+  company: 'crm.accounts.list',
+  deal: 'crm.deals.list',
+  ticket: 'crm.tickets.list',
+};
 
 /** Shift opens alongside, Alt pops out — the same modifier contract every other
  *  list in the workbench uses. */
@@ -86,6 +109,36 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const openRecord = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.record.detail', { id, objectKey }, { target: targetFor(event) });
   };
+
+  if (type.data?.kind === 'builtin') {
+    const target = BUILTIN_SCREEN[objectKey];
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faTable} className="size-6" aria-hidden />}
+            title={`${labelPlural} have a screen of their own`}
+            description={`This screen lists the things you chose to track yourself. ${labelPlural} came with Piggles, so they live on their own screen with everything that only they can do.`}
+            {...(target
+              ? {
+                  actions: (
+                    <Button
+                      color="module"
+                      onClick={(event) => {
+                        ctx.open(target, {}, { target: targetFor(event) });
+                      }}
+                    >
+                      Open {labelPlural}
+                    </Button>
+                  ),
+                }
+              : {})}
+          />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>
@@ -192,7 +245,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
               // The tenant invented this type, so the welcome is about the thing
               // they invented — in their word for it, not "records".
               title: `No ${labelPlural.toLowerCase()} yet`,
-              description: `You made this record type up, which means nobody else's software has it. Add the first ${label.toLowerCase()} and it will show here, with its own search, its own saved views, and a page of its own.`,
+              description: `You made this up yourself, which means nobody else's software has it. Add the first ${label.toLowerCase()} and it will show here, with its own search, its own saved views, and a page of its own.`,
               actions: (
                 <Button
                   size="sm"

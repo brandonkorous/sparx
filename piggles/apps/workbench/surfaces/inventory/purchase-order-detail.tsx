@@ -472,7 +472,7 @@ function LineEditor({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col overflow-hidden">
           <DialogTitle>{isEdit ? 'Edit line' : 'Add a line'}</DialogTitle>
 
-          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             {/* Choosing the item — only when adding. When editing, the item is
                 fixed (changing it is a remove-and-add), shown as identity. */}
             {isEdit ? (
@@ -1039,7 +1039,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [isNew, detail, loaded, dirty, baseline]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New purchase order' : (detail?.number ?? 'Purchase order'));
+    ctx.setTitle(isNew ? 'New order to a supplier' : (detail?.number ?? 'Order to a supplier'));
   }, [ctx, isNew, detail?.number]);
 
   const activeLocations = (locationsQuery.data?.items ?? []).filter(
@@ -1100,7 +1100,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   useDirtySource(
     editable && dirty && loaded,
     isNew
-      ? 'This purchase order has not been saved yet. Close anyway?'
+      ? 'This order to a supplier has not been saved yet. Close anyway?'
       : `Changes to ${detail?.number ?? 'this order'} have not been saved. Close anyway?`
   );
 
@@ -1320,18 +1320,15 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed load REPLACES the pane.
   if (!isNew && po.isError) {
-    const gone = isNotFound(po.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This order no longer exists' : 'Could not load this order'}
-            description={
-              gone
-                ? 'It may have been a draft that was deleted.'
-                : 'This is a problem reaching the server. The order itself is unaffected.'
-            }
+            error={po.error}
+            title="Could not load this order"
+            description="This is a problem reaching the server. The order itself is unaffected."
+            missingTitle="This order no longer exists"
+            missingDescription="It may have been a draft that was deleted."
             onRetry={() => {
               void po.refetch();
             }}
@@ -1357,7 +1354,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Purchase order actions"
+        label="Order to a supplier actions"
         status={
           state ? (
             <Badge color={state.tone} variant="soft" size="sm">
@@ -1435,33 +1432,6 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Button>
               </Tooltip>
             ) : null}
-            {/* The sticker that makes this order scannable at all. Icon-only: it is
-            a secondary action, and the tooltip carries the meaning. */}
-            {detail && status !== 'draft' ? (
-              <Tooltip content="Print a scannable label for the paperwork and the pallet">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  shape="square"
-                  className="shrink-0"
-                  aria-label="Print a scannable label for this order"
-                  onClick={() => {
-                    ctx.open(
-                      'inventory.documents.label',
-                      {
-                        number: detail.number,
-                        title: 'Purchase order',
-                        subtitle: detail.supplierName ?? '',
-                      },
-                      { target: 'beside' }
-                    );
-                  }}
-                >
-                  <Icon glyph={faPrint} className="size-4" aria-hidden />
-                </Button>
-              </Tooltip>
-            ) : null}
             {detail && (status === 'submitted' || status === 'partial' || status === 'received') ? (
               <Button
                 size="sm"
@@ -1493,24 +1463,50 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 Cancel
               </Button>
             ) : null}
-            {detail && status === 'draft' ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                aria-label="Delete this draft"
-                title="Delete this draft"
-                loading={remove.isPending}
-                onClick={() => {
-                  void onDelete();
-                }}
-              >
-                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-              </Button>
-            ) : null}
           </>
         }
+        /* VALUES, not bespoke `controls` JSX. `controls` is relocated into the
+           narrow bar's overflow popover VERBATIM and only `actions` are
+           re-authored there as labelled rows, so the printer arrived as a
+           nameless glyph above "Close", "Refresh this list" and "Copy a link to
+           this" - three rows with words and one without.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={[
+          ...(detail && status !== 'draft'
+            ? [
+                {
+                  label: 'Print a label',
+                  title: 'Print a scannable label for the paperwork and the pallet',
+                  icon: faPrint,
+                  onClick: () => {
+                    ctx.open(
+                      'inventory.documents.label',
+                      {
+                        number: detail.number,
+                        title: 'Order to a supplier',
+                        subtitle: detail.supplierName ?? '',
+                      },
+                      { target: 'beside' }
+                    );
+                  },
+                },
+              ]
+            : []),
+          ...(detail && status === 'draft'
+            ? [
+                {
+                  label: 'Delete',
+                  title: 'Delete this draft',
+                  icon: faTrashCan,
+                  tone: 'danger' as const,
+                  loading: remove.isPending,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
+            : []),
+        ]}
         refresh={
           isNew ? null : (
             <RefreshButton

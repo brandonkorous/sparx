@@ -15,6 +15,15 @@
 // Either way this earns a table rather than cards: every column is a value an
 // owner scans down, and status leads on the right because "who is on hold" is
 // what the list gets opened to answer.
+//
+// THE CREDIT COLUMN SAYS WHAT IS OWED AND WHAT IS STILL ALLOWED. It printed
+// the limit alone, so the 11 of 29 companies sitting at the column's
+// `DEFAULT 0` read `$0.00`, which looks like a rounding error and is in fact
+// a closed door: the checkout refuses every order on terms against a zero. The
+// balance beside it was already being fetched and drawn nowhere, which is how a
+// company could owe $1,193 under a cell reading `$0.00`. `creditStanding` in
+// lib/credit-standing.ts settles which of the three things is true; the trade
+// app's list answers the same question about the same record the same way.
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -40,6 +49,7 @@ import {
   type CompanyStatus,
 } from './companies-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { creditStanding } from '../../lib/credit-standing';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -49,6 +59,35 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
+}
+
+/**
+ * What this company owes, and whether a ceiling was ever recorded.
+ *
+ * This column used to print the limit alone, so every company nobody had given
+ * one read `$0.00`, a database default wearing the face of a figure. It also
+ * threw away `creditUsed`, which the list has already fetched and which is the
+ * number an owner opens this screen to see. The trade app's list answers the
+ * same question about the same record, so both now say it the same way.
+ *
+ * A zero limit is a closed door, not a blank: the checkout refuses every order
+ * placed on terms against one. So both states below a real ceiling say so,
+ * rather than reporting an absence.
+ *
+ * Two parts rather than one sentence, because this column is 107px wide in a
+ * docked pane at 360px, where a whole clause wraps to four ragged lines. Split,
+ * the figure keeps its own line and the qualifier sits under it, which is the
+ * shape the trade list already uses for the company cell.
+ */
+function creditCell(row: Company): { amount: string; note: string | null } {
+  switch (creditStanding(row.creditLimit, row.creditUsed)) {
+    case 'limit':
+      return { amount: formatMoney(row.creditUsed), note: `of ${formatMoney(row.creditLimit)}` };
+    case 'owing':
+      return { amount: formatMoney(row.creditUsed), note: 'no more on terms' };
+    default:
+      return { amount: 'None on terms', note: null };
+  }
 }
 
 export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -93,7 +132,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Company list controls"
+        label="Companies controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -191,7 +230,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th className="text-right">People</th>
                 {tradeEnabled ? (
                   <>
-                    <th className="text-right">Credit limit</th>
+                    <th className="text-right">Credit used</th>
                     <th className="hidden text-right @md:table-cell">Discount</th>
                     <th className="hidden @xl:table-cell">Terms</th>
                   </>
@@ -205,6 +244,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
               {rows.map((row) => {
                 const meta = accountStatusMeta(row.status);
                 const discount = Number(row.discountPercent);
+                const credit = creditCell(row);
                 // A zero is worth saying out loud — "nobody here yet" is a
                 // prompt to add somebody, and an em-dash would read as unknown.
                 const people = row._count?.customers ?? 0;
@@ -227,8 +267,14 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="text-right tabular-nums">{people}</td>
                     {tradeEnabled ? (
                       <>
-                        <td className="text-right font-mono text-sm tabular-nums">
-                          {formatMoney(row.creditLimit)}
+                        {/* `tabular-nums` keeps the figures in a column; the
+                            monospace that used to be here turned "no more on terms"
+                            into something that reads like a terminal. */}
+                        <td className="text-right text-sm tabular-nums">
+                          <span className="block">{credit.amount}</span>
+                          {credit.note === null ? null : (
+                            <span className="block">{credit.note}</span>
+                          )}
                         </td>
                         <td className="hidden text-right font-mono text-sm tabular-nums @md:table-cell">
                           {discount > 0 ? `${String(discount)}%` : '—'}

@@ -69,7 +69,7 @@ export function PublishPaneSurface() {
   if (state.isPending) return <PaneWaiting label="Checking what is live…" />;
 
   return (
-    <div className="bg-base-200 flex h-full min-h-0 flex-col gap-4 overflow-auto p-4">
+    <div className="bg-base-200 flex h-full min-h-0 flex-col gap-4 overflow-auto p-4 [&>*]:shrink-0">
       <Waiting state={state.data ?? null} publishing={publish.isPending} onPublish={goLive} />
       <PublishGaps state={state.data ?? null} />
       <PublishChecks report={report} running={check.isPending} onRun={runCheck} />

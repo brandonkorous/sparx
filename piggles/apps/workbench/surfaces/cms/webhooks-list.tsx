@@ -88,7 +88,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Notification list controls"
+        label="Tell other software controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

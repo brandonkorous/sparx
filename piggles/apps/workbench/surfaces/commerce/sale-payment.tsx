@@ -5,6 +5,12 @@
 // Prefilled with the total, because at a counter the whole thing is paid nearly
 // every time. It is still a box, so a part payment is typing over it and a slip
 // nobody has paid for yet is clearing it.
+//
+// WHAT the box is prefilled with is `whatToOffer` next door, not this file: a
+// deposit product asks for its deposit, and an order going out on a shop's
+// account asks for nothing. The sentence under the heading comes with it, since
+// "how much you were handed" is a question about a counter and this pane is
+// also where a phoned-in order is written down.
 
 import { Input, NativeSelect, Text } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
@@ -29,6 +35,7 @@ export function SalePayment({
   setPaidWith,
   paidNote,
   setPaidNote,
+  note,
 }: {
   total: number;
   currency: string;
@@ -38,16 +45,15 @@ export function SalePayment({
   setPaidWith: (value: string) => void;
   paidNote: string;
   setPaidNote: (value: string) => void;
+  /** What this section is for, in the words that fit who is buying. */
+  note: string;
 }) {
   const { amount, problem } = readMoney(paid);
   const taken = amount ?? 0;
   const owing = total - taken;
 
   return (
-    <FormSection
-      title="What they paid"
-      description="How much you were handed, and how. Clear it if they have not paid yet: the sale is still written down, and it shows up under what you are owed."
-    >
+    <FormSection title="What they paid" description={note}>
       <div className="flex flex-wrap items-start gap-3">
         <label className="w-32">
           <span className="mb-1.5 block text-base font-medium">How much</span>

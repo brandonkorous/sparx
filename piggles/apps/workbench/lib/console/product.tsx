@@ -46,7 +46,7 @@ import { APPS } from '@piggles/config';
 import { Mark } from '@piggles/brand/react';
 import { PIGGLES_COPY } from './copy';
 import { PIGGLES_SECTIONS } from './section-names';
-import { PIGGLES_SURFACES } from './vocabulary';
+import { PIGGLES_CREATE_LABELS, PIGGLES_SURFACES } from './vocabulary';
 import { PigglesStateArt } from './state-art';
 
 /**
@@ -172,6 +172,7 @@ configureProduct({
   // the product and the most-read, written under the same rule as the sentences
   // above — see vocabulary.ts.
   surfaceTitles: PIGGLES_SURFACES,
+  createLabels: PIGGLES_CREATE_LABELS,
   sectionTitles: PIGGLES_SECTIONS,
   // Piggles herself, in every empty, waiting and failed pane — small, and
   // posed to the state rather than tinted to it. See state-art.tsx.

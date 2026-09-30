@@ -112,7 +112,7 @@ export function supplierOrdersEmptyWords(supplierCount: number, filtered: boolea
 
   if (supplierCount === 1) {
     return {
-      title: 'No supplier orders yet',
+      title: 'Nothing is going to a supplier yet',
       detail:
         'When a customer buys a product your supplier ships, the order is routed to them and ' +
         'appears here with its tracking. Nothing has been routed yet.',
@@ -121,7 +121,7 @@ export function supplierOrdersEmptyWords(supplierCount: number, filtered: boolea
   }
 
   return {
-    title: 'No supplier orders yet',
+    title: 'Nothing is going to a supplier yet',
     detail:
       'When a customer buys a product one of your suppliers ships, the order is routed to that ' +
       'supplier and appears here with its tracking. Nothing has been routed yet.',

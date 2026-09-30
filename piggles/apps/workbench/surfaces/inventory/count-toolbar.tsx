@@ -4,7 +4,7 @@
 // entirely on where the count stands, so all of that lives here rather than
 // being read out of the session's JSX.
 
-import { Badge, Button, Tooltip } from '@wizeworks/silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import {
   faClipboardCheck,
   faFloppyDisk,
@@ -114,32 +114,30 @@ export function CountToolbar(props: ToolbarProps) {
           ) : null}
         </>
       }
-      controls={
-        /* The sticker that makes "scan the count sheet" true. Without it that
-           instruction in warehouse mode has nothing to scan. */
-        <Tooltip content="Print a scannable label for the count sheet">
-          <Button
-            size="sm"
-            variant="ghost"
-            shape="square"
-            className="shrink-0"
-            aria-label="Print a scannable label for this count"
-            onClick={() => {
-              ctx.open(
-                'inventory.documents.label',
-                {
-                  number: count.number,
-                  title: 'Stock count',
-                  subtitle: count.warehouseName ?? '',
-                },
-                { target: 'beside' }
-              );
-            }}
-          >
-            <Icon glyph={faPrint} className="size-4" aria-hidden />
-          </Button>
-        </Tooltip>
-      }
+      /* The sticker that makes "scan the count sheet" true. Without it that
+         instruction in Scanner mode has nothing to scan.
+
+         A VALUE rather than bespoke `controls` JSX: `controls` is relocated into
+         the narrow bar's overflow popover verbatim, so this was a bare printer
+         glyph among rows that had words. */
+      actions={[
+        {
+          label: 'Print a label',
+          title: 'Print a scannable label for the count sheet',
+          icon: faPrint,
+          onClick: () => {
+            ctx.open(
+              'inventory.documents.label',
+              {
+                number: count.number,
+                title: 'Stock count',
+                subtitle: count.warehouseName ?? '',
+              },
+              { target: 'beside' }
+            );
+          },
+        },
+      ]}
       refresh={
         /* ALWAYS the last child of a toolbar — see RefreshButton. Picks up a
            change someone else made to this count while it sat open. */

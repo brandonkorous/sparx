@@ -36,13 +36,16 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { WorkflowPanes } from './workflow-editor-panes';
 import { WorkflowToolbar } from './workflow-editor-toolbar';
 import { useStageOps } from './workflow-editor-stages';
+import { isSystemWorkflowSlug } from '@wizeworks/crm-schemas/builtins';
 import { slugifyTyping } from '../../lib/slugify';
 import type { DocumentWorkflowDetail } from './types';
 import {
+  comparableWorkflow,
   emptyWorkflowDraft,
   slugify,
   toWorkflowDraft,
   useArchiveWorkflow,
+  useRestoreWorkflow,
   useInvalidateWorkflows,
   useWorkflow,
   workflowErrorMessage,
@@ -64,15 +67,22 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   } = useWorkflow(id);
   const invalidate = useInvalidateWorkflows();
   const archive = useArchiveWorkflow();
+  const restore = useRestoreWorkflow();
   const toast = useToast();
   const confirm = useConfirm();
 
   const [draft, setDraft] = useState<WorkflowDraft>(emptyWorkflowDraft);
-  // What was last adopted from the server, serialized. Dirty is the comparison
-  // against it: a sticky boolean meant "somebody touched something" rather than
-  // "this differs from what is stored", so undoing an edit still left the pane
-  // claiming unsaved work and still confirmed on close (issue 507).
-  const baselineRef = useRef<string>(JSON.stringify(emptyWorkflowDraft()));
+  // What was last adopted from the server, reduced to what the server stores.
+  // Dirty is the comparison against it: a sticky boolean meant "somebody
+  // touched something" rather than "this differs from what is stored", so
+  // undoing an edit still left the pane claiming unsaved work and still
+  // confirmed on close (issue 507).
+  //
+  // BOTH sides go through `comparableWorkflow`, and that is the whole point.
+  // Serializing the draft raw made the baseline permanently unequal to it,
+  // because each stage carries a random session key — so the pane was dirty on
+  // arrival and the adopt effect below, guarded on dirty, never ran (issue 780).
+  const baselineRef = useRef<string>(comparableWorkflow(emptyWorkflowDraft()));
   // Once the operator has typed a reference name of their own, the name field
   // stops overwriting it — otherwise fixing a typo in the title silently rewrites
   // a slug that may already be linked to from elsewhere.
@@ -91,14 +101,14 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
    */
   const [original, setOriginal] = useState<DocumentWorkflowDetail | null>(null);
 
-  const dirty = JSON.stringify(draft) !== baselineRef.current;
+  const dirty = comparableWorkflow(draft) !== baselineRef.current;
   useDirtySource(dirty, 'This workflow has unsaved changes. Close it anyway?');
 
   /** Adopt a server state as both the draft and the baseline. */
   const adopt = (next: DocumentWorkflowDetail) => {
     const adopted = toWorkflowDraft(next);
     setDraft(adopted);
-    baselineRef.current = JSON.stringify(adopted);
+    baselineRef.current = comparableWorkflow(adopted);
     setOriginal(next);
     setSlugTouched(true);
     ctx.setTitle(next.name);
@@ -152,8 +162,11 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!original) return;
     const ok = await confirm({
       title: `Archive “${original.name}”?`,
+      // The last sentence is new, and it is not reassurance: it is the truth,
+      // and it only became true when Bring it back was built. Before that this
+      // confirm described a reversible change over a one-way one (issue 783).
       description:
-        'It stops being offered when someone creates a document. Documents already using it are untouched and keep working exactly as they do now.',
+        'It stops being offered when someone creates a document. Documents already using it are untouched and keep working exactly as they do now. You can find it again under Archived and bring it back.',
       color: 'danger',
       confirmLabel: 'Archive workflow',
       cancelLabel: 'Keep it',
@@ -167,6 +180,24 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
       onError: (error) => {
         toast.add({
           title: 'Could not archive this workflow',
+          description: workflowErrorMessage(error, 'Try again in a moment.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  /** No confirm: this one only ever puts something back. */
+  const onRestore = () => {
+    if (!original) return;
+    restore.mutate(original.id, {
+      onSuccess: () => {
+        toast.add({ title: 'Workflow brought back', type: 'success' });
+        void refetch();
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not bring this workflow back',
           description: workflowErrorMessage(error, 'Try again in a moment.'),
           type: 'error',
         });
@@ -217,6 +248,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
         onArchive={() => {
           void onArchive();
         }}
+        onRestore={onRestore}
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -239,6 +271,9 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <WorkflowPanes
         draft={draft}
+        /* Read off the STORED slug, never the draft: the question is what this
+           workflow already is, not what somebody has typed into the box. */
+        slugLocked={isSystemWorkflowSlug(original?.slug)}
         stageOps={stageOps}
         onName={onName}
         onSlug={onSlug}

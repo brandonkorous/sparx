@@ -1,4 +1,4 @@
-// Money and enquiries — what a business most wants another system to hear.
+// Money and inquiries — what a business most wants another system to hear.
 
 import type { WebhookEventDef } from './types';
 
@@ -28,7 +28,7 @@ export const SELLING_EVENTS: readonly WebhookEventDef[] = [
     key: 'form.submitted',
     label: 'Form filled in',
     description:
-      'Somebody fills in a form on your site: a contact page, an enquiry, a trade application.',
+      'Somebody fills in a form on your site: a contact page, an inquiry, a trade application.',
     group: 'Selling',
   },
 ];

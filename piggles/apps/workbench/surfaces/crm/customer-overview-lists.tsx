@@ -51,7 +51,7 @@ export function OpenDeals({ ctx, deals }: { ctx: SurfaceContext; deals: Deal[] }
   return (
     <FormSection
       title="Open deals"
-      description="Live deals with this customer and where each one sits on its pipeline."
+      description="Live deals with this customer and which step of its process each one sits on."
     >
       <ul className="divide-base-300 -my-1 flex flex-col divide-y">
         {deals.map((deal) => {

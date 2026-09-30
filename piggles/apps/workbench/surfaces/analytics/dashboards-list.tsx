@@ -8,9 +8,13 @@
 // by id. Each row wears its owning module's hue as a small signal — wayfinding,
 // not decoration, so the tint rides the icon rather than washing the whole card.
 
-import { Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
-import { faGauge, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { Card, Text } from '@wizeworks/silicaui-react';
+import { faGauge } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
+import { RowOpenHint } from '../../components/row-open-hint';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -60,8 +64,11 @@ function DashboardRow({
   );
 }
 
+const MODULE = 'platform';
+
 export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const dashboards = useDashboards();
+  const rows = dashboards.data ?? [];
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('analytics.dashboard.view', { id }, { target: targetFor(event) });
@@ -71,6 +78,20 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Dashboards"
+        status={
+          <>
+            <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="text-sm">
+              {rows.length === 0
+                ? 'No dashboards yet'
+                : rows.length === 1
+                  ? '1 dashboard'
+                  : `${String(rows.length)} dashboards`}
+            </Text>
+          </>
+        }
+        statusReady={!dashboards.isPending}
+        statusFailed={dashboards.isError}
         refresh={
           <div className="ml-auto">
             <RefreshButton
@@ -85,25 +106,20 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
           {dashboards.isError ? (
-            <EmptyState
-              icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
+            <PaneLoadError
+              icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
               title="Could not load your dashboards"
               description={analyticsErrorMessage(
                 dashboards.error,
-                'This is a problem reaching the server. Try again in a moment.'
+                'This is a problem reaching the server. Nothing you are looking at is affected. It just could not be read.'
               )}
-              actions={
-                <Button size="sm" color="neutral" onClick={() => void dashboards.refetch()}>
-                  Try again
-                </Button>
-              }
+              onRetry={() => void dashboards.refetch()}
             />
           ) : dashboards.isPending ? (
-            <Text className="text-sm" role="status">
-              Loading…
-            </Text>
-          ) : (dashboards.data ?? []).length === 0 ? (
-            <EmptyState
+            <PaneWaiting module={MODULE} />
+          ) : rows.length === 0 ? (
+            <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
               title="No dashboards yet"
               description={productCopy(
@@ -113,13 +129,16 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           ) : (
             <>
-              <Text className="text-sm">
-                Each dashboard answers one set of questions. Open one in a tab, Shift-click to place
-                it alongside your work, or Alt-click to send it to another window.
-              </Text>
-              {(dashboards.data ?? []).map((dashboard) => (
+              <Text className="text-sm">Each dashboard answers one set of questions.</Text>
+              {rows.map((dashboard) => (
                 <DashboardRow key={dashboard.id} dashboard={dashboard} onOpen={open} />
               ))}
+              {/* The 88th copy of this sentence used to live above the list, in
+                  its own wording, shown at every width. `RowOpenHint` exists
+                  because 87 surfaces each wrote their own and none of them could
+                  be changed at once, and because shift and alt do not exist on
+                  the phone the compact console was built for. */}
+              <RowOpenHint what="a dashboard to open it" />
             </>
           )}
         </div>

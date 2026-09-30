@@ -58,14 +58,25 @@ describe('waitingLine', () => {
     expect(line).not.toContain('visitors');
   });
 
-  it('leaves a site that has never been published alone', () => {
-    // "Nobody can see it yet" is already true whether the lights are on or off,
-    // so the dark case must not reword it into something weaker.
-    for (const dark of [false, true]) {
-      expect(waitingLine(state({ neverPublished: true }), dark)).toBe(
-        'Your website has never been published. Nobody can see it yet.'
-      );
-    }
+  it('does not tell her nobody can see a site that is answering the public', () => {
+    // The assertion here used to be the whole defect, written down as a rule:
+    // it pinned "Nobody can see it yet" under a comment claiming that sentence
+    // was "already true whether the lights are on or off". An unpublished site
+    // is served the code starter, so a visitor gets a working website with her
+    // products on it (issue 851).
+    const line = waitingLine(state({ neverPublished: true }), false);
+    expect(line).toContain('never been published');
+    expect(line).not.toContain('Nobody');
+    expect(line).toContain('starter page');
+  });
+
+  it('does say nobody is seeing anything once the site is offline', () => {
+    // The one case where "nobody" is true: suspension serves the Back soon
+    // overlay instead of any page, starter or hers.
+    const line = waitingLine(state({ neverPublished: true }), true);
+    expect(line).toContain('never been published');
+    expect(line).toContain('nobody is seeing anything');
+    expect(line).not.toContain('starter page');
   });
 });
 
@@ -104,6 +115,10 @@ describe('the property all three share', () => {
     // Whatever the shape of the input, the promise and the state must agree.
     const shapes = [
       state(),
+      // The never-published shape belongs in here too. It was the one branch
+      // that returned the same string either way, so the property never reached
+      // it and the branch was free to be wrong (issue 851).
+      state({ neverPublished: true }),
       state({ hasUnpublished: true, unpublishedPages: 1 }),
       state({ hasUnpublished: true, unpublishedPages: 4, frameUnpublished: true }),
       state({ hasUnpublished: true, frameUnpublished: true }),

@@ -3,53 +3,88 @@
 // The money that moved on this order: every attempt to take it, and everything
 // given back.
 
-import { Badge } from '@wizeworks/silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { FormSection } from '../../components/form-section';
 import { SubSection } from './order-detail-blocks';
 import { RecordPayment } from './record-payment';
+import { paymentNote } from './payment-note';
+import { canTakeOff } from './payment-undo';
 import type { useOrderPayments, useOrderRefunds } from './data';
+import type { useOrderRisk } from './order-detail-actions';
 import {
   amountDue,
   formatDateTime,
   formatMoney,
+  paidByHand,
   paymentRecordTone,
   refundTone,
   PAYMENT_PROCESSOR_LABELS,
   PAYMENT_STATUS_LABELS,
   REFUND_STATUS_LABELS,
   type Order,
+  type OrderPayment,
 } from './data';
 
 const ROW =
   'border-base-300 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0';
 
-/**
- * What a person wrote down about this payment.
- *
- * `metadata.note` is where it belongs and where it goes now. `processorRef` is
- * read as a fallback because payments taken before issue 223 was fixed have the
- * note stored there — on a hand-taken payment that field only ever held what
- * somebody typed, so showing it is the honest reading of an old row.
- */
-function paymentNote(payment: {
-  processor: string;
-  processorRef: string | null;
-  metadata?: Record<string, unknown> | null;
-}): string | null {
-  const note = payment.metadata?.note;
-  if (typeof note === 'string' && note.trim()) return note.trim();
-  if (payment.processor === 'stripe' || payment.processor === 'paypal') return null;
-  const older = payment.processorRef?.trim() ?? '';
-  return older === '' ? null : older;
+function PaymentRow({
+  order,
+  payment,
+  risk,
+}: {
+  order: Order;
+  payment: OrderPayment;
+  risk: ReturnType<typeof useOrderRisk>;
+}) {
+  const note = paymentNote(payment);
+  // Offered only on money the shop took itself, and only while the order is
+  // still counting on it. See payment-undo.ts for why a gateway row gets no
+  // action at all (issue 875).
+  const takeable = canTakeOff({ status: payment.status, byHand: paidByHand(payment.processor) });
+  return (
+    <li className={ROW}>
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="text-base font-medium">
+          {formatMoney(payment.amount, payment.currency)} ·{' '}
+          {PAYMENT_PROCESSOR_LABELS[payment.processor] ?? payment.processor}
+        </span>
+        <span className="text-sm">{formatDateTime(payment.capturedAt ?? payment.createdAt)}</span>
+        {/* What she wrote down when the money came in (issue 223). */}
+        {note ? <span className="text-sm">{note}</span> : null}
+        {payment.failureReason ? <span className="text-sm">{payment.failureReason}</span> : null}
+      </div>
+      <div className="flex items-center gap-2">
+        <Badge color={paymentRecordTone(payment.status)} variant="soft" size="sm">
+          {PAYMENT_STATUS_LABELS[payment.status] ?? payment.status}
+        </Badge>
+        {takeable ? (
+          <Button
+            size="sm"
+            color="danger"
+            variant="outline"
+            loading={risk.takeOff.isPending}
+            onClick={() => {
+              void risk.askToTakeOff(order, payment);
+            }}
+          >
+            Take it off
+          </Button>
+        ) : null}
+      </div>
+    </li>
+  );
 }
 
 export function PaymentsSection({
   order,
   payments,
+  risk,
 }: {
   order: Order;
   payments: ReturnType<typeof useOrderPayments>;
+  risk: ReturnType<typeof useOrderRisk>;
 }) {
   const due = amountDue(order);
   return (
@@ -69,28 +104,7 @@ export function PaymentsSection({
     >
       <ul className="flex flex-col">
         {(payments.data ?? []).map((payment) => (
-          <li key={payment.id} className={ROW}>
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-base font-medium">
-                {formatMoney(payment.amount, payment.currency)} ·{' '}
-                {PAYMENT_PROCESSOR_LABELS[payment.processor] ?? payment.processor}
-              </span>
-              <span className="text-sm">
-                {formatDateTime(payment.capturedAt ?? payment.createdAt)}
-              </span>
-              {/* What she wrote down when the money came in. The box asked for a
-                  cheque number and then showed it back nowhere (issue 223). */}
-              {paymentNote(payment) ? (
-                <span className="text-sm">{paymentNote(payment)}</span>
-              ) : null}
-              {payment.failureReason ? (
-                <span className="text-sm">{payment.failureReason}</span>
-              ) : null}
-            </div>
-            <Badge color={paymentRecordTone(payment.status)} variant="soft" size="sm">
-              {PAYMENT_STATUS_LABELS[payment.status] ?? payment.status}
-            </Badge>
-          </li>
+          <PaymentRow key={payment.id} order={order} payment={payment} risk={risk} />
         ))}
       </ul>
     </SubSection>

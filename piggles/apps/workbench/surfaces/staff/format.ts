@@ -11,6 +11,8 @@
 // is what carries the distinction — an expired licence and a valid one rendering
 // the same grey is a failed screen, not a safe one.
 
+import { formatCentsAmount } from '../../lib/money-format';
+
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
 /* ── Hours ─────────────────────────────────────────────────────────────────── */
@@ -39,7 +41,7 @@ export function decimalHours(minutes: number): string {
 /* ── Money ─────────────────────────────────────────────────────────────────── */
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /**

@@ -34,6 +34,7 @@ import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { usePropertySchema, type PropertyField, type PropertySchema } from './object-types-data';
 import { localMomentInstant } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 export interface CustomPropertiesPanelProps {
   /** contact | company | deal | ticket, or a custom object key. */
@@ -326,14 +327,13 @@ function ScalarControl({
 
     case 'date':
       return (
-        <Input
+        <DayInput
           color="module"
           aria-label={field.label}
-          type="date"
           disabled={disabled}
           value={typeof value === 'string' ? value.slice(0, 10) : ''}
-          onChange={(e) => {
-            onChange(e.target.value === '' ? null : e.target.value);
+          onValueChange={(value) => {
+            onChange(value === '' ? null : value);
           }}
         />
       );

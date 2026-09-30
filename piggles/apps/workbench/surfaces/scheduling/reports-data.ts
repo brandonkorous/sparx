@@ -35,6 +35,7 @@
 import { useQuery } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes (mirror wizeworks/packages/scheduling/src/reports.ts) ─────────────────── */
 
@@ -188,7 +189,7 @@ export function formatCount(value: number): string {
  * a limitation of the endpoint, noted rather than hidden.
  */
 export function formatMoney(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function plural(count: number, one: string, many: string): string {

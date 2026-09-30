@@ -21,7 +21,7 @@ import 'server-only';
 //
 // Publishing to the broker alone set the flags, put a message on a topic, and
 // seeded NONE of it — with nothing anywhere reporting a failure, because nothing
-// failed. Every Piggles business created this way arrived with fifteen apps
+// failed. Every Piggles business created this way arrived with every app
 // switched on and no pipeline in any of them — the exact outcome the old
 // lib/activate-modules.ts was written to prevent, reached by the mechanism it
 // chose. Only a process with those consumers registered can announce on both

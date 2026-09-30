@@ -113,3 +113,63 @@ export function settleMoney(text: string, options?: ReadMoneyOptions): string {
   const { amount } = readMoney(text, options);
   return amount === null ? text : amount.toFixed(2);
 }
+
+/**
+ * The text a money FIELD should hold for an amount already stored.
+ *
+ * `MoneyTextInput` settles itself on BLUR, and only on blur, so whatever a
+ * screen seeds it with is what an operator reads until they click into it.
+ * "Spending limits" seeded `(minAmountCents / 100).toString()` and the list one
+ * screen away printed the same number through `formatCents`: one said
+ * **$200.00**, the other said **200**. On a supplier bill it is worse -
+ * `(123450 / 100).toString()` is `"1234.5"`, ONE decimal, beside an invoice
+ * that says 1,234.50.
+ *
+ * MEASURED 2026-09-19 across both consoles: 18 places seed a money field from a
+ * stored amount, 10 settled and 8 did not, in the same four files each side.
+ *
+ * Lives here rather than beside the component because the component is a
+ * `.tsx` and the guard that keeps this rule is a `.ts` test - importing across
+ * that line is a transform error, not a type error, so it fails as "no tests
+ * found". Same reason `provenance-copy.ts` sits apart from its pane.
+ * [[feedback_the_empty_control_is_the_untested_one]]
+ */
+export function moneyText(cents: number): string {
+  return (Number.isFinite(cents) ? cents / 100 : 0).toFixed(2);
+}
+
+/**
+ * The text a money field should hold for an amount that may not be set at all.
+ *
+ * Blank rather than "0.00", because the two mean different things on a field
+ * that can be left empty: an answer that adds nothing to the price is 0, and an
+ * answer nobody has priced is nothing at all. `moneyText` above cannot say the
+ * second, so a field that can be empty uses this one.
+ */
+export function optionalMoneyText(cents: number | undefined): string {
+  return cents === undefined ? '' : moneyText(cents);
+}
+
+/** Both readings of what was typed into a money field whose owner stores CENTS. */
+export interface CentsReading {
+  /** What to store. Undefined means nothing is set. */
+  readonly cents: number | undefined;
+  /** What to say, or null when there is nothing wrong. Blank is not wrong. */
+  readonly problem: string | null;
+}
+
+/**
+ * What a typed amount means to an owner that stores cents rather than the text.
+ *
+ * Text that cannot be read keeps the amount ALREADY STORED and returns the
+ * sentence to show. The alternative is what the two build editors did: an
+ * unreadable amount was coerced to "no change to the price", so a slip halfway
+ * through typing wrote a price nobody meant and said nothing about it.
+ * [[feedback_never_present_absence_as_measurement]]
+ */
+export function readCents(text: string, stored: number | undefined): CentsReading {
+  if (text.trim() === '') return { cents: undefined, problem: null };
+  const { amount, problem } = readMoney(text, { allowZero: true });
+  if (amount === null) return { cents: stored, problem };
+  return { cents: Math.round(amount * 100), problem: null };
+}

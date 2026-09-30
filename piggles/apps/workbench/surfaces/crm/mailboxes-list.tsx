@@ -10,9 +10,11 @@
 // the list down the page on every visit for the sake of an action taken once,
 // and duplicated the empty state directly underneath itself.
 
-import { Badge, Button, Card, EmptyState, useToast } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, Text, useToast } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { faArrowsRotate, faMailbox, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
@@ -38,6 +40,10 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.shiftKey) return 'beside';
   return 'tab';
 }
+
+/** Registry module for this pane, so the brand draws Customers' own picture
+ *  rather than the generic one. */
+const MODULE = 'crm';
 
 export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
@@ -108,7 +114,21 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Mailbox controls"
+        label="Mailboxes controls"
+        status={
+          <>
+            <Icon glyph={faMailbox} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="text-sm">
+              {rows.length === 0
+                ? 'No mailbox connected yet'
+                : rows.length === 1
+                  ? '1 mailbox connected'
+                  : `${String(rows.length)} mailboxes connected`}
+            </Text>
+          </>
+        }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -137,32 +157,25 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Icon glyph={faMailbox} className="size-6" aria-hidden />}
               title="Turn on Customers to connect a mailbox"
-              description="Connecting a mailbox puts the emails you exchange with a customer onto their record, so anyone on your team can see the conversation."
+              description="Connecting a mailbox puts the emails you exchange with a customer onto their record, so the conversation sits with everything else you know about them rather than buried in an inbox."
             />
           ) : isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<Icon glyph={faMailbox} className="size-6" aria-hidden />}
               title="Could not load your mailboxes"
-              description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Anything you have already connected is unaffected."
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <PaneWaiting />
           ) : rows.length === 0 ? (
-            <EmptyState
+            <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faMailbox} className="size-6" aria-hidden />}
               title="No mailbox connected yet"
-              description="Connect the email account you write to customers from. Their replies will appear on their record, so the next person to pick up the conversation can see what was already said."
+              description="Connect the email account you write to customers from. Their replies land on their record, so the whole conversation is in one place the next time you open them."
               actions={
                 <Button size="sm" color="module" onClick={connectMailbox}>
                   Connect a mailbox
@@ -254,11 +267,15 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
       </div>
 
       <p className="shrink-0 px-1 text-xs">
+        {/* THE WHOLE SENTENCE LIVES IN THE KEY. It used to end at "to check"
+            and this line added " one right now." after it. Whoever writes the
+            Piggles override writes a whole sentence, because a whole sentence
+            is what a copy key looks like — so the tail glued onto the end of
+            it: "...if you cannot wait. one right now." */}
         {productCopy(
           'crm.mailbox.checkNote',
-          'Piggles checks connected mailboxes every few minutes. Use the refresh button on a row to check'
-        )}{' '}
-        one right now.
+          'Piggles checks connected mailboxes every few minutes. Use the refresh button on a row to check one right now.'
+        )}
       </p>
     </div>
   );

@@ -318,7 +318,10 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
   // model rather than carrying this one's rules across.
   useEffect(() => {
     const next = {
-      name: model?.name ?? (objectKey === 'deal' ? 'Deal health' : 'Lead score'),
+      // The pane says "score" in every other sentence on it, so the default
+      // name says it too. It read "Lead score" and "Deal health": one word this
+      // console never uses anywhere else, and two different words for one idea.
+      name: model?.name ?? (objectKey === 'deal' ? 'Deal score' : 'Customer score'),
       rules: model?.rules ?? [],
       decayPerDay:
         model?.decayPerDay === null || model?.decayPerDay === undefined
@@ -335,7 +338,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const current = JSON.stringify({ name, rules, decayPerDay, maxScore });
   const dirty = current !== baseline && baseline !== '';
-  useDirtySource(dirty, 'This scoring has unsaved changes. Close anyway?');
+  useDirtySource(dirty, 'These rules have unsaved changes. Close anyway?');
 
   const create = useCreateScoringModel();
   const update = useUpdateScoringModel(model?.id ?? 'new');
@@ -369,7 +372,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
 
     const onDone = () => {
       setBaseline(current);
-      toast.add({ title: 'Scoring saved', type: 'success' });
+      toast.add({ title: 'Rules saved', type: 'success' });
     };
     const onFail = (e: unknown) => {
       setError(e instanceof Error ? e.message : 'Could not save this. Nothing was changed.');
@@ -413,7 +416,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Scoring controls"
+        label="Controls for who is worth chasing"
         refresh={
           <RefreshButton
             isFetching={models.isFetching || scoringFields.isFetching}

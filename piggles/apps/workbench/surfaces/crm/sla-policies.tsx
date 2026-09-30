@@ -29,7 +29,6 @@ import {
   Field,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Text,
@@ -41,6 +40,7 @@ import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneEmpty } from '../../components/pane-empty';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { api } from '../../lib/api/client';
@@ -56,6 +56,10 @@ import {
   type SlaPolicy,
   type TicketPriority,
 } from './tickets-data';
+
+/** Registry module for this surface, so the brand's empty-state artwork is
+ *  this app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -162,21 +166,20 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (!policy) {
+    // The house first-run state: a centered PaneEmpty in a Card, with this
+    // app's own artwork. This branch used to render a bare heading and a
+    // paragraph flush to the top-left corner, which is the only empty state in
+    // the console that looked like that.
     return (
       <div className={PANE_SHELL}>
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className={COLUMN}>
-            <Heading level={1} className="text-2xl font-semibold">
-              No response times set up yet
-            </Heading>
-            <Text>
-              A response time is your promise about how quickly you will get back to someone, and it
-              is counted only during the hours you are open, so a message that arrives on a Sunday
-              night is not late on Monday morning. One is created for you the first time a support
-              request comes in.
-            </Text>
-          </div>
-        </div>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faClock} className="size-6" aria-hidden />}
+            title="No response times set up yet"
+            description="A response time is your promise about how quickly you will get back to someone, and it is counted only during the hours you are open, so a message that arrives on a Sunday night is not late on Monday morning. One is created for you the first time a help request comes in."
+          />
+        </Card>
       </div>
     );
   }

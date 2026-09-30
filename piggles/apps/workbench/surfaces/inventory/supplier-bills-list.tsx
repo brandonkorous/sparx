@@ -203,7 +203,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier bill controls"
+        label="Controls for what suppliers billed you"
         status={
           <Text className="text-sm">
             {owedLine(
@@ -255,8 +255,8 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-auto">{body()}</Card>
 
       <Text className="text-sm">
-        Enter a bill from the purchase order it belongs to: the lines come across already filled in,
-        and the check runs straight away.
+        Enter a bill from the order to the supplier it belongs to: the lines come across already
+        filled in, and the check runs straight away.
       </Text>
     </div>
   );

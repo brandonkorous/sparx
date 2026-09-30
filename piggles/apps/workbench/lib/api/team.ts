@@ -37,6 +37,18 @@ export interface TeamMember {
   /** 'all' = whatever their role allows. 'selected' = only `modules`. */
   moduleAccessMode: 'all' | 'selected';
   modules: string[];
+  /**
+   * The SITE axis, which is a different question from the module one: not
+   * "which parts of the product" but "whose business".
+   *
+   * `/v1/team` has always returned both of these and this type did not declare
+   * them, so they fell off the wire and the pane had nothing to draw. The
+   * server enforces the restriction on every read, the partner list already
+   * declares the same two fields, and no account on the platform had ever set
+   * one, because there was nowhere to set it (issue 879).
+   */
+  propertyAccessMode: 'all' | 'selected';
+  properties: string[];
 }
 
 /** An email that has been asked in but has not accepted yet. */
@@ -245,6 +257,9 @@ export interface MemberPatch {
   role?: string;
   moduleAccessMode?: 'all' | 'selected';
   modules?: string[];
+  propertyAccessMode?: 'all' | 'selected';
+  /** Replaces the whole grant set. Absent leaves the existing grants alone. */
+  properties?: string[];
 }
 
 /**

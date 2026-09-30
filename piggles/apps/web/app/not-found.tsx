@@ -47,7 +47,7 @@ export default function NotFound() {
       <Section>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PIGGLES_GROUPS.map((group) => (
-            <Card key={group} data-group={group} className="bg-module bg-soft">
+            <Card key={group} data-group={group}>
               <CardBody>
                 <h2 className="ink-module text-xl font-bold">{GROUP_COPY[group].title}</h2>
                 <ul className="mt-3 space-y-1">

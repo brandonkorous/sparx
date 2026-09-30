@@ -9,6 +9,7 @@ import {
   Checkbox,
   Field,
   FieldControl,
+  FieldDescription,
   FieldLabel,
   Input,
   PasswordInput,
@@ -71,10 +72,14 @@ function Submit() {
 export function SignUpForm({
   from,
   attribution,
+  next,
   google,
 }: {
   from: string;
   attribution: string;
+  /** Where to land once the account exists. Usually `/onboarding`; an
+   *  invitation link sends them back to the invitation instead. */
+  next: string;
   google: boolean;
 }) {
   const [state, action] = useActionState<SignUpState, FormData>(signUpAction, { error: null });
@@ -94,6 +99,10 @@ export function SignUpForm({
             the ad. Recorded on meetpiggles.com with permission and handed over in
             the link, because three registrable domains cannot share a cookie. */}
         <input type="hidden" name="a" value={attribution} />
+        {/* Where to land afterwards. The server action is what navigates, so it
+            has to be told — a destination the page knows and the action does not
+            is a destination nobody honors. */}
+        <input type="hidden" name="next" value={next} />
 
         {error ? (
           <Alert color="danger" variant="soft">
@@ -135,6 +144,12 @@ export function SignUpForm({
             required
             minLength={8}
           />
+          {/* THE RULE, BEFORE IT IS BROKEN. `minLength` and the server both
+              enforce eight characters and neither said so until somebody had
+              already typed something shorter and pressed the button — a rule
+              that only ever arrives as a refusal. Three new-password fields
+              across two screens were doing this. */}
+          <FieldDescription>At least 8 characters.</FieldDescription>
         </Field>
 
         {/* A label bound to a real checkbox, with the text as DIRECT children of
@@ -188,7 +203,24 @@ export function SignUpForm({
       {google ? (
         <>
           <AuthDivider />
-          <GoogleButton next="/" onError={setSocialError} />
+          {/* `/onboarding`, NOT `/`. This said `/`, and `/` is a junction that
+              sends a signed-in person to /account — so somebody who created
+              their account with Google was never shown setup at all. They
+              landed on the account home with the tenant exactly as provisioning
+              left it: a derived placeholder name, a generated web address
+              (quiet-haven-3783.piggles.site), no trade, no sample data, and no
+              modules switched on, because furnishing is what switches them on
+              and furnishing only runs from setup. The password path next to
+              this one redirects to /onboarding on success; this one did not.
+              [[feedback_a_fix_leaves_its_neighbour_behind]]
+
+              Latent rather than live: MEASURED 2026-09-25, all eight Piggles
+              accounts were made with a password, so nobody has been through it.
+
+              Safe for somebody who already has an account and presses this
+              button on the signup page by mistake: /onboarding now bounces a
+              finished business to /account (see app/onboarding/page.tsx). */}
+          <GoogleButton next={next} onError={setSocialError} />
         </>
       ) : null}
     </div>

@@ -14,6 +14,7 @@ import { Icon } from '@piggles/ui';
 import { formatCents, plural } from './data';
 import {
   deadStockLevelCount,
+  deadStockSplit,
   deadStockValueCents,
   turnoverHeadline,
   type AgingReport,
@@ -33,7 +34,7 @@ function worthDescription(
 ): string {
   if (cover.none) return `${held}, ${retail}. What they cost you has not been recorded.`;
   if (cover.partial) {
-    return `${held} · ${retail}. ${plural(cover.uncostedUnits, 'unit has', 'units have')} no cost recorded, so the figure above is short by whatever those cost.`;
+    return `${held} · ${retail}. ${plural(cover.uncostedUnits, 'unit has', 'units have')} no cost recorded, so the figure above is short by whatever ${cover.uncostedUnits === 1 ? 'that one costs' : 'those cost'}.`;
   }
   return `${held} · ${retail}`;
 }
@@ -73,13 +74,38 @@ function StillStat({
     return formatCents(value, currency);
   };
 
+  // When every costed unit is in the dead bands, this figure and "What your
+  // stock is worth" beside it are the SAME number. Both were right and the pane
+  // showed them as two unrelated figures that happened to match, which is the
+  // shape a reader reads as the software being broken rather than as the finding
+  // it actually is. MEASURED 2026-09-19, Juniper Row: never-sold $1,934.56,
+  // everything that HAS sold $0.00, total $1,934.56. Say it. Issue 692 is the
+  // same lesson with the subtraction the other way up.
+  const allOfIt = value !== null && value > 0 && value === summary.valuation.totalCostCents;
+
+  /** Lines that have had three months to sell and did not. The never-sold band
+   *  is in the FIGURE, because that money is genuinely sitting still, and it is
+   *  not what makes the figure alarming. */
+  const { stale } = aging ? deadStockSplit(aging) : { stale: 0 };
+
   return (
     <Stat>
       <StatTitle>Money sitting still</StatTitle>
-      <StatValue className={value && value > 0 ? `text-warning ${FIGURE}` : FIGURE}>
-        {figure()}
-      </StatValue>
-      <StatDesc>{aging === undefined ? 'Working it out…' : stillCaption(aging)}</StatDesc>
+      {/* Amber is a CLAIM, and it was being made about stock this same pane
+          then says is fine. The figure covers two bands: "not sold in over 3
+          months", which is money gathering dust, and "never sold", which the
+          dead-stock section below explicitly excludes — "which is not the same
+          thing as dead. They have not had the time." A shop whose whole figure
+          is never-sold got an alarm-colored number above a green box telling it
+          nothing was wrong. Colour on the band that is actually a problem. */}
+      <StatValue className={stale > 0 ? `text-warning ${FIGURE}` : FIGURE}>{figure()}</StatValue>
+      <StatDesc>
+        {aging === undefined
+          ? 'Working it out…'
+          : allOfIt
+            ? `${stillCaption(aging)}. That is every bit of the stock value you hold.`
+            : stillCaption(aging)}
+      </StatDesc>
     </Stat>
   );
 }

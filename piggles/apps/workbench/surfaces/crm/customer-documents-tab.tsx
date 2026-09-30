@@ -204,7 +204,7 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
           <EmptyState
             icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="No documents yet"
-            description="Attach a signed contract, an ID scan, or any PDF or image with “Upload a file” above. Only your team can see them."
+            description="Attach a signed contract, an ID scan, or any PDF or image with “Upload a file” above. Nobody outside your business can see them."
           />
         ) : (
           <div className="divide-base-300 flex flex-col divide-y px-4">

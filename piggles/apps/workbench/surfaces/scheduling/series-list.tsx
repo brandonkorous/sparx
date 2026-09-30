@@ -16,6 +16,7 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
+  Text,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faPlus, faRepeat } from '@fortawesome/pro-solid-svg-icons';
@@ -68,7 +69,21 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Repeating booking controls"
+        label="Repeating bookings controls"
+        status={
+          <>
+            <Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {rows.length === 0
+                ? 'None set up yet'
+                : rows.length === 1
+                  ? '1 repeating booking'
+                  : `${String(rows.length)} repeating bookings`}
+            </Text>
+          </>
+        }
+        statusReady={!isLoading}
+        statusFailed={Boolean(error)}
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -91,7 +106,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Repeating booking
+            New repeating booking
           </Button>
         }
         controls={
@@ -166,7 +181,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  Repeating booking
+                  Set one up
                 </Button>
               ),
             }}

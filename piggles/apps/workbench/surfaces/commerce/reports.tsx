@@ -83,7 +83,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Reports controls"
+        label="Controls for how selling is going"
         controls={
           <div className="w-36">
             <Select
@@ -120,7 +120,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <PaneLoadError
                 module={MODULE}
                 icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
-                title="Could not load your reports"
+                title="Could not load how selling is going"
                 description={reportsErrorMessage(
                   summary.error,
                   'This is a problem reaching the server. Try again in a moment.'

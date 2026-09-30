@@ -2,6 +2,7 @@ import { faCheckCircle, faClock, faGrid } from '@fortawesome/pro-solid-svg-icons
 import { Icon } from '@piggles/ui';
 import type { PigglesIcon } from '@piggles/ui';
 import { ProductGlimpse } from './product-glimpse';
+import { APP_COUNT_WORD } from '@piggles/config';
 
 // The column beside the form on the credential screens.
 //
@@ -39,7 +40,11 @@ import { ProductGlimpse } from './product-glimpse';
 // be named, that line is the right place for them — and only then.
 
 const POINTS: { icon: PigglesIcon; title: string; body: string }[] = [
-  { icon: faCheckCircle, title: 'Everything included', body: 'All fifteen apps, one price.' },
+  {
+    icon: faCheckCircle,
+    title: 'Everything included',
+    body: `All ${APP_COUNT_WORD} apps, one price.`,
+  },
   { icon: faClock, title: 'Ready in minutes', body: 'Two questions and you are in.' },
   { icon: faGrid, title: 'One place for all of it', body: 'Site, customers, stock, invoices.' },
 ];

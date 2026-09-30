@@ -45,6 +45,7 @@ import { api } from '../../lib/api/client';
 import { openServerHtml } from '../../lib/api/html-artifact';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { typeBadge } from './stage-presentation';
 import {
   stageTone,
   type BillingDocument,
@@ -170,7 +171,7 @@ export function StageControl({ doc, stages }: StageControlProps) {
                     <span className="flex items-center gap-2">
                       {stage.customerLabel}
                       <Badge color={stageTone(stage.stageType)} variant="soft" size="xs">
-                        {stage.stageType}
+                        {typeBadge(stage.stageType)}
                       </Badge>
                     </span>
                     {effects.length > 0 ? (
@@ -210,7 +211,19 @@ function sentOn(iso: string): string {
  * It sits in the TOOLBAR, not the overflow menu. Making an invoice and sending
  * it is one errand, and the second half of it is not a thing to go hunting for.
  */
-export function SendButton({ doc, dirty }: { doc: BillingDocument; dirty: boolean }) {
+export function SendButton({
+  doc,
+  dirty,
+  noun,
+  priceOffer,
+}: {
+  doc: BillingDocument;
+  dirty: boolean;
+  /** What this document is called in a sentence: "invoice", "quote". */
+  noun: string;
+  /** True when it OFFERS a price rather than DEMANDS money. */
+  priceOffer: boolean;
+}) {
   const queryClient = useQueryClient();
   const toast = useToast();
   const confirm = useConfirm();
@@ -225,7 +238,7 @@ export function SendButton({ doc, dirty }: { doc: BillingDocument; dirty: boolea
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
       toast.add({
         title: `Sent to ${result.to}`,
-        description: 'The invoice is in their inbox, with the lines and the total on it.',
+        description: `The ${noun} is in their inbox, with the lines and the total on it.`,
         type: 'success',
       });
     },
@@ -250,7 +263,7 @@ export function SendButton({ doc, dirty }: { doc: BillingDocument; dirty: boolea
   // Never email a version that is not the saved one — what lands in their inbox
   // has to be the document this pane can still show her afterwards.
   const blockedReason = dirty
-    ? 'Save your changes first, otherwise they would get a different invoice from the one you are looking at.'
+    ? `Save your changes first, otherwise they would get a different ${noun} from the one you are looking at.`
     : null;
 
   const onSend = async () => {
@@ -262,16 +275,28 @@ export function SendButton({ doc, dirty }: { doc: BillingDocument; dirty: boolea
         .map((value) => (value ?? '').trim())
         .find((value) => value.length > 0) ?? '';
     const ok = await confirm({
-      title: sentAt ? 'Send this invoice again?' : 'Send this invoice?',
+      title: sentAt ? `Send this ${noun} again?` : `Send this ${noun}?`,
       description: to
-        ? `${doc.number ?? 'This invoice'} goes to ${to}, with its lines, its total and anything you wrote in Notes.` +
+        ? `${doc.number ?? `This ${noun}`} goes to ${to}, with its lines, its total and anything you wrote in Notes.` +
           // Sending fills in an empty deadline, so say so BEFORE she clicks. A
           // date she never typed appearing in a field she can see is a small
           // surprise, and a deadline is the one thing on a bill she may want to
           // choose herself.
-          (doc.dueAt ? '' : ' It has no deadline yet, so it will be due when they get it.') +
+          //
+          // NOT on a price offer, which falls due on no date at all. Sending one
+          // used to stamp it "due today", which the printed copy then read back
+          // to the customer as "Valid until" today: an offer that expired the
+          // minute it was made. What an offer wants said is how long the price
+          // stands, and that stays hers to set. Issue 765.
+          (priceOffer
+            ? doc.validUntil
+              ? ''
+              : ' It has no end date, so the price stands until you say otherwise.'
+            : doc.dueAt
+              ? ''
+              : ' It has no deadline yet, so it will be due when they get it.') +
           (sentAt ? ' They already have a copy; this sends another.' : '')
-        : 'There is no email address on this invoice yet. Add one under Bill to first.',
+        : `There is no email address on this ${noun} yet. Add one under Bill to first.`,
       confirmLabel: sentAt ? 'Send it again' : 'Send it',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -310,6 +335,10 @@ interface DocumentActionsProps {
   doc: BillingDocument;
   stage: DocumentStage | undefined;
   ctx: SurfaceContext;
+  /** What this document is called in a sentence: "invoice", "quote". */
+  noun: string;
+  /** True when it OFFERS a price rather than DEMANDS money. */
+  priceOffer: boolean;
 }
 
 /**
@@ -317,7 +346,7 @@ interface DocumentActionsProps {
  * or Save. Each item appears only when it can actually work, so the menu is
  * the document's real capabilities, not a list of greyed-out wishes.
  */
-export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
+export function DocumentActions({ doc, stage, ctx, noun, priceOffer }: DocumentActionsProps) {
   const queryClient = useQueryClient();
   const toast = useToast();
   const confirm = useConfirm();
@@ -358,14 +387,19 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
       ),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
+      // Take her to it. Converting is the moment the quote stops being the
+      // thing she works on and the order starts, and a toast that names an
+      // order number she then has to go and find is a dead end dressed as
+      // good news. Issue 766.
+      ctx.open('commerce.order.detail', { id: result.order.id }, { target: 'tab' });
       toast.add({
         title: `Order ${result.order.orderNumber} created`,
-        description: 'The accepted quote is now a real order, ready to fulfil.',
+        description: `${result.order.orderNumber} is open in a new tab, ready to fulfill.`,
         type: 'success',
       });
     },
     onError: () => {
-      toast.add({ title: 'Could not convert this document to an order', type: 'error' });
+      toast.add({ title: `Could not turn this ${noun} into an order`, type: 'error' });
     },
   });
 
@@ -383,7 +417,12 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
 
   const canDelete = stage?.stageType === 'draft';
   const canConvert = stage?.stageType === 'committed' && !doc.convertedOrder;
-  const canPaymentLink = doc.balance > 0;
+  // NOT on a price offer. A quote asks for nothing, and this pane says so in as
+  // many words two panels down ("Nothing is owed on a quote"), while this menu
+  // offered a link to collect the whole $504 of it and a toast calling that sum
+  // "the amount still owed". One screen, two answers. The money on an offer is
+  // a deposit, which has its own button in Deposits. Issue 766.
+  const canPaymentLink = doc.balance > 0 && !priceOffer;
 
   return (
     <DropdownMenu>
@@ -442,14 +481,22 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
             }}
           >
             <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
-            Convert to order
+            Turn it into an order
           </DropdownMenuItem>
         ) : null}
 
+        {/* A DOOR, not a notice. This row wore an open-in-a-new-window icon and
+            was disabled: it told her the order existed and refused to take her
+            to it, at the one moment she wanted to go. Issue 766. */}
         {doc.convertedOrder ? (
-          <DropdownMenuItem disabled>
+          <DropdownMenuItem
+            onClick={() => {
+              const order = doc.convertedOrder;
+              if (order) ctx.open('commerce.order.detail', { id: order.id }, { target: 'tab' });
+            }}
+          >
             <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
-            Order {doc.convertedOrder.orderNumber} exists
+            Open order {doc.convertedOrder.orderNumber}
           </DropdownMenuItem>
         ) : null}
 

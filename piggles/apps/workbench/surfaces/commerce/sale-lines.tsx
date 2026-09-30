@@ -5,6 +5,10 @@
 // Pick it off her list, or type it. Both are needed and neither is the odd one
 // out: a salon sells a treatment that IS on her list and a bottle of something
 // that never will be, in the same minute.
+//
+// Each line also says what this customer pays and why (issue 737). The sentence
+// itself is `sale-price-note.ts`, beside this file, because it is pure copy and
+// pure copy is the part worth pinning with a test.
 
 import { useState } from 'react';
 import { Badge, Button, Input, SearchInput, Text } from '@wizeworks/silicaui-react';
@@ -13,6 +17,8 @@ import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { formatCents } from './products-data';
 import { formatMoney } from './data';
+import { priceNote } from './sale-price-note';
+import { matchingSellables } from './sale-sellable-search';
 import type { SaleLine, Sellable } from './sale-data';
 
 function lineTotal(line: SaleLine): number {
@@ -35,6 +41,7 @@ function ChosenLine({
   onChange: (next: SaleLine) => void;
   onRemove: () => void;
 }) {
+  const note = priceNote(line);
   return (
     <div className="border-base-300 flex flex-wrap items-end gap-3 border-b pb-3 last:border-b-0 last:pb-0">
       <label className="min-w-[10rem] flex-1">
@@ -72,7 +79,9 @@ function ChosenLine({
             event.target.select();
           }}
           onChange={(event) => {
-            onChange({ ...line, price: event.target.value });
+            // Typed on, so it is hers from here. Nothing the pricing engine
+            // answers later replaces it. [[feedback_honor_the_users_choice]]
+            onChange({ ...line, price: event.target.value, priceTouched: true });
           }}
         />
       </label>
@@ -89,16 +98,29 @@ function ChosenLine({
       >
         <Icon glyph={faTrash} className="size-4" aria-hidden />
       </Button>
+      {note ? (
+        // Its own full-width line, so it reads as a sentence about the row
+        // rather than a fourth squeezed column at 360px.
+        <div className="flex w-full items-start gap-2">
+          {note.typedOver ? (
+            <Badge color="warning" variant="soft" size="sm">
+              Not their price
+            </Badge>
+          ) : null}
+          <Text className="text-sm">{note.text}</Text>
+        </div>
+      ) : null}
     </div>
   );
 }
 
 function SellablePicker({ items, onPick }: { items: Sellable[]; onPick: (s: Sellable) => void }) {
   const [search, setSearch] = useState('');
-  const term = search.trim().toLowerCase();
-  const results = items
-    .filter((item) => term === '' || item.name.toLowerCase().includes(term))
-    .slice(0, 12);
+  const term = search.trim();
+  // Name, version AND code, word by word — see sale-sellable-search.ts. Most of
+  // what a maker sells shares a product name, so searching the name alone made
+  // "Marlow Knit XL" find nothing while eight Marlow Knits sat on the screen.
+  const results = matchingSellables(items, term);
 
   return (
     <div className="flex flex-col gap-2">
@@ -114,7 +136,7 @@ function SellablePicker({ items, onPick }: { items: Sellable[]; onPick: (s: Sell
       {results.length === 0 ? (
         <Text className="text-sm">
           {term
-            ? `Nothing you sell is called “${search.trim()}”. Add it by hand below.`
+            ? `Nothing you sell matches “${term}”. Try fewer words, or the code off the box. If it really is a one-off, write it in below.`
             : 'Nothing set up to sell yet. Add what they had by hand below.'}
         </Text>
       ) : (

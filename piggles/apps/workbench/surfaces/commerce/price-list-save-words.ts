@@ -47,7 +47,7 @@ export type SavePoint =
  */
 export function saveFailureLine(point: SavePoint, removedCount: number): string {
   if (point === 'settings') {
-    return 'Could not save this price list. Nothing was changed.';
+    return 'Could not save this special price. Nothing was changed.';
   }
 
   const gone =

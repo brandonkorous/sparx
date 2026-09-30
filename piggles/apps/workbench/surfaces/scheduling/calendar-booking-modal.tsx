@@ -168,7 +168,7 @@ function LoadedModal({
     <>
       <ModalHeader booking={booking} />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
         <SaveFailure title="That did not go through" message={state.actionError} />
 
         {booking.status === 'cancelled' && booking.cancellationReason ? (

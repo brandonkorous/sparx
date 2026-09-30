@@ -46,26 +46,20 @@ export type ModuleSlug =
 // Exhaustive by construction — `Record<ModuleSlug, string>` means adding to the
 // union above without a label here is a compile error rather than a slug
 // leaking onto the screen through `moduleLabel`'s fallback.
-const MODULE_LABEL: Record<ModuleSlug, string> = {
-  crm: 'Customers',
-  funnels: 'Campaigns',
-  email: 'Email',
-  commerce: 'Selling',
-  b2b: 'Wholesale',
-  cms: 'Content',
-  invoicing: 'Invoicing',
-  social: 'Social posts',
-  // The sidebar's words, not the slug's: a person looks for "Your team", never
-  // for "staff".
-  staff: 'Your team',
-  finance: 'Finance',
-  dropship: 'Dropshipping',
-  platform: 'Platform',
-};
-
-export function moduleLabel(slug: ModuleSlug): string {
-  return MODULE_LABEL[slug] ?? slug;
-}
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`, which resolves through the brand's own
+ * app registry. This file kept its own, and so did five others; measured
+ * 2026-09-25, `commerce` alone had SIX names across the two consoles —
+ *
+ *     Sell (the rail) · Selling · Online store · Online stores · Store · commerce
+ *
+ * — and a Piggles shop owner met four of them on four different screens while
+ * the rail beside her said Sell the whole time. Same defect as one order reading
+ * four ways on four screens (issue 260), one level up: the APPS themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
 /** Render an unknown config/condition value as display text without tripping
  *  `no-base-to-string`: primitives stringify, objects/arrays serialize as JSON. */
@@ -206,7 +200,7 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   },
   {
     eventType: 'crm.billing_document.finalized',
-    label: 'An invoice is finalised',
+    label: 'An invoice is finalized',
     module: 'invoicing',
   },
   {
@@ -351,7 +345,7 @@ export interface ScanEntityDef {
 
 export const SCAN_ENTITIES: readonly ScanEntityDef[] = [
   { entity: 'customer', label: 'Customers', module: 'crm' },
-  { entity: 'b2b_account', label: 'Wholesale accounts', module: 'b2b' },
+  { entity: 'b2b_account', label: 'Wholesale customers', module: 'b2b' },
   { entity: 'billing_document', label: 'Quotes & invoices', module: 'invoicing' },
   { entity: 'cart', label: 'Abandoned carts', module: 'commerce' },
   // A quote IS a billing document (the b2b-quotes workflow), so it shares the
@@ -691,7 +685,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     type: 'crm.update_deal_stage',
     label: 'Move the sales deal',
     module: 'crm',
-    description: 'Move the deal this rule is about to a pipeline stage.',
+    description: 'Move the deal this rule is about to a step of its process.',
     mode: 'fields',
     available: true,
     configFields: [
@@ -700,7 +694,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         label: 'To stage (stage ID)',
         type: 'text',
         required: true,
-        help: 'The ID of the pipeline stage to move the deal into.',
+        help: 'The short id of the step to move the deal into.',
       },
     ],
   },
@@ -902,7 +896,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
   // ── Site forms ──
   {
     type: 'form.notify',
-    label: 'Email me the form submission',
+    label: 'Email me the form reply',
     module: 'cms',
     description:
       'Email you (and any recipients set on the form) when it is submitted. Follows the form’s “email me” setting.',
@@ -1106,9 +1100,12 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     type: 'inventory.draft_reorder_po',
     label: 'Draft a restock order',
     module: 'commerce',
-    description: 'Not available yet.',
-    mode: 'json',
-    available: false,
+    // Built and running: the shipped "Auto-reorder low stock" recipe uses it. It
+    // was listed as unavailable, so nobody could pick it for their own rule.
+    description:
+      'Adds the item that ran low to a draft order for its usual supplier. Use it with "A product runs low on stock". Nothing is sent until you review the order.',
+    mode: 'none',
+    available: true,
   },
 ];
 

@@ -37,11 +37,11 @@ import {
   Input,
   Text,
   Textarea,
-  Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { FormSection } from '../../components/form-section';
+import { CalendarDate, calendarDateText } from '../../components/calendar-date';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -76,10 +76,30 @@ function lineTone(line: ReconciliationLine): 'success' | 'warning' | 'danger' | 
   }
 }
 
+/**
+ * The calendar day a picked `Date` represents, in the reader's own zone.
+ *
+ * `toISOString()` is UTC, which is the wrong question: she pointed at a square
+ * on a calendar, and the answer must be that square whatever time it is where
+ * she is. `sv-SE` is the shortest way to a `YYYY-MM-DD` out of `Intl` without a
+ * second dependency; the locale never reaches the screen.
+ */
+function localDay(date: Date): string {
+  return new Intl.DateTimeFormat('sv-SE', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
 export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const [asOf, setAsOf] = useState<Date | null>(() => new Date());
-  const iso = asOf ? asOf.toISOString() : undefined;
+  // The DAY she picked, not the instant she picked it in. `toISOString()` is
+  // UTC, so a shop owner in London choosing today at 00:30 asked for yesterday
+  // and one in Los Angeles choosing it at 6pm asked for tomorrow.
+  // See `components/calendar-date.tsx`.
+  const iso = asOf ? localDay(asOf) : undefined;
 
   const report = useGlReconciliation(iso);
   const snapshots = useGlSnapshots();
@@ -97,7 +117,7 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!Number.isFinite(parsed) || accountName.trim() === '') return;
     record.mutate(
       {
-        as_of: (asOf ?? new Date()).toISOString(),
+        as_of: localDay(asOf ?? new Date()),
         account_name: accountName.trim(),
         balance_cents: Math.round(parsed * 100),
         currency,
@@ -127,7 +147,7 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Reconciliation controls"
+        label="Stock versus your books controls"
         refresh={
           <RefreshButton
             isFetching={report.isFetching}
@@ -215,8 +235,8 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
                 title="Where the difference comes from"
                 description={productCopyWith(
                   'inventory.gl.description',
-                  `As at ${new Date(data.asOf).toLocaleDateString()}. Each line either raises what your books should show against Piggles, or lowers it.`,
-                  { asOf: new Date(data.asOf).toLocaleDateString() }
+                  `As at ${calendarDateText(data.asOf)}. Each line either raises what your books should show against Piggles, or lowers it.`,
+                  { asOf: calendarDateText(data.asOf) }
                 )}
               >
                 <Table size="sm">
@@ -359,7 +379,7 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
                   {(snapshots.data?.items ?? []).map((snapshot) => (
                     <tr key={snapshot.id}>
                       <td className="whitespace-nowrap">
-                        <Timestamp value={snapshot.asOf} format="absolute" />
+                        <CalendarDate value={snapshot.asOf} />
                       </td>
                       <td className="max-w-40 truncate">{snapshot.accountName}</td>
                       <td className="hidden @md:table-cell">

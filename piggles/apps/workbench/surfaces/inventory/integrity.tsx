@@ -51,6 +51,7 @@ import {
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
+import { ItemName } from './item-name';
 import {
   faArrowsRotate,
   faBarcodeRead,
@@ -65,8 +66,12 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import {
+  CHECK_STALE_AFTER_HOURS,
+  checkAgeHours,
   freshnessVerdict,
+  heldBackAtDecision,
   humanDuration,
+  listOf,
   oversellKind,
   policyLabel,
   runVerdict,
@@ -110,6 +115,10 @@ function Verdict({
   rechecking: boolean;
 }) {
   const verdict = latest ? runVerdict(latest) : null;
+  // A clean result that nobody has refreshed for two nights is not a clean
+  // result about today. `runVerdict` has already stopped calling it one; this
+  // says what to do about it.
+  const stale = latest !== undefined && (checkAgeHours(latest) ?? 0) >= CHECK_STALE_AFTER_HOURS;
   // Consecutive clean runs, counted back from the latest. "Clean for 14 nights"
   // is a far stronger statement than one green tick, and it costs nothing to say.
   const streak = (() => {
@@ -136,6 +145,12 @@ function Verdict({
               <Icon
                 glyph={faExclamationTriangle}
                 className="text-danger mt-0.5 size-8 shrink-0"
+                aria-hidden
+              />
+            ) : verdict?.tone === 'warning' ? (
+              <Icon
+                glyph={faExclamationTriangle}
+                className="text-warning mt-0.5 size-8 shrink-0"
                 aria-hidden
               />
             ) : (
@@ -166,6 +181,12 @@ function Verdict({
                   'The check runs every night. Run it now to see where you stand.'
                 )}
               </Text>
+              {stale ? (
+                <Text className="text-sm">
+                  The check runs every night, so this answer is older than it should be. Run it now
+                  to see where you stand today.
+                </Text>
+              ) : null}
               {streak > 1 ? (
                 <Text className="text-sm">Clean {plural(streak, 'check', 'checks')} in a row.</Text>
               ) : null}
@@ -298,11 +319,14 @@ function DriftsCard({
                 }
               }}
             >
-              <td className="max-w-56">
-                <span className="block truncate font-medium">
-                  {drift.productTitle ?? drift.variantSku ?? 'Unnamed item'}
+              <td className="w-full max-w-0 min-w-56">
+                <span className="flex min-w-0 flex-col">
+                  <ItemName
+                    productTitle={drift.productTitle}
+                    variantName={drift.variantName}
+                    code={drift.variantSku}
+                  />
                 </span>
-                {drift.variantSku ? <span className="text-sm">{drift.variantSku}</span> : null}
               </td>
               <td className="hidden max-w-40 truncate @lg:table-cell">
                 {drift.warehouseName ?? drift.warehouseCode}
@@ -407,6 +431,7 @@ function OversellCard({
             <tbody>
               {incidents.map((incident) => {
                 const kind = oversellKind(incident.kind);
+                const held = heldBackAtDecision(incident);
                 return (
                   <tr
                     key={incident.id}
@@ -420,16 +445,20 @@ function OversellCard({
                       }
                     }}
                   >
-                    <td className="max-w-56">
-                      <span className="block truncate font-medium">
-                        {incident.productTitle ?? incident.variantSku ?? 'Unnamed item'}
+                    <td className="w-full max-w-0 min-w-56">
+                      <span className="flex min-w-0 flex-col">
+                        <ItemName
+                          productTitle={incident.productTitle}
+                          variantName={incident.variantName}
+                          code={incident.variantSku}
+                        />
+                        {incident.channel ? (
+                          /* The place, in the console's ONE vocabulary. This
+                             read "via storefront" - the raw stored word - while
+                             the same sale on Money read "Your website". */
+                          <span className="text-sm">{channelLabel(incident.channel)}</span>
+                        ) : null}
                       </span>
-                      {incident.channel ? (
-                        /* The place, in the console's ONE vocabulary. This read
-                           "via storefront" — the raw stored word — while the
-                           same sale on Money read "Your website". */
-                        <span className="text-sm">{channelLabel(incident.channel)}</span>
-                      ) : null}
                     </td>
                     <td>
                       <Badge color={kind.tone} variant="soft">
@@ -442,8 +471,14 @@ function OversellCard({
                     <td className="text-right tabular-nums">
                       {NUMBER.format(incident.requestedQuantity)}
                     </td>
-                    <td className="text-right tabular-nums">
-                      {NUMBER.format(incident.availableQuantity)}
+                    <td className="text-right">
+                      <span className="block tabular-nums">
+                        {NUMBER.format(incident.availableQuantity)}
+                      </span>
+                      {/* Why it was that number. Without this the row reads as a
+                          miscount: stock in the building, nothing free to sell,
+                          no reason given. See `heldBackAtDecision`. */}
+                      {held ? <span className="block text-sm">{held}</span> : null}
                     </td>
                     <td className="hidden @xl:table-cell">
                       {/* The age of the number at the moment of the decision. A
@@ -475,7 +510,17 @@ function OversellCard({
 
 function FreshnessCard({ sources }: { sources: SourceFreshness[] }) {
   const withPromise = sources.filter((s) => s.expectedIntervalSec > 0);
-  const exempt = sources.length - withPromise.length;
+  const exemptSources = sources.filter((s) => s.expectedIntervalSec === 0);
+  const exempt = exemptSources.length;
+  // Whether anything is actually being watched. When nothing is, the two
+  // sentences below both used to describe a list that was not there: the intro
+  // said "each one BELOW", and the footnote called the only connection she has
+  // an "OTHER" connection. Other than none.
+  const checking = withPromise.length > 0;
+  // Naming them beats counting them. With one connection, "1 other connection
+  // has not been given a schedule" is strictly less than she already knew.
+  const exemptNames = exemptSources.slice(0, 3).map((s) => s.name);
+  const exemptRest = exempt - exemptNames.length;
 
   return (
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
@@ -485,8 +530,10 @@ function FreshnessCard({ sources }: { sources: SourceFreshness[] }) {
         </Heading>
         <Text className="text-sm">
           A connection whose last update worked but was days ago looks perfectly healthy everywhere
-          else, and its numbers are worthless. Each one below promises how often it will report;
-          this is whether it has kept that promise.
+          else, and its numbers are worthless.{' '}
+          {checking
+            ? 'Each one below promises how often it will report; this is whether it has kept that promise.'
+            : 'Anything that promises how often it will report is checked against that promise here.'}
         </Text>
       </div>
 
@@ -535,8 +582,11 @@ function FreshnessCard({ sources }: { sources: SourceFreshness[] }) {
           {exempt > 0 ? (
             <li>
               <Text className="text-sm">
-                {plural(exempt, 'other connection has', 'other connections have')} not been given a
-                schedule to keep, so nothing is checked for {exempt === 1 ? 'it' : 'them'}.
+                {exemptRest === 0
+                  ? `${listOf(exemptNames)} ${exempt === 1 ? 'has' : 'have'}`
+                  : `${listOf(exemptNames)} and ${plural(exemptRest, 'other connection', 'others')} ${exempt === 1 ? 'has' : 'have'}`}{' '}
+                not been given a schedule to keep, so nothing is checked for{' '}
+                {exempt === 1 ? 'it' : 'them'}.
               </Text>
             </li>
           ) : null}
@@ -575,7 +625,7 @@ export function IntegritySurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Integrity controls"
+        label="Things that do not add up controls"
         refresh={
           <RefreshButton
             isFetching={

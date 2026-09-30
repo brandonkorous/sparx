@@ -73,7 +73,7 @@ function LocationsToolbar({
 }) {
   return (
     <PaneToolbar
-      label="Places list controls"
+      label="Places controls"
       primaryAction={{
         label: 'Add a place',
         icon: faPlus,

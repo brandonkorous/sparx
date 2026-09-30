@@ -162,7 +162,7 @@ export const FACTS = [
   },
   {
     title: 'Connecting an outside account does not add cookies here',
-    body: 'Linking Instagram, Amazon or a carrier lets Piggles talk to them from our servers. It does not put their tracking on any page you look at. What information travels to them is on the privacy page.',
+    body: 'Linking Instagram, a payment provider or a carrier lets Piggles talk to them from our servers. It does not put their tracking on any page you look at. What information travels to them is on the privacy page.',
   },
   {
     title: 'Your own visitors are your business, not ours',

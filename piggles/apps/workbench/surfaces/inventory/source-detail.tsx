@@ -81,13 +81,12 @@ import { useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   agentOnline,
-  isNotFound,
   relativeTime,
   sourceErrorMessage,
   sourceState,
   sourceTypeDescription,
   sourceTypeLabel,
-  syncIntervalLabel,
+  syncIntervalPhrase,
   SYNC_INTERVALS,
   useCreateSource,
   useDeleteSource,
@@ -101,7 +100,6 @@ import {
   type SourceType,
 } from './sources-data';
 import { productCopy } from '../../lib/product';
-import { ActionLabel } from '../../components/action-label';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -237,7 +235,7 @@ function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: 
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col gap-4 overflow-hidden">
           <DialogTitle>{result.rotated ? 'Your new pairing key' : 'Your pairing key'}</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 [&>*]:shrink-0">
             <Alert color="warning">
               <AlertContent>
                 <AlertTitle>You will only see this once</AlertTitle>
@@ -363,7 +361,7 @@ function SourceEditor({
   const hasSavedKey = Boolean(source && (source.config.hasApiKey as boolean | undefined));
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'Add a stock source' : (source?.name ?? 'Stock source'));
+    ctx.setTitle(isNew ? 'Where a count comes from' : (source?.name ?? 'Counts from elsewhere'));
   }, [ctx, isNew, source?.name]);
 
   // Serialise the meaningful fields so dirtiness survives any field changing,
@@ -392,7 +390,7 @@ function SourceEditor({
   useDirtySource(
     dirty && !saving,
     isNew
-      ? 'This stock source has not been added yet. Close anyway?'
+      ? 'You have not added this yet. Close anyway?'
       : `Changes to ${source?.name ?? 'this source'} have not been saved. Close anyway?`
   );
 
@@ -632,7 +630,7 @@ function SourceEditor({
     <div className={PANE_SHELL}>
       {isNew ? (
         <PaneToolbar
-          label="Add a stock source actions"
+          label="Counts from elsewhere actions"
           primary={
             <Button
               size="sm"
@@ -649,7 +647,7 @@ function SourceEditor({
         />
       ) : (
         <PaneToolbar
-          label="Stock source actions"
+          label="Counts from elsewhere actions"
           status={
             state ? (
               <Badge color={state.tone} variant="soft" size="sm">
@@ -673,58 +671,46 @@ function SourceEditor({
               Save
             </Button>
           }
-          controls={
-            <>
-              <Button
-                size="sm"
-                variant="outline"
-                className="shrink-0"
-                loading={update.isPending}
-                onClick={togglePaused}
-              >
-                {source?.status === 'paused' ? (
-                  <>
-                    <Icon glyph={faPlay} className="size-4" aria-hidden />
-                    <ActionLabel>Turn on</ActionLabel>
-                  </>
-                ) : (
-                  <>
-                    <Icon glyph={faPause} className="size-4" aria-hidden />
-                    <ActionLabel>Pause</ActionLabel>
-                  </>
-                )}
-              </Button>
-              {type === 'agent' ? null : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="neutral"
-                  className="shrink-0"
-                  loading={sync.isPending}
-                  disabled={source?.status === 'paused'}
-                  onClick={runSync}
-                >
-                  <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-                  <ActionLabel>Sync now</ActionLabel>
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                className="shrink-0"
-                aria-label="Remove this source"
-                title="Remove this source"
-                loading={remove.isPending}
-                onClick={() => {
-                  void removeSource();
-                }}
-              >
-                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-              </Button>
-            </>
-          }
+          /* Declared as VALUES, not hand-written buttons. `controls` folds into
+             the overflow popover VERBATIM, so three buttons whose names are
+             width-dependent arrived there as three bare glyphs - a pause, a
+             circular arrow and a red bin, stacked above two properly labelled
+             rows. Meanwhile the copy under "How often should it update?" says
+             "You can always pull the latest at any time with Sync now", naming a
+             control whose name was nowhere on the screen. `actions` are
+             re-authored as labelled rows in the popover, which is the whole
+             reason the prop exists - and action-label.tsx says so in its own
+             header. [[feedback_a_promise_in_copy_is_a_contract]] */
+          actions={[
+            {
+              label: source?.status === 'paused' ? 'Turn on' : 'Pause',
+              icon: source?.status === 'paused' ? faPlay : faPause,
+              loading: update.isPending,
+              onClick: togglePaused,
+            },
+            ...(type === 'agent'
+              ? []
+              : [
+                  {
+                    label: 'Sync now',
+                    icon: faArrowsRotate,
+                    title: 'Fetch the latest numbers right now',
+                    loading: sync.isPending,
+                    disabled: source?.status === 'paused',
+                    onClick: runSync,
+                  },
+                ]),
+            {
+              label: 'Remove',
+              icon: faTrashCan,
+              title: 'Remove this source',
+              tone: 'danger' as const,
+              loading: remove.isPending,
+              onClick: () => {
+                void removeSource();
+              },
+            },
+          ]}
           refresh={
             /* Re-reads liveness/last-sync from the server without remounting, so
                           an in-progress draft survives the refresh. */
@@ -1218,7 +1204,7 @@ function SourceEditor({
                   </Text>
                 ) : (
                   <Text className="text-sm">
-                    Updates {syncIntervalLabel(source.syncIntervalSec).toLowerCase()}.
+                    Updates {syncIntervalPhrase(source.syncIntervalSec)}.
                   </Text>
                 )}
               </div>
@@ -1271,18 +1257,15 @@ function ExistingSource({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { data, isPending, isFetching, isError, error, refetch } = useInventorySource(id);
 
   if (isError) {
-    const gone = isNotFound(error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This source no longer exists' : 'Could not load this source'}
-            description={
-              gone
-                ? 'It has been removed from your list. Any stock numbers it brought in are unaffected.'
-                : 'This is a problem reaching the server. The connection itself is unaffected.'
-            }
+            error={error}
+            title="Could not load this source"
+            description="This is a problem reaching the server. The connection itself is unaffected."
+            missingTitle="This source no longer exists"
+            missingDescription="It has been removed from your list. Any stock numbers it brought in are unaffected."
             onRetry={() => {
               ctx.open('inventory.sources', undefined, { target: 'replace' });
             }}

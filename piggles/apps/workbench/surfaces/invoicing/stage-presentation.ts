@@ -52,13 +52,6 @@ export const STAGE_TYPES: { value: DocumentStageType; label: string; hint: strin
   },
 ];
 
-/** The short half of the option label — the part before the em dash. */
-export function typeLabel(type: DocumentStageType): string {
-  return (
-    (STAGE_TYPES.find((option) => option.value === type)?.label ?? type).split(': ')[0] ?? type
-  );
-}
-
 /** The one-line hint under the stage-type select. */
 export function typeHint(type: DocumentStageType): string {
   return STAGE_TYPES.find((option) => option.value === type)?.hint ?? '';
@@ -81,4 +74,29 @@ export function effectSummary(stage: StageDraft): string {
       ? effects[0]
       : `${effects.slice(0, -1).join(', ')} and ${effects[effects.length - 1] ?? ''}`;
   return `Arriving here ${joined ?? ''}.`;
+}
+
+/**
+ * The same six roles as one short plain phrase, for the badge beside a stage
+ * NAME in the lifecycle menu.
+ *
+ * That badge used to print `stage.stageType` raw, so a shop owner choosing what
+ * to do next read "Accepted committed", "Declined void" and — on four rows
+ * running — "Submitted draft", "Quoted draft": a schema word from a different
+ * vocabulary, contradicting the name beside it on two of them, and repeating
+ * the name on the third. The words this file already owns are the ones she can
+ * act on, so the badge says those instead. Issue 766.
+ */
+const TYPE_BADGES: Readonly<Record<DocumentStageType, string>> = {
+  draft: 'not promised yet',
+  open: 'sent, still yours to change',
+  committed: 'they said yes',
+  final: 'they owe it',
+  paid: 'settled',
+  void: 'called off',
+};
+
+/** What a stage of this type MEANS, in three or four words. */
+export function typeBadge(type: DocumentStageType): string {
+  return TYPE_BADGES[type] ?? type;
 }

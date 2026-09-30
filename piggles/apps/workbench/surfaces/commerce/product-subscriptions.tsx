@@ -11,6 +11,11 @@
 //
 //   not set up for repeat  → "People buy this one at a time." Plus what setting
 //                            it up would mean. Nothing is wrong.
+//
+// What those states used to say was that a customer would "choose a delivery
+// frequency at checkout". No storefront could do that, and nothing could create
+// a repeat order at all until issue 738 gave the console a screen for it. The
+// copy now points at the screen that actually exists.
 //   set up, nobody yet     → "Ready to be bought on repeat, nobody has." This is
 //                            the one worth acting on, and it is invisible if you
 //                            collapse it into the case above.
@@ -42,6 +47,7 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
 import {
+  cadenceWords,
   formatCents,
   productErrorMessage,
   subscriptionState,
@@ -53,7 +59,12 @@ import {
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 
-const LABEL = 'Subscriptions';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'repeat orders';
 /** Registry module for this pane, so the brand draws Sell's own picture rather
  *  than the generic one. */
 const MODULE = 'commerce';
@@ -104,7 +115,8 @@ function SubscriberRow({ subscriber }: { subscriber: ProductSubscriber }) {
           {state.label}
         </Badge>
         <Text as="span" className="font-medium">
-          {formatCents(subscriber.monthlyRecurringRevenueCents, subscriber.currency)} a month
+          {formatCents(subscriber.cycleAmountCents, subscriber.currency)}{' '}
+          {cadenceWords(subscriber.intervalUnit, subscriber.intervalCount)}
         </Text>
       </div>
     </div>
@@ -135,10 +147,9 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
             description={`${product.title} is a normal one-off purchase. Someone buys it, you send it, and that is the end of it. Nothing is missing here.`}
           />
           <Text className="text-sm">
-            If you wanted it delivered on a schedule instead (every month, every quarter), you would
-            set that up on the product itself by changing how it is fulfilled. Customers would then
-            choose a delivery frequency at checkout, and every repeat order would appear on this
-            panel.
+            If somebody asks for it every month, you can set that up for them. Open Repeat orders
+            and start one: pick the customer, pick what goes out and how often, and it bills them
+            each time. It will show up here once it is running.
           </Text>
         </FormSection>
       ) : null}
@@ -149,12 +160,12 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
             size="sm"
             icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
             title="Ready for repeat orders, but nobody has started one"
-            description={`${product.title} is set up to be delivered on a schedule, and customers can choose that at checkout. Nobody has yet.`}
+            description={`${product.title} is marked as something delivered on a schedule. Nobody has one on repeat yet.`}
           />
           <Text className="text-sm">
-            If this has been on sale a while, it is worth checking that the repeat option is
-            actually visible on the product&apos;s page and that the price for subscribing is
-            attractive next to buying it once.
+            You set these up one customer at a time, over on Repeat orders, so this stays empty
+            until somebody asks for one. Shoppers cannot choose a delivery schedule for themselves
+            on your website yet.
           </Text>
         </FormSection>
       ) : null}
@@ -168,11 +179,11 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
             <div className="flex flex-wrap gap-x-8 gap-y-4">
               <Figure
                 value={formatCents(data.monthlyRecurringRevenueCents, data.currency ?? 'USD')}
-                label="every month, from repeat orders that are still running"
+                label="a month on average, from the repeat orders still running"
               />
               <Figure
-                value={String(data.unitsPerMonth)}
-                label="of these you are committed to sending each month"
+                value={String(data.unitsPerYear)}
+                label="of these you are committed to making in a year"
               />
               <Figure
                 value={String(data.counts.active)}
@@ -221,12 +232,12 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
 }
 
 export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const subscriptions = useProductSubscriptions(productId);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} module={MODULE} />;
   }
 
   const data = subscriptions.data;
@@ -235,7 +246,7 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         status={
           <>
             {scope.isFollowing ? (

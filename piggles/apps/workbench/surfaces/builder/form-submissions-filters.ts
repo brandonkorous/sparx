@@ -21,6 +21,19 @@ export const STATUS_FILTERS = [
 
 export type StatusFilterValue = (typeof STATUS_FILTERS)[number]['value'];
 
+/**
+ * `status` on the address, read once as the chip's starting value.
+ *
+ * Home's "2 people wrote to you from your website" has always SENT `status:
+ * 'new'`, and nothing here read it: the inbox opened on All, with the two
+ * somewhere among every message the site had ever had, under a sentence whose
+ * own comment said it opened on New ([258]). Anything unrecognised means "no
+ * narrowing", never a guess.
+ */
+export function parseStatusFilter(raw: unknown): StatusFilterValue {
+  return STATUS_FILTERS.find((entry) => entry.value === raw)?.value ?? 'all';
+}
+
 /** A one-line preview of what they actually wrote, for the table. */
 export function previewOf(submission: FormSubmission): string {
   if (submission.message && submission.message.trim() !== '') return submission.message.trim();

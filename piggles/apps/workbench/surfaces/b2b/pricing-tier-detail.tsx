@@ -1,13 +1,13 @@
 'use client';
 
-// One price tier — create it, then manage it. Create and manage are the SAME
-// surface: `{ id: 'new' }` builds it, `{ id }` manages it.
+// One wholesale group — create it, then manage it. Create and manage are the
+// SAME surface: `{ id: 'new' }` builds it, `{ id }` manages it.
 //
-// A tier has two parts: the standing discount everyone on it gets, and — once it
-// exists — a set of per-product prices that override that discount on specific
-// items. The tier fields save with the Save button; the per-product overrides
-// are managed live, each its own add or remove, because that is how the server
-// models them.
+// A group has two parts: the standing discount everyone in it gets, and — once
+// it exists — a set of per-product prices that override that discount on
+// specific items. The group fields save with the Save button; the per-product
+// overrides are managed live, each its own add or remove, because that is how
+// the server models them.
 
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -112,9 +112,9 @@ function TierLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
               error={tierQuery.error}
-              noun="tier"
-              title="Could not load this tier"
-              description="This is a problem reaching the server. The tier itself is unaffected. Nothing has been lost."
+              noun="group"
+              title="Could not load this group"
+              description="This is a problem reaching the server. The group itself is unaffected. Nothing has been lost."
               onRetry={() => {
                 void tierQuery.refetch();
               }}
@@ -179,7 +179,7 @@ function TierEditor({
   }, [saved, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New price tier' : (tier?.name ?? 'Price tier'));
+    ctx.setTitle(isNew ? 'New wholesale group' : (tier?.name ?? 'Wholesale group'));
   }, [ctx, isNew, tier]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
@@ -187,7 +187,7 @@ function TierEditor({
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
-  const nameError = draft.name.trim() === '' ? 'Give this tier a name.' : null;
+  const nameError = draft.name.trim() === '' ? 'Give this group a name.' : null;
   const valueError =
     draft.discountType === 'percentage' && (draft.discountValue < 0 || draft.discountValue > 100)
       ? 'A percentage discount has to be between 0% and 100%.'
@@ -212,8 +212,8 @@ function TierEditor({
   useDirtySource(
     dirty && !create.isSuccess,
     isNew
-      ? 'This tier has not been created yet. Close anyway?'
-      : 'This tier has unsaved changes. Close anyway?'
+      ? 'This group has not been created yet. Close anyway?'
+      : 'This group has unsaved changes. Close anyway?'
   );
 
   const writePayload = (): TierWriteInput => ({
@@ -237,7 +237,7 @@ function TierEditor({
           });
         },
         onError: (error) => {
-          setFailure(tierErrorMessage(error, 'Could not create this tier.'));
+          setFailure(tierErrorMessage(error, 'Could not create this group.'));
         },
       });
       return;
@@ -245,10 +245,10 @@ function TierEditor({
     update.mutate(writePayload(), {
       onSuccess: () => {
         setTouched(false);
-        toast.add({ title: 'Tier saved', type: 'success' });
+        toast.add({ title: 'Group saved', type: 'success' });
       },
       onError: (error) => {
-        setFailure(tierErrorMessage(error, 'Could not save this tier. Nothing was changed.'));
+        setFailure(tierErrorMessage(error, 'Could not save this group. Nothing was changed.'));
       },
     });
   };
@@ -258,8 +258,8 @@ function TierEditor({
     const ok = await confirm({
       title: `Remove ${tier.name}?`,
       description:
-        'Accounts on this tier go back to your normal prices. Their orders already placed are unaffected. This cannot be undone.',
-      confirmLabel: 'Remove this tier',
+        'Businesses in this group go back to your normal prices. Orders they have already placed are unaffected. This cannot be undone.',
+      confirmLabel: 'Remove this group',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -273,7 +273,7 @@ function TierEditor({
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not remove this tier',
+          title: 'Could not remove this group',
           description: tierErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -284,11 +284,11 @@ function TierEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Price tier actions"
+        label="Wholesale group actions"
         status={
           tier?.accountCount !== undefined ? (
             <Badge color="neutral" variant="soft" size="sm">
-              {tier.accountCount === 1 ? '1 account' : `${String(tier.accountCount)} accounts`}
+              {tier.accountCount === 1 ? '1 business' : `${String(tier.accountCount)} businesses`}
             </Badge>
           ) : null
         }
@@ -301,7 +301,7 @@ function TierEditor({
             disabled={Boolean(nameError) || (!isNew && !dirty)}
             onClick={submit}
           >
-            {isNew ? 'Create tier' : 'Save'}
+            {isNew ? 'Create group' : 'Save'}
           </Button>
         }
         refresh={
@@ -319,14 +319,14 @@ function TierEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              Set a discount once and give it to every account you put on this tier: instead of
+              Set a discount once and give it to every business you put in this group, instead of
               setting one per customer.
             </Text>
           ) : null}
 
-          <SaveFailure title="Could not save this tier" message={failure} />
+          <SaveFailure title="Could not save this group" message={failure} />
 
-          <FormSection title="The tier">
+          <FormSection title="The group">
             <Field>
               <FieldLabel>Name</FieldLabel>
               <FieldControl
@@ -345,7 +345,7 @@ function TierEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  What you call this level: Trade, Distributor, Key account.
+                  What you call this group: Trade, Distributor, Stockists.
                 </FieldDescription>
               )}
             </Field>
@@ -358,7 +358,7 @@ function TierEditor({
                     color="module"
                     rows={2}
                     value={draft.description}
-                    placeholder="A reminder of who this tier is for."
+                    placeholder="A reminder of who this group is for."
                     onChange={(event) => {
                       set('description', event.target.value);
                     }}
@@ -370,7 +370,7 @@ function TierEditor({
 
           <FormSection
             title="The discount"
-            description="How much this tier takes off your normal prices, before any per-product prices below."
+            description="How much this group takes off your normal prices, before any per-product prices below."
           >
             <div className="grid grid-cols-1 gap-4 @md:grid-cols-2">
               <Field>
@@ -379,7 +379,7 @@ function TierEditor({
                   render={
                     <Select
                       color="module"
-                      aria-label="How this tier discounts"
+                      aria-label="How this group discounts"
                       value={draft.discountType}
                       items={[
                         { value: 'percentage', label: 'A percentage off' },
@@ -456,7 +456,7 @@ function TierEditor({
                 }
               />
               <FieldDescription>
-                Keep it on everything unless this tier only discounts part of your range. Use the
+                Keep it on everything unless this group only discounts part of your range. Use the
                 per-product prices below to set specific items.
               </FieldDescription>
             </Field>
@@ -478,7 +478,7 @@ function TierEditor({
                 }
               />
               <FieldDescription>
-                The smallest order this tier&apos;s prices apply to. Leave at zero for no minimum.
+                The smallest order this group&apos;s prices apply to. Leave at zero for no minimum.
               </FieldDescription>
             </Field>
           </FormSection>
@@ -486,7 +486,7 @@ function TierEditor({
           {isNew ? (
             <FormSection title="Per-product prices">
               <Text className="text-sm">
-                Save the tier first, then set special prices on individual products for it.
+                Save the group first, then set special prices on individual products for it.
               </Text>
             </FormSection>
           ) : tier ? (
@@ -496,7 +496,7 @@ function TierEditor({
           {tier ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
-                Remove this tier. Accounts on it go back to your normal prices.
+                Remove this group. Businesses in it go back to your normal prices.
               </Text>
               <Button
                 size="sm"
@@ -508,7 +508,7 @@ function TierEditor({
                 }}
               >
                 <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-                Remove tier
+                Remove group
               </Button>
             </div>
           ) : null}
@@ -574,7 +574,7 @@ function OverridesSection({ tierId }: { tierId: string }) {
   return (
     <FormSection
       title="Per-product prices"
-      description="Set a fixed price or a bigger cut on specific products for this tier. Anything not listed uses the tier discount above."
+      description="Set a fixed price or a bigger cut on specific products for this group. Anything not listed uses the group discount above."
     >
       {overridesQuery.isError ? (
         <Text className="text-sm">The per-product prices could not be loaded just now.</Text>
@@ -584,7 +584,7 @@ function OverridesSection({ tierId }: { tierId: string }) {
         </Text>
       ) : overrides.length === 0 ? (
         <Text className="text-sm">
-          No per-product prices yet. Add a product below to give it a special price on this tier.
+          No per-product prices yet. Add a product below to give it a special price in this group.
         </Text>
       ) : (
         <ul className="flex flex-col gap-2">

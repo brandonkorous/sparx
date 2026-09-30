@@ -15,7 +15,7 @@
 // keyboard-reachable; opening one docks the thread BESIDE this list so the queue
 // never leaves the screen.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Badge,
@@ -26,14 +26,15 @@ import {
   FilterItem,
   SearchInput,
 } from '@wizeworks/silicaui-react';
-import { faGlobe, faInbox, faUserCheck } from '@fortawesome/pro-solid-svg-icons';
+import { faCircleDot, faGlobe, faInbox, faUserCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useSites } from '../../lib/api/shell-data';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { describeAgo } from '../../lib/api/activity';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
+import { parseUnread } from './inbox-filters';
 import {
   conversationName,
   statusLabel,
@@ -135,6 +136,9 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [statusValue, setStatusValue] = useState('all');
   const [mine, setMine] = useState(false);
+  // Seeded from the address so "2 people are waiting to hear back" opens on
+  // those two. Read ONCE: after the first render the toggle owns it.
+  const [unread, setUnread] = useState(() => parseUnread(ctx.params.unread));
   const [allSites, setAllSites] = useState(false);
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
@@ -150,6 +154,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
     ...(allSites ? { property: 'all' } : {}),
     status: activeStatus?.status,
     mine,
+    unread,
     q: search.trim() || undefined,
     take,
     skip,
@@ -157,7 +162,14 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const filtered = statusValue !== 'all' || mine || search.trim() !== '';
+  const filtered = statusValue !== 'all' || mine || unread || search.trim() !== '';
+
+  // Params make a distinct pane, so a narrowed one opens as a SECOND tab beside
+  // any inbox already open. It says which it is, following the toggle.
+  useEffect(() => {
+    const base = surfaceTitle('chat.inbox') ?? 'Inbox';
+    ctx.setTitle(unread ? `${base} · unread` : base);
+  }, [ctx, unread]);
 
   const siteNameById = useMemo(() => {
     const map = new Map<string, string>();
@@ -180,7 +192,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Inbox controls"
+        label="Live chat controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -247,6 +259,23 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
               <Icon glyph={faUserCheck} className="size-4" aria-hidden />
               Mine
             </Button>
+            {/* The question Home's "waiting to hear back" asks: a message
+            nobody on the team has read. The same dot the rows carry. */}
+            <Button
+              size="sm"
+              variant={unread ? 'soft' : 'ghost'}
+              color={unread ? 'module' : undefined}
+              aria-pressed={unread}
+              className="shrink-0"
+              title="Show only conversations with a message nobody has read yet"
+              onClick={() => {
+                setUnread((v) => !v);
+                resetWindow();
+              }}
+            >
+              <Icon glyph={faCircleDot} className="size-4" aria-hidden />
+              Unread
+            </Button>
           </>
         }
         refresh={
@@ -275,7 +304,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
             title={filtered ? 'No conversations match that' : 'No conversations yet'}
             description={
               filtered
-                ? 'Try a different status, turn off “Mine”, or clear the search. Turn on “All sites” to look across every site you run.'
+                ? 'Try a different status, turn off “Mine” or “Unread”, or clear the search. Turn on “All sites” to look across every site you run.'
                 : // The chat box is not something a person adds. It mounts on
                   // every page of a site whenever the Live chat app is on, and
                   // this pane is itself gated on that app being on — so

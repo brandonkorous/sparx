@@ -11,7 +11,7 @@
 // single real record.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import type { WorkbenchModule } from '../../components/module-scope';
+import { WORKBENCH_MODULES, type WorkbenchModule } from '../../components/module-scope';
 
 import { api } from '../../lib/api/client';
 
@@ -93,24 +93,27 @@ export function useClearSampleData() {
   });
 }
 
-/** Plain-language label + hue for each module a pack fills. */
-const MODULE_META: Record<string, { label: string; module: WorkbenchModule }> = {
-  commerce: { label: 'Online store', module: 'commerce' },
-  crm: { label: 'Customers', module: 'crm' },
-  cms: { label: 'Content', module: 'cms' },
-  inventory: { label: 'Stock', module: 'inventory' },
-  scheduling: { label: 'Bookings', module: 'scheduling' },
-  b2b: { label: 'Wholesale', module: 'b2b' },
-  invoicing: { label: 'Invoicing', module: 'invoicing' },
-  ai: { label: 'AI', module: 'ai' },
-};
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`, which resolves through the brand's own
+ * app registry. This file kept its own, and so did five others; measured
+ * 2026-09-25, `commerce` alone had SIX names across the two consoles —
+ *
+ *     Sell (the rail) · Selling · Online store · Online stores · Store · commerce
+ *
+ * — and a Piggles shop owner met four of them on four different screens while
+ * the rail beside her said Sell the whole time. Same defect as one order reading
+ * four ways on four screens (issue 260), one level up: the APPS themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
-export function moduleLabel(slug: string): string {
-  return MODULE_META[slug]?.label ?? slug;
-}
-
+/** The hue for a module slug. The slug IS the hue for every registered
+ *  module; anything the registry does not know falls back to the platform's. */
 export function moduleHue(slug: string): WorkbenchModule {
-  return MODULE_META[slug]?.module ?? 'platform';
+  return (WORKBENCH_MODULES as readonly string[]).includes(slug)
+    ? (slug as WorkbenchModule)
+    : 'platform';
 }
 
 /** Count keys in the order they read on screen, with plain-language labels.

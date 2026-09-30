@@ -604,6 +604,7 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
       'route',
       'wave',
       'batch',
+      'fulfill',
       'fulfil',
       'orders to pick',
     ],
@@ -920,7 +921,7 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     icon: faChartColumn,
     section: 'Reporting',
     order: 30,
-    keywords: ['analytics', 'value', 'ageing', 'turnover', 'shrinkage', 'loss'],
+    keywords: ['analytics', 'value', 'aging', 'ageing', 'turnover', 'shrinkage', 'loss'],
     component: ReportsSurface,
   },
   {

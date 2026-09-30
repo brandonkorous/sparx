@@ -46,19 +46,19 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Record type controls"
+        label="Things you track controls"
         primary={
           <Button
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New record type: hold Shift to open alongside, Alt for a new window"
+            title="New thing to track: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.object-type.detail', { key: 'new' }, { target: targetFor(event) });
             }}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New record type
+            New thing to track
           </Button>
         }
         controls={
@@ -95,13 +95,13 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {moduleOff ? (
           <EmptyState
             icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-            title="Turn on Customers to see your record types"
-            description="Record types appear once the Customers app is switched on. They are the kinds of things you keep track of (customers, companies, deals) and the extra details you record on each."
+            title="Turn on Customers to see the things you track"
+            description="Things you track appear once the Customers app is switched on. They are the kinds of things you keep track of (customers, companies, deals) and the extra details you record on each."
           />
         ) : isError ? (
           <PaneLoadError
             icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-            title="Could not load your record types"
+            title="Could not load the things you track"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
@@ -115,13 +115,13 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
             title="Nothing to show with this filter"
-            description="Every record type you have is put away. Switch the filter above to see them."
+            description="Every thing you track is put away. Switch the filter above to see them."
           />
         ) : (
           <Table size="sm" hover>
             <thead>
               <tr>
-                <th>Record type</th>
+                <th>Thing you track</th>
                 <th>Kind</th>
                 <th className="text-right">Extra details</th>
                 <th className="hidden @lg:table-cell">What it is</th>

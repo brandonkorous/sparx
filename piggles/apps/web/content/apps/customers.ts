@@ -1,13 +1,28 @@
 import type { AppMarketing } from './types';
+import { CUSTOMER_PROFILE_CHAPTER, CUSTOMER_REPORTS_CHAPTER } from './chapters/customers';
+
+// Corrected 2026-09-30: "One record per person" said orders, bookings,
+// invoices, emails, calls and notes sit on one page in the order they happened.
+// They sit on one RECORD, each kind on its own tab; only notes, email and calls
+// share a timeline. And "Answer without starting cold" said a request shows the
+// customer's orders and invoices beside it; the request screen shows none of
+// them, so that bullet now says what it does do (reply from the request). What
+// was verified, and what was left out, is noted in ./chapters/customers.ts.
 
 export const CUSTOMERS: AppMarketing = {
   heading: 'Everything you know about someone, in one history.',
   lede: 'Customers is the memory of your business. Who they are, what they have bought, what they asked last time, what you promised, and what is still open, so anybody who picks up the phone can pick up the thread.',
-  alsoKnownAs: ['CRM', 'customer relationship management', 'contact management', 'helpdesk'],
+  alsoKnownAs: [
+    'CRM',
+    'customer relationship management',
+    'contact management',
+    'helpdesk',
+    'sales pipeline',
+  ],
   does: [
     {
       title: 'One record per person, not four',
-      body: 'Their orders, bookings, invoices, emails, calls and notes on one page, in the order they happened.',
+      body: 'Their bookings, orders, invoices, emails, calls and notes on one record, a tab each, so nobody has to go looking in four places.',
     },
     {
       title: 'The companies behind the people',
@@ -15,7 +30,7 @@ export const CUSTOMERS: AppMarketing = {
     },
     {
       title: 'Track work you are trying to win',
-      body: 'Quotes and jobs on a board you can move along, with what it is worth and what happens next: instead of a spreadsheet nobody updates.',
+      body: 'Quotes and jobs on a board you can move along, with what each is worth and what happens next, instead of a spreadsheet nobody updates.',
     },
     {
       title: 'Questions and complaints, answered',
@@ -23,7 +38,7 @@ export const CUSTOMERS: AppMarketing = {
     },
     {
       title: 'Groups that keep themselves up to date',
-      body: 'Everyone who bought a particular thing, or has not been in for six months. Defined once, always current, ready to write to.',
+      body: 'Everyone who bought a particular thing, or has not bought anything for six months. Defined once, always current, ready to write to.',
     },
     {
       title: 'One of them, not two',
@@ -31,6 +46,7 @@ export const CUSTOMERS: AppMarketing = {
     },
   ],
   chapters: [
+    CUSTOMER_PROFILE_CHAPTER,
     {
       heading: 'Work you have not won yet is still work.',
       body: 'The jobs you are quoting for are the most valuable records in the business and usually the worst kept: a quote in a sent-items folder, a promise made on a phone call, and a follow-up that depended on somebody remembering. Here they are records with a value, a stage and a next action, on a board you move things along.',
@@ -49,7 +65,7 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'Which ones are worth your morning',
-          body: 'Scoring you set the rules for, so the list is ordered by likelihood rather than by whoever emailed most recently. It shows its working: you can see why a record scored what it did.',
+          body: 'Scoring you set the rules for, for customers and for jobs, so the list is ordered by likelihood rather than by whoever emailed most recently. While you write the rules you see what they make of a real customer.',
         },
         {
           title: 'Won and lost, counted',
@@ -59,7 +75,7 @@ export const CUSTOMERS: AppMarketing = {
     },
     {
       heading: 'When somebody has a problem, the clock is already running.',
-      body: 'A complaint that ages in a shared inbox becomes a bad review. Requests here are records with an owner and a time they are expected to be answered by, so nothing depends on somebody noticing an unread email, and the whole history of that customer sits beside the request while you answer it.',
+      body: 'A complaint that ages in a shared inbox becomes a bad review. Requests here are records with an owner and a time they are expected to be answered by, so nothing depends on somebody noticing an unread email, and the reply you send from the request lands on that customer’s record as well.',
       does: [
         {
           title: 'Assigned to a person, not to everybody',
@@ -67,19 +83,23 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'A time it should be answered by',
-          body: 'Response targets you set, measured, and visible before they are missed rather than reported after.',
+          body: 'Targets for the first reply and for sorting it out, set by how urgent it is and counted in your opening hours, so a message at five in the afternoon is not late by morning.',
         },
         {
-          title: 'Answer without starting cold',
-          body: 'Their orders, invoices and previous conversations are on the same screen, so the reply knows what happened last time.',
+          title: 'Replied to from the request itself',
+          body: 'Email them or log a call without leaving it. Start a request from a customer’s record and it is already linked, and replying is what marks it answered.',
         },
         {
           title: 'The sentences you write constantly',
           body: 'Saved paragraphs and email templates for the answers you give weekly, so the tenth one is as good as the first.',
         },
         {
-          title: 'Calls and email on the record',
-          body: 'Connect your mailbox and your phone system and the conversation lands on the customer automatically, not because somebody typed a note afterwards.',
+          title: 'Email on the record without copying it',
+          body: 'Connect your mailbox and messages from people already in your customers land on their record every few minutes, without anybody pasting them in.',
+        },
+        {
+          title: 'Calls from their record',
+          body: 'Connect a phone account and press Call: your own phone rings first, then it dials them, and who was called, when and for how long is kept on the record.',
         },
       ],
     },
@@ -97,15 +117,15 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'Groups that keep themselves current',
-          body: 'Defined by a rule rather than a list, so "bought in the last 90 days" is true today without anyone rebuilding it.',
+          body: 'Defined by a rule rather than a list, so "bought in the last 90 days" is true today without anyone rebuilding it. You see how many match while you write the rule.',
+        },
+        {
+          title: 'Or a list you pick by hand',
+          body: 'For the group no rule describes. Add and remove people one at a time, and see who came off it and when.',
         },
         {
           title: 'Duplicates found and joined',
-          body: 'The same person entered twice is found, and merging keeps both histories instead of abandoning one.',
-        },
-        {
-          title: 'Your own questions answered',
-          body: 'Build a report over any of it and pin the ones you check often to a dashboard.',
+          body: 'The same person entered twice is found, and merging keeps both histories instead of abandoning one. You decide what counts as the same person, and nothing is merged without somebody looking unless you switch that on.',
         },
         {
           title: 'Let people book you from here',
@@ -113,6 +133,7 @@ export const CUSTOMERS: AppMarketing = {
         },
       ],
     },
+    CUSTOMER_REPORTS_CHAPTER,
   ],
   worksWith: ['messages', 'bookings', 'sell'],
   photo: {

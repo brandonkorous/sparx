@@ -160,7 +160,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Discount list controls"
+        label="Discounts controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

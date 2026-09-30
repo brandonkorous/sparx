@@ -101,25 +101,25 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Broadcasts list controls"
+        label="Email campaigns controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search broadcasts"
-              placeholder="Search broadcasts…"
+              aria-label="Search email campaigns"
+              placeholder="Search campaigns…"
               value={search}
               onValueChange={setSearch}
             />
           </div>
         }
         primaryAction={{
-          label: 'New broadcast',
+          label: 'New email campaign',
           icon: faPlus,
           onClick: (event) => {
             ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New broadcast: hold Shift to open alongside, Alt for a new window',
+          title: 'New email campaign: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <div className="w-40 shrink-0">
@@ -163,27 +163,27 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <PaneLoadError
             icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
-            title="Could not load your broadcasts"
+            title="Could not load your campaigns"
             description="Something went wrong reaching the server. Anything already sent is unaffected. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
           />
         ) : isPending ? (
-          <PaneWaiting label="Loading broadcasts…" />
+          <PaneWaiting label="Loading your campaigns…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
             module={MODULE}
             filtered={filtering}
             noResults={{
               icon: <Icon glyph={faPaperPlane} className="size-6" aria-hidden />,
-              title: 'No broadcasts match those filters',
+              title: 'No campaigns match those filters',
               description: 'Try a different search, or switch the status back to Any.',
             }}
             firstRun={{
-              title: 'No broadcasts yet',
+              title: 'No email campaigns yet',
               description:
-                'A broadcast is one email sent to a group of people at once: a newsletter, an offer, an announcement. Write your first to reach your audience.',
+                'This is one email sent to a lot of people at once: a newsletter, an offer, an announcement. Write your first one to reach everybody on a list in one go.',
               actions: (
                 <Button
                   size="sm"
@@ -193,7 +193,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  New broadcast
+                  New email campaign
                 </Button>
               ),
             }}
@@ -268,7 +268,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      {rows.length > 0 ? <RowOpenHint what="a broadcast to open it" /> : null}
+      {rows.length > 0 ? <RowOpenHint what="a campaign to open it" /> : null}
     </div>
   );
 }

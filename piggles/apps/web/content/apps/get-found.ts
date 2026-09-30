@@ -13,7 +13,7 @@ import type { AppMarketing } from './types';
 
 export const GET_FOUND: AppMarketing = {
   heading: 'Turn up when somebody searches for what you do.',
-  lede: 'Get Found is the unglamorous half of being visible: the titles, descriptions, addresses and posts that decide whether a person looking for exactly your thing ever sees you. It tells you what is wrong in plain words, mostly fixes it for you, and posts to every network you are on without you opening eight apps.',
+  lede: 'Get Found is the unglamorous half of being visible: the titles, descriptions, addresses and posts that decide whether a person looking for exactly your thing ever sees you. It tells you what is wrong in plain words, mostly fixes it for you, and posts to every network you are on without you opening seven apps.',
   alsoKnownAs: ['SEO', 'search engine optimisation', 'social media management', 'meta tags'],
   does: [
     {
@@ -29,7 +29,7 @@ export const GET_FOUND: AppMarketing = {
       body: 'Sitemaps, structured data and redirects handled for you, and kept correct when you rename or move a page.',
     },
     {
-      title: 'Post to social without doing it eight times',
+      title: 'Post to social without doing it seven times',
       body: 'Write once, choose where it goes, schedule it for when your customers are actually awake. Eight networks, one box.',
     },
     {
@@ -72,7 +72,7 @@ export const GET_FOUND: AppMarketing = {
     {
       // The chapter this whole file was restructured for.
       heading: 'Write it once. It goes everywhere you are.',
-      body: 'Posting the same thing to eight places by hand is the job everybody quietly stops doing after about three weeks. You write one post here, pick where it goes, and Piggles reshapes it for each one: the caption trimmed to that network’s limit, the image cropped to the shape it wants, the whole thing checked before it goes rather than failing quietly at two in the morning. Then it tells you what each post actually did, and brings the replies back.',
+      body: 'Posting the same thing to seven places by hand is the job everybody quietly stops doing after about three weeks. You write one post here, pick where it goes, and Piggles reshapes it for each one: the caption trimmed to that network’s limit, the image cropped to the shape it wants, the whole thing checked before it goes rather than failing quietly at two in the morning. Then it tells you what each post actually did, and brings the replies back.',
       does: [
         {
           title: 'One box, every network you are on',
@@ -112,11 +112,11 @@ export const GET_FOUND: AppMarketing = {
         },
         {
           title: 'Did it work',
-          body: 'Reach, engagement and clicks per post per network, so the next month is planned from what happened rather than from what felt good.',
+          body: 'Reach, engagement and clicks per post, from the networks that report them back, so the next month is planned from what happened rather than from what felt good.',
         },
         {
           // Deliberately names the four rather than saying "the platforms you
-          // connected". All eight publish and report numbers; only these four
+          // connected". Seven publish (TikTok reports no numbers yet); only these four
           // hand back comments and accept a reply, and a reader who connected
           // TikTok expecting an inbox would have been misled by the vaguer
           // sentence that was here.
@@ -124,16 +124,15 @@ export const GET_FOUND: AppMarketing = {
           body: 'Comments and messages from Facebook, Instagram, LinkedIn and your Google Business listing arrive in one inbox, and you answer from there. Each one sits beside that customer’s orders and emails, so you are not replying to a stranger.',
         },
       ],
-      // Publishing + numbers on all eight. X is deliberately absent: its posting
-      // API is paid-tier and there is no adapter, so listing it would be exactly
-      // the logo-wall lie ./types.ts forbids.
+      // Networks a post goes out to publicly today. X has no adapter. Pinterest is
+      // left out: production posts to its sandbox (PINTEREST_SANDBOX=true), so
+      // nobody sees them. TikTok posts, but sends back no numbers yet.
       connects: [
         'Facebook Page',
         'Instagram',
         'LinkedIn',
         'Google Business Profile',
         'TikTok',
-        'Pinterest',
         'YouTube',
         'Threads',
       ],

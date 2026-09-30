@@ -64,7 +64,7 @@ function BillField({
   return (
     <li
       className={`rounded-box grid grid-cols-[1fr_auto] items-center gap-3 border p-4 transition-colors ${
-        bill.on ? 'border-success bg-success bg-soft' : 'border-base-300'
+        bill.on ? 'border-success ring-success ring-1' : 'border-base-300'
       }`}
     >
       <label className="flex cursor-pointer items-start gap-3">

@@ -47,7 +47,6 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
   RESOURCE_KINDS,
-  isNotFound,
   resourceKindLabel,
   schedulingErrorMessage,
   resourceState,
@@ -371,7 +370,7 @@ function ResourceEditor({
                     color="module"
                     rows={2}
                     value={draft.description}
-                    placeholder="Anything worth noting: a speciality, a location, a quirk."
+                    placeholder="Anything worth noting: a specialty, a location, a quirk."
                     onChange={(event) => {
                       set('description', event.target.value);
                     }}
@@ -633,18 +632,15 @@ export function ResourceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (resource.isError) {
-    const gone = isNotFound(resource.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This no longer exists' : 'Could not load this'}
-            description={
-              gone
-                ? 'It has been removed. Any bookings already made against it are unaffected.'
-                : 'This is a problem reaching the server. Nothing has changed.'
-            }
+            error={resource.error}
+            title="Could not load this"
+            description="This is a problem reaching the server. Nothing has changed."
+            missingTitle="This no longer exists"
+            missingDescription="It has been removed. Any bookings already made against it are unaffected."
             onRetry={() => {
               void resource.refetch();
             }}

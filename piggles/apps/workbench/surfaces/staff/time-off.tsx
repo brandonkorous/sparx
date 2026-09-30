@@ -30,7 +30,6 @@ import {
   FieldLabel,
   FieldStatus,
   Heading,
-  Input,
   NativeSelect,
   Text,
   Textarea,
@@ -63,6 +62,7 @@ import {
   toDateInput,
 } from './format';
 import { NOT_A_DATE, dayEndLocal, dayStartLocal } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -206,6 +206,24 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Time off controls"
+        status={
+          <>
+            <Icon glyph={faCalendarXmark} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {waiting > 0
+                ? waiting === 1
+                  ? '1 waiting on you'
+                  : `${String(waiting)} waiting on you`
+                : items.length === 0
+                  ? 'None asked for yet'
+                  : items.length === 1
+                    ? '1 booked'
+                    : `${String(items.length)} booked`}
+            </Text>
+          </>
+        }
+        statusReady={!requests.isPending}
+        statusFailed={requests.isError}
         primaryAction={{
           label: 'Log time off',
           icon: faPlus,
@@ -397,7 +415,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-md flex-col overflow-hidden">
           <DialogTitle>Log time off</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Field>
               <FieldLabel>Who</FieldLabel>
               <FieldControl
@@ -442,12 +460,11 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>First day</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={startsAt}
-                      onChange={(event) => {
-                        setStartsAt(event.target.value);
-                        if (event.target.value > endsAt) setEndsAt(event.target.value);
+                      onValueChange={(value) => {
+                        setStartsAt(value);
+                        if (value > endsAt) setEndsAt(value);
                       }}
                     />
                   }
@@ -457,12 +474,11 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Last day</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={endsAt}
                       min={startsAt}
-                      onChange={(event) => {
-                        setEndsAt(event.target.value);
+                      onValueChange={(value) => {
+                        setEndsAt(value);
                       }}
                     />
                   }

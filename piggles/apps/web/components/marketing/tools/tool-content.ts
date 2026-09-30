@@ -118,7 +118,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'How small can I print a QR code?',
-        a: 'About two centimetres square, or three quarters of an inch, is the practical floor for something scanned from a phone held normally. If it is going on a shelf edge or a business card, keep the content short: a shorter web address makes a simpler pattern, and a simpler pattern survives being small.',
+        a: 'About two centimeters square, or three quarters of an inch, is the practical floor for something scanned from a phone held normally. If it is going on a shelf edge or a business card, keep the content short: a shorter web address makes a simpler pattern, and a simpler pattern survives being small.',
       },
       {
         q: 'Should I download a PNG or an SVG?',
@@ -135,7 +135,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     learn: [
       {
         title: 'What those tags on the end of a link are',
-        body: 'When you see a link ending in something like ?utm_source=instagram, those extra bits are notes attached to the link. They do nothing to the page (it opens exactly as normal) but analytics tools read them and record where the visitor came from. Without them, most of your traffic arrives labelled "direct", which is analytics-speak for "no idea".',
+        body: 'When you see a link ending in something like ?utm_source=instagram, those extra bits are notes attached to the link. They do nothing to the page (it opens exactly as normal) but analytics tools read them and record where the visitor came from. Without them, most of your traffic arrives labeled "direct", which is analytics-speak for "no idea".',
       },
       {
         title: 'The three that matter, in plain terms',
@@ -254,7 +254,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     faqs: [
       {
         q: 'Is an invoice made here legally valid?',
-        a: 'An invoice is a commercial document, not a legal form, so there is no official template to fail. What matters is that it contains what your tax authority requires, typically your business details, a unique number, the date, an itemised list, the tax treatment and the total. Check your local rules for anything specific to your trade, particularly around tax registration numbers.',
+        a: 'An invoice is a commercial document, not a legal form, so there is no official template to fail. What matters is that it contains what your tax authority requires, typically your business details, a unique number, the date, an itemized list, the tax treatment and the total. Check your local rules for anything specific to your trade, particularly around tax registration numbers.',
       },
       {
         q: 'Do I need to charge tax on my invoice?',
@@ -422,7 +422,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
         body: 'Without one, a quote is open indefinitely, and a customer can accept a price you gave before your supplier put their costs up. Thirty days is the usual convention. It also does something quieter and more useful: it gives a customer who has gone quiet an honest reason to be nudged, which is a much easier email to write than one that begins "just following up".',
       },
       {
-        title: 'Itemise more than feels necessary',
+        title: 'Itemize more than feels necessary',
         body: 'A single line reading "kitchen refit: $8,000" invites one question: why so much. The same work broken into materials, labor, disposal and finishing invites better questions, and lets a customer take something out rather than walking away from all of it. Detail also protects you later, when somebody remembers a thing being included that was never on the list.',
       },
     ],
@@ -507,7 +507,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Is this a legal requirement?',
-        a: 'In many places, for many organisations, yes: public bodies and larger businesses in particular. It is also the accessibility failure most commonly cited in complaints, because unlike most it can be measured automatically at scale. Worth fixing regardless of whether anybody is obliged to.',
+        a: 'In many places, for many organizations, yes: public bodies and larger businesses in particular. It is also the accessibility failure most commonly cited in complaints, because unlike most it can be measured automatically at scale. Worth fixing regardless of whether anybody is obliged to.',
       },
       {
         q: 'Why does my dark mode fail when light mode passes?',
@@ -577,7 +577,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Can I put a QR code on a printed business card?',
-        a: 'Yes, and it is the best of both: the card gets kept, the details get saved correctly. Keep the code at least two centimetres square, and put your name and number in readable text beside it too, for the people who will simply type it in.',
+        a: 'Yes, and it is the best of both: the card gets kept, the details get saved correctly. Keep the code at least two centimeters square, and put your name and number in readable text beside it too, for the people who will simply type it in.',
       },
       {
         q: 'Are my contact details sent anywhere?',

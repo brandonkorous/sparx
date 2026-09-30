@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { PIGGLES_GROUPS, GROUP_HEX, type PigglesGroup } from '@piggles/brand';
-import { appsInGroup, PRODUCT } from '@piggles/config';
+import { APP_COUNT_WORD, appsInGroup, PRODUCT } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
 import { BrandFigure } from '@/components/marketing/hero/brand-figure';
 
@@ -190,8 +190,8 @@ function ThemePanel({ theme, label }: { theme: string; label: string }) {
           ))}
         </div>
         <p className="mt-3 text-sm">
-          Five hues plus the brand cover all fifteen apps. Apps inside a group separate by icon and
-          label, never by hue.
+          Five hues plus the brand cover all {APP_COUNT_WORD} apps. Apps inside a group separate by
+          icon and label, never by hue.
         </p>
       </Section>
 

@@ -29,6 +29,7 @@ import {
 import { faLocationDot, faPencil, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
+import { CountryField } from '../../components/country-field';
 import { FormSection } from '../../components/form-section';
 import { customerErrorMessage, type CustomerAddress } from './customers-data';
 import {
@@ -202,9 +203,11 @@ function AddressForm({
 
   const line1Error = draft.line1.trim() === '' ? 'Enter the street address.' : null;
   const cityError = draft.city.trim() === '' ? 'Enter the town or city.' : null;
-  const countryError = !/^[A-Za-z]{2}$/.test(draft.country.trim())
-    ? 'Use the two-letter country code, like US or GB.'
-    : null;
+  // The picker only ever hands back a code, so this now catches one thing: a
+  // country nobody has chosen yet. It used to read "use the two-letter country
+  // code, like US or GB", which was a rule about OUR filing system printed in
+  // red under a box she had no way of filling in correctly without knowing it.
+  const countryError = draft.country.trim() === '' ? 'Choose the country.' : null;
   const blocked = line1Error ?? cityError ?? countryError;
 
   const saving = add.isPending || update.isPending;
@@ -372,27 +375,18 @@ function AddressForm({
             }
           />
         </Field>
-        <Field>
-          <FieldLabel>Country</FieldLabel>
-          <FieldControl
-            render={
-              <Input
-                color={countryError && showErrors ? 'error' : 'module'}
-                value={draft.country}
-                placeholder="US"
-                spellCheck={false}
-                autoComplete="off"
-                className="max-w-[8rem] font-mono uppercase"
-                onChange={(event) => {
-                  set('country', event.target.value.toUpperCase().slice(0, 2));
-                }}
-              />
-            }
+        <div className="flex flex-col gap-1">
+          <CountryField
+            required
+            value={draft.country}
+            onChange={(next) => {
+              set('country', next);
+            }}
           />
           {countryError && showErrors ? (
             <FieldStatus status="error">{countryError}</FieldStatus>
           ) : null}
-        </Field>
+        </div>
       </div>
 
       <Field>

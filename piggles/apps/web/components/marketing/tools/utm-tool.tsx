@@ -282,15 +282,11 @@ export function UtmTool() {
                       <div className="min-w-0">
                         <p className="truncate font-mono text-sm">{link.url}</p>
                         <p className="mt-1 flex flex-wrap items-center gap-2 text-base">
-                          {link.campaign ? (
-                            <Badge color="module" variant="soft">
-                              {link.campaign}
-                            </Badge>
-                          ) : null}
+                          {link.campaign ? <Badge color="module">{link.campaign}</Badge> : null}
                           <span>{new Date(link.built).toLocaleDateString()}</span>
                         </p>
                       </div>
-                      <Button size="sm" variant="soft" onClick={() => void copyText(link.url)}>
+                      <Button size="sm" onClick={() => void copyText(link.url)}>
                         Copy
                       </Button>
                     </li>

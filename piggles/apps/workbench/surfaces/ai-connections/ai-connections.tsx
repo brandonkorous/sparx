@@ -73,6 +73,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useViewer, useModuleStates } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { getSurface, resolveTitle } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
   aiCredentialErrorMessage,
@@ -186,6 +187,16 @@ function CopyValue({ value, label }: { value: string; label: string }) {
 
 /** One clickable cross-pointer to the surface that governs a connection's
  *  BEHAVIOUR — Instructions for the account, Permissions for connected apps. */
+/**
+ * A card that sends you to another screen.
+ *
+ * The destination's NAME is read from the registry, never written here. Both of
+ * these used to spell it out with an arrow in the middle — "How it writes for
+ * you → Instructions", "What connected apps can do → Permissions" — which was
+ * wrong three ways: the arrow is a glyph doing the work of a word, the card
+ * already draws a real arrow at its right, and the second one named the
+ * PLATFORM's title for a screen this console calls "What it may do".
+ */
 function CrossPointer({
   ctx,
   surface,
@@ -197,6 +208,8 @@ function CrossPointer({
   title: string;
   detail: string;
 }) {
+  const definition = getSurface(surface);
+  const where = definition ? resolveTitle(definition, {}) : null;
   return (
     <button
       type="button"
@@ -206,7 +219,7 @@ function CrossPointer({
       }}
     >
       <span className="flex min-w-0 flex-col gap-0.5">
-        <span className="font-semibold">{title}</span>
+        <span className="font-semibold">{where ? `${where}: ${title}` : title}</span>
         <Text as="span" className="text-sm">
           {detail}
         </Text>
@@ -562,7 +575,7 @@ function AiAccountSection({
       <CrossPointer
         ctx={ctx}
         surface="ai.prompts"
-        title="How it writes for you → Instructions"
+        title="how it writes for you"
         detail={productCopy(
           'ai.instructions.pointer',
           'Set the voice, rules and facts Piggles follows when it writes with your account.'
@@ -727,7 +740,7 @@ function ConnectedAssistantsSection({
       <CrossPointer
         ctx={ctx}
         surface="ai.tools"
-        title="What connected apps can do → Permissions"
+        title="the tools an outside assistant may use"
         detail="Choose exactly which tools a connected app may use, and switch any of them off at any time."
       />
     </FormSection>
@@ -1195,7 +1208,20 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="AI connection controls"
+        label="AI connections controls"
+        status={
+          <>
+            <Icon glyph={faKey} className="size-4 shrink-0" aria-hidden />
+            {/* The one fact this pane turns on, and the bar had nothing on its
+                left. Without an AI account NOTHING on this screen writes
+                anything, and the sentence saying so was 200px down the page. */}
+            <Text as="span" className="min-w-0 truncate text-sm">
+              {data?.credential ? 'Your AI account is connected' : 'No AI account connected yet'}
+            </Text>
+          </>
+        }
+        statusReady={!isPending}
+        statusFailed={isError}
         refresh={
           <RefreshButton isFetching={isFetching} updatedAt={dataUpdatedAt} onRefresh={refreshAll} />
         }

@@ -3,7 +3,7 @@ import { FaqSection, Section } from '@piggles/ui';
 import Link from 'next/link';
 import { Table } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { accountUrl, PRODUCT } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD, APP_COUNT_WORD_CAP, PRODUCT } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { PriceFigure } from '@/components/marketing/hero/price-figure';
@@ -46,11 +46,11 @@ import { CloseBand } from '@/components/marketing/close-band';
 
 export const metadata: Metadata = {
   title: 'Pricing',
-  description: `Piggles is ${PRICE_LABEL} a month with all fifteen apps included. No tiers, no per-feature unlocks. Your bill changes when your business needs more room, not when you switch an app on.`,
+  description: `Piggles is ${PRICE_LABEL} a month with all ${APP_COUNT_WORD} apps included. No tiers, no per-feature unlocks. Your bill changes when your business needs more room, not when you switch an app on.`,
 };
 
 const INCLUDED = [
-  { what: 'All fifteen apps', amount: 'Every one', note: 'No app is an upgrade' },
+  { what: `All ${APP_COUNT_WORD} apps`, amount: 'Every one', note: 'No app is an upgrade' },
   { what: 'Your business', amount: '1', note: 'A second business is its own subscription' },
   { what: 'Locations', amount: '1', note: 'Shops, units, vans: add more any time' },
   { what: 'Websites', amount: '1', note: 'On your own domain, certificate included' },
@@ -69,7 +69,7 @@ const INCLUDED = [
 const NEVER = [
   {
     title: 'No app costs extra',
-    body: 'Bookings is not a tier. Invoices is not an add-on. If it is one of the fifteen, it is in the price.',
+    body: `Bookings is not a tier. Invoices is not an add-on. If it is one of the ${APP_COUNT_WORD}, it is in the price.`,
   },
   {
     title: 'No plan to compare',
@@ -104,7 +104,7 @@ const FAQ = [
   },
   {
     q: 'Can I take my data with me if I leave?',
-    a: 'All of it, whenever you want, in formats other software can actually read: customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.',
+    a: 'Whenever you want, as spreadsheets other software can actually read: customers, products, stock, orders, invoices, bookings and your articles, each from the list it lives on. You do not have to ask, and you do not have to be leaving.',
   },
   {
     q: 'Is there a discount for paying yearly?',
@@ -116,7 +116,7 @@ export default function PricingPage() {
   return (
     <>
       <PageHero
-        heading={`${PRICE_LABEL} a month. All fifteen apps. No upgrade buttons.`}
+        heading={`${PRICE_LABEL} a month. All ${APP_COUNT_WORD} apps. No upgrade buttons.`}
         lede="You are not charged for what the software is allowed to do. You are charged when your business needs more room: more people, more storage, more email going out."
         figure={<PriceFigure />}
         assurances={['Free for 14 days', 'No card needed', 'Cancel by not carrying on']}
@@ -132,7 +132,7 @@ export default function PricingPage() {
           Start free for 14 days
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
-          See the fifteen apps
+          See the {APP_COUNT_WORD} apps
         </Link>
       </PageHero>
 
@@ -152,8 +152,8 @@ export default function PricingPage() {
                 is ever added, this page is one of the places to update, which is
                 why /apps derives its own list rather than repeating one here. */}
           <p className="mt-4 text-lg">
-            Fifteen apps, and the two things that usually cost extra everywhere else (your own
-            domain and your own sending address) are in here too.
+            {APP_COUNT_WORD_CAP} apps, and the two things that usually cost extra everywhere else
+            (your own domain and your own sending address) are in here too.
           </p>
         </div>
 
@@ -204,7 +204,7 @@ export default function PricingPage() {
       <FaqSection heading="The questions everybody asks." items={FAQ} />
 
       <CloseBand
-        heading="Fourteen days, no card, all fifteen apps."
+        heading={`Fourteen days, no card, all ${APP_COUNT_WORD} apps.`}
         primary={{ label: `Get ${PRODUCT.name}`, href: accountUrl('signup', 'pricing-close') }}
         secondary={{
           label: 'Ask us something first',

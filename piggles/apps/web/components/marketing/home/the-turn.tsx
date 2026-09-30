@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Section } from '@piggles/ui';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { APP_BY_ID, type PigglesAppId } from '@piggles/config';
+import { APP_BY_ID, APP_COUNT_WORD, type PigglesAppId } from '@piggles/config';
 
 function AppName({ app }: { app: PigglesAppId }) {
   const def = APP_BY_ID[app]!;
@@ -114,7 +114,7 @@ export function TheTurn() {
               that restates its own section is the section arguing twice, and at
               32 characters it was the widest label on the page. */}
           <Link className={`${buttonClasses({ color: 'primary', size: 'lg' })} mt-8`} href="/apps">
-            See the fifteen
+            See the {APP_COUNT_WORD}
           </Link>
         </div>
 

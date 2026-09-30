@@ -57,7 +57,7 @@ export function HeroPanelBar({
           on top is the same hue against a paler version of itself, and the
           glyph all but disappears. The tint is the fill; the derived ink is what
           goes on it. */}
-      <span className="bg-module bg-soft ink-module grid size-7 shrink-0 place-items-center rounded-lg">
+      <span className="bg-module text-module-content grid size-7 shrink-0 place-items-center rounded-lg">
         <Icon glyph={appIcon(app)} aria-hidden className="size-4" />
       </span>
       <b className="truncate text-base font-bold">{title}</b>

@@ -162,6 +162,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             on={draft}
             canEdit={canEdit}
             defaultStallHours={current.defaultStallHours}
+            hasLandingPage={current.entryPageId !== null}
             error={
               update.isError
                 ? funnelErrorMessage(update.error, 'That change could not be saved.')

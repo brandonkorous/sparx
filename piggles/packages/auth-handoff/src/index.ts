@@ -195,6 +195,7 @@ export {
   audienceOrigin,
   handoffEntryUrl,
   internalPath,
+  returnPath,
   type HandoffAudience,
 } from './origins';
 

@@ -4,11 +4,11 @@
 // panel can be asked for. Prefixed, because an app id is a registry key and
 // these are not apps — `~` cannot appear in one, so the two can never collide.
 
-export const FAVOURITES_LIST = '~favourites';
+export const FAVORITES_LIST = '~favorites';
 export const RECENT_LIST = '~recent';
 
-export type ShortcutList = typeof FAVOURITES_LIST | typeof RECENT_LIST;
+export type ShortcutList = typeof FAVORITES_LIST | typeof RECENT_LIST;
 
 export function isShortcutList(id: string | null | undefined): id is ShortcutList {
-  return id === FAVOURITES_LIST || id === RECENT_LIST;
+  return id === FAVORITES_LIST || id === RECENT_LIST;
 }

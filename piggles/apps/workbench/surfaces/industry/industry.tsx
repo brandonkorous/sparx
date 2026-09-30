@@ -53,6 +53,7 @@ import {
   type IndustryStarter,
 } from './data';
 import { productCopy, productCopyWith } from '../../lib/product';
+import { industryDescription } from '../../lib/console/industry-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -65,6 +66,30 @@ function ModuleChip({ slug }: { slug: string }) {
       </Badge>
     </ModuleScope>
   );
+}
+
+/**
+ * A list of module slugs, reduced to ONE per app.
+ *
+ * An app routinely fronts several modules — Piggles' Sell is commerce + B2B +
+ * dropship — so a starter that sets up both `commerce` and `b2b` drew the chips
+ * **Sell · Sell**, which reads as a rendering fault rather than as two parts of
+ * one app. Deduplicated on the NAME, because the name is what is on screen and
+ * the slugs are genuinely different things.
+ */
+function oneChipPerApp(slugs: readonly string[]): string[] {
+  const seen = new Set<string>();
+  return slugs.filter((slug) => {
+    const name = moduleLabel(slug);
+    if (seen.has(name)) return false;
+    seen.add(name);
+    return true;
+  });
+}
+
+/** The same list, as the words themselves. */
+function appNames(slugs: readonly string[]): string[] {
+  return oneChipPerApp(slugs).map((slug) => moduleLabel(slug));
 }
 
 function StarterCard({
@@ -99,12 +124,12 @@ function StarterCard({
                 </Badge>
               ) : null}
             </div>
-            <Text>{starter.description}</Text>
+            <Text>{industryDescription(starter.slug, starter.description)}</Text>
           </div>
         </div>
         {starter.enabledModules.length > 0 ? (
           <div className="mt-auto flex flex-wrap gap-1.5">
-            {starter.enabledModules.map((slug) => (
+            {oneChipPerApp(starter.enabledModules).map((slug) => (
               <ModuleChip key={slug} slug={slug} />
             ))}
           </div>
@@ -137,15 +162,15 @@ export function IndustrySurface() {
   // Picking a different card but not yet applying is unsaved intent worth
   // guarding — closing the pane would drop the choice silently.
   const dirty = seeded && selected !== null && selected !== activeSlug;
-  useDirtySource(dirty, 'You picked an industry but have not applied it yet. Close anyway?');
+  useDirtySource(dirty, 'You picked one but have not applied it yet. Close anyway?');
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            title="Could not load the industry list"
-            description="This is a problem reaching the server. Your current industry is unaffected."
+            title="Could not load the list"
+            description="This is a problem reaching the server. What you picked before is unaffected."
             onRetry={() => {
               void refetch();
             }}
@@ -156,17 +181,18 @@ export function IndustrySurface() {
   }
 
   const chosen = data?.find((s) => s.slug === selected) ?? null;
+  const current = data?.find((s) => s.active) ?? null;
   const isReapply = chosen?.active ?? false;
 
   const offModules = chosen ? chosen.modules.filter((m) => !chosen.enabledModules.includes(m)) : [];
 
   const onApply = async () => {
     if (!chosen) return;
-    const enabledList = chosen.enabledModules.map(moduleLabel).join(', ');
+    const enabledList = appNames(chosen.enabledModules).join(', ');
     const ok = await confirm({
       title: isReapply
         ? `Update the starting setup for ${chosen.name}?`
-        : `Set your industry to ${chosen.name}?`,
+        : `Set your business up as ${chosen.name}?`,
       description: isReapply
         ? productCopyWith(
             'industry.confirm.reapply',
@@ -182,7 +208,7 @@ export function IndustrySurface() {
             }. It only fills empty spots. Nothing you have already made is changed or removed.`,
             { name: chosen.name, apps: enabledList ? ` (${enabledList})` : '' }
           ),
-      confirmLabel: isReapply ? 'Update setup' : 'Set my industry',
+      confirmLabel: isReapply ? 'Update setup' : 'Set it up',
       cancelLabel: 'Not now',
       color: 'primary',
     });
@@ -192,17 +218,17 @@ export function IndustrySurface() {
       onSuccess: (result) => {
         const added = result.installed.length;
         toast.add({
-          title: `Industry set to ${chosen.name}`,
+          title: `Set up as ${chosen.name}`,
           description:
             added > 0
               ? `Added ${String(added)} ${added === 1 ? 'piece' : 'pieces'} of starting setup. Nothing you made was changed.`
-              : 'Everything for this industry was already in place.',
+              : 'Everything for it was already in place.',
           type: 'success',
         });
       },
       onError: () => {
         toast.add({
-          title: 'Could not apply that industry',
+          title: 'Could not set that up',
           description: 'Nothing was changed. Try again in a moment.',
           type: 'error',
         });
@@ -213,7 +239,20 @@ export function IndustrySurface() {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Industry actions"
+        label="Controls for what kind of business"
+        status={
+          <>
+            <Icon glyph={faCompass} className="size-4 shrink-0" aria-hidden />
+            {/* The one fact this pane is about, and the bar had nothing on its
+                left at all. A person who opened it to check what they picked had
+                to read nine cards looking for the badge. */}
+            <Text as="span" className="min-w-0 truncate text-sm">
+              {current ? current.name : 'No line of work chosen yet'}
+            </Text>
+          </>
+        }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -226,7 +265,7 @@ export function IndustrySurface() {
             }}
           >
             <Icon glyph={faCheck} className="size-4" aria-hidden />
-            {isReapply ? 'Update setup' : 'Set my industry'}
+            {isReapply ? 'Update setup' : 'Set it up'}
           </Button>
         }
         refresh={
@@ -254,7 +293,7 @@ export function IndustrySurface() {
               <Text>
                 {productCopy(
                   'industry.intro',
-                  'Telling Piggles your industry changes the wording you see and gives you a starting setup built for that trade: example categories, sensible defaults, and a bit of content to build on. You can change it later, and picking one never removes anything you have already made.'
+                  'Telling Piggles what kind of business you run changes the wording you see and gives you a starting setup built for that trade: example categories, sensible defaults, and a bit of content to build on. You can change it later, and picking one never removes anything you have already made.'
                 )}
               </Text>
             </div>
@@ -287,7 +326,7 @@ export function IndustrySurface() {
                   <FormSection
                     title={
                       isReapply
-                        ? `${chosen.name} is your current industry`
+                        ? `${chosen.name} is what you picked`
                         : `What happens when you apply ${chosen.name}`
                     }
                   >
@@ -302,7 +341,7 @@ export function IndustrySurface() {
                               )}. Everything it adds is new. Your own work is left exactly as it is.`,
                             {
                               trade: chosen.name.toLowerCase(),
-                              apps: chosen.enabledModules.map(moduleLabel).join(', '),
+                              apps: appNames(chosen.enabledModules).join(', '),
                             }
                           )
                         : productCopy(
@@ -312,9 +351,8 @@ export function IndustrySurface() {
                     </Text>
                     {offModules.length > 0 ? (
                       <Text>
-                        It also has a setup ready for {offModules.map(moduleLabel).join(', ')}, that
-                        part waits quietly until you switch{' '}
-                        {offModules.length === 1 ? 'it' : 'them'} on.
+                        It also has a setup ready for {appNames(offModules).join(', ')}, that part
+                        waits quietly until you switch {offModules.length === 1 ? 'it' : 'them'} on.
                       </Text>
                     ) : null}
                   </FormSection>
@@ -335,7 +373,7 @@ export function IndustrySurface() {
       {/* Sits on the pane, not in a docked strip. */}
       <p className="shrink-0 px-1 text-sm">
         <Icon glyph={faCompass} className="mr-1 inline size-4 align-[-3px]" aria-hidden />
-        Not sure? Pick the closest. You can change your industry whenever you like.
+        Not sure? Pick the closest. You can change it whenever you like.
       </p>
     </div>
   );

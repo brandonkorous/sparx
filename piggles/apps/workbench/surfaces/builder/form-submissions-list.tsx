@@ -13,7 +13,7 @@
 // while an operator reads, and offset paging would re-show rows already passed
 // (see form-submissions-data.ts, and the activity feed for the same reasoning).
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
@@ -32,11 +32,12 @@ import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useSubmissions, type FormSubmission } from './form-submissions-data';
 import { formLabel, formNamer } from './form-submissions-words';
 import {
   emptyAdvice,
+  parseStatusFilter,
   previewOf,
   STATUS_FILTERS,
   type StatusFilterValue,
@@ -51,7 +52,11 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>('all');
+  // Seeded from the address so "2 people wrote to you" opens on those two.
+  // Read ONCE: after the first render the chips own it.
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(() =>
+    parseStatusFilter(ctx.params.status)
+  );
   const [formNodeId, setFormNodeId] = useState('');
   const [pageSize, setPageSize] = useState<PageSize>(50);
   // One cursor per step back through the inbox. Empty = the newest window.
@@ -62,6 +67,13 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const activeStatus =
     STATUS_FILTERS.find((entry) => entry.value === statusFilter) ?? STATUS_FILTERS[0];
   const cursor = cursors[cursors.length - 1];
+
+  // Params make a distinct pane, so a narrowed one opens as a SECOND tab beside
+  // any inbox already open. It says which it is, following the chips.
+  useEffect(() => {
+    const base = surfaceTitle('builder.forms') ?? 'Form submissions';
+    ctx.setTitle(statusFilter === 'all' ? base : `${base} · ${activeStatus.label.toLowerCase()}`);
+  }, [ctx, statusFilter, activeStatus.label]);
 
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useSubmissions({
     ...(activeStatus.status ? { status: activeStatus.status } : {}),
@@ -85,6 +97,10 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.submissions ?? [];
   const forms = data?.forms ?? [];
+  // The same test as `manySites`, applied to the column next to it. Measured
+  // 2026-09-28: every tenant on the platform with anything in this inbox has
+  // exactly one form, so naming it per row was a word repeated down the page.
+  const manyForms = forms.length > 1;
   // A full window means there is (probably) another one behind it — the same
   // "the window came back full" signal the activity feed walks on.
   const hasMore = rows.length === pageSize;
@@ -178,7 +194,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               narrowed
                 ? emptyAdvice(statusFilter === 'all' ? null : activeStatus.label, activeFormName)
-                : 'When someone fills in a form on your site (a contact request, an enquiry, a sign-up), it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
+                : 'When someone fills in a form on your site (a contact request, an inquiry, a sign-up), it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
             }
           />
         ) : (
@@ -187,6 +203,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             nameForm={nameForm}
             siteName={siteName}
             manySites={manySites}
+            manyForms={manyForms}
             previewOf={previewOf}
             onOpen={open}
           />

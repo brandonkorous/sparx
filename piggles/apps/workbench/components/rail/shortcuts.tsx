@@ -1,14 +1,14 @@
 'use client';
 
-// Yours, above the product: the screens this person favourited, and the ones
+// Yours, above the product: the screens this person favorited, and the ones
 // they were just in.
 //
 // EACH IS ONE ROW, at every rail width. Both lists open into the app panel —
 // the subrail — exactly as an app does, and for the same reason: the rail is the
 // one element a person looks at every day, so it holds the NAMES of things and
-// nothing else. Five favourites plus five recents plus fifteen apps is
-// twenty-five rows in a column that has to stay readable at a glance; two rows
-// plus fifteen apps is a rail you can still scan.
+// nothing else. Five favorites plus five recents plus every app is
+// well past twenty rows in a column that has to stay readable at a glance; two
+// rows plus the apps is a rail you can still scan.
 //
 // This started as the collapsed-only treatment — five nameless icons above
 // fifteen more is where people lose the rail — and the expanded rail had the
@@ -18,7 +18,7 @@
 // per-row remove here. Managing either list happens where the list is opened up
 // (../panel/shortcut-panel.tsx), which is also where Clear lives.
 //
-// Favourites is ALWAYS here, empty or not — a row that only exists once you have
+// Favorites is ALWAYS here, empty or not — a row that only exists once you have
 // used a feature cannot teach you the feature; opened, it says how to fill it.
 // Recent is not: a history nobody has made yet is a row that names nothing.
 
@@ -34,7 +34,7 @@ interface ShortcutRowProps {
   onBrowseList: () => void;
 }
 
-export function Favourites({ browsing, expanded, onBrowseList }: ShortcutRowProps) {
+export function Favorites({ browsing, expanded, onBrowseList }: ShortcutRowProps) {
   return (
     <ListRow
       label="Favorites"

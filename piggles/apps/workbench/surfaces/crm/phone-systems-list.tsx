@@ -12,9 +12,11 @@
 // the list down the page on every visit for the sake of an action taken once,
 // and duplicated the empty state directly underneath itself.
 
-import { Badge, Button, Card, EmptyState, useToast } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, Text, useToast } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { faPhone, faPhoneVolume, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
@@ -39,6 +41,10 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.shiftKey) return 'beside';
   return 'tab';
 }
+
+/** Registry module for this pane, so the brand draws Customers' own picture
+ *  rather than the generic one. */
+const MODULE = 'crm';
 
 export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
@@ -90,7 +96,21 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Phone system controls"
+        label="Phone systems controls"
+        status={
+          <>
+            <Icon glyph={faPhoneVolume} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="text-sm">
+              {rows.length === 0
+                ? 'No phone system connected yet'
+                : rows.length === 1
+                  ? '1 phone system connected'
+                  : `${String(rows.length)} phone systems connected`}
+            </Text>
+          </>
+        }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -129,26 +149,19 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
               description="Connecting a phone system means handing over an account token, so it is kept to the people who run the account. Ask one of them to connect it: once it is done, everyone on your team gets the Call button."
             />
           ) : isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<Icon glyph={faPhoneVolume} className="size-6" aria-hidden />}
               title="Could not load your phone systems"
-              description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Anything you have already connected is unaffected."
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <PaneWaiting />
           ) : rows.length === 0 ? (
-            <EmptyState
+            <PaneEmpty
+              module={MODULE}
               icon={<Icon glyph={faPhoneVolume} className="size-6" aria-hidden />}
               title="No phone system connected yet"
               description={productCopy(

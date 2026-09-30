@@ -1,6 +1,7 @@
 import { Badge } from '@wizeworks/silicaui-react';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { HeroPanel, HeroRow, HeroRows } from './panel';
+import { APP_COUNT_WORD } from '@piggles/config';
 
 // /pricing — the bill.
 //
@@ -26,7 +27,7 @@ import { HeroPanel, HeroRow, HeroRows } from './panel';
 // receipt answers the objection rather than listing the product.
 
 const LINES: { what: string; note: string }[] = [
-  { what: 'All fifteen apps', note: 'No app is an upgrade' },
+  { what: `All ${APP_COUNT_WORD} apps`, note: 'No app is an upgrade' },
   { what: 'Your own domain', note: 'Certificate included' },
   { what: 'Your own sending address', note: 'Email from your business, not ours' },
   { what: 'Three people on your team', note: 'Each with their own sign-in' },

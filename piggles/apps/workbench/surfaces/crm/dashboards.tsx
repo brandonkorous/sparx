@@ -274,9 +274,46 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   /* ── Render ─────────────────────────────────────────────────────────────── */
 
+  /**
+   * THE BAR STAYS, WHATEVER STATE THE PANE IS IN.
+   *
+   * Three of this pane's four states returned without one, so the screen a
+   * person meets FIRST — before there is any board — had no name on it, no
+   * refresh and none of the chrome every other pane in this console keeps in
+   * every state. `tasks-list.tsx` and `reports-library.tsx` each have exactly
+   * one `PANE_SHELL` for that reason: the toolbar is the pane, and the states
+   * happen inside it.
+   * [[feedback_copy_the_house_layout_before_building]]
+   *
+   * The board picker and "Add a report" both need a board, so until there is
+   * one the bar carries what there IS: a way to make the first board, and a
+   * refresh.
+   */
+  const boardlessToolbar = (
+    <PaneToolbar
+      label="Customer dashboards controls"
+      primary={
+        <Button color="module" onClick={startNewBoard}>
+          <Icon glyph={faPlus} className="size-4" aria-hidden /> Make a dashboard
+        </Button>
+      }
+      controls={
+        <RefreshButton
+          isFetching={isFetching}
+          updatedAt={boards ? dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void landing.refetch();
+            void refetch();
+          }}
+        />
+      }
+    />
+  );
+
   if (landing.isPending) {
     return (
       <div className={PANE_SHELL}>
+        {boardlessToolbar}
         <div className="skeleton m-6 h-64" />
       </div>
     );
@@ -407,6 +444,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
   if (landing.isError && !landing.data && !activeId) {
     return (
       <div className={PANE_SHELL}>
+        {boardlessToolbar}
         <Card className="min-h-0 flex-1 overflow-y-auto">
           <PaneLoadError
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
@@ -425,6 +463,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
   if (!landing.data && !activeId) {
     return (
       <div className={PANE_SHELL}>
+        {boardlessToolbar}
         {/* The card is the pane's content region — the same one a board of report
             cards fills. */}
         <Card className="min-h-0 flex-1 overflow-y-auto">
@@ -451,7 +490,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Dashboard controls"
+        label="Customer dashboards controls"
         status={
           board?.description ? (
             <Text className="hidden min-w-0 truncate md:block">{board.description}</Text>

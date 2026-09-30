@@ -73,6 +73,7 @@ import {
   weekRange,
 } from './format';
 import { NOT_A_DATE, dayTimeLocal } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -113,6 +114,18 @@ interface ShiftDialogState {
   start: string;
   end: string;
   label: string;
+}
+
+/** The week this pane is showing, in one short phrase. Spelled once and used
+ *  both on the bar and in the week picker, so the two cannot disagree. */
+function weekLabel(from: string, to: string): string {
+  const day = (iso: string) =>
+    new Date(`${iso}T00:00:00.000Z`).toLocaleDateString(undefined, {
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'UTC',
+    });
+  return `${day(from)} to ${day(to)}`;
 }
 
 export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -280,6 +293,17 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Schedule controls"
+        status={
+          <>
+            <Icon glyph={faCalendarDays} className="size-4 shrink-0" aria-hidden />
+            {/* WHICH week. The week picker lives in `controls`, which folds into
+                the overflow on a narrow pane, and the sentence under it says
+                "this week" — so at that width nothing on screen said which. */}
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {weekLabel(range.from, range.to)}
+            </Text>
+          </>
+        }
         primary={
           drafts.length > 0 ? (
             <Button
@@ -309,17 +333,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
               </Button>
               <Text as="span" className="min-w-40 text-center text-sm font-medium">
-                {new Date(`${range.from}T00:00:00.000Z`).toLocaleDateString(undefined, {
-                  day: 'numeric',
-                  month: 'short',
-                  timeZone: 'UTC',
-                })}
-                {' – '}
-                {new Date(`${range.to}T00:00:00.000Z`).toLocaleDateString(undefined, {
-                  day: 'numeric',
-                  month: 'short',
-                  timeZone: 'UTC',
-                })}
+                {weekLabel(range.from, range.to)}
               </Text>
               <Button
                 size="sm"
@@ -516,7 +530,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
           <DialogTitle>{editing?.id ? 'Change this shift' : 'Add a shift'}</DialogTitle>
 
           {editing ? (
-            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
               <Field>
                 <FieldLabel>Who</FieldLabel>
                 <FieldControl
@@ -541,11 +555,10 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Day</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={editing.day}
-                      onChange={(event) => {
-                        setEditing({ ...editing, day: event.target.value });
+                      onValueChange={(value) => {
+                        setEditing({ ...editing, day: value });
                       }}
                     />
                   }

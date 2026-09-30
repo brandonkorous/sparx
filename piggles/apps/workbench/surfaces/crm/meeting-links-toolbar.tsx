@@ -43,7 +43,7 @@ export function MeetingLinksToolbar({
           disabled={noServices}
           title={
             noServices
-              ? 'Set up something bookable under Scheduling first'
+              ? 'Set up something bookable under Bookings first'
               : 'Make a new booking link'
           }
           onClick={onNew}

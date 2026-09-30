@@ -80,7 +80,7 @@ const CLAUSES: Clause[] = [
     heading: '3. What we will not do with it',
     paras: [
       'We do not sell it. We do not share it with data brokers or advertisers. There is no arrangement under which it leaves us for money.',
-      'We do not train AI on it, not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, so it goes where you agreed and nowhere else.',
+      'We do not train AI on it, not a model of ours, not a shared assistant, not anonymized, not aggregated. Any AI feature runs on a key you connect yourself, so it goes where you agreed and nowhere else.',
       'We do not use it to build anything, and we do not look at it except where you ask us to help with a support request, or where we have to in order to keep the service running or to comply with the law.',
     ],
   },
@@ -112,14 +112,14 @@ const CLAUSES: Clause[] = [
     heading: '7. The other companies involved',
     paras: [
       'Running Piggles means some information reaches other companies: the people who host the servers, send the email, take the payments, and whatever you choose to connect yourself. Every one of them is named on the privacy page, in two groups: the ones always involved, and the ones that exist only because you switched them on.',
-      'You authorise the ones in the first group by agreeing to this addendum. The second group you authorise by connecting them, and you can disconnect any of them at any time.',
+      'You authorize the ones in the first group by agreeing to this addendum. The second group you authorize by connecting them, and you can disconnect any of them at any time.',
       'If we add or change a company in the first group, we will tell you before it starts and you have the right to object. Each one is bound by terms at least as protective as this addendum, and we stay responsible to you for what they do with your information.',
     ],
   },
   {
     heading: '8. Getting it back, and getting rid of it',
     paras: [
-      'You can export everything, in formats other software can actually read, whenever you want. You do not have to ask, and you do not have to be leaving.',
+      'You can export your customers, products, stock, orders, invoices, bookings and articles whenever you want, as spreadsheets other software can actually read. You do not have to ask, and you do not have to be leaving.',
       'When your subscription ends we keep your information for a short window so an accidental cancellation or a late change of mind is recoverable, and then we delete it. If you want it gone sooner, say so and we will do it.',
       'Backups age out on their own cycle rather than being edited, so a deleted record can persist in a backup for a short time after it disappears from the software. It is not restored to the live service, and it goes when that backup does.',
     ],

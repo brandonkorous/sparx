@@ -4,7 +4,7 @@
 // actually being browsed, and so the shell stays presentation-only.
 
 import { useClearRecents, useToggleFavorite } from '@/lib/api/shell-data';
-import { FAVOURITES_LIST, type ShortcutList } from '@/lib/console/shortcut-lists';
+import { FAVORITES_LIST, type ShortcutList } from '@/lib/console/shortcut-lists';
 import { useShortcutSurfaces } from '@/lib/console/use-shortcut-surfaces';
 import { useWorkbench } from '@/lib/workbench/context';
 import { ShortcutPanel } from './shortcut-panel';
@@ -21,14 +21,14 @@ export function ShortcutPanelHost({
   onDismiss: () => void;
 }) {
   const { controller } = useWorkbench();
-  const { favourites, recents } = useShortcutSurfaces();
+  const { favorites, recents } = useShortcutSurfaces();
   const toggleFavorite = useToggleFavorite();
   const clearRecents = useClearRecents();
 
   return (
     <ShortcutPanel
       list={list}
-      surfaces={list === FAVOURITES_LIST ? favourites : recents}
+      surfaces={list === FAVORITES_LIST ? favorites : recents}
       clearing={clearRecents.isPending}
       pinned={pinned}
       onTogglePin={onTogglePin}

@@ -23,6 +23,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { fieldWord } from './report-field-words';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -152,6 +153,20 @@ export const MEASURE_LABEL: Record<MeasureFn, string> = {
   max: 'The highest',
 };
 
+/**
+ * The bucket as a bare noun, for a SENTENCE rather than a picker option.
+ *
+ * `BUCKET_LABEL` below reads "By month", which is right on a control and wrong
+ * inside "broken down by …". Two shapes of the same fact, both needed.
+ */
+export const BUCKET_NOUN: Record<DateBucket, string> = {
+  day: 'day',
+  week: 'week',
+  month: 'month',
+  quarter: 'quarter',
+  year: 'year',
+};
+
 export const BUCKET_LABEL: Record<DateBucket, string> = {
   day: 'By day',
   week: 'By week',
@@ -276,12 +291,32 @@ export function useReport(id: string) {
   });
 }
 
-/** What can be reported on. The compiler's own allowlist, so the builder offers
- *  exactly what will run — a person cannot assemble a definition that fails. */
+/**
+ * What can be reported on. The compiler's own allowlist, so the builder offers
+ * exactly what will run — a person cannot assemble a definition that fails.
+ *
+ * THE WORDS ARE SWAPPED HERE, at the one point the catalog enters the console,
+ * rather than at each of the four places that draw a field name. The API writes
+ * these for the other console's reader: "Stage", "Lead status", "Probability",
+ * "Pipeline". `report-field-words.ts` says what this console calls each of
+ * them, and a field it has no word for keeps the API's. The `path` is never
+ * touched — it is the identity the compiler runs on.
+ */
 export function useReportFields() {
   return useQuery({
     queryKey: reportBuilderKeys.fields,
-    queryFn: () => api.get<{ objects: ReportableObject[] }>('/v1/crm/reports/fields'),
+    queryFn: async () => {
+      const data = await api.get<{ objects: ReportableObject[] }>('/v1/crm/reports/fields');
+      return {
+        objects: data.objects.map((object) => ({
+          ...object,
+          fields: object.fields.map((field) => ({
+            ...field,
+            label: fieldWord(object.objectKey, field.path, field.label),
+          })),
+        })),
+      };
+    },
     staleTime: 30 * 60_000,
   });
 }

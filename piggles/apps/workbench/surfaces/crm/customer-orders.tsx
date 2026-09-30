@@ -27,6 +27,7 @@ import {
   useOrders,
   type Order,
 } from '../commerce/data';
+import { FILTERS } from '../commerce/orders-list-filters';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -35,13 +36,26 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
+// A THIRD COPY OF THE ORDERS FILTER LIVED HERE, AND IT HAD DRIFTED FURTHEST.
+//
+// `orders-list-filters.ts` exists because the shop's Orders and Wholesale
+// orders kept two hand-copied lists that disagreed. This pane kept a third,
+// built straight out of the stored values, and it disagreed with the BADGES on
+// its own rows: the filter said Placed / Fulfilled / Delivered while the table
+// beside it said To send / On the way / Collected. Six rows apart, two
+// vocabularies for one fact.
+//
+// "Fulfilled" is the exact word `shippingState` was written to keep off the
+// screen — its own header says it "reads as finished to everyone who has not
+// worked in commerce, when it means the opposite". It was the only rendered
+// "Fulfilled" left in this console.
+//
+// The shared list also refuses to name a delivery method, because one stored
+// status covers both sending and collecting, and it leaves "Refunded" out for
+// a stated reason. This copy did neither.
 const STATUS_ITEMS: Record<string, string> = {
   all: 'All orders',
-  placed: 'Placed',
-  fulfilled: 'Fulfilled',
-  delivered: 'Delivered',
-  cancelled: 'Canceled',
-  refunded: 'Refunded',
+  ...Object.fromEntries(FILTERS.filter((f) => f.status).map((f) => [f.status, f.label])),
 };
 
 export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -71,7 +85,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
     <ModuleScope module="commerce" className="h-full">
       <div className={PANE_SHELL}>
         <PaneToolbar
-          label="Customer order list controls"
+          label="Customer orders controls"
           search={
             <div className="max-w-xs min-w-0 flex-1">
               <SearchInput

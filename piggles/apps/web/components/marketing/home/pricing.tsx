@@ -1,16 +1,16 @@
 import { Section } from '@piggles/ui';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { accountUrl } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 
 // ── 6 · PRICE ────────────────────────────────────────────────────────────────
 const INCLUDED = [
-  'All fifteen apps, from the first day',
+  `All ${APP_COUNT_WORD} apps, from the first day`,
   'Your website, and a Piggles address for it',
   'Three people on your team',
   'Your own customer records, products and orders',
-  'Everything exportable, always',
+  'Your records exportable, always',
 ];
 
 /** A tick. Inline rather than an icon import so it inherits `currentColor` and

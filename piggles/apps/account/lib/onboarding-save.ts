@@ -92,7 +92,53 @@ function mergeSettings(raw: unknown, does: PigglesGroup[]): Prisma.InputJsonObje
       ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
       // The RAW answer, kept because the WizeWorks board segments on it.
       railGroups: does,
-      onboardedAt: new Date().toISOString(),
     },
   };
+}
+
+/**
+ * Mark the setup finished. Called by the action AFTER furnishing has returned,
+ * never in the transaction above, and the distinction is the whole point.
+ *
+ * `onboardedAt` used to be written here, beside the rail groups — so it recorded
+ * that somebody PRESSED THE BUTTON, not that their business was ready. Naming a
+ * completion that early is how a marker ends up meaning the wrong thing to
+ * whoever reads it next: furnishing is a separate process, it is the half that
+ * switches the modules on, and when it fails the action says so and the person
+ * is still mid-setup. A marker set before that is a claim the code cannot back.
+ *
+ * It is also now LOAD-BEARING, which is the other half of the fix. Nothing read
+ * it. `/onboarding` had no completion check of any kind, so a business that
+ * finished a month ago could open the setup form again, prefilled with its own
+ * live name and web address, over a button that offers to set it all up. See
+ * app/onboarding/page.tsx. [[feedback_fetched_but_never_rendered]]
+ *
+ * Best-effort on purpose: the business is already built and usable by the time
+ * this runs, and failing the signup over a bookkeeping field would throw away
+ * the thing that just succeeded. A miss costs the guard, not the account.
+ */
+export async function markOnboardingFinished(tenantId: string): Promise<void> {
+  await withTenant({ tenantId }, async (tx) => {
+    const current = await tx.tenant.findUniqueOrThrow({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const settings =
+      current.settings && typeof current.settings === 'object' && !Array.isArray(current.settings)
+        ? (current.settings as Record<string, unknown>)
+        : {};
+
+    await tx.tenant.update({
+      where: { id: tenantId },
+      data: {
+        settings: {
+          ...settings,
+          piggles: {
+            ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
+            onboardedAt: new Date().toISOString(),
+          },
+        },
+      },
+    });
+  });
 }

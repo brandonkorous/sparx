@@ -160,7 +160,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Do-not-email list controls"
+        label="Do not email controls"
         search={
           /* The width sits on a WRAPPER: SearchInput forwards className to its inner
                       <input>, so a sizing class aimed at the control never reaches the

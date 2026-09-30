@@ -1,4 +1,5 @@
 import type { AppMarketing } from './types';
+import { AUTOMATIONS_CHAPTERS } from './chapters/automations';
 
 export const AUTOMATIONS: AppMarketing = {
   heading: 'The jobs that should just happen, happening.',
@@ -22,13 +23,14 @@ export const AUTOMATIONS: AppMarketing = {
       body: 'Every run is listed with what it acted on and what it changed. An automation you cannot inspect is one you will not trust.',
     },
     {
-      title: 'Test before it is loose',
-      body: 'Run one against a real record and see the outcome before it is switched on for everybody.',
+      title: 'Edit without breaking it',
+      body: 'Changes wait as a draft until you publish them. The running version keeps going, and every earlier version is kept to go back to.',
     },
     {
       title: 'Off is one click',
       body: 'Pause anything immediately, without deleting it and rebuilding it later.',
     },
   ],
+  chapters: AUTOMATIONS_CHAPTERS,
   worksWith: ['customers', 'messages', 'stock'],
 };

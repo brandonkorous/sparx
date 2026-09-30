@@ -164,7 +164,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Shared barcode controls"
+        label="Shared barcodes controls"
         status={
           <Text className="text-sm">
             {rows.length > 0
@@ -172,6 +172,8 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
               : 'Nothing shared'}
           </Text>
         }
+        statusReady={!isLoading}
+        statusFailed={isError}
         refresh={
           <RefreshButton
             isFetching={isFetching}

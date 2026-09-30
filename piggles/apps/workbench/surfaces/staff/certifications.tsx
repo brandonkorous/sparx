@@ -74,7 +74,21 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Certification controls"
+        label="Tickets and licenses controls"
+        status={
+          <>
+            <Icon glyph={faShieldCheck} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {rows.length === 0
+                ? 'Nothing recorded yet'
+                : rows.length === 1
+                  ? '1 to watch'
+                  : `${String(rows.length)} to watch`}
+            </Text>
+          </>
+        }
+        statusReady={!certs.isPending}
+        statusFailed={certs.isError}
         filters={[
           {
             label: 'How far ahead',

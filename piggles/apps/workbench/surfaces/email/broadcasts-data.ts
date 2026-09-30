@@ -114,7 +114,9 @@ export interface DesignedEmail {
  *  order has shipped" and reads `{{order.number}}`, which no audience has. The
  *  picker offered all forty-five, so "Payment failed" sat two rows from the
  *  newsletter, and choosing it would have told every subscriber their payment
- *  had failed. Only emails the owner wrote herself belong here. */
+ *  had failed. Only emails the owner wrote herself belong here. The server
+ *  refuses a keyed email by the same rule (`assertBroadcastableEmail` in
+ *  broadcast-service.ts), so this filter and a send can never disagree. */
 export function broadcastableEmails(emails: DesignedEmail[] | undefined): DesignedEmail[] {
   return (emails ?? []).filter((email) => email.key === null);
 }

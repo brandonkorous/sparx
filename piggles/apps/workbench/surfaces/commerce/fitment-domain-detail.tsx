@@ -361,7 +361,7 @@ function DomainEditor({
           <>
             <Icon glyph={HeaderIcon} className="size-4 shrink-0" aria-hidden />
             {!isNew && domain ? (
-              <Badge color="neutral" variant="soft" size="sm">
+              <Badge variant="soft" size="sm">
                 {rootCountLabel(domain)}
               </Badge>
             ) : null}
@@ -421,7 +421,7 @@ function DomainEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  What your team calls this list: “Vehicles”, “Phone models”, “Machines”.
+                  What your team calls this list: “Clothing sizes”, “Vehicles”, “Printer models”.
                 </FieldDescription>
               )}
             </Field>
@@ -437,7 +437,11 @@ function DomainEditor({
                       key={choice.key}
                       type="button"
                       size="sm"
-                      color={selected ? 'module' : 'neutral'}
+                      // Picked wears the app's hue; the rest name no color at all.
+                      // A bare outline button already resolves to readable ink, and
+                      // sixteen tiles calling themselves `neutral` is the thing RULE
+                      // #4 asks about (issue 800).
+                      {...(selected ? { color: 'module' as const } : {})}
                       variant={selected ? 'soft' : 'outline'}
                       aria-pressed={selected}
                       className="h-auto flex-col gap-1 py-2"
@@ -446,7 +450,13 @@ function DomainEditor({
                       }}
                     >
                       <Icon glyph={choice.Icon} className="size-5" aria-hidden />
-                      <span className="text-xs font-normal">{choice.label}</span>
+                      {/* A button does not wrap its own text, and this grid is three
+                          columns wide in a docked pane: at 360px a tile is 93px and
+                          "Boat or powersport" wants 109, so it ran out of the tile,
+                          across its neighbour and off the card (issue 800). */}
+                      <span className="text-xs leading-tight font-normal whitespace-normal">
+                        {choice.label}
+                      </span>
                     </Button>
                   );
                 })}
@@ -474,7 +484,7 @@ function DomainEditor({
 
           <FormSection
             title="How it narrows down"
-            description="A shopper picks their way down these, step by step, for vehicles that is the make, then the model, then the engine. Add one level for each step, from broadest to most specific."
+            description="A shopper picks their way down these, step by step. Sizes need one step; a vehicle needs three, the make, then the model, then the engine. Add one level for each step, from broadest to most specific."
           >
             <div className="flex flex-col gap-2">
               {draft.levels.map((level, index) => (
@@ -526,8 +536,8 @@ function DomainEditor({
             <div>
               <Button
                 size="sm"
-                variant="outline"
-                color="neutral"
+                variant="soft"
+                color="module"
                 onClick={() => {
                   set('levels', [...draft.levels, { key: null, label: '', unit: '' }]);
                 }}
@@ -544,8 +554,8 @@ function DomainEditor({
           >
             {draft.ranges.length === 0 ? (
               <Text className="text-sm">
-                None yet. Most lists do not need any. Add one only if a product fits, say, a range
-                of model years.
+                None yet. Most lists do not need any. Add one only if a product fits a SPAN rather
+                than a choice: waists 28 to 34, model years 2011 to 2022.
               </Text>
             ) : (
               <div className="flex flex-col gap-2">
@@ -596,8 +606,8 @@ function DomainEditor({
             <div>
               <Button
                 size="sm"
-                variant="outline"
-                color="neutral"
+                variant="soft"
+                color="module"
                 onClick={() => {
                   set('ranges', [...draft.ranges, { key: null, label: '', unit: '' }]);
                 }}

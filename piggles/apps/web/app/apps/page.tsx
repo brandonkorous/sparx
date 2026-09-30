@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
-import { accountUrl, appsInGroup } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD, APP_COUNT_WORD_CAP, appsInGroup } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { AppsFigure } from '@/components/marketing/hero/apps-figure';
@@ -24,7 +24,7 @@ import { CloseBand } from '@/components/marketing/close-band';
 // selling — which is the same thing the rail will teach them on day one.
 
 export const metadata: Metadata = {
-  title: 'All fifteen apps',
+  title: `All ${APP_COUNT_WORD} apps`,
   description: `Everything Piggles includes, grouped the way a business actually works: your website, selling, people, money, and running the place. Every app is in the ${PRICE_LABEL} plan.`,
 };
 
@@ -32,8 +32,8 @@ export default function AppsIndexPage() {
   return (
     <>
       <PageHero
-        heading="Fifteen apps. One subscription. No upgrade buttons."
-        lede="Every app below is included from your first day, whether you use one of them or all fifteen. Turning one on changes your workspace, not your bill."
+        heading={`${APP_COUNT_WORD_CAP} apps. One subscription. No upgrade buttons.`}
+        lede={`Every app below is included from your first day, whether you use one of them or all ${APP_COUNT_WORD}. Turning one on changes your workspace, not your bill.`}
         figure={<AppsFigure />}
         assurances={['Free for 14 days', 'No card needed']}
       >
@@ -90,7 +90,7 @@ export default function AppsIndexPage() {
       ))}
 
       <CloseBand
-        heading={`All fifteen, from the first day, for ${PRICE_LABEL} a month.`}
+        heading={`All ${APP_COUNT_WORD}, from the first day, for ${PRICE_LABEL} a month.`}
         primary={{ label: 'Start free for 14 days', href: accountUrl('signup', 'apps-close') }}
         secondary={{ label: 'See what it costs', href: '/pricing' }}
       />

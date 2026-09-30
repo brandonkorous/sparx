@@ -103,6 +103,35 @@ export function PersonToolbar(props: PersonToolbarProps) {
   return (
     <PaneToolbar
       label="Person actions"
+      /* VALUES, not bespoke children. Written as buttons these two were a box
+         and a bin with no words on either, side by side, and a phone cannot
+         hover over them. Bringing somebody back is a good outcome and says so;
+         marking them as left carries no tone of its own, so it takes none.
+         scripts/check-toolbar-glyph.mjs holds the line. */
+      actions={
+        isNew
+          ? undefined
+          : [
+              {
+                label: archived ? 'Bring them back' : 'Mark as left',
+                icon: faBoxArchive,
+                ...(archived ? { tone: 'success' as const } : {}),
+                loading: writes.archive.isPending,
+                onClick: () => {
+                  void writes.onArchive(!archived);
+                },
+              },
+              {
+                label: 'Delete',
+                title: 'Delete this record',
+                icon: faTrashCan,
+                tone: 'danger' as const,
+                onClick: () => {
+                  void writes.onDelete();
+                },
+              },
+            ]
+      }
       refresh={
         isNew ? undefined : (
           <RefreshButton
@@ -148,38 +177,6 @@ export function PersonToolbar(props: PersonToolbarProps) {
         <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
         {isNew ? 'Add them' : 'Save'}
       </Button>
-
-      {isNew ? null : (
-        <>
-          {/* Bringing somebody back is a good outcome and says so; marking them
-              as left carries no tone of its own, so it takes none. */}
-          <Button
-            size="sm"
-            variant="ghost"
-            {...(archived ? { color: 'success' as const } : {})}
-            loading={writes.archive.isPending}
-            aria-label={archived ? 'Bring them back' : 'Mark as left'}
-            title={archived ? 'Bring them back' : 'Mark as left'}
-            onClick={() => {
-              void writes.onArchive(!archived);
-            }}
-          >
-            <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            color="danger"
-            aria-label="Delete this record"
-            title="Delete this record"
-            onClick={() => {
-              void writes.onDelete();
-            }}
-          >
-            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-          </Button>
-        </>
-      )}
     </PaneToolbar>
   );
 }

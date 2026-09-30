@@ -154,7 +154,7 @@ const GUIDES: ModuleGuide[] = [
     'cms',
     'CMS',
     'Give them a real content engine: pages and posts.',
-    `Switch on CMS and define the content types they need (posts, guides, FAQs).
+    `Switch on CMS and define the kinds of content they need (posts, guides, FAQs).
      Create a few starter entries so the layout has real content to show.
      Add a blog or index component to the site and link it in the navigation.
      Hand off the editor: it’s explicit-save, last-write-wins, like every editor.`
@@ -180,9 +180,9 @@ const GUIDES: ModuleGuide[] = [
   guide(
     'b2b',
     'B2B',
-    'Wholesale accounts, price lists and a buyer portal.',
+    'Wholesale customers, special prices and a buyer portal.',
     `Switch on B2B (Commerce comes with it) and create the wholesale accounts.
-     Set per-account price lists and payment terms.
+     Set per-account special prices and payment terms.
      Invite the buyers to the account portal.
      Test a wholesale order at account-specific pricing.`
   ),

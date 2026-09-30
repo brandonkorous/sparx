@@ -782,7 +782,7 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Calendar controls"
+        label="Controls for what is going out, and when"
         primary={
           canWrite ? (
             <Button

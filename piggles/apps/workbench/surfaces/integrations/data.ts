@@ -22,6 +22,8 @@
 
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { moduleLabel } from '../../lib/surfaces/nav';
+import type { WorkbenchModule } from '../../components/module-scope';
 
 /** Mirrors @wizeworks/integrations. `subscription_billing` and `identity` are absent
  *  because nothing implements either — see the note on IntegrationCategory there. */
@@ -60,6 +62,9 @@ export interface Integration {
   blurb: string;
   /** `sparx` for first-party; an approved contributor's slug for an uploaded one. */
   publisher: string;
+  /** Did WE publish this? A boolean rather than a name comparison, because
+   *  the name is the tenant's own brand by the time it arrives. */
+  firstParty: boolean;
   availability: IntegrationAvailability;
   unavailableReason?: string;
   recommended?: boolean;
@@ -119,20 +124,13 @@ export function connectionState(connection: ConnectionState): {
   }
 }
 
-/** The sentence under a category a tenant has not unlocked. Names the modules in the
- *  owner's words rather than echoing slugs. */
-const MODULE_LABEL: Record<string, string> = {
-  commerce: 'Selling',
-  invoicing: 'Invoicing',
-  b2b: 'Wholesale',
-  scheduling: 'Bookings',
-  social: 'Social posting',
-  dropship: 'Dropshipping',
-  ai: 'AI',
-};
-
 export function lockedReason(view: IntegrationCategoryView): string {
-  const names = view.unlockedBy.map((m) => MODULE_LABEL[m] ?? m);
+  // The names come from `lib/surfaces/nav.ts`, which resolves them through the
+  // brand's app registry. This file kept its own table saying "Selling", "AI"
+  // and "Social posting" for apps whose rail rows read Sell, Connections and
+  // Get Found — so the sentence told a person to turn on something they could
+  // not find. One of six such tables; see the note in nav.ts.
+  const names = view.unlockedBy.map((m) => moduleLabel(m as WorkbenchModule));
   if (names.length === 0) return 'This is not available on your plan yet.';
   const list =
     names.length === 1

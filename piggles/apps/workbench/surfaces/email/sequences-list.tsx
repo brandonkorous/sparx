@@ -73,25 +73,25 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Email sequences list controls"
+        label="Automatic emails controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search sequences"
-              placeholder="Search sequences…"
+              aria-label="Search automatic emails"
+              placeholder="Search automatic emails…"
               value={search}
               onValueChange={setSearch}
             />
           </div>
         }
         primaryAction={{
-          label: 'New sequence',
+          label: 'New series',
           icon: faPlus,
           onClick: (event) => {
             ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New sequence: hold Shift to open alongside, Alt for a new window',
+          title: 'New series: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <div className="w-40 shrink-0">
@@ -134,27 +134,27 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <PaneLoadError
             icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
-            title="Could not load your sequences"
-            description="Something went wrong reaching the server. Anyone already in a sequence is unaffected. Try again in a moment."
+            title="Could not load your automatic emails"
+            description="Something went wrong reaching the server. Anyone already partway through is unaffected. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
           />
         ) : isPending ? (
-          <PaneWaiting label="Loading sequences…" />
+          <PaneWaiting label="Loading your automatic emails…" />
         ) : rows.length === 0 ? (
           <ListEmptyState
             module={MODULE}
             filtered={filtering}
             noResults={{
               icon: <Icon glyph={faRoute} className="size-6" aria-hidden />,
-              title: 'No sequences match those filters',
+              title: 'Nothing matches those filters',
               description: 'Try a different search, or switch the status filter back to Any.',
             }}
             firstRun={{
-              title: 'No sequences yet',
+              title: 'No automatic emails yet',
               description:
-                'A sequence follows up with someone over time (a welcome today, a nudge in two days, an offer in a week) sending each email on its own schedule. Create your first to get started.',
+                'A series follows somebody up over time: a welcome today, a nudge in two days, an offer in a week, each one going out on its own. Create your first one and it runs without you.',
               actions: (
                 <Button
                   size="sm"
@@ -164,7 +164,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  New sequence
+                  New series
                 </Button>
               ),
             }}
@@ -232,7 +232,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      {rows.length > 0 ? <RowOpenHint what="a sequence to open it" /> : null}
+      {rows.length > 0 ? <RowOpenHint what="a series to open it" /> : null}
     </div>
   );
 }

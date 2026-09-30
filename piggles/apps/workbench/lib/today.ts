@@ -45,6 +45,33 @@ export function todayIso(now: Date = new Date()): string {
  */
 export const NOT_A_DATE = 'That is not a date. A year is four digits, like 2026.';
 
+/**
+ * What to tell someone whose date box is half filled in.
+ *
+ * A native date box is THREE cells, and it reports a value only when all three
+ * hold something. Type "03" and "31" and stop, and `value` is the empty string
+ * while the box on screen still shows what was typed — so a form reads "no date
+ * given", saves without one, and the person watches their own typing be
+ * ignored. The browser knows: `validity.badInput` is true. Nothing in either
+ * console was asking. [[feedback_the_empty_control_is_the_untested_one]]
+ *
+ * Measured 2026-09-19: 82 `<Input type="date">` call sites across the two
+ * consoles, 0 reading `badInput`. Issue 741.
+ */
+export const HALF_A_DAY = 'That date is not finished. Fill in the day, the month and the year.';
+
+/**
+ * What a date box is really holding, said in one sentence or not at all.
+ *
+ * `null` means the box is fine — empty, or a real day. `value` is what the
+ * control reports and `badInput` is what it refuses to put there, so the two
+ * together are the whole truth about the box and neither alone is.
+ */
+export function dayBoxProblem(value: string, badInput: boolean): string | null {
+  if (badInput) return HALF_A_DAY;
+  return badDayIn(value);
+}
+
 const atMidnightUtc = (day: string): string => `${day}T00:00:00.000Z`;
 
 /**

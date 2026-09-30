@@ -15,7 +15,12 @@
 import { Icon } from '@piggles/ui';
 import { Button, SidebarItem, Tooltip } from '@wizeworks/silicaui-react';
 import { faPlus } from '@fortawesome/pro-solid-svg-icons';
-import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '@/lib/surfaces/registry';
+import {
+  resolveCreateLabel,
+  resolveTitle,
+  type OpenTarget,
+  type SurfaceDefinition,
+} from '@/lib/surfaces/registry';
 import { surfaceWaiting, WaitingBadge } from '@/components/rail/waiting';
 import type { useAttention } from '@/lib/console/home-data';
 
@@ -74,6 +79,8 @@ export function NavRow({
   onKeyDown,
 }: NavRowProps) {
   const label = resolveTitle(surface, {});
+  // Through the brand, like the name above it. Both are copy somebody reads.
+  const createLabel = resolveCreateLabel(surface);
   const hint = focused
     ? `${label}: you are looking at this`
     : open
@@ -114,11 +121,11 @@ export function NavRow({
       </Tooltip>
 
       {surface.createSurface ? (
-        <Tooltip content={surface.createLabel ?? 'New'}>
+        <Tooltip content={createLabel ?? 'New'}>
           <Button
             size="xs"
             shape="square"
-            aria-label={surface.createLabel ?? `New ${label}`}
+            aria-label={createLabel ?? `New ${label}`}
             // Revealed on row hover or its own focus, never display:none — it
             // stays reachable by keyboard.
             className="absolute right-2 opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"

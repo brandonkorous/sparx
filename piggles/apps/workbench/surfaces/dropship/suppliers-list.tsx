@@ -18,9 +18,9 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
   Select,
+  Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
@@ -36,6 +36,7 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { supplierState, useSuppliersPage, type SortDir, type SupplierSort } from './dropship-data';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -121,7 +122,17 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier list controls"
+        label="Ship-direct suppliers controls"
+        status={
+          <>
+            <Icon glyph={faLink} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {rows.length === 1 ? '1 supplier' : `${String(rows.length)} suppliers`}
+            </Text>
+          </>
+        }
+        statusReady={!isLoading}
+        statusFailed={Boolean(error)}
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -189,10 +200,22 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          // `PaneLoadError`, not a bare EmptyState. The old one said "Try again
+          // in a moment" and gave nothing to try again WITH, so the only way
+          // out of a failed read was to reload the whole console — and it drew
+          // a small grey glyph where every other failure in this console draws
+          // the brand's own picture. It also told a person the server was
+          // unreachable whatever the server had actually said; `error` lets the
+          // component tell a missing thing from an unreachable one.
+          <PaneLoadError
             icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
             title="Could not load your suppliers"
-            description="Something went wrong reaching the server. Your suppliers are unaffected. Try again in a moment."
+            error={error}
+            noun="supplier list"
+            description="This is a problem reaching the server. Your suppliers are unaffected. They just could not be read."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading suppliers…" />
@@ -243,7 +266,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((supplier) => {
-                const state = supplierState(supplier.status);
+                const state = supplierState(supplier.status, supplier.type);
                 return (
                   <tr
                     key={supplier.id}

@@ -5,7 +5,7 @@ import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
 import { furnishTenant } from '@/lib/furnish';
 import { isKnownTrade } from '@/lib/trades';
 import { AddressTakenError, slugifyAddress, slugifyBusinessName } from '@/lib/business-slug';
-import { saveOnboarding } from '@/lib/onboarding-save';
+import { markOnboardingFinished, saveOnboarding } from '@/lib/onboarding-save';
 import { text, textAll } from '@/lib/form';
 
 // Onboarding, which is three questions long.
@@ -157,6 +157,25 @@ export async function completeOnboarding(
       error: 'We saved your details but could not finish setting things up. Please try again.',
     };
   }
+
+  // HERE, and not a line earlier. The marker means "this business is set up",
+  // which is only true once furnishing has returned: it is the half that
+  // switches the modules on. Written inside saveOnboarding, as it was, it meant
+  // "somebody pressed the button", and a reload after the failure above would
+  // then bounce them off this page with their modules still off.
+  //
+  // Best-effort: the business exists and works by now, and losing the signup
+  // over a bookkeeping field would throw away the thing that just succeeded.
+  await markOnboardingFinished(session.user.tenantId).catch((err: unknown) => {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        tenantId: session.user.tenantId,
+        err: err instanceof Error ? err.message : String(err),
+        msg: 'piggles onboarding: could not mark the setup finished',
+      })
+    );
+  });
 
   // Straight into the workbench — not to an account home. Somebody who has just
   // finished setting up wants to see their business.

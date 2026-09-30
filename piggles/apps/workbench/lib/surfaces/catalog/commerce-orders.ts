@@ -26,6 +26,7 @@ import { CheckoutSessionsListSurface } from '../../../surfaces/commerce/checkout
 import { CheckoutSessionDetailSurface } from '../../../surfaces/commerce/checkout-detail';
 import { SubscriptionsListSurface } from '../../../surfaces/commerce/subscriptions-list';
 import { SubscriptionDetailSurface } from '../../../surfaces/commerce/subscription-detail';
+import { RepeatOrderNewSurface } from '../../../surfaces/commerce/repeat-order-new';
 import { ReviewsListSurface } from '../../../surfaces/commerce/reviews-list';
 import { ReviewsQueueSurface } from '../../../surfaces/commerce/reviews-queue';
 import { QaListSurface } from '../../../surfaces/commerce/qa-list';
@@ -50,12 +51,32 @@ export const ORDER_SURFACES: SurfaceDefinition[] = [
   {
     // The till. Most of this audience is paid in the room, so a sale that never
     // touched a website is the ordinary case, not the exception.
+    //
+    // It has two doors and they are not the same errand. From Orders it is a
+    // counter sale; from Wholesale orders it is an order a shop rang through,
+    // and `through` carries which, so the tab says what she pressed rather than
+    // renaming her action on arrival (issue 743). The launcher passes nothing
+    // and gets the counter name, which is the ordinary case.
     key: 'commerce.sale.new',
-    title: 'Take a sale',
+    title: (params) => (params.through === 'wholesale' ? 'Enter an order' : 'Take a sale'),
     module: 'commerce',
     icon: faCashRegister,
     order: 2,
-    keywords: ['till', 'counter', 'cash', 'card', 'in person', 'walk-in', 'sell', 'payment'],
+    keywords: [
+      'till',
+      'counter',
+      'cash',
+      'card',
+      'in person',
+      'walk-in',
+      'sell',
+      'payment',
+      // What the button on Wholesale orders says. Typing the words she just
+      // pressed should find the screen they open.
+      'enter an order',
+      'phone order',
+      'new order',
+    ],
     component: SaleDetailSurface,
   },
   {
@@ -114,7 +135,17 @@ export const ORDER_SURFACES: SurfaceDefinition[] = [
     section: 'In progress',
     order: 32,
     keywords: ['recurring', 'memberships', 'plans'],
+    createLabel: 'Start a subscription',
+    createSurface: 'commerce.subscription.new',
     component: SubscriptionsListSurface,
+  },
+  {
+    key: 'commerce.subscription.new',
+    title: 'New subscription',
+    module: 'commerce',
+    icon: faRepeat,
+    component: RepeatOrderNewSurface,
+    listed: false,
   },
   {
     key: 'commerce.subscription.detail',

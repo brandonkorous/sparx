@@ -54,17 +54,22 @@ import type { Product } from './products-data';
  * The seven tabs, in order — declared as data so the ORDER is visible in one
  * place and adding one is a single entry.
  *
- * Options and Variants are deliberately separate. Options are the AXES the
- * product is sold along, and editing them is a schema-shaped act with a blast
- * radius: adding a value multiplies the grid, removing one destroys the SKUs
- * sitting on it. Variants are routine price and code entry. Putting a
+ * Options and Versions are deliberately separate. Options are the AXES the
+ * product is sold along, and editing them is a structural act with a blast
+ * radius: adding a value multiplies the grid, removing one destroys the codes
+ * sitting on it. Versions are routine price and code entry. Putting a
  * destructive structural edit on the same surface as everyday data entry is how
- * someone rebuilds a lattice while meaning to change a price.
+ * someone rebuilds the whole grid while meaning to change a price.
+ *
+ * The tab is "Versions" and not "Variants" because every sentence on and around
+ * it already said version: "5 versions stay on sale ... on the Variants tab"
+ * made a shop owner work out that the two words were one thing, on the one
+ * screen where getting it wrong destroys prices.
  */
 export const PRODUCT_TABS: { value: string; label: string }[] = [
   { value: 'overview', label: 'Overview' },
   { value: 'options', label: 'Options' },
-  { value: 'variants', label: 'Variants' },
+  { value: 'variants', label: 'Versions' },
   { value: 'media', label: 'Media' },
   { value: 'attributes', label: 'Details' },
   { value: 'pricing', label: 'Pricing' },

@@ -49,7 +49,7 @@ import { useOwnerWindowBody } from '@/lib/dock/window-boundary';
 import { useCopyLink, usePaneLink } from '@/components/copy-pane-link';
 
 /**
- * Favourite THIS pane's screen, from its own title bar.
+ * Favorite THIS pane's screen, from its own title bar.
  *
  * ── WHY IT IS HERE AND NOT IN THE APP TOOLBAR ───────────────────────────────
  *
@@ -60,13 +60,13 @@ import { useCopyLink, usePaneLink } from '@/components/copy-pane-link';
  * The tab has no such ambiguity — it IS the screen — so the control belongs on
  * it, beside the close button that already works the same way.
  *
- * A favourite is a SCREEN, never a record: "Invoices" can be one, invoice
+ * A favorite is a SCREEN, never a record: "Invoices" can be one, invoice
  * INV-000004 cannot, because the rail would fill with rows nobody can maintain.
  * A pane opened with params is therefore offered nothing rather than a control
  * that would refuse — the tooltip on the close-neighbour explains why when it is
  * a near miss.
  */
-function FavouriteButton({
+function FavoriteButton({
   descriptor,
   title,
 }: {
@@ -78,27 +78,27 @@ function FavouriteButton({
 
   const surfaceKey = descriptor?.surface ?? null;
   const hasParams = Boolean(descriptor?.params && Object.keys(descriptor.params).length > 0);
-  // A record's pane cannot be favourited, and a disabled star on every entity
+  // A record's pane cannot be favorited, and a disabled star on every entity
   // tab is chrome that never does anything — so it simply is not offered.
   if (!surfaceKey || hasParams) return null;
 
-  const favourited = favorites?.some((favorite) => favorite.actionId === surfaceKey) ?? false;
+  const favorited = favorites?.some((favorite) => favorite.actionId === surfaceKey) ?? false;
 
   return (
-    <Tooltip content={favourited ? 'Remove from favorites' : 'Add to favorites'}>
+    <Tooltip content={favorited ? 'Remove from favorites' : 'Add to favorites'}>
       <Button
         color="primary"
         variant="ghost"
         size="xs"
         shape="square"
-        aria-label={favourited ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
-        aria-pressed={favourited}
+        aria-label={favorited ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+        aria-pressed={favorited}
         disabled={toggle.isPending}
         className="shrink-0"
         onClick={(event) => {
           // The bar is also the pane's drag handle and its focus target.
           event.stopPropagation();
-          toggle.mutate({ actionId: surfaceKey, favorited: favourited });
+          toggle.mutate({ actionId: surfaceKey, favorited: favorited });
         }}
       >
         {/* FILLED when it is one, HOLLOW when it is not — the same solid glyph
@@ -108,13 +108,13 @@ function FavouriteButton({
             tint sitting behind it.
 
             `primary` rather than the `warning` this wore in the toolbar: amber
-            is the status axis and means something is WRONG, which a favourite
+            is the status axis and means something is WRONG, which a favorite
             never is. Piggles Pink is the brand's one accent, and "I marked this"
             is exactly what an accent is for. */}
         <Icon
           glyph={faStar}
-          outline={!favourited}
-          className={favourited ? 'text-primary size-3.5' : 'size-3.5'}
+          outline={!favorited}
+          className={favorited ? 'text-primary size-3.5' : 'size-3.5'}
           aria-hidden
         />
       </Button>
@@ -225,7 +225,7 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
             />
           ) : null}
 
-          <FavouriteButton descriptor={descriptor} title={title} />
+          <FavoriteButton descriptor={descriptor} title={title} />
 
           {/* Always visible — not hover-revealed, and never `display: none`.
               Hiding it until hover is a desktop habit that costs more than it

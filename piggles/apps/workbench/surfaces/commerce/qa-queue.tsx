@@ -43,6 +43,7 @@ import {
   type QueueQuestion,
 } from './moderation-data';
 import { bulkDecisionWords, questionDecisions, unchangedWords } from './moderation-decisions';
+import { answerBoxPrompt } from './question-answers';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -51,10 +52,13 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 function AnswerBox({
   busy,
+  status,
   onSend,
   onCancel,
 }: {
   busy: boolean;
+  /** Where the question already sits, which changes what posting an answer DOES. */
+  status: string;
   onSend: (text: string) => void;
   onCancel: () => void;
 }) {
@@ -65,7 +69,7 @@ function AnswerBox({
         color="module"
         rows={3}
         value={text}
-        placeholder="Answer this question: once you show it, everyone reading the product's page sees your answer under their question."
+        placeholder={answerBoxPrompt(status)}
         aria-label="Answer this question"
         onChange={(event) => {
           setText(event.target.value);
@@ -209,6 +213,7 @@ function QuestionCard({
       {answering ? (
         <AnswerBox
           busy={answer.isPending}
+          status={question.status}
           onCancel={() => {
             setAnswering(false);
           }}

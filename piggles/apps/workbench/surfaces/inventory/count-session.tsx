@@ -53,6 +53,10 @@ interface SessionProps {
 
 export function CountSession({ ctx, count, isFetching, updatedAt, onRefresh }: SessionProps) {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  // Kept apart from `drafts` on purpose. They are saved together, but they
+  // are two different edits, and folding them into one record would mean a
+  // keystroke in a number touching the state of the words beside it.
+  const [whyDrafts, setWhyDrafts] = useState<Record<string, string>>({});
 
   useEffect(() => {
     ctx.setTitle(count.number);
@@ -61,16 +65,27 @@ export function CountSession({ ctx, count, isFetching, updatedAt, onRefresh }: S
   const editable = count.status === 'counting';
   const state = countState(count.status);
 
+  // A line is unsaved when its NUMBER has moved or its WORDS have. Saving
+  // either one sends both, because the server records a note against a
+  // counted quantity rather than on its own.
   const changed = useMemo<ChangedLine[]>(
     () =>
-      count.lines
-        .filter((line) => drafts[line.id] !== undefined)
-        .map((line) => ({ line, value: parseQty(drafts[line.id]) }))
-        .filter(
-          (entry): entry is ChangedLine =>
-            entry.value !== null && entry.value !== entry.line.countedQuantity
-        ),
-    [count.lines, drafts]
+      count.lines.flatMap((line) => {
+        const value =
+          drafts[line.id] !== undefined ? parseQty(drafts[line.id]) : line.countedQuantity;
+        // Nothing counted yet, so there is no quantity to hang a note on.
+        // The box is not offered on such a line either, so this cannot drop
+        // words somebody typed.
+        if (value === null) return [];
+        const why = whyDrafts[line.id];
+        // Compared TRIMMED against what is stored, so opening a box and
+        // closing it again is not an edit, and a note of two spaces is not
+        // one either. Emptying a filled box IS one, and sends `''`.
+        const whyMoved = why !== undefined && why.trim() !== (line.note ?? '').trim();
+        if (value === line.countedQuantity && !whyMoved) return [];
+        return [{ line, value, ...(whyMoved ? { note: why } : {}) }];
+      }),
+    [count.lines, drafts, whyDrafts]
   );
 
   const uncounted = count.lines.filter((line) => {
@@ -80,11 +95,15 @@ export function CountSession({ ctx, count, isFetching, updatedAt, onRefresh }: S
 
   useDirtySource(
     changed.length > 0,
-    `You have counted quantities on ${count.number} that are not saved. Close anyway?`
+    `Counts or notes you have put in on ${count.number} are not saved. Close anyway?`
   );
 
   const setDraft = (lineId: string, value: string) => {
     setDrafts((current) => ({ ...current, [lineId]: value }));
+  };
+
+  const setWhy = (lineId: string, value: string) => {
+    setWhyDrafts((current) => ({ ...current, [lineId]: value }));
   };
 
   const act = useCountActions(count, changed);
@@ -153,6 +172,8 @@ export function CountSession({ ctx, count, isFetching, updatedAt, onRefresh }: S
               editable={editable}
               drafts={drafts}
               setDraft={setDraft}
+              whyDrafts={whyDrafts}
+              setWhy={setWhy}
               onRemove={(line: CountLine) => {
                 act.removeItem(line);
               }}

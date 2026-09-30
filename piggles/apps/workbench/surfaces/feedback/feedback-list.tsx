@@ -6,10 +6,11 @@
 // reading is usually about a pane you still have open, and a dialog would cover
 // the very thing under discussion. As a surface it opens beside that pane
 // (⇧-click), tears off to a second monitor, survives in a saved layout, and can
-// be favourited — none of which an overlay can do.
+// be favorited — none of which an overlay can do.
 
-import { Button, Card, EmptyState } from '@wizeworks/silicaui-react';
+import { Button, Card } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
+import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { faMessagePlus } from '@fortawesome/pro-solid-svg-icons';
@@ -30,6 +31,10 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
+/** Registry module for this surface, so the brand's empty-state artwork is
+ *  this app's own picture rather than a small grey glyph. */
+const MODULE = 'platform';
+
 export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
   const feedback = useFeedback();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMyFeedback();
@@ -43,7 +48,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
           icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
-          title="Could not load your feedback"
+          title="Could not load what you told us"
           description="This is a problem reaching the server, not a problem with anything you sent. Nothing was lost."
           onRetry={() => {
             void refetch();
@@ -58,13 +63,15 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Feedback list controls"
+        label="Controls for what you told us"
         status={
           <p className="shrink-0 text-sm whitespace-nowrap">
             {rows.length === 1 ? '1 message' : `${String(rows.length)} messages`}
             {data && data.unreadCount > 0 ? ` · ${String(data.unreadCount)} with a new reply` : ''}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -94,7 +101,8 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           </Card>
         ) : rows.length === 0 ? (
-          <EmptyState
+          <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
             title="You haven’t sent anything yet"
             description="Tell us what’s broken, what’s missing, or what you wish worked differently. A real person reads every message, and replies land right here."

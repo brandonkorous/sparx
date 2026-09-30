@@ -22,6 +22,7 @@ import {
   contentsGroups,
   formatDate,
   installState,
+  lookSentence,
   moduleLabel,
   type ContentsLine,
   type Tone,
@@ -148,9 +149,11 @@ export function BlueprintContentsSection({
   offModules: string[];
 }) {
   const groups = contentsGroups(blueprint.contents);
-  // `contents` is free-form JSON on the wire, so read the theme name defensively
-  // — a non-string would render as `[object Object]` or crash React.
-  const themeName = typeof blueprint.contents.theme === 'string' ? blueprint.contents.theme : null;
+  // `contents` is free-form JSON on the wire, and its `theme` is a STORAGE KEY,
+  // not a name — this drew it verbatim, so a shop owner read "comes with the
+  // glossy-fashion look". `lookSentence` turns it into words, and drops the name
+  // altogether when it is just this design's own name again.
+  const look = lookSentence(blueprint.contents.theme, blueprint.name);
   const empty = groups.structure.length === 0 && groups.examples.length === 0;
 
   return (
@@ -168,12 +171,15 @@ export function BlueprintContentsSection({
       ) : (
         <LineList lines={groups.structure} />
       )}
-      {themeName ? (
-        <Text className="text-sm">
-          Comes with the <span className="font-medium">{themeName}</span> look (colors, fonts and
-          spacing) applied for you.
-        </Text>
-      ) : null}
+      <Text className="text-sm">
+        {look.name ? (
+          <>
+            Its <span className="font-medium">{look.name}</span> {look.text}
+          </>
+        ) : (
+          look.text
+        )}
+      </Text>
 
       {groups.examples.length > 0 ? (
         <>
@@ -204,12 +210,16 @@ export function BlueprintContentsSection({
  *  one), whether a newer version exists, and a refresh for both reads. */
 export function BlueprintToolbar({
   status,
+  targetName,
   updateAvailable,
   isFetching,
   updatedAt,
   onRefresh,
 }: {
   status: { label: string; tone: Tone } | null;
+  /** The site the picker below is pointed at, because that is what `status` is
+   *  about — not the site the console is currently working on. */
+  targetName: string;
   updateAvailable: boolean;
   isFetching: boolean;
   updatedAt: number;
@@ -225,7 +235,11 @@ export function BlueprintToolbar({
               {status.label}
             </Badge>
           ) : (
-            <Text className="text-sm">Preview</Text>
+            /* "Preview" is a MODE, not a state of anything, and it was the only
+               word on this bar. What the bar is for is saying where this design
+               stands on the site below — which, when there is no install, is
+               that it is not on it. */
+            <Text className="text-sm">Not on {targetName} yet</Text>
           )}
           {updateAvailable ? (
             <Badge color="module" variant="soft" size="sm">

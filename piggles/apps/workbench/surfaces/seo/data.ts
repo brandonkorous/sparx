@@ -264,6 +264,7 @@ function useInvalidateAudits() {
 export function useReindexAudits() {
   const invalidate = useInvalidateAudits();
   return useMutation({
+    meta: { running: 'score your pages again' },
     mutationFn: () => api.post<{ reindexed: number; truncated: boolean }>('/v1/seo/audits/reindex'),
     onSuccess: () => {
       invalidate();

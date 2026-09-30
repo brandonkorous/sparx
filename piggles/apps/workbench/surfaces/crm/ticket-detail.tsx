@@ -463,7 +463,7 @@ function TicketEditor({
                   <Select
                     size="sm"
                     color="module"
-                    aria-label="Which stage this request is on"
+                    aria-label="Which step this request is on"
                     value={view.ticket.stageId}
                     items={stageItems}
                     disabled={moveStage.isPending || Object.keys(stageItems).length === 0}
@@ -633,7 +633,7 @@ function TicketEditor({
                 </div>
                 {view.ticket.company ? (
                   <div className="flex items-baseline justify-between gap-3">
-                    <Text>Trade account</Text>
+                    <Text>Wholesale customer</Text>
                     <Text>{view.ticket.company.name}</Text>
                   </div>
                 ) : null}

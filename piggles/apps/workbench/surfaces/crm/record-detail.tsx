@@ -24,6 +24,7 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
+  Card,
   Heading,
   Text,
   useToast,
@@ -33,6 +34,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { PaneEmpty } from '../../components/pane-empty';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
@@ -43,6 +45,18 @@ import { AssociationsPanel } from './associations-panel';
 import { recordErrorMessage, recordTitle, useRecord, useRecordMutations } from './records-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/** Registry module, so the brand draws Customers' own picture. */
+const MODULE = 'crm';
+
+/** The four built-in objects and the screen each really lives on. Mirrors the
+ *  map in `records-list.tsx`, because both panes are addressable by key. */
+const BUILTIN_SCREEN: Record<string, string> = {
+  contact: 'crm.customers.list',
+  company: 'crm.accounts.list',
+  deal: 'crm.deals.list',
+  ticket: 'crm.tickets.list',
+};
 
 function sameBag(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -75,6 +89,7 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [isNew, record.data, saved, loaded]);
 
   const label = type.data?.label ?? 'Record';
+  const labelPlural = type.data?.labelPlural ?? 'Records';
   const title = record.data ? recordTitle(record.data, type.data?.primaryFieldKey ?? null) : '';
 
   useEffect(() => {
@@ -148,6 +163,45 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  // A BUILT-IN OBJECT HAS ITS OWN SCREEN, AND THIS IS NOT IT.
+  //
+  // `crm_records` holds tenant-invented objects only, so addressed with a
+  // built-in key — `/crm/records/contact/new` — this pane drew a working "New
+  // customer" form with an "Add customer" button on it. Pressing it would have
+  // written a customer that never appears on the Customers screen, can never be
+  // sold to and can never be found. The fact that stops it was already on the
+  // record the pane had fetched: `kind: 'builtin'`.
+  // [[feedback_fetched_but_never_rendered]]
+  if (type.data?.kind === 'builtin') {
+    const target = BUILTIN_SCREEN[objectKey];
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faTable} className="size-6" aria-hidden />}
+            title={`${labelPlural} have a screen of their own`}
+            description={`This screen is for the things you chose to track yourself. ${labelPlural} came with Piggles, so adding one here would make something none of your other screens could ever find.`}
+            {...(target
+              ? {
+                  actions: (
+                    <Button
+                      color="module"
+                      onClick={() => {
+                        ctx.open(target, {}, { target: 'replace' });
+                      }}
+                    >
+                      Open {labelPlural}
+                    </Button>
+                  ),
+                }
+              : {})}
+          />
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -172,19 +226,23 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             {isNew ? `Add ${label.toLowerCase()}` : 'Save'}
           </Button>
         }
-        controls={
-          !isNew ? (
-            <Button
-              color="danger"
-              variant="ghost"
-              size="sm"
-              aria-label={`Remove this ${label.toLowerCase()}`}
-              title="Remove it"
-              onClick={() => void onDelete()}
-            >
-              <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-            </Button>
-          ) : null
+        /* A VALUE, not bespoke JSX: `controls` relocates into the narrow bar's
+           overflow popover verbatim, so this was a bare red bin among rows that
+           had words. scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          isNew
+            ? undefined
+            : [
+                {
+                  label: 'Remove',
+                  title: `Remove this ${label.toLowerCase()}`,
+                  icon: faTrashCan,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
         }
         refresh={
           <RefreshButton
@@ -214,10 +272,10 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           {fields.length === 0 && type.isSuccess ? (
             <Alert color="info">
               <AlertContent>
-                <AlertTitle>This record type has no details on it yet</AlertTitle>
+                <AlertTitle>This kind of thing has no details on it yet</AlertTitle>
                 <AlertDescription>
-                  Add some fields to &ldquo;{type.data?.label}&rdquo; under record types, and they
-                  will appear here.
+                  Add some fields to &ldquo;{type.data?.label}&rdquo; under things you track, and
+                  they will appear here.
                 </AlertDescription>
               </AlertContent>
             </Alert>

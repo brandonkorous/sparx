@@ -45,6 +45,7 @@ import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { getSurface, resolveTitle } from '../../lib/surfaces/registry';
 import {
   aiErrorMessage,
   canAdminAi,
@@ -106,6 +107,12 @@ function InstructionRow({
       </button>
     </li>
   );
+}
+
+/** What this console calls `ai.tools`, read from the registry rather than spelled out. */
+function aiToolsName(): string {
+  const definition = getSurface('ai.tools');
+  return definition ? resolveTitle(definition, {}) : 'Permissions';
 }
 
 export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -178,7 +185,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Instructions list controls"
+        label="Instructions controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -263,7 +270,11 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('ai.tools', {}, { target: targetFor(event) });
                 }}
               >
-                Permissions
+                {/* The destination's own name, from the registry. Spelled out
+                    here it said "Permissions" for a screen this console calls
+                    "What it may do", so the sentence pointed at a tab that does
+                    not exist by that name. */}
+                {aiToolsName()}
               </Button>
               <Text as="span" className="text-sm">
                 .

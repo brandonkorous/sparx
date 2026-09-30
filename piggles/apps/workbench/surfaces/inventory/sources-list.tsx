@@ -26,6 +26,7 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
+  Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
@@ -133,7 +134,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <EmptyState
           icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
-          title="Could not load your stock sources"
+          title="Could not load your counts from elsewhere"
           description="This is a problem reaching the server. Your connections are unaffected. They just could not be listed just now."
         />
       );
@@ -154,10 +155,10 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             description: 'Try part of a source’s name, or switch the status back to “Any status”.',
           }}
           firstRun={{
-            title: 'No stock sources yet',
+            title: 'No counts from elsewhere yet',
             description: productCopy(
               'inventory.sources.description',
-              'Connect a stock source when something outside Piggles keeps the count: a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
+              'Connect somewhere else when something outside Piggles keeps the count: a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
             ),
             actions: (
               <Button size="sm" color="module" onClick={addSource}>
@@ -171,96 +172,109 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     return (
-      <Card className="overflow-hidden">
-        <Table size="sm" hover>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th className="hidden @lg:table-cell">Kind</th>
-              <th className="hidden whitespace-nowrap @xl:table-cell">Last updated</th>
-              <th className="hidden @3xl:table-cell">How it is doing</th>
-              <th>State</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((source) => {
-              const state = sourceState(source);
-              return (
-                <tr
-                  key={source.id}
-                  className="cursor-pointer"
-                  tabIndex={0}
-                  role="button"
-                  onClick={(event) => {
-                    openSource(source, event);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key !== 'Enter' && event.key !== ' ') return;
-                    event.preventDefault();
-                    openSource(source, event);
-                  }}
-                >
-                  {/* `max-w-0 w-full` is load-bearing: a table cell sizes to its
+      <div className="flex flex-col gap-3">
+        {/* The explanation lived ONLY in the empty state, so the pane stopped
+            saying what a "source" IS the moment it had one. Every other pane in
+            this group keeps its sentence whichever way the list goes, and this
+            is the one whose word is jargon. */}
+        <Text className="text-sm">
+          A count from elsewhere is something outside Piggles that keeps the count: a spreadsheet
+          you publish, another system, or a bridge on your own computers. Its numbers flow in and
+          become what you sell against.
+        </Text>
+        <Card className="overflow-hidden">
+          <Table size="sm" hover>
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th className="hidden @lg:table-cell">Kind</th>
+                <th className="hidden whitespace-nowrap @xl:table-cell">Last updated</th>
+                <th className="hidden @3xl:table-cell">How it is doing</th>
+                <th>State</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((source) => {
+                const state = sourceState(source);
+                return (
+                  <tr
+                    key={source.id}
+                    className="cursor-pointer"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(event) => {
+                      openSource(source, event);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'Enter' && event.key !== ' ') return;
+                      event.preventDefault();
+                      openSource(source, event);
+                    }}
+                  >
+                    {/* `max-w-0 w-full` is load-bearing: a table cell sizes to its
                       content, so a long source name would push the row wider and
                       shove the state badge — the one column that must never go —
                       off the right edge. Zeroing the max width makes THIS the
                       cell that gives, which is what lets the truncation bite. */}
-                  <td className="w-full max-w-0 min-w-56">
-                    <span className="flex min-w-0 items-center gap-3">
-                      <TypeIcon type={source.type} />
-                      <span className="flex min-w-0 flex-col">
-                        <span className="truncate text-base font-medium">{source.name}</span>
-                        {/* Below @lg the Kind and Last-updated columns are gone,
+                    <td className="w-full max-w-0 min-w-56">
+                      <span className="flex min-w-0 items-center gap-3">
+                        <TypeIcon type={source.type} />
+                        <span className="flex min-w-0 flex-col">
+                          <span className="truncate text-base font-medium">{source.name}</span>
+                          {/* Below @lg the Kind and Last-updated columns are gone,
                             so their gist comes back here — a row that reads as a
                             bare name tells you nothing about the connection. */}
-                        <span className="truncate text-sm @lg:hidden">
-                          {sourceTypeLabel(source.type)}
-                          {' · '}
-                          {source.lastSyncAt ? (
-                            <>
-                              updated <Timestamp value={source.lastSyncAt} format="relative" />
-                            </>
-                          ) : (
-                            'not run yet'
-                          )}
+                          <span className="truncate text-sm @lg:hidden">
+                            {sourceTypeLabel(source.type)}
+                            {' · '}
+                            {source.lastSyncAt ? (
+                              <>
+                                updated <Timestamp value={source.lastSyncAt} format="relative" />
+                              </>
+                            ) : (
+                              'not run yet'
+                            )}
+                          </span>
                         </span>
                       </span>
-                    </span>
-                  </td>
-                  <td className="hidden max-w-40 truncate @lg:table-cell">
-                    {sourceTypeLabel(source.type)}
-                  </td>
-                  <td className="hidden whitespace-nowrap @xl:table-cell">
-                    {source.lastSyncAt ? (
-                      <Timestamp value={source.lastSyncAt} format="relative" />
-                    ) : (
-                      'Not run yet'
-                    )}
-                  </td>
-                  <td className="hidden max-w-56 truncate @3xl:table-cell">{healthLine(source)}</td>
-                  <td>
-                    <Badge color={state.tone} variant="soft" size="sm">
-                      {state.label}
-                    </Badge>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
-      </Card>
+                    </td>
+                    <td className="hidden max-w-40 truncate @lg:table-cell">
+                      {sourceTypeLabel(source.type)}
+                    </td>
+                    <td className="hidden whitespace-nowrap @xl:table-cell">
+                      {source.lastSyncAt ? (
+                        <Timestamp value={source.lastSyncAt} format="relative" />
+                      ) : (
+                        'Not run yet'
+                      )}
+                    </td>
+                    <td className="hidden max-w-56 truncate @3xl:table-cell">
+                      {healthLine(source)}
+                    </td>
+                    <td>
+                      <Badge color={state.tone} variant="soft" size="sm">
+                        {state.label}
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </Card>
+      </div>
     );
   };
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Stock source controls"
+        label="Counts from elsewhere controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search stock sources"
+              aria-label="Search counts from elsewhere"
               placeholder="Source name…"
               value={search}
               onValueChange={(next) => {

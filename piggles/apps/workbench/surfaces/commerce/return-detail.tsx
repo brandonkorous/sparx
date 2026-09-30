@@ -206,7 +206,7 @@ function ReturnDetailBody({
                 <AlertDescription>
                   There is no order behind this return any more, so nothing here can be named,
                   approved or settled. It is safe to ignore. If you did not expect to see it, it
-                  almost certainly arrived with sample data that was later cleared.
+                  almost certainly arrived with practice data that was later cleared.
                 </AlertDescription>
               </AlertContent>
             </Alert>

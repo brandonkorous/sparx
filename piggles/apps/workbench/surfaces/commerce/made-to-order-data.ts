@@ -5,6 +5,8 @@
 // sentences live here rather than in the section so the product editor, the
 // order pane and any future summary all read the same.
 
+import { formatCentsAmount } from '../../lib/money-format';
+
 /** How much of the price is taken up front. Three shapes, never four columns. */
 export type ProductDeposit =
   { type: 'none' } | { type: 'amount'; amountCents: number } | { type: 'percent'; percent: number };
@@ -12,7 +14,7 @@ export type ProductDeposit =
 export const NO_DEPOSIT: ProductDeposit = { type: 'none' };
 
 export function money(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /** How a notice period reads to the person setting it. */

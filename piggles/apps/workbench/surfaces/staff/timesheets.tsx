@@ -294,7 +294,19 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Timesheet controls"
+        label="Timesheets controls"
+        status={
+          <>
+            <Icon glyph={faClock} className="size-4 shrink-0" aria-hidden />
+            {/* WHICH period. The month picker lives in `controls`, which folds
+                into the overflow on a narrow pane, and every figure below is
+                "this period" — so at that width the screen said $0.00 this
+                period with nothing anywhere naming the period. */}
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {periodLabel(range.from, range.to)}
+            </Text>
+          </>
+        }
         primary={
           <Button
             size="sm"

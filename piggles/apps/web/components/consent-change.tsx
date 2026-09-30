@@ -51,7 +51,7 @@ export function ConsentChange() {
         </Badge>
       )}
       <span className="flex-1" />
-      <Button color="primary" variant="soft" onClick={openConsentChoices}>
+      <Button color="primary" onClick={openConsentChoices}>
         {state === null ? 'Answer it' : 'Change this'}
       </Button>
     </div>

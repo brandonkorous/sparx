@@ -70,10 +70,11 @@ import { afterPaneChange } from '../../lib/defer';
 import { pickedDayUtc } from '../../lib/today';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, physicalLocations, plural, useStockLocations } from './data';
+import { ItemName } from './item-name';
 // The day formatter, shared with Buying so a planned day and an expected
 // day cannot print the same stored value as two different days.
 import { formatDay } from './purchase-orders-data';
-import { buyingErrorMessage, isNotFound } from './suppliers-data';
+import { buyingErrorMessage } from './suppliers-data';
 import {
   runKindLabel,
   runState,
@@ -123,11 +124,24 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
     () =>
       (boms.data?.items ?? []).map((b) => ({
         value: b.id,
-        label: `${b.outputTitle ?? b.outputSku ?? 'Item'} · ${b.name} (makes ${String(b.outputQuantity)})`,
+        // The VERSION between the product and the recipe name: a shop with a
+        // recipe per size otherwise gets twelve options reading "The Ash
+        // Overshirt · …" and has to open one to find out which (issue 681).
+        label: [
+          b.outputTitle ?? b.outputSku ?? 'Item',
+          b.outputVariantName,
+          `${b.name} (makes ${String(b.outputQuantity)})`,
+        ]
+          .filter(Boolean)
+          .join(' · '),
       })),
     [boms.data]
   );
   const selected = bomOptions.find((o) => o.value === bomId) ?? null;
+
+  /** The query has ANSWERED, and the answer was none. Not the same as not
+   *  having asked yet, which is what an empty list also looks like. */
+  const askedAndEmpty = boms.data !== undefined && bomOptions.length === 0;
 
   const parsedQuantity = Number.parseInt(quantity, 10);
   const canPlan =
@@ -205,7 +219,25 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
             paper stage.
           </Text>
 
-          {bomOptions.length === 0 ? (
+          {/* THREE states, not two. `boms.data` is undefined while the query is in
+              flight and after it fails, and `?? []` turned both of those into
+              "you have none" — so a cold load told a shop owner with a recipe in
+              use that she had none, and offered to start her a second one. Seen
+              on screen: the first paint after a dev restart, before the active
+              site had resolved. Only claim it once the answer is actually in.
+              [[feedback_never_present_absence_as_measurement]] */}
+          {boms.isError ? (
+            <Alert color="warning">
+              <AlertContent>
+                <AlertTitle>Could not load your recipes</AlertTitle>
+                <AlertDescription>
+                  Nothing is wrong with them. Try again in a moment, or refresh this pane.
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          ) : null}
+
+          {askedAndEmpty ? (
             <Alert color="info">
               <AlertContent>
                 <AlertTitle>No recipes in use yet</AlertTitle>
@@ -255,7 +287,13 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
                 color="module"
                 items={bomOptions}
                 value={selected}
-                placeholder={bomOptions.length === 0 ? 'No recipes in use' : 'Find the recipe…'}
+                placeholder={
+                  boms.isLoading
+                    ? 'Looking…'
+                    : askedAndEmpty
+                      ? 'No recipes in use'
+                      : 'Find the recipe…'
+                }
                 emptyMessage="No recipe matches that."
                 aria-label="Recipe"
                 clearable={false}
@@ -359,18 +397,15 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }, [ctx, run.data]);
 
   if (run.isError) {
-    const gone = isNotFound(run.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This run no longer exists' : 'Could not load it'}
-            description={
-              gone
-                ? 'It may have been deleted.'
-                : 'This is a problem reaching the server. Nothing is affected.'
-            }
+            error={run.error}
+            title="Could not load it"
+            description="This is a problem reaching the server. Nothing is affected."
+            missingTitle="This run no longer exists"
+            missingDescription="It may have been deleted."
           />
         </Card>
       </div>
@@ -397,9 +432,15 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     const ok = await confirm({
       title: `Hold the parts for ${data.number}?`,
       description: isMaking
-        ? `The ${String(data.lines.length)} parts this needs stop being sellable, so nothing gets sold out from under the build. Nothing physically moves, and canceling gives them straight back.`
-        : `${plural(planned, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} stop being sellable so nobody sells what you are about to take apart.`,
-      confirmLabel: 'Hold them',
+        ? // The branch below this one gets the agreement right and this one did
+          // not: one ternary, one sentence fixed, its neighbour left reading
+          // "The 1 parts this needs stop being sellable ... gives them back".
+          // Three words for a crowd against a number that was 1.
+          `${plural(data.lines.length, 'part', 'parts')} this needs ${data.lines.length === 1 ? 'stops' : 'stop'} being sellable, so nothing gets sold out from under the build. Nothing physically moves, and canceling gives ${data.lines.length === 1 ? 'it' : 'them'} straight back.`
+        : `${plural(planned, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} ${planned === 1 ? 'stops' : 'stop'} being sellable so nobody sells what you are about to take apart.`,
+      // The button is the same sentence in two words, so it counts too: one part
+      // is held, not "them".
+      confirmLabel: isMaking && data.lines.length === 1 ? 'Hold it' : 'Hold them',
       cancelLabel: 'Not yet',
       color: 'warning',
     });
@@ -419,8 +460,8 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     const ok = await confirm({
       title: `Mark ${data.number} as made?`,
       description: isMaking
-        ? `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} go onto the shelf, and the parts come off it. This moves real stock and cannot be undone by editing: a correction afterwards is a stock count.`
-        : `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} come off the shelf and its parts go back on. This moves real stock and cannot be undone by editing.`,
+        ? `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} ${made === 1 ? 'goes' : 'go'} onto the shelf, and the parts come off it. This moves real stock and cannot be undone by editing: a correction afterwards is a stock count.`
+        : `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} ${made === 1 ? 'comes' : 'come'} off the shelf and its parts go back on. This moves real stock and cannot be undone by editing.`,
       confirmLabel: 'Mark it made',
       cancelLabel: 'Go back',
       color: 'warning',
@@ -528,24 +569,25 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             ) : null}
           </>
         }
-        controls={
-          workable ? (
-            <Button
-              size="sm"
-              variant="ghost"
-              color="danger"
-              shape="square"
-              aria-label="Call this run off"
-              loading={cancel.isPending}
-              onClick={() => {
-                void doCancel();
-              }}
-            >
-              <Icon glyph={faBan} className="size-4" aria-hidden />
-            </Button>
-          ) : (
-            <span className="ml-auto" />
-          )
+        // An ACTION, not a control. A control relocates into the overflow popover
+        // exactly as written, so this arrived there as a bare red circle-slash
+        // above two labelled rows — the destructive one was the only thing on the
+        // menu with no name. `actions` are re-authored as labelled rows, which is
+        // what that slot is for.
+        actions={
+          workable
+            ? [
+                {
+                  label: 'Call this run off',
+                  icon: faBan,
+                  tone: 'danger' as const,
+                  loading: cancel.isPending,
+                  onClick: () => {
+                    void doCancel();
+                  },
+                },
+              ]
+            : []
         }
         refresh={
           <RefreshButton
@@ -563,6 +605,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <div className="flex flex-col gap-1">
             <Heading level={1} className="text-2xl font-semibold">
               {runKindLabel(data.kind)} {data.outputTitle ?? data.outputSku ?? 'something'}
+              {data.outputVariantName ? ` · ${data.outputVariantName}` : ''}
             </Heading>
             <Text className="text-sm">
               {data.bomName ? `${data.bomName} · ` : ''}
@@ -688,12 +731,11 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     <tr key={line.id}>
                       <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
-                          <span className="truncate">
-                            {line.productTitle ?? 'Untitled product'}
-                          </span>
-                          <span className="truncate font-mono text-sm">
-                            {line.variantSku ?? 'No code'}
-                          </span>
+                          <ItemName
+                            productTitle={line.productTitle}
+                            variantName={line.variantName}
+                            code={line.variantSku}
+                          />
                         </span>
                       </td>
                       <td className="text-right tabular-nums">{line.quantityRequired}</td>

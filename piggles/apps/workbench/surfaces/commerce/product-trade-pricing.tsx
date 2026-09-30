@@ -11,13 +11,18 @@
 // ── Why one pane and not four ────────────────────────────────────────────
 //
 // Four separate things decide what a trade customer is charged, and the server
-// resolves them as a waterfall: a price set for ONE business beats an agreement
-// signed with that business, which beats a price set for a whole customer group
-// on this product, which beats that group's blanket discount, which beats list.
-// Read on their own, any one of them is a half-answer — a group discount of 15%
-// means nothing if the account you are thinking of has a fixed price that
-// overrides it. So the pane shows all four, in waterfall order, with every rule
-// converted to CASH so they can actually be compared.
+// resolves them as a waterfall: a SIGNED AGREEMENT wins for as long as it runs,
+// then a price set for one business, then a price set for a whole group on this
+// product, then that group's blanket discount, then list. Read on their own, any
+// one of them is a half-answer — a group discount of 15% means nothing if the
+// business you are thinking of has a fixed price that overrides it. So the pane
+// shows all four, in waterfall order, with every rule converted to CASH so they
+// can actually be compared.
+//
+// This comment, the subtitle and the render order all used to say the reverse,
+// and `pricingService.resolve` has always returned on the contract price before
+// `resolve_b2b_price()` is consulted at all. See `trade-price-order.ts`, which
+// now owns the sentence, and its test, which reads the charging code.
 //
 // ── Why the conversion matters more than it looks ────────────────────────
 //
@@ -52,6 +57,9 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
+import { dayBoxProblem, dayEndUtc, todayIso, todayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
+import { STRENGTH_ORDER_SENTENCE } from './trade-price-order';
 import { faPlus, faServer, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -63,10 +71,13 @@ import {
   formatCents,
   productErrorMessage,
   tradeRulePriceCents,
+  useAddAccountOverride,
+  useAddContractPrice,
   useAddTierOverride,
   useRemoveAccountOverride,
   useRemoveContractPrice,
   useRemoveTierOverride,
+  useTradeAccounts,
   useTradePricing,
   type Product,
   type TradePricing,
@@ -75,7 +86,12 @@ import {
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 
-const LABEL = 'Trade pricing';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'the wholesale price';
 /** Registry module for this pane, so the brand draws Trade's own picture rather
  *  than the generic one. */
 const MODULE = 'b2b';
@@ -106,6 +122,7 @@ function RuleRow({
   ruleCents,
   tone,
   badge,
+  beaten,
   onRemove,
   removing,
 }: {
@@ -115,6 +132,9 @@ function RuleRow({
   ruleCents: number | null;
   tone: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
   badge: string;
+  /** Why this rule is not the one being charged, when a stronger one covers
+   *  the same business and the same version. Null when it IS the one. */
+  beaten: string | null;
   onRemove: () => void;
   removing: boolean;
 }) {
@@ -123,7 +143,11 @@ function RuleRow({
 
   return (
     <div className="border-base-300 flex flex-wrap items-start gap-x-3 gap-y-2 border-b pb-3 last:border-b-0 last:pb-0">
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      {/* `basis-48` is what makes the row fold instead of squeezing: below about
+          360px the left column cannot shrink past 12rem, so the price block wraps
+          to its own line rather than crushing "MARLOW-KNIT-XL-MOSS" into a column
+          one syllable wide. */}
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
         <div className="flex flex-wrap items-center gap-2">
           <Text as="span" className="font-medium">
             {who}
@@ -131,6 +155,15 @@ function RuleRow({
           <Badge color={tone} variant="soft" size="sm">
             {badge}
           </Badge>
+          {/* A figure on a screen is read as the figure being charged. This row
+              carries a real price that nothing will ever bill, so it says so
+              beside its own name rather than leaving the reader to work the
+              waterfall out. [[feedback_never_present_absence_as_measurement]] */}
+          {beaten ? (
+            <Badge color="warning" variant="soft" size="sm">
+              Not what they pay
+            </Badge>
+          ) : null}
         </div>
         {variant ? (
           <Text className="text-sm">
@@ -140,6 +173,7 @@ function RuleRow({
           <Text className="text-sm">This rule points at a version that no longer exists.</Text>
         )}
         {detail ? <Text className="text-sm">{detail}</Text> : null}
+        {beaten ? <Text className="text-sm">{beaten}</Text> : null}
       </div>
 
       <div className="flex items-center gap-2">
@@ -165,22 +199,52 @@ function RuleRow({
   );
 }
 
-/** Add a price for one customer group on one version of this product. */
-function AddGroupPrice({
+/**
+ * Set a wholesale price for this product.
+ *
+ * ── WHY ONE FORM AND NOT THREE ───────────────────────────────────────────
+ *
+ * The pane renders four kinds of rule and, until issue 740, could CREATE one
+ * of them. A group price had this form; a price for one business and a signed
+ * agreement had a delete button each and no way to make one — the REST routes
+ * existed and nothing in either console called them, so
+ * `b2b_account_product_overrides` and `commerce_contract_prices` held 0 rows
+ * across all 43 tenants on the machine.
+ * [[feedback_screen_over_a_function_nobody_calls]]
+ *
+ * Three separate cards would have asked the same four questions three times.
+ * So it is ONE form whose first question is who the price is for, and the rest
+ * follow from that answer.
+ *
+ * ── AND WHY THE END DATE IS THE WHOLE OF THE THIRD ONE ───────────────────
+ *
+ * A price for one business and a signed agreement differ in the data by their
+ * dates, and in a shop by whether anything was promised. So the form asks the
+ * one question a shop owner can answer — "until when?" — and says what saying
+ * so does. Blank is a standing price; a date makes it an agreement, which the
+ * server then lets beat their group's price for as long as it runs.
+ */
+function SetAPrice({
+  ctx,
   product,
   data,
   productId,
 }: {
+  ctx: SurfaceContext;
   product: Product;
   data: TradePricing;
   productId: string;
 }) {
   const toast = useToast();
-  const add = useAddTierOverride(productId);
+  const addTier = useAddTierOverride(productId);
+  const addAccount = useAddAccountOverride(productId);
+  const addContract = useAddContractPrice(productId);
 
   const liveTiers = data.tiers;
-  const firstTier = liveTiers[0]?.id ?? '';
-  const firstVariant = data.variants[0]?.id ?? '';
+  // Only asked for once there is something on the product worth pricing, so a
+  // product with no versions never pays for the list.
+  const accounts = useTradeAccounts(data.variants.length > 0);
+  const accountRows = useMemo(() => accounts.data ?? [], [accounts.data]);
 
   const tierItems = useMemo(
     () =>
@@ -196,6 +260,16 @@ function AddGroupPrice({
       ),
     [liveTiers]
   );
+  const accountItems = useMemo(
+    () =>
+      Object.fromEntries(
+        accountRows.map((account) => [
+          account.id,
+          `${account.companyName}${account.tierName ? ` · ${account.tierName}` : ''}`,
+        ])
+      ),
+    [accountRows]
+  );
   const variantItems = useMemo(
     () =>
       Object.fromEntries(
@@ -207,20 +281,61 @@ function AddGroupPrice({
     [data.variants]
   );
 
-  const [tierId, setTierId] = useState(firstTier);
-  const [variantId, setVariantId] = useState(firstVariant);
+  const hasGroups = liveTiers.length > 0;
+  const hasBusinesses = accountRows.length > 0;
+  const whoItems = useMemo(() => {
+    const items: Record<string, string> = {};
+    if (hasGroups) items.group = 'Everyone in a wholesale group';
+    if (hasBusinesses) items.business = 'One business';
+    return items;
+  }, [hasGroups, hasBusinesses]);
+
+  const [who, setWho] = useState<'group' | 'business'>('group');
+  const [tierId, setTierId] = useState('');
+  const [accountId, setAccountId] = useState('');
+  const [variantId, setVariantId] = useState('');
   const [mode, setMode] = useState<'fixed' | 'percent'>('percent');
   const [amount, setAmount] = useState('');
+  const [until, setUntil] = useState('');
+  // The box's own half-typed state, which its `value` cannot express. See
+  // `DayInput`.
+  const [untilHalfTyped, setUntilHalfTyped] = useState(false);
 
-  const chosenVariant = data.variants.find((v) => v.id === variantId);
+  // The first row of each list, once it has arrived. Held here rather than in
+  // `useState`'s initial value because the accounts arrive after the first
+  // render and a picker that opens on a blank row makes the Save button look
+  // broken for no reason the person can see.
+  const chosenTier = tierId === '' ? (liveTiers[0]?.id ?? '') : tierId;
+  const chosenAccount = accountId === '' ? (accountRows[0]?.id ?? '') : accountId;
+  const chosenVariantId = variantId === '' ? (data.variants[0]?.id ?? '') : variantId;
+  const chosenVariant = data.variants.find((v) => v.id === chosenVariantId);
+
+  // "One business" cannot be the answer before there is a business, and neither
+  // can "a group". Whichever is available wins, so the form is never sitting on
+  // a choice that has no picker under it.
+  const effectiveWho: 'group' | 'business' =
+    who === 'business' && !hasBusinesses
+      ? 'group'
+      : who === 'group' && !hasGroups
+        ? 'business'
+        : who;
+
+  // An agreement is a price, not a percentage: the server's contract price
+  // carries `priceCents` and nothing else. So the end date is only offered once
+  // a fixed price is being set for one business.
+  const datable = effectiveWho === 'business' && mode === 'fixed';
+  const endDate = datable ? until : '';
+  const dateError = datable ? dayBoxProblem(until, untilHalfTyped) : null;
+
   const numeric = Number(amount);
   const valid =
-    tierId !== '' &&
-    variantId !== '' &&
+    chosenVariantId !== '' &&
+    (effectiveWho === 'group' ? chosenTier !== '' : chosenAccount !== '') &&
     amount.trim() !== '' &&
     Number.isFinite(numeric) &&
     numeric > 0 &&
-    (mode === 'fixed' || numeric <= 100);
+    (mode === 'fixed' || numeric <= 100) &&
+    dateError === null;
 
   const preview =
     valid && chosenVariant
@@ -229,79 +344,174 @@ function AddGroupPrice({
         : Math.round(chosenVariant.priceCents * (1 - numeric / 100))
       : null;
 
+  const pending = addTier.isPending || addAccount.isPending || addContract.isPending;
+
+  const failed = (error: unknown) => {
+    toast.add({
+      title: 'Could not set that price',
+      description: productErrorMessage(error, 'Nothing was changed.'),
+      type: 'error',
+    });
+  };
+  const done = (title: string) => () => {
+    setAmount('');
+    setUntil('');
+    setUntilHalfTyped(false);
+    toast.add({ title, type: 'success' });
+  };
+
   const submit = () => {
     if (!valid) return;
-    add.mutate(
-      {
-        tierId,
-        variantId,
-        ...(mode === 'fixed'
-          ? { priceCents: Math.round(numeric * 100) }
-          : { discountPercentage: numeric }),
-      },
-      {
-        onSuccess: () => {
-          setAmount('');
-          toast.add({ title: 'Price set', type: 'success' });
+    const priceCents = mode === 'fixed' ? Math.round(numeric * 100) : undefined;
+    const discountPercentage = mode === 'percent' ? numeric : undefined;
+
+    if (effectiveWho === 'group') {
+      addTier.mutate(
+        { tierId: chosenTier, variantId: chosenVariantId, priceCents, discountPercentage },
+        { onSuccess: done('Price set'), onError: failed }
+      );
+      return;
+    }
+
+    if (endDate !== '' && priceCents !== undefined) {
+      const validTo = dayEndUtc(endDate);
+      // `dateError` already refused anything that is not a calendar day, so a
+      // null here would be a bug rather than a typo — and a silent fallback to
+      // "no end date" would save an agreement that never ends.
+      if (validTo === null) return;
+      addContract.mutate(
+        {
+          companyId: chosenAccount,
+          variantId: chosenVariantId,
+          priceCents,
+          validFrom: todayStartUtc(),
+          validTo,
         },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not set that price',
-            description: productErrorMessage(error, 'Nothing was changed.'),
-            type: 'error',
-          });
-        },
-      }
+        { onSuccess: done('Agreement recorded'), onError: failed }
+      );
+      return;
+    }
+
+    addAccount.mutate(
+      { accountId: chosenAccount, variantId: chosenVariantId, priceCents, discountPercentage },
+      { onSuccess: done('Price set'), onError: failed }
     );
   };
 
-  if (liveTiers.length === 0) {
+  if (data.variants.length === 0) {
     return (
-      <FormSection title="Set a price for a customer group">
+      <FormSection title="Set a wholesale price">
         <Text className="text-sm">
-          You have not created any customer groups yet. A group is a set of businesses you charge
-          the same way: &ldquo;Wholesale&rdquo;, &ldquo;Trade&rdquo;, &ldquo;Fleet&rdquo;. Create
-          one under your trade customers, then come back and set what this product costs them.
+          {product.title} has no versions to price yet. Add one on the product itself first: a
+          wholesale price is set against a specific version, not the product as a whole.
         </Text>
       </FormSection>
     );
   }
-  if (data.variants.length === 0) {
+
+  // Neither picker has anything in it, so there is nothing to fill in and two
+  // places to go. This used to be a sentence telling her to "create one under
+  // your trade customers" — a screen that is not called that, is not where a
+  // group is made, and was not a link. Issue 740.
+  if (!hasGroups && !hasBusinesses) {
     return (
-      <FormSection title="Set a price for a customer group">
+      <FormSection title="Set a wholesale price">
         <Text className="text-sm">
-          {product.title} has no versions to price yet. Add one on the product itself first: a trade
-          price is set against a specific version, not the product as a whole.
+          Nobody is set up to buy from you wholesale yet. A wholesale group is a set of businesses
+          you charge the same way, like &ldquo;Trade&rdquo; or &ldquo;Stockists&rdquo;. Make a group
+          first if several shops will pay the same, or add the business on its own if it is only
+          one.
         </Text>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            color="module"
+            size="sm"
+            onClick={() => {
+              ctx.open('b2b.pricing-tiers.list');
+            }}
+          >
+            Open Wholesale groups
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              ctx.open('b2b.accounts.list');
+            }}
+          >
+            Open Wholesale customers
+          </Button>
+        </div>
       </FormSection>
     );
   }
 
   return (
     <FormSection
-      title="Set a price for a customer group"
-      description="Everyone in that group pays this instead of the normal price."
+      title="Set a wholesale price"
+      description="What this product costs a business you sell to, instead of the normal price."
     >
-      <Field>
-        <FieldLabel>Which group</FieldLabel>
-        <FieldControl
-          render={
-            <Select
-              color="module"
-              value={tierId}
-              // `items` is not a convenience here: silica renders the TRIGGER's
-              // selected label from this map, so a Select given only children
-              // shows the raw stored value — a bare UUID sitting where a group
-              // name belongs.
-              items={tierItems}
-              onValueChange={(next) => {
-                setTierId(String(next));
-              }}
-              aria-label="Which group"
-            />
-          }
-        />
-      </Field>
+      {/* One of the two is missing, so there is nothing to choose and the form
+          says which one it is doing rather than asking a question with one
+          answer. */}
+      {hasGroups && hasBusinesses ? (
+        <Field>
+          <FieldLabel>Who gets it</FieldLabel>
+          <FieldControl
+            render={
+              <Select
+                color="module"
+                value={effectiveWho}
+                items={whoItems}
+                onValueChange={(next) => {
+                  setWho(next === 'business' ? 'business' : 'group');
+                }}
+                aria-label="Who gets it"
+              />
+            }
+          />
+        </Field>
+      ) : null}
+
+      {effectiveWho === 'group' ? (
+        <Field>
+          <FieldLabel>Which group</FieldLabel>
+          <FieldControl
+            render={
+              <Select
+                color="module"
+                value={chosenTier}
+                // `items` is not a convenience here: silica renders the
+                // TRIGGER's selected label from this map, so a Select given
+                // only children shows the raw stored value — a bare UUID
+                // sitting where a group name belongs.
+                items={tierItems}
+                onValueChange={(next) => {
+                  setTierId(String(next));
+                }}
+                aria-label="Which group"
+              />
+            }
+          />
+        </Field>
+      ) : (
+        <Field>
+          <FieldLabel>Which business</FieldLabel>
+          <FieldControl
+            render={
+              <Select
+                color="module"
+                value={chosenAccount}
+                items={accountItems}
+                onValueChange={(next) => {
+                  setAccountId(String(next));
+                }}
+                aria-label="Which business"
+              />
+            }
+          />
+        </Field>
+      )}
 
       {/* A one-version product has nothing to choose, and a control with one
           option is a question nobody asked. */}
@@ -312,7 +522,7 @@ function AddGroupPrice({
             render={
               <Select
                 color="module"
-                value={variantId}
+                value={chosenVariantId}
                 items={variantItems}
                 onValueChange={(next) => {
                   setVariantId(String(next));
@@ -369,21 +579,50 @@ function AddGroupPrice({
         </FieldDescription>
       </Field>
 
+      {datable ? (
+        <Field>
+          <FieldLabel>Until (optional)</FieldLabel>
+          <FieldControl
+            render={
+              <div className="max-w-48">
+                <DayInput
+                  color="module"
+                  min={todayIso()}
+                  value={until}
+                  aria-label="Until"
+                  onValueChange={(next, halfTyped) => {
+                    setUntil(next);
+                    setUntilHalfTyped(halfTyped);
+                  }}
+                />
+              </div>
+            }
+          />
+          <FieldDescription>
+            {dateError ??
+              (until === ''
+                ? 'Leave this empty and they simply get this price from now on.'
+                : 'Putting a date on it records it as an agreement, starting today. While it runs it is what they pay, whatever else is set for them.')}
+          </FieldDescription>
+        </Field>
+      ) : null}
+
       <div className="flex justify-end">
-        <Button color="module" size="sm" disabled={!valid} loading={add.isPending} onClick={submit}>
+        <Button color="module" size="sm" disabled={!valid} loading={pending} onClick={submit}>
           <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Set this price
+          {endDate === '' ? 'Set this price' : 'Record this agreement'}
         </Button>
       </div>
     </FormSection>
   );
 }
-
 function TradePricingBody({
+  ctx,
   product,
   data,
   productId,
 }: {
+  ctx: SurfaceContext;
   product: Product;
   data: TradePricing;
   productId: string;
@@ -398,6 +637,29 @@ function TradePricingBody({
     () => new Map(data.variants.map((variant) => [variant.id, variant])),
     [data.variants]
   );
+
+  /**
+   * Every business-and-version already covered by a live agreement, with when
+   * it ends.
+   *
+   * An agreement wins outright for as long as it runs, so a standing price on
+   * the same pair is a number that will not be charged until the agreement
+   * lapses. Held as a map rather than a set because the row needs the DATE: "not
+   * what they pay" is a warning, and "not until April" is an answer.
+   */
+  const coveredByAgreement = useMemo(() => {
+    const covered = new Map<string, string>();
+    for (const contract of data.contractPrices) {
+      if (!contract.active) continue;
+      covered.set(
+        `${contract.accountId}|${contract.variantId}`,
+        contract.validTo
+          ? `Not while the agreement above runs. This takes over on ${new Date(contract.validTo).toLocaleDateString(undefined, { dateStyle: 'medium' })}.`
+          : 'Not while the agreement above runs, and that agreement has no end date.'
+      );
+    }
+    return covered;
+  }, [data.contractPrices]);
 
   // A tier scoped to `all` discounts this product without anybody having listed
   // it here, which is the difference between "nothing is set up" and "trade
@@ -471,10 +733,7 @@ function TradePricingBody({
         </FormSection>
       ) : null}
 
-      <FormSection
-        title="Prices set for this product"
-        description="Listed strongest first: a price agreed with one business wins over a signed agreement, which wins over a whole group's price."
-      >
+      <FormSection title="Prices set for this product" description={STRENGTH_ORDER_SENTENCE}>
         {nothingSpecific ? (
           <Text className="text-sm">
             Nothing has been set for {product.title} in particular.{' '}
@@ -484,6 +743,41 @@ function TradePricingBody({
           </Text>
         ) : (
           <div className="flex flex-col gap-3">
+            {data.contractPrices.map((rule) => {
+              const variant = variantById.get(rule.variantId);
+              const period = rule.validTo
+                ? `Agreed until ${new Date(rule.validTo).toLocaleDateString(undefined, { dateStyle: 'medium' })}`
+                : 'Agreed with no end date';
+              return (
+                <RuleRow
+                  key={rule.id}
+                  who={rule.accountName}
+                  detail={[period, rule.notes].filter(Boolean).join(' · ')}
+                  variant={variant}
+                  ruleCents={rule.priceCents}
+                  tone={rule.active ? 'success' : 'neutral'}
+                  badge={rule.active ? 'Signed agreement' : 'Agreement expired'}
+                  beaten={null}
+                  removing={removeContract.isPending}
+                  onRemove={() => {
+                    void (async () => {
+                      const ok = await confirmRemove(
+                        `${rule.accountName} (signed agreement)`,
+                        `The agreed price of ${formatCents(rule.priceCents)} stops applying and ${rule.accountName} falls back to their group's price. This does not cancel anything you signed on paper. It only stops the system charging it.`
+                      );
+                      if (!ok) return;
+                      removeContract.mutate(rule.id, {
+                        onSuccess: () => {
+                          toast.add({ title: 'Agreed price removed', type: 'success' });
+                        },
+                        onError: failed,
+                      });
+                    })();
+                  }}
+                />
+              );
+            })}
+
             {data.accountOverrides.map((rule) => {
               const variant = variantById.get(rule.variantId ?? '');
               const limits = [
@@ -505,6 +799,9 @@ function TradePricingBody({
                     rule.accountStatus === 'active'
                       ? 'Just this business'
                       : `Just this business · account ${rule.accountStatus}`
+                  }
+                  beaten={
+                    coveredByAgreement.get(`${rule.accountId}|${rule.variantId ?? ''}`) ?? null
                   }
                   removing={removeAccount.isPending}
                   onRemove={() => {
@@ -529,40 +826,6 @@ function TradePricingBody({
               );
             })}
 
-            {data.contractPrices.map((rule) => {
-              const variant = variantById.get(rule.variantId);
-              const period = rule.validTo
-                ? `Agreed until ${new Date(rule.validTo).toLocaleDateString(undefined, { dateStyle: 'medium' })}`
-                : 'Agreed with no end date';
-              return (
-                <RuleRow
-                  key={rule.id}
-                  who={rule.accountName}
-                  detail={[period, rule.notes].filter(Boolean).join(' · ')}
-                  variant={variant}
-                  ruleCents={rule.priceCents}
-                  tone={rule.active ? 'success' : 'neutral'}
-                  badge={rule.active ? 'Signed agreement' : 'Agreement expired'}
-                  removing={removeContract.isPending}
-                  onRemove={() => {
-                    void (async () => {
-                      const ok = await confirmRemove(
-                        `${rule.accountName} (signed agreement)`,
-                        `The agreed price of ${formatCents(rule.priceCents)} stops applying and ${rule.accountName} falls back to their group's price. This does not cancel anything you signed on paper. It only stops the system charging it.`
-                      );
-                      if (!ok) return;
-                      removeContract.mutate(rule.id, {
-                        onSuccess: () => {
-                          toast.add({ title: 'Agreed price removed', type: 'success' });
-                        },
-                        onError: failed,
-                      });
-                    })();
-                  }}
-                />
-              );
-            })}
-
             {data.tierOverrides.map((rule) => {
               const variant = variantById.get(rule.variantId ?? '');
               return (
@@ -578,6 +841,7 @@ function TradePricingBody({
                   ruleCents={tradeRulePriceCents(rule, variant?.priceCents ?? 0)}
                   tone={rule.tierDeleted ? 'neutral' : 'info'}
                   badge={rule.tierDeleted ? 'Group deleted' : 'Everyone in this group'}
+                  beaten={null}
                   removing={removeTier.isPending}
                   onRemove={() => {
                     void (async () => {
@@ -604,24 +868,24 @@ function TradePricingBody({
         )}
       </FormSection>
 
-      <AddGroupPrice product={product} data={data} productId={productId} />
+      <SetAPrice ctx={ctx} product={product} data={data} productId={productId} />
     </>
   );
 }
 
 export function ProductTradePricingSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const pricing = useTradePricing(productId);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} module={MODULE} />;
   }
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         status={
           scope.isFollowing ? (
             <Badge color="info" variant="soft" size="sm">
@@ -664,6 +928,7 @@ export function ProductTradePricingSurface({ ctx }: { ctx: SurfaceContext }) {
             </Card>
           ) : pricing.data ? (
             <TradePricingBody
+              ctx={ctx}
               product={scope.product}
               data={pricing.data}
               productId={scope.productId}

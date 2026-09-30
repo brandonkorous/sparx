@@ -41,6 +41,7 @@ import {
   type RepeaterFieldDef,
 } from './data';
 import { AssetField, useMediaPicker } from './media-picker';
+import { DayInput } from '../../components/day-input';
 
 /* ── Value readers ──────────────────────────────────────────────────────── */
 
@@ -206,17 +207,15 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
       return (
         <FieldControl
           render={
-            <div className="max-w-[16rem]">
-              <Input
-                color="module"
-                type="date"
-                value={asString(value)}
-                disabled={disabled}
-                onChange={(event) => {
-                  onChange(event.target.value || undefined);
-                }}
-              />
-            </div>
+            <DayInput
+              className="max-w-[16rem]"
+              color="module"
+              value={asString(value)}
+              disabled={disabled}
+              onValueChange={(value) => {
+                onChange(value || undefined);
+              }}
+            />
           }
         />
       );
@@ -225,17 +224,16 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
       return (
         <FieldControl
           render={
-            <div className="max-w-[18rem]">
-              <Input
-                color="module"
-                type="datetime-local"
-                value={value ? isoToLocal(asString(value)) : ''}
-                disabled={disabled}
-                onChange={(event) => {
-                  onChange(localToIso(event.target.value));
-                }}
-              />
-            </div>
+            <Input
+              className="max-w-[18rem]"
+              color="module"
+              type="datetime-local"
+              value={value ? isoToLocal(asString(value)) : ''}
+              disabled={disabled}
+              onChange={(event) => {
+                onChange(localToIso(event.target.value));
+              }}
+            />
           }
         />
       );

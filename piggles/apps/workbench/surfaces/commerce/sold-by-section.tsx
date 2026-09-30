@@ -37,36 +37,15 @@ import {
   useClearSaleAttribution,
   useSaleAttribution,
   useStaffMembers,
-  type CommissionOutcome,
   type SaleType,
 } from '../staff/data';
-import { formatCents } from '../finance/format';
+import { formatCents, formatDay } from '../finance/format';
+import { outcomeMessage, type OutcomeWords } from './sold-by-message';
 
-/**
- * What a recalculation means, in the owner's words.
- *
- * Every one of these is an ordinary state rather than an error, and they are
- * fixed in three different places — so a single "no commission" would leave
- * somebody guessing which. `not-payable` is the one people ask about most: an
- * order earns nothing until it is PAID, because a commission on an unpaid order
- * is a promise.
- */
-function outcomeMessage(result: CommissionOutcome, who: string): string {
-  switch (result.outcome) {
-    case 'recorded':
-      return result.amountCents
-        ? `${who} earned ${formatCents(result.amountCents)} on this order.`
-        : `Credited to ${who}. This order earned nothing: the amount it was based on came to zero.`;
-    case 'no-rate':
-      return `Credited to ${who}, but they are not on commission, so nothing was earned. Set a commission rate on their pay record to change that.`;
-    case 'not-payable':
-      return `Credited to ${who}. Commission is worked out once the order is paid.`;
-    case 'no-attribution':
-      return 'Nobody is credited with this sale yet.';
-    default:
-      return 'That sale could not be found.';
-  }
-}
+/** The sentences live in a sibling `.ts` so they can be tested: a `.tsx` cannot
+ *  be imported by vitest here. `words` carries the two formatters so that module
+ *  stays free of the money and date helpers. */
+const OUTCOME_WORDS: OutcomeWords = { cents: formatCents, day: formatDay };
 
 export function SoldBySection({
   type,
@@ -105,7 +84,7 @@ export function SoldBySection({
           afterPaneChange(() => {
             toast.add({
               title: 'Sale credited',
-              description: outcomeMessage(result.commission, who),
+              description: outcomeMessage(result.commission, who, OUTCOME_WORDS),
               type: result.commission.outcome === 'recorded' ? 'success' : 'info',
             });
           });

@@ -154,9 +154,15 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="font-mono whitespace-nowrap">{run.number}</td>
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate">{run.outputTitle ?? 'Untitled product'}</span>
+                    {/* Not `ItemName`: the KIND belongs on the second line too,
+                        and the shared component composes only version + code. */}
+                    <span className="truncate font-medium">
+                      {run.outputTitle ?? 'Untitled product'}
+                    </span>
                     <span className="truncate text-sm">
-                      {runKindLabel(run.kind)} · {run.outputSku ?? 'No code'}
+                      {runKindLabel(run.kind)}
+                      {run.outputVariantName ? ` · ${run.outputVariantName}` : ''} ·{' '}
+                      <span className="font-mono">{run.outputSku ?? 'No code'}</span>
                     </span>
                   </span>
                 </td>
@@ -191,7 +197,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Run list controls"
+        label="Making runs controls"
         search={
           <SearchInput
             value={q}
@@ -233,7 +239,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Location"
               value={locationId}
               onChange={(event) => {

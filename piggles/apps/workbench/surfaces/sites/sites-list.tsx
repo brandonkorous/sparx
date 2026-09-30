@@ -44,6 +44,50 @@ function canonicalHost(domains: Domain[]): string | null {
   return (active.find((domain) => domain.isCanonical) ?? active[0])?.host ?? null;
 }
 
+/**
+ * WHAT A VISITOR GETS AT THIS ADDRESS, WHICH IS NOT THE SAME AS WHAT SHE BUILT.
+ *
+ * `wizeworks/apps/site` serves the code starter at every address whose site has
+ * published no tree of its own — deliberately, so a business is live from its first
+ * minute rather than a blank page. `site-service` names the rule exactly: a page can
+ * be "saved, unpublished, and read by the whole world".
+ *
+ * This list is the ONLY screen that shows every site at once, and it printed a
+ * clickable web address for each and stopped. Juniper Row has seven sites. Four of
+ * them had published nothing — nine pages, nine, twelve, and one with none at all —
+ * and every one was answering the public with a starter home page, a nav, and her
+ * real clothes at her real prices with a working Add to cart. She had never opened
+ * three of them. 35 sites on this database are in that state (issue 851).
+ *
+ * Said under the ADDRESS rather than as a badge beside the role, because the address
+ * is what makes the promise: a link labelled with a working host reads as "this is
+ * my website". One statement, in the column that needs correcting.
+ */
+function addressTruth(site: Site): string | null {
+  // Absent, not zero. `publishedPageCount` is undefined on the single-site read
+  // and on an older api-rest, and "not counted" must never render as "none"
+  // ([[feedback_never_present_absence_as_measurement]]).
+  if (site.publishedPageCount === undefined) return null;
+  if (site.publishedPageCount > 0) return null;
+  return 'Shows a starter page, not yours yet';
+}
+
+/**
+ * A site that is not live, in words rather than in the value it is stored under.
+ *
+ * `properties.status` is `active | paused | archived` and the badge drew it
+ * verbatim, lower case: a site read "paused" or "archived" with no sentence
+ * saying what that meant for the person looking at it. Both wore `warning`,
+ * which is right for one of them and not the other: a paused site is something
+ * you did and may want to undo; an archived one is simply put away, and a
+ * colorless badge says that without claiming anything is wrong (RULE #4).
+ */
+function notLiveWords(status: string): { label: string; tone?: 'warning' } {
+  if (status === 'paused') return { label: 'Paused', tone: 'warning' };
+  if (status === 'archived') return { label: 'Put away' };
+  return { label: status, tone: 'warning' };
+}
+
 export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { controller } = useWorkbench();
   const confirm = useConfirm();
@@ -165,7 +209,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
     // card lifted onto it, matching invoicing and orders. The house pattern.
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Site list controls"
+        label="Sites controls"
         search={
           /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
@@ -198,6 +242,8 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <div className="flex-1" />
           </>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           /* Same reasoning as the count: the label stays on one line and the
             button keeps its width, so a narrow pane shrinks the search box
@@ -320,22 +366,33 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </td>
                     <td>
                       {host ? (
-                        // Stops the row's own open-handler: this opens the live
-                        // site, which is not what clicking the row means.
-                        <a
-                          href={`https://${host}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="link inline-flex items-center gap-1 text-sm"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                          }}
-                        >
-                          {host}
-                          <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
-                        </a>
+                        <div className="flex flex-col gap-0.5">
+                          {/* Stops the row's own open-handler: this opens the live
+                              site, which is not what clicking the row means. */}
+                          <a
+                            href={`https://${host}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="link inline-flex items-center gap-1 text-sm"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                            }}
+                          >
+                            {host}
+                            <Icon glyph={faArrowUpRightFromSquare} className="size-3" aria-hidden />
+                          </a>
+                          {/* A real ink token, never a faded one: this is the line
+                              she most needs to read on the row. */}
+                          {addressTruth(site) ? (
+                            <span className="text-warning text-sm">{addressTruth(site)}</span>
+                          ) : null}
+                        </div>
                       ) : (
-                        <span className="text-sm">Not published yet</span>
+                        // "Not published yet" is what this said, and it is a
+                        // different fact from the one it was standing in for: the
+                        // site may be finished and published and simply have no
+                        // address. Two of them on this database are (issue 851).
+                        <span className="text-sm">No web address yet</span>
                       )}
                     </td>
                     <td>
@@ -351,8 +408,8 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                           </Badge>
                         ) : null}
                         {site.status !== 'active' ? (
-                          <Badge color="warning" variant="soft" size="sm">
-                            {site.status}
+                          <Badge color={notLiveWords(site.status).tone} variant="soft" size="sm">
+                            {notLiveWords(site.status).label}
                           </Badge>
                         ) : null}
                       </div>

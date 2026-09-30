@@ -37,6 +37,7 @@ import {
   type SegmentField,
   type SegmentOperator,
 } from './segment-rules';
+import { DayInput } from '../../components/day-input';
 
 const MAX_DEPTH = 2;
 
@@ -164,14 +165,13 @@ function ValueControl({
       );
     case 'date':
       return (
-        <Input
+        <DayInput
           color="module"
-          type="date"
           aria-label="Value"
           className="max-w-[12rem]"
           value={node.value}
-          onChange={(event) => {
-            set(event.target.value);
+          onValueChange={(value) => {
+            set(value);
           }}
         />
       );
@@ -195,12 +195,12 @@ function ValueControl({
       return (
         <Select
           color="module"
-          aria-label="Wholesale account"
+          aria-label="Wholesale customer"
           value={node.value}
           items={itemsIncluding(
             Object.entries(accountItems).map(([value, label]) => ({ value, label })),
             node.value,
-            'A removed account'
+            'A business since removed'
           )}
           onValueChange={(next) => {
             set(next as string);

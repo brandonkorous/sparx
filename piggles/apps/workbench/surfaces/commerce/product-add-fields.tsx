@@ -81,7 +81,7 @@ export function NewProductFields(p: NewProductFieldsProps) {
 
       <FormSection
         title="Price"
-        description="Every product needs a price and a code before anyone can buy it, so both are set up here. Once it exists you can add sizes, colors and their own prices on the Options and Variants tabs."
+        description="Every product needs a price and a code before anyone can buy it, so both are set up here. Once it exists you can add sizes, colors and their own prices on the Options and Versions tabs."
       >
         <Field>
           <FieldLabel required>Price</FieldLabel>

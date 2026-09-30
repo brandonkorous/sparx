@@ -48,9 +48,10 @@ interface MediaAssetWire {
   // 0..1 normalized subject point. Set on the asset (the CMS image editor writes it),
   // so every surface that CROPS the image to a different shape — the social composer's
   // per-platform previews most of all — keeps the subject in frame instead of
-  // centre-cropping a head off. Absent → treated as dead centre.
-  focal_point_x?: number | null;
-  focal_point_y?: number | null;
+  // centre-cropping a head off. Absent → treated as dead centre. NESTED on reads:
+  // the flat `focal_point_x` is the PATCH body's spelling, and reading it put every
+  // asset at dead centre.
+  focal_point?: { x: number; y: number } | null;
   variants: { id: string; format: string; width: number; height: number; url: string }[];
 }
 
@@ -74,7 +75,7 @@ function thumbnailUrl(wire: MediaAssetWire): string | null {
   return big?.url ?? sorted.at(-1)?.url ?? wire.original_url;
 }
 
-function toAsset(wire: MediaAssetWire): MediaAsset {
+export function toAsset(wire: MediaAssetWire): MediaAsset {
   const url = thumbnailUrl(wire);
   return {
     id: wire.id,
@@ -84,8 +85,8 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     canOptimize: isOwnMediaUrl(url),
     status: wire.status,
     altText: wire.alt_text ?? null,
-    focalX: clampUnit(wire.focal_point_x),
-    focalY: clampUnit(wire.focal_point_y),
+    focalX: clampUnit(wire.focal_point?.x),
+    focalY: clampUnit(wire.focal_point?.y),
   };
 }
 

@@ -1,5 +1,5 @@
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { accountUrl } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import {
   amountOf,
@@ -133,7 +133,7 @@ function Verdict({ f }: { f: Figures }) {
       <p className="mt-4 text-lg font-bold">
         {f.bills > 1
           ? `Exactly what you pay now, for one bill instead of ${count(f.bills, 'bill', 'bills')}.`
-          : 'Exactly what that one thing costs you, for all fifteen apps.'}
+          : `Exactly what that one thing costs you, for all ${APP_COUNT_WORD} apps.`}
       </p>
     );
   }

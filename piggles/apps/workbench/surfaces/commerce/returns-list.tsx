@@ -86,7 +86,7 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Returns list controls"
+        label="Returns controls"
         filters={[
           {
             label: 'Show',

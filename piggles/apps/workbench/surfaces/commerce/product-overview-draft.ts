@@ -4,6 +4,8 @@
 // Save sends only what actually did.
 
 import type { ProductDeposit } from './made-to-order-data';
+import { plainText } from '@wizeworks/commerce-schemas';
+
 import type { Product, ProductPatch } from './products-data';
 
 /** Everything this tab holds, so "has anything changed" is one comparison
@@ -38,7 +40,10 @@ export function toDraft(product: Product): Draft {
   return {
     title: product.title,
     handle: product.handle,
-    description: product.description ?? '',
+    // Read back as the plain text the field holds. A row written before the
+    // schema normalized it can still carry tags, and the box she types in has
+    // to show her what a shopper reads (issue 848).
+    description: plainText(product.description),
     vendor: product.vendor ?? '',
     productType: product.productType ?? '',
     tags: product.tags,

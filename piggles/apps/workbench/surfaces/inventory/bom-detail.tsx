@@ -62,14 +62,15 @@ import {
   faTrashCan,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { FITS_ITS_NAME, PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
-import { buyingErrorMessage, isNotFound, useVariantLookup } from './suppliers-data';
+import { ItemName } from './item-name';
+import { buyingErrorMessage, useVariantLookup } from './suppliers-data';
 import {
   bomState,
   buildableTone,
@@ -90,6 +91,8 @@ interface ComponentDraft {
   variantId: string;
   variantSku: string;
   productTitle: string;
+  /** WHICH ONE of it. Two lengths of one linen read the same without it. */
+  variantName: string;
   quantityPer: string;
   scrapPercent: string;
 }
@@ -97,6 +100,17 @@ interface ComponentDraft {
 interface Draft {
   outputVariantId: string;
   outputSku: string;
+  /** What the finished thing is CALLED.
+   *
+   *  The lookup returns it, the recipe's default name is built out of it, and
+   *  then it was dropped on the floor: the card that confirms what you just
+   *  picked read "ASH-OVERSHIRT-L-INK / The finished item" — a code and a
+   *  placeholder, on the one screen whose job is to tell you that you chose the
+   *  right thing. The ingredient rows below it have carried `productTitle` all
+   *  along. [[feedback_fetched_but_never_rendered]] */
+  outputTitle: string;
+  /** WHICH VERSION it makes — "L / Ink". A recipe is keyed on one variant. */
+  outputVariantName: string;
   name: string;
   outputQuantity: string;
   laborCost: string;
@@ -108,6 +122,8 @@ function emptyDraft(): Draft {
   return {
     outputVariantId: '',
     outputSku: '',
+    outputTitle: '',
+    outputVariantName: '',
     name: '',
     outputQuantity: '1',
     laborCost: '',
@@ -156,6 +172,16 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const buildable = useBuildable(isNew ? '' : id, locationId);
 
+  /** The component that runs out first, so the card can name it rather than
+   *  print its code. */
+  const limiting = buildable.data?.components.find((c) => c.isLimiting);
+
+  /** Ingredients with no cost recorded, and whether that leaves nothing to add
+   *  up at all. A recipe of uncosted parts and no labor cost has NOT been
+   *  measured at zero; it has not been measured. */
+  const uncosted = bom.data?.uncostedComponentCount ?? 0;
+  const nothingCosted = uncosted > 0 && (bom.data?.estimatedUnitCostCents ?? 0) === 0;
+
   useEffect(() => {
     if (isNew) {
       ctx.setTitle('New recipe');
@@ -170,6 +196,8 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const next: Draft = {
       outputVariantId: bom.data.outputVariantId,
       outputSku: bom.data.outputSku ?? '',
+      outputTitle: bom.data.outputTitle ?? '',
+      outputVariantName: bom.data.outputVariantName ?? '',
       name: bom.data.name,
       outputQuantity: String(bom.data.outputQuantity),
       laborCost: bom.data.laborCostCents ? (bom.data.laborCostCents / 100).toFixed(2) : '',
@@ -178,6 +206,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         variantId: c.variantId,
         variantSku: c.variantSku ?? '',
         productTitle: c.productTitle ?? '',
+        variantName: c.variantName ?? '',
         quantityPer: String(c.quantityPer),
         scrapPercent: c.scrapPercent ? String(c.scrapPercent) : '',
       })),
@@ -227,6 +256,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               variantId: found.variantId,
               variantSku: found.sku,
               productTitle: found.productTitle ?? '',
+              variantName: found.variantName ?? '',
               quantityPer: '1',
               scrapPercent: '',
             },
@@ -261,6 +291,8 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           ...d,
           outputVariantId: found.variantId,
           outputSku: found.sku,
+          outputTitle: found.productTitle ?? '',
+          outputVariantName: found.variantName ?? '',
           name: d.name || `${found.productTitle ?? found.sku} recipe`,
         }));
         setOutputSkuEntry('');
@@ -372,18 +404,15 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   if (!isNew && bom.isError) {
-    const gone = isNotFound(bom.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This recipe no longer exists' : 'Could not load it'}
-            description={
-              gone
-                ? 'It may have been deleted.'
-                : 'This is a problem reaching the server. The recipe is unaffected.'
-            }
+            error={bom.error}
+            title="Could not load it"
+            description="This is a problem reaching the server. The recipe is unaffected."
+            missingTitle="This recipe no longer exists"
+            missingDescription="It may have been deleted."
           />
         </Card>
       </div>
@@ -463,21 +492,26 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 Retire it
               </Button>
             ) : null}
-            {!isNew ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                aria-label="Delete this recipe"
-                onClick={() => {
-                  void remove();
-                }}
-              >
-                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-              </Button>
-            ) : null}
           </>
+        }
+        // A VALUE, not bespoke JSX. `controls` relocates into the narrow bar's
+        // overflow popover verbatim, and only `actions` are re-authored there as
+        // labelled rows - so as a button this was a bare red bin above two rows
+        // that had words. scripts/check-toolbar-glyph.mjs holds the line.
+        actions={
+          isNew
+            ? undefined
+            : [
+                {
+                  label: 'Delete',
+                  title: 'Delete this recipe',
+                  icon: faTrashCan,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void remove();
+                  },
+                },
+              ]
         }
         refresh={
           isNew ? null : (
@@ -508,23 +542,42 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Stat>
                 <Stat>
                   <StatTitle>Runs out first</StatTitle>
+                  {/* The NAME, not the code. This is the one figure on the card
+                      that tells her what to go and buy, and it read
+                      "BRASS-BELT-1". The name and the version were both on the
+                      component row it comes from (issue 681). */}
                   <StatValue className="text-warning text-2xl">
-                    {buildable.data.limitingSku ?? '—'}
+                    {limiting?.productTitle ?? buildable.data.limitingSku ?? '—'}
                   </StatValue>
                   <StatDesc>
-                    {buildable.data.limitingSku
-                      ? 'Order this to make more'
+                    {limiting || buildable.data.limitingSku
+                      ? `${[
+                          limiting?.variantName,
+                          limiting?.variantSku ?? buildable.data.limitingSku,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}. Order this to make more.`
                       : 'Nothing is holding you back'}
                   </StatDesc>
                 </Stat>
                 <Stat>
                   <StatTitle>Costs about</StatTitle>
+                  {/* A part with no cost recorded is not a part that is free.
+                      `costCents` was read as zero, so a recipe whose every
+                      ingredient is uncosted printed "$0.00" as though somebody
+                      had worked it out, on the screen an owner prices against.
+                      [[feedback_never_present_absence_as_measurement]] */}
                   <StatValue className="text-2xl tabular-nums">
-                    {formatCents(bom.data?.estimatedUnitCostCents ?? 0)}
+                    {nothingCosted
+                      ? 'Not known'
+                      : formatCents(bom.data?.estimatedUnitCostCents ?? 0)}
                   </StatValue>
                   <StatDesc>
-                    each, at today&apos;s part prices: what a batch really costs is settled when you
-                    make one
+                    {nothingCosted
+                      ? 'No part on this recipe has a cost recorded, so there is nothing to add up. Put a cost on the parts and this fills itself in.'
+                      : uncosted > 0
+                        ? `each, and short by whatever the ${plural(uncosted, 'part', 'parts')} with no cost recorded cost.`
+                        : "each, at today's part prices: what a batch really costs is settled when you make one"}
                   </StatDesc>
                 </Stat>
               </Stats>
@@ -554,9 +607,17 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       />
                     }
                   />
+                  {/* Disabled while the box is empty, because `setOutput`
+                      starts `if (sku === '') return;` — so clicking it with
+                      nothing typed did nothing at all: no toast, no error, no
+                      movement. A person who does not know the code off by heart
+                      presses the button LABELLED "Find it" first, gets silence,
+                      and reads the screen as broken.
+                      [[feedback_the_empty_control_is_the_untested_one]] */}
                   <Button
                     color="module"
                     variant="outline"
+                    disabled={outputSkuEntry.trim() === ''}
                     loading={lookup.isPending}
                     onClick={setOutput}
                   >
@@ -570,8 +631,12 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : (
               <div className="border-base-300 flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3">
                 <span className="flex min-w-0 flex-col">
-                  <Text className="font-mono font-medium">{draft.outputSku}</Text>
-                  <Text className="text-sm">{bom.data?.outputTitle ?? 'The finished item'}</Text>
+                  <ItemName
+                    productTitle={draft.outputTitle || (bom.data?.outputTitle ?? null)}
+                    variantName={draft.outputVariantName || (bom.data?.outputVariantName ?? null)}
+                    code={draft.outputSku}
+                    fallback="The finished item"
+                  />
                 </span>
                 {isNew ? (
                   <Button
@@ -579,7 +644,13 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     variant="ghost"
                     color="neutral"
                     onClick={() => {
-                      setDraft((d) => ({ ...d, outputVariantId: '', outputSku: '' }));
+                      setDraft((d) => ({
+                        ...d,
+                        outputVariantId: '',
+                        outputSku: '',
+                        outputTitle: '',
+                        outputVariantName: '',
+                      }));
                     }}
                   >
                     Change
@@ -674,9 +745,12 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     addComponent();
                   }}
                 />
+                {/* Same silence as "Find it" above: `addComponent` returns
+                    early on an empty code and said nothing about it. */}
                 <Button
                   variant="outline"
                   color="neutral"
+                  disabled={skuEntry.trim() === ''}
                   loading={lookup.isPending}
                   onClick={addComponent}
                 >
@@ -715,12 +789,11 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       <tr key={component.variantId}>
                         <td className="w-full max-w-0 min-w-56">
                           <span className="flex min-w-0 flex-col">
-                            <span className="truncate">
-                              {component.productTitle || 'Untitled product'}
-                            </span>
-                            <span className="truncate font-mono text-sm">
-                              {component.variantSku}
-                            </span>
+                            <ItemName
+                              productTitle={component.productTitle || null}
+                              variantName={component.variantName || null}
+                              code={component.variantSku}
+                            />
                           </span>
                         </td>
                         <td>
@@ -826,7 +899,12 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </div>
                 <NativeSelect
                   size="sm"
-                  className="max-w-40"
+                  /* Not a cap. This picker lists warehouses the owner named,
+                     and `max-w-40` clipped "Fulfillment Center" to
+                     "Fulfillment Cente" in a card with 700 pixels going
+                     spare. The bar releases the same cap for its own slots;
+                     this card is not the bar. */
+                  className={FITS_ITS_NAME}
                   aria-label="Location"
                   value={locationId}
                   onChange={(event) => {
@@ -856,12 +934,11 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     <tr key={component.variantId}>
                       <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
-                          <span className="truncate">
-                            {component.productTitle ?? 'Untitled product'}
-                          </span>
-                          <span className="truncate font-mono text-sm">
-                            {component.variantSku ?? 'No code'}
-                          </span>
+                          <ItemName
+                            productTitle={component.productTitle}
+                            variantName={component.variantName}
+                            code={component.variantSku}
+                          />
                         </span>
                       </td>
                       <td className="text-right tabular-nums">{component.available}</td>

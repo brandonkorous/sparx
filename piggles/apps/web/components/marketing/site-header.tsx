@@ -5,7 +5,7 @@ import { Logo, Mark } from '@piggles/brand/react';
 import { accountUrl } from '@piggles/config';
 import { ThemeToggle } from './theme-toggle';
 import { HeaderMenu } from './header-menu';
-import { HEADER_LINKS } from './header-links';
+import { MegaNav } from './mega-nav';
 
 // Solid, not laid over the hero: the montage cuts between clips whose brightness
 // is nothing alike, so a bar readable over one is unreadable over the next.
@@ -28,12 +28,8 @@ export function SiteHeader() {
           </Link>
         </NavbarStart>
 
-        <NavbarCenter className="hidden gap-8 lg:flex">
-          {HEADER_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="text-base font-semibold">
-              {l.label}
-            </Link>
-          ))}
+        <NavbarCenter>
+          <MegaNav />
         </NavbarCenter>
 
         <NavbarEnd className="items-center gap-2">

@@ -78,12 +78,14 @@ export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Clients list controls"
+        label="Clients controls"
         status={
           <Text className="text-sm whitespace-nowrap">
             {clients.length === 1 ? '1 client' : `${String(clients.length)} clients`}
           </Text>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         refresh={
           <RefreshButton
             isFetching={isFetching}

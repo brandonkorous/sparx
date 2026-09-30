@@ -19,24 +19,10 @@
 // (issue 148).
 
 import { bookingStateMeta, type BookingStatus } from './bookings-data';
-import { clockLabel, TONE_BLOCK, TONE_RAIL, type CalendarEvent } from './calendar-data';
+import { TONE_BLOCK, TONE_RAIL, type CalendarEvent } from './calendar-data';
+import { blockWho, linesFor } from './calendar-block-text';
+import { zonedClock } from './calendar-zone';
 import type { Placement } from './calendar-grid';
-
-/** Who is coming. The chair is the fallback only where nobody is recorded — in
- *  the day view the chair is already the column heading, so naming it on the
- *  block repeats the words directly above it and never names the client. */
-function whoFor(event: CalendarEvent): string | null {
-  if (event.customerName) return event.customerName;
-  if (event.partySize && event.partySize > 1) return `Party of ${String(event.partySize)}`;
-  return event.resourceNames.length > 0 ? event.resourceNames.join(', ') : null;
-}
-
-/** Rows the block has room for: three from an hour up, two at three quarters,
- *  one at a half hour or less. */
-function linesFor(slots: number): 1 | 2 | 3 {
-  if (slots >= 4) return 3;
-  return slots === 3 ? 2 : 1;
-}
 
 /** A half hour or less: one row, so the words run out of WIDTH and end in an
  *  ellipsis rather than being cut off through their middles. The client still
@@ -45,7 +31,9 @@ function linesFor(slots: number): 1 | 2 | 3 {
 function OneLine({ event, who }: { event: CalendarEvent; who: string | null }) {
   return (
     <span className="flex min-w-0 items-baseline gap-1.5">
-      <span className="shrink-0 text-xs font-medium tabular-nums">{clockLabel(event.startAt)}</span>
+      <span className="shrink-0 text-xs font-medium tabular-nums">
+        {zonedClock(event.startAt, event.timezone)}
+      </span>
       <span className="truncate text-xs font-semibold">
         {who ? `${event.serviceName} · ${who}` : event.serviceName}
       </span>
@@ -73,7 +61,7 @@ function Stacked({
       <span className="flex min-w-0 flex-col leading-tight">
         <span className="flex min-w-0 items-baseline gap-1.5">
           <span className="shrink-0 text-xs font-medium tabular-nums">
-            {clockLabel(event.startAt)}
+            {zonedClock(event.startAt, event.timezone)}
           </span>
           <span className="truncate text-sm font-semibold">{event.serviceName}</span>
         </span>
@@ -83,7 +71,9 @@ function Stacked({
   }
   return (
     <span className="flex min-w-0 flex-col leading-tight">
-      <span className="truncate text-xs font-medium tabular-nums">{clockLabel(event.startAt)}</span>
+      <span className="truncate text-xs font-medium tabular-nums">
+        {zonedClock(event.startAt, event.timezone)}
+      </span>
       <span className="truncate text-sm font-semibold">{event.serviceName}</span>
       {who ? <span className="truncate text-xs">{who}</span> : null}
     </span>
@@ -100,14 +90,19 @@ export function EventBlock({
   onOpen: (event: CalendarEvent, modifiers: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const meta = bookingStateMeta(event.status as BookingStatus);
-  const who = whoFor(event);
+  const who = blockWho(event);
   const lines = linesFor(placement.slots);
 
   return (
     <button
       type="button"
       // The whole of it, always, however little the block itself can hold.
-      title={[clockLabel(event.startAt), event.serviceName, event.customerName, meta.label]
+      title={[
+        zonedClock(event.startAt, event.timezone),
+        event.serviceName,
+        event.customerName,
+        meta.label,
+      ]
         .filter(Boolean)
         .join(' · ')}
       onClick={(domEvent) => {

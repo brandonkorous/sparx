@@ -10,46 +10,71 @@
 // Picking someone also fills in the billing name and email when those are still
 // empty — filling them is almost always what was wanted, overwriting something
 // already typed almost never is.
+//
+// The row itself is `customerPickerRow`, next door, and the businesses are
+// looked up here because a name is the only part of a wholesale customer this
+// control needs: a person who buys for a shop has to READ as that on the screen
+// that decides what they are charged (issue 746).
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQueryClient } from '@wizeworks/query';
 import { useDebouncedValue } from '../../lib/api/search';
-import { SearchPicker, type PickerRow } from '../../components/search-picker';
+import { SearchPicker } from '../../components/search-picker';
+import { useAccounts } from '../crm/companies-data';
+import { customerName } from '../crm/customer-display';
 import {
-  customerLabel,
+  billingName,
   customerPickerKeys,
+  customerPickerRow,
   useCustomerOnRecord,
   useCustomerSearch,
   type CustomerSummary,
 } from './customer-picker-data';
 
-export { customerLabel };
+export { billingName, customerName };
 export type { CustomerSummary };
-
-/** Two lines: who they are, then the email that tells apart the two Dave Kellys
- *  every real customer list has. */
-function toRow(customer: CustomerSummary): PickerRow {
-  const primary = customerLabel(customer);
-  return {
-    id: customer.id,
-    primary,
-    secondary: customer.email && customer.email !== primary ? customer.email : null,
-  };
-}
 
 interface CustomerPickerProps {
   value: string | null;
   disabled?: boolean;
   onSelect: (customer: CustomerSummary) => void;
   onClear: () => void;
+  /**
+   * What to do when nobody matches. Given what was typed, so the screen it
+   * opens can arrive with the name already in it.
+   *
+   * Without it the picker keeps saying "Add them in Customers first", which is
+   * true and is still a dead end: she leaves, finds the screen, retypes the
+   * name, comes back, finds the record again, and types the name a third time
+   * (issue 745). A picker that can only reject is only half a control.
+   */
+  onAddNew?: (typed: string) => void;
 }
 
-export function CustomerPicker({ value, disabled, onSelect, onClear }: CustomerPickerProps) {
+export function CustomerPicker({
+  value,
+  disabled,
+  onSelect,
+  onClear,
+  onAddNew,
+}: CustomerPickerProps) {
   const [query, setQuery] = useState('');
   const queryClient = useQueryClient();
   const onRecord = useCustomerOnRecord(value);
   const search = useCustomerSearch(useDebouncedValue(query, 250));
   const results = search.data?.items ?? [];
+
+  // The same read the customer editor's Wholesale customer field makes, so both
+  // screens name a business identically and neither pays for its own list.
+  const { data: accounts } = useAccounts();
+  const businesses = useMemo(() => {
+    const names: Record<string, string> = {};
+    for (const account of accounts?.items ?? []) names[account.id] = account.companyName;
+    return names;
+  }, [accounts]);
+
+  const toRow = (customer: CustomerSummary) =>
+    customerPickerRow(customer, customer.companyId ? businesses[customer.companyId] : null);
 
   return (
     <SearchPicker
@@ -64,7 +89,19 @@ export function CustomerPicker({ value, disabled, onSelect, onClear }: CustomerP
       label="Search customers"
       placeholder="Search by name, email or company…"
       tooShort="Type at least two letters to find someone."
-      nothingFound="No customer matches that. Add them in Customers first."
+      nothingFound={
+        onAddNew
+          ? 'Nobody you already know is called that.'
+          : 'No customer matches that. Add them in Customers first.'
+      }
+      {...(onAddNew
+        ? {
+            nothingFoundAction: {
+              label: (typed: string) => `Add ${typed} as a customer`,
+              onAct: onAddNew,
+            },
+          }
+        : {})}
       clearLabel="Choose a different customer"
       onSelect={(id) => {
         const picked = results.find((customer) => customer.id === id);

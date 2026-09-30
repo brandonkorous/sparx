@@ -32,7 +32,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useBlueprints, type Blueprint } from './blueprints-data';
-import { contentsSummary, installState } from './blueprints-words';
+import { contentsSummary, installState, verticalLabel } from './blueprints-words';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { useSiteIsDark } from '../../lib/billing/site-live';
 
@@ -45,16 +45,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-/** Title-cased vertical for the card's quiet meta line. Rendered as plain text,
- *  never a badge — a category chip introducing the name would read as an eyebrow. */
-function verticalLabel(vertical: string | null): string | null {
-  if (!vertical) return null;
-  return vertical
-    .split(/[-_\s]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
 }
 
 function BlueprintCard({
@@ -158,7 +148,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Blueprints controls"
+        label="Ready-made sites controls"
         status={
           typeof total === 'number' ? (
             <Text className="ml-auto hidden shrink-0 text-sm whitespace-nowrap @md:block">

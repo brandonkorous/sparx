@@ -206,7 +206,13 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'builder.piece',
-    title: 'Saved piece',
+    // "Edit a piece", not "Saved piece". This is the EDITOR, and it sat in the
+    // launcher one letter from the list ("Saved pieces") under the same My Site
+    // heading — two rows, both leading to a list of pieces, nothing to choose
+    // between them. The tab renames itself to the piece the moment one is open
+    // (`ctx.setTitle`), so this string is only ever read in the launcher, which
+    // is exactly where it had to say what pressing it does. Issue 740.
+    title: 'Edit a piece',
     module: 'builder',
     icon: faCube,
     order: 5,
@@ -247,7 +253,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     icon: faInbox,
     section: 'Forms',
     order: 20,
-    keywords: ['contact', 'enquiries', 'leads', 'messages'],
+    keywords: ['contact', 'inquiries', 'enquiries', 'leads', 'messages'],
     component: FormSubmissionsListSurface,
   },
   {
@@ -268,7 +274,16 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     icon: faSliders,
     section: 'Forms',
     order: 21,
-    keywords: ['form', 'notify', 'recipients', 'reply', 'autoresponder', 'contact', 'enquiries'],
+    keywords: [
+      'form',
+      'notify',
+      'recipients',
+      'reply',
+      'autoresponder',
+      'contact',
+      'inquiries',
+      'enquiries',
+    ],
     component: FormSettingsListSurface,
   },
   {

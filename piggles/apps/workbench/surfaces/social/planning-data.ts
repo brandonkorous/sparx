@@ -230,6 +230,7 @@ export interface ImportResult {
  *  by finding thirty half-right drafts. */
 export function usePreviewImport() {
   return useMutation({
+    meta: { running: 'read that file' },
     mutationFn: (csv: string) => api.post<ImportPreview>('/v1/social/import/preview', { csv }),
   });
 }

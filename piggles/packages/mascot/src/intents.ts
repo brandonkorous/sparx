@@ -172,7 +172,7 @@ export type MascotAppId =
 
 /** The empty state of each app — the single most common place the mascot appears
  *  in the console, and the one most likely to drift into fifteen people each
- *  picking their favourite.
+ *  picking their favorite.
  *
  *  ── ALL FIFTEEN ARE SPECIFIC NOW ───────────────────────────────────────────
  *

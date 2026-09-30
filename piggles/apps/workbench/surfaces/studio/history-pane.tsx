@@ -90,7 +90,7 @@ function DocumentHistory({ doc, ref_ }: { doc: StudioDoc; ref_: DocumentRef }) {
   }
 
   return (
-    <div className="bg-base-200 flex h-full min-h-0 flex-col gap-4 overflow-auto p-4">
+    <div className="bg-base-200 flex h-full min-h-0 flex-col gap-4 overflow-auto p-4 [&>*]:shrink-0">
       {source.store === 'email' ? null : (
         <SavesSection source={source} restore={restore} entries={history.data.drafts} />
       )}

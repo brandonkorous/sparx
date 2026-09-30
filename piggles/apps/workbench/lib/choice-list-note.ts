@@ -14,7 +14,7 @@
 // she has none and sent her to Customers to make a tenth
 // ([[feedback_never_present_absence_as_measurement]]).
 //
-// The same two sentences sit over trade accounts on the wholesale invoice pane,
+// The same two sentences sit over wholesale customers on the wholesale invoice pane,
 // where the advice is "Add one under Accounts first".
 //
 // This is the words half. The other half is structural: a pane that WAITS for a

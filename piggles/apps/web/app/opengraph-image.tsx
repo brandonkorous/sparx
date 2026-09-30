@@ -1,5 +1,5 @@
 import { OG_SIZE, renderOg } from '@piggles/brand/og';
-import { PRODUCT } from '@piggles/config';
+import { APP_COUNT_WORD_CAP, PRODUCT } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { resolveIntent } from '@piggles/mascot';
 
@@ -12,7 +12,7 @@ export const alt = PRODUCT.tagline;
 export default function Image() {
   return renderOg({
     title: `Everything your business runs on, for ${PRICE_LABEL} a month`,
-    subtitle: 'Fifteen apps. One price. Named for what you are actually doing.',
+    subtitle: `${APP_COUNT_WORD_CAP} apps. One price. Named for what you are actually doing.`,
     pose: resolveIntent('hero'),
   });
 }

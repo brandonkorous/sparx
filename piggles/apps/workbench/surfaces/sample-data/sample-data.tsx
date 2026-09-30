@@ -62,21 +62,21 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   // "Sample data" — one screen with two names, and the one a person clicked was
   // not the one they landed on. Issue #012.
   useEffect(() => {
-    ctx.setTitle(productSurfaceTitle('platform.settings.sample-data') ?? 'Sample data');
+    ctx.setTitle(productSurfaceTitle('platform.settings.sample-data') ?? 'Practice data');
   }, [ctx]);
 
   const busy = load.isPending || clear.isPending;
   // A load/clear in flight is real work the operator should be warned about
   // before closing — it is a running job, not just an edited field.
-  useDirtySource(busy, 'Sample data is still being changed. Close anyway?');
+  useDirtySource(busy, 'Practice data is still being changed. Close anyway?');
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            title="Could not load the sample-data status"
-            description="This is a problem reaching the server. Any sample data you have is unaffected."
+            title="Could not load the practice-data status"
+            description="This is a problem reaching the server. Any practice data you have is unaffected."
             onRetry={() => {
               void refetch();
             }}
@@ -93,15 +93,15 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!data) return;
     const scope = modules.length > 0 ? modules.map(moduleLabel).join(', ') : 'your account';
     const ok = await confirm({
-      title: loaded ? 'Replace the sample data with a fresh set?' : 'Load sample data?',
+      title: loaded ? 'Replace the practice data with a fresh set?' : 'Load practice data?',
       description: loaded
-        ? `This clears the current sample records and stamps a fresh ${data.packLabel.toLowerCase()} set across ${scope}. Every record it adds is marked as a sample, and none of your real records are touched.`
+        ? `This clears the current practice records and stamps a fresh ${data.packLabel.toLowerCase()} set across ${scope}. Every record it adds is marked as practice, and none of your real records are touched.`
         : productCopyWith(
             'sampleData.loadConfirm',
-            `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how Piggles works with real-looking records. Everything it adds is clearly marked as a sample and can be removed in one step.`,
+            `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how Piggles works with real-looking records. Everything it adds is clearly marked as practice and can be removed in one step.`,
             { scope, pack: data.packLabel.toLowerCase() }
           ),
-      confirmLabel: loaded ? 'Replace it' : 'Load sample data',
+      confirmLabel: loaded ? 'Replace it' : 'Load practice data',
       cancelLabel: 'Not now',
       color: 'primary',
     });
@@ -110,14 +110,14 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
     load.mutate(undefined, {
       onSuccess: (result) => {
         toast.add({
-          title: 'Sample data loaded',
+          title: 'Practice data loaded',
           description: `Added ${summarizeCounts(result.counts)}.`,
           type: 'success',
         });
       },
       onError: () => {
         toast.add({
-          title: 'Could not load sample data',
+          title: 'Could not load practice data',
           description: 'Nothing was changed. Try again in a moment.',
           type: 'error',
         });
@@ -128,11 +128,11 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   const onClear = async () => {
     if (!data) return;
     const ok = await confirm({
-      title: 'Remove all sample data?',
+      title: 'Remove all practice data?',
       description: `This permanently deletes the ${summarizeCounts(
         data.counts
-      )} that were added as samples. Your real records are not touched, and this cannot be undone.`,
-      confirmLabel: 'Remove sample data',
+      )} that were added as practice records. Your real records are not touched, and this cannot be undone.`,
+      confirmLabel: 'Remove practice data',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -141,14 +141,14 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
     clear.mutate(undefined, {
       onSuccess: (result) => {
         toast.add({
-          title: 'Sample data removed',
+          title: 'Practice data removed',
           description: `Removed ${summarizeCounts(result.counts)}.`,
           type: 'success',
         });
       },
       onError: () => {
         toast.add({
-          title: 'Could not remove sample data',
+          title: 'Could not remove practice data',
           description: 'Nothing was changed. Try again in a moment.',
           type: 'error',
         });
@@ -159,7 +159,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Sample data actions"
+        label="Practice data actions"
         primary={
           <Button
             color="module"
@@ -177,8 +177,8 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                 ? 'Replacing…'
                 : 'Loading…'
               : loaded
-                ? 'Reload sample data'
-                : 'Load sample data'}
+                ? 'Reload practice data'
+                : 'Load practice data'}
           </Button>
         }
         refresh={
@@ -207,7 +207,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
               </div>
               <Text>
                 Fill your account with realistic made-up records so you can try things out before
-                your real ones exist. Everything added is clearly marked as a sample, and you can
+                your real ones exist. Everything added is clearly marked as practice, and you can
                 remove it all whenever you like.
               </Text>
             </div>
@@ -227,7 +227,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                 <div className="flex flex-col gap-2">
                   <Text className="text-sm">
                     {loaded
-                      ? 'Sample records are in place across:'
+                      ? 'Practice records are in place across:'
                       : productCopy(
                           'sampleData.scopeIntro',
                           'A load would fill the apps you have switched on:'
@@ -255,7 +255,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : (
                 <Text className="text-sm">
                   Nothing is loaded right now. Loading is safe to undo. One click removes every
-                  sample record and leaves your real ones exactly as they are.
+                  practice record and leaves your real ones exactly as they are.
                 </Text>
               )}
             </FormSection>
@@ -265,9 +265,9 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
             {loaded ? (
               <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
                 <div className="flex min-w-0 flex-col">
-                  <span className="text-base font-medium">Remove all sample data</span>
+                  <span className="text-base font-medium">Remove all practice data</span>
                   <Text className="text-sm">
-                    Deletes every sample record. Your real records are left untouched.
+                    Deletes every practice record. Your real records are left untouched.
                   </Text>
                 </div>
                 <Button
@@ -281,7 +281,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-                  Remove sample data
+                  Remove practice data
                 </Button>
               </div>
             ) : null}

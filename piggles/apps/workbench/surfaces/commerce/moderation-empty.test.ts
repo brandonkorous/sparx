@@ -16,6 +16,7 @@
 // and only 10 have ever had a question or a review.
 
 import { describe, expect, it } from 'vitest';
+import { UNANSWERED_FILTER } from './question-answers';
 import {
   moderationEmptyWords,
   type ModerationEmptyInput,
@@ -124,5 +125,33 @@ describe('the property', () => {
       const expected = theyFiltered && !(args.everCount === 0 && !args.searching);
       expect(blamed, JSON.stringify(shape)).toBe(expected);
     }
+  });
+});
+
+describe('the view that is not a status', () => {
+  const unanswered = (over: Partial<ModerationEmptyInput> = {}) =>
+    input({ status: UNANSWERED_FILTER, everCount: 4, ...over });
+
+  it('calls an empty "No answer yet" good news, not a filter to widen', () => {
+    // The whole point. Falling through to the generic branch would tell her to
+    // try a different word she never typed, about a view that is empty because
+    // the work is done. [[feedback_one_outcome_two_causes]]
+    const words = moderationEmptyWords('question', unanswered());
+    expect(words.title).toBe('Every question has an answer');
+    expect(words.detail).not.toContain('different word');
+  });
+
+  it('still says nobody has ever asked, when nobody has', () => {
+    // A shop with no questions at all must not be congratulated on answering
+    // them. The count past every filter wins over the view.
+    expect(moderationEmptyWords('question', unanswered({ everCount: 0 })).title).toBe(
+      'No questions yet'
+    );
+  });
+
+  it('leaves reviews alone, which have no answers axis', () => {
+    expect(moderationEmptyWords('review', unanswered()).title).toBe(
+      'Nothing matches those filters'
+    );
   });
 });

@@ -245,7 +245,7 @@ export function AuditDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <PaneLoadError
           reason="missing"
           title="No page to show"
-          description="Open a page check from the Site checks list to see its breakdown here."
+          description="Open a page check from things worth fixing to see its breakdown here."
         />
       </Card>
     );

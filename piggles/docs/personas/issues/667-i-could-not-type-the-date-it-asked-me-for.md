@@ -7,8 +7,9 @@
 **Filed:** 2026-09-18
 **Fixed:** 2026-09-18
 **Confirmed by:** P03, on the screen — see below
-**Blocked on:** release. The code fix is done and proved; it reaches the consoles
-when silicaui is published and the catalog version moves. See **The fix**.
+**Blocked on:** — cleared 2026-09-19. silicaui 0.56.0 is installed and the fix is
+live in both consoles; driven on screen, both halves, see **Confirmed live** at
+the end.
 
 ## What happened
 
@@ -230,3 +231,32 @@ Recorded in [rating.md](../rating.md):
 **Stock versus your books** is not scored here. Its date field has the same
 fault, but the pane has not been walked as a pane yet, and a score is for a walk.
 Whoever takes it should press Backspace in that field first.
+
+## Confirmed live — 2026-09-19
+
+silicaui **0.56.0** installed, dev restarted, driven as Devi on
+**Making things › Plan a run › Planned for**, the field that was dead:
+
+|                        | typed    | showed                                         |
+| ---------------------- | -------- | ---------------------------------------------- |
+| from EMPTY             | `09`     | `09 / dd / yyyy`, focus on the day             |
+|                        | `252026` | `09 / 25 / 2026`                               |
+| Backspace on the month |          | `mm / 25 / 2026` — **the neighbours survived** |
+| retype the month       | `11`     | `11 / 25 / 2026`                               |
+
+Both halves of the defect are gone: the empty field fills, and clearing one cell
+clears one cell. The shipped mechanism keeps the segments as the component's own
+state and syncs `value` down only when it says something the segments do not
+already say:
+
+```ts
+setInternal((prev) => {
+  const incoming = partsFromDate(value);
+  if (datePartsEqual(prev, incoming)) return prev;
+  if (value == null && dateFromParts(prev) === null) return prev;
+  return incoming;
+});
+```
+
+That second line is the fix: an incomplete set of segments beside a `null` value
+is somebody part-way through typing, never a parent clearing the field.

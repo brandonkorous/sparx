@@ -110,7 +110,12 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { ActionLabel } from '../../components/action-label';
 
-const LABEL = 'Fitment';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'what this fits';
 /** Registry module for this pane, so the brand draws Sell's own picture in the
  *  empty, waiting and failed states rather than the generic one. */
 const MODULE = 'commerce';
@@ -149,9 +154,26 @@ function rangeLabel(range: ProductFitmentRange, dimension: FitmentDimension | un
   return `${label}: any`;
 }
 
-function ruleTitle(rule: { nodePath: string[] }, domain: FitmentDomain | undefined): string {
+/**
+ * A rule as a phrase, at the start of a sentence or in the middle of one.
+ *
+ * The list's name is the TENANT's own — "Apparel sizes", "Vehicles", "Printer
+ * models" — so it may be singular or plural and nothing here may bend it into a
+ * grammatical slot. `Every ${name.toLowerCase()}` gave Devi a button reading
+ * **"It fits every apparel sizes"**, a saved row reading "Every apparel sizes"
+ * and a toast saying "Now fits Every apparel sizes" (issue 794).
+ *
+ * "Everything in <Name>" reads correctly whichever way the list was named, and
+ * leaves the name exactly as it was typed.
+ */
+function ruleTitle(
+  rule: { nodePath: string[] },
+  domain: FitmentDomain | undefined,
+  position: 'start' | 'mid' = 'start'
+): string {
   if (rule.nodePath.length > 0) return rule.nodePath.join(' › ');
-  return `Every ${(domain?.displayName ?? 'thing').toLowerCase()}`;
+  const lead = position === 'start' ? 'Everything in' : 'everything in';
+  return domain ? `${lead} ${domain.displayName}` : `${lead} this list`;
 }
 
 /* ── The picker ─────────────────────────────────────────────────────────── */
@@ -247,10 +269,8 @@ function FitmentPicker({
     // exists that does not.
   };
 
-  const here =
-    path.length === 0
-      ? `every ${(domain?.displayName ?? 'thing').toLowerCase()}`
-      : path.map((step) => step.name).join(' › ');
+  // Mid-sentence: the button around it reads "It fits …".
+  const here = ruleTitle({ nodePath: path.map((step) => step.name) }, domain, 'mid');
 
   return (
     // PaneScope portals into the pane that opened it — a modal in a
@@ -272,7 +292,7 @@ function FitmentPicker({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col overflow-hidden">
           <DialogTitle>Add what this fits</DialogTitle>
 
-          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             {domains.length > 1 ? (
               <Field>
                 <FieldLabel>What kind of thing</FieldLabel>
@@ -291,33 +311,46 @@ function FitmentPicker({
             ) : null}
 
             {/* Where you are, and the way back. A drill-down with no visible
-                path is a maze — you cannot tell a dead end from the bottom. */}
+                path is a maze — you cannot tell a dead end from the bottom.
+                WHERE YOU ARE IS TEXT, not a disabled button. The step you are on
+                was drawn greyed-out and unclickable, which is how this console
+                draws something you MAY NOT USE — so the one line naming the list
+                you are standing in read as broken, and it is the only thing on
+                the dialog that says what you are choosing from. */}
             <div className="flex flex-wrap items-center gap-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                disabled={path.length === 0}
-                onClick={() => {
-                  setPath([]);
-                }}
-              >
-                {domain?.displayName ?? 'All'}
-              </Button>
+              {path.length === 0 ? (
+                <Text as="span" className="px-2 text-sm font-medium">
+                  {domain?.displayName ?? 'All'}
+                </Text>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setPath([]);
+                  }}
+                >
+                  {domain?.displayName ?? 'All'}
+                </Button>
+              )}
               {path.map((step, index) => (
                 <span key={step.id} className="flex items-center gap-1">
                   <Icon glyph={faChevronRight} className="size-3 shrink-0" aria-hidden />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    disabled={index === path.length - 1}
-                    onClick={() => {
-                      setPath((current) => current.slice(0, index + 1));
-                    }}
-                  >
-                    {step.name}
-                  </Button>
+                  {index === path.length - 1 ? (
+                    <Text as="span" className="px-2 text-sm font-medium">
+                      {step.name}
+                    </Text>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setPath((current) => current.slice(0, index + 1));
+                      }}
+                    >
+                      {step.name}
+                    </Button>
+                  )}
                 </span>
               ))}
             </div>
@@ -449,7 +482,7 @@ function FitmentPicker({
                     color="module"
                     size="sm"
                     value={notes}
-                    placeholder="Only with the heavy-duty bracket"
+                    placeholder="Check the measurement first"
                     onChange={(event) => {
                       setNotes(event.target.value);
                     }}
@@ -457,7 +490,8 @@ function FitmentPicker({
                 }
               />
               <FieldDescription>
-                A caveat worth remembering. Kept with the rule, for you, not shown to shoppers.
+                Anything you want to remember about this match. Kept with it, for you, and never
+                shown to shoppers.
               </FieldDescription>
             </Field>
           </div>
@@ -551,7 +585,7 @@ function FitmentBody({
           // every invalidate-then-toast save here.)
           setPicking(false);
           afterPaneChange(() => {
-            toast.add({ title: `Now fits ${ruleTitle(rule, domain)}`, type: 'success' });
+            toast.add({ title: `Now fits ${ruleTitle(rule, domain, 'mid')}`, type: 'success' });
           });
         },
         onError: (error) => {
@@ -569,7 +603,7 @@ function FitmentBody({
    *  and what stops happening because of it. */
   const onRemove = async (rule: ProductFitment) => {
     const domain = domains.find((candidate) => candidate.id === rule.domainId);
-    const title = ruleTitle(rule, domain);
+    const title = ruleTitle(rule, domain, 'mid');
     const ok = await confirm({
       title: `Stop saying this fits ${title}?`,
       description: `Anyone filtering your website by what they own will no longer be shown ${scope.product.title} for ${title}, from the moment you confirm. Nothing else about the product changes, and you can add it again, but nothing here remembers the note or the years you had set on it.`,
@@ -731,8 +765,8 @@ function FitmentBody({
                       color="danger"
                       shape="square"
                       className="shrink-0"
-                      aria-label={`Remove ${ruleTitle(rule, domain)}`}
-                      title={`Remove ${ruleTitle(rule, domain)}`}
+                      aria-label={`Stop saying this fits ${ruleTitle(rule, domain, 'mid')}`}
+                      title={`Stop saying this fits ${ruleTitle(rule, domain, 'mid')}`}
                       onClick={() => {
                         void onRemove(rule);
                       }}
@@ -752,7 +786,7 @@ function FitmentBody({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="What it fits controls"
+        label="Controls for what it fits"
         status={
           scope.isFollowing ? (
             <Badge color="info" variant="soft" size="sm">
@@ -822,10 +856,10 @@ export function ProductFitmentSurface({ ctx }: { ctx: SurfaceContext }) {
   // There is no draft beyond that, and no Save — every act on this pane commits
   // on its own. See the header.
   const [picking, setPicking] = useState(false);
-  const scope = useProductScope(ctx, { label: LABEL, hold: picking });
+  const scope = useProductScope(ctx, { noun: NOUN, hold: picking });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} module={MODULE} />;
   }
   // Keyed on the product so a following pane that DID move starts clean rather
   // than carrying one product's state onto the next.

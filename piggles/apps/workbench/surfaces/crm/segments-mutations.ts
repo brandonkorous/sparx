@@ -42,6 +42,7 @@ export function useRecomputeSegment() {
 export function useRecomputeAllSegments() {
   const invalidate = useInvalidateSegments();
   return useMutation({
+    meta: { running: 'work your groups out again' },
     mutationFn: () => api.post<RecomputeResult>('/v1/crm/segments/recompute', {}),
     onSuccess: () => {
       invalidate();

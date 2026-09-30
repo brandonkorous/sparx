@@ -22,6 +22,7 @@ import {
 import { afterPaneChange } from '../../lib/defer';
 import { staffErrorMessage, useSetRate } from './data';
 import { toDateInput } from './format';
+import { DayInput } from '../../components/day-input';
 
 type Basis = 'hourly' | 'salary' | 'commission' | 'none';
 
@@ -153,11 +154,10 @@ export function NewRateForm({
           <FieldLabel>Starting from</FieldLabel>
           <FieldControl
             render={
-              <Input
-                type="date"
+              <DayInput
                 value={from}
-                onChange={(event) => {
-                  setFrom(event.target.value);
+                onValueChange={(value) => {
+                  setFrom(value);
                 }}
               />
             }

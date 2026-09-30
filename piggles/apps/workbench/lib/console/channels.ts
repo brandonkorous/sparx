@@ -61,6 +61,22 @@ const CHANNEL: Record<string, string> = {
  * place rather than describing an order. Without it a marketplace order reads
  * "Marketplace", which is the honest answer when the caller does not know which.
  */
+/**
+ * Where a sale came from, for a key that is ALREADY derived.
+ *
+ * A report groups by ONE key, so it has no (channel, source) pair to hand over:
+ * a marketplace order keys by its own slug so Etsy and Faire are separate
+ * lines, and everything else keys by its channel. Buckets and slugs share no
+ * names, so the marketplace lookup goes first without risk.
+ *
+ * This exists because the customer reports pane drew the API's wording
+ * instead — "Storefront", "Admin", "B2B portal" — which made a FIFTH name for
+ * the fact this file was written to give one name to.
+ */
+export function channelKeyLabel(key: string): string {
+  return MARKETPLACE_SOURCE[key] ?? CHANNEL[key] ?? key.replace(/_/g, ' ');
+}
+
 export function channelLabel(channel: string | null | undefined, source?: string | null): string {
   if (channel === 'marketplace' && source) {
     return MARKETPLACE_SOURCE[source] ?? source.replace(/_/g, ' ');

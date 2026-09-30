@@ -33,7 +33,7 @@ export function BookingResourcePicker({
           You have not set up any people or equipment yet, so this will be assigned automatically.
         </Text>
       ) : (
-        <div className="border-base-300 flex max-h-56 flex-col gap-1 overflow-y-auto rounded-md border p-1">
+        <div className="border-base-300 flex max-h-56 flex-col gap-1 overflow-y-auto rounded-md border p-1 [&>*]:shrink-0">
           {resourceList.map((resource) => {
             const on = resourceIds.includes(resource.id);
             return (

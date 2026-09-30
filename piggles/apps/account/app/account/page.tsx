@@ -6,11 +6,12 @@ import { requireSession } from '@wizeworks/auth';
 import { prisma } from '@wizeworks/db';
 import { Logo } from '@piggles/brand/react';
 import { AppearanceControl } from '@/components/appearance-control';
-import { marketingUrl, PRODUCT } from '@piggles/config';
+import { APP_COUNT_WORD, marketingUrl, PRODUCT } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { capacityReport } from '@wizeworks/usage';
 import { Capacity } from '@/components/capacity';
 import { readConsent } from '@/lib/consent';
+import { planState } from '@/lib/plan-state';
 
 export const metadata: Metadata = { title: 'Your account' };
 export const dynamic = 'force-dynamic';
@@ -21,11 +22,11 @@ export const dynamic = 'force-dynamic';
 // measured yet" and a ceiling nobody has decided draws no bar — a value nobody
 // took must never render as one.
 
-function trialState(trialEndsAt: Date | null, status: string) {
-  if (status !== 'trialing' || !trialEndsAt) return null;
-  const days = Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000);
-  return { days, over: days <= 0 };
-}
+// `planState` lives in lib/ because BOTH halves of this page read it: the badge
+// under "Your plan" and the sentence under "Payment". They used to be written
+// separately, which is how the badge came to say `active` while the paragraph
+// below it said "while you are on the trial" for a business whose trial had
+// ended nineteen days earlier.
 
 export default async function AccountPage() {
   const session = await requireSession();
@@ -52,7 +53,7 @@ export default async function AccountPage() {
     select: { host: true },
   });
 
-  const trial = trialState(tenant?.trialEndsAt ?? null, tenant?.subscriptionStatus ?? '');
+  const plan = planState(tenant?.subscriptionStatus, tenant?.trialEndsAt);
 
   // The analytics answer, shown as a fact rather than as a control. This page
   // reports where things stand; changing a decision happens on the screen that
@@ -88,7 +89,14 @@ export default async function AccountPage() {
 
             Same rule for every other entry to the door — see the note in
             accept-invite-client.tsx. */}
-        <div className="flex items-center gap-2">
+        {/* `flex-wrap` HERE, not only on the row above. The outer row wrapped,
+            so the logo dropped to its own line and these three landed together
+            on the next one — 349px of controls in a 341px column at 360px, which
+            pushed **Go to my business** 32px off the right edge and gave the
+            page sideways scroll. The one button this page exists for was the
+            part hanging off the screen. `justify-end` keeps them on the right
+            once they do wrap. */}
+        <div className="flex flex-wrap items-center justify-end gap-2">
           {/* Beside the way out, not instead of it — the same corner it occupies
               on the signed-out screens, so it does not move once somebody has an
               account. */}
@@ -119,29 +127,20 @@ export default async function AccountPage() {
         <Card>
           <CardBody>
             <h2 className="text-xl font-bold">Your plan</h2>
-            <p className="mt-1 text-base">All fifteen apps, one price.</p>
+            <p className="mt-1 text-base">All {APP_COUNT_WORD} apps, one price.</p>
             <p className="mt-4 text-4xl font-extrabold">
               {PRICE_LABEL}
               <span className="text-base font-bold">/month</span>
             </p>
             <div className="mt-4">
-              {/* Status is its own color axis — a lifecycle state gets a
-                  semantic tone, never a neutral pill. */}
-              {trial ? (
-                <Badge color={trial.over ? 'warning' : 'success'} variant="soft" size="lg">
-                  {trial.over
-                    ? 'Trial finished'
-                    : `Free trial: ${trial.days} day${trial.days === 1 ? '' : 's'} left`}
-                </Badge>
-              ) : (
-                <Badge
-                  color={tenant?.subscriptionStatus === 'active' ? 'success' : 'warning'}
-                  variant="soft"
-                  size="lg"
-                >
-                  {tenant?.subscriptionStatus ?? 'unknown'}
-                </Badge>
-              )}
+              {/* Status is its own color axis: a state that wants something
+                  from her gets a semantic tone. `plan.tone` is UNDEFINED for
+                  the states that want nothing, which renders a colorless badge
+                  — a different thing from naming `neutral`, and the right
+                  answer for "no billing set up yet". */}
+              <Badge color={plan.tone} variant="soft" size="lg">
+                {plan.label}
+              </Badge>
             </div>
           </CardBody>
         </Card>
@@ -166,9 +165,12 @@ export default async function AccountPage() {
 
       <div className="border-base-300 mt-12 border-t pt-8">
         <h2 className="text-xl font-bold">Payment</h2>
+        {/* The first sentence is the one the badge above is drawn from, so the
+            two halves of this page cannot say different things about the same
+            business. The second is true in every state. */}
         <p className="mt-2 text-base">
-          There is nothing to pay while you are on the trial, and no card on file. Adding a payment
-          method, seeing invoices, and buying more room are the next thing being built.
+          {plan.payment} Adding a payment method, seeing invoices, and buying more room are the next
+          thing being built.
         </p>
       </div>
 

@@ -10,7 +10,7 @@ export const HARMONY_LABELS: Record<HarmonyKind, { label: string; blurb: string 
       'Two colors from opposite sides of the wheel. High energy: good when one thing needs to stand out against everything else.',
   },
   analogous: {
-    label: 'Neighbours',
+    label: 'Neighbors',
     blurb:
       'Colors that sit beside each other. Calm and unmistakably related: good for backgrounds and large areas.',
   },

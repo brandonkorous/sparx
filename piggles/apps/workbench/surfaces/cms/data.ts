@@ -100,7 +100,16 @@ export interface ContentEntry {
   legal_kind: string | null;
   /** Whether the owner has said they have read the starter wording. */
   legal_reviewed: boolean;
-  /** Only present on GET one — the sites this entry publishes to (empty = all). */
+  /** The sites this entry publishes to. **The EMPTY list means every site**, so
+   *  `?? []` is not a safe default: it turns a row whose scope never arrived into
+   *  a confident claim that all of them show it.
+   *
+   *  Sent on GET one and, since issue 870, on every LIST row too — the list is
+   *  where she decides what to open, and it could not tell a page pinned to the
+   *  site she was standing on from one all of her businesses publish.
+   *
+   *  Still optional, because a response cached from before that shipped has no
+   *  such key. `siteScopeCell` keeps the three cases apart. */
   propertyIds?: string[];
 }
 
@@ -289,6 +298,11 @@ export interface UpdateEntryInput {
   body?: Record<string, unknown>;
   seo?: Record<string, unknown>;
   author_id?: string | null;
+  /** Which of the business's sites this appears on; `[]` means every one of
+   *  them. Omitted leaves the scope alone, which is what every save did before
+   *  the editor had a control for it — the server sent `propertyIds` on GET for
+   *  a "Visible on sites" control that was never built (issue 867). */
+  property_ids?: string[];
 }
 
 export function useUpdateEntry(id: string) {

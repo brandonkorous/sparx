@@ -126,11 +126,18 @@ export function CalendarToolbar({
         and twenty chips is a bar taller than the grid. */}
           <NativeSelect
             size="sm"
-            /* Wide enough for its own default option: at `max-w-40` the picker
-               read "Everyone & equip" at every width, including inside a popover
-               with room to spare. Still capped, because a business may name a
-               chair a whole sentence. */
-            className="max-w-56 shrink"
+            /* NO cap, and the note that used to sit here said the opposite.
+               It read "still capped, because a business may name a chair a
+               whole sentence" - but the bar's own slot sets
+               `[&>.select]:max-w-full` on its children, which outranks a
+               `max-w-*` written on the control, so the cap never did anything.
+               Measured on screen: this picker is 197px, its own content width,
+               at a `max-w-56` of 224. It had been widened a step from
+               `max-w-40` to stop "Everyone & equip" being clipped, and the
+               thing that actually stopped that was releasing the cap in the
+               popover (issue 717). A name the business typed cannot carry a
+               width we chose. */
+            className="shrink"
             aria-label="Show the diary for"
             value={resourceId}
             disabled={resources.length === 0}

@@ -216,6 +216,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   const tools = data ?? [];
   const groups = useMemo(() => groupTools(data ?? []), [data]);
   const blockedCount = tools.filter((t) => !t.enabled).length;
+  const toolCount = tools.length;
   const changedCount = tools.filter((t) => t.explicit).length;
 
   const onToggle = (tool: ToolPolicyDto, enabled: boolean) => {
@@ -298,11 +299,16 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Connected app access controls"
+        label="Controls for what it may do"
+        statusReady={!isPending}
+        statusFailed={isError}
         status={
           <>
+            {/* The bar said "Permissions" while the tab above it said "What it
+                may do" — the platform's title for this pane, spelled out here,
+                on the pane itself. A count is what a bar is for anyway. */}
             <Text as="span" className="text-sm font-medium">
-              Permissions
+              {toolCount === 1 ? '1 thing it can do' : `${String(toolCount)} things it can do`}
             </Text>
             {blockedCount > 0 ? (
               <Badge color="warning" variant="soft" size="sm">

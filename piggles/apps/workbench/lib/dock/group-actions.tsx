@@ -46,6 +46,7 @@ import { Icon } from '@piggles/ui';
 import { ChromeWindowBoundary } from '@/lib/dock/window-boundary';
 import { useWorkbench } from '@/lib/workbench/context';
 import { useWindowMode } from '@/lib/window-mode-context';
+import { TabListMenu } from './tab-list-menu';
 import { TabScrollButtons } from './tab-scroll';
 
 export function GroupActions(props: IDockviewHeaderActionsProps) {
@@ -93,6 +94,22 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
           mid-bar would compete with the tabs they are there to move. */}
       <TabScrollButtons />
 
+      {/* And GOING to one by name, which is a different job from moving along
+          the strip.
+
+          This console had the arrows and nothing else. `TabListMenu` — two
+          hundred and fifty lines of searchable jump list, with its own arrow-key
+          wiring and a header explaining why it exists — was imported by nothing,
+          so the feature its own comments describe was not on the screen. Every
+          other presentation of this product gives you a list of what is open:
+          the phone has its Open sheet, the other console wires this same
+          component. Only the desktop dock asked somebody with a strip full of
+          tabs to find one by pressing an arrow.
+
+          It hides itself below two tabs, so the pair only ever appears on a bar
+          that has something to jump to. [[feedback_screen_over_a_function_nobody_calls]] */}
+      <TabListMenu panels={props.panels} activePanel={props.activePanel} />
+
       <DropdownMenu>
         <Tooltip content="More">
           <DropdownMenuTrigger>
@@ -135,11 +152,11 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
                 }
               }}
             >
-              {detached ? (
-                <Icon glyph={faWindow} className="size-4" aria-hidden />
-              ) : (
-                <Icon glyph={faWindow} className="size-4" aria-hidden />
-              )}
+              {/* One glyph for both directions: a window is a window, and the
+                  LABEL is what says which way it is going. This was a ternary
+                  whose two branches rendered exactly the same icon — code that
+                  reads as a decision and makes none. */}
+              <Icon glyph={faWindow} className="size-4" aria-hidden />
               {detached ? 'Bring this back' : 'Move to its own window'}
             </DropdownMenuItem>
           </DropdownMenuGroup>

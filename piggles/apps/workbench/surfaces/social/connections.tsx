@@ -603,7 +603,7 @@ export function SocialConnectionsSurface() {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Connections controls"
+        label="Your social accounts controls"
         status={
           connections.length > 0 ? (
             <Badge color="success" variant="soft" size="sm">
@@ -631,7 +631,7 @@ export function SocialConnectionsSurface() {
               <PaneLoadError
                 module={MODULE}
                 icon={<Icon glyph={faShareNodes} className="size-6" aria-hidden />}
-                title="Could not load your connections"
+                title="Could not load your social accounts"
                 description={socialErrorMessage(
                   overview.error,
                   'This is a problem reaching the server. Your connected accounts are unaffected.'

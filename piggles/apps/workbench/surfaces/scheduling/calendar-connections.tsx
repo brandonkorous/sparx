@@ -50,6 +50,7 @@ import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useSchedulingResources } from './bookings-data';
+import { useFeedback } from '../../components/feedback/provider';
 import {
   calendarErrorMessage,
   connectionStateMeta,
@@ -71,6 +72,7 @@ const MODULE = 'scheduling';
 export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
+  const feedback = useFeedback();
 
   const resources = useSchedulingResources();
   const providers = useOAuthProviders();
@@ -195,14 +197,29 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
           </Text>
 
           {cryptoOff ? (
+            // A warning with no way to act on it is half a message. This said
+            // sync was "switched on for it" — passive, naming nobody, on a state
+            // a business cannot change from any screen because it needs a key
+            // set at our end. It says who to ask and gives her the way to ask.
             <Alert color="warning">
               <AlertContent>
-                <AlertTitle>Calendar sync is not set up yet</AlertTitle>
+                <AlertTitle>We have not switched calendar sync on for you yet</AlertTitle>
                 <AlertDescription>
-                  This account cannot link outside calendars until sync is switched on for it. Your
-                  bookings are unaffected.
+                  Linking an outside calendar needs something we turn on at our end, and it is not
+                  on for this account. Send us a message and we will sort it. Your bookings carry on
+                  as normal either way.
                 </AlertDescription>
               </AlertContent>
+              <Button
+                size="sm"
+                color="warning"
+                variant="soft"
+                onClick={() => {
+                  feedback.openSend({ source: 'button' });
+                }}
+              >
+                Send us a message
+              </Button>
             </Alert>
           ) : (
             <FormSection
@@ -299,7 +316,11 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
                 module={MODULE}
                 icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
                 title="No calendars linked yet"
-                description="Once you link a calendar above, the times its owner is busy elsewhere will show as unavailable in your diary."
+                description={
+                  cryptoOff
+                    ? 'Nothing is linked, and nothing can be until we switch sync on for this account.'
+                    : 'Once you link a calendar above, the times its owner is busy elsewhere will show as unavailable in your diary.'
+                }
               />
             </Card>
           ) : (

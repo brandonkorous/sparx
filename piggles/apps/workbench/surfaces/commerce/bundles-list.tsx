@@ -133,7 +133,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Bundle list controls"
+        label="Bundles controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

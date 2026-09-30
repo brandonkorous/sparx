@@ -212,7 +212,7 @@ export function InventorySetupSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Setup controls"
+        label="Set up your stock controls"
         refresh={
           <RefreshButton
             isFetching={setup.isFetching}

@@ -5,6 +5,7 @@
 
 import { daysPastDue } from '../../lib/console/days';
 import { invoiceState, type InvoiceStatus, type InvoiceTone } from '../../lib/invoice-status';
+import { formatAmount } from '../../lib/money-format';
 
 export type ArStatus = InvoiceStatus;
 
@@ -168,12 +169,25 @@ export interface BillingDocument {
    *  it -- see issue 442. */
   shippingTotal: number;
   surchargeTotal: number;
+  /** Money already taken against this document before it was raised. The
+   *  printed copy subtracts it from the balance, so a preview that does not
+   *  carry it asks the customer for more than the document does. */
+  depositTotal: number;
+  /** When the document was issued, or null while it is still a draft. The
+   *  printed copy dates itself `finalizedAt ?? createdAt`; without it the
+   *  preview stamped today on a document raised weeks ago. */
+  finalizedAt: string | null;
   total: number;
   balance: number;
   amountPaid: number;
   status: ArStatus;
-  /** Net-terms due date. Null for pay-now/retail documents with no terms. */
+  /** Net-terms due date. Null for pay-now/retail documents with no terms, and
+   *  always null on a quote or an estimate — an offer has no money owing on it,
+   *  so it has an expiry instead. */
   dueAt: string | null;
+  /** When a price offer stops standing. Null on a bill. The Quotes list reads
+   *  this for its "Valid until" column and its Expired badge. */
+  validUntil: string | null;
   /**
    * Days past due, computed server-side. The UI never re-derives this — if it
    * did, the list and the AR aging report could disagree about whether the same
@@ -236,6 +250,9 @@ export function normalizeDocument(raw: BillingDocument): BillingDocument {
     taxTotal: num(raw.taxTotal),
     shippingTotal: num(raw.shippingTotal),
     surchargeTotal: num(raw.surchargeTotal),
+    // Prisma sends every Decimal over the wire as a STRING, so a money field
+    // left out of this list is typed `number` and holds "30.00" at runtime.
+    depositTotal: num(raw.depositTotal),
     total: num(raw.total),
     balance: num(raw.balance),
     amountPaid: num(raw.amountPaid),
@@ -257,7 +274,7 @@ export type ArTone = InvoiceTone;
 export { invoiceState };
 
 export function formatMoney(amount: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  return formatAmount(amount, currency);
 }
 
 /**
@@ -279,7 +296,7 @@ export function formatMoneyCompact(amount: number, currency = 'USD'): string {
       maximumFractionDigits: 1,
     }).format(amount);
   }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  return formatAmount(amount, currency);
 }
 
 export interface AgingBucket {

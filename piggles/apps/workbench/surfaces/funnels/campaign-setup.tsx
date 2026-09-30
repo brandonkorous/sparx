@@ -51,7 +51,7 @@ function Identity({
   return (
     <FormSection
       title="What this campaign is"
-      description="The name is yours, to recognize it by. Nobody outside your team sees either of these."
+      description="The name is yours, to recognize it by. Nobody outside your business sees either of these."
     >
       <Field>
         <FieldLabel>Name</FieldLabel>
@@ -197,12 +197,17 @@ export function CampaignSetup({
   canEdit,
   error,
   defaultStallHours,
+  hasLandingPage,
 }: {
   draft: SetupDraft;
   on: SetupHandlers;
   canEdit: boolean;
   error: string | null;
   defaultStallHours: number | undefined;
+  /** Whether this campaign has a landing page of its own. Server-set, so it is
+   *  read rather than edited here — and it decides what the page field's hint
+   *  is allowed to say. */
+  hasLandingPage: boolean;
 }) {
   return (
     <>
@@ -212,7 +217,12 @@ export function CampaignSetup({
         title="The steps"
         description="In order, from the first thing somebody does to the outcome you want. Renaming a step keeps everything it has already recorded."
       >
-        <StageLadderEditor stages={draft.stages} onChange={on.setStages} disabled={!canEdit} />
+        <StageLadderEditor
+          stages={draft.stages}
+          onChange={on.setStages}
+          disabled={!canEdit}
+          hasLandingPage={hasLandingPage}
+        />
       </FormSection>
 
       <Entry draft={draft} on={on} canEdit={canEdit} />

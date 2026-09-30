@@ -10,17 +10,20 @@
 // always taken a `customerId` filter and nothing had ever passed one.
 //
 // Newest first, past and future in one run, because "when were they last in" and
-// "are they coming back" are the same glance.
+// "are they coming back" are the same glance. With the Bookings app removed the
+// tab says so and how to add it back, rather than "Could not load this".
 
-import { Badge } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { faCalendarCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 
 import { Table } from '../../components/table';
 import { ModuleScope } from '../../components/module-scope';
+import { useModuleStates } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   bookingResourceLabel,
+  type Booking,
   bookingStateMeta,
   formatClock,
   formatDay,
@@ -39,6 +42,46 @@ export function CustomerBookingsTab({
   ctx: SurfaceContext;
   customerId: string;
 }) {
+  const { data: modules } = useModuleStates();
+  const bookings = modules?.find((module) => module.slug === 'scheduling');
+  // Only a known "off" hides the history; a slow modules read never does.
+  if (bookings && (!bookings.enabled || bookings.reachable === false)) {
+    return <BookingsAppOff ctx={ctx} reachable={bookings.reachable !== false} />;
+  }
+  return <BookingsHistory ctx={ctx} customerId={customerId} />;
+}
+
+/** The Bookings app is not in this workspace, or not open to this person. */
+function BookingsAppOff({ ctx, reachable }: { ctx: SurfaceContext; reachable: boolean }) {
+  return (
+    <Card>
+      <EmptyState
+        icon={<Icon glyph={faCalendarCheck} className="size-6" aria-hidden />}
+        title="Bookings is not in your workspace"
+        description={
+          reachable
+            ? 'Add the Bookings app and everything this person books appears here.'
+            : 'Your access does not include Bookings. Whoever runs the account can add it for you.'
+        }
+        actions={
+          reachable ? (
+            <Button
+              size="sm"
+              color="primary"
+              onClick={() => {
+                ctx.open('platform.settings.modules', {});
+              }}
+            >
+              Add app
+            </Button>
+          ) : undefined
+        }
+      />
+    </Card>
+  );
+}
+
+function BookingsHistory({ ctx, customerId }: { ctx: SurfaceContext; customerId: string }) {
   const { data, isPending, isError } = useBookings({
     customerId,
     order: 'desc',
@@ -69,40 +112,35 @@ export function CustomerBookingsTab({
             </tr>
           </thead>
           <tbody>
-            {rows.map((booking) => {
-              const meta = bookingStateMeta(booking.status);
-              return (
-                <tr
-                  key={booking.id}
-                  {...openableRowProps((event) => {
-                    ctx.open(
-                      'scheduling.bookings.detail',
-                      { id: booking.id },
-                      { target: targetFor(event) }
-                    );
-                  })}
-                >
-                  <td className="align-top whitespace-nowrap">
-                    <div className="font-medium">
-                      {formatDay(booking.startAt, booking.timezone)}
-                    </div>
-                    <div className="text-sm">{formatClock(booking.startAt, booking.timezone)}</div>
-                  </td>
-                  <td className="align-top">{booking.service.name}</td>
-                  <td className="hidden align-top text-sm @lg:table-cell">
-                    {bookingResourceLabel(booking)}
-                  </td>
-                  <td className="text-right align-top">
-                    <Badge color={meta.tone} variant="soft" size="sm">
-                      {meta.label}
-                    </Badge>
-                  </td>
-                </tr>
-              );
-            })}
+            {rows.map((booking) => (
+              <BookingRow key={booking.id} ctx={ctx} booking={booking} />
+            ))}
           </tbody>
         </Table>
       </RelatedCard>
     </ModuleScope>
+  );
+}
+
+function BookingRow({ ctx, booking }: { ctx: SurfaceContext; booking: Booking }) {
+  const meta = bookingStateMeta(booking.status);
+  return (
+    <tr
+      {...openableRowProps((event) => {
+        ctx.open('scheduling.bookings.detail', { id: booking.id }, { target: targetFor(event) });
+      })}
+    >
+      <td className="align-top whitespace-nowrap">
+        <div className="font-medium">{formatDay(booking.startAt, booking.timezone)}</div>
+        <div className="text-sm">{formatClock(booking.startAt, booking.timezone)}</div>
+      </td>
+      <td className="align-top">{booking.service.name}</td>
+      <td className="hidden align-top text-sm @lg:table-cell">{bookingResourceLabel(booking)}</td>
+      <td className="text-right align-top">
+        <Badge color={meta.tone} variant="soft" size="sm">
+          {meta.label}
+        </Badge>
+      </td>
+    </tr>
   );
 }

@@ -12,6 +12,7 @@
 import { getSurface, resolveTitle } from '../../lib/surfaces/registry';
 import { descriptorKey, type PaneDescriptor } from '../../lib/surfaces/descriptor';
 import type { FeedbackContextPayload } from '../../lib/api/feedback';
+import { productSurfaceTitle } from '../../lib/product';
 
 /** Prefix so a workbench submission is never mistaken for a dashboard path in
  *  the admin inbox — `workbench:invoicing.invoice?id=…`, not `/invoicing/…`. */
@@ -92,3 +93,19 @@ export function summarizeContext(context: FeedbackContextPayload): string {
   if (parts.length > 0) return parts.join(' · ');
   return context.route?.replace(PREFIX, '') ?? 'the workbench';
 }
+
+/**
+ * What THIS console calls the screen a reply lands on.
+ *
+ * The platform's title for `platform.feedback.list` is "Your feedback"; Piggles
+ * calls it "What you told us", and two sentences in the compose dialog were
+ * spelling the platform's name out by hand. Read from the brand so a rename in
+ * `vocabulary.ts` carries here, and so the sentence cannot drift from the tab it
+ * is pointing at. [[feedback_a_copy_edit_breaks_identity_lookups]]
+ */
+export function feedbackScreenName(): string {
+  return productSurfaceTitle(FEEDBACK_SURFACE) ?? 'Your feedback';
+}
+
+/** The surface the sentence above points at. Spelled once. */
+const FEEDBACK_SURFACE = 'platform.feedback.list';

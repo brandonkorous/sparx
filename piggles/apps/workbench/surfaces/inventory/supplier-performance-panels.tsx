@@ -303,7 +303,7 @@ export function PriceLadders({
   return (
     <FormSection
       title="Quantity prices"
-      description="“$4.10 each, or $3.60 if you take fifty.” Set the ladder here and a purchase order picks the right price for the quantity being ordered, and tells the buyer what the next step down would save."
+      description="“$4.10 each, or $3.60 if you take fifty.” Set the ladder here and an order to them picks the right price for the quantity being ordered, and tells the buyer what the next step down would save."
     >
       {variants.map((link) => (
         <PriceLadderRow key={link.id} link={link} currency={currency} />
@@ -363,7 +363,7 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
           afterCommit(() => {
             toast.add({
               title: 'Quantity prices saved',
-              description: `Purchase orders for ${link.productTitle ?? link.variantSku ?? 'this item'} will use them from now on.`,
+              description: `Orders to this supplier for ${link.productTitle ?? link.variantSku ?? 'this item'} will use them from now on.`,
               type: 'success',
             });
           });

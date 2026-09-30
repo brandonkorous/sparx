@@ -45,7 +45,7 @@ import {
 } from '@wizeworks/query';
 import { useToast } from '@wizeworks/silicaui-react';
 import { describeWriteFailure } from '../lib/api/write-failure';
-import { readWriteMeta } from '../lib/api/write-meta';
+import { readWriteMeta, writeFailureTitle } from '../lib/api/write-meta';
 import { reportCrash } from '../lib/analytics';
 
 export function WriteFailureReporter(): null {
@@ -94,6 +94,7 @@ export function WriteFailureReporter(): null {
         boundary: 'mutation',
         outcome: failure.code,
         ...(meta.writing ? { writing: meta.writing } : {}),
+        ...(meta.running ? { running: meta.running } : {}),
         ...(failure.reference ? { requestId: failure.reference } : {}),
       });
 
@@ -118,7 +119,7 @@ export function WriteFailureReporter(): null {
       if (identity) withdraw(identity);
 
       const shown = addToast({
-        title: meta.writing ? `Couldn't save ${meta.writing}` : "That didn't save",
+        title: writeFailureTitle(meta),
         description: failure.showReference
           ? `${failure.message} If it keeps happening, quote ${failure.reference}.`
           : failure.message,

@@ -122,12 +122,14 @@ export function ReferralsListSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Referrals list controls"
+        label="Referrals controls"
         status={
           <Text className="text-sm whitespace-nowrap">
             {referrals.length === 1 ? '1 referral' : `${String(referrals.length)} referrals`}
           </Text>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         refresh={
           <RefreshButton
             isFetching={isFetching}

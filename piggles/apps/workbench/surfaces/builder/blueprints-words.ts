@@ -52,23 +52,20 @@ export function installState(
   }
 }
 
-/** The friendly name for a module slug, for the "what this needs" note. Falls
- *  back to a capitalised slug so an unknown module still reads as words. */
-export function moduleLabel(slug: string): string {
-  const names: Record<string, string> = {
-    builder: 'Site',
-    commerce: 'Store',
-    cms: 'Content',
-    email: 'Email',
-    crm: 'Customers',
-    b2b: 'Wholesale',
-    invoicing: 'Invoicing',
-    inventory: 'Inventory',
-    scheduling: 'Scheduling',
-    dropship: 'Dropshipping',
-  };
-  return names[slug] ?? slug.charAt(0).toUpperCase() + slug.slice(1);
-}
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`, which resolves through the brand's own
+ * app registry. This file kept its own, and so did five others; measured
+ * 2026-09-25, `commerce` alone had SIX names across the two consoles —
+ *
+ *     Sell (the rail) · Selling · Online store · Online stores · Store · commerce
+ *
+ * — and a Piggles shop owner met four of them on four different screens while
+ * the rail beside her said Sell the whole time. Same defect as one order reading
+ * four ways on four screens (issue 260), one level up: the APPS themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
 /** A short "what it creates" line for a card: the two or three biggest things,
  *  in plain words. Empty designs (a bare starting point) say so rather than
@@ -218,4 +215,68 @@ export function installImpact(siteName: string, pageCount: number | undefined): 
     pages: pageCount,
     sentence: `A design is a whole site, not a set of pages added to one. ${siteName} has ${pageCount === 1 ? '1 page' : `${String(pageCount)} pages`} now, and adding this design replaces ${many}, along with its header, footer and look. That cannot be undone. ${kept}`,
   };
+}
+
+/**
+ * A design's look, said in words rather than in the key it is stored under.
+ *
+ * `contents.theme` is a SLUG — `glossy-fashion`, `retail-plant-modern`,
+ * `b2b-apparel-blanks`, `fiveelements` — and it was drawn onto the pane exactly
+ * as stored: "Comes with the glossy-fashion look". Measured 2026-09-25 on the
+ * dev catalog: 191 designs carry a theme, 79 of the slugs have a hyphen in them,
+ * and `marketplace_themes.name` is the slug again, so there is no display name
+ * anywhere to reach for.
+ *
+ * 40 of the 191 slugs are the design's OWN name, slugified, so the sentence read
+ * "Glossy Fashion comes with the Glossy Fashion look" — a name repeated back to
+ * somebody who just read it. That case says the same thing without the echo.
+ */
+export function lookSentence(
+  theme: unknown,
+  designName: string
+): { text: string; name: string | null } {
+  if (typeof theme !== 'string' || theme.trim() === '') {
+    return { text: 'Its colors, fonts and spacing come set up for you.', name: null };
+  }
+  const name = theme
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  if (name.toLowerCase() === designName.trim().toLowerCase()) {
+    return { text: 'Its colors, fonts and spacing come set up for you.', name: null };
+  }
+  return { text: 'look (colors, fonts and spacing) comes set up for you.', name };
+}
+
+/**
+ * What KIND of business a design was drawn for, in words rather than the trade's
+ * own four labels.
+ *
+ * The catalog stores four verticals and nothing else: `services` (111 designs),
+ * `retail` (50), `content` (18) and `b2b` (12), measured 2026-09-25. Both the
+ * gallery card and the detail line title-cased the raw value with their own
+ * private copy of the same three lines of code — so a shop owner read "Retail",
+ * "Content", and, for twelve designs, "B2b".
+ *
+ * "Retail" is not wrong so much as EMPTY: it is a word from a catalog taxonomy,
+ * and what somebody choosing a design wants to know is what the design is set up
+ * to do. The fallback stays title-case, for a vertical added after this table.
+ */
+const VERTICAL_WORDS: Record<string, string> = {
+  retail: 'For selling things',
+  services: 'For taking bookings',
+  content: 'For publishing',
+  b2b: 'For selling to other businesses',
+};
+
+export function verticalLabel(vertical: string | null | undefined): string | null {
+  if (!vertical) return null;
+  const known = VERTICAL_WORDS[vertical.toLowerCase()];
+  if (known) return known;
+  return vertical
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }

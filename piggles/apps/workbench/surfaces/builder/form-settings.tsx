@@ -22,6 +22,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card, Text, useToast } from '@wizeworks/silicaui-react';
+import { faFileLines } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -38,7 +40,7 @@ import {
   type FormConfig,
   type FormDefinition,
 } from './form-settings-data';
-import { SETTINGS_COLUMN } from './form-settings-column';
+import { MODULE, SETTINGS_COLUMN, formPageWords } from './form-settings-column';
 import { CustomersCard, NameCard, NotifyCard, ReplyCard } from './form-settings-fields';
 
 interface Draft {
@@ -131,6 +133,7 @@ function EditForm({ ctx, formNodeId }: { ctx: SurfaceContext; formNodeId: string
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            module={MODULE}
             title="Could not load these settings"
             description="This is a problem reaching the server. The form on your site is unaffected and is still taking messages."
             onRetry={() => {
@@ -142,7 +145,18 @@ function EditForm({ ctx, formNodeId }: { ctx: SurfaceContext; formNodeId: string
     );
   }
 
-  if (isLoading || !data || !draft) return <PaneWaiting />;
+  // Inside the shell and inside a card, like every other state in this console.
+  // A bare <PaneWaiting> has no pane background and no content region round it,
+  // so waiting and loaded were two different shapes.
+  if (isLoading || !data || !draft) {
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneWaiting module={MODULE} />
+        </Card>
+      </div>
+    );
+  }
 
   const recipients = parseRecipients(draft.recipientsText);
   const badAddress = firstInvalidRecipient(recipients);
@@ -178,6 +192,18 @@ function EditForm({ ctx, formNodeId }: { ctx: SurfaceContext; formNodeId: string
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Form settings controls"
+        status={
+          <>
+            <Icon glyph={faFileLines} className="size-4 shrink-0" aria-hidden />
+            {/* WHICH form. The page it sits on appears nowhere else on this pane
+                once the form has a name of its own — it is the Name field's
+                PLACEHOLDER, which vanishes the moment anybody types. With more
+                than one form, that is the only thing telling them apart. */}
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {formPageWords(data.pageSlug)}
+            </Text>
+          </>
+        }
         primary={
           <Button
             color="module"

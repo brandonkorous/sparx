@@ -117,6 +117,7 @@ import {
   leadStatusMeta,
   lifecycleStageMeta,
   joinedMonth,
+  splitTypedName,
 } from './customer-display';
 
 // The focused single column a NEW customer is created in — no profile to show yet.
@@ -176,13 +177,28 @@ interface Draft {
   customProperties: Record<string, unknown>;
 }
 
-function emptyDraft(): Draft {
+/**
+ * A blank customer, or as much of one as whoever opened this screen already
+ * knew.
+ *
+ * A picker somewhere else was searched for a person who turned out not to
+ * exist, so the name is already typed and the business is already chosen
+ * (issue 745). Arriving with an empty form would make her type both again, and
+ * typing a name a second time is how the same person ends up in the book twice.
+ *
+ * Everything here is a STARTING POINT and stays editable; nothing is locked.
+ */
+function emptyDraft(seed: { name?: string; companyId?: string } = {}): Draft {
+  const { firstName, lastName } = splitTypedName(seed.name ?? '');
+
   return {
-    firstName: '',
-    lastName: '',
+    firstName,
+    lastName,
     company: '',
     jobTitle: '',
-    type: 'retail',
+    // Filed under a business, so they buy as one. The relationship picker is
+    // right there if that is wrong.
+    type: seed.companyId ? 'b2b' : 'retail',
     lifecycleStage: 'lead',
     leadStatus: '',
     email: '',
@@ -190,7 +206,7 @@ function emptyDraft(): Draft {
     preferredContactMethod: '',
     doNotContact: false,
     assignedRepId: '',
-    companyId: '',
+    companyId: seed.companyId ?? '',
     tags: [],
     customProperties: {},
   };
@@ -304,7 +320,18 @@ function CustomerEditor({
   const { members } = useTeamRoster();
   const { data: accounts } = useAccounts();
 
-  const saved = useMemo(() => (customer ? toDraft(customer) : emptyDraft()), [customer]);
+  const seedName = typeof ctx.params.name === 'string' ? ctx.params.name : undefined;
+  const seedCompanyId = typeof ctx.params.companyId === 'string' ? ctx.params.companyId : undefined;
+  const saved = useMemo(
+    () =>
+      customer
+        ? toDraft(customer)
+        : emptyDraft({
+            ...(seedName ? { name: seedName } : {}),
+            ...(seedCompanyId ? { companyId: seedCompanyId } : {}),
+          }),
+    [customer, seedName, seedCompanyId]
+  );
   const [draft, setDraft] = useState<Draft>(saved);
   const [touched, setTouched] = useState(false);
   useEffect(() => {
@@ -353,10 +380,10 @@ function CustomerEditor({
   }, [members, draft.assignedRepId]);
 
   const accountItems = useMemo(() => {
-    const items: Record<string, string> = { '': 'Not linked to an account' };
+    const items: Record<string, string> = { '': 'Not linked to a business' };
     for (const a of accounts?.items ?? []) items[a.id] = a.companyName;
     if (draft.companyId && !items[draft.companyId]) {
-      items[draft.companyId] = 'A removed account';
+      items[draft.companyId] = 'A business since removed';
     }
     return items;
   }, [accounts, draft.companyId]);
@@ -712,10 +739,10 @@ function CustomerEditor({
 
         {draft.type === 'b2b' ? (
           <Field>
-            <FieldLabel>Wholesale account</FieldLabel>
+            <FieldLabel>Wholesale customer</FieldLabel>
             <Select
               color="module"
-              aria-label="Which wholesale account this contact belongs to"
+              aria-label="Which wholesale customer this person buys for"
               value={draft.companyId}
               items={accountItems}
               onValueChange={(next) => {
@@ -723,7 +750,8 @@ function CustomerEditor({
               }}
             />
             <FieldDescription>
-              The business this person buys on behalf of. They get its agreed prices and terms.
+              The business this person buys for. They get its agreed prices and terms, and they are
+              listed under Who can order on that business.
             </FieldDescription>
           </Field>
         ) : null}
@@ -1214,7 +1242,7 @@ function IdentityRail({
         {customer.phone ? <MetadataItem label="Phone">{customer.phone}</MetadataItem> : null}
         {contact ? <MetadataItem label="Best reached by">{contact}</MetadataItem> : null}
         {rep ? <MetadataItem label="Looked after by">{rep}</MetadataItem> : null}
-        {account ? <MetadataItem label="Wholesale account">{account}</MetadataItem> : null}
+        {account ? <MetadataItem label="Wholesale customer">{account}</MetadataItem> : null}
         <MetadataItem label="Customer since">{joinedMonth(customer.createdAt)}</MetadataItem>
       </MetadataList>
 

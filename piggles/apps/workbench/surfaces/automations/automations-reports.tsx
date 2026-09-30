@@ -192,7 +192,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Automations report controls"
+        label="Controls for what has run"
         controls={
           <>
             <div className="ml-auto w-32 shrink-0">

@@ -70,17 +70,16 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const emptyBody: Record<CartFilter, string> = {
-    active: 'No one is filling a cart right now. Live carts appear here as shoppers add things.',
+    active: 'Nobody is filling a basket right now. They appear here as shoppers add things.',
     abandoned:
-      'No abandoned carts at the moment. When a shopper fills a cart and leaves without paying, it lands here so you can follow it up.',
-    recovered:
-      'No recovered carts yet. These are the abandoned ones a shopper came back to finish.',
+      'Nothing left behind at the moment. When a shopper fills a basket and leaves without paying, it lands here so you can follow it up.',
+    recovered: 'None came back yet. These are the ones a shopper returned to and finished.',
   };
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Carts list controls"
+        label="Baskets left behind controls"
         filters={[
           {
             label: 'Show',
@@ -111,11 +110,11 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error ? (
           <EmptyState
             icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}
-            title="Could not load your carts"
-            description="This is a problem reaching the server. Your carts are unaffected. Nothing has been lost."
+            title="Could not load the baskets"
+            description="This is a problem reaching the server. The baskets themselves are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
-          <PaneWaiting label="Loading carts…" />
+          <PaneWaiting label="Loading baskets…" />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}

@@ -1,8 +1,8 @@
 # Piggles — the persona test roster
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-09-28
 
 Ten businesses, ten owners, ten full runs from "never heard of it" to a published
 site a stranger can buy from. How to run one is in [CLAUDE.md](CLAUDE.md).
@@ -45,20 +45,24 @@ owner — and it needs a mature business underneath it, so it goes last.
 
 ## The roster
 
-| #   | Persona                                  | Business               | Trade          | Rail groups           | Status      |
-| --- | ---------------------------------------- | ---------------------- | -------------- | --------------------- | ----------- |
-| P01 | [Marisol Vega](01-thistle-and-rye.md)    | Thistle & Rye          | Food & drink   | web · sell · money    | not started |
-| P02 | [Nia Okafor](02-halo-and-hem.md)         | Halo & Hem             | Beauty & salon | people · web · money  | not started |
-| P03 | [Devi Raman](03-juniper-row.md)          | Juniper Row            | Clothing       | sell · web · people   | not started |
-| P04 | [Tomás Herrera](04-herrera-and-co.md)    | Herrera & Co.          | Professional   | money · people · web  | not started |
-| P05 | [Priya Anand](05-wildwater-climbing.md)  | Wildwater Climbing     | Fitness        | people · sell · money | not started |
-| P06 | [Wes Ostrander](06-ostrander-auto.md)    | Ostrander Auto & Fleet | Car parts      | sell · people · run   | not started |
-| P07 | [Lena Fischer](07-circuit-and-coil.md)   | Circuit & Coil         | Electronics    | sell · run · web      | not started |
-| P08 | [Abel Mwangi](08-kanto-trade-supply.md)  | Kanto Trade Supply     | Wholesale      | sell · money · people | not started |
-| P09 | [Rosalind Pike](09-the-marrow-review.md) | The Marrow Review      | Something else | web · people          | not started |
-| P10 | [Ida Brandt](10-brandt-and-sons.md)      | Brandt & Sons Joinery  | Something else | web · money · run     | not started |
+| #   | Persona                                  | Business               | Trade          | Rail groups           | Status        |
+| --- | ---------------------------------------- | ---------------------- | -------------- | --------------------- | ------------- |
+| P01 | [Marisol Vega](01-thistle-and-rye.md)    | Thistle & Rye          | Food & drink   | web · sell · money    | **complete**  |
+| P02 | [Nia Okafor](02-halo-and-hem.md)         | Halo & Hem             | Beauty & salon | people · web · money  | in progress   |
+| P03 | [Devi Raman](03-juniper-row.md)          | Juniper Row            | Clothing       | sell · web · people   | in progress   |
+| P04 | [Tomás Herrera](04-herrera-and-co.md)    | Herrera & Co.          | Professional   | money · people · web  | not started   |
+| P05 | [Priya Anand](05-wildwater-climbing.md)  | Wildwater Climbing     | Fitness        | people · sell · money | not started   |
+| P06 | [Wes Ostrander](06-ostrander-auto.md)    | Ostrander Auto & Fleet | Car parts      | sell · people · run   | not started   |
+| P07 | [Lena Fischer](07-circuit-and-coil.md)   | Circuit & Coil         | Electronics    | sell · run · web      | not started   |
+| P08 | [Abel Mwangi](08-kanto-trade-supply.md)  | Kanto Trade Supply     | Wholesale      | sell · money · people | not started   |
+| P09 | [Rosalind Pike](09-the-marrow-review.md) | The Marrow Review      | Something else | web · people          | business made |
+| P10 | [Ida Brandt](10-brandt-and-sons.md)      | Brandt & Sons Joinery  | Something else | web · money · run     | not started   |
 
-Keep this table current — it is the only place the ten are visible at once.
+Keep this table current — it is the only place the ten are visible at once. It was
+wrong for a month: every row read `not started` while P01 had finished, P02 and P03
+were deep into their runs, and P09's business existed and had been read by a
+stranger (issues 849, 851). **`business made`** means the tenant is in the database
+and its site has been walked, but nobody has run the persona.
 
 ## What each one is the only proof of
 

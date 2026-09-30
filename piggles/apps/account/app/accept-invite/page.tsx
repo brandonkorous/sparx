@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import * as React from 'react';
 import Link from 'next/link';
 import { Alert, Badge, Button, Text } from '@wizeworks/silicaui-react';
-import { PRODUCT } from '@piggles/config';
 import { getInvitationDetail, getSession, type InvitationDetail } from '@wizeworks/auth';
 import { AuthShell } from '@/components/auth-shell';
 import {
@@ -11,7 +10,10 @@ import {
   SwitchAccountButton,
 } from './accept-invite-client';
 
-export const metadata: Metadata = { title: `You've been invited · ${PRODUCT.name}` };
+// Bare, like every other page here: the root layout's title template already
+// appends the product name, so spelling it out again read "You've been invited ·
+// Piggles · Piggles" in the browser tab and in anything that quotes a title.
+export const metadata: Metadata = { title: "You've been invited" };
 export const dynamic = 'force-dynamic';
 
 // "Someone has invited you to help run their business."

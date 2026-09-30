@@ -1,11 +1,15 @@
 'use client';
 
-// Price tiers — the named trade levels you put accounts on.
+// Wholesale groups — the named sets of businesses you charge the same way.
 //
-// Each tier is a discount you set once and apply to everyone on it, so the list
-// shows the two things that tell tiers apart: what it takes off, and how many
-// accounts are riding on it. A tier is a one-line idea, so it is a row per tier,
+// A group is a discount you set once and give to everyone in it, so the list
+// shows the two things that tell groups apart: what it takes off, and how many
+// businesses are in it. A group is a one-line idea, so it is a row per group,
 // not a wide table inventing columns to fill.
+//
+// It was called "Wholesale prices", one letter from the product panel's
+// "Wholesale price" and stacked under the same Sell heading in the launcher.
+// Issue 740.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -48,7 +52,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'Add a price tier',
+    label: 'Add a wholesale group',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -57,13 +61,13 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Price tier controls"
+        label="Wholesale groups controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search price tiers"
-              placeholder="Search price tiers…"
+              aria-label="Search wholesale groups"
+              placeholder="Search wholesale groups…"
               value={search}
               onValueChange={setSearch}
             />
@@ -74,7 +78,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a price tier: hold Shift to open alongside, Alt for a new window"
+            title="Add a wholesale group: hold Shift to open alongside, Alt for a new window"
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -103,8 +107,8 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             icon={<Icon glyph={faDollarSign} className="size-6" aria-hidden />}
-            title="Could not load your price tiers"
-            description="This is a problem reaching the server. Your tiers are unaffected. Nothing has been lost."
+            title="Could not load your wholesale groups"
+            description="This is a problem reaching the server. Your groups are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -114,13 +118,13 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
             filtered={narrowed}
             noResults={{
               icon: <Icon glyph={faDollarSign} className="size-6" aria-hidden />,
-              title: 'No tiers match that',
-              description: 'Try a different word, or clear the search to see every tier.',
+              title: 'No groups match that',
+              description: 'Try a different word, or clear the search to see every group.',
             }}
             firstRun={{
-              title: 'No price tiers yet',
+              title: 'No wholesale groups yet',
               description:
-                'A price tier is a named trade level (trade, distributor, key account) with a discount you set once and give to every account on it. Add your first one, then put accounts on it.',
+                'A wholesale group is a set of businesses you charge the same way. Give the group a discount once and every business in it gets it. Add your first one, then put businesses in it.',
               action: createFirst,
             }}
           />
@@ -145,12 +149,15 @@ function TierRowItem({
   row: TierRow;
   onOpen: (id: string, event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const accountLabel =
+  // "Businesses", not "accounts": this console has a Money app, and an account
+  // there is a ledger. The screen was renamed off that word and the row was left
+  // saying it. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const memberLabel =
     row.accountCount === undefined
       ? null
       : row.accountCount === 1
-        ? '1 account'
-        : `${String(row.accountCount)} accounts`;
+        ? '1 business'
+        : `${String(row.accountCount)} businesses`;
 
   return (
     <li>
@@ -169,9 +176,9 @@ function TierRowItem({
             </Text>
           ) : null}
         </span>
-        {accountLabel ? (
+        {memberLabel ? (
           <Text as="span" className="hidden shrink-0 text-sm @md:inline">
-            {accountLabel}
+            {memberLabel}
           </Text>
         ) : null}
         <Badge

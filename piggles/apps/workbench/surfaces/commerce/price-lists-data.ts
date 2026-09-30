@@ -6,7 +6,7 @@
 // A price list is a named set of special prices for particular customers — a
 // wholesale sheet, a distributor's rates, a "trade" price for the businesses you
 // supply. It carries ONE currency, a targeting rule (everyone on a channel, one
-// customer group, or one trade account), an optional go-live window, and a set
+// customer group, or one wholesale customer), an optional go-live window, and a set
 // of per-product-version ENTRIES: either a fixed price, or a percentage off the
 // normal price.
 //
@@ -69,7 +69,7 @@ export interface PriceListEntryRow {
   maxQuantity: number | null;
 }
 
-/** A targetable audience — a saved customer group, or a trade account. Both come
+/** A targetable audience — a saved customer group, or a wholesale customer. Both come
  *  from CRM, so both are named `{ id, name }`. */
 export interface NamedChoice {
   id: string;
@@ -119,7 +119,7 @@ export function audienceSummary(row: {
   customerSegmentId: string | null;
   companyId: string | null;
 }): string {
-  if (row.companyId) return 'A trade account';
+  if (row.companyId) return 'One wholesale customer';
   if (row.customerSegmentId) return 'A customer group';
   return 'Everyone';
 }
@@ -164,7 +164,7 @@ export function useCustomerSegments(enabled: boolean) {
   });
 }
 
-/** The trade accounts a list can target (CRM B2B accounts). Same module-off
+/** The wholesale customers a list can target (CRM B2B accounts). Same module-off
  *  tolerance as {@link useCustomerSegments}. */
 export function useB2bAccounts(enabled: boolean) {
   return useQuery({

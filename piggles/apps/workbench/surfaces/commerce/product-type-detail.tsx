@@ -115,7 +115,7 @@ const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
   email: { label: 'Email address', hint: 'A single email address.' },
   reference: {
     label: 'Link to another record',
-    hint: 'Points at another product type or piece of content.',
+    hint: 'Points at another kind of product or piece of content.',
   },
   asset: { label: 'Image or file', hint: 'Pick from your media library, or upload something.' },
   object: { label: 'Group', hint: 'A set of related details bundled under one heading.' },
@@ -197,10 +197,10 @@ function createPayload(draft: TypeDraft): CreateTypeInput {
 
 /** The first thing stopping a save, in plain words, or null when it is ready. */
 function metaProblem(draft: TypeDraft, forCreate: boolean): string | null {
-  if (draft.name.trim() === '') return 'Give this type a name.';
+  if (draft.name.trim() === '') return 'Give this kind of product a name.';
   if (forCreate) {
     const key = draft.key.trim();
-    if (key === '') return 'Give this type a short id.';
+    if (key === '') return 'Give this kind of product a short id.';
     if (!TYPE_KEY_RE.test(key)) {
       return 'The id must start with a lowercase letter and use only lowercase letters, numbers and underscores.';
     }
@@ -227,11 +227,11 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
   const keyTouched = useRef(false);
 
   useEffect(() => {
-    ctx.setTitle('New product type');
+    ctx.setTitle('New kind of product');
   }, [ctx]);
 
   const dirty = signature(draft) !== initialRef.current && !create.isSuccess;
-  useDirtySource(dirty, 'You have started a product type you have not saved. Close anyway?');
+  useDirtySource(dirty, 'You have started a kind of product you have not saved. Close anyway?');
 
   const problem = metaProblem(draft, true);
   const failure = create.isError
@@ -262,7 +262,7 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="New product type actions"
+        label="New kind of product actions"
         primary={
           <Button
             color="module"
@@ -327,9 +327,9 @@ function LoadType({ ctx, typeKey }: { ctx: SurfaceContext; typeKey: string }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             error={error}
-            noun="product type"
-            title="Could not load this product type"
-            description="This is a problem reaching the server. The type itself is unaffected."
+            noun="kind of product"
+            title="Could not load this kind of product"
+            description="This is a problem reaching the server. Nothing you have set up is affected."
             onRetry={() => {
               void refetch();
             }}
@@ -392,7 +392,7 @@ function EditType({
 
   const builtIn = type.isBuiltIn;
   const dirty = signature(draft) !== initialRef.current;
-  useDirtySource(dirty, 'You have unsaved changes to this product type. Close anyway?');
+  useDirtySource(dirty, 'You have unsaved changes to this kind of product. Close anyway?');
 
   const problem = metaProblem(draft, false);
 
@@ -414,7 +414,7 @@ function EditType({
             description: result.forked
               ? productCopy(
                   'commerce.productType.forked',
-                  'You edited a built-in type, so Piggles saved it as your own copy. Your changes only affect your business.'
+                  'You edited a built-in kind of product, so Piggles saved it as your own copy. Your changes only affect your business.'
                 )
               : undefined,
             type: 'success',
@@ -435,7 +435,7 @@ function EditType({
     const ok = await confirm({
       title: `Delete “${type.name}”?`,
       description:
-        'This removes the type and its attributes for good. Any product using it keeps the values already saved on it, but loses this shared definition. This cannot be undone.',
+        'This removes this kind of product and the details it carries, for good. Any product using it keeps the values already saved on it, but loses this shared definition. This cannot be undone.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -461,7 +461,7 @@ function EditType({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Product type actions"
+        label="Kind of product actions"
         status={
           builtIn ? (
             <Badge color="info" variant="soft" size="sm">
@@ -491,11 +491,11 @@ function EditType({
           {builtIn ? (
             <Alert color="info">
               <AlertContent>
-                <AlertTitle>This is a built-in type</AlertTitle>
+                <AlertTitle>This is a built-in kind of product</AlertTitle>
                 <AlertDescription>
                   {productCopy(
                     'commerce.productType.builtIn',
-                    'It comes with Piggles and is shared across every business. You can use it as-is, or change its attributes here, and Piggles will save your own copy the first time you do. Your copy only affects your business.'
+                    'It comes with Piggles and is shared across every business. You can use it as-is, or change the details it carries here, and Piggles will save your own copy the first time you do. Your copy only affects your business.'
                   )}
                 </AlertDescription>
               </AlertContent>
@@ -519,10 +519,10 @@ function EditType({
           {builtIn ? null : (
             <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <div className="flex min-w-0 flex-col">
-                <Text className="font-medium">Delete this type</Text>
+                <Text className="font-medium">Delete this kind of product</Text>
                 <Text className="text-sm">
-                  Removes the type and its attributes for good. Products keep the values already on
-                  them. This cannot be undone.
+                  Removes this kind of product and the details it carries, for good. Products keep
+                  the values already on them. This cannot be undone.
                 </Text>
               </div>
               <Button
@@ -565,7 +565,10 @@ function MetaForm({
   };
 
   return (
-    <FormSection title="About this type" description="What you call it, and the id products use.">
+    <FormSection
+      title="About this kind of product"
+      description="What you call it, and the id products use."
+    >
       <div className="grid gap-4 @lg:grid-cols-2">
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -574,7 +577,7 @@ function MetaForm({
               <Input
                 color="module"
                 value={draft.name}
-                placeholder="Apparel"
+                placeholder="Jacket"
                 onChange={(event) => {
                   onName(event.target.value);
                 }}
@@ -590,14 +593,14 @@ function MetaForm({
               <Input
                 color="module"
                 value={draft.pluralName}
-                placeholder="Apparel"
+                placeholder="Jackets"
                 onChange={(event) => {
                   set('pluralName', event.target.value);
                 }}
               />
             }
           />
-          <FieldDescription>What you call several: shown in menus. Optional.</FieldDescription>
+          <FieldDescription>What you call several of them. Optional.</FieldDescription>
         </Field>
       </div>
 
@@ -623,7 +626,7 @@ function MetaForm({
         <FieldDescription>
           {editableKey
             ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
-            : 'The internal name for this type. It is fixed once the type is created.'}
+            : 'The internal name for this kind of product. It is fixed once it is created.'}
         </FieldDescription>
       </Field>
 
@@ -660,7 +663,7 @@ function MetaForm({
           }
         />
         <FieldDescription>
-          A small symbol shown next to this type in menus, such as an emoji. Optional.
+          A small symbol shown next to this kind of product in menus, such as an emoji. Optional.
         </FieldDescription>
       </Field>
     </FormSection>
@@ -682,10 +685,17 @@ function FieldsSection({
     [types]
   );
 
+  // Her own plural if she gave one, her singular if she did not, and a
+  // phrase that works on a blank form. NEVER an inflected copy of a name
+  // she chose — inflecting a tenant's own word is what issue 794 took out
+  // of the compatibility lists, and the plural field above exists exactly
+  // so this sentence never has to guess (issue 798).
+  const belonging = draft.pluralName.trim() || draft.name.trim() || 'these products';
+
   return (
     <FormSection
-      title="Attributes"
-      description="The extra details every product of this kind holds. Drag to reorder, or use the arrows."
+      title="The details it carries"
+      description={`The extra details every one of your ${belonging} holds. Drag to reorder, or use the arrows.`}
     >
       <FieldBuilder
         fields={draft.fields}
@@ -743,7 +753,7 @@ function FieldBuilder({ fields, typeOptions, depth, onChange }: FieldBuilderProp
   return (
     <div className="@container flex flex-col gap-3">
       {fields.length === 0 ? (
-        <Text className="text-sm">No attributes yet. Add the first one below.</Text>
+        <Text className="text-sm">No details yet. Add the first one below.</Text>
       ) : (
         <ul className="flex flex-col gap-2">
           {fields.map((field, index) => (
@@ -795,7 +805,7 @@ function FieldBuilder({ fields, typeOptions, depth, onChange }: FieldBuilderProp
         <NativeSelect
           size="sm"
           color="module"
-          aria-label="Add an attribute"
+          aria-label="Add a detail"
           value={adding}
           onChange={(event) => {
             const type = event.target.value as FieldType | '';
@@ -803,7 +813,7 @@ function FieldBuilder({ fields, typeOptions, depth, onChange }: FieldBuilderProp
             else setAdding('');
           }}
         >
-          <option value="">Add an attribute…</option>
+          <option value="">Add a detail…</option>
           {addable.map((type) => (
             <option key={type} value={type}>
               {FIELD_TYPE_META[type].label}
@@ -852,7 +862,8 @@ function FieldRow({
   onDragOver,
   onDragEnd,
 }: FieldRowProps) {
-  const label = field.label.trim() || 'Untitled attribute';
+  const label = field.label.trim() || 'Untitled detail';
+  const ownHelp = field.helpText?.trim() ?? '';
 
   return (
     <li
@@ -874,14 +885,18 @@ function FieldRow({
         dropTarget ? 'border-module border-dashed' : ''
       }`}
     >
-      <div className="flex items-start gap-2 p-3">
+      {/* WRAPS at a narrow width rather than squeezing the words. Docked at
+          360px the three buttons kept their ~110px and the detail’s own help
+          text was left about 150, so a two-line sentence became six lines
+          beside a column of empty space (issue 804). */}
+      <div className="flex flex-wrap items-start gap-2 p-3">
         <div className="flex shrink-0 flex-col items-center pt-0.5">
           <Icon glyph={faGripDots} className="size-4 cursor-grab" aria-hidden />
         </div>
 
         <button
           type="button"
-          className="flex min-w-0 flex-1 cursor-pointer flex-col items-start gap-1 text-left"
+          className="flex min-w-48 flex-1 cursor-pointer flex-col items-start gap-1 text-left"
           onClick={onToggle}
           aria-expanded={expanded}
         >
@@ -893,7 +908,7 @@ function FieldRow({
             )}
             <span className="text-base font-semibold">{label}</span>
             {field.key ? <span className="font-mono text-sm">{field.key}</span> : null}
-            <Badge color="neutral" variant="soft" size="sm">
+            <Badge variant="soft" size="sm">
               {FIELD_TYPE_META[field.type].label}
             </Badge>
             {field.required ? (
@@ -902,14 +917,20 @@ function FieldRow({
               </Badge>
             ) : null}
           </span>
-          <Text className="text-sm">{FIELD_TYPE_META[field.type].hint}</Text>
+          {/* Her own words for this detail if she wrote any, and only the
+              generic description of the KIND when she did not. Apparel ships
+              three Long text details in a row, so the row read "Several lines
+              of plain writing, with no formatting." three times while each one
+              carried a sentence of its own that nothing drew (issue 804). */}
+          <Text className="text-sm">
+            {ownHelp === '' ? FIELD_TYPE_META[field.type].hint : ownHelp}
+          </Text>
         </button>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="ms-auto flex shrink-0 items-center gap-1">
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             aria-label={`Move ${label} up`}
             title="Move up"
@@ -923,7 +944,6 @@ function FieldRow({
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             aria-label={`Move ${label} down`}
             title="Move down"
@@ -940,7 +960,7 @@ function FieldRow({
             color="danger"
             shape="square"
             aria-label={`Remove ${label}`}
-            title="Remove this attribute"
+            title="Remove this detail"
             onClick={onRemove}
           >
             <Icon glyph={faTrashCan} className="size-4" aria-hidden />
@@ -1003,7 +1023,7 @@ function FieldConfig({ field, depth, siblingKeys, typeOptions, onChange }: Field
     <>
       <div className="grid gap-4 @lg:grid-cols-2">
         <Field>
-          <FieldLabel>Attribute name</FieldLabel>
+          <FieldLabel>Detail name</FieldLabel>
           <FieldControl
             render={
               <Input
@@ -1019,7 +1039,7 @@ function FieldConfig({ field, depth, siblingKeys, typeOptions, onChange }: Field
           <FieldDescription>What you see above this detail when filling it in.</FieldDescription>
         </Field>
         <Field>
-          <FieldLabel>Attribute id</FieldLabel>
+          <FieldLabel>Detail id</FieldLabel>
           <FieldControl
             render={
               <Input
@@ -1230,7 +1250,7 @@ function TypeSpecificConfig({
               ))}
             </NativeSelect>
             <FieldDescription>
-              Make the address automatically from another attribute. Optional.
+              Make the address automatically from another detail. Optional.
             </FieldDescription>
           </Field>
           <Field className="max-w-xs">

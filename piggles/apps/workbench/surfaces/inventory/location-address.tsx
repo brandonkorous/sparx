@@ -15,6 +15,7 @@ import {
   FieldLabel,
   Input,
 } from '@wizeworks/silicaui-react';
+import { CountryField } from '../../components/country-field';
 import { FormSection } from '../../components/form-section';
 import { cleanCountry, type Draft } from './location-draft';
 
@@ -33,7 +34,7 @@ function StreetLines({ draft, set }: PartProps) {
             <Input
               color="module"
               value={draft.line1}
-              placeholder="14 Mill Lane"
+              placeholder="123 Main St"
               onChange={(event) => {
                 set('line1', event.target.value);
               }}
@@ -61,7 +62,7 @@ function StreetLines({ draft, set }: PartProps) {
   );
 }
 
-/** Town, region, postcode and country on one grid — they are read as one line on
+/** Town, region, postal code and country on one grid — they are read as one line on
  *  an envelope, so they are entered as one block. */
 function PlaceLines({ draft, set }: PartProps) {
   return (
@@ -73,7 +74,6 @@ function PlaceLines({ draft, set }: PartProps) {
             <Input
               color="module"
               value={draft.city}
-              placeholder="Bristol"
               onChange={(event) => {
                 set('city', event.target.value);
               }}
@@ -89,7 +89,6 @@ function PlaceLines({ draft, set }: PartProps) {
             <Input
               color="module"
               value={draft.region}
-              placeholder="Somerset"
               onChange={(event) => {
                 set('region', event.target.value);
               }}
@@ -99,13 +98,12 @@ function PlaceLines({ draft, set }: PartProps) {
       </Field>
 
       <Field>
-        <FieldLabel>Postcode or ZIP (optional)</FieldLabel>
+        <FieldLabel>Postal code (optional)</FieldLabel>
         <FieldControl
           render={
             <Input
               color="module"
               value={draft.postalCode}
-              placeholder="BS1 4RW"
               onChange={(event) => {
                 set('postalCode', event.target.value);
               }}
@@ -114,26 +112,17 @@ function PlaceLines({ draft, set }: PartProps) {
         />
       </Field>
 
-      <Field>
-        <FieldLabel>Country</FieldLabel>
-        <FieldControl
-          render={
-            <Input
-              color="module"
-              value={draft.country}
-              placeholder="GB"
-              className="max-w-24 font-mono uppercase"
-              onChange={(event) => {
-                set('country', cleanCountry(event.target.value));
-              }}
-            />
-          }
-        />
-        <FieldDescription>
-          The two-letter country code: GB for the United Kingdom, US for the United States, DE for
-          Germany.
-        </FieldDescription>
-      </Field>
+      {/* Picked by name. This field used to be a two-character box under a
+          line teaching her that Germany is DE - a filing system asked to be
+          learned, on the screen where she writes down where her own stock is.
+          `lib/geo.ts` has said "a shop owner should never SEE a code" since it
+          was written. Issue 721. */}
+      <CountryField
+        value={draft.country}
+        onChange={(next) => {
+          set('country', cleanCountry(next));
+        }}
+      />
     </div>
   );
 }
@@ -147,7 +136,7 @@ function PhoneLine({ draft, set }: PartProps) {
           <Input
             color="module"
             value={draft.phone}
-            placeholder="+44 117 496 0000"
+            placeholder="+1 555 010 0000"
             onChange={(event) => {
               set('phone', event.target.value);
             }}
@@ -170,8 +159,7 @@ function AddressWarning({ show }: { show: boolean }) {
       <AlertContent>
         <AlertTitle>The address needs a little more</AlertTitle>
         <AlertDescription>
-          A street address, a town or city, and a two-letter country code are needed before this can
-          be saved.
+          A street address, a town or city and a country are needed before this can be saved.
         </AlertDescription>
       </AlertContent>
     </Alert>

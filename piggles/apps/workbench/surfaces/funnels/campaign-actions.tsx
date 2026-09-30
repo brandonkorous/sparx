@@ -87,21 +87,25 @@ export function CampaignActions({
           </div>
         ) : null
       }
-      // Bespoke rather than a `ToolbarAction`, because deleting is destructive
-      // and a ToolbarAction has no color of its own to say so.
-      controls={
-        canEdit ? (
-          <Button
-            size="sm"
-            color="danger"
-            variant="ghost"
-            shape="square"
-            aria-label="Delete this campaign"
-            onClick={onDelete}
-          >
-            <Icon glyph={faTrash} className="size-4" aria-hidden />
-          </Button>
-        ) : null
+      /* A VALUE, not bespoke JSX. The header above used to say a
+         ToolbarAction had no color of its own to say "destructive" - it has
+         had `tone: 'danger'` since the assembly run's "Call this run off" hit
+         the same wall, and this call site was not swept with it.
+         scripts/check-toolbar-glyph.mjs holds the line. */
+      actions={
+        canEdit
+          ? [
+              {
+                label: 'Delete',
+                title: 'Delete this campaign',
+                icon: faTrash,
+                tone: 'danger' as const,
+                onClick: () => {
+                  void onDelete();
+                },
+              },
+            ]
+          : undefined
       }
     />
   );

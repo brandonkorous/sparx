@@ -43,10 +43,12 @@ export function StageLadderEditor({
   stages,
   onChange,
   disabled,
+  hasLandingPage,
 }: {
   stages: FunnelStage[];
   onChange: (next: FunnelStage[]) => void;
   disabled: boolean;
+  hasLandingPage: boolean;
 }) {
   const add = () => {
     const step: FunnelStage = {
@@ -72,6 +74,8 @@ export function StageLadderEditor({
             stage={stage}
             index={index}
             count={stages.length}
+            hasLandingPage={hasLandingPage}
+            disabled={disabled}
             onChange={(next) => {
               onChange(stages.map((s, i) => (i === index ? next : s)));
             }}

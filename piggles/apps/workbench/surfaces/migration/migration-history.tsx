@@ -132,7 +132,7 @@ export function MigrationHistorySurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
         {/* Carded like the runs themselves, so the pane keeps its shape between
             waiting, empty and a list. */}
         {isPending ? (

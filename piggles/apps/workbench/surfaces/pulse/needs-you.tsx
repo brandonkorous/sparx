@@ -18,7 +18,7 @@
 // would push rows they already passed down onto the next page.
 
 import { useState } from 'react';
-import { Badge, Button, Text, Tooltip } from '@wizeworks/silicaui-react';
+import { Badge, Button, Skeleton, Text, Tooltip } from '@wizeworks/silicaui-react';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { faBell, faCheck } from '@fortawesome/pro-solid-svg-icons';
@@ -161,7 +161,19 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
             ),
           }}
         />
-      ) : items.length === 0 ? (
+      ) : !ready ? (
+        // The FIRST thing this pane said, every single time it opened: the
+        // branch below is not gated on having stepped back, so while the first
+        // window was still in flight a person was told there was nothing older
+        // and to step back to Newer — from the newest window, about a list that
+        // had not loaded. Rows in the real shape instead, so nothing reflows
+        // when they land. [[feedback_never_present_absence_as_measurement]]
+        <div className="flex flex-col gap-3 py-2" role="status" aria-label="Loading what needs you">
+          {[0, 1, 2].map((row) => (
+            <Skeleton key={row} className="h-10 w-full" />
+          ))}
+        </div>
+      ) : cursors.length > 0 && items.length === 0 ? (
         // Reachable when a full last window left the cursor one step past the
         // end. Not an error, and not the same as an empty inbox.
         <Text className="py-2">

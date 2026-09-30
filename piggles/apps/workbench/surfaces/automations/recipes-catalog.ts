@@ -90,7 +90,7 @@ export const GOAL_GROUPS: readonly GoalGroup[] = [
   {
     key: 'welcome',
     title: 'Welcome & grow',
-    blurb: 'Greet new customers and accounts, and turn website enquiries into contacts.',
+    blurb: 'Greet new customers and accounts, and turn website inquiries into contacts.',
     icon: faSparkles,
   },
   {
@@ -178,9 +178,9 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'crm',
   },
   {
-    name: 'Handle form submissions',
+    name: 'Handle form replies',
     goal: 'welcome',
-    title: 'Handle your website form submissions',
+    title: 'Handle the replies your website forms collect',
     blurb:
       'When someone fills in a form on your site, emails you, replies to them, and saves them as a contact.',
     icon: faInbox,
@@ -392,7 +392,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     name: 'Subscription confirmed: email',
     goal: 'aftersale',
     title: 'Welcome new subscribers',
-    blurb: 'Emails the customer when a new subscription starts.',
+    blurb: 'Emails the customer when a new repeat order starts.',
     icon: faRepeat,
     module: 'commerce',
   },
@@ -483,7 +483,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Auto-draft restock orders',
     blurb:
-      'Drafts a purchase order to your supplier when a product hits its reorder point. You review and send it.',
+      'Drafts an order to your supplier when a product hits its reorder point. You review and send it.',
     icon: faBoxOpen,
     module: 'inventory',
   },

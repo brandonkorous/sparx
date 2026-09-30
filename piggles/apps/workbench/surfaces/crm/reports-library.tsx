@@ -17,6 +17,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
 import {
+  BUCKET_NOUN,
   VISUALIZATION_LABEL,
   describeDateRange,
   useArchiveReport,
@@ -43,8 +44,15 @@ function describe(report: SavedReport, fieldLabel: (objectKey: string, path: str
     count === 1 && report.measures[0]?.fn === 'count'
       ? 'How many'
       : `${String(count)} thing${count === 1 ? '' : 's'} worked out`;
+  // A DATE COLUMN'S LABEL IS NOT A NOUN. These labels are written to head a
+  // column — "Closed", "Added", "Opened" — and dropped into this slot they made
+  // "broken down by closed", which is not a sentence in any language. When a
+  // date is bucketed, the bucket IS the breakdown: the report groups by month,
+  // not by "closed". So say the bucket.
   const by = report.groupBy
-    ? `, broken down by ${fieldLabel(report.objectKey, report.groupBy.field).toLowerCase()}`
+    ? report.groupBy.bucket
+      ? `, broken down by ${BUCKET_NOUN[report.groupBy.bucket]}`
+      : `, broken down by ${fieldLabel(report.objectKey, report.groupBy.field).toLowerCase()}`
     : '';
   // Two reports that differ only in what they leave out read as the same report
   // without this — which is exactly the pair somebody is trying to tell apart.
@@ -156,7 +164,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Report library controls"
+        label="Build a report controls"
         controls={
           <>
             <div className="max-w-xs min-w-0 flex-1">
@@ -197,7 +205,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
-      <div className="flex flex-col gap-6 overflow-auto p-6">
+      <div className="flex flex-col gap-6 overflow-auto p-6 [&>*]:shrink-0">
         {isPending ? (
           <div className="skeleton h-40 w-full" />
         ) : rows.length === 0 ? (
@@ -223,7 +231,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
             {builtins.length > 0 ? (
               <section className="flex flex-col gap-2">
                 <Text>
-                  Ready-made. Open one to see how it is built, then copy it and change a thing
+                  Ready-made. Open one to see how it is built, then copy it and change a thing.
                 </Text>
                 {builtins.map((report) => (
                   <Row key={report.id} report={report} />

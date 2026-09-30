@@ -164,6 +164,19 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
     <ModuleScope module={module} className={PANE_SHELL}>
       <PaneToolbar
         label="Dashboard controls"
+        status={
+          <>
+            <Icon glyph={faGauge} className="size-4 shrink-0" aria-hidden />
+            {/* The left of this bar was empty, on a pane whose whole content is
+                numbers whose meaning depends on WHICH dashboard and over WHAT
+                stretch of time. Both controls sit on the right and fold into the
+                overflow on a narrow pane, so at that width the screen showed a
+                wall of figures and nothing saying what they were of. */}
+            <Text as="span" className="min-w-0 truncate text-sm">
+              {config ? `${config.title} · ${RANGE_LABEL[preset]}` : 'Dashboard'}
+            </Text>
+          </>
+        }
         controls={
           <div className="ml-auto flex items-center gap-2">
             <ToggleGroup

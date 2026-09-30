@@ -29,6 +29,7 @@ import { faFileText, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { DownloadButton } from '../../components/download-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
@@ -44,6 +45,8 @@ import {
   type EntryStatus,
 } from './data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { useSites } from '../sites/data';
+import { showSiteColumn, siteScopeCell } from './content-sites';
 import { useSiteIsDark } from '../../lib/billing/site-live';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -110,6 +113,11 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
   // byline column. Both are small, long-cached lookups shared with the editor.
   const { data: types } = useContentTypes();
   const { data: authors } = useAuthors();
+  // And sites name the "Sites" column. A page is pinned to some of her websites
+  // or on ALL of them, and the list drew no difference: on her Journal, six of
+  // the nine rows were pages every one of her businesses publishes, and editing
+  // one edits all of them (issue 870).
+  const { data: sites } = useSites();
 
   const typeName = useMemo(() => {
     const map = new Map<string, string>();
@@ -122,6 +130,17 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
     for (const author of authors ?? []) map.set(author.id, author.display_name);
     return map;
   }, [authors]);
+
+  const siteName = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const site of sites ?? []) map.set(site.id, site.name);
+    return map;
+  }, [sites]);
+
+  // Hidden entirely for a business with one website: there is no choice to show,
+  // and a column headed "Sites" would invent one. Same rule the shared
+  // site-scope field follows on every editor that has it.
+  const showSites = showSiteColumn(sites?.length ?? 0);
 
   const siteIsDark = useSiteIsDark();
   const rows = data?.items ?? [];
@@ -146,7 +165,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Content list controls"
+        label="Content controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -199,6 +218,15 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             },
           },
         ]}
+        controls={
+          /* Everything written for this site, fields and all, as a spreadsheet.
+            The marketing site promises a business can take its records with it. */
+          <DownloadButton
+            label="Export"
+            filename="content-export.csv"
+            path="/v1/export/content?take=10000"
+          />
+        }
         views={{
           target: '/cms/content',
           params: { q: search },
@@ -291,6 +319,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
               <tr>
                 <th>Title</th>
                 <th className="hidden @xl:table-cell">Kind</th>
+                {showSites ? <th className="hidden @3xl:table-cell">Sites</th> : null}
                 <th className="hidden @2xl:table-cell">Author</th>
                 <th className="hidden @4xl:table-cell">Changed</th>
                 <th>Status</th>
@@ -301,6 +330,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
                 const state = entryStatusState(entry.status, siteIsDark);
                 const kind = typeName.get(entry.type_key) ?? entry.type_key;
                 const author = entry.author_id ? (authorName.get(entry.author_id) ?? '—') : '—';
+                const scope = siteScopeCell(entry.propertyIds, (id) => siteName.get(id));
                 return (
                   <tr
                     key={entry.id}
@@ -327,6 +357,17 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
                       ) : null}
                     </td>
                     <td className="hidden max-w-40 truncate @xl:table-cell">{kind}</td>
+                    {showSites ? (
+                      <td className="hidden max-w-48 @3xl:table-cell">
+                        {scope === null ? null : scope.everySite ? (
+                          <Badge color="info" variant="soft" size="sm">
+                            {scope.text}
+                          </Badge>
+                        ) : (
+                          <span className="block truncate text-sm">{scope.text}</span>
+                        )}
+                      </td>
+                    ) : null}
                     <td className="hidden max-w-40 truncate @2xl:table-cell">{author}</td>
                     <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
                       {formatDate(entry.updated_at)}

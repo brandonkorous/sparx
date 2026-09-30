@@ -55,6 +55,7 @@ import {
 import {
   faBoxOpen,
   faBoxes,
+  faBoxesStacked,
   faClipboardCheck,
   faClockRotateLeft,
   faFloppyDisk,
@@ -100,11 +101,17 @@ import {
   writeLastCountLocation,
 } from '../inventory/count-location';
 import { countingMatters } from '../inventory/data';
+import { PackSizesForm } from './product-pack-sizes';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 
-const LABEL = 'Stock';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'stock';
 /** Registry module for this pane, so the brand draws Stock's own picture in the
  *  empty, waiting and failed states rather than the generic one. */
 const MODULE = 'inventory';
@@ -386,7 +393,7 @@ function CountForm({
         />
         <FieldDescription>
           {current
-            ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted. We work out the difference and record it.`
+            ? `We currently think you have ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted. We work out the difference and record it.`
             : 'This version has never been counted here. Put in what is on the shelf.'}
         </FieldDescription>
       </Field>
@@ -658,7 +665,11 @@ function LevelRow({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Text className="text-sm">
           {level.reorderPoint === null
-            ? 'No reorder rule. Nothing will warn you when this runs down.'
+            ? // A FRAGMENT, like the other branch, because the cost clause below
+              // appends to both with a middle dot. Ending this one in a full stop
+              // produced "…runs down. · costs you $18.55 each": two sentences, then a
+              // list separator, then a lowercase fragment, on one line.
+              'No reorder rule, so nothing will warn you when this runs down'
             : `Warns at ${String(level.reorderPoint)}, then order ${String(
                 level.reorderQuantity ?? 0
               )}${level.leadTimeDays === null ? '' : ` · about ${plural(level.leadTimeDays, 'day', 'days')} to arrive`}`}
@@ -711,6 +722,7 @@ function VariantCard({
   currency: string;
 }) {
   const [counting, setCounting] = useState(false);
+  const [packing, setPacking] = useState(false);
   const totalAvailable = levels.reduce((sum, level) => sum + sellable(level), 0);
 
   return (
@@ -730,17 +742,32 @@ function VariantCard({
                 )}`}
           </Text>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          color="module"
-          onClick={() => {
-            setCounting((open) => !open);
-          }}
-        >
-          <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
-          Record a count
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={() => {
+              setCounting((open) => !open);
+            }}
+          >
+            <Icon glyph={faClipboardCheck} className="size-4" aria-hidden />
+            Record a count
+          </Button>
+          {/* The screen "Units" promises exists: a unit is only a word until an
+              item says what it contains, and this is where it says it. */}
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={() => {
+              setPacking((open) => !open);
+            }}
+          >
+            <Icon glyph={faBoxesStacked} className="size-4" aria-hidden />
+            Pack sizes
+          </Button>
+        </div>
       </div>
 
       {levels.length === 0 ? (
@@ -774,6 +801,16 @@ function VariantCard({
           nearby={nearby}
           onDone={() => {
             setCounting(false);
+          }}
+        />
+      ) : null}
+
+      {packing ? (
+        <PackSizesForm
+          variantId={variant.id}
+          variantLabel={variantLabel(variant)}
+          onDone={() => {
+            setPacking(false);
           }}
         />
       ) : null}
@@ -1064,8 +1101,16 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
     return (
       <>
         {/* The product-wide answer first, so the question "do I have any" is
-            settled before anyone reads a single row. */}
-        {levels.length > 0 ? (
+            settled before anyone reads a single row.
+
+            Only when there IS more than one row to roll up. On a product with a
+            single variant in a single location this card was the row beneath it,
+            verbatim: the same three figures, the same three words, 150px apart.
+            MEASURED 2026-09-19: 64 of 188 products with any stock at all have
+            exactly one row, so a third of the time this pane opened it printed
+            its headline twice and invited the reader to hunt for a difference
+            that was not there. */}
+        {levels.length > 1 ? (
           <section className="card bg-base-100 grid grid-cols-3 gap-2 p-4">
             <div className="flex flex-col">
               <Text className="text-3xl font-semibold">{totals.available}</Text>
@@ -1211,10 +1256,10 @@ export function ProductStockSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }, []);
 
-  const scope = useProductScope(ctx, { label: LABEL, hold: openEditors.length > 0 });
+  const scope = useProductScope(ctx, { noun: NOUN, hold: openEditors.length > 0 });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} module={MODULE} />;
   }
   return (
     <EditorRegistry.Provider value={register}>

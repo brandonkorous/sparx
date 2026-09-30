@@ -211,7 +211,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const filtered = search.trim() !== '' || pipelineId !== 'all' || (!isBoard && state !== 'open');
 
   const pipelineItems = useMemo(() => {
-    const items: Record<string, string> = isBoard ? {} : { all: 'All pipelines' };
+    const items: Record<string, string> = isBoard ? {} : { all: 'All processes' };
     for (const p of pipelineList) items[p.id] = p.name;
     return items;
   }, [pipelineList, isBoard]);
@@ -308,7 +308,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Deal list controls"
+        label="Deals controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -339,7 +339,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <Select
                 color="module"
                 size="sm"
-                aria-label="Which pipeline"
+                aria-label="Which process"
                 value={isBoard ? (boardPipeline?.id ?? '') : pipelineId}
                 items={pipelineItems}
                 onValueChange={(next) => {
@@ -418,8 +418,8 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : isBoard && !boardReady ? (
           <EmptyState
             icon={<Icon glyph={faColumns3} className="size-6" aria-hidden />}
-            title="No pipeline to show a board for"
-            description="A board needs a pipeline: the named steps a deal moves through, from first contact to won or lost. Set one up and every deal gets a column to sit in."
+            title="No process to show a board for"
+            description="A board needs a process: the named steps a deal moves through, from first contact to won or lost. Set one up and every deal gets a column to sit in."
             actions={
               <Button
                 size="sm"
@@ -428,11 +428,17 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
                 }}
               >
-                Set up a pipeline
+                Set up a process
               </Button>
             }
           />
-        ) : rows.length === 0 && !isBoard ? (
+        ) : // ZERO DEALS IS ZERO DEALS IN EITHER VIEW. This read
+        // `rows.length === 0 && !isBoard`, so the first-run invitation and the
+        // no-results message only ever appeared in the LIST. Board is the
+        // default, so somebody opening Deals for the first time got six empty
+        // columns each reading "Nothing at this step yet." and no word anywhere
+        // about what a deal is or how to add one.
+        rows.length === 0 ? (
           <ListEmptyState
             module={MODULE}
             filtered={filtered}
@@ -445,7 +451,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No deals yet',
               description:
-                'A deal tracks a sale you are working on, from first contact to close. Add your first one to start a pipeline.',
+                'A deal tracks a sale you are working on, from first contact to close. Add your first one and it lands at the first step of your board.',
               action: createFirst,
             }}
           />
@@ -522,7 +528,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               ? `Showing the ${rows.length.toLocaleString()} most recent of ${total.toLocaleString()}`
               : filtered
                 ? `${rows.length.toLocaleString()} shown`
-                : `${total.toLocaleString()} ${isBoard ? 'on this pipeline' : 'open'}`}
+                : `${total.toLocaleString()} ${isBoard ? 'on this process' : 'open'}`}
           </p>
         ) : null}
       </div>

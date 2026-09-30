@@ -3,18 +3,18 @@
 // What sits under the toolbar: the "nothing is bookable yet" note, and either
 // the links or the reason to make one.
 
-import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
-  Heading,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Alert, AlertContent, AlertDescription, AlertTitle, Card } from '@wizeworks/silicaui-react';
+import { faCalendarCheck } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import { PaneEmpty } from '../../components/pane-empty';
 import { MeetingLinksTable } from './meeting-links-table';
 import type { MeetingLink } from './workspace-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
+
+/** Registry module for this surface, so the brand's empty-state artwork is this
+ *  app's own picture rather than the generic one. */
+const MODULE = 'crm';
 
 export function MeetingLinksBody({
   rows,
@@ -40,8 +40,8 @@ export function MeetingLinksBody({
               <AlertTitle>You need something bookable first</AlertTitle>
               <AlertDescription>
                 A booking link points at one of your bookable services. That is where the length,
-                your availability and your cancellation terms come from. Set one up under
-                Scheduling, then come back.
+                your availability and your cancellation terms come from. Set one up under Bookings,
+                then come back.
               </AlertDescription>
             </AlertContent>
           </Alert>
@@ -56,18 +56,18 @@ export function MeetingLinksBody({
             onRetire={onRetire}
           />
         ) : (
-          // A bare heading over blank space says nothing. Somebody who has
-          // never made one of these needs to know what they would get.
-          <div className="flex flex-col gap-1">
-            <Heading level={2} className="text-lg">
-              No booking links yet
-            </Heading>
-            <Text>
-              Make one and you get a web address you can put in an email signature, on a quote, or
-              in a reply. Anyone who opens it picks a time from your real availability and the
-              booking lands in your calendar, with the customer already attached.
-            </Text>
-          </div>
+          // The house first-run state. This was a bare heading and a paragraph
+          // floating in the column with no card behind them, which is the exact
+          // shape components/pane-empty.tsx says in its own header it exists to
+          // stop. [[feedback_copy_the_house_layout_before_building]]
+          <Card className="p-0">
+            <PaneEmpty
+              module={MODULE}
+              icon={<Icon glyph={faCalendarCheck} className="size-6" aria-hidden />}
+              title="No booking links yet"
+              description="Make one and you get a web address you can put in an email signature, on a quote, or in a reply. Anyone who opens it picks a time from your real availability and the booking lands in your calendar, with the customer already attached."
+            />
+          </Card>
         )}
       </div>
     </div>

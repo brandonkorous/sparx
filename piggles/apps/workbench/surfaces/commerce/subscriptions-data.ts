@@ -180,6 +180,109 @@ export function useSubscription(id: string) {
   });
 }
 
+/* ── Starting one ───────────────────────────────────────────────────────── */
+
+/** One of the customer's saved addresses, as the delivery picker offers them. */
+export interface CustomerAddressRow {
+  id: string;
+  label: string | null;
+  isDefault: boolean;
+  recipientName: string | null;
+  company: string | null;
+  line1: string;
+  line2: string | null;
+  city: string;
+  region: string | null;
+  postalCode: string | null;
+  country: string;
+  phone: string | null;
+}
+
+/**
+ * Where this customer's deliveries go.
+ *
+ * A standing order must carry an address snapshot, so the alternative to this
+ * query is a second address form on a screen that is already asking four
+ * questions. She has almost always got one on file already.
+ */
+export function useCustomerAddresses(customerId: string) {
+  return useQuery({
+    queryKey: ['crm', 'customer-addresses', customerId] as const,
+    queryFn: () => api.list<CustomerAddressRow>(`/v1/crm/customers/${customerId}/addresses`),
+    enabled: customerId !== '',
+  });
+}
+
+export interface StartRepeatOrderLine {
+  variantId: string;
+  quantity: number;
+  unitPriceCents: number;
+}
+
+export interface StartRepeatOrderInput {
+  customerId: string;
+  currency: string;
+  /** The gateway this shop takes money through, off its own payment
+   *  settings. Stored on the standing order so a later look at it says who
+   *  was going to collect, rather than a word this screen made up. */
+  paymentProviderSlug: string;
+  intervalUnit: string;
+  intervalCount: number;
+  lines: StartRepeatOrderLine[];
+  shippingAddress: {
+    recipientName?: string;
+    company?: string;
+    line1: string;
+    line2?: string;
+    city: string;
+    region?: string;
+    postalCode?: string;
+    country: string;
+    phone?: string;
+  };
+}
+
+/**
+ * Starts a standing order.
+ *
+ * `billingMode: 'invoice'` is not a default here, it is the only mode this
+ * screen offers. The other one charges a vaulted card, and a card can only be
+ * vaulted by the person who owns it on a checkout of their own - so a back
+ * office offering "charge their card" would be asking a shop owner to take card
+ * details down a phone line. Invoicing bills each delivery and sends a link,
+ * which is what a shop that agreed this over the counter actually does.
+ *
+ * `channel: 'admin'` because she set it up, not a website. The renewal orders it
+ * produces carry their own channel and are not affected.
+ */
+export function useStartRepeatOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: StartRepeatOrderInput) =>
+      api.post<{ id: string; nextOccurrenceAt: string }>('/v1/commerce/subscriptions', {
+        customerId: input.customerId,
+        channel: 'admin',
+        currency: input.currency,
+        billingMode: 'invoice',
+        paymentProviderSlug: input.paymentProviderSlug,
+        schedule: {
+          intervalUnit: input.intervalUnit,
+          intervalCount: input.intervalCount,
+          deliveriesPerCycle: 1,
+        },
+        items: input.lines.map((line) => ({
+          variantId: line.variantId,
+          quantity: line.quantity,
+          unitPriceCents: line.unitPriceCents,
+        })),
+        shippingAddress: input.shippingAddress,
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: subscriptionKeys.lists() });
+    },
+  });
+}
+
 /* ── Lifecycle mutations ────────────────────────────────────────────────── */
 
 export function usePauseSubscription(id: string) {

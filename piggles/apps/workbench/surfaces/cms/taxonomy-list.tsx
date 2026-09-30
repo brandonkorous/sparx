@@ -90,7 +90,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Tags and topics list controls"
+        label="Tags and topics controls"
         search={
           /* The width sits on a WRAPPER: SearchInput forwards className to its
             inner <input>, so a class aimed at the control never reaches the
@@ -114,6 +114,8 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(all.length)} ways to file`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primaryAction={{
           label: 'New',
           icon: faPlus,

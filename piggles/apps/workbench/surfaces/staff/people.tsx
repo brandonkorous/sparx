@@ -246,7 +246,17 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Roster controls"
+        label="People controls"
+        status={
+          <>
+            <Icon glyph={faUsers} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {people.length === 1 ? '1 person' : `${String(people.length)} people`}
+            </Text>
+          </>
+        }
+        statusReady={!isPending}
+        statusFailed={isError}
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

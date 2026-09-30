@@ -36,12 +36,25 @@ import type { ReactNode } from 'react';
 import { EmptyState } from '@wizeworks/silicaui-react';
 import { hasStateArt, StateArt } from './state-art';
 
+// ── WHEN A PANE HAS TWO EMPTY REGIONS AT ONCE ───────────────────────────────
+//
+// Each region decides its own state, which is right, and the decision is made
+// without knowing what its neighbour chose. On "Paying for what sold" both
+// sections were empty on the same screen and drew the SAME picture, one above
+// the other, in one viewport. Two copies of one illustration does not read as a
+// pattern; it reads as a bug.
+//
+// So a SECOND region on the same pane passes `art={false}` and keeps its glyph.
+// One picture establishes whose pane this is; the sections below it are
+// subordinate and a label is enough. The first region keeps the art.
+
 export function PaneEmpty({
   icon,
   module,
   title,
   description,
   actions,
+  art = true,
 }: {
   /** The surface's own glyph, so the state still looks like the pane it is. */
   icon?: ReactNode;
@@ -52,12 +65,14 @@ export function PaneEmpty({
   description?: ReactNode;
   /** The way out — usually the thing that would fill this pane. */
   actions?: ReactNode;
+  /** False on a SECOND empty region of the same pane — see the note above. */
+  art?: boolean;
 }) {
-  const branded = hasStateArt();
+  const branded = hasStateArt() && art;
 
   return (
     <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
-      <StateArt state="empty" module={module} />
+      {art ? <StateArt state="empty" module={module} /> : null}
       <EmptyState
         icon={branded ? undefined : icon ? <span className="text-module">{icon}</span> : undefined}
         title={title}

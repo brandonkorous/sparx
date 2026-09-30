@@ -38,7 +38,7 @@ export const KIND_LABEL: Record<FunnelKind, string> = {
   lead: 'Finding new customers',
   recovery: 'Winning back a lost sale',
   purchase: 'Selling something',
-  booking: 'Filling the diary',
+  booking: 'Filling the calendar',
   winback: 'Bringing people back',
   custom: 'Something else',
 };

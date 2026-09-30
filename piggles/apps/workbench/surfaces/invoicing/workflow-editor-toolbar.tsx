@@ -3,15 +3,8 @@
 // The workflow editor's toolbar: what state it is in, Save, and the one rare
 // action that needs a conversation first.
 
-import {
-  Badge,
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@wizeworks/silicaui-react';
-import { faBoxArchive, faEllipsis, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { Badge, Button } from '@wizeworks/silicaui-react';
+import { faBoxArchive, faBoxOpen, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar } from '../../components/pane-toolbar';
 import type { DocumentWorkflowDetail } from './types';
@@ -23,6 +16,7 @@ export function WorkflowToolbar({
   saving,
   onSave,
   onArchive,
+  onRestore,
   refresh,
 }: {
   original: DocumentWorkflowDetail | null;
@@ -31,6 +25,7 @@ export function WorkflowToolbar({
   saving: boolean;
   onSave: () => void;
   onArchive: () => void;
+  onRestore: () => void;
   refresh: React.ReactNode;
 }) {
   return (
@@ -64,27 +59,26 @@ export function WorkflowToolbar({
           Save
         </Button>
       }
-      controls={
-        original ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="ml-auto shrink-0"
-                aria-label="More actions"
-              >
-                <Icon glyph={faEllipsis} className="size-4" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={onArchive}>
-                <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-                Archive workflow
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null
+      /* Archiving and un-archiving are the same slot: only one of them can
+         apply, so showing both would mean one is always inert. */
+      actions={
+        original
+          ? [
+              original.archivedAt
+                ? {
+                    label: 'Bring it back',
+                    title: 'Put this workflow back in the list',
+                    icon: faBoxOpen,
+                    onClick: onRestore,
+                  }
+                : {
+                    label: 'Archive',
+                    title: 'Archive this workflow',
+                    icon: faBoxArchive,
+                    onClick: onArchive,
+                  },
+            ]
+          : undefined
       }
     />
   );

@@ -252,6 +252,10 @@ export interface PickThroughputReport {
     scanVerifiedRate: number;
     shortLineRate: number;
     boxesPacked: number;
+    /** Whether this business has ever confirmed a pick by scan, in any period.
+     *  A shop that has never owned a scanner must not be shown 0% in red.
+     *  Optional so an older API is read as "we cannot tell" rather than "never". */
+    everScanned?: boolean;
   };
   pickers: PickerThroughput[];
   bins: BinShortfall[];
@@ -772,6 +776,58 @@ export function isPickNotFound(error: unknown): boolean {
 }
 
 /* ── How fast, said honestly ──────────────────────────────────── */
+
+/**
+ * THE FEWEST EVENTS A PERCENTAGE IS ALLOWED TO BE MADE FROM.
+ *
+ * Juniper Row has picked two lines. One of them came up short, so this pane told
+ * her, in red, that she **came up short 50.0%** of the time - a tenth of a
+ * percent of precision out of two events - and put the same red on her name in
+ * the picker table underneath.
+ *
+ * One thing happened. A rate says it keeps happening.
+ *
+ * The rule was already written in this pane, for the one figure that got it:
+ * `pickingRate` refuses to divide by a window under a minute and says why
+ * instead. Four other figures on the same screen divide by whatever they are
+ * given. [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * Below the floor the figure is shown as the COUNT it actually is - "1 of 2" -
+ * which is the same information with none of the false weight, and no alarm
+ * color, because one event is not a trend to be alarmed about.
+ */
+export const RATE_FLOOR = 10;
+
+export interface RateFigure {
+  /** What to print: a percentage, or the plain count it is still too early for. */
+  text: string;
+  /** The alarm color, or null while there is not enough behind it to earn one. */
+  tone: 'success' | 'warning' | 'danger' | null;
+  /** Whether a percentage was earned. Callers word their own hints from this. */
+  enough: boolean;
+}
+
+/**
+ * A percentage, or the count it is still too small to be.
+ *
+ * `toneFor` is passed in rather than chosen here because the two rates on this
+ * screen point opposite ways: a short-pick rate is bad when HIGH and a
+ * scan-verified rate is bad when LOW, and one helper that pretended otherwise is
+ * how a dashboard goes green on the wrong thing.
+ */
+export function ratePercent(
+  part: number,
+  whole: number,
+  toneFor: (rate: number) => 'success' | 'warning' | 'danger',
+  decimals = 0
+): RateFigure {
+  if (whole <= 0) return { text: '—', tone: null, enough: false };
+  if (whole < RATE_FLOOR) {
+    return { text: `${String(part)} of ${String(whole)}`, tone: null, enough: false };
+  }
+  const rate = (part / whole) * 100;
+  return { text: `${rate.toFixed(decimals)}%`, tone: toneFor(rate), enough: true };
+}
 
 /**
  * The headline picking rate, and the line under it.

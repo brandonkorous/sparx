@@ -30,7 +30,6 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
   bookingTypeLabel,
-  isNotFound,
   serviceState,
   usePolicies,
   useService,
@@ -149,18 +148,15 @@ export function ServiceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (service.isError) {
-    const gone = isNotFound(service.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This service has been removed' : 'Could not load this service'}
-            description={
-              gone
-                ? 'Bookings already made against it are unaffected, and you can put it back from your services list.'
-                : 'This is a problem reaching the server. Nothing about the service has changed.'
-            }
+            error={service.error}
+            title="Could not load this service"
+            description="This is a problem reaching the server. Nothing about the service has changed."
+            missingTitle="This service has been removed"
+            missingDescription="Bookings already made against it are unaffected, and you can put it back from your services list."
             onRetry={() => {
               void service.refetch();
             }}

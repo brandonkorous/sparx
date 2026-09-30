@@ -398,7 +398,7 @@ function TaskEditor({
 
           <SaveFailure title="Could not save this task" message={failure} />
 
-          <FormSection title="The task">
+          <FormSection title="What to do">
             <Field>
               <FieldLabel>Title</FieldLabel>
               <FieldControl
@@ -482,7 +482,7 @@ function TaskEditor({
               {assigneeError && touched ? (
                 <FieldStatus status="error">{assigneeError}</FieldStatus>
               ) : (
-                <FieldDescription>The person on your team who owns this task.</FieldDescription>
+                <FieldDescription>Whoever is going to do it.</FieldDescription>
               )}
             </Field>
 

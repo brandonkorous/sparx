@@ -91,6 +91,8 @@ export interface ComposeBodyProps {
   recipientCount: number | undefined;
   estimatePending: boolean;
   emailUnpublished: boolean;
+  /** The draft already points at a ready-made email, which can't go to a list. */
+  emailBuiltIn: boolean;
   missing: string[];
   timing: 'now' | 'schedule';
   setTiming: (next: 'now' | 'schedule') => void;

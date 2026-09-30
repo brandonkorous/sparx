@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 // A STOCK COUNT SESSION — start one, count each item, apply it to correct your
 // real stock numbers in one go.
 //
@@ -22,7 +24,7 @@ import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { isCountNotFound, useCount } from './counts-data';
+import { useCount } from './counts-data';
 import { CountSession } from './count-session';
 import { StartCount } from './count-start';
 import { COUNT_MODULE } from './count-shared';
@@ -36,6 +38,15 @@ export function CountDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
 function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const count = useCount(id);
+
+  // The tab's name, once the record is here. Sixty-one of this console's
+  // seventy-five detail panes do this; the ones that did not put identical
+  // words on every tab they opened, which is the one thing the strip is for.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const countNumber = count.data?.number;
+  useEffect(() => {
+    if (countNumber) ctx.setTitle(countNumber);
+  }, [countNumber, ctx]);
 
   if (id === '') {
     return (
@@ -64,18 +75,15 @@ function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }
 
   if (count.isError) {
-    const gone = isCountNotFound(count.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This count no longer exists' : 'Could not load this count'}
-            description={
-              gone
-                ? 'It may have been removed. Your stock and its movement history are unaffected.'
-                : 'This is a problem reaching the server. The count is unaffected. It just could not be read just now.'
-            }
+            error={count.error}
+            title="Could not load this count"
+            description="This is a problem reaching the server. The count is unaffected. It just could not be read just now."
+            missingTitle="This count no longer exists"
+            missingDescription="It may have been removed. Your stock and its movement history are unaffected."
             onRetry={() => {
               void count.refetch();
             }}

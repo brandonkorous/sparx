@@ -13,6 +13,7 @@ import {
   faFileText,
   faReceipt,
 } from '@fortawesome/pro-solid-svg-icons';
+import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import type { SurfaceDefinition } from '../registry';
 import { AccountsListSurface } from '../../../surfaces/b2b/accounts-list';
 import { AccountDetailSurface } from '../../../surfaces/b2b/account-detail';
@@ -37,7 +38,7 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     keywords: ['trade', 'companies', 'buyers', 'dealers', 'wholesale'],
     component: AccountsListSurface,
     createSurface: 'b2b.account.detail',
-    createLabel: 'Add a trade account',
+    createLabel: 'Add a wholesale customer',
   },
   {
     key: 'b2b.account.detail',
@@ -58,6 +59,13 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     order: 10,
     keywords: ['trade orders', 'bulk'],
     component: WholesaleOrdersListSurface,
+    // The till, which is a COMMERCE surface. Safe from here because
+    // `requiredModules('b2b')` is `['commerce']` — b2b cannot be on without it —
+    // and it is the console's only screen for writing an order down. A shop
+    // that phones one through had nowhere to go before this (issue 748).
+    createSurface: 'commerce.sale.new',
+    createParams: { through: 'wholesale' },
+    createLabel: 'Enter an order',
   },
   {
     key: 'b2b.quotes.list',
@@ -68,6 +76,15 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     order: 11,
     keywords: ['rfq', 'estimate', 'request for quote', 'pricing request'],
     component: QuotesListSurface,
+    // The invoicing editor, told which kind of document to make. A quote IS a
+    // billing document on the system `b2b-quotes` workflow, so the screen that
+    // prices one already exists — it just had no door from here. A shop that
+    // phones and asks what a bulk order would cost is the ordinary way a quote
+    // starts, and this pane answered it with an empty card and nothing to press
+    // (issue 761). Exactly the gap the two rows above had before issue 748.
+    createSurface: 'invoicing.invoice.edit',
+    createParams: { workflow: B2B_QUOTE_WORKFLOW_SLUG },
+    createLabel: 'Price up a quote',
   },
   {
     key: 'b2b.quote.detail',

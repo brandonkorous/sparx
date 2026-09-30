@@ -249,11 +249,11 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
   const keyTouched = useRef(false);
 
   useEffect(() => {
-    ctx.setTitle('New content type');
+    ctx.setTitle('New kind of content');
   }, [ctx]);
 
   const dirty = signature(draft) !== initialRef.current && !create.isSuccess;
-  useDirtySource(dirty, 'You have started a content type you have not saved. Close anyway?');
+  useDirtySource(dirty, 'You have started a kind of content you have not saved. Close anyway?');
 
   const problem = metaProblem(draft, true);
   const failure = create.isError
@@ -284,7 +284,7 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="New content type actions"
+        label="New kind of content actions"
         primary={
           <Button
             color="module"
@@ -348,8 +348,8 @@ function LoadType({ ctx, typeKey }: { ctx: SurfaceContext; typeKey: string }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             error={error}
-            noun="content type"
-            title="Could not load this content type"
+            noun="kind of content"
+            title="Could not load this kind of content"
             description="This is a problem reaching the server. The type itself is unaffected."
             onRetry={() => {
               void refetch();
@@ -425,7 +425,7 @@ function EditType({
   }, [type]);
 
   const dirty = signature(draft) !== initialRef.current;
-  useDirtySource(dirty, 'You have unsaved changes to this content type. Close anyway?');
+  useDirtySource(dirty, 'You have unsaved changes to this kind of content. Close anyway?');
 
   const problem = metaProblem(draft, false);
   // The DELETE reckons with every site: `deleteContentTypeTx` refuses tenant-wide,
@@ -485,7 +485,7 @@ function EditType({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Content type actions"
+        label="Kind of content actions"
         primary={
           <Button
             color="module"
@@ -560,7 +560,7 @@ function BuiltInType({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Content type actions"
+        label="Kind of content actions"
         status={
           <Badge color="info" variant="soft" size="sm">
             Built-in

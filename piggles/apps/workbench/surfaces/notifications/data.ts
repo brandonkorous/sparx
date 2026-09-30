@@ -105,7 +105,7 @@ export const NOTIFICATION_CATEGORY_META: readonly CategoryMeta[] = [
   },
   {
     key: 'customers',
-    label: 'Customers & enquiries',
+    label: 'Customers & inquiries',
     description: 'Someone signs up, sends a message, asks a question, or leaves a review.',
     icon: faUsers,
     module: 'crm',

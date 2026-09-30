@@ -5,7 +5,16 @@ import { Icon } from '@piggles/ui';
 import { Badge } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { PigglesGroup } from '@piggles/brand';
-import { accountUrl, APP_BY_ID, APPS, appIcon } from '@piggles/config';
+import {
+  accountUrl,
+  APP_BY_ID,
+  APP_COUNT,
+  APP_COUNT_WORD,
+  APP_COUNT_WORD_CAP,
+  appIcon,
+  APPS,
+  numberWord,
+} from '@piggles/config';
 import { PigglesMascot } from '@piggles/mascot/react';
 import type { MascotPoseId } from '@piggles/mascot';
 
@@ -260,11 +269,18 @@ const BEATS: Beat[] = [
     lights: ['money'],
     group: 'money',
     pose: 'desk-celebrate',
-    // Eight and seven, not six and nine. The rail lights eight apps across the
-    // day and a visitor can count both numbers on screen — a claim the page
-    // makes with its own furniture has to survive being checked.
-    heading: 'Eight apps before six o’clock. You opened one.',
-    body: 'The other seven were there the whole time: content, suppliers, staff, automations, the rest. Not an upgrade. Not an add-on. Just not needed today.',
+    // Both numbers are COUNTED, below, not typed. The rail lights eight apps
+    // across the day and a visitor can count both figures on screen, which is
+    // the whole reason they matter: a claim the page makes with its own
+    // furniture has to survive being checked.
+    //
+    // It used to say eight and SEVEN, kept in step by hand and adding to
+    // fifteen — a total this product has never had. There are sixteen apps and
+    // there always were. The old comment here said "a visitor can count both
+    // numbers on screen", which was exactly the right instinct and is why being
+    // wrong mattered.
+    heading: '',
+    body: '',
     place: 'left-[64%] top-[69%] w-[28%]',
     window: {
       title: 'Money',
@@ -276,8 +292,27 @@ const BEATS: Beat[] = [
   },
 ];
 
+// ── THE CLOSING BEAT COUNTS THE DAY ─────────────────────────────────────────
+//
+// "Eight apps before six o'clock" and "the other eight" are the SAME fact said
+// twice: how many the rail lit, and everything else. Written here rather than
+// in the beat because `lights` is what a reader can actually count, so the
+// sentence has to be taken from it.
+//
+// They were typed by hand as eight and SEVEN, which adds to fifteen. There are
+// sixteen apps and there always were, so the page's closing claim — the one it
+// invites you to check — was the one thing on it that did not add up.
+const DAY_LIT = new Set(BEATS.flatMap((b) => b.lights)).size;
+const DAY_REST = APP_COUNT - DAY_LIT;
+const CLOSING = BEATS[BEATS.length - 1];
+if (CLOSING) {
+  const lit = numberWord(DAY_LIT);
+  CLOSING.heading = `${lit.charAt(0).toUpperCase() + lit.slice(1)} apps before six o’clock. You opened one.`;
+  CLOSING.body = `The other ${numberWord(DAY_REST)} were there the whole time: content, suppliers, staff, automations, the rest. Not an upgrade. Not an add-on. Just not needed today.`;
+}
+
 /** Offsets and sizes for the ground field, cycled by index. Five and three
- *  against fifteen apps, so no two neighbours share a hue AND an offset. */
+ *  against the app count, so no two neighbours share a hue AND an offset. */
 const JITTER = [
   'translate-x-1/3',
   '-translate-x-2 translate-y-4 rotate-6',
@@ -349,7 +384,7 @@ function DeskWindow({ beat, state }: { beat: Beat; state: 'ghost' | 'on' | 'hot'
           state === 'ghost' ? 'opacity-0' : 'opacity-100'
         }`}
       >
-        <span className="bg-module bg-soft text-module grid size-5 place-items-center rounded-md">
+        <span className="bg-module text-module-content grid size-5 place-items-center rounded-md">
           <Icon glyph={glyph} aria-hidden className="size-3" />
         </span>
         {beat.window.title}
@@ -528,8 +563,8 @@ export function TheDay() {
           <br className="hidden lg:inline" /> One screen.
         </h1>
         <p className="mt-5 max-w-[52ch] text-lg sm:text-xl lg:mx-auto">
-          Fifteen apps that already know about each other. Here is an ordinary Thursday, on one
-          login.
+          {APP_COUNT_WORD_CAP} apps that already know about each other. Here is an ordinary
+          Thursday, on one login.
         </p>
         <div className="mt-7 flex flex-wrap gap-3 lg:justify-center">
           <a
@@ -548,11 +583,13 @@ export function TheDay() {
           </a>
         </div>
         <ul className="mt-6 flex flex-wrap gap-x-7 gap-y-2 lg:justify-center">
-          {['Free for 14 days', 'All fifteen apps included', 'No card needed'].map((line) => (
-            <li key={line} className="text-base font-semibold">
-              {line}
-            </li>
-          ))}
+          {['Free for 14 days', `All ${APP_COUNT_WORD} apps included`, 'No card needed'].map(
+            (line) => (
+              <li key={line} className="text-base font-semibold">
+                {line}
+              </li>
+            )
+          )}
         </ul>
       </div>
     </div>
@@ -863,7 +900,7 @@ export function TheDay() {
 function BeatCopy({ beat }: { beat: Beat }) {
   return (
     <div data-group={beat.group}>
-      <span className="bg-module bg-soft ink-module inline-flex items-center rounded-full px-3.5 py-2 text-sm font-semibold tabular-nums">
+      <span className="bg-module text-module-content inline-flex items-center rounded-full px-3.5 py-2 text-sm font-semibold tabular-nums">
         {beat.when}
       </span>
       <h2 className="mt-4 text-[clamp(1.55rem,6.4vw,2.1rem)] leading-[1.07] font-extrabold lg:text-[clamp(1.75rem,2.7vw,2.625rem)]">

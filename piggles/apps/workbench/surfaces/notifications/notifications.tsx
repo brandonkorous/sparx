@@ -28,7 +28,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { faBell, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -172,6 +172,19 @@ export function NotificationsSurface() {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Notification preference actions"
+        status={
+          <>
+            <Icon glyph={faBell} className="size-4 shrink-0" aria-hidden />
+            {/* The bar was empty on its left, on a pane that is a form with a
+                Save. What a person wants to know at a glance here is whether
+                there is anything to save. */}
+            <Text as="span" className="text-sm">
+              {dirty ? 'Not saved yet' : 'Saved'}
+            </Text>
+          </>
+        }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"

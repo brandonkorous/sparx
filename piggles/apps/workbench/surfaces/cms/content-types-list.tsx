@@ -85,12 +85,12 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Content type list controls"
+        label="Kinds of content controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search content types"
+              aria-label="Search kinds of content"
               placeholder="Name or reference…"
               value={search}
               onValueChange={setSearch}
@@ -138,7 +138,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Card className="flex-1">
             <EmptyState
               icon={<Icon glyph={faDatabase} className="size-6" aria-hidden />}
-              title="Could not load your content types"
+              title="Could not load your kinds of content"
               description="This is a problem reaching the server. Nothing you have defined is affected."
               actions={
                 <Button
@@ -168,7 +168,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 description: 'Try a different search, or switch the filter back to All.',
               }}
               firstRun={{
-                title: 'No content types yet',
+                title: 'No kinds of content yet',
                 description:
                   'Define your first kind of content (a recipe, a case study, a job listing) with exactly the fields it needs.',
                 actions: (

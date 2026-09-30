@@ -1,4 +1,5 @@
 import type { AppMarketing } from './types';
+import { BOOKINGS_CHAPTERS } from './chapters/bookings';
 
 export const BOOKINGS: AppMarketing = {
   heading: 'Let people book you without the back-and-forth.',
@@ -30,6 +31,7 @@ export const BOOKINGS: AppMarketing = {
       body: 'When somebody cancels, the next person is offered the slot instead of it silently going empty.',
     },
   ],
+  chapters: BOOKINGS_CHAPTERS,
   worksWith: ['customers', 'messages', 'team'],
   photo: { src: '/photos/barber.jpg', alt: 'A barber finishing a client’s cut' },
 };

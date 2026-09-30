@@ -27,6 +27,8 @@
 // Pure, with one branch per state — a plural-only phrase reads fine in source
 // and only breaks on screen.
 
+import { UNANSWERED_FILTER } from './question-answers';
+
 export type ModerationKind = 'question' | 'review';
 
 export interface ModerationEmpty {
@@ -102,6 +104,19 @@ export function moderationEmptyWords(
       detail:
         `Nobody has left one. When a customer ${noun.verb}, it appears here for you to publish ` +
         'or hide before it goes on your website.',
+    };
+  }
+
+  // "No answer yet" is not a status, and an empty one is the GOOD outcome —
+  // every question has a reply. Falling through to the line below would tell her
+  // to try a different word she never typed, about a view that is empty because
+  // the work is done. [[feedback_one_outcome_two_causes]]
+  if (kind === 'question' && input.status === UNANSWERED_FILTER) {
+    return {
+      title: 'Every question has an answer',
+      detail:
+        'Nothing is waiting on a reply from you. Switch the filter to All to read the ones you ' +
+        'have already answered.',
     };
   }
 

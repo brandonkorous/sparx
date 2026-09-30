@@ -207,10 +207,16 @@ export function CrmSettingsSurface() {
                     <div className="flex flex-col gap-1">
                       <FieldLabel>Offer a company when the email domain matches one</FieldLabel>
                       <FieldDescription>
-                        Add someone at <Text as="span">jo@northgatedental.com</Text> and we&rsquo;ll
-                        ask whether they belong under Northgate Dental Group, if you have told us
-                        that domain belongs to them. It is always a question, never done for you,
-                        and personal addresses like gmail are ignored entirely.
+                        {/* No <Text as="span"> around the address. It rendered a
+                            bare span with no class and no style — it did nothing
+                            — and the JSX transform then dropped the space after
+                            it, so this read "jo@northgatedental.comand we&rsquo;ll ask".
+                            Prettier removes a {' '} written to put the space back,
+                            so the wrapper had to go rather than be worked around. */}
+                        Add someone at jo@northgatedental.com and we&rsquo;ll ask whether they
+                        belong under Northgate Dental Group, if you have told us that domain belongs
+                        to them. It is always a question, never done for you, and personal addresses
+                        like gmail are ignored entirely.
                       </FieldDescription>
                     </div>
                   </div>

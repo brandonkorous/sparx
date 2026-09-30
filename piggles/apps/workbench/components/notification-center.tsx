@@ -6,7 +6,7 @@
 // bar carries facts about the SESSION — is it saving, what's running, which
 // windows are open — all of which stop mattering when you close the app. A
 // notification is addressed to a PERSON and survives the session, which puts it
-// with the other person-scoped chrome (the account menu, favourites).
+// with the other person-scoped chrome (the account menu, favorites).
 //
 // The bell is silent when there is nothing unread: no badge, no dot, no color.
 // A permanently-decorated bell teaches people that the decoration means nothing.

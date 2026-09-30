@@ -9,7 +9,7 @@ import { PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { isNotFound, useLocation } from './locations-data';
+import { useLocation } from './locations-data';
 import { BLANK, draftFrom } from './location-draft';
 import { LocationEditor } from './location-editor';
 
@@ -27,18 +27,15 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // A failed load REPLACES the form — never an empty form beside a dead Save,
   // which invites editing a location you cannot see.
   if (location.isError) {
-    const gone = isNotFound(location.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This location no longer exists' : 'Could not load this location'}
-            description={
-              gone
-                ? 'It has been archived or removed. Its past stock movements are unaffected.'
-                : 'This is a problem reaching the server. Nothing about the location has changed.'
-            }
+            error={location.error}
+            title="Could not load this location"
+            description="This is a problem reaching the server. Nothing about the location has changed."
+            missingTitle="This location no longer exists"
+            missingDescription="It has been archived or removed. Its past stock movements are unaffected."
             onRetry={() => {
               void location.refetch();
             }}

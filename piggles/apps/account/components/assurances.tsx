@@ -59,7 +59,7 @@ const ASSURANCES: { icon: PigglesIcon; title: string; body: string }[] = [
   {
     icon: faEyeSlash,
     title: 'Never used to train AI',
-    body: 'Not a model, not anonymised, not ever.',
+    body: 'Not a model, not anonymized, not ever.',
   },
 ];
 

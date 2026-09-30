@@ -106,6 +106,7 @@ function ReconcileBanner({ data }: { data: StockProvenance }) {
 /* ── The number, taken apart ─────────────────────────────────────────────── */
 
 function Breakdown({ data }: { data: StockProvenance }) {
+  const unsellable = data.unsellableOnHand ?? 0;
   const rows: { label: string; value: number; note: string; emphasis?: boolean }[] = [
     {
       label: 'On the shelf',
@@ -127,6 +128,18 @@ function Breakdown({ data }: { data: StockProvenance }) {
         data.safetyBuffer === 0
           ? 'You are not withholding any as a cushion.'
           : 'A cushion you chose to keep off sale.',
+    },
+    // The fourth term. The server subtracted it and did not report it, so this
+    // list showed three of the four and the arithmetic stopped adding up: one on
+    // the shelf, none spoken for, none held back, "free to sell 0". A pane whose
+    // whole job is to take the number apart cannot leave a piece out.
+    {
+      label: 'Not fit to sell',
+      value: -unsellable,
+      note:
+        unsellable === 0
+          ? 'Nothing is put aside as damaged or waiting to be checked.'
+          : `${plural(unsellable, 'unit is', 'units are')} on a shelf you do not sell from: damaged, in quarantine, or waiting to be looked at.`,
     },
     {
       label: 'Free to sell',
@@ -439,7 +452,7 @@ export function ProvenanceSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Explanation controls"
+        label="Controls for where this number came from"
         controls={
           data ? (
             <Button

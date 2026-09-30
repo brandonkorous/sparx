@@ -86,7 +86,7 @@ export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const descriptor = hidden ? undefined : (catalog.data ?? []).find((g) => g.id === gatewayId);
 
   useEffect(() => {
-    ctx.setTitle(descriptor?.name ?? 'Payment provider');
+    ctx.setTitle(descriptor?.name ?? 'How you take payment');
   }, [ctx, descriptor]);
 
   if (config.isError || catalog.isError) {
@@ -129,7 +129,7 @@ export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             reason="missing"
-            title="Unknown payment provider"
+            title="We do not know this way of taking payment"
             description={productCopy(
               'commerce.provider.retired',
               'This provider is no longer part of Piggles. Close this pane and pick another from the list.'
@@ -180,7 +180,7 @@ function ProviderEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Payment provider actions"
+        label="How you take payment actions"
         status={
           <Badge color={state.tone} variant="soft" size="sm">
             {state.label}

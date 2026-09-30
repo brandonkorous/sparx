@@ -155,9 +155,28 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
                     variantName={lot.variantName}
                     code={lot.lotNumber}
                   />
-                  <span className="truncate text-sm">
-                    {lot.warehouseName ?? 'Unknown location'}
-                    {lot.recallStatus ? ` · recall ${lot.recallStatus}` : ''}
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    <span className="truncate text-sm">
+                      {lot.warehouseName ?? 'Unknown location'}
+                    </span>
+                    {/* A recall is the most serious thing a batch can be, and it
+                        was trailing text on a TRUNCATING line, in the same grey
+                        as the warehouse name, reading "· recall active" — the
+                        enum word, styled identically to "· recall cleared",
+                        which means the opposite. MEASURED 2026-09-19: 2 batches
+                        holding 68 units are recalled right now. The expiry date
+                        one cell to the right is already a toned Badge, so this
+                        file knew the pattern. Say what it MEANS, not the column
+                        value. */}
+                    {lot.recallStatus === 'active' ? (
+                      <Badge color="danger" variant="soft" size="sm" className="shrink-0">
+                        Recalled
+                      </Badge>
+                    ) : lot.recallStatus === 'cleared' ? (
+                      <Badge color="success" variant="soft" size="sm" className="shrink-0">
+                        Recall lifted
+                      </Badge>
+                    ) : null}
                   </span>
                 </span>
               </td>
@@ -384,7 +403,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
           <DialogTitle>Write off {acting?.lot.lotNumber}</DialogTitle>
           <DialogDescription>
             {acting
-              ? `${plural(acting.lot.quantity, 'unit', 'units')} comes off the shelf as a LOSS, not as damage: expired goods are a buying problem, and filing them as damage sends somebody looking for a thief who does not exist.`
+              ? `${plural(acting.lot.quantity, 'unit', 'units')} ${acting.lot.quantity === 1 ? 'comes' : 'come'} off the shelf as a LOSS, not as damage: expired goods are a buying problem, and filing them as damage sends somebody looking for a thief who does not exist.`
               : ''}
           </DialogDescription>
           <div className="flex flex-col gap-3 py-2">

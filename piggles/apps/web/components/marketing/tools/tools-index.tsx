@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Section } from '@piggles/ui';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS } from '@piggles/brand';
-import { accountUrl } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PigglesMascot } from '@piggles/mascot/react';
 import { PageHero } from '../page-hero';
@@ -104,9 +104,10 @@ export function ToolsIndex() {
               make one invoice here and never come back, the arrangement worked exactly as intended.
             </p>
             <p className="text-lg">
-              The product these come from is Piggles: fifteen apps for running a small business
-              (your website, your customers, your stock, your money) for {PRICE_LABEL} a month with
-              everything included. These seventeen are the corners of it that fit in a page.
+              The product these come from is Piggles: {APP_COUNT_WORD} apps for running a small
+              business (your website, your customers, your stock, your money) for {PRICE_LABEL} a
+              month with everything included. These seventeen are the corners of it that fit in a
+              page.
             </p>
           </div>
         </div>

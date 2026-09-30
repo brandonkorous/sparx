@@ -4,6 +4,7 @@
 // amounts in the reader’s own locale.
 
 import type { Order, OrderAddress, OrderCustomer } from './order-types';
+import { formatAmount } from '../../lib/money-format';
 
 /** The buyer in one line: a company if they trade as one, otherwise their name,
  *  otherwise their email. Never an empty cell — an order always has a buyer. */
@@ -31,7 +32,7 @@ export function amountDue(order: Order): number {
 }
 
 export function formatMoney(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  return formatAmount(amount, currency);
 }
 
 export function formatDate(value: string | null | undefined): string {

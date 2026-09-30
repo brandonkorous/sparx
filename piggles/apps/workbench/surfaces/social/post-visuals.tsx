@@ -17,7 +17,7 @@ import { faMessageLines, faVideo } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PlatformMark } from '../../components/platform-mark';
 import { useMediaAssets, type MediaAsset } from '../cms/media';
-import { focalClassFor } from './post-preview';
+import { focalClassFor } from '../cms/focal-point';
 import {
   platformName,
   targetStatusMeta,

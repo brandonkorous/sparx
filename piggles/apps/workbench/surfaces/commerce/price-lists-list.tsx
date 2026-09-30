@@ -7,10 +7,10 @@
 // whether it is live — so unlike the one-line collection/discount lists this is
 // a real table, its columns disclosing with @container as the pane widens.
 //
-// A "price list" is a set of special prices for particular customers: a
-// wholesale sheet, a distributor's rates, the "trade" price you give the
-// businesses you supply. The empty state says exactly that, because the audience
-// owns a shop, not a pricing engine.
+// A SPECIAL PRICE is a set of prices for particular customers: a wholesale
+// sheet, a distributor's rates, the "trade" price you give the businesses you
+// supply. The platform calls it a price list; the empty state does not, because
+// the audience owns a shop, not a pricing engine.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -81,7 +81,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'Add a price list',
+    label: 'Add a special price',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -90,13 +90,13 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Price list controls"
+        label="Special prices controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search price lists"
-              placeholder="Search price lists…"
+              aria-label="Search special prices"
+              placeholder="Search special prices…"
               value={search}
               onValueChange={setSearch}
             />
@@ -107,7 +107,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a price list: hold Shift to open alongside, Alt for a new window"
+            title="Add a special price: hold Shift to open alongside, Alt for a new window"
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -118,7 +118,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="w-40 shrink-0">
             <Select
               size="sm"
-              aria-label="Show which price lists"
+              aria-label="Show which special prices"
               value={filter}
               items={FILTERS.map((entry) => ({ value: entry.value, label: entry.label }))}
               onValueChange={(next) => {
@@ -151,8 +151,8 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             icon={<Icon glyph={faTag} className="size-6" aria-hidden />}
-            title="Could not load your price lists"
-            description="This is a problem reaching the server. Your price lists are unaffected. Nothing has been lost."
+            title="Could not load your special prices"
+            description="This is a problem reaching the server. Your special prices are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -166,9 +166,9 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
               description: 'Try a different word, or clear the filters to see everything.',
             }}
             firstRun={{
-              title: 'No price lists yet',
+              title: 'No special prices yet',
               description:
-                'A price list is a set of special prices for particular customers: a wholesale sheet for the businesses you supply, or a members’ rate. Add your first one to start giving certain customers their own prices.',
+                'A special price is a set of prices for particular customers: a wholesale sheet for the businesses you supply, or a members’ rate. Add your first one to start giving certain customers their own prices.',
               action: createFirst,
             }}
           />

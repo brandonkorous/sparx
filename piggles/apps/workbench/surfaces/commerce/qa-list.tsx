@@ -54,13 +54,22 @@ import {
 import { RowOpenHint } from '../../components/row-open-hint';
 import { moderationEmptyWords } from './moderation-empty';
 import { bulkDecisionWords, questionDecisions, unchangedWords } from './moderation-decisions';
+import { answerState, shownWithoutAnswerNote, UNANSWERED_FILTER } from './question-answers';
 
-/** Plain-language filter over the stored statuses. Default is "Waiting" — the
+/** Plain-language names for the subsets of this list. Four are stored statuses
+ *  and the fifth is not; see the note beside it. Default is "Waiting" — the
  *  queue's whole job is the backlog, so that is what opens. */
 const STATUS_FILTERS = [
   { value: 'pending', label: 'Waiting' },
   { value: 'published', label: 'Shown' },
   { value: 'rejected', label: 'Hidden' },
+  // Not a stored status, and deliberately in the SAME group: from her side these
+  // are five ways of saying "which ones am I looking at", and a second chip row
+  // for one question would be two controls to read before she can start. The
+  // words match the column exactly so the chip and the cells speak one language,
+  // and they describe a fact rather than claiming she owes a reply, which would
+  // be wrong for a question she has hidden (issue 734).
+  { value: UNANSWERED_FILTER, label: 'No answer yet' },
   { value: 'all', label: 'All' },
 ] as const;
 
@@ -102,9 +111,13 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
   // rather than every row's (the moderate mutation is shared across the table).
   const [actingId, setActingId] = useState<string | null>(null);
 
+  // The chip group holds two axes, so it is unpacked into two here: the
+  // "No answer yet" chip is not a status and must never be sent as one.
+  const unanswered = status === UNANSWERED_FILTER;
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useQuestionsList({
     q: search,
-    status,
+    status: unanswered ? 'all' : status,
+    ...(unanswered ? { unanswered: true } : {}),
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -164,6 +177,11 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const setStatusFor = (id: string, next: 'published' | 'rejected', done: string) => {
     setActingId(id);
+    // Showing a question does NOT answer it, and this is the one moment the
+    // console can say so without nagging: after it, the question is off the
+    // waiting queue for good and nothing raises it again (issue 734).
+    const silent =
+      next === 'published' && (rows.find((r) => r.id === id)?.answerCount ?? 0) === 0 ? 1 : 0;
     moderate.mutate(
       { id, status: next },
       {
@@ -171,8 +189,15 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A decision that moved nothing is not announced as one. The button
           // that could produce this has been taken off the row, so it is reachable
           // only when somebody else worked the same queue first (issue 640).
+          const note = shownWithoutAnswerNote(silent);
           toast.add(
-            result.changed ? { title: done, type: 'success' } : unchangedWords('question', next)
+            result.changed
+              ? {
+                  title: done,
+                  type: 'success',
+                  ...(note === undefined ? {} : { description: note }),
+                }
+              : unchangedWords('question', next)
           );
         },
         onError: (err) => {
@@ -190,13 +215,31 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const bulkSetStatus = (next: 'published' | 'rejected') => {
+    // Exactly the rows about to GO on the page with nothing under them:
+    // selected, not already shown, and nobody has replied. Counted here rather
+    // than from the result, which reports how many moved but not which.
+    const silent =
+      next === 'published'
+        ? rows.filter((r) => selected.has(r.id) && r.status !== 'published' && r.answerCount === 0)
+            .length
+        : 0;
     bulkModerate.mutate(
       { questionIds: selectedIds, status: next },
       {
         onSuccess: (result) => {
           clearSelection();
           // Counts what MOVED, and names what did not.
-          toast.add(bulkDecisionWords('question', next, result));
+          const words = bulkDecisionWords('question', next, result);
+          const note = result.count > 0 ? shownWithoutAnswerNote(silent) : undefined;
+          toast.add(
+            note === undefined
+              ? words
+              : {
+                  ...words,
+                  description:
+                    words.description === undefined ? note : `${words.description} ${note}`,
+                }
+          );
         },
         onError: (err) => {
           toast.add({
@@ -236,7 +279,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Questions list controls"
+        label="Questions people ask controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -268,7 +311,10 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
         }
         filters={[
           {
-            label: 'Status',
+            // Not "Status" any more: one of the five chips is not a status, and a
+            // group named after the axis it no longer only carries is the kind
+            // of label somebody reads once and then stops believing.
+            label: 'Which questions',
             key: 'status',
             value: status,
             onValueChange: (next) => {
@@ -363,7 +409,15 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Table size="sm" hover>
             <thead>
               <tr>
-                <th className="w-10">
+                {/* Hidden below @sm. Four columns, a checkbox, a badge and two
+                    icon buttons do not fit 360px: the table measured 418px in a
+                    343px scrollport, so the Actions buttons — the only way to
+                    show or hide a question from this list — sat off the right
+                    edge behind a sideways scroll. Ticking rows to act on twenty
+                    at once is not what a phone is for; pressing show or hide on
+                    the one in front of you is. Dropping this column buys 61px
+                    and the table fits. */}
+                <th className="hidden w-10 @sm:table-cell">
                   <Checkbox
                     color="module"
                     checked={allSelected}
@@ -378,6 +432,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>Question</th>
                 <th className="hidden @lg:table-cell">Product</th>
                 <th className="hidden @xl:table-cell">Asked by</th>
+                <th className="hidden @lg:table-cell">Answer</th>
                 {header('status', 'Status')}
                 {header('createdAt', 'Asked', 'hidden @2xl:table-cell')}
                 <th className="text-right">Actions</th>
@@ -386,6 +441,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
             <tbody>
               {rows.map((row) => {
                 const state = questionState(row.status);
+                const answered = answerState(row.answerCount);
                 const busyRow = actingId === row.id && moderate.isPending;
                 const open = (event: { shiftKey: boolean; altKey: boolean }) => {
                   openQueue(event, row.id);
@@ -407,7 +463,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td
-                      className="w-10"
+                      className="hidden w-10 @sm:table-cell"
                       onClick={(event) => {
                         event.stopPropagation();
                       }}
@@ -421,7 +477,19 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                         }}
                       />
                     </td>
-                    <td className="max-w-md truncate">{preview(row.body)}</td>
+                    {/* The GIVE-CELL: the question takes whatever the other columns
+                        leave, and truncates rather than pushing them off the edge.
+                        It was `max-w-md` — one desktop number, 448px, wider than a
+                        whole 360px pane — so at 360 the table measured 706px in a
+                        343px scrollport, the status badge read "Publis" and the
+                        Actions buttons, the only way to show or hide a question from
+                        this list, sat off the right-hand edge behind a sideways
+                        scroll. No `min-w-56` floor with it: the floor in
+                        components/table.tsx protects a name column whose siblings
+                        are all floored number cells, and here 224px is itself too
+                        wide beside a badge and two buttons. MEASURED at a 360px
+                        pane: 706px before, 343px after, no sideways scroll. */}
+                    <td className="w-full max-w-0 truncate">{preview(row.body)}</td>
                     <td className="hidden max-w-40 truncate text-sm @lg:table-cell">
                       {row.productTitle ?? '—'}
                     </td>
@@ -441,6 +509,15 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                           </span>
                         ) : null}
                       </div>
+                    </td>
+                    <td className="hidden @lg:table-cell">
+                      {answered.tone === null ? (
+                        <span className="text-sm">{answered.label}</span>
+                      ) : (
+                        <Badge color={answered.tone} variant="soft" size="sm">
+                          {answered.label}
+                        </Badge>
+                      )}
                     </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">

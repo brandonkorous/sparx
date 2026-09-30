@@ -168,7 +168,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
   // The other screen's name in THIS console's words. Read from the registry rather
   // than typed, because the brand renames it there ("How people find you") and a
   // sentence pointing at a name nobody sees is worse than no pointer at all.
-  const performanceTitle = surfaceTitle('seo.performance') ?? 'Search performance';
+  const performanceTitle = surfaceTitle('seo.performance') ?? 'How people find you';
 
   const connection = status.data?.connection ?? null;
   const configured = status.data?.configured ?? false;

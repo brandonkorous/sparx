@@ -151,7 +151,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
           group is "Open the editor" then refresh, and the count gives way first
           as the pane narrows. This bar does not wrap. */}
       <PaneToolbar
-        label="Saved pieces list controls"
+        label="Saved pieces controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -172,6 +172,8 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(all.length)} pieces`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             size="sm"

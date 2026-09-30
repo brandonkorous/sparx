@@ -21,14 +21,21 @@ export interface Signal {
   icon: PigglesIcon;
   /** The app this belongs to, so the row wears that app's hue. */
   module: string;
+  /** The screen the count is measured on — `COUNT_SURFACE[key]`, which
+   *  signals.test.ts holds it to. */
   surface: string;
   /**
    * What the screen must be narrowed to for the number to be visible on it. A
    * sentence naming a count promises the screen behind it shows THAT count:
    * "1 item is sold out" opened 62 unnarrowed rows with the one ninth ([258]).
    * Same values the pane's own chips use, so she can see it and turn it off.
+   *
+   * Required, not optional: it was optional, and three of seven sentences
+   * shipped without one — "4 orders are waiting to go out" opened every order
+   * the shop had taken. signals.test.ts reads each one through the pane's own
+   * parser and checks it asks the server the count's question.
    */
-  params?: Record<string, string>;
+  params: Record<string, string>;
   /** The sentence AFTER the number. Two forms, because "1 orders" is the kind of
    *  small wrongness that makes software feel unattended. */
   one: string;
@@ -46,6 +53,8 @@ export const SIGNALS: Signal[] = [
     icon: faBagShopping,
     module: 'commerce',
     surface: 'commerce.orders.list',
+    // To pack: the chip that asks `status=placed`, the count's own filter.
+    params: { show: 'to_send' },
     one: 'order is waiting to go out',
     many: 'orders are waiting to go out',
     clear: 'everything is sent',
@@ -56,6 +65,9 @@ export const SIGNALS: Signal[] = [
     icon: faComment,
     module: 'chat',
     surface: 'chat.inbox',
+    // The inbox's Unread toggle: the count asks `unread=true`, so an answered
+    // conversation is not among the people "waiting to hear back".
+    params: { unread: 'true' },
     one: 'person is waiting to hear back',
     many: 'people are waiting to hear back',
     clear: 'everyone has had a reply',
@@ -82,7 +94,12 @@ export const SIGNALS: Signal[] = [
     key: 'bookings',
     icon: faCalendarCheck,
     module: 'scheduling',
-    surface: 'scheduling.calendar',
+    // The bookings LIST, not the calendar. The calendar shows a week, so a
+    // request for next month was not on it, and nothing on the grid picked the
+    // requests out from the confirmed bookings around them. The list narrows
+    // to exactly the `status=requested` rows the count asks for.
+    surface: 'scheduling.bookings.list',
+    params: { status: 'requested' },
     one: 'booking needs confirming',
     many: 'bookings need confirming',
     clear: 'no bookings are waiting',
@@ -93,6 +110,9 @@ export const SIGNALS: Signal[] = [
     icon: faFileExclamation,
     module: 'invoicing',
     surface: 'invoicing.invoices.list',
+    // The Late chip, which asks `pastDue=true`: the count's own question. The
+    // whole list opened with the late ones somewhere among the paid ones.
+    params: { pastDue: 'true' },
     // 'Late', the word the invoices list itself uses on the band at the top of
     // it and on the badge on every row. 'Overdue' was also the name of the stored
     // status that turned out not to mean late at all, and no screen a business

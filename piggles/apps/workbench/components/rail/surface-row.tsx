@@ -10,7 +10,7 @@ import { resolveTitle, type SurfaceDefinition } from '@/lib/surfaces/registry';
 import { ModuleScope } from '@/components/module-scope';
 
 /**
- * One favourite or recent row. A launch shortcut, not a navigation position — it
+ * One favorite or recent row. A launch shortcut, not a navigation position — it
  * never carries an `active` state; clicking opens the surface where any other
  * open would land it.
  *

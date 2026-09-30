@@ -13,21 +13,17 @@ import { faStar, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import type { Site } from './data';
+import { moduleLabel } from '../../lib/surfaces/nav';
+import type { WorkbenchModule } from '../../components/module-scope';
 
 /** Modules a site can be told not to show. `builder` is absent on purpose — it
  *  is what BUILDS the site, so hiding it from one site is meaningless. */
 const SCOPEABLE = ['commerce', 'cms', 'crm', 'email', 'b2b', 'dropship', 'inventory', 'ai'];
 
-const MODULE_LABELS: Record<string, string> = {
-  commerce: 'Selling',
-  cms: 'Content',
-  crm: 'Customers',
-  email: 'Email',
-  b2b: 'Wholesale',
-  dropship: 'Dropshipping',
-  inventory: 'Inventory',
-  ai: 'AI',
-};
+// The names come from `lib/surfaces/nav.ts`, which resolves them through the
+// brand's app registry. This file kept its own, saying "Selling", "Email", "AI"
+// and "Inventory" for apps the rail calls Sell, Messages, Connections and Stock.
+// One of six such tables; see the note in nav.ts.
 
 export function SiteScope({
   site,
@@ -51,7 +47,11 @@ export function SiteScope({
   return (
     <FormSection
       title="What this site shows"
-      description="Switch off anything this site has no use for. It stays available on your other sites."
+      // "Saved as you switch them" because this card does NOT wait for the Save
+      // button sitting at the top of the same screen, and the Site name field
+      // above it does. Two save models on one page with nothing saying which is
+      // which leaves a person guessing whether their change took.
+      description="Switch off anything this site has no use for. It stays available on your other sites. Saved as you switch them."
     >
       {available.length === 0 ? (
         <Text className="text-sm">
@@ -65,12 +65,12 @@ export function SiteScope({
               color="module"
               checked={!site.moduleScope.includes(slug)}
               disabled={saving}
-              aria-label={MODULE_LABELS[slug] ?? slug}
+              aria-label={moduleLabel(slug as WorkbenchModule)}
               onChange={(event) => {
                 onToggle(slug, event.target.checked);
               }}
             />
-            <Text as="span">{MODULE_LABELS[slug] ?? slug}</Text>
+            <Text as="span">{moduleLabel(slug as WorkbenchModule)}</Text>
           </label>
         ))
       )}

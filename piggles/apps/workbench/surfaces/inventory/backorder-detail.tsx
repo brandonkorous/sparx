@@ -1,6 +1,6 @@
 'use client';
 
-// ONE COMMITMENT — who is owed what, what they were told, and when it was told.
+// ONE THING OWED — who is owed what, what they were told, and when it was told.
 //
 // The pane a salesperson opens with a customer on the phone. Three questions get
 // answered in the order they get asked: where am I in the queue, when will it
@@ -65,6 +65,7 @@ import {
   useUpdateBackorder,
 } from './demand-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 /** `<input type="date">` wants `YYYY-MM-DD`; the API speaks ISO instants. */
 function toDateInput(iso: string | null): string {
@@ -102,7 +103,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 overflow-y-auto">
-          <PaneWaiting module={MODULE} label="Loading the commitment…" />
+          <PaneWaiting module={MODULE} label="Loading what is owed…" />
         </Card>
       </div>
     );
@@ -113,10 +114,10 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1 overflow-y-auto">
           <PaneLoadError
             error={error}
-            noun="commitment"
+            noun="item owed"
             module={MODULE}
             icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
-            title="Could not load that commitment"
+            title="Could not load what is owed"
             description="It may have been canceled, or the server is unreachable. Nothing anyone is owed has changed."
             onRetry={() => {
               void refetch();
@@ -174,7 +175,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Commitment controls"
+        label="Owed controls"
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -211,7 +212,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     toast.add({
                       title: 'Marked as told',
                       description:
-                        'If the date moves from here, this commitment will show up as worth a second call.',
+                        'If the date moves from here, this will show up as worth a second call.',
                       type: 'success',
                     });
                   });
@@ -233,7 +234,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               disabled={cancel.isPending}
               onClick={() => {
                 void confirm({
-                  title: 'Drop this commitment?',
+                  title: 'Drop what is owed?',
                   description: `${plural(data.outstanding, 'unit', 'units')} owed to ${data.customerName ?? 'a guest'} will stop being tracked. The order itself is untouched: do this only when the customer no longer wants it.`,
                   confirmLabel: 'Drop it',
                   cancelLabel: 'Keep it',
@@ -243,7 +244,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   cancel.mutate('Dropped from the queue by hand.', {
                     onSuccess: () => {
                       afterCommit(() => {
-                        toast.add({ title: 'Commitment dropped', type: 'info' });
+                        toast.add({ title: 'Dropped', type: 'info' });
                       });
                     },
                     onError: fail('Could not drop it'),
@@ -291,9 +292,9 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <AlertContent>
                   <AlertTitle>Nobody has promised a date</AlertTitle>
                   <AlertDescription>
-                    Nothing here knows when more is coming, so nothing has been said. Raising a
-                    purchase order with an expected arrival gives this a real date automatically, or
-                    type one below if you know something the system does not.
+                    Nothing here knows when more is coming, so nothing has been said. Raising an
+                    order to a supplier with an expected arrival gives this a real date
+                    automatically, or type one below if you know something the system does not.
                   </AlertDescription>
                 </AlertContent>
               </Alert>
@@ -324,11 +325,10 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
             <Field>
               <FieldLabel>Date to give them</FieldLabel>
-              <Input
-                type="date"
+              <DayInput
                 value={promised}
-                onChange={(event) => {
-                  setPromised(event.target.value);
+                onValueChange={(value) => {
+                  setPromised(value);
                 }}
               />
             </Field>
@@ -382,7 +382,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                             toast.add({
                               title: 'Date cleared',
                               description:
-                                'Honest is better than stale. This commitment now shows as having no date.',
+                                'Honest is better than stale. This now shows as having no date.',
                               type: 'info',
                             });
                           });

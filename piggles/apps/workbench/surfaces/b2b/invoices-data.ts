@@ -1,11 +1,11 @@
 'use client';
 
 // ══════════════════════════════════════════════════════════════════════════
-// WHOLESALE INVOICES — what each trade account owes, and by when.
+// WHOLESALE INVOICES — what each wholesale customer owes, and by when.
 //
 // A wholesale invoice is a net-terms receivable: a business bought on terms, so
 // you invoice them and they pay within the agreed window. Under the hood it is a
-// billing document scoped to a trade account; these routes project it as an
+// billing document scoped to a wholesale customer; these routes project it as an
 // "invoice" with the fields an accounts-receivable view needs — the amount, the
 // balance still owed, the due date, and whether it's paid, overdue or written
 // off.
@@ -26,6 +26,7 @@ import {
 } from '../../lib/invoice-status';
 import { paymentMethodLabels } from '../../lib/payment-methods';
 import type { PaymentTerms } from './accounts-data';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -78,7 +79,7 @@ export const PAID_METHOD_LABELS: Record<PaidMethod, string> = paymentMethodLabel
 ] as const satisfies readonly PaidMethod[]);
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function formatDate(value: string | null | undefined): string {
@@ -119,7 +120,7 @@ export function useInvoice(id: string) {
   });
 }
 
-/** Trade accounts, named, for the create form's picker. Kept minimal so a new
+/** Wholesale customers, named, for the create form's picker. Kept minimal so a new
  *  invoice can name the business without loading the full account view. */
 export function useInvoiceAccountChoices() {
   return useQuery({
@@ -145,7 +146,9 @@ export function useInvalidateInvoices() {
 
 export interface CreateInvoiceInput {
   accountId: string;
-  invoiceNumber: string;
+  /** Left out, the issuing site's own run numbers it — the way every other
+   *  invoice on the platform is numbered. */
+  invoiceNumber?: string;
   amountCents: number;
   dueAt: string; // ISO datetime
   notes?: string | null;
@@ -157,7 +160,7 @@ export function useCreateInvoice() {
     mutationFn: (input: CreateInvoiceInput) =>
       api.post<InvoiceRow>('/v1/b2b/invoices', {
         accountId: input.accountId,
-        invoiceNumber: input.invoiceNumber,
+        ...(input.invoiceNumber ? { invoiceNumber: input.invoiceNumber } : {}),
         amountCents: input.amountCents,
         dueAt: input.dueAt,
         ...(input.notes ? { notes: input.notes } : {}),

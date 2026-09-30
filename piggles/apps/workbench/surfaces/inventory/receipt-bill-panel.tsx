@@ -48,6 +48,7 @@ import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 interface BillDraftLine {
   purchaseOrderLineId: string | null;
@@ -240,23 +241,21 @@ export function ReceiptBillPanel({
         </Field>
         <Field>
           <FieldLabel>Invoice date</FieldLabel>
-          <Input
+          <DayInput
             color="module"
-            type="date"
             value={billedAt}
-            onChange={(event) => {
-              setBilledAt(event.target.value);
+            onValueChange={(value) => {
+              setBilledAt(value);
             }}
           />
         </Field>
         <Field>
           <FieldLabel>Due</FieldLabel>
-          <Input
+          <DayInput
             color="module"
-            type="date"
             value={dueAt}
-            onChange={(event) => {
-              setDueAt(event.target.value);
+            onValueChange={(value) => {
+              setDueAt(value);
             }}
           />
           {data.suggestedDueAt === null ? (

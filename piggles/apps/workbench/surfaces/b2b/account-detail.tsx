@@ -1,13 +1,14 @@
 'use client';
 
-// One trade account — create it, then manage it. Create and manage are the SAME
-// surface: `{ id: 'new' }` builds it, `{ id }` manages it, so a create is a pane
-// in its "new" state, never a second form.
+// One wholesale customer — create it, then manage it. Create and manage are the
+// SAME surface: `{ id: 'new' }` builds it, `{ id }` manages it, so a create is a
+// pane in its "new" state, never a second form.
 //
-// A trade account is a business you supply on agreed prices and terms. It has:
+// A wholesale customer is a business you supply on agreed prices and terms. It
+// has:
 //
 //   1. WHO they are     — company name, tax number, website.
-//   2. HOW they buy      — a price tier, a credit limit, payment terms, an
+//   2. HOW they buy      — a wholesale group, a credit limit, payment terms, an
 //                          across-the-board discount, and whether they're open.
 //   3. WHO can order     — the people at that business allowed to place orders.
 //
@@ -52,7 +53,7 @@ import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from '../crm/custom-properties-panel';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '../../components/money-input';
-import { CustomerPicker, customerLabel, type CustomerSummary } from '../invoicing/customer-picker';
+import { CustomerPicker, customerName, type CustomerSummary } from '../invoicing/customer-picker';
 import { SaveFailure } from '@/components/save-failure';
 import {
   CONTACT_ROLE_LABELS,
@@ -75,6 +76,7 @@ import {
   type ContactRole,
   type PaymentTerms,
 } from './accounts-data';
+import { creditStanding } from '../../lib/credit-standing';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -144,6 +146,31 @@ function normalizeWebsite(value: string): string | null {
   return `https://${trimmed}`;
 }
 
+/**
+ * The note under the Credit limit box.
+ *
+ * It said "Leave at zero for no credit", which is right about the outcome and
+ * silent about the stakes: the checkout works out `creditLimit - creditUsed`
+ * and refuses anything larger, so a zero turns every order on terms away. It
+ * also had two branches, and an account owing money behind a closed door fell
+ * into the wrong one.
+ */
+function creditFieldNote(account: AccountDetail | undefined): string {
+  if (account) {
+    const standing = creditStanding(account.creditLimitCents, account.creditUsedCents);
+    if (standing === 'limit') {
+      return account.creditRemainingCents > 0
+        ? `They have used ${formatCents(account.creditUsedCents)} of this, with ${formatCents(account.creditRemainingCents)} left.`
+        : `They have used all of this, and ${formatCents(account.creditUsedCents)} in total.`;
+    }
+    if (standing === 'owing') {
+      return `They still owe you ${formatCents(account.creditUsedCents)}, and cannot order on terms until you put an amount here.`;
+    }
+    return 'They cannot order on terms. Put an amount here to let them, up to that much at once.';
+  }
+  return 'The most they can owe you at once on terms. Left at zero, they cannot order on terms at all.';
+}
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -166,9 +193,9 @@ function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             error={accountQuery.error}
-            noun="account"
-            title="Could not load this account"
-            description="This is a problem reaching the server. The account itself is unaffected. Nothing has been lost."
+            noun="customer"
+            title="Could not load this customer"
+            description="This is a problem reaching the server. The customer itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void accountQuery.refetch();
             }}
@@ -231,7 +258,7 @@ function AccountEditor({
   }, [saved, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New account' : (account?.companyName ?? 'Account'));
+    ctx.setTitle(isNew ? 'New wholesale customer' : (account?.companyName ?? 'Wholesale customer'));
   }, [ctx, isNew, account]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
@@ -241,7 +268,7 @@ function AccountEditor({
 
   /* ── Validation ─────────────────────────────────────────────────────── */
 
-  const nameError = draft.companyName.trim() === '' ? 'Give this account a company name.' : null;
+  const nameError = draft.companyName.trim() === '' ? 'Give this customer a company name.' : null;
   const discountError =
     draft.discountPercent < 0 || draft.discountPercent > 100
       ? 'The discount has to be between 0% and 100%.'
@@ -280,8 +307,8 @@ function AccountEditor({
   useDirtySource(
     dirty && !create.isSuccess,
     isNew
-      ? 'This account has not been created yet. Close anyway?'
-      : 'This account has unsaved changes. Close anyway?'
+      ? 'This customer has not been created yet. Close anyway?'
+      : 'This customer has unsaved changes. Close anyway?'
   );
 
   /* ── Save ───────────────────────────────────────────────────────────── */
@@ -317,7 +344,7 @@ function AccountEditor({
           }
         },
         onError: (error) => {
-          setFailure(accountErrorMessage(error, 'Could not add this account.'));
+          setFailure(accountErrorMessage(error, 'Could not add this customer.'));
         },
       });
       return;
@@ -344,11 +371,11 @@ function AccountEditor({
       {
         onSuccess: () => {
           setTouched(false);
-          toast.add({ title: 'Account saved', type: 'success' });
+          toast.add({ title: 'Customer saved', type: 'success' });
         },
         onError: (error) => {
           setFailure(
-            accountErrorMessage(error, 'Could not save this account. Nothing was changed.')
+            accountErrorMessage(error, 'Could not save this customer. Nothing was changed.')
           );
         },
       }
@@ -362,8 +389,8 @@ function AccountEditor({
     const ok = await confirm({
       title: `Remove ${account.companyName}?`,
       description:
-        'This account, its agreed prices and its list of contacts are removed. Orders and invoices already placed are kept. This cannot be undone.',
-      confirmLabel: 'Remove this account',
+        'This customer, their agreed prices and their list of contacts are removed. Orders and invoices already placed are kept. This cannot be undone.',
+      confirmLabel: 'Remove this customer',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -377,7 +404,7 @@ function AccountEditor({
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not remove this account',
+          title: 'Could not remove this customer',
           description: accountErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -390,7 +417,7 @@ function AccountEditor({
       value: tier.id,
       label: tier.name,
     }));
-    return [{ value: '', label: 'No tier: normal prices' }, ...items];
+    return [{ value: '', label: 'No group: normal prices' }, ...items];
   }, [tiersQuery.data]);
 
   const state = account ? accountState(account.status) : null;
@@ -424,7 +451,7 @@ function AccountEditor({
             disabled={Boolean(nameError) || (!isNew && !dirty)}
             onClick={submit}
           >
-            {isNew ? 'Add account' : 'Save'}
+            {isNew ? 'Add customer' : 'Save'}
           </Button>
         }
         refresh={
@@ -452,7 +479,7 @@ function AccountEditor({
             </Text>
           ) : null}
 
-          <SaveFailure title="Could not save this account" message={failure} />
+          <SaveFailure title="Could not save this customer" message={failure} />
 
           {/* 1 — Who they are */}
           <FormSection title="Who they are">
@@ -463,7 +490,7 @@ function AccountEditor({
                   <Input
                     color={nameError && touched ? 'error' : 'module'}
                     value={draft.companyName}
-                    placeholder="Acme Building Supplies"
+                    placeholder="The shop or business you are selling to"
                     onChange={(event) => {
                       set('companyName', event.target.value);
                     }}
@@ -521,13 +548,13 @@ function AccountEditor({
             description="The prices and terms this business gets. Set once here instead of on every order."
           >
             <Field>
-              <FieldLabel>Price tier</FieldLabel>
+              <FieldLabel>Wholesale group</FieldLabel>
               <FieldControl
                 render={
                   <div className="max-w-sm">
                     <Select
                       color="module"
-                      aria-label="Price tier"
+                      aria-label="Wholesale group"
                       value={draft.tierId}
                       items={tierItems}
                       onValueChange={(next) => {
@@ -538,8 +565,8 @@ function AccountEditor({
                 }
               />
               <FieldDescription>
-                A named discount level (trade, distributor, key account) set up under Price tiers.
-                Leave it on normal prices to charge them the same as everyone else.
+                A set of businesses you charge the same way, set up under Wholesale groups. Leave it
+                on normal prices to charge them the same as everyone else.
               </FieldDescription>
             </Field>
 
@@ -560,11 +587,7 @@ function AccountEditor({
                     </div>
                   }
                 />
-                <FieldDescription>
-                  {account && account.creditLimitCents > 0
-                    ? `They've used ${formatCents(account.creditUsedCents)} of this, with ${formatCents(account.creditRemainingCents)} left.`
-                    : 'The most they can owe you at once on terms. Leave at zero for no credit.'}
-                </FieldDescription>
+                <FieldDescription>{creditFieldNote(account)}</FieldDescription>
               </Field>
               <Field>
                 <FieldLabel>Extra discount</FieldLabel>
@@ -595,7 +618,8 @@ function AccountEditor({
                   <FieldStatus status="error">{discountError}</FieldStatus>
                 ) : (
                   <FieldDescription>
-                    Taken off everything, on top of their tier. Leave at zero for none.
+                    Taken off everything, on top of their group&apos;s discount. Leave at zero for
+                    none.
                   </FieldDescription>
                 )}
               </Field>
@@ -651,7 +675,7 @@ function AccountEditor({
                     color="module"
                     rows={2}
                     value={draft.notes}
-                    placeholder="Anything your team should know about this account. Only you see this."
+                    placeholder="Anything your team should know about this customer. Only you see this."
                     onChange={(event) => {
                       set('notes', event.target.value);
                     }}
@@ -681,7 +705,7 @@ function AccountEditor({
               </Text>
             </FormSection>
           ) : account ? (
-            <ContactsSection accountId={account.id} />
+            <ContactsSection ctx={ctx} accountId={account.id} />
           ) : null}
 
           {/* Fleet — read-only, only when the account has one recorded */}
@@ -754,7 +778,7 @@ function AccountEditor({
           {account ? (
             <FormSection
               title="Their trade activity"
-              description="Everything this account has going on with you, filtered to just them."
+              description="Everything this customer has going on with you, filtered to just them."
             >
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -798,7 +822,7 @@ function AccountEditor({
           {account ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
-                Remove this account and its agreed prices. Orders and invoices already placed are
+                Remove this customer and their agreed prices. Orders and invoices already placed are
                 kept.
               </Text>
               <Button
@@ -811,7 +835,7 @@ function AccountEditor({
                 }}
               >
                 <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-                Remove account
+                Remove this customer
               </Button>
             </div>
           ) : null}
@@ -827,7 +851,7 @@ const ROLE_OPTIONS: { value: ContactRole; label: string }[] = (
   Object.keys(CONTACT_ROLE_LABELS) as ContactRole[]
 ).map((role) => ({ value: role, label: CONTACT_ROLE_LABELS[role] }));
 
-function ContactsSection({ accountId }: { accountId: string }) {
+function ContactsSection({ ctx, accountId }: { ctx: SurfaceContext; accountId: string }) {
   const toast = useToast();
   const contactsQuery = useAccountContacts(accountId);
   const addContact = useAddContact(accountId);
@@ -848,7 +872,7 @@ function ContactsSection({ accountId }: { accountId: string }) {
         onSuccess: () => {
           setPicked(null);
           setRole('buyer');
-          toast.add({ title: `${customerLabel(picked)} added`, type: 'success' });
+          toast.add({ title: `${customerName(picked)} added`, type: 'success' });
         },
         onError: (error) => {
           toast.add({
@@ -874,7 +898,7 @@ function ContactsSection({ accountId }: { accountId: string }) {
         </Text>
       ) : active.length === 0 && inactive.length === 0 ? (
         <Text className="text-sm">
-          No one is set up to order for this account yet. Add someone below. They must already be a
+          No one is set up to order for this customer yet. Add someone below. They must already be a
           customer of yours.
         </Text>
       ) : (
@@ -907,6 +931,12 @@ function ContactsSection({ accountId }: { accountId: string }) {
             }}
             onClear={() => {
               setPicked(null);
+            }}
+            onAddNew={(typed) => {
+              // Opened with the name already typed and this business already
+              // chosen, so she saves once and comes back to a person who is
+              // already a member. Issue 745.
+              ctx.open('crm.customer.detail', { id: 'new', name: typed, companyId: accountId });
             }}
           />
           <div className="flex flex-wrap items-center gap-2">

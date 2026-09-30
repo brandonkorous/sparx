@@ -95,7 +95,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Page results controls"
+        label="Controls for how your pages do"
         filters={[
           {
             label: 'How far back',
@@ -147,7 +147,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           <PaneLoadError
             icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
-            title="Could not load your page results"
+            title="Could not load how your pages are doing"
             description="This is a problem reaching the server. Nothing about your site or your figures has changed."
             onRetry={() => {
               void refetch();

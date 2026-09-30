@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSession } from '@wizeworks/auth';
-import { safeInternalPath } from '@piggles/config';
+import { returnPath } from '@piggles/auth-handoff';
 import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';
 import { SignInForm } from '@/components/sign-in-form';
@@ -12,12 +12,13 @@ export const metadata: Metadata = { title: 'Sign in' };
 export const dynamic = 'force-dynamic';
 
 type SP = Record<string, string | string[] | undefined>;
-const one = (v: string | string[] | undefined): string =>
-  Array.isArray(v) ? (v[0] ?? '') : (v ?? '');
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
-  const next = safeInternalPath(one(sp.next));
+  // Either spelling. The invitation's own buttons write `callbackURL`, and
+  // reading only `next` is what made "Sign in to join" sign people in without
+  // joining them (issue 881).
+  const next = returnPath(sp);
 
   if (await getSession()) redirect(next);
 
@@ -34,7 +35,13 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
       aside={
         <p>
           New here?{' '}
-          <Link href="/signup" className="text-primary font-semibold">
+          {/* Carries where they were going. Somebody who followed an invitation
+              here and then realises they have no account yet must not lose the
+              invitation by clicking the one link offered to them. */}
+          <Link
+            href={next === '/' ? '/signup' : `/signup?next=${encodeURIComponent(next)}`}
+            className="text-primary font-semibold"
+          >
             Create an account
           </Link>
           . Fourteen days free, no card.

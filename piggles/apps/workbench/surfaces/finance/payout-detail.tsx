@@ -21,6 +21,10 @@ import { usePayout, type PayoutSale } from './payouts-data';
 import { channelLabel, formatMoney, formatDate, methodLabel, payoutState } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
+/** Registry module for this surface, so its waiting and failed states wear the
+ *  brand's own artwork for this app rather than the generic mark. */
+const MODULE = 'finance';
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -45,8 +49,30 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Payout controls"
-        status={<p className="text-sm">Deposit</p>}
+        label="Deposit controls"
+        status={
+          /* "Deposit" is the pane's NAME, said again on its own bar, under a tab
+             that already says it. The two facts a person opens a deposit to
+             confirm are how much and whether it has landed, and the second was
+             only in a badge in the body, which scrolls away. */
+          data && state ? (
+            <>
+              <Badge color={state.tone} variant="soft" size="sm">
+                {state.label}
+              </Badge>
+              <Text as="span" className="shrink-0 text-sm whitespace-nowrap tabular-nums">
+                {formatMoney(data.amount, data.currency)}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Icon glyph={faMoneyBill} className="size-4 shrink-0" aria-hidden />
+              <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+                {isError ? 'Could not be read' : 'Looking it up…'}
+              </Text>
+            </>
+          )
+        }
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -64,6 +90,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneLoadError
               error={error}
               noun="deposit"
+              module={MODULE}
               icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
               title="Could not load this deposit"
               description="Something went wrong reaching the server. Try again in a moment."
@@ -73,7 +100,11 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           </Card>
         ) : isPending ? (
-          <PaneWaiting label="Loading deposit…" />
+          // In the same card the failure uses, so waiting and failed are not
+          // two different shapes on one pane.
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneWaiting module={MODULE} label="Looking up this deposit…" />
+          </Card>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
             {/* Identity first: what this is, how much, when, and whether it has

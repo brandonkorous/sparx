@@ -123,7 +123,7 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Payment providers controls"
+        label="Controls for how you take payment"
         status={
           summary ? (
             <Badge color={summary.tone} variant="soft" size="sm">
@@ -149,7 +149,7 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
               <PaneLoadError
                 module={MODULE}
                 icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-                title="Could not load your payment providers"
+                title="Could not load how you take payment"
                 description={paymentsErrorMessage(
                   config.error ?? catalog.error,
                   'This is a problem reaching the server. Your payment setup is unaffected.'

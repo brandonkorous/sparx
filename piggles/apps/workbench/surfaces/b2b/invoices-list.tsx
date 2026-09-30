@@ -1,6 +1,6 @@
 'use client';
 
-// Wholesale invoices — what your trade accounts owe you.
+// Wholesale invoices — what your wholesale customers owe you.
 //
 // A business bought on terms, so you invoice them and they pay within the agreed
 // window. This list is opened to answer "who owes me, and what's late" — so the
@@ -95,7 +95,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Wholesale invoice controls"
+        label="Wholesale invoices controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -197,7 +197,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No invoices yet',
               description: accountName
                 ? `${accountName} has no invoices yet. Raise one for work you've billed them for outside an order.`
-                : 'When a trade account buys on terms, its invoice shows up here with what it owes and when it is due. You can also raise one by hand for work billed outside an order.',
+                : 'When a wholesale customer buys on terms, their invoice shows up here with what they owe and when it is due. You can also raise one by hand for work billed outside an order.',
             }}
           />
         ) : (

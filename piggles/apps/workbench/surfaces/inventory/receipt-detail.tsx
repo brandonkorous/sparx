@@ -47,7 +47,6 @@ import {
   NativeSelect,
   Text,
   Textarea,
-  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
@@ -316,7 +315,7 @@ function BookDelivery({
       if (fullyDamaged.length > 0) {
         const units = fullyDamaged.reduce((sum, row) => sum + row.damaged, 0);
         notes.push(
-          `${plural(units, 'unit', 'units')} across ${plural(fullyDamaged.length, 'line', 'lines')} arrived fully damaged. Nothing received against the order; recorded and written off, and the order stays open for them`
+          `${plural(units, 'unit', 'units')} across ${plural(fullyDamaged.length, 'line', 'lines')} arrived fully damaged. Nothing received against the order; recorded and written off, and the order stays open for ${units === 1 ? 'it' : 'them'}`
         );
       }
       if (partlyDamaged.length > 0) {
@@ -442,7 +441,7 @@ function BookDelivery({
           {preTargetPoId === '' ? (
             <FormSection title="Which order is this for?">
               <Field>
-                <FieldLabel required>Purchase order</FieldLabel>
+                <FieldLabel required>Order to a supplier</FieldLabel>
                 <Combobox
                   color="module"
                   items={receivableOptions}
@@ -453,7 +452,7 @@ function BookDelivery({
                       : 'Find the order this delivery is for…'
                   }
                   emptyMessage="No order matches that."
-                  aria-label="Purchase order"
+                  aria-label="Order to a supplier"
                   clearable={false}
                   onValueChange={(next) => {
                     const option = next as { value: string } | null;
@@ -1129,18 +1128,15 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }, [ctx, receipt.data]);
 
   if (receipt.isError) {
-    const gone = isNotFound(receipt.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This receipt no longer exists' : 'Could not load this receipt'}
-            description={
-              gone
-                ? 'It may have been removed.'
-                : 'This is a problem reaching the server. The record is unaffected.'
-            }
+            error={receipt.error}
+            title="Could not load this receipt"
+            description="This is a problem reaching the server. The record is unaffected."
+            missingTitle="This receipt no longer exists"
+            missingDescription="It may have been removed."
             onRetry={() => {
               void receipt.refetch();
             }}
@@ -1191,34 +1187,31 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             <span className="ml-auto" />
           )
         }
-        controls={
-          /* A receipt is history, so this is for TRACING rather than for a
-                      workflow: stick it on the carton that came in and a scan months later
-                      says which delivery it arrived on. */
-          <Tooltip content="Print a scannable label so this delivery can be traced later">
-            <Button
-              size="sm"
-              variant="ghost"
-              color="neutral"
-              shape="square"
-              className="shrink-0"
-              aria-label="Print a scannable label for this delivery"
-              onClick={() => {
-                ctx.open(
-                  'inventory.documents.label',
-                  {
-                    number: data.number,
-                    title: 'Goods receipt',
-                    subtitle: data.warehouseName ?? '',
-                  },
-                  { target: 'beside' }
-                );
-              }}
-            >
-              <Icon glyph={faPrint} className="size-4" aria-hidden />
-            </Button>
-          </Tooltip>
-        }
+        /* A receipt is history, so this is for TRACING rather than for a
+           workflow: stick it on the carton that came in and a scan months later
+           says which delivery it arrived on.
+
+           A VALUE rather than bespoke `controls` JSX: `controls` is relocated
+           into the narrow bar's overflow popover verbatim, so this was a bare
+           printer glyph among rows that had words. */
+        actions={[
+          {
+            label: 'Print a label',
+            title: 'Print a scannable label so this delivery can be traced later',
+            icon: faPrint,
+            onClick: () => {
+              ctx.open(
+                'inventory.documents.label',
+                {
+                  number: data.number,
+                  title: 'Goods receipt',
+                  subtitle: data.warehouseName ?? '',
+                },
+                { target: 'beside' }
+              );
+            },
+          },
+        ]}
         refresh={
           <RefreshButton
             isFetching={receipt.isFetching}

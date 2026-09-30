@@ -66,7 +66,9 @@ export function ThemeLibrary({
             rows={themes.data ?? []}
             appliedId={appliedId}
             onOpen={pick}
-            onApply={(id) => void applyTheme.mutateAsync(id)}
+            onApply={(id) => {
+              applyTheme.mutate(id);
+            }}
           />
           <ReadyMade
             groups={presets.data ?? []}
@@ -166,7 +168,7 @@ function ReadyMade({
           )
           .join('')}
       </style>
-      <div className="flex max-h-72 flex-col gap-4 overflow-auto">
+      <div className="flex max-h-72 flex-col gap-4 overflow-auto [&>*]:shrink-0">
         {groups.map((group) => (
           <div key={group.key}>
             <h4 className="text-base-content mb-1 text-sm">{group.label}</h4>

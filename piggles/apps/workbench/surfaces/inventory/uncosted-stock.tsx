@@ -151,7 +151,7 @@ export function UncostedStockSurface() {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Stock cost controls"
+        label="Controls for what your stock cost you"
         status={
           entries.length > 0 ? (
             <Text as="span" className="text-sm">

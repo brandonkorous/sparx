@@ -7,19 +7,24 @@
 // rather than showing an em-dash: an empty column invites someone to go and look
 // the number up, which is exactly what blind counting is preventing.
 
-import { Badge, Button, Heading, Input, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Heading, Input, Text, Textarea } from '@wizeworks/silicaui-react';
 import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Table } from '../../components/table';
 import { deltaTone, signedDelta } from './movements-data';
 import { varianceLabel, varianceTone, type CountDetail, type CountLine } from './counts-data';
 import { parseQty } from './count-shared';
+import { askWhy, whyFieldLabel, whyIntro, whyPlaceholder } from './count-why';
 
 interface LinesProps {
   count: CountDetail;
   editable: boolean;
   drafts: Record<string, string>;
   setDraft: (lineId: string, value: string) => void;
+  /** What has been typed into the why boxes, by line id. Kept apart from
+   *  `drafts` so correcting a number never disturbs the words beside it. */
+  whyDrafts: Record<string, string>;
+  setWhy: (lineId: string, value: string) => void;
   onRemove: (line: CountLine) => void;
   removingId: string | null;
 }
@@ -33,7 +38,16 @@ function introFor(editable: boolean, blind: boolean): string {
     : 'The quantities counted, and how they differed from what was expected.';
 }
 
-export function LinesCard({ count, editable, drafts, setDraft, onRemove, removingId }: LinesProps) {
+export function LinesCard({
+  count,
+  editable,
+  drafts,
+  setDraft,
+  whyDrafts,
+  setWhy,
+  onRemove,
+  removingId,
+}: LinesProps) {
   const posted = count.status === 'posted';
   const blind = count.isBlind && count.status === 'counting';
 
@@ -44,6 +58,10 @@ export function LinesCard({ count, editable, drafts, setDraft, onRemove, removin
           {editable ? 'Count each item' : 'What was counted'}
         </Heading>
         <Text className="text-sm">{introFor(editable, blind)}</Text>
+        {/* Said once here rather than as a label over every box: a full
+            count is a hundred lines, and a hundred repetitions of the same
+            four words down the screen is not a label, it is wallpaper. */}
+        {editable ? <Text className="text-sm">{whyIntro(blind)}</Text> : null}
       </div>
 
       <Table size="sm">
@@ -68,6 +86,8 @@ export function LinesCard({ count, editable, drafts, setDraft, onRemove, removin
               editable={editable}
               draft={drafts[line.id]}
               setDraft={setDraft}
+              whyDraft={whyDrafts[line.id]}
+              setWhy={setWhy}
               onRemove={onRemove}
               removing={removingId === line.id}
             />
@@ -85,14 +105,31 @@ interface RowProps {
   editable: boolean;
   draft: string | undefined;
   setDraft: (lineId: string, value: string) => void;
+  whyDraft: string | undefined;
+  setWhy: (lineId: string, value: string) => void;
   onRemove: (line: CountLine) => void;
   removing: boolean;
 }
 
-function LineRow({ line, blind, posted, editable, draft, setDraft, onRemove, removing }: RowProps) {
+function LineRow({
+  line,
+  blind,
+  posted,
+  editable,
+  draft,
+  setDraft,
+  whyDraft,
+  setWhy,
+  onRemove,
+  removing,
+}: RowProps) {
   const counted = draft !== undefined ? parseQty(draft) : line.countedQuantity;
   const variance =
     counted === null || line.expectedQuantity === null ? null : counted - line.expectedQuantity;
+  const why = whyDraft ?? line.note ?? '';
+  const ask =
+    editable && askWhy({ counted, difference: variance, hasWords: why.trim().length > 0 });
+  const what = line.variantSku ?? line.productTitle ?? 'this item';
 
   return (
     <tr>
@@ -105,6 +142,30 @@ function LineRow({ line, blind, posted, editable, draft, setDraft, onRemove, rem
               We think {String(line.expectedQuantity ?? '—')} here
             </span>
           )}
+          {/* The words live in the item's own cell rather than in a column
+              or a row of their own. A column would take width from the item
+              name, which is already the cell that gives; a separate row
+              would be cut off from its line by the table's row border. */}
+          {ask ? (
+            <Textarea
+              color="module"
+              rows={2}
+              className="mt-1 w-full min-w-0"
+              aria-label={whyFieldLabel(blind, what)}
+              placeholder={whyPlaceholder(blind)}
+              maxLength={2000}
+              value={why}
+              onChange={(event) => {
+                setWhy(line.id, event.target.value);
+              }}
+            />
+          ) : null}
+          {/* Read back once the count is closed. This is the whole reason
+              the box exists: applying a count rewrites the stock numbers, so
+              the figures look after themselves and the reason does not. */}
+          {!editable && line.note ? (
+            <span className="mt-1 block text-sm whitespace-pre-wrap">{line.note}</span>
+          ) : null}
         </span>
       </td>
 

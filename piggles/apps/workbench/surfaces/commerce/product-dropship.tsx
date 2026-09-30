@@ -39,7 +39,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faArrowsRotate, faBoxCheck, faServer } from '@fortawesome/pro-solid-svg-icons';
+import { faArrowsRotate, faBoxCheck, faServer, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -59,7 +59,12 @@ import {
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 
-const LABEL = 'Dropshipping';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'who ships this';
 /** Registry module for this pane, so the brand draws Dropshipping's own picture
  *  rather than the generic one. */
 const MODULE = 'dropship';
@@ -281,12 +286,12 @@ function SupplierCard({
 }
 
 export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const dropship = useProductDropship(productId);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} module={MODULE} />;
   }
 
   const product = scope.product;
@@ -297,7 +302,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         status={
           scope.isFollowing ? (
             <Badge color="info" variant="soft" size="sm">
@@ -368,10 +373,24 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
                     </Text>
                   ) : null}
                   <Text className="text-sm">
-                    To have someone else ship it, connect that supplier and bring the product in
-                    from their catalog: a product becomes dropshipped by being imported, not by
-                    being flagged.
+                    To have someone else ship it for you, add that supplier and bring the product in
+                    from their own list. That is the only way a product becomes theirs to ship:
+                    there is no switch for it here, because the link carries their price, their
+                    stock and where the order has to go.
                   </Text>
+                  <div className="flex justify-start">
+                    <Button
+                      size="sm"
+                      color="module"
+                      variant="soft"
+                      onClick={() => {
+                        ctx.open('dropship.suppliers.list', {}, { target: 'tab' });
+                      }}
+                    >
+                      <Icon glyph={faTruck} className="size-4" aria-hidden />
+                      Go to your suppliers
+                    </Button>
+                  </div>
                 </FormSection>
               ) : (
                 data.links.map((link) => (

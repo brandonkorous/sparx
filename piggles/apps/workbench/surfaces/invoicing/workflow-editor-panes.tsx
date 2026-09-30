@@ -21,12 +21,16 @@ export function WorkflowPanes({
   onName,
   onSlug,
   onDefault,
+  slugLocked,
 }: {
   draft: WorkflowDraft;
   stageOps: StageOps;
   onName: (value: string) => void;
   onSlug: (value: string) => void;
   onDefault: (value: boolean) => void;
+  /** Whether this workflow's reference name is the platform's — see the note on
+   *  `StageInspectorProps.slugLocked`. */
+  slugLocked: boolean;
 }) {
   return (
     <>
@@ -70,6 +74,7 @@ export function WorkflowPanes({
             onName={onName}
             onSlug={onSlug}
             onDefault={onDefault}
+            slugLocked={slugLocked}
             onStagePatch={stageOps.patch}
             onStageRemove={stageOps.remove}
           />

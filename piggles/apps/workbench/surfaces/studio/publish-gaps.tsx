@@ -95,7 +95,9 @@ function PageGaps({ state }: { state: PublishState | null }) {
           size="sm"
           color="warning"
           disabled={repair.isPending}
-          onClick={() => void repair.mutateAsync()}
+          onClick={() => {
+            repair.mutate(undefined);
+          }}
         >
           Bring my pages up to date
         </Button>

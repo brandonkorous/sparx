@@ -16,7 +16,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
 import { LanguageForm } from './translation-form';
-import { AddLanguage } from './translation-add-language';
+import { AddLanguage } from '../../components/add-language';
 import { useTranslationDraft } from './use-translation-draft';
 import {
   localeName,
@@ -65,7 +65,7 @@ export function Editor({
   return (
     <ModuleScope module="commerce" className={PANE_SHELL}>
       <PaneToolbar
-        label="Product translations actions"
+        label="Other languages actions"
         status={
           <Badge color={status.tone} variant="soft" size="sm">
             {status.label}
@@ -134,7 +134,11 @@ export function Editor({
             </Tabs>
           )}
 
-          <AddLanguage existing={locales} onAdd={addLanguage} />
+          <AddLanguage
+            existing={locales}
+            description="Pick the language you want to write this product in. Its own wording lives on its own tab, and anything you leave empty falls back to your words."
+            onAdd={addLanguage}
+          />
         </div>
       </div>
     </ModuleScope>

@@ -142,7 +142,7 @@ export function draftedOutcome(orders: DraftedOrder[]): { title: string; descrip
   if (joinedCount === 0) {
     return {
       title: `${plural(orders.length, 'draft order', 'draft orders')} created`,
-      description: `${where}Find them under Purchase orders to review and send.`,
+      description: `${where}Find them under Orders to suppliers to review and send.`,
     };
   }
   if (madeCount === 0) {
@@ -155,13 +155,13 @@ export function draftedOutcome(orders: DraftedOrder[]): { title: string; descrip
         orders.length === 1
           ? 'that supplier already had an order open'
           : 'those suppliers already had orders open'
-      } for this location. Find ${orders.length === 1 ? 'it' : 'them'} under Purchase orders.`,
+      } for this location. Find ${orders.length === 1 ? 'it' : 'them'} under Orders to suppliers.`,
     };
   }
   return {
     title: `${plural(orders.length, 'draft order', 'draft orders')} updated`,
     description: `${where}${String(madeCount)} new, and ${String(
       joinedCount
-    )} added to an order that was already open. Find them under Purchase orders.`,
+    )} added to an order that was already open. Find them under Orders to suppliers.`,
   };
 }

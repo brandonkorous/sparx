@@ -118,7 +118,17 @@ export function NavBar({ active, openCount, activeApp, onSelect }: NavBarProps) 
                 }`}
                 aria-current={on ? 'true' : undefined}
                 // The only name this control has — there is no visible label.
-                aria-label={tab.label}
+                //
+                // Open carries the count, because the count is drawn on it and
+                // was reaching nobody who cannot see it: the badge is a SIBLING
+                // of this button, so a screen reader met "Open, button" and then
+                // a loose "374" with nothing joining them. The rail learned the
+                // same lesson about its waiting badge in issue 839.
+                aria-label={
+                  tab.key === 'open' && openCount > 0
+                    ? `${tab.label}, ${String(openCount)}`
+                    : tab.label
+                }
                 onClick={() => {
                   onSelect(tab.key);
                 }}

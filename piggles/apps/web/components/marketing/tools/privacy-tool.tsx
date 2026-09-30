@@ -236,7 +236,7 @@ export function PrivacyTool() {
               placeholder="Stripe, Mailchimp, our website host"
             />
             <SelectField
-              label="How long you keep enquiries"
+              label="How long you keep inquiries"
               value={String(input.retentionMonths)}
               onChange={(v) => set('retentionMonths', Number(v))}
               options={[

@@ -80,9 +80,9 @@ function emptyAdvice(
   locationName: string | null
 ): string {
   const parts: string[] = [];
-  if (search) parts.push('Try part of a transfer reference or a location name.');
-  if (statusLabel) parts.push(`You are only seeing ${statusLabel.toLowerCase()} transfers.`);
-  if (locationName) parts.push(`You are only seeing transfers touching ${locationName}.`);
+  if (search) parts.push('Try part of a reference number or a place name.');
+  if (statusLabel) parts.push(`You are only seeing ${statusLabel.toLowerCase()} moves.`);
+  if (locationName) parts.push(`You are only seeing moves touching ${locationName}.`);
   return parts.join(' ');
 }
 
@@ -133,14 +133,14 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <EmptyState
           icon={<Icon glyph={faArrowRightArrowLeft} className="size-6" aria-hidden />}
-          title="Could not load your transfers"
-          description="This is a problem reaching the server. Your transfers are unaffected. They just could not be read just now."
+          title="Could not load what you have moved"
+          description="This is a problem reaching the server. Nothing you have moved is affected. It just could not be read right now."
         />
       );
     }
 
     if (isLoading) {
-      return <PaneWaiting label="Loading transfers…" />;
+      return <PaneWaiting label="Loading what you have moved…" />;
     }
 
     if (rows.length === 0) {
@@ -156,11 +156,11 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
           firstRun={{
             title: 'No stock has been moved between locations yet',
             description:
-              'A transfer moves stock from one of your locations to another and keeps a record of it in motion. Start one when you need to send stock somewhere else.',
+              'This is stock on its way from one of your places to another, with a record of it while it is in transit. Start one when you need to send stock somewhere else.',
             actions: (
               <Button size="sm" color="module" onClick={openNew}>
                 <Icon glyph={faPlus} className="size-4" aria-hidden />
-                New transfer
+                Start a move
               </Button>
             ),
           }}
@@ -250,12 +250,12 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Transfer list controls"
+        label="Moving stock controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search transfers"
+              aria-label="Search stock moves"
               placeholder="Reference or location…"
               value={search}
               onValueChange={(next) => {
@@ -266,7 +266,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'New transfer',
+          label: 'Start a move',
           icon: faPlus,
           onClick: openNew,
         }}
@@ -275,7 +275,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
             <NativeSelect
               size="sm"
               className="max-w-44 shrink"
-              aria-label="Show transfers in state"
+              aria-label="Show moves in state"
               value={status}
               onChange={(event) => {
                 setStatus(event.target.value as TransferStatus | '');
@@ -291,8 +291,8 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
-              aria-label="Show transfers touching"
+              className="shrink"
+              aria-label="Show moves touching"
               value={locationId}
               onChange={(event) => {
                 setLocationId(event.target.value);

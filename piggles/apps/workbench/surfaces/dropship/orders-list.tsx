@@ -17,11 +17,16 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+
+/** Registry module for this surface, so an empty state draws this app's own
+ *  picture rather than a small grey glyph. */
+const MODULE = 'dropship';
 import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
   Select,
   Timestamp,
@@ -164,12 +169,12 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier order controls"
+        label="Controls for what they are sending"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search supplier orders"
+              aria-label="Search what they are sending"
               placeholder="Search order or tracking…"
               value={search}
               onValueChange={setSearch}
@@ -249,15 +254,23 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          // `PaneLoadError`, not a bare EmptyState: the old one said "Try again
+          // in a moment" and gave nothing to try again WITH.
+          <PaneLoadError
             icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
-            title="Could not load supplier orders"
-            description="Something went wrong reaching the server. Try again in a moment."
+            title="Could not load what they are sending"
+            error={error}
+            noun="order list"
+            description="This is a problem reaching the server. Nothing your suppliers are sending is affected. It just could not be read."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
-          <PaneWaiting label="Loading supplier orders…" />
+          <PaneWaiting label="Loading what they are sending…" />
         ) : rows.length === 0 ? (
-          <EmptyState
+          <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
             title={empty.title}
             description={empty.detail}

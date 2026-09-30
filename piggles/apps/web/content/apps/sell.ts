@@ -11,10 +11,13 @@ import type { AppMarketing } from './types';
 // customer cannot sign up for either (piggles/CLAUDE.md, "A sparx PRODUCT is not
 // a Piggles capability"). The console hides both; this file simply never had
 // them.
+//
+// No marketplace is named or promised: none can be connected in production today
+// (no deploy sets CHANNELS_TOKEN_KEY or any partner app credentials).
 
 export const SELL: AppMarketing = {
   heading: 'Take money for whatever it is you sell.',
-  lede: 'Sell covers products, services, one-offs and repeats: over the counter, on your site, on a marketplace, or on account to businesses that pay you at the end of the month. Same catalog, same orders, however the sale happens.',
+  lede: 'Sell covers products, services, one-offs and repeats: over the counter, on your site, or on account to businesses that pay you at the end of the month. Same catalog, same orders, however the sale happens.',
   alsoKnownAs: ['ecommerce', 'online store', 'point of sale', 'B2B commerce', 'dropshipping'],
   does: [
     {
@@ -22,8 +25,8 @@ export const SELL: AppMarketing = {
       body: 'Sizes, colors, options, bundles, gift cards and things sold by weight or length, not just a name and a price.',
     },
     {
-      title: 'Orders from anywhere, in one list',
-      body: 'The website, the counter, the phone, a marketplace. One place to see what has been ordered and what has gone out.',
+      title: 'Every order, in one list',
+      body: 'The website, the counter, the phone, a trade account. One place to see what has been ordered and what has gone out.',
     },
     {
       title: 'Discounts that do what you meant',
@@ -81,36 +84,25 @@ export const SELL: AppMarketing = {
       connects: ['Stripe', 'PayPal', 'Square', 'Authorize.net', '1stPayGateway'],
     },
     {
-      heading: 'And on the places people are already shopping.',
-      body: 'Your own site is where the margin is, and a marketplace is where the people are. Listing on both means keeping one catalog rather than four, and having every order arrive in the same list whichever shopfront it came through, so the stock figure stays right and nobody sells the last one twice.',
+      heading: 'Every way you sell, working from one stock number.',
+      body: 'A sale over the counter, an order on your site, a phone order you type in yourself and a trade order on account are the same kind of thing here. They come from one catalog, land in one list and take from one stock figure, so your site stops offering the last one the moment it goes over the counter.',
       does: [
         {
-          title: 'One catalog, several shopfronts',
-          body: 'Choose which products go where. The description, the pictures and the price come from the record you already maintain.',
+          title: 'One record per product',
+          body: 'The description, the pictures and the price are kept once, and your site, the counter and your trade price lists all read from that record.',
         },
         {
           title: 'Orders land in the same place',
-          body: 'A marketplace order is an order. Same list, same picking, same returns, same figures at the end of the month.',
+          body: 'A counter sale is an order. Same list, same picking, same returns, same figures at the end of the month.',
         },
         {
           title: 'Stock stays honest across all of them',
-          body: 'What is available is a single number, and every channel is working from it, which is what stops an oversell you have to apologize for.',
+          body: 'What is available is a single number, and every way you sell works from it, which is what stops an oversell you have to apologize for.',
         },
         {
-          title: 'Worth it, or not',
-          body: 'What each channel actually brought in and what it cost in fees, so "should we still be on there" has an answer.',
+          title: 'Where the money came from',
+          body: 'Takings split by where each sale happened, so you can see whether the counter or the site carried the month.',
         },
-      ],
-      connects: [
-        'Amazon',
-        'eBay',
-        'Etsy',
-        'Faire',
-        'Walmart Marketplace',
-        'Google Shopping',
-        'Meta (Instagram & Facebook)',
-        'TikTok Shop',
-        'Pinterest',
       ],
     },
     {

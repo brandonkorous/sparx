@@ -307,7 +307,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Barcode list controls"
+        label="Barcodes controls"
         search={
           <SearchInput
             value={search}

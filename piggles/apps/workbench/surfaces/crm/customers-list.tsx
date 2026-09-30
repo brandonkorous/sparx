@@ -19,6 +19,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
+import { DownloadButton } from '../../components/download-button';
 import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu';
 import { scoreBand, useActiveScoringModel } from './scoring-data';
 import type { SavedView } from './workspace-data';
@@ -168,7 +169,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Customer list controls"
+        label="Customers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -232,15 +233,24 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
           },
         ]}
         controls={
-          <SavedViewsMenu
-            objectKey="contact"
-            current={currentFilters}
-            baseline={viewFilters([])}
-            sort={{ field: sortBy, direction: 'desc' }}
-            nameHint="New enquiries"
-            selectedId={viewId}
-            onApply={applyView}
-          />
+          <>
+            <SavedViewsMenu
+              objectKey="contact"
+              current={currentFilters}
+              baseline={viewFilters([])}
+              sort={{ field: sortBy, direction: 'desc' }}
+              nameHint="New inquiries"
+              selectedId={viewId}
+              onApply={applyView}
+            />
+            {/* Every customer, custom fields included, as a spreadsheet. The
+                marketing site promises you can take your list with you. */}
+            <DownloadButton
+              label="Export"
+              filename="customers.csv"
+              path="/v1/export/customers?take=10000"
+            />
+          </>
         }
         refresh={
           <RefreshButton
@@ -332,7 +342,16 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="block text-sm">{row.email}</span>
                       ) : null}
                     </td>
-                    <td className="hidden @md:table-cell">{row.company ?? '—'}</td>
+                    {/* The typed employer first, because that is what this person
+                        said; the LINKED business when they typed none. They are
+                        two different facts (docs/144 §11) and a column headed
+                        "Company" owes the reader whichever one it has. This read
+                        only the typed one, so the two wholesale buyers of Loom
+                        and Larder showed a dash while the retail shopper who had
+                        typed the name showed it (issue 883). */}
+                    <td className="hidden @md:table-cell">
+                      {row.company ?? row.b2bAccount?.companyName ?? '—'}
+                    </td>
                     <td>
                       <Badge color={stageMeta.color} variant="soft" size="sm">
                         {stageMeta.label}

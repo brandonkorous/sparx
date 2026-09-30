@@ -96,7 +96,7 @@ export function FitmentDictionaryPicker({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden">
           <DialogTitle>Start from a ready-made list</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Text className="text-sm">
               Each of these is a full list you can use as-is or change afterwards: install one and
               its entries are yours to add to, rename, or trim.
@@ -149,12 +149,18 @@ export function FitmentDictionaryPicker({
                   const glyph = resolveFitmentIcon(option.iconKey);
                   const installing = install.isPending && install.variables === option.slug;
                   return (
+                    // Docked narrow, the Install button held its width and the
+                    // words beside it took the whole squeeze: at a 328px dialog
+                    // the description column was 112px, six words to a line.
+                    // `flex-wrap` needs a FLOOR to wrap against, so the column
+                    // gets one and Install drops underneath instead of
+                    // crushing it (issue 806).
                     <li
                       key={option.slug}
-                      className="border-base-300 flex items-start gap-3 rounded border p-3"
+                      className="border-base-300 flex flex-wrap items-start gap-3 rounded border p-3"
                     >
                       <Icon glyph={glyph} className="size-6 shrink-0" aria-hidden />
-                      <div className="flex min-w-0 flex-1 flex-col gap-1">
+                      <div className="flex min-w-48 flex-1 flex-col gap-1">
                         <Heading level={3} className="text-base font-semibold">
                           {option.name}
                         </Heading>
@@ -164,7 +170,7 @@ export function FitmentDictionaryPicker({
                             {option.summary.map((chip, index) => (
                               <Badge
                                 key={index}
-                                color={chip.tone === 'module' ? 'module' : 'neutral'}
+                                {...(chip.tone === 'module' ? { color: 'module' as const } : {})}
                                 variant="soft"
                                 size="sm"
                               >
@@ -174,7 +180,7 @@ export function FitmentDictionaryPicker({
                           </div>
                         ) : null}
                       </div>
-                      <div className="shrink-0 self-center">
+                      <div className="ms-auto shrink-0 self-center">
                         {option.installed ? (
                           <Badge color="success" variant="soft" size="sm">
                             <Icon glyph={faCheck} className="size-3.5" aria-hidden />

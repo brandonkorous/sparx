@@ -496,6 +496,7 @@ export function useUpdatePlanningPolicy() {
 export function useRecomputePlanning() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { running: 'work your reorder points out again' },
     mutationFn: (input: { warehouseId?: string }) =>
       api.post<PlanningSweepResult>('/v1/inventory/planning/recompute', {
         ...(input.warehouseId ? { warehouse_id: input.warehouseId } : {}),

@@ -15,7 +15,7 @@
 // viewport breakpoint would leave a narrow pane on a wide monitor showing six
 // columns in 300px.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBusinessZone } from '../../lib/business-timezone';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useQuery, useQueryClient } from '@wizeworks/query';
@@ -25,11 +25,13 @@ import { faArrowDown, faArrowUp, faFileText, faPlus } from '@fortawesome/pro-sol
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { DownloadButton } from '../../components/download-button';
 import { ArSummary } from './ar-summary';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { api } from '../../lib/api/client';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
+import { LATE_FILTERS, parseLate } from './invoice-list-filters';
 import {
   describeDue,
   formatMoney,
@@ -85,18 +87,6 @@ const SENT_FILTERS = [
   { value: 'true', label: 'Sent' },
 ] as const;
 
-// LATE IS A DATE, NOT A STATUS. `overdue` used to sit in the Status list above,
-// which made it look like the answer to "who is late" and it was not: the status
-// column is written when something is DONE to a document, and a due date passing
-// is nobody doing anything, so it went on saying `unpaid` or `partial` for ever
-// (issue 522). Asking the due date is a different question from asking the money
-// state, the way `sent` is, so it gets its own control rather than a word in
-// somebody else's list.
-const LATE_FILTERS = [
-  { value: 'all', label: 'All' },
-  { value: 'true', label: 'Late only' },
-] as const;
-
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -110,7 +100,9 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [sent, setSent] = useState('all');
-  const [late, setLate] = useState('all');
+  // Seeded from the address so "8 invoices are late" opens on those eight.
+  // Read ONCE: after the first render the chip owns it.
+  const [late, setLate] = useState<string>(() => parseLate(ctx.params.pastDue));
   // Due soonest first — the question a receivables list exists to answer, and
   // the reason the endpoint needed a real `order` param rather than the
   // platform's usual hardcoded 'desc'.
@@ -123,6 +115,15 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
 
   const activeStatus = status;
+
+  // Params make a distinct pane, so a narrowed one opens as a SECOND tab beside
+  // any "Invoices" already open. It says which it is, following the chip rather
+  // than the address so narrowed by hand and by link read the same.
+  useEffect(() => {
+    const base = surfaceTitle('invoicing.invoices.list') ?? 'Invoices';
+    const chosen = LATE_FILTERS.find((option) => option.value === late);
+    ctx.setTitle(late === 'all' || !chosen ? base : `${base} · ${chosen.label.toLowerCase()}`);
+  }, [ctx, late]);
   const skip = (page - 1) * pageSize;
 
   /**
@@ -233,7 +234,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           swallowed the entire row (measured: 1208px) and pushed everything else
           onto a second line. */}
       <PaneToolbar
-        label="Invoice list controls"
+        label="Invoices controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -319,6 +320,15 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           },
         }}
+        controls={
+          /* Every invoice and quote as a spreadsheet. The marketing site
+            promises a business can take its records with it. */
+          <DownloadButton
+            label="Export"
+            filename="invoices-export.csv"
+            path="/v1/export/invoices?take=10000"
+          />
+        }
         refresh={
           /* ALWAYS the last child of a list toolbar — see RefreshButton. Inside
             the Toolbar rather than beside it, so it joins the roving arrow-key

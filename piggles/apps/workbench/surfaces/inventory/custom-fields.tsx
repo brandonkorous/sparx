@@ -123,7 +123,8 @@ const ENTITY_REACH: Record<CustomFieldEntity, string> = {
   level:
     'in the stock grid, in your spreadsheet exports as a cf_ column that imports back, and to any app or assistant you have connected',
   supplier: 'on every supplier, and to any app or assistant you have connected',
-  purchase_order: 'on every purchase order, and to any app or assistant you have connected',
+  purchase_order:
+    'on every order you send a supplier, and to any app or assistant you have connected',
 };
 
 function NewFieldDialog({
@@ -342,7 +343,11 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
       <EmptyState
         icon={<Icon glyph={faColumns3} className="size-6" aria-hidden />}
         title="No columns of your own here yet"
-        description={ENTITY_HELP[entity]}
+        /* NOT `ENTITY_HELP` — the FormSection header two lines above this is
+           already showing that exact sentence, so the pane said the same thing
+           twice, forty pixels apart, four times over. An empty state has to add
+           something the heading did not: what happens once there IS one. */
+        description={`Add one and it appears ${ENTITY_REACH[entity]}.`}
       />
     );
   }
@@ -463,7 +468,7 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Custom column controls"
+        label="Your own columns controls"
         refresh={
           <RefreshButton
             isFetching={fields.isFetching}

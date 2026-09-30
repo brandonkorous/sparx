@@ -51,6 +51,7 @@ import {
   type ProductType,
   type RepeaterFieldDef,
 } from './product-types-data';
+import { DayInput } from '../../components/day-input';
 
 /* ── Value readers ──────────────────────────────────────────────────────── */
 
@@ -276,7 +277,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
                 }}
               >
                 <Icon glyph={faPlus} className="size-4" aria-hidden />
-                New product type
+                New kind of product
               </Button>
             </Alert>
           ) : null}
@@ -471,17 +472,15 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
       return (
         <FieldControl
           render={
-            <div className="max-w-[16rem]">
-              <Input
-                color="module"
-                type="date"
-                value={asString(value)}
-                disabled={disabled}
-                onChange={(event) => {
-                  onChange(event.target.value || undefined);
-                }}
-              />
-            </div>
+            <DayInput
+              className="max-w-[16rem]"
+              color="module"
+              value={asString(value)}
+              disabled={disabled}
+              onValueChange={(value) => {
+                onChange(value || undefined);
+              }}
+            />
           }
         />
       );
@@ -490,17 +489,16 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
       return (
         <FieldControl
           render={
-            <div className="max-w-[18rem]">
-              <Input
-                color="module"
-                type="datetime-local"
-                value={value ? isoToLocal(asString(value)) : ''}
-                disabled={disabled}
-                onChange={(event) => {
-                  onChange(localToIso(event.target.value));
-                }}
-              />
-            </div>
+            <Input
+              className="max-w-[18rem]"
+              color="module"
+              type="datetime-local"
+              value={value ? isoToLocal(asString(value)) : ''}
+              disabled={disabled}
+              onChange={(event) => {
+                onChange(localToIso(event.target.value));
+              }}
+            />
           }
         />
       );

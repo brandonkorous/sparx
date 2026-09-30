@@ -30,7 +30,7 @@ import { Icon } from '@piggles/ui';
 import type { PigglesIcon } from '@piggles/ui';
 import type { StageDraft, WorkflowDraft } from './workflow-data';
 import type { DocumentStageType } from './types';
-import { STAGE_TYPES, typeHint, typeLabel } from './stage-presentation';
+import { STAGE_TYPES, typeBadge, typeHint } from './stage-presentation';
 import { SETTINGS_NODE } from './stage-canvas';
 import { productCopy } from '../../lib/product';
 
@@ -69,6 +69,17 @@ export interface StageInspectorProps {
   /** Name change — the editor decides whether to also carry the slug. */
   onName: (value: string) => void;
   onSlug: (value: string) => void;
+  /**
+   * True where the platform itself finds this workflow BY its reference name,
+   * so the name is not the tenant's to move (issue 781).
+   *
+   * Three services look theirs up by slug with no document in hand, and the
+   * print renderer reads it to tell a price offer from a demand for money. A
+   * rename made every one of those miss: the next quote minted a second copy of
+   * the workflow, and the tenant's own quotes started printing as invoices. The
+   * server refuses the change; this is the screen saying so first.
+   */
+  slugLocked: boolean;
   onDefault: (value: boolean) => void;
   onStagePatch: (key: string, patch: Partial<StageDraft>) => void;
   onStageRemove: (key: string) => void;
@@ -88,7 +99,7 @@ export function StageInspector(props: StageInspectorProps) {
   return <SettingsPanel {...props} />;
 }
 
-function SettingsPanel({ draft, onName, onSlug, onDefault }: StageInspectorProps) {
+function SettingsPanel({ draft, onName, onSlug, onDefault, slugLocked }: StageInspectorProps) {
   return (
     <Panel>
       <PanelHead
@@ -122,6 +133,10 @@ function SettingsPanel({ draft, onName, onSlug, onDefault }: StageInspectorProps
               color="module"
               value={draft.slug}
               placeholder="service-repair"
+              /* readOnly rather than disabled: the reference name is what an
+                 automation is pointed at, so it has to stay selectable and
+                 copyable even where it cannot be changed. */
+              readOnly={slugLocked}
               onChange={(event) => {
                 onSlug(event.target.value);
               }}
@@ -129,8 +144,9 @@ function SettingsPanel({ draft, onName, onSlug, onDefault }: StageInspectorProps
           }
         />
         <FieldDescription>
-          A short version with no spaces, used behind the scenes. Filled in from the name. Change it
-          only if you have a reason to.
+          {slugLocked
+            ? 'This is one your account runs on, so its reference name stays as it is. Everything else here is yours: the name, the steps, and what your customers see at each one.'
+            : 'A short version with no spaces, used behind the scenes. Filled in from the name. Change it only if you have a reason to.'}
         </FieldDescription>
       </Field>
 
@@ -164,7 +180,9 @@ function StagePanel({
   onStageRemove,
 }: StageInspectorProps & { stage: StageDraft; index: number; count: number }) {
   const headline = stage.customerLabel.trim() || stage.name.trim() || 'Untitled stage';
-  const subtitle = `${typeLabel(stage.stageType)} · stage ${String(index + 1)} of ${String(count)}`;
+  // What the stage means, not the schema's word for it — the heading above
+  // already carries the tenant's own name for this step (issue 782).
+  const subtitle = `${typeBadge(stage.stageType)} · stage ${String(index + 1)} of ${String(count)}`;
   const patch = (changes: Partial<StageDraft>) => {
     onStagePatch(stage.key, changes);
   };

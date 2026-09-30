@@ -115,6 +115,29 @@ export function emptyWorkflowDraft(): WorkflowDraft {
   return { name: '', slug: '', isDefault: false, stages: [starterStage()] };
 }
 
+/**
+ * A draft reduced to what the SERVER stores, which is what "unsaved changes"
+ * has to mean.
+ *
+ * `key` is excluded because it is a session-only React key: `newStageKey()`
+ * mints a fresh random one on every read, so two calls describing the identical
+ * workflow produce different objects. A baseline built by calling
+ * `emptyWorkflowDraft()` a SECOND time therefore never matched the draft, the
+ * pane was dirty before anyone touched it, and the adopt effect — guarded on
+ * dirty so a refetch cannot overwrite typing — never ran. Every saved workflow
+ * opened as a blank new one (issue 780).
+ *
+ * The same reduction is what `comparableDraft` does for print templates.
+ */
+export function comparableWorkflow(value: WorkflowDraft): string {
+  return JSON.stringify({
+    name: value.name,
+    slug: value.slug,
+    isDefault: value.isDefault,
+    stages: value.stages.map(({ key: _key, ...rest }) => rest),
+  });
+}
+
 /** A stage added part-way through an existing workflow. Deliberately inert —
  *  no entry effects — so adding one can never silently start locking or
  *  numbering documents before anyone has looked at it. */
@@ -209,6 +232,19 @@ export function useArchiveWorkflow() {
   const invalidate = useInvalidateWorkflows();
   return useMutation({
     mutationFn: (id: string) => api.delete(`/v1/invoicing/workflows/${id}`),
+    onSuccess: () => {
+      invalidate();
+    },
+  });
+}
+
+/** The other half of archiving. Without it, putting a workflow away by mistake
+ *  was permanent from in here — the Archived filter could find it and nothing
+ *  could bring it back (issue 783). */
+export function useRestoreWorkflow() {
+  const invalidate = useInvalidateWorkflows();
+  return useMutation({
+    mutationFn: (id: string) => api.post(`/v1/invoicing/workflows/${id}/restore`, {}),
     onSuccess: () => {
       invalidate();
     },

@@ -73,7 +73,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const total = data?.total;
   const filtered = search.trim() !== '' || scope !== 'active';
 
-  const scopeItems = useMemo(() => ({ active: 'Active segments', all: 'Including archived' }), []);
+  const scopeItems = useMemo(() => ({ active: 'Groups in use', all: 'Including put away' }), []);
 
   const open = (segment: Segment, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.segment.detail', { id: segment.id }, { target: targetFor(event) });
@@ -82,7 +82,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'New segment',
+    label: 'New customer group',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -91,14 +91,14 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Segment list controls"
+        label="Groups of customers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               color="module"
               size="sm"
-              aria-label="Search segments"
-              placeholder="Search segments…"
+              aria-label="Search customer groups"
+              placeholder="Search customer groups…"
               value={search}
               onValueChange={setSearch}
             />
@@ -111,7 +111,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
               color="module"
               size="sm"
               className="shrink-0"
-              title="New segment: hold Shift to open alongside, Alt for a new window"
+              title="New customer group: hold Shift to open alongside, Alt for a new window"
               onClick={createFirst.onClick}
             >
               <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -124,7 +124,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <Select
               color="module"
               size="sm"
-              aria-label="Which segments to show"
+              aria-label="Which groups to show"
               value={scope}
               items={scopeItems}
               onValueChange={(next) => {
@@ -156,7 +156,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <PaneLoadError
             icon={<Icon glyph={faFilter} className="size-6" aria-hidden />}
-            title="Could not load your segments"
+            title="Could not load your customer groups"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
@@ -170,13 +170,13 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faFilter} className="size-6" aria-hidden />,
-              title: 'No segments match that',
-              description: 'Try a different word, or switch back to active segments.',
+              title: 'No customer groups match that',
+              description: 'Try a different word, or switch back to the ones in use.',
             }}
             firstRun={{
-              title: 'No segments yet',
+              title: 'No customer groups yet',
               description:
-                'A segment is a saved group of customers who share something: big spenders, or everyone who has not bought in a year. Create your first one to start targeting a group.',
+                'A customer group is a saved set of people who share something: big spenders, or everyone who has not bought in a year. Create your first one and you can email or price for the whole group at once.',
               action: createFirst,
             }}
           />

@@ -9,7 +9,7 @@
 // matter how much arrives above it. See lib/api/activity.ts.
 
 import { useState } from 'react';
-import { Badge, Text } from '@wizeworks/silicaui-react';
+import { Badge, Skeleton, Text } from '@wizeworks/silicaui-react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { faWavePulse } from '@fortawesome/pro-solid-svg-icons';
@@ -174,8 +174,8 @@ export function ActivityFeed({ hasJobs }: { hasJobs: boolean }) {
           title="Nothing has happened yet"
           description={
             hasJobs
-              ? 'Once your team starts publishing pages, taking orders or importing records, every one of those shows up here, newest first.'
-              : 'As you and your team work (publishing pages, taking orders, importing records), it all shows up here, newest first.'
+              ? 'Once pages get published, orders come in or records are imported, every one of those shows up here, newest first.'
+              : 'Publishing a page, taking an order, importing records: it all shows up here, newest first.'
           }
         />
       </FormSection>
@@ -187,10 +187,23 @@ export function ActivityFeed({ hasJobs }: { hasJobs: boolean }) {
       title="What's happened"
       description={productCopy(
         'pulse.activity.description',
-        'Everything your team, your customers and Piggles itself have done, newest first.'
+        'Everything that has happened in your business, newest first.'
       )}
     >
-      {items.length === 0 ? (
+      {!ready ? (
+        // Same trap as the inbox above it: the branch below is about having
+        // stepped BACK in time, and without the cursor check it was what a
+        // person read on every first open, before any window had arrived.
+        <div
+          className="flex flex-col gap-3 py-2"
+          role="status"
+          aria-label="Loading what has happened"
+        >
+          {[0, 1, 2, 3, 4].map((row) => (
+            <Skeleton key={row} className="h-8 w-full" />
+          ))}
+        </div>
+      ) : cursors.length > 0 && items.length === 0 ? (
         // Reachable when a full last window left the cursor one step past the
         // end. Not an error, and not the same as an empty log.
         <Text className="py-2">

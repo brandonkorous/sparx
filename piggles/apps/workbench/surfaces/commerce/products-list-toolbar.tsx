@@ -1,6 +1,6 @@
 'use client';
 
-// Search, the status chips, Add a product, saved views, refresh.
+// Search, the status chips, Add a product, saved views, export, refresh.
 //
 // Slots, not children: the bar decides what gives way, and on a narrow pane the
 // chips relocate into its popover rather than spilling onto a second row.
@@ -12,6 +12,7 @@ import { SearchInput } from '@wizeworks/silicaui-react';
 import { faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { PaneToolbar } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { DownloadButton } from '../../components/download-button';
 import type { ProductSortKey, SortDirection } from './products-data';
 import { FILTERS, type FilterValue, type Modifiers } from './products-list-shared';
 
@@ -83,6 +84,11 @@ export function ProductsListToolbar({
           }
         },
       }}
+      // Every product as a spreadsheet: the marketing site promises you can take
+      // your catalog with you.
+      controls={
+        <DownloadButton label="Export" filename="products.csv" path="/v1/export/products?take=10000" />
+      }
       refresh={
         <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />
       }

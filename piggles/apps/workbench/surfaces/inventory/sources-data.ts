@@ -319,6 +319,23 @@ export function syncIntervalLabel(seconds: number): string {
   return `Every ${plural(seconds, 'second', 'seconds')}`;
 }
 
+/**
+ * The same words, fit to sit INSIDE a sentence: "Updates only when I ask."
+ *
+ * Only the first letter comes down. The detail pane wrote
+ * `syncIntervalLabel(…).toLowerCase()` and the screen read "Updates only when i
+ * ask." — a lower-case "i" about the owner herself, on the one card that tells
+ * her whether her stock numbers are being kept up to date.
+ *
+ * A label is a NAME. The only thing convention put there is the capital at the
+ * front, so the front is the only thing safe to take off. Every other capital in
+ * a label is carrying something: a pronoun, a company, an acronym.
+ */
+export function syncIntervalPhrase(seconds: number): string {
+  const label = syncIntervalLabel(seconds);
+  return label.charAt(0).toLowerCase() + label.slice(1);
+}
+
 /* ── Relative time, in plain words ───────────────────────────────────────── */
 
 /**

@@ -289,7 +289,7 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Insights controls"
+        label="Controls for how your posts did"
         controls={
           <ToggleGroup
             color="module"

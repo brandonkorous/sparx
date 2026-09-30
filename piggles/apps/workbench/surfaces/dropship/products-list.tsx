@@ -18,11 +18,16 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
+
+/** Registry module for this surface, so an empty state draws this app's own
+ *  picture rather than a small grey glyph. */
+const MODULE = 'dropship';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
   Select,
   Text,
@@ -295,12 +300,12 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier products controls"
+        label="Controls for what they can send"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search supplier products"
+              aria-label="Search what they can send"
               placeholder="Search products…"
               value={search}
               onValueChange={(next) => {
@@ -380,13 +385,22 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          // `PaneLoadError`, not a bare EmptyState: the old one said "Try again
+          // in a moment" and gave nothing to try again WITH, so a failed read
+          // could only be escaped by reloading the console.
+          <PaneLoadError
             icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
-            title="Could not load supplier products"
-            description="Something went wrong reaching the server. Try again in a moment."
+            title="Could not load what they can send"
+            error={error}
+            noun="product list"
+            description="This is a problem reaching the server. Nothing your suppliers hold is affected. It just could not be read."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : noSuppliers ? (
-          <EmptyState
+          <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title={noneConnected.title}
             description={noneConnected.detail}
@@ -405,7 +419,8 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : isLoading ? (
           <PaneWaiting label="Loading products…" />
         ) : rows.length === 0 ? (
-          <EmptyState
+          <PaneEmpty
+            module={MODULE}
             icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
             title={nothingToShow.title}
             description={nothingToShow.detail}

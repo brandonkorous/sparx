@@ -80,7 +80,7 @@ export function useVariantsTab(product: Product) {
 
   useDirtySource(
     pending.length > 0,
-    'Some versions of this product have unsaved prices on the Variants tab. Close anyway?'
+    'Some versions of this product have unsaved prices on the Versions tab. Close anyway?'
   );
 
   const setDraft = (id: string, change: Partial<VariantDraft>) => {

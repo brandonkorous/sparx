@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { APPS, PRODUCT } from '@piggles/config';
 import { TOOLS } from '@/components/marketing/tools/registry';
+import { TRADES } from '@/content/trades';
+import { COMPARISONS } from '@/content/compare';
 
 // The sitemap matters more here than on a typical marketing site.
 //
@@ -40,13 +42,43 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  // One page per kind of business: the pages a prospect is sent to after a sales call.
+  const tradePages: MetadataRoute.Sitemap = TRADES.map((t) => ({
+    url: `${BASE}/for/${t.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
+  const page = (path: string, priority: number) => ({
+    url: `${BASE}${path}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority,
+  });
+
   return [
     { url: BASE, lastModified: now, changeFrequency: 'weekly', priority: 1 },
     { url: `${BASE}/pricing`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE}/apps`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE}/tools`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE}/trust`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    page('/how-it-works', 0.9),
+    page('/who-its-for', 0.9),
+    page('/compare', 0.8),
+    ...COMPARISONS.map((c) => page(`/compare/${c.slug}`, 0.8)),
+    page('/switching', 0.8),
+    page('/faq', 0.7),
+    page('/what-connects', 0.7),
+    page('/about', 0.6),
+    { url: `${BASE}/whats-new`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
+    page('/status', 0.3),
+    page('/terms', 0.3),
+    page('/privacy', 0.3),
+    page('/cookies', 0.3),
+    page('/data-processing', 0.3),
     ...appPages,
+    ...tradePages,
     ...toolPages,
   ];
 }

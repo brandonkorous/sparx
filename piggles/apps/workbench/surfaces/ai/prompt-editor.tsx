@@ -379,6 +379,30 @@ function InstructionEditor({
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Instruction actions"
+        status={
+          <>
+            {/* The bar was empty on its left beside a Save, so there was nowhere
+                to see whether there was anything to save — and nowhere to see
+                whether this instruction is one the assistant actually follows,
+                which is the fact that decides whether editing it changes
+                anything at all. */}
+            <Text as="span" className="text-sm">
+              {dirty ? 'Not saved yet' : 'Saved'}
+            </Text>
+            {/* COLORLESS when off, never `neutral` — a bare badge resolves to
+                base ink and needs no approval, and "off" is a real state rather
+                than an absence of one. RULE #4. */}
+            {draft.enabled ? (
+              <Badge color="success" variant="soft" size="sm">
+                Switched on
+              </Badge>
+            ) : (
+              <Badge variant="soft" size="sm">
+                Switched off
+              </Badge>
+            )}
+          </>
+        }
         refresh={
           !isNew && onRefresh ? (
             <RefreshButton
@@ -437,11 +461,13 @@ function InstructionEditor({
               <AlertContent>
                 <AlertTitle>You can read this but not change it</AlertTitle>
                 <AlertDescription>
+                  {/* The whole message lives in the key. Split, the tail glued
+                      straight onto the override with no space at all, and
+                      whoever writes an override writes a whole message. */}
                   {productCopy(
                     'ai.prompt.readOnly',
-                    'Only an editor, admin or owner can change how Piggles writes with your AI account.'
+                    'Only an editor, admin or owner can change how Piggles writes with your AI account. Ask one of them if something here needs changing.'
                   )}
-                  Ask one of them if something here needs changing.
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -547,7 +573,7 @@ function InstructionEditor({
 
           <FormSection
             title="The instruction"
-            description="The actual wording your assistant reads. Write it as if you were briefing a new team member."
+            description="The actual wording your assistant reads. Write it the way you would brief somebody on their first day."
           >
             <Field>
               <FieldLabel>What to tell the assistant</FieldLabel>

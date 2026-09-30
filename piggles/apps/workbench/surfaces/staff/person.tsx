@@ -41,7 +41,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { useSites, useViewer } from '../../lib/api/shell-data';
 import { productCopy } from '../../lib/product';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { isNotFound, useStaffMember, useTimeEntries } from './data';
+import { useStaffMember, useTimeEntries } from './data';
 import { EMPTY, formFrom, type FormState } from './person-form';
 import { usePersonWrites } from './person-writes';
 import { PersonToolbar } from './person-toolbar';
@@ -126,18 +126,15 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
   const canSeePay = viewer.data?.role === 'admin' || viewer.data?.role === 'owner';
 
   if (!isNew && person.isError) {
-    const gone = isNotFound(person.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This person is no longer on file' : 'Could not load this person'}
-            description={
-              gone
-                ? 'The record may have been deleted. Everything else on your roster is unaffected.'
-                : 'This is a problem reaching the server. The record itself is unaffected.'
-            }
+            error={person.error}
+            title="Could not load this person"
+            description="This is a problem reaching the server. The record itself is unaffected."
+            missingTitle="This person is no longer on file"
+            missingDescription="The record may have been deleted. Everything else on your roster is unaffected."
             onRetry={() => {
               void person.refetch();
             }}

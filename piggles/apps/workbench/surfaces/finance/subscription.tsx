@@ -148,8 +148,8 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Bill controls"
-        status={<p className="text-sm">Your sparx bill</p>}
+        label={`${productCopy('finance.bill.title', 'Your sparx bill')} controls`}
+        status={<p className="text-sm">{productCopy('finance.bill.title', 'Your sparx bill')}</p>}
         refresh={
           <RefreshButton
             isFetching={isFetching}

@@ -9,9 +9,6 @@ import type {
   SchedulingService,
 } from './setup-data';
 
-/** The currencies offered, lowercase to match the 3-char ISO the service stores. */
-export const CURRENCIES = ['usd', 'cad', 'eur', 'gbp', 'aud', 'nzd', 'jpy'] as const;
-
 export interface Draft {
   name: string;
   description: string;

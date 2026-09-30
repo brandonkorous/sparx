@@ -56,6 +56,12 @@ export interface Customer {
   firstName: string | null;
   lastName: string | null;
   company: string | null;
+  /** The business this person is LINKED to, as the order screens publish it.
+   *  Separate from `company` above, which is the employer they TYPED — a
+   *  wholesale buyer usually has the link and no typed name. Carried under its
+   *  own key because `Customer.company` is a computed field that shadows the
+   *  relation (see @wizeworks/db's client). */
+  b2bAccount: { id: string; companyName: string } | null;
   jobTitle: string | null;
   preferredContactMethod: string | null;
   doNotContact: boolean;

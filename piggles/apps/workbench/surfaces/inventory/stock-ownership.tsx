@@ -154,7 +154,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Ownership controls"
+        label="Whose stock controls"
         status={
           <Text className="text-sm">
             {rows.length === 0
@@ -162,6 +162,8 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
               : `${formatCents(totalValueCents)} across ${plural(rows.length, 'line', 'lines')}`}
           </Text>
         }
+        statusReady={!list.isLoading}
+        statusFailed={list.isError}
         controls={
           <NativeSelect
             size="sm"

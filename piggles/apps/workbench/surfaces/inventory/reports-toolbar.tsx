@@ -45,7 +45,7 @@ function LocationPicker({
        it isn't turning" is a real question. */
     <NativeSelect
       size="sm"
-      className="max-w-40 shrink"
+      className="shrink"
       aria-label="Location for the aging breakdown"
       value={locationId}
       onChange={(event) => {

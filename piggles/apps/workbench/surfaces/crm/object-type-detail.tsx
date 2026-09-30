@@ -44,6 +44,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
@@ -184,13 +185,25 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const snapshot = useMemo(() => snapshotOf(draft), [draft]);
   useDirtySource(
     loaded && snapshot !== baseline,
-    'This record type has changes you have not saved. Close it anyway?'
+    'This thing you track has changes you have not saved. Close it anyway?'
   );
+
+  // The tab says the same words as the row she clicked: the list names each one
+  // by its PLURAL ("Projects"), and so does the open action beside it. Read off
+  // the draft rather than the server row, so renaming one renames its tab as she
+  // types, the way the site-identity pane does.
+  useEffect(() => {
+    ctx.setTitle(
+      isNew
+        ? 'New thing to track'
+        : draft.labelPlural.trim() || draft.label.trim() || 'Thing you track'
+    );
+  }, [ctx, isNew, draft.labelPlural, draft.label]);
 
   const isBuiltin = type?.kind === 'builtin';
 
   const nameError =
-    draft.label.trim() === '' ? 'Give this record type a name, like "Project".' : null;
+    draft.label.trim() === '' ? 'Give this thing you track a name, like "Project".' : null;
   const keyError =
     isNew && draft.key.trim() !== '' && !/^[a-z][a-z0-9_]*$/.test(draft.key.trim())
       ? 'Use lowercase letters, numbers and underscores, starting with a letter.'
@@ -294,8 +307,8 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <EmptyState
           icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-          title="Could not open that record type"
-          description="This is a problem reaching the server, or the record type has been removed."
+          title="Could not open that thing you track"
+          description="This is a problem reaching the server, or the thing you track has been removed."
         />
       </div>
     );
@@ -312,7 +325,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Record type actions"
+        label="Thing you track actions"
         status={
           isBuiltin ? (
             <Badge color="info" variant="soft" size="sm">
@@ -375,9 +388,22 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
+          {/* A READY-MADE TYPE DOES NOT GET A SIDEBAR ROW OF ITS OWN.
+              `useTenantRecordTypeRows` builds a nav row per type a business
+              INVENTED, and says in its own comment why the four built-ins are
+              excluded: they already have purpose-built screens, and a second
+              row into the same records would be two doors into one room. So
+              renaming Customer to Client changes the word on its records and
+              leaves the rail saying Customers — and this sentence promised
+              otherwise, which is the kind of promise you only find out about
+              after you have saved. [[feedback_a_promise_in_copy_is_a_contract]] */}
           <FormSection
             title="What this is"
-            description="The name you want to see in your sidebar and on your records."
+            description={
+              isBuiltin
+                ? 'The name you want to see on these records. This one came ready-made, so it keeps its own place in your sidebar whatever you call it here.'
+                : 'The name you want to see in your sidebar and on your records.'
+            }
           >
             <Field>
               <FieldLabel>Name for one</FieldLabel>
@@ -743,21 +769,14 @@ function FieldRow({
           ) : null}
 
           {field.type === 'currency' ? (
-            <Field>
-              <FieldLabel>Currency</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={field.currency ?? 'USD'}
-                    maxLength={3}
-                    onChange={(e) => {
-                      onChange({ ...field, currency: e.target.value.toUpperCase() });
-                    }}
-                  />
-                }
-              />
-            </Field>
+            <CurrencyField
+              required
+              value={field.currency ?? 'USD'}
+              onChange={(next) => {
+                onChange({ ...field, currency: next });
+              }}
+              description="Every amount saved in this detail is in this currency."
+            />
           ) : null}
 
           {field.type !== 'calculated' ? (

@@ -69,6 +69,7 @@ import {
 import { VariantPicker, versionOf } from '../commerce/variant-picker';
 import type { VariantChoice } from '../commerce/bundles-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 function toDateInput(iso: string | null): string {
   if (!iso) return '';
@@ -211,7 +212,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Preorder controls"
+        label="Preorders controls"
         status={
           <Text className="text-sm">
             {live.length > 0
@@ -294,7 +295,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
             afterCommit(() => {
               toast.add({
                 title: 'Preorder closed',
-                description: 'Existing commitments are unaffected. They are still owed.',
+                description: 'What is already owed is unaffected. It is still owed.',
                 type: 'info',
               });
             });
@@ -428,11 +429,10 @@ function PreorderEditor({
 
           <Field>
             <FieldLabel>Ships on</FieldLabel>
-            <Input
-              type="date"
+            <DayInput
               value={availableAt}
-              onChange={(event) => {
-                setAvailableAt(event.target.value);
+              onValueChange={(value) => {
+                setAvailableAt(value);
               }}
             />
           </Field>
@@ -452,21 +452,19 @@ function PreorderEditor({
           <div className="grid gap-3 @md:grid-cols-2">
             <Field>
               <FieldLabel>Opens</FieldLabel>
-              <Input
-                type="date"
+              <DayInput
                 value={startsAt}
-                onChange={(event) => {
-                  setStartsAt(event.target.value);
+                onValueChange={(value) => {
+                  setStartsAt(value);
                 }}
               />
             </Field>
             <Field>
               <FieldLabel>Closes</FieldLabel>
-              <Input
-                type="date"
+              <DayInput
                 value={endsAt}
-                onChange={(event) => {
-                  setEndsAt(event.target.value);
+                onValueChange={(value) => {
+                  setEndsAt(value);
                 }}
               />
             </Field>
@@ -531,7 +529,7 @@ function PreorderEditor({
               onClick={() => {
                 void confirm({
                   title: 'Stop taking preorders?',
-                  description: `${plural(sold, 'order', 'orders')} already committed stay owed: closing only stops new ones. The window and its history are kept.`,
+                  description: `${plural(sold, 'order', 'orders')} already committed ${sold === 1 ? 'stays' : 'stay'} owed: closing only stops new ones. The window and its history are kept.`,
                   confirmLabel: 'Stop taking them',
                   cancelLabel: 'Keep it open',
                   color: 'danger',

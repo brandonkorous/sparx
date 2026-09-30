@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readMoney } from './read-money';
+import { optionalMoneyText, readCents, readMoney } from './read-money';
 
 /**
  * WHY THIS FILE EXISTS.
@@ -74,5 +74,56 @@ describe('readMoney', () => {
   it('refuses zero unless the caller says nothing is a real answer', () => {
     expect(readMoney('0.00').amount).toBeNull();
     expect(readMoney('0.00', { allowZero: true }).amount).toBe(0);
+  });
+});
+
+/**
+ * A money field whose OWNER stores cents.
+ *
+ * The two build editors re-derived the field's text from the stored cents on
+ * every render, so every keystroke was reformatted: "18" became "1.00" after
+ * the first digit, then "1.008", and settled as "1.01". `readCents` plus a
+ * field that holds its own text is the shape that cannot do that, and these
+ * cover the part of it that is a rule rather than a render.
+ */
+describe('readCents', () => {
+  it('reads a whole amount without touching the digits after it', () => {
+    expect(readCents('18', undefined).cents).toBe(1800);
+    expect(readCents('18.50', undefined).cents).toBe(1850);
+  });
+
+  it('treats a blank field as nothing set, never as zero', () => {
+    expect(readCents('', 1800).cents).toBeUndefined();
+    expect(readCents('   ', 1800).cents).toBeUndefined();
+    expect(readCents('', 1800).problem).toBeNull();
+  });
+
+  it('keeps zero, which is a real answer on a price that adds nothing', () => {
+    expect(readCents('0', undefined).cents).toBe(0);
+    expect(readCents('0.00', undefined).problem).toBeNull();
+  });
+
+  it('leaves the stored amount alone when the text cannot be read', () => {
+    const reading = readCents('eighteen', 1800);
+    expect(reading.cents).toBe(1800);
+    expect(reading.problem).toBe('That does not look like an amount. Try something like 8.50.');
+  });
+
+  it('reads the spellings a person actually types', () => {
+    expect(readCents('$18.00', undefined).cents).toBe(1800);
+    expect(readCents('8,50', undefined).cents).toBe(850);
+    expect(readCents('1,250.00', undefined).cents).toBe(125000);
+  });
+});
+
+describe('optionalMoneyText', () => {
+  it('is blank for an amount nobody has set', () => {
+    expect(optionalMoneyText(undefined)).toBe('');
+  });
+
+  it('settles a stored amount to two decimals, including zero', () => {
+    expect(optionalMoneyText(0)).toBe('0.00');
+    expect(optionalMoneyText(1800)).toBe('18.00');
+    expect(optionalMoneyText(123450)).toBe('1234.50');
   });
 });

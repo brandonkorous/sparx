@@ -70,6 +70,7 @@ import {
   type RecurringExpense,
 } from './spend-data';
 import { cadenceLabel, formatCents, formatDay, kindColor } from './format';
+import { DayInput } from '../../components/day-input';
 
 const CADENCES = ['weekly', 'biweekly', 'monthly', 'quarterly', 'annual'] as const;
 
@@ -322,12 +323,11 @@ function TemplateEditor({
           <FieldLabel required>Starting</FieldLabel>
           <FieldControl
             render={
-              <Input
+              <DayInput
                 color="module"
-                type="date"
                 value={form.startsOn}
-                onChange={(event) => {
-                  set('startsOn', event.target.value);
+                onValueChange={(value) => {
+                  set('startsOn', value);
                 }}
               />
             }
@@ -341,12 +341,11 @@ function TemplateEditor({
           <FieldLabel>Ending</FieldLabel>
           <FieldControl
             render={
-              <Input
+              <DayInput
                 color="module"
-                type="date"
                 value={form.endsOn}
-                onChange={(event) => {
-                  set('endsOn', event.target.value);
+                onValueChange={(value) => {
+                  set('endsOn', value);
                 }}
               />
             }

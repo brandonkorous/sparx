@@ -79,7 +79,6 @@ import { MediaPickerProvider, useMediaMultiPicker } from '../cms/media-picker';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   centsToInput,
-  isNotFound,
   parseMoneyToCents,
   spendErrorMessage,
   useDeleteExpense,
@@ -92,6 +91,7 @@ import {
   type ExpenseDraft,
 } from './spend-data';
 import { billState, formatCents, formatDate, kindColor, sourceLabel } from './format';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -668,18 +668,15 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
   };
 
   if (!isNew && expense.isError) {
-    const gone = isNotFound(expense.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This cost no longer exists' : 'Could not load this cost'}
-            description={
-              gone
-                ? 'It may have been deleted. Your other records are unaffected.'
-                : 'This is a problem reaching the server. The record itself is unaffected.'
-            }
+            error={expense.error}
+            title="Could not load this cost"
+            description="This is a problem reaching the server. The record itself is unaffected."
+            missingTitle="This cost no longer exists"
+            missingDescription="It may have been deleted. Your other records are unaffected."
             onRetry={() => {
               void expense.refetch();
             }}
@@ -926,13 +923,12 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel required>Date of the cost</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={form.incurredAt}
                       disabled={readOnly}
-                      onChange={(event) => {
-                        set('incurredAt', event.target.value);
+                      onValueChange={(value) => {
+                        set('incurredAt', value);
                       }}
                     />
                   }
@@ -948,13 +944,12 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Due by</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={form.dueAt}
                       disabled={readOnly}
-                      onChange={(event) => {
-                        set('dueAt', event.target.value);
+                      onValueChange={(value) => {
+                        set('dueAt', value);
                       }}
                     />
                   }
@@ -970,13 +965,12 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Paid on</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={form.paidAt}
                       disabled={readOnly}
-                      onChange={(event) => {
-                        set('paidAt', event.target.value);
+                      onValueChange={(value) => {
+                        set('paidAt', value);
                       }}
                     />
                   }

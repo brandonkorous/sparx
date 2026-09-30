@@ -183,8 +183,16 @@ export function DigitalCardTool() {
               value={input.region}
               onChange={(v) => set('region', v)}
             />
+            {/* The label is American; the stored key is not, and stays that way.
+                This form is saved to the visitor's own browser under
+                'piggles.tools.vcard', and the hook REPLACES its whole object
+                with whatever it finds there rather than merging over the
+                default. Renaming the key would read an older saved card back
+                with no value at all for this field, which turns a controlled
+                input uncontrolled and blanks it for anybody who used the tool
+                before today. [[feedback_copy_edit_breaks_identity_lookups]] */}
             <TextField
-              label="Postcode"
+              label="Postal code"
               value={input.postcode}
               onChange={(v) => set('postcode', v)}
             />
@@ -220,7 +228,7 @@ export function DigitalCardTool() {
                 {dense ? (
                   <Aside>
                     <strong>This code has got quite dense.</strong> It will still scan, but print it
-                    at least three centimetres square. Taking out the address, or the note, makes a
+                    at least three centimeters square. Taking out the address, or the note, makes a
                     simpler pattern that reads from further away, which matters on a business card.
                   </Aside>
                 ) : null}

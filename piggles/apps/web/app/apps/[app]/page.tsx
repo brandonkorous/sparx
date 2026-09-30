@@ -5,7 +5,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { badgeClasses, buttonClasses } from '@wizeworks/silicaui-react/server';
-import { accountUrl, APP_BY_ID, APPS, appsInGroup, PRODUCT } from '@piggles/config';
+import {
+  accountUrl,
+  APP_BY_ID,
+  APP_COUNT_WORD,
+  APPS,
+  appsInGroup,
+  OTHER_APPS_WORD,
+  PRODUCT,
+} from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { APP_MARKETING } from '@/content/apps';
 import { PageHero } from '@/components/marketing/page-hero';
@@ -14,7 +22,7 @@ import { GROUP_COPY } from '@/components/marketing/groups';
 import { AppChapters } from '@/components/marketing/app-chapters';
 import { CloseBand } from '@/components/marketing/close-band';
 
-// /apps/[app] — one page per app, fifteen of them.
+// /apps/[app] — one page per app.
 //
 // These are the pages the satellite domains point at. pigglescms.com exists to
 // catch somebody searching "CMS" — a word this product refuses to use in its own
@@ -70,7 +78,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
         heading={copy.heading}
         lede={copy.lede}
         figure={<AppFigure app={app.id} copy={copy} />}
-        assurances={['Free for 14 days', 'No card needed', 'All fifteen apps included']}
+        assurances={['Free for 14 days', 'No card needed', `All ${APP_COUNT_WORD} apps included`]}
       >
         <a
           className={buttonClasses({ color: 'primary', size: 'lg' })}
@@ -79,7 +87,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           Get Piggles for {PRICE_LABEL}/month
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
-          All fifteen apps
+          All {APP_COUNT_WORD} apps
         </Link>
       </PageHero>
 
@@ -93,7 +101,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           </p>
           <ul className="flex flex-wrap gap-2">
             {copy.alsoKnownAs.slice(1).map((term) => (
-              <li key={term} className={badgeClasses({ color: 'module', variant: 'soft' })}>
+              <li key={term} className={badgeClasses({ color: 'module' })}>
                 {term}
               </li>
             ))}
@@ -138,8 +146,8 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
               </h2>
               <p className="mt-6 text-lg">
                 {app.label} is not an add-on, an upgrade or a thing you pay to unlock and get billed
-                for. It is in the {PRICE_LABEL} plan alongside the other fourteen, whether you open
-                it every morning or twice a year.
+                for. It is in the {PRICE_LABEL} plan alongside the other {OTHER_APPS_WORD}, whether
+                you open it every morning or twice a year.
               </p>
               <Link className={`${buttonClasses({ color: 'success' })} mt-6`} href="/pricing">
                 What actually changes the price
@@ -205,7 +213,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           end having read about Stock and needs an offer in front of them. A page
           that ends in the footer sends them back to the search results. */}
       <CloseBand
-        heading={`${app.label} is in the ${PRICE_LABEL} plan. So are the other fourteen.`}
+        heading={`${app.label} is in the ${PRICE_LABEL} plan. So are the other ${OTHER_APPS_WORD}.`}
         primary={{
           label: 'Start free for 14 days',
           href: accountUrl('signup', `app-${app.id}-close`),

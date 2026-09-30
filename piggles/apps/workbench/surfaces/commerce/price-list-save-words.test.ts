@@ -5,10 +5,10 @@ import { createdWithoutPrices, saveFailureLine } from './price-list-save-words';
 describe('saveFailureLine', () => {
   it('says nothing changed only when nothing was written', () => {
     expect(saveFailureLine('settings', 0)).toBe(
-      'Could not save this price list. Nothing was changed.'
+      'Could not save this special price. Nothing was changed.'
     );
     expect(saveFailureLine('settings', 3)).toBe(
-      'Could not save this price list. Nothing was changed.'
+      'Could not save this special price. Nothing was changed.'
     );
   });
 

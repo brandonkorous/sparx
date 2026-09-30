@@ -291,7 +291,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Approvals controls"
+        label="Posts waiting on you controls"
         status={
           pending.length > 0 ? (
             <Badge color="warning" variant="soft" size="sm">
@@ -319,7 +319,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
               <PaneLoadError
                 module={MODULE}
                 icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
-                title="Could not load the approvals inbox"
+                title="Could not load the posts waiting on you"
                 description={socialErrorMessage(
                   posts.error,
                   'This is a problem reaching the server. Nothing about your posts has changed.'

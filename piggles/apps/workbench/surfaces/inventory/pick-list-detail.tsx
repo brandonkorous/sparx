@@ -21,7 +21,7 @@
 // short pick is the single best free signal that a stock number is wrong, and it
 // is worth nothing if it is a grey row somebody scrolls past.
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Alert,
@@ -101,6 +101,14 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const { data: walk, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickList(id);
 
+  // The tab's name, once the record is here. Sixty-one of this console's
+  // seventy-five detail panes do this; the ones that did not put identical
+  // words on every tab they opened, which is the one thing the strip is for.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  useEffect(() => {
+    if (walk) ctx.setTitle(walk.number);
+  }, [walk, ctx]);
+
   const [assignee, setAssignee] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -151,6 +159,56 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Walk actions"
+        /* VALUES, not bespoke children. Written as buttons these two were a
+           printer and a circle-slash with no words, and a phone cannot hover
+           over either. scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={[
+          {
+            label: 'Print the sheet',
+            title: 'Print the walk as a scannable sheet',
+            icon: faPrint,
+            onClick: (event) => {
+              ctx.open(
+                'inventory.documents.label',
+                {
+                  number: walk.number,
+                  title: 'Pick list',
+                  subtitle: `${walk.warehouseName} · ${plural(walk.lineCount, 'line', 'lines')}`,
+                },
+                { target: targetFor(event) }
+              );
+            },
+          },
+          ...(open
+            ? [
+                {
+                  label: 'Abandon',
+                  title: 'Abandon this walk',
+                  icon: faBan,
+                  tone: 'danger' as const,
+                  disabled: cancel.isPending,
+                  onClick: () => {
+                    void (async () => {
+                      const ok = await confirm({
+                        title: `Abandon walk ${walk.number}?`,
+                        description:
+                          'Anything already picked stays picked. It is in a tote. The rest of the route is dropped and those orders can be put on a new walk.',
+                        confirmLabel: 'Abandon it',
+                        cancelLabel: 'Keep it',
+                        color: 'danger',
+                      });
+                      if (!ok) return;
+                      try {
+                        await cancel.mutateAsync(undefined);
+                      } catch (err) {
+                        setError(pickErrorMessage(err, 'Could not abandon the walk.'));
+                      }
+                    })();
+                  },
+                },
+              ]
+            : []),
+        ]}
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -180,62 +238,9 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <ActionLabel from="md">Work this walk</ActionLabel>
           </Button>
         ) : null}
-
-        <Tooltip content="Print the walk as a scannable sheet">
-          <Button
-            size="sm"
-            variant="outline"
-            aria-label="Print the walk sheet"
-            onClick={(event) => {
-              ctx.open(
-                'inventory.documents.label',
-                {
-                  number: walk.number,
-                  title: 'Pick list',
-                  subtitle: `${walk.warehouseName} · ${plural(walk.lineCount, 'line', 'lines')}`,
-                },
-                { target: targetFor(event) }
-              );
-            }}
-          >
-            <Icon glyph={faPrint} className="size-4" aria-hidden />
-          </Button>
-        </Tooltip>
-
-        {open ? (
-          <Tooltip content="Abandon this walk">
-            <Button
-              size="sm"
-              variant="outline"
-              color="danger"
-              aria-label="Abandon this walk"
-              disabled={cancel.isPending}
-              onClick={() => {
-                void (async () => {
-                  const ok = await confirm({
-                    title: `Abandon walk ${walk.number}?`,
-                    description:
-                      'Anything already picked stays picked. It is in a tote. The rest of the route is dropped and those orders can be put on a new walk.',
-                    confirmLabel: 'Abandon it',
-                    cancelLabel: 'Keep it',
-                    color: 'danger',
-                  });
-                  if (!ok) return;
-                  try {
-                    await cancel.mutateAsync(undefined);
-                  } catch (err) {
-                    setError(pickErrorMessage(err, 'Could not abandon the walk.'));
-                  }
-                })();
-              }}
-            >
-              <Icon glyph={faBan} className="size-4" aria-hidden />
-            </Button>
-          </Tooltip>
-        ) : null}
       </PaneToolbar>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
         {error ? (
           <Alert color="danger" variant="soft">
             <AlertContent>
@@ -353,7 +358,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   variant="ghost"
                   disabled={assign.isPending}
                   onClick={() => {
-                    void assign.mutateAsync(null);
+                    assign.mutate(null);
                   }}
                 >
                   Hand back to the pool

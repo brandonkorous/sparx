@@ -23,6 +23,10 @@ export interface OrderQuery {
    *  left out. For a list shown BESIDE those figures. */
   countedOnly?: boolean;
   paymentStatus?: string;
+  /** Orders with money still to collect. A named question, not a payment column
+   *  value: a canceled order carries 'unpaid' and is owed by nobody, and a
+   *  part-paid one never carries it. See `isOwingOrder`. */
+  owing?: boolean;
   /** Scope the list to one customer — the customer's-side lens on Selling. The
    *  endpoint (`GET /v1/orders?customer_id=`) is the join; there is no separate
    *  per-customer orders route. */
@@ -43,6 +47,7 @@ export function useOrders(query: OrderQuery) {
           ...(query.status ? { status: query.status } : {}),
           ...(query.countedOnly ? { counted_only: 'true' } : {}),
           ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
+          ...(query.owing ? { owing: 'true' } : {}),
           ...(query.customerId ? { customer_id: query.customerId } : {}),
           sort_by: query.sortBy,
           order: query.order,

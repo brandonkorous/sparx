@@ -214,7 +214,7 @@ export function RecordShipmentDialog({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden">
           <DialogTitle>What {purchaseOrderNumber} says has shipped</DialogTitle>
 
-          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Text className="text-sm">
               Copy this off their dispatch note or the email they sent. It does not add anything to
               your stock: it records what is coming, so booking the delivery in starts from these

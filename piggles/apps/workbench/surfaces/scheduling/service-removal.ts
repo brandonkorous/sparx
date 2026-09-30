@@ -56,9 +56,9 @@ function bookingsLine({ total, upcoming }: ServiceLosses): string {
   if (total === null || upcoming === null) return 'Bookings already made against it are kept.';
   if (total === 0) return 'Nothing has ever been booked on it.';
   if (upcoming === 0) {
-    return `${plural(total, 'booking was', 'bookings were')} taken on it, all in the past. They keep their time and their price.`;
+    return `${plural(total, 'booking was', 'bookings were')} taken on it, all in the past. ${total === 1 ? 'It keeps its time and its price.' : 'They keep their time and their price.'}`;
   }
-  return `${plural(total, 'booking was', 'bookings were')} taken on it and ${plural(upcoming, 'is', 'are')} still to come. Those keep their time and their price, and stay in your diary.`;
+  return `${plural(total, 'booking was', 'bookings were')} taken on it and ${plural(upcoming, 'is', 'are')} still to come. ${upcoming === 1 ? 'That one keeps its time and its price, and stays in your diary.' : 'Those keep their time and their price, and stay in your diary.'}`;
 }
 
 /** The whole description, in the order it matters: what happens to the people

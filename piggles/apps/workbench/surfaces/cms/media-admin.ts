@@ -21,6 +21,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { focalFromWire } from './focal-point';
 
 /* ── What a file is, in the terms this surface groups by ─────────────────── */
 
@@ -138,6 +139,13 @@ export interface MediaAsset {
   width: number | null;
   height: number | null;
   durationSec: number | null;
+  /** Which part of the picture matters, 0..1 on each axis. Dead centre means
+   *  NOBODY has chosen: the media worker treats that as "find the subject
+   *  yourself" and only obeys the stored pair when it has been moved. Four
+   *  layers read this and, until issue 869, no screen could write it — the
+   *  wire has always carried `focal_point` and this mapper dropped it. */
+  focalX: number;
+  focalY: number;
   /** A small rendition for a grid tile, or null while nothing renders yet. */
   thumbnailUrl: string | null;
   /** The best full-size URL for a detail preview (the original, or the largest
@@ -179,6 +187,7 @@ function pickThumbnail(wire: MediaAssetWire, minWidth: number): string | null {
 function toAsset(wire: MediaAssetWire): MediaAsset {
   const largestVariant = [...wire.variants].sort((a, b) => b.width - a.width)[0]?.url ?? null;
   const byteSize = Number(wire.byte_size);
+  const focal = focalFromWire(wire.focal_point);
   return {
     id: wire.id,
     filename: wire.original_filename,
@@ -189,6 +198,8 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     width: wire.width,
     height: wire.height,
     durationSec: wire.duration_sec,
+    focalX: focal.x,
+    focalY: focal.y,
     thumbnailUrl: pickThumbnail(wire, 320),
     // Prefer the true original; fall back to the largest variant when the
     // original is private (production images) so a preview still renders.

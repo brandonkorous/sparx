@@ -14,9 +14,10 @@ import {
   NativeSelect,
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { MoneyTextInput } from '../../components/money-input';
 import { policySummary, reminderSummary, type BookingPolicy } from './setup-data';
-import { CURRENCIES, type Draft } from './service-draft';
+import type { Draft } from './service-draft';
 
 export interface PolicyList {
   data?: { items: BookingPolicy[] };
@@ -60,27 +61,16 @@ export function ServicePrice({
             )}
           </Field>
 
-          <Field>
-            <FieldLabel>Currency</FieldLabel>
-            <FieldControl
-              render={
-                <NativeSelect
-                  className="max-w-32"
-                  value={draft.currency}
-                  aria-label="Currency"
-                  onChange={(event) => {
-                    onSet('currency', event.target.value);
-                  }}
-                >
-                  {CURRENCIES.map((code: string) => (
-                    <option key={code} value={code}>
-                      {code.toUpperCase()}
-                    </option>
-                  ))}
-                </NativeSelect>
-              }
-            />
-          </Field>
+          {/* A service stores its currency LOWERCASE, which is this module's own
+              shape and nothing to do with what a person picks. The picker deals
+              in codes as they are written; the case is put back here. */}
+          <CurrencyField
+            required
+            value={draft.currency.toUpperCase()}
+            onChange={(next) => {
+              onSet('currency', next.toLowerCase());
+            }}
+          />
         </div>
       </FormSection>
 

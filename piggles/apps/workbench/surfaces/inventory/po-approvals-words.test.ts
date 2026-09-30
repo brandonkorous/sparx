@@ -93,7 +93,11 @@ describe('what pressing Place order really does', () => {
 
   it('keeps the ordinary words when nothing holds it', () => {
     const words = placingWords(order, null, money);
-    expect(words.description).toContain('This sends the order and locks it');
+    // Placing sends nothing to the supplier (submitPurchaseOrder only changes
+    // the status), so the words must not say it does.
+    expect(words.description).toContain('This places the order and locks it');
+    expect(words.description).toContain('Nothing is sent to the supplier');
+    expect(words.toastDescription).not.toContain('has gone');
     expect(words.confirmLabel).toBe('Place the order');
     expect(words.toastTitle).toBe('PO-000004 placed');
   });

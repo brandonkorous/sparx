@@ -16,6 +16,8 @@
 // one is written for a settings page, and these screens are not that page.
 
 import { ORG_ROLES, type OrgRole } from '@wizeworks/auth/org-roles';
+import { roleIgnoresModuleAccess } from '@wizeworks/auth/module-access';
+import { roleIgnoresPropertyAccess } from '@wizeworks/auth/property-access';
 import { productCopy } from '../../lib/product';
 
 /** The role names as a person reads them. */
@@ -120,9 +122,32 @@ export function canModifyMember(
  * so a list of ticked areas beside them would be a control that changes
  * nothing. The server ignores module access for these two; the UI hides it and
  * says why in a sentence instead.
+ *
+ * The rule itself comes from the package that ENFORCES it rather than being
+ * copied here. A screen that decides for itself who may be limited is one
+ * release away from offering a control the server then refuses, and the person
+ * who reads that refusal is a business owner who was told the opposite a
+ * second earlier.
  */
 export function roleHasModuleLimits(role: string): boolean {
-  return role !== 'owner' && role !== 'admin';
+  return !roleIgnoresModuleAccess(role);
+}
+
+/**
+ * The same question for SITES, which is a separate axis from modules.
+ *
+ * Modules answer "which parts of the product may they open?"; sites answer
+ * "whose business may they open it on?". An account running a shop and a
+ * market stall uses the same apps for both, so the module list cannot say "the
+ * Saturday assistant works the stall only" — and that is the sentence most
+ * owners with more than one site actually need to write down.
+ *
+ * The unrestricted roles happen to match the module axis today. They are asked
+ * separately anyway, each from the helper that enforces it, because two rules
+ * that agree by coincidence are one change away from disagreeing in silence.
+ */
+export function roleHasSiteLimits(role: string): boolean {
+  return !roleIgnoresPropertyAccess(role);
 }
 
 /** Name, falling back to the email — a person who signed up without filling in

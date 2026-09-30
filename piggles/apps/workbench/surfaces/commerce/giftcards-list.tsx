@@ -144,7 +144,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Gift card list controls"
+        label="Gift cards controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

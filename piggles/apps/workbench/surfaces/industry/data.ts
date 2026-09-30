@@ -24,7 +24,7 @@ import {
 import type { PigglesIcon } from '@piggles/ui';
 
 import { api } from '../../lib/api/client';
-import type { WorkbenchModule } from '../../components/module-scope';
+import { WORKBENCH_MODULES, type WorkbenchModule } from '../../components/module-scope';
 
 /** The dashboard-facing projection of an industry starter — mirrors
  *  `IndustryStarterView` from @wizeworks/modules (the wire shape). */
@@ -93,25 +93,33 @@ export function iconForStarter(iconKey: string): PigglesIcon {
   return ICONS[iconKey] ?? faShop;
 }
 
-/** Plain-language name for a module slug, plus the hue it carries. A business
- *  owner reads "Online store", never "commerce". */
-export const MODULE_META: Record<string, { label: string; module: WorkbenchModule }> = {
-  commerce: { label: 'Online store', module: 'commerce' },
-  crm: { label: 'Customers', module: 'crm' },
-  cms: { label: 'Content', module: 'cms' },
-  email: { label: 'Email', module: 'email' },
-  ai: { label: 'AI', module: 'ai' },
-  scheduling: { label: 'Bookings', module: 'scheduling' },
-  invoicing: { label: 'Invoicing', module: 'invoicing' },
-  b2b: { label: 'Wholesale', module: 'b2b' },
-  inventory: { label: 'Stock', module: 'inventory' },
-  finance: { label: 'Finance', module: 'finance' },
-};
+/**
+ * What this console calls a part of the platform, and the hue it carries.
+ *
+ * THIS FILE USED TO KEEP ITS OWN TABLE, and it drifted the way a second copy
+ * always does. It read:
+ *
+ *     commerce: 'Online store'   crm: 'Customers'   email: 'Email'
+ *     ai: 'AI'   invoicing: 'Invoicing'   b2b: 'Wholesale'
+ *
+ * and shipped under the comment "a business owner reads 'Online store', never
+ * 'commerce'" — which is the right instinct pointed at the wrong table. Piggles
+ * has no modules and does not name them: it has APPS, and the rail four inches
+ * to the left of these chips says **Sell**, **Messages**, **Connections** and
+ * **Invoices**. A shop owner reading "Online store · Email · AI" on this screen
+ * is reading four names for things she cannot find anywhere else in her console.
+ *
+ * `lib/surfaces/nav.ts` already resolves this through the brand's app registry
+ * (`moduleLabels` in `lib/console/product.tsx`), and it was one import away.
+ * It also exported a function of the same name, so the console had two
+ * `moduleLabel`s and this pane had the one that knew nothing about the brand.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
-export function moduleLabel(slug: string): string {
-  return MODULE_META[slug]?.label ?? slug;
-}
-
+/** The hue for a module slug. The slug IS the hue for every registered module;
+ *  anything the registry does not know falls back to the platform's. */
 export function moduleHue(slug: string): WorkbenchModule {
-  return MODULE_META[slug]?.module ?? 'platform';
+  return (WORKBENCH_MODULES as readonly string[]).includes(slug)
+    ? (slug as WorkbenchModule)
+    : 'platform';
 }

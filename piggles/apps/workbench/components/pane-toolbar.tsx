@@ -32,12 +32,15 @@
 // goes in `primary` and nowhere else. `controls` RELOCATES, and a Save moved into
 // a popover is the one control they came to press, hidden behind a tap they have
 // no reason to expect. The failure is invisible at the width anyone develops at.
-// Enforced by piggles/scripts/check-toolbar-primary.mjs, in the pre-push guard.
+// Enforced by scripts/check-toolbar-primary.mjs, in the pre-push guard.
+// It scans BOTH consoles. It did not until 2026-09-19 — it computed its scan
+// root from its own location inside piggles/scripts, so this line was a claim
+// rather than a fact for one of the two files that carries it.
 //
 // `activeControls` is what keeps the collapse honest — see PaneToolbarOverflow.
 
 import { useRef } from 'react';
-import { Toolbar } from '@wizeworks/silicaui-react';
+import { Text, Toolbar } from '@wizeworks/silicaui-react';
 import { CopyPaneLink, usePaneHasLink } from './copy-pane-link';
 import { PaneBetaNotice } from './module-beta-notice';
 import { CollapsedToolbar } from './pane-toolbar-overflow';
@@ -89,6 +92,26 @@ interface PaneToolbarProps {
   search?: React.ReactNode;
   /** Counts, totals, state — information rather than a control. Never hidden. */
   status?: React.ReactNode;
+  /**
+   * Has the read behind `status` landed?
+   *
+   * A COUNT IS A MEASUREMENT AND MUST NOT BE PRINTED BEFORE IT IS TAKEN. Almost
+   * every status slot in the console is `rows.length`, off a `data?.items ?? []`,
+   * so while the query is in flight the array is empty and the bar asserts a
+   * confident ZERO over a pane that is still loading: "0 messages", "No mailbox
+   * connected yet", "No dashboards yet". On a failed read it says it FOREVER,
+   * over a body that is explaining the server could not be reached.
+   *
+   * Measured 2026-09-25 across both consoles: 43 toolbars print a count off an
+   * array with a `?? []` fallback, and 41 of them did it unguarded.
+   *
+   * Leave it out and nothing changes — a status that is not a count (a saved
+   * state, a name, a warning) has nothing to wait for. Pass it and the bar keeps
+   * its own counsel until it knows. [[feedback_never_present_absence_as_measurement]]
+   */
+  statusReady?: boolean;
+  /** The read behind `status` failed, so the count is UNKNOWN rather than zero. */
+  statusFailed?: boolean;
   /** The one action this surface exists for, as a node — rendered exactly as
    *  written, at every width. Use for a Save, or anything bespoke. */
   primary?: React.ReactNode;
@@ -137,11 +160,33 @@ interface PaneToolbarProps {
 }
 
 /**
+ * A picker that must be as wide as the NAME inside it.
+ *
+ * silica draws a bare `.select` at `width: 100%`, so a picker dropped into a
+ * card stretches the width of the pane. The obvious answer is a cap - and a cap
+ * is a width WE chose for a word the business owner typed, so it clips: the
+ * recipe pane's location picker read "Fulfillment Cente" with 700 pixels free
+ * beside it. This pair answers both at once: as wide as its widest option,
+ * never wider than the room it is in.
+ *
+ * The bar applies it to its own slots through ATOMIC below. A picker drawn
+ * anywhere ELSE in a pane has to ask for it, which is what this export is for.
+ * Tailwind reads class names literally, so ATOMIC spells the same two utilities
+ * out rather than composing them from here.
+ */
+export const FITS_ITS_NAME = 'w-auto max-w-full';
+
+/**
  * Makes a slot's controls ATOMIC without moving them: `contents` keeps each one a
  * direct item of the bar's row (several surfaces aim an `ml-auto` at it), and
  * `shrink-0` is the fix — a control keeps its width or takes the next row, never
  * both. `w-auto` undoes silica's `width:100%` on a bare `.select`/`.input`, which
  * a wrapping row would otherwise stretch across the pane.
+ *
+ * `max-w-full` here OUTRANKS a `max-w-40` written on the control itself, so a
+ * cap inside this slot has never done anything. Do not write one: it reads as a
+ * ceiling to the next person, and the day that JSX is lifted out of the bar it
+ * starts clipping. scripts/check-select-name-width.mjs holds the line.
  */
 const ATOMIC =
   'contents [&>*]:shrink-0 [&>.select]:w-auto [&>.select]:max-w-full [&>.input]:w-auto [&>.input]:max-w-full';
@@ -150,6 +195,8 @@ export function PaneToolbar({
   label,
   search,
   status,
+  statusReady,
+  statusFailed,
   primary,
   primaryAction,
   filters,
@@ -199,7 +246,21 @@ export function PaneToolbar({
           className={`bg-base-100 min-h-[calc(2rem+1rem+2px)] w-full flex-wrap gap-2 p-2 ${className ?? ''}`}
         >
           {/* Information first; `min-w-0` truncates rather than overflowing. */}
-          {status ? <div className="flex min-w-0 items-center gap-2">{status}</div> : null}
+          {status ? (
+            <div className="flex min-w-0 items-center gap-2">
+              {statusFailed ? (
+                <Text as="span" className="shrink-0 text-sm">
+                  Could not be read
+                </Text>
+              ) : statusReady === false ? (
+                <Text as="span" className="shrink-0 text-sm">
+                  Counting…
+                </Text>
+              ) : (
+                status
+              )}
+            </div>
+          ) : null}
 
           {/* The one child allowed to give, and only to its floor: `flex-1` alone
               let it shrink to an icon and a sliver of border. */}

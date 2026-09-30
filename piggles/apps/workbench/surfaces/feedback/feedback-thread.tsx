@@ -18,7 +18,6 @@ import { Icon } from '@piggles/ui';
 import { describeAgo } from '../../lib/api/activity';
 import {
   MAX_FEEDBACK_BODY,
-  isFeedbackNotFound,
   useFeedbackThread,
   useReplyToFeedback,
   type FeedbackAuthorKind,
@@ -90,18 +89,15 @@ export function FeedbackThreadSurface({ ctx }: { ctx: SurfaceContext }) {
   // reached. One arm was answering both, so somebody whose wifi dropped was being
   // told to go and find a conversation that is still there.
   if (isError) {
-    const gone = isFeedbackNotFound(error);
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
+          error={error}
           icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
-          title={gone ? 'This conversation is no longer here' : 'Could not load this conversation'}
-          description={
-            gone
-              ? 'It has been removed since you opened it. Close this pane and pick another from your feedback list.'
-              : 'This is a problem reaching the server. Nothing you or the team has written has been lost.'
-          }
+          title="Could not load this conversation"
+          description="This is a problem reaching the server. Nothing you or the team has written has been lost."
+          missingTitle="This conversation is no longer here"
+          missingDescription="It has been removed since you opened it. Close this pane and pick another from what you told us."
           onRetry={() => {
             void refetch();
           }}
@@ -117,7 +113,7 @@ export function FeedbackThreadSurface({ ctx }: { ctx: SurfaceContext }) {
           reason="missing"
           icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
           title="This conversation is no longer here"
-          description="Close this pane and open the message again from your feedback list."
+          description="Close this pane and open the message again from what you told us."
         />
       </Card>
     );

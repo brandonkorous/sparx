@@ -24,6 +24,7 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import type { CompanyStatus, PaymentTerms } from '@wizeworks/crm-schemas';
 import { api } from '../../lib/api/client';
+import { formatAmount } from '../../lib/money-format';
 
 // The status + payment-terms enums come straight from `@wizeworks/crm-schemas` (the
 // server's Zod), so they can't drift. `AccountInput` below stays a local, narrow
@@ -81,7 +82,22 @@ export const ACCOUNT_STATUSES: CompanyStatus[] = ['active', 'credit_hold', 'susp
 
 /** How an account's state reads — plain label, tone for the badge, and a
  *  sentence. These carry a genuine good/needs-attention/bad meaning, so the
- *  tones are semantic. */
+ *  tones are semantic.
+ *
+ *  EVERY SENTENCE HERE IS A CLAIM THE CHECKOUT HAS TO KEEP, and three of the
+ *  four did not. All the account-state guards live inside
+ *  `if (activeB2bAccountId && session.paymentTermsRequested)`, so each one is
+ *  about ordering ON TERMS and none of them stops a card payment.
+ *
+ *    - Active said "can place orders on its agreed terms". It cannot, unless a
+ *      credit limit is set: the checkout works out `creditLimit - creditUsed`
+ *      and refuses anything larger, and the column is `NOT NULL DEFAULT 0`.
+ *      MEASURED 2026-09-25: all ten Active companies sat at zero, every one of
+ *      them under this sentence and a green badge.
+ *    - Suspended said "cannot order". It can still buy paying up front.
+ *    - Inactive said "not trading", and nothing in the order path read the
+ *      state at all. It does now (`termsRefusal` in checkout-service.ts), so
+ *      this sentence became true rather than being reworded around. */
 export function accountStatusMeta(status: string): {
   label: string;
   tone: 'success' | 'warning' | 'danger' | 'neutral';
@@ -92,25 +108,27 @@ export function accountStatusMeta(status: string): {
       return {
         label: 'Active',
         tone: 'success',
-        description: 'This account can place orders on its agreed terms.',
+        description:
+          'Nothing here is holding this account back. Whether they can order on terms depends on the credit limit below.',
       };
     case 'credit_hold':
       return {
         label: 'Credit hold',
         tone: 'warning',
-        description: 'Ordering on account is paused until an outstanding balance is settled.',
+        description: 'They cannot order on terms until what they owe is settled.',
       };
     case 'suspended':
       return {
         label: 'Suspended',
         tone: 'danger',
-        description: 'This account is switched off and cannot order.',
+        description: 'They cannot order on terms. They can still buy from you paying up front.',
       };
     default:
       return {
         label: 'Inactive',
         tone: 'neutral',
-        description: 'This account is dormant: kept on file but not trading.',
+        description:
+          'Kept on file and not being traded with. They cannot order on terms while this is set.',
       };
   }
 }
@@ -123,7 +141,7 @@ export { PAYMENT_TERM_PRESETS as PAYMENT_TERMS, paymentTermsLabel } from '../../
 export function formatMoney(value: number | string | null | undefined, currency = 'USD'): string {
   const n = typeof value === 'string' ? Number(value) : (value ?? 0);
   if (!Number.isFinite(n)) return '—';
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(n);
+  return formatAmount(n, currency);
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */

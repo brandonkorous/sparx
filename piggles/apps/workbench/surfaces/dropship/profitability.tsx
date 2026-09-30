@@ -46,6 +46,7 @@ import { FormSection } from '../../components/form-section';
  *  rather than the generic one. */
 const MODULE = 'dropship';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { plural } from '../inventory/data';
 import {
   RANGE_LABEL,
   dropshipErrorMessage,
@@ -151,13 +152,21 @@ function SupplierProfitRow({ row }: { row: AnalyticsSupplierRow }) {
   );
 }
 
-/** Hours as a human span — "6h", "1d 4h" — for the SLA figures. */
+/**
+ * Hours as a span somebody reads rather than decodes: "6 hours", "1 day 4
+ * hours".
+ *
+ * It said "6h" and "1d 4h". Twelve other places in this console spell "days"
+ * out, and a person who has to work out that `d` is days is being handed a
+ * filing system on a screen about whether a supplier is slow. Issue 728.
+ */
 function hoursLabel(hours: number | null): string {
   if (hours === null) return '—';
-  if (hours < 24) return `${String(Math.round(hours))}h`;
+  if (hours < 24) return plural(Math.round(hours), 'hour', 'hours');
   const days = Math.floor(hours / 24);
   const rem = Math.round(hours - days * 24);
-  return rem > 0 ? `${String(days)}d ${String(rem)}h` : `${String(days)}d`;
+  const whole = plural(days, 'day', 'days');
+  return rem > 0 ? `${whole} ${plural(rem, 'hour', 'hours')}` : whole;
 }
 
 function SlaRowView({ row }: { row: SlaRow }) {
@@ -223,7 +232,7 @@ export function DropshipProfitabilitySurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Profitability controls"
+        label="Controls for what you made on it"
         controls={
           <div className="ml-auto w-36">
             <Select
@@ -260,7 +269,7 @@ export function DropshipProfitabilitySurface({ ctx }: { ctx: SurfaceContext }) {
               <PaneLoadError
                 module={MODULE}
                 icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
-                title="Could not load profitability"
+                title="Could not work out what you made"
                 description={dropshipErrorMessage(
                   analytics.error,
                   'This is a problem reaching the server. Try again in a moment.'

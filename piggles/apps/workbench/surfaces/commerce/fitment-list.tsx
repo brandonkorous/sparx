@@ -79,7 +79,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Compatibility list controls"
+        label="Controls for what fits what"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -102,7 +102,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Icon glyph={faSparkles} className="size-4" aria-hidden />
-            <span>Starter library</span>
+            <span>Ready-made lists</span>
           </Button>
         }
         // Save is `primary`, never `controls`: `controls` relocates into the

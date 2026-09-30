@@ -99,7 +99,11 @@ function RecordBlock({
   return (
     <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge color="neutral" variant="outline" size="sm">
+        {/* COLORLESS, not `neutral`. A DNS record type carries no meaning to
+            color and naming grey is not a choice this file may make (RULE #4).
+            The value itself is right as it stands: TXT and CNAME are what the
+            person's domain provider will call them too. */}
+        <Badge variant="outline" size="sm">
           {kind}
         </Badge>
         <Text className="text-sm">{purpose}</Text>
@@ -450,23 +454,29 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     Make main address
                   </Button>
                 ) : null}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="danger"
-                  shape="square"
-                  aria-label="Disconnect this address"
-                  title="Disconnect this address"
-                  loading={disconnect.isPending}
-                  onClick={() => {
-                    void onDisconnect();
-                  }}
-                >
-                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-                </Button>
               </>
             )}
           </>
+        }
+        /* A VALUE, not bespoke JSX: `controls` relocates into the narrow bar's
+           overflow popover verbatim, so this was a bare red bin under "Visit"
+           and "Make main address". scripts/check-toolbar-glyph.mjs holds the
+           line. */
+        actions={
+          isManaged
+            ? undefined
+            : [
+                {
+                  label: 'Disconnect',
+                  title: 'Disconnect this address',
+                  icon: faTrashCan,
+                  tone: 'danger' as const,
+                  loading: disconnect.isPending,
+                  onClick: () => {
+                    void onDisconnect();
+                  },
+                },
+              ]
         }
       />
 

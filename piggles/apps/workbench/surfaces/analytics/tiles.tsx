@@ -92,9 +92,11 @@ export function spanClass(span: 1 | 2 | 3 | 4 | undefined): string {
 
 function DeltaChip({ compare }: { compare: NonNullable<MetricResult['compare']> }) {
   if (compare.deltaPct === null) {
+    // "no baseline" is an analyst's word for a thing every shop owner
+    // understands: there is no earlier stretch of time to hold this up against.
     return (
       <Text as="span" className="text-sm">
-        no baseline
+        nothing to compare with
       </Text>
     );
   }
@@ -102,11 +104,17 @@ function DeltaChip({ compare }: { compare: NonNullable<MetricResult['compare']> 
   const flat = compare.deltaPct === 0;
   const tone = flat ? 'neutral' : up ? 'success' : 'danger';
   const glyph = flat ? faMinus : up ? faArrowUpRight : faArrowDownRight;
+  // A bare "12%" beside a number answers "12% of what?" only on hover, and there
+  // is no hover on the device the compact console was built for. The badge keeps
+  // its tooltip for a mouse and now says the whole thing to everything else.
+  const said = flat
+    ? 'the same as the period before'
+    : `${String(Math.abs(compare.deltaPct))}% ${up ? 'up on' : 'down on'} the period before`;
   return (
-    <Tooltip content="vs previous period">
-      <Badge color={tone} variant="soft" size="sm">
+    <Tooltip content="Against the period before this one">
+      <Badge color={tone} variant="soft" size="sm" aria-label={said}>
         <Icon glyph={glyph} className="size-3.5" aria-hidden />
-        {Math.abs(compare.deltaPct)}%
+        <span aria-hidden>{Math.abs(compare.deltaPct)}%</span>
       </Badge>
     </Tooltip>
   );
@@ -168,13 +176,23 @@ function KpiValue({
 
 /* ── Timeseries (the hero chart) ─────────────────────────────────────────── */
 
-function TimeseriesTile({ result }: { result: MetricResult }) {
+function TimeseriesTile({ tile, result }: { tile: DashboardTile; result: MetricResult }) {
   const series = result.data as TimeseriesData;
   const hasData = series.points.some((p) => series.series.some((s) => Number(p[s.key] ?? 0) > 0));
   if (!hasData) {
     return <TileMessage>No figures for this period yet.</TileMessage>;
   }
-  return <TrendChart series={series.series} points={series.points} grain={series.grain} />;
+  return (
+    <TrendChart
+      series={series.series}
+      points={series.points}
+      grain={series.grain}
+      // The same formatter the donut beside it already got. Without it the axis
+      // prints the stored number, and money is stored in cents.
+      format={(n) => formatValue(n, result.unit)}
+      label={tile.title}
+    />
+  );
 }
 
 /* ── Breakdown (donut) ───────────────────────────────────────────────────── */
@@ -183,6 +201,22 @@ function BreakdownTile({ tile, result }: { tile: DashboardTile; result: MetricRe
   const rows = (result.data as BreakdownData).rows;
   if (rows.length === 0) {
     return <TileMessage>{tile.emptyHint ?? 'Nothing to break down in this period.'}</TileMessage>;
+  }
+  // A PIE OF ONE THING IS NOT A CHART.
+  //
+  // "Where sales came from" drew a full circle labelled "Unattributed · 100%",
+  // which is a picture of not knowing, drawn with all the authority of a
+  // measurement. Every breakdown can land here: one channel, one campaign, one
+  // source. Saying it in a sentence is both shorter and true.
+  // [[feedback_never_present_absence_as_measurement]]
+  const only = rows.length === 1 ? rows[0] : undefined;
+  if (only) {
+    return (
+      <TileMessage>
+        All of it falls under one heading, {only.label}: {formatValue(only.value, result.unit)}.
+        There is nothing here to compare it against yet.
+      </TileMessage>
+    );
   }
   return (
     <DonutChart
@@ -367,7 +401,7 @@ export function Tile({ tile, result, onDrill }: TileProps) {
     if (result.status !== 'ok') return <StatusLine result={result} tile={tile} />;
     switch (result.shape) {
       case 'timeseries':
-        return <TimeseriesTile result={result} />;
+        return <TimeseriesTile tile={tile} result={result} />;
       case 'breakdown':
         return <BreakdownTile tile={tile} result={result} />;
       case 'list':

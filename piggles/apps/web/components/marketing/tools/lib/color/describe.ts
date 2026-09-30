@@ -29,7 +29,7 @@ const FAMILIES: [number, string][] = [
  *  while comparing five of them. */
 export function describeColor(rgb: Rgb): string {
   const { h, s, l } = rgbToHsl(rgb);
-  if (s < 8) return l > 80 ? 'near white' : l < 18 ? 'near black' : 'grey';
+  if (s < 8) return l > 80 ? 'near white' : l < 18 ? 'near black' : 'gray';
 
   const family = FAMILIES.find(([max]) => h <= max)?.[1] ?? 'red';
   const weight = l > 78 ? 'pale ' : l > 62 ? 'light ' : l < 26 ? 'deep ' : l < 42 ? 'dark ' : '';

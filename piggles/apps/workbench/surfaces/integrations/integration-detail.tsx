@@ -420,6 +420,7 @@ function ManageIntegration({
   const confirm = useConfirm();
   const {
     data: installation,
+    error,
     isPending,
     isError,
     isFetching,
@@ -457,8 +458,17 @@ function ManageIntegration({
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
+          {/* `error` and `noun`, not a hardcoded sentence. Without them this
+              always read "This is a problem reaching the server" — including
+              when the server answered perfectly well to say there is no such
+              connection, which is a different thing with a different remedy.
+              PaneLoadError already tells the two apart; this call site was
+              opting out of the one job it does.
+              [[feedback_one_outcome_two_causes]] */}
           <PaneLoadError
             title="Could not load this connection"
+            error={error}
+            noun="connection"
             description="This is a problem reaching the server. The connection itself is unaffected."
             onRetry={() => {
               void refetch();

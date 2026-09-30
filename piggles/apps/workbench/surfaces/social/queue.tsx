@@ -228,7 +228,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Posts list controls"
+        label="Posts controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

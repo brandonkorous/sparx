@@ -56,17 +56,16 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faFloppyDisk, faPlus, faServer, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { faFloppyDisk, faServer, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { AddLanguage } from '../../components/add-language';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
 import {
-  canonicalLocale,
-  isValidLocale,
   localeName,
   productErrorMessage,
   useDeleteTranslation,
@@ -78,7 +77,12 @@ import {
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 
-const LABEL = 'Translations';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'other languages';
 /** Registry module for this pane, so the brand draws Content's own picture
  *  rather than the generic one. */
 const MODULE = 'cms';
@@ -121,67 +125,6 @@ function same(a: Draft, b: Draft): boolean {
 interface Pending {
   locale: string;
   draft: Draft;
-}
-
-function AddLanguage({ existing, onAdd }: { existing: string[]; onAdd: (locale: string) => void }) {
-  const [raw, setRaw] = useState('');
-  const canonical = canonicalLocale(raw);
-  const duplicate = existing.includes(canonical);
-  const valid = raw.trim() !== '' && isValidLocale(raw) && !duplicate;
-
-  return (
-    <FormSection
-      title="Add a language"
-      description="Use the short code for the language: “es” for Spanish, “fr-CA” for Canadian French, “de” for German."
-    >
-      <Field>
-        <FieldLabel>Language code</FieldLabel>
-        <FieldControl
-          render={
-            <Input
-              color="module"
-              value={raw}
-              spellCheck={false}
-              autoComplete="off"
-              placeholder="es"
-              onChange={(event) => {
-                setRaw(event.target.value);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && valid) {
-                  onAdd(canonical);
-                  setRaw('');
-                }
-              }}
-            />
-          }
-        />
-        <FieldDescription>
-          {raw.trim() === ''
-            ? 'Two letters for a language, optionally followed by a country: es, pt-BR, zh-Hans.'
-            : duplicate
-              ? `You already have ${localeName(canonical)} below.`
-              : isValidLocale(raw)
-                ? `Adds ${localeName(canonical)} (${canonical}).`
-                : 'That is not a language code. Try two letters, like “es”, optionally with a country: “es-MX”.'}
-        </FieldDescription>
-      </Field>
-      <div className="flex justify-end">
-        <Button
-          size="sm"
-          color="module"
-          disabled={!valid}
-          onClick={() => {
-            onAdd(canonical);
-            setRaw('');
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add this language
-        </Button>
-      </div>
-    </FormSection>
-  );
 }
 
 function TranslationEditor({
@@ -505,6 +448,7 @@ function TranslationEditor({
 
       <AddLanguage
         existing={locales}
+        description="Pick the language you want to write this product in. Its own wording lives on its own tab, and anything you leave empty falls back to your words."
         onAdd={(locale) => {
           setPending((existing) => [...existing, { locale, draft: BLANK }]);
           setActive(locale);
@@ -515,7 +459,7 @@ function TranslationEditor({
 }
 
 export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const translations = useProductTranslations(productId);
 
@@ -530,13 +474,13 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
   }>({ dirty: false, saving: false, save: null, label: 'Save' });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} module={MODULE} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} module={MODULE} />;
   }
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         status={
           scope.isFollowing ? (
             <Badge color="info" variant="soft" size="sm">

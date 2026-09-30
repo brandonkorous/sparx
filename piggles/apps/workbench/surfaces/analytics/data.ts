@@ -18,6 +18,7 @@ import { useQuery } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { channelKeyLabel } from '../../lib/console/channels';
 
 /* ── Dashboard config (mirrors the server) ──────────────────────────────── */
 
@@ -109,7 +110,7 @@ export interface MetricResult {
   message?: string;
 }
 
-interface QueryResponse {
+export interface QueryResponse {
   range: { from: string; to: string; grain: Grain };
   property: string | null;
   results: MetricResult[];
@@ -177,18 +178,53 @@ export function useDashboardQuery(dashboard: DashboardConfig | undefined, range:
     queryKey: ['analytics', 'query', dashboard?.id, range],
     enabled: Boolean(dashboard),
     placeholderData: (previous) => previous,
-    queryFn: () =>
-      api.post<QueryResponse>('/v1/analytics/query', {
-        range,
-        metrics: (dashboard?.tiles ?? []).map((tile, index) => ({
-          key: tileKey(index),
-          metric: tile.metric,
-          shape: tile.shape,
-          limit: tile.limit,
-          compare: tile.compare,
-        })),
-      }),
+    queryFn: async () =>
+      inThisConsolesWords(
+        await api.post<QueryResponse>('/v1/analytics/query', {
+          range,
+          metrics: (dashboard?.tiles ?? []).map((tile, index) => ({
+            key: tileKey(index),
+            metric: tile.metric,
+            shape: tile.shape,
+            limit: tile.limit,
+            compare: tile.compare,
+          })),
+        })
+      ),
   });
+}
+
+/**
+ * Metrics whose breakdown rows are keyed by a SALES CHANNEL, and so must be
+ * written in the one set of words this console uses for that fact.
+ *
+ * `channels.ts` exists because one till sale read four different ways on four
+ * screens (issue 260), and its own header records that the customer reports pane
+ * later became a fifth by drawing the API's wording instead. The Sales dashboard
+ * was a sixth: it showed "Added by your team" to a sole trader, from a copy of
+ * the table in api-rest that was also missing `pos` entirely.
+ *
+ * Swapped HERE, off the row's key, rather than in the tile that draws it — the
+ * same boundary rule as `useReportFields` and `useActivity`. A label map applied
+ * at the drawing is one new tile away from being half-applied.
+ */
+const CHANNEL_KEYED_METRICS = new Set(['commerce.revenue.by_channel']);
+
+export function inThisConsolesWords(response: QueryResponse): QueryResponse {
+  return {
+    ...response,
+    results: response.results.map((result) => {
+      if (!CHANNEL_KEYED_METRICS.has(result.metric)) return result;
+      const data = result.data as BreakdownData | undefined;
+      if (!data?.rows) return result;
+      return {
+        ...result,
+        data: {
+          rows: data.rows.map((row) => ({ ...row, label: channelKeyLabel(row.key) })),
+        },
+      };
+    }),
+  };
 }
 
 /* ── Helpers ────────────────────────────────────────────────────────────── */

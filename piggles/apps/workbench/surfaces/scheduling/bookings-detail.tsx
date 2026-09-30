@@ -18,7 +18,7 @@ import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingCreate } from './booking-create';
 import { BookingManage } from './booking-manage';
-import { isNotFound, useBooking } from './bookings-data';
+import { useBooking } from './bookings-data';
 
 export function BookingDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
@@ -30,18 +30,15 @@ export function BookingDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed load REPLACES the record — never a live form beside a dead action.
   if (booking.isError) {
-    const gone = isNotFound(booking.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This booking no longer exists' : 'Could not load this booking'}
-            description={
-              gone
-                ? 'It may have been removed. Nothing else is affected.'
-                : 'This is a problem reaching the server. Nothing about the booking has changed.'
-            }
+            error={booking.error}
+            title="Could not load this booking"
+            description="This is a problem reaching the server. Nothing about the booking has changed."
+            missingTitle="This booking no longer exists"
+            missingDescription="It may have been removed. Nothing else is affected."
             onRetry={() => {
               void booking.refetch();
             }}

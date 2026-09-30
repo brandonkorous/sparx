@@ -1,5 +1,6 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import type { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@wizeworks/auth';
+import { sameOriginRedirect } from '@/lib/same-origin-redirect';
 
 // Signing out, from the account side.
 //
@@ -32,7 +33,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     .signOut({ headers: request.headers, asResponse: true })
     .catch(() => null);
 
-  const response = NextResponse.redirect(new URL('/sign-in', request.url), 303);
+  // NOT `NextResponse.redirect(new URL('/sign-in', request.url))`. A pod binds
+  // to 0.0.0.0:3000, so `request.url` names an address that exists nowhere and
+  // the person asking to sign out is sent to it. That is the whole reason
+  // `sameOriginRedirect` exists, and this route was written before it and never
+  // moved across (issue 882). A relative Location resolves against whatever
+  // address the browser actually asked for, behind any proxy, on any hostname.
+  const response = sameOriginRedirect('/sign-in', 303);
   for (const cookie of signedOut?.headers.getSetCookie() ?? []) {
     response.headers.append('set-cookie', cookie);
   }

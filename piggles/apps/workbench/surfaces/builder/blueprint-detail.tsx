@@ -16,14 +16,14 @@
 // (issue 098).
 
 import { useEffect, useState } from 'react';
-import { Card, Text } from '@wizeworks/silicaui-react';
+import { Card, Heading, Text } from '@wizeworks/silicaui-react';
 
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useBlueprint, type Blueprint } from './blueprints-data';
-import { contentsGroups } from './blueprints-words';
+import { contentsGroups, verticalLabel } from './blueprints-words';
 import { useBlueprintActions } from './blueprint-detail-actions';
 import { useBlueprintTarget } from './blueprint-detail-state';
 import {
@@ -36,6 +36,10 @@ import {
 import { BlueprintTargetSection } from './blueprint-detail-target';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/** Registry module for this surface, so the waiting and failed states wear the
+ *  brand's own artwork for this app rather than the generic mark. */
+const MODULE = 'builder';
 
 export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const key = typeof ctx.params.key === 'string' ? ctx.params.key : '';
@@ -60,6 +64,7 @@ export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             error={error}
             noun="design"
+            module={MODULE}
             title="Could not load this design"
             description="This is a problem reaching the server, or the design is no longer in the catalog. Your site is unaffected."
             onRetry={() => {
@@ -71,7 +76,19 @@ export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  if (isPending || !blueprint) return <PaneWaiting />;
+  // Inside the shell and inside a card, like every other state in this console.
+  // A bare <PaneWaiting> returns the waiting mark with no pane background and no
+  // content region around it, so the loading state and the loaded state were
+  // two different shapes.
+  if (isPending || !blueprint) {
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneWaiting module={MODULE} />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <BlueprintBody
@@ -128,6 +145,7 @@ function BlueprintBody({
     <div className={PANE_SHELL}>
       <BlueprintToolbar
         status={target.status}
+        targetName={targetName}
         updateAvailable={updateAvailable}
         isFetching={isFetching || installsFetching}
         updatedAt={dataUpdatedAt}
@@ -139,14 +157,20 @@ function BlueprintBody({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <Text className="text-sm">
-            {[
-              blueprint.vertical ? verticalText(blueprint.vertical) : null,
-              `Version ${blueprint.version}`,
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          </Text>
+          {/* The design's NAME, on the design's own pane. A read-only detail
+              surface keeps its identity heading (DESIGN.md); this one carried
+              its name in the dock tab and nowhere else, so the first thing on
+              the pane was a category and a version number. */}
+          <div className="flex flex-col gap-0.5">
+            <Heading level={2} className="text-xl font-semibold">
+              {blueprint.name}
+            </Heading>
+            <Text className="text-sm">
+              {[verticalLabel(blueprint.vertical), `Version ${blueprint.version}`]
+                .filter(Boolean)
+                .join(' · ')}
+            </Text>
+          </div>
 
           <BlueprintPreview blueprint={blueprint} />
 
@@ -202,12 +226,4 @@ function BlueprintBody({
       </div>
     </div>
   );
-}
-
-/** Title-cased vertical for the identity line. Plain text, not a badge. */
-function verticalText(vertical: string): string {
-  return vertical
-    .split(/[-_\s]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
 }

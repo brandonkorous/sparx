@@ -39,7 +39,7 @@ import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { countryOptions, coverageSummary } from './geo';
+import { countryOptions, coverageSummary } from '../../lib/geo';
 import { ZoneRatesEditor } from './shipping-rate-editor';
 import { SaveFailure } from '@/components/save-failure';
 import {

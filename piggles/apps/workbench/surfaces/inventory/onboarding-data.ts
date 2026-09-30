@@ -224,6 +224,7 @@ export interface PreviewInput {
 /** Read the file, guess the columns, WRITE NOTHING. */
 export function usePreviewImport() {
   return useMutation({
+    meta: { running: 'read that file' },
     mutationFn: (input: PreviewInput) =>
       api.post<ImportPreview>('/v1/inventory/imports/preview', input),
   });
@@ -342,7 +343,7 @@ export const CUSTOM_FIELD_ENTITY_LABELS: Record<CustomFieldEntity, string> = {
   variant: 'Items',
   level: 'Stock at a location',
   supplier: 'Suppliers',
-  purchase_order: 'Purchase orders',
+  purchase_order: 'Orders to suppliers',
 };
 
 /** Sentences — "a new column on ITEM", "appears on every ITEM". Kept apart from
@@ -353,7 +354,7 @@ export const CUSTOM_FIELD_ENTITY_NOUNS: Record<CustomFieldEntity, string> = {
   variant: 'item',
   level: 'stocked location',
   supplier: 'supplier',
-  purchase_order: 'purchase order',
+  purchase_order: 'order to a supplier',
 };
 
 export const CUSTOM_FIELD_TYPE_LABELS: Record<CustomFieldType, string> = {
@@ -425,7 +426,12 @@ export interface StockGridRow {
   variantId: string;
   warehouseId: string;
   sku: string;
-  title: string;
+  /** What the thing IS. Null only when the product behind it is gone. */
+  productTitle: string | null;
+  /** WHICH ONE of them — "M / Bone". Null for a product with a single unnamed
+   *  version. Both, never one: this grid shows twelve rows of one overshirt at
+   *  a time. Issue 681. */
+  variantName: string | null;
   warehouseCode: string;
   warehouseName: string;
   onHand: number;

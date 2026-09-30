@@ -19,6 +19,7 @@
 //     invoice with a typed-in name but no customer record is rejected.
 
 import { api } from '../../lib/api/client';
+import { documentNoun, isPriceOffer } from './document-words';
 import { isBlank, type DraftLine } from './totals';
 import { normalizeDocument, type BillingDocument } from './types';
 import { dayMiddayUtc } from '../../lib/today';
@@ -26,6 +27,11 @@ import { dayMiddayUtc } from '../../lib/today';
 export interface DocumentWorkflow {
   id: string;
   name: string;
+  /** The stable key a caller names a workflow by when it opens the editor to
+   *  make one PARTICULAR kind of document — `b2b-quotes` from the Quotes
+   *  screen, say. The tenant renames the workflow freely; the slug does not
+   *  move, so the door keeps working. */
+  slug: string;
   archivedAt: string | null;
 }
 
@@ -35,7 +41,18 @@ export interface InvoiceHeader {
   taxRate: number;
   notes: string;
   currency: string;
-  /** `YYYY-MM-DD` as typed, or '' for none. Sent as an instant, or null. */
+  /**
+   * The one date on the form, `YYYY-MM-DD` as typed, or '' for none. Sent as an
+   * instant, or null.
+   *
+   * Named for the common case. It is stored in `dueAt` on a bill and in
+   * `validUntil` on a price offer, because those are two different promises: a
+   * bill falls due and then counts days late, while an offer simply runs out.
+   * `SaveInput.workflowSlug` is what decides. Sending the wrong one is not a cosmetic
+   * mistake — the Quotes list reads `validUntil` for its "Valid until" column
+   * and its Expired badge, so a quote saved into `dueAt` shows no expiry at all
+   * and can never expire (issue 762).
+   */
   dueAt: string;
 }
 
@@ -43,6 +60,13 @@ export interface SaveInput {
   /** 'new', or the id of an existing document. */
   id: string;
   workflowId: string | null;
+  /**
+   * The slug of the workflow the document belongs to, which decides what the
+   * document IS: a bill, a quote, or an estimate. It picks the date column and
+   * the word every message here uses. Null on a tenant's own workflow, which
+   * gets the plain invoice treatment.
+   */
+  workflowSlug: string | null;
   header: InvoiceHeader;
   lines: DraftLine[];
   /** Lines exactly as the server last returned them — the delete baseline. */
@@ -122,30 +146,39 @@ function usableLines(lines: DraftLine[]): DraftLine[] {
   return kept;
 }
 
-function headerBody(header: InvoiceHeader) {
+function headerBody(header: InvoiceHeader, priceOffer: boolean) {
+  // Midday UTC, not midnight: this is a DAY, and midnight lands on the day
+  // before for anyone west of UTC, so the document would read as due a day
+  // early for them and go late a day early with it.
+  const instant = header.dueAt === '' ? null : dayMiddayUtc(header.dueAt);
   return {
     customerId: header.customerId,
     currency: header.currency,
     taxRate: header.taxRate,
     billTo: header.billTo,
     notes: header.notes || null,
-    // Midday UTC, not midnight: a due date is a DAY, and midnight lands on the
-    // day before for anyone west of UTC, so the invoice would read as due a day
-    // early for them and go late a day early with it.
-    dueAt: header.dueAt === '' ? null : dayMiddayUtc(header.dueAt),
+    // BOTH keys go every time, and only one of them carries the date. The other
+    // is explicitly null, so switching a document's kind cannot leave a stale
+    // date behind in the column its new kind does not read.
+    dueAt: priceOffer ? null : instant,
+    validUntil: priceOffer ? instant : null,
   };
 }
 
 export async function saveInvoice(input: SaveInput): Promise<BillingDocument> {
   const lines = usableLines(input.lines);
   const isNew = input.id === 'new';
+  const priceOffer = isPriceOffer(input.workflowSlug);
+  // What to call it in a message she reads. Telling someone pricing a quote to
+  // "choose the customer this invoice is for" names a screen she is not on.
+  const noun = documentNoun(input.workflowSlug);
 
   if (isNew && !input.header.customerId) {
-    throw new InvoiceValidationError('Choose the customer this invoice is for before saving.');
+    throw new InvoiceValidationError(`Choose the customer this ${noun} is for before saving.`);
   }
   if (isNew && !input.workflowId) {
     throw new InvoiceValidationError(
-      'No invoice workflow is set up yet, so there is nothing to create this invoice in.'
+      `No ${noun} workflow is set up yet, so there is nothing to create this ${noun} in.`
     );
   }
 
@@ -153,13 +186,13 @@ export async function saveInvoice(input: SaveInput): Promise<BillingDocument> {
     ? (
         await api.post<BillingDocument>('/v1/invoicing/documents', {
           workflowId: input.workflowId,
-          ...headerBody(input.header),
+          ...headerBody(input.header, priceOffer),
         })
       ).id
     : (
         await api.patch<BillingDocument>(
           `/v1/invoicing/documents/${input.id}`,
-          headerBody(input.header)
+          headerBody(input.header, priceOffer)
         )
       ).id;
 

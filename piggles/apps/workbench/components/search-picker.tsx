@@ -8,12 +8,24 @@
 // this control never holds a list — it shows what it was handed and reports
 // what was typed.
 
-import { Button, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { faUser, faXmark } from '@fortawesome/pro-solid-svg-icons';
+import { Badge, Button, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { faPlus, faUser, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 
 /** A one-letter query matches half the book and is not a search anyone means. */
 export const MIN_QUERY = 2;
+
+/**
+ * A short state word for a row, e.g. "Wholesale".
+ *
+ * A picker is where somebody commits to a record, so a fact that CHANGES what
+ * happens next belongs on the row rather than one screen away — and it has to
+ * survive being picked, which is why the chosen row carries it too.
+ */
+export interface PickerMark {
+  label: string;
+  color: string;
+}
 
 /** One row, already reduced to the two lines a person reads. */
 export interface PickerRow {
@@ -21,6 +33,8 @@ export interface PickerRow {
   primary: string;
   /** The email, the company, whatever tells two same-named rows apart. */
   secondary: string | null;
+  /** Optional. Left out on the rows where nothing about this one is notable. */
+  mark?: PickerMark | null;
 }
 
 export interface SearchPickerProps {
@@ -42,6 +56,18 @@ export interface SearchPickerProps {
   /** Says which record kind is missing, and what to do about it. Safe to give
    *  advice here only because the search is the whole book, not a window. */
   nothingFound: string;
+  /**
+   * The way out, when the answer is "make one". Advice that names a screen and
+   * cannot open it sends a person off to find it, remember what they typed, and
+   * come back to a box they have to fill in again — which is a dead end wearing
+   * a helpful sentence (issue 745).
+   *
+   * Given the text that was typed, so the button can name the thing being made
+   * and the screen it opens can arrive with the name already in it. Optional:
+   * a picker over records a person genuinely cannot create from here leaves it
+   * out and keeps the plain sentence.
+   */
+  nothingFoundAction?: { label: (typed: string) => string; onAct: (typed: string) => void };
   /** Prompt before the query is long enough to ask with. */
   tooShort: string;
   clearLabel: string;
@@ -59,7 +85,14 @@ function Chosen({
     <div className="border-base-300 bg-base-100 flex items-center gap-2 rounded-md border p-2">
       <Icon glyph={faUser} className="size-4 shrink-0" aria-hidden />
       <span className="min-w-0 flex-1">
-        <span className="block font-medium">{row.primary}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-medium">{row.primary}</span>
+          {row.mark ? (
+            <Badge color={row.mark.color} variant="soft" size="sm">
+              {row.mark.label}
+            </Badge>
+          ) : null}
+        </span>
         {row.secondary ? (
           <Text as="span" className="block text-sm">
             {row.secondary}
@@ -91,7 +124,14 @@ function Results({ rows, onSelect }: { rows: PickerRow[]; onSelect: (id: string)
             onSelect(row.id);
           }}
         >
-          <span className="min-w-0 flex-1 font-medium">{row.primary}</span>
+          <span className="flex min-w-0 flex-1 items-center gap-1.5">
+            <span className="truncate font-medium">{row.primary}</span>
+            {row.mark ? (
+              <Badge color={row.mark.color} variant="soft" size="sm">
+                {row.mark.label}
+              </Badge>
+            ) : null}
+          </span>
           {row.secondary ? (
             <Text as="span" className="shrink-0 text-sm">
               {row.secondary}
@@ -109,7 +149,10 @@ function Hint({
   searching,
   tooShort,
   nothingFound,
-}: Pick<SearchPickerProps, 'searching' | 'tooShort' | 'nothingFound'> & { typed: string }) {
+  nothingFoundAction,
+}: Pick<SearchPickerProps, 'searching' | 'tooShort' | 'nothingFound' | 'nothingFoundAction'> & {
+  typed: string;
+}) {
   if (typed.length < MIN_QUERY) return <Text className="text-sm">{tooShort}</Text>;
   if (searching)
     return (
@@ -117,7 +160,22 @@ function Hint({
         Searching…
       </Text>
     );
-  return <Text className="text-sm">{nothingFound}</Text>;
+  if (!nothingFoundAction) return <Text className="text-sm">{nothingFound}</Text>;
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <Text className="text-sm">{nothingFound}</Text>
+      <Button
+        size="sm"
+        color="module"
+        onClick={() => {
+          nothingFoundAction.onAct(typed);
+        }}
+      >
+        <Icon glyph={faPlus} className="size-4" aria-hidden />
+        {nothingFoundAction.label(typed)}
+      </Button>
+    </div>
+  );
 }
 
 export function SearchPicker(props: SearchPickerProps) {
@@ -160,6 +218,7 @@ export function SearchPicker(props: SearchPickerProps) {
           searching={props.searching}
           tooShort={props.tooShort}
           nothingFound={props.nothingFound}
+          {...(props.nothingFoundAction ? { nothingFoundAction: props.nothingFoundAction } : {})}
         />
       )}
     </div>

@@ -113,7 +113,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Group list controls"
+        label="Groups of products controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

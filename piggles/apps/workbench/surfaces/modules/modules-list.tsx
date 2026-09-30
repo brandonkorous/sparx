@@ -286,7 +286,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="App list controls"
+        label="Modules controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

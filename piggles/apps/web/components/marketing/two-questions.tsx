@@ -61,7 +61,7 @@ function DoesRow({
       <label
         htmlFor={`does-${option.group}`}
         className={`rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 border p-4 transition-colors ${
-          on ? 'border-module bg-module bg-soft' : 'border-base-300'
+          on ? 'border-module ring-module ring-1' : 'border-base-300'
         }`}
       >
         <Checkbox

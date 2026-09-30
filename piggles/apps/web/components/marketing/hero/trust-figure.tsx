@@ -25,7 +25,7 @@ import { HeroPanel, HeroRow, HeroRows } from './panel';
 const FACTS: { q: string; a: string; tone: 'success' | 'warning' }[] = [
   { q: 'Separation between businesses', a: 'At the database', tone: 'success' },
   { q: 'In transit and at rest', a: 'Encrypted', tone: 'success' },
-  { q: 'Export everything you have', a: 'Any time, no asking', tone: 'success' },
+  { q: 'Export your records', a: 'Any time, no asking', tone: 'success' },
   { q: 'Your data used to train AI', a: 'Never', tone: 'success' },
   { q: 'Two-step sign-in', a: 'Available today', tone: 'success' },
   { q: 'Certifications', a: 'None yet', tone: 'warning' },

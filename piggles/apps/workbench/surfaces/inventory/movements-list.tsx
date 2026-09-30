@@ -33,7 +33,6 @@ import {
   Button,
   Card,
   EmptyState,
-  Input,
   SearchInput,
   Timestamp,
   Tooltip,
@@ -59,6 +58,7 @@ import {
   type Movement,
 } from './movements-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { DayInput } from '../../components/day-input';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -79,6 +79,41 @@ function dayEnd(day: string): string | undefined {
   if (!day) return undefined;
   const date = new Date(`${day}T23:59:59.999Z`);
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
+/**
+ * The row's one action: what this item's number is now, and how it got there.
+ *
+ * Rendered TWICE per row, at two widths, because where it belongs changes with
+ * the room available — its own column when there is one, tucked under the
+ * change badge when there is not. One definition so the two cannot drift, and
+ * so the label a screen reader announces is written once.
+ */
+function StandsNow({
+  movement,
+  onExplain,
+}: {
+  movement: Movement;
+  onExplain: (movement: Movement) => void;
+}) {
+  return (
+    // `stopPropagation` because the row is itself a button — without it this
+    // opens the item AND the explanation, and whichever lands second wins.
+    <Tooltip content="Where this item&rsquo;s number stands now">
+      <Button
+        size="sm"
+        variant="ghost"
+        color="neutral"
+        aria-label={`Where the number for ${movement.variantSku ?? 'this item'} stands now`}
+        onClick={(event) => {
+          event.stopPropagation();
+          onExplain(movement);
+        }}
+      >
+        <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
+      </Button>
+    </Tooltip>
+  );
 }
 
 export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -257,8 +292,18 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
               {/* `max-w-0 w-full` makes this the cell that gives, so the product
                   name truncates instead of shoving the Change column off the
-                  right edge. */}
-              <td className="w-full max-w-0 min-w-56">
+                  right edge.
+
+                  THE FLOOR IS RAISED BY WIDTH, not set once. A flat `min-w-56`
+                  is 224px, and at a 360px pane the body is 318px against 88px
+                  of Change and 78px of the explain button — so the give cell
+                  stopped giving at 224 and the table ran 390px wide inside 318.
+                  That put the row's ONLY action off the right edge, behind a
+                  sideways drag with no header word and nothing saying the list
+                  scrolls, and dragging to it cut the product name from the
+                  LEFT. A floor that forces a sideways scroll is not protecting
+                  the column it is on. */}
+              <td className="w-full max-w-0 min-w-28 @sm:min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{movement.productTitle ?? 'Untitled product'}</span>
                   <span className="truncate font-mono text-sm">
@@ -284,9 +329,19 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
               </td>
 
               <td className="text-right whitespace-nowrap">
-                <Badge color={deltaTone(movement.delta)} variant="soft" size="sm">
-                  <span className="tabular-nums">{signedDelta(movement.delta)}</span>
-                </Badge>
+                <span className="flex flex-col items-end gap-1">
+                  <Badge color={deltaTone(movement.delta)} variant="soft" size="sm">
+                    <span className="tabular-nums">{signedDelta(movement.delta)}</span>
+                  </Badge>
+                  {/* At the narrowest width the explain button rides under the
+                      badge rather than taking a column of its own. A column of
+                      its own cost 78px of a 318px row to hold one 32px icon,
+                      and the row is already four lines tall down there — that
+                      is where vertical room is the cheap kind. */}
+                  <span className="@sm:hidden">
+                    <StandsNow movement={movement} onExplain={explain} />
+                  </span>
+                </span>
               </td>
 
               <td className="hidden text-right tabular-nums @3xl:table-cell">
@@ -324,24 +379,10 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 {movement.warehouseName ?? '—'}
               </td>
 
-              <td>
-                {/* `stopPropagation` because the row is itself a button — without
-                    it this opens the item AND the explanation, and whichever
-                    lands second wins. */}
-                <Tooltip content="Where this item's number stands now">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    aria-label={`Where the number for ${movement.variantSku ?? 'this item'} stands now`}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      explain(movement);
-                    }}
-                  >
-                    <Icon glyph={faShieldCheck} className="size-4" aria-hidden />
-                  </Button>
-                </Tooltip>
+              {/* Its own column from @sm up, where a row has the width for one.
+                  Below that it rides in the Change cell above. */}
+              <td className="hidden @sm:table-cell">
+                <StandsNow movement={movement} onExplain={explain} />
               </td>
             </tr>
           ))}
@@ -353,11 +394,11 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Movements filters"
+        label="Filters for every change"
         search={
           <SearchInput
             size="sm"
-            aria-label="Search movements by item"
+            aria-label="Search changes by item"
             placeholder="Product name or code…"
             value={search}
             onValueChange={(next) => {
@@ -371,32 +412,36 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
         // the case the values slot cannot express.
         controls={
           <>
-            <label className="flex items-center gap-1.5">
+            {/* `htmlFor`, not a label wrapped round the control: DayInput draws
+                its half-typed warning as a sibling of the box, so the box is no
+                longer the label's only child and the implicit association is
+                gone. */}
+            <label className="flex items-center gap-1.5" htmlFor="movements-from">
               <span className="text-sm whitespace-nowrap">From</span>
-              <Input
+              <DayInput
+                id="movements-from"
                 size="sm"
-                type="date"
                 aria-label="Changes on or after"
                 className="max-w-40"
                 value={from}
                 max={to || undefined}
-                onChange={(event) => {
-                  setFrom(event.target.value);
+                onValueChange={(value) => {
+                  setFrom(value);
                   resetWindow();
                 }}
               />
             </label>
-            <label className="flex items-center gap-1.5">
+            <label className="flex items-center gap-1.5" htmlFor="movements-to">
               <span className="text-sm whitespace-nowrap">To</span>
-              <Input
+              <DayInput
+                id="movements-to"
                 size="sm"
-                type="date"
                 aria-label="Changes on or before"
                 className="max-w-40"
                 value={to}
                 min={from || undefined}
-                onChange={(event) => {
-                  setTo(event.target.value);
+                onValueChange={(value) => {
+                  setTo(value);
                   resetWindow();
                 }}
               />

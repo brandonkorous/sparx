@@ -41,6 +41,11 @@ export interface PartnerMember {
   status: string;
   createdAt: string;
   lastLoginAt: string | null;
+  /** The last thing they DID, derived from the audit log. `/v1/team` has always
+   *  returned it and this type did not declare it, so it was dropped off the
+   *  wire. It is the corroboration that stops the pane saying "never signed in"
+   *  about somebody who plainly did (issue 853's rule, applied here). */
+  lastActiveAt: string | null;
   moduleAccessMode: 'all' | 'selected';
   modules: string[];
   propertyAccessMode: 'all' | 'selected';

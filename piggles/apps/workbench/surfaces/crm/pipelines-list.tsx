@@ -55,7 +55,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'New pipeline',
+    label: 'New process',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -64,14 +64,14 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Pipeline list controls"
+        label="Controls for how things move"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               color="module"
               size="sm"
-              aria-label="Search pipelines"
-              placeholder="Search pipelines…"
+              aria-label="Search the steps things go through"
+              placeholder="Search by name…"
               value={search}
               onValueChange={setSearch}
             />
@@ -82,7 +82,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New pipeline: hold Shift to open alongside, Alt for a new window"
+            title="New process: hold Shift to open alongside, Alt for a new window"
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -94,9 +94,9 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <Select
               color="module"
               size="sm"
-              aria-label="Which pipelines to show"
+              aria-label="Which ones to show"
               value={scope}
-              items={{ active: 'Active pipelines', all: 'Including archived' }}
+              items={{ active: 'In use', all: 'Including put away' }}
               onValueChange={(next) => {
                 setScope(next as 'active' | 'all');
               }}
@@ -126,7 +126,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <PaneLoadError
             icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
-            title="Could not load your pipelines"
+            title="Could not load these"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
@@ -140,13 +140,13 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faDiagramProject} className="size-6" aria-hidden />,
-              title: 'No pipelines match that',
-              description: 'Try a different word, or switch back to active pipelines.',
+              title: 'Nothing matches that',
+              description: 'Try a different word, or switch back to the ones in use.',
             }}
             firstRun={{
-              title: 'No pipelines yet',
+              title: 'Nothing set up yet',
               description:
-                'A pipeline is the set of stages a deal moves through. Your own way of winning work. Create your first one to start tracking deals.',
+                'A process is the set of steps something moves through: a sale going from a first inquiry to won, or a help request from asked to answered. Create your first one to start following them.',
               action: createFirst,
             }}
           />
@@ -156,7 +156,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
               <tr>
                 <th>Name</th>
                 <th>Moves</th>
-                <th className="hidden text-right @md:table-cell">Stages</th>
+                <th className="hidden text-right @md:table-cell">Steps</th>
                 <th>State</th>
               </tr>
             </thead>
@@ -188,16 +188,19 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       variant="soft"
                       size="sm"
                     >
-                      {row.objectKey === 'ticket' ? 'Support requests' : 'Sales deals'}
+                      {row.objectKey === 'ticket' ? 'Help requests' : 'Sales deals'}
                     </Badge>
                   </td>
                   <td className="hidden text-right text-sm tabular-nums @md:table-cell">
                     {row.stages.length}
                   </td>
                   <td>
+                    {/* "Put away" is this console's word for hidden-but-kept
+                        (the object-type editor, the all-apps dialog). The filter
+                        above says it too; this badge said "Archived". */}
                     {row.archivedAt ? (
                       <Badge color="neutral" variant="soft" size="sm">
-                        Archived
+                        Put away
                       </Badge>
                     ) : row.isDefault ? (
                       <Badge color="module" variant="soft" size="sm">

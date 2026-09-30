@@ -128,7 +128,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title="No suppliers yet"
-          description="A supplier is a business you buy stock from. Add your first one and you can raise purchase orders against it."
+          description="A supplier is a business you buy stock from. Add your first one and you can start sending them orders."
           actions={addSupplier}
         />
       );
@@ -210,7 +210,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier list controls"
+        label="Suppliers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

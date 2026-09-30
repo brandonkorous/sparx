@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 // WHOLESALE ORDERS — a B2B lens over the shared order spine.
 //
-// A wholesale order is an ordinary order whose buyer belongs to a trade account.
+// A wholesale order is an ordinary order whose buyer belongs to a wholesale customer.
 // There is no separate "B2B order" table: the platform identifies one by the
 // customer's `companyId`, so this reads the same `/v1/orders` root every order
 // list does, with `b2b_only=true` (and optionally one account) applied.
@@ -39,6 +39,10 @@ export interface WholesaleOrderQuery {
   q?: string;
   status?: string;
   paymentStatus?: string;
+  /** Orders with money still to collect. A named question, not a payment column
+   *  value: a canceled order carries 'unpaid' and is owed by nobody, and a
+   *  part-paid one never carries it. See `isOwingOrder`. */
+  owing?: boolean;
   accountId?: string;
   sortBy: OrderSortKey;
   order: SortDirection;
@@ -57,6 +61,7 @@ export function useWholesaleOrders(query: WholesaleOrderQuery) {
           ...(query.q ? { q: query.q } : {}),
           ...(query.status ? { status: query.status } : {}),
           ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
+          ...(query.owing ? { owing: 'true' } : {}),
           sort_by: query.sortBy,
           order: query.order,
           take: query.take,

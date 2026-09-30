@@ -316,7 +316,7 @@ function Conversation({
                 {archived ? (
                   <>
                     <Icon glyph={faRotate} className="size-4" aria-hidden />
-                    Put back in the inbox
+                    Put it back
                   </>
                 ) : (
                   <>
@@ -371,7 +371,7 @@ export function SocialInboxSurface() {
       {
         onSuccess: () => {
           toast.add({
-            title: nextStatus === 'archived' ? 'Moved out of the inbox' : 'Back in the inbox',
+            title: nextStatus === 'archived' ? 'Moved out of the way' : 'Back in the list',
             type: 'success',
           });
         },
@@ -389,7 +389,7 @@ export function SocialInboxSurface() {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Inbox controls"
+        label="Comments and replies controls"
         controls={
           <ToggleGroup
             color="module"
@@ -424,7 +424,7 @@ export function SocialInboxSurface() {
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
               icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-              title="Could not load your inbox"
+              title="Could not load comments and replies"
               description={socialErrorMessage(
                 items.error,
                 'This is a problem reaching the server. Nothing has changed.'

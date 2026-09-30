@@ -28,7 +28,13 @@ export function WindowCanvas({
   children: ReactNode;
 }) {
   return (
-    <div className="relative h-full">
+    // MARKED when the floating tools are on it. They sit in the bottom-right
+    // corner, over whatever the pane put there — and a pane footer is exactly
+    // what a full-width pane puts there. Anything that would land under them
+    // keeps clear by answering this attribute (see ListPagination), so the
+    // knowledge stays with the thing that mounts them rather than being a second
+    // viewport media query guessing at the same fact.
+    <div className="relative h-full" data-canvas-tools={tools ? '' : undefined}>
       <div ref={handle.frameRef} className="h-full overflow-auto">
         <div ref={handle.clipRef} className="relative h-full w-full overflow-clip">
           <div

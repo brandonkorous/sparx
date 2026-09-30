@@ -9,6 +9,9 @@
 //     name:  value.name  || customerLabel(customer),
 //     email: value.email || (customer.email ?? ''),
 //
+// (`customerLabel` is called `billingName` now — same function, a name that says
+// it addresses a DOCUMENT rather than a person. Issue 746.)
+//
 // commented "fill what's empty, keep what was typed". It cannot tell what was
 // TYPED from what it AUTOFILLED a moment ago, because it only asks whether the
 // box is empty. So changing the customer on a document left the previous

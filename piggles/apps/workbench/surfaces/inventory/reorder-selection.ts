@@ -34,7 +34,7 @@ function draftConfirm(itemCount: number, orderCount: number, coming: string | nu
     'draft orders'
   )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`;
   return {
-    title: `Draft ${plural(orderCount, 'purchase order', 'purchase orders')}?`,
+    title: `Draft ${plural(orderCount, 'order to a supplier', 'orders to suppliers')}?`,
     // One paragraph, warning first: the dialog renders its description as plain
     // text, so a blank line between them would collapse to a space anyway, and
     // the fact that changes her mind has to be the thing she reads first.

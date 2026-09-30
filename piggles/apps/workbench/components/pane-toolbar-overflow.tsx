@@ -150,8 +150,20 @@ export function PaneToolbarOverflow({
         {controls ? (
           // Column, not a row: this is the one place these controls get to be
           // full-width, which is what a select or a chip group actually wants.
-          // No blanket `w-full` — it would fight the `max-w-xs` wrappers many of
-          // them carry — but `items-stretch` lets the ones that can, do.
+          //
+          // `items-stretch` alone was not enough, and the reason it was thought
+          // to be is written above it: "no blanket `w-full`, it would fight the
+          // `max-w-xs` wrappers many of them carry". They do carry them, and the
+          // wrapper WON — a cap written for a crowded BAR came with the control
+          // into a 288px column and held it at half that. "Medium: Paperwork"
+          // read as "Medium: Pape" in a panel with 144px going spare, and 156
+          // relocated controls across the two consoles carry such a cap.
+          //
+          // So the cap is released HERE, once, rather than by teaching every call
+          // site a second width. A control keeps whatever width the bar needs and
+          // takes the column when it is moved into one. MEASURED 2026-09-19: 117
+          // caps on the control itself, 39 on a wrapper div.
+          // [[feedback_silicaui_single_point_of_change]]
           //
           // `[&>.btn]` reaches a button passed straight through `controls`, which
           // `items-stretch` widens and a silica `.btn` then centres — a stretched
@@ -159,7 +171,7 @@ export function PaneToolbarOverflow({
           // chip group or a select keep their own alignment.
           <div
             aria-labelledby={titleId}
-            className="flex flex-col items-stretch gap-3 px-4 pt-2 pb-3 [&>.btn]:justify-start"
+            className="flex flex-col items-stretch gap-3 px-4 pt-2 pb-3 [&_.input]:max-w-none [&_.select]:max-w-none [&>.btn]:justify-start [&>div]:w-auto [&>div]:max-w-none"
           >
             {controls}
           </div>

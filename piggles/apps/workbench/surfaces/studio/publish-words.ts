@@ -30,7 +30,26 @@ export interface PublishState {
 /** What is outstanding, in one sentence someone can act on. */
 export function waitingLine(state: PublishState, siteIsDark = false): string {
   if (state.neverPublished) {
-    return 'Your website has never been published. Nobody can see it yet.';
+    // AN UNPUBLISHED SITE IS NOT AN INVISIBLE ONE.
+    //
+    // This said "Nobody can see it yet", and the test under it asserted that the
+    // sentence was "already true whether the lights are on or off". It is true in
+    // neither. `wizeworks/apps/site` falls back to the code starter whenever a site
+    // has published no tree of its own — deliberately, so a brand-new business is
+    // live from day one rather than a blank page — so what a visitor gets is a
+    // whole working website: a headline, the nav, the shop, her products at her
+    // prices, and an Add to cart that works.
+    //
+    // Found on Juniper Row, which has seven sites. FOUR of them had published
+    // nothing and every one of the four was answering the public. She had never
+    // opened three of them. Across this database, 35 sites have a live web address
+    // and nothing published behind it (issue 851).
+    //
+    // A suspended site is the one case where nobody really is seeing anything, and
+    // it keeps a sentence that says so.
+    return siteIsDark
+      ? 'Your website has never been published, and your site is offline right now, so nobody is seeing anything.'
+      : 'Your website has never been published, so visitors are seeing a starter page rather than your own.';
   }
 
   if (!state.hasUnpublished) {

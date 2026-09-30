@@ -273,9 +273,25 @@ function MediaPickerDialog({
       }
     );
   };
+  // Taking a picture OUT of an album is visible on its own (the tile leaves the
+  // album), so there is nothing to say when it works. A failure had nothing to
+  // say either: the tile stayed put and no message appeared, which reads as a
+  // click that never landed. Its partner above has said both since the day it
+  // was written. [[feedback_a_fix_leaves_its_neighbour_behind]]
   const removeAssetFrom = (assetId: string) => {
     if (!collectionId) return;
-    removeFromCollection.mutate({ collectionId, assetId });
+    removeFromCollection.mutate(
+      { collectionId, assetId },
+      {
+        onError: () => {
+          toast.add({
+            title: 'Could not take that picture out of the album',
+            description: 'It is still in there. Nothing else was changed.',
+            type: 'error',
+          });
+        },
+      }
+    );
   };
 
   const assets = library.data ?? [];

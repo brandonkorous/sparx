@@ -99,7 +99,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
           gives way first, since search is used constantly and the count is a
           glance. The bar does not wrap. */}
       <PaneToolbar
-        label="Author list controls"
+        label="Authors controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -120,6 +120,8 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(authors.length)} authors`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primaryAction={{
           label: 'New author',
           icon: faPlus,

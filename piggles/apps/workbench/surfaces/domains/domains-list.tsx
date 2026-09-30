@@ -120,7 +120,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
           box absorbs whatever is left (`min-w-0 flex-1`), and the primary action
           and refresh never change. */}
       <PaneToolbar
-        label="Web address list controls"
+        label="Domains controls"
         search={
           /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
@@ -147,6 +147,8 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <div className="flex-1" />
           </>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"

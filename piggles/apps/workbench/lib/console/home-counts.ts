@@ -51,7 +51,13 @@ export const SOURCES = {
     key: 'messages',
     module: 'chat',
     path: '/v1/chat/conversations',
-    query: { status: 'open', take: 1, skip: 0 },
+    // `unread`, NOT `status: 'open'`. Open is a stored word meaning "not yet
+    // resolved", and a conversation you answered an hour ago is open because
+    // the CUSTOMER has not come back — nothing is waiting on you. The badge
+    // read 1 over a thread that had already been replied to, which is the same
+    // mistake this file's header records for invoices: a filter that names a
+    // stored word rather than the question being asked.
+    query: { unread: true, take: 1, skip: 0 },
   },
   invoices: {
     key: 'invoices',
@@ -135,3 +141,34 @@ export const SOURCES = {
 } satisfies Record<string, Source>;
 
 export type AttentionKey = keyof typeof SOURCES;
+
+/**
+ * The SCREEN each count is about — the nav row that owns it.
+ *
+ * More than one count may name the same screen: Stock owns both "running low"
+ * and "sold out". The rail sums them, which is only honest because the two
+ * measurements are disjoint by construction — see `stock`'s `sellable_only`.
+ *
+ * Declared beside the count itself, because the count and the screen it
+ * describes are one fact. The rail badges a screen from this, then sums the
+ * screens into the app and the apps into the group, so all three levels are
+ * derived from one line rather than declared three times
+ * (components/rail/waiting.tsx).
+ *
+ * Home's sentence opens THIS screen too, narrowed to the count (`SIGNALS` in
+ * surfaces/home/signals.ts). It used to be a separate judgement, and "3
+ * bookings need confirming" opened the week's calendar, where a request for
+ * next month was not on screen and nothing picked the three out from the rest.
+ * Here rather than in home-data so the pairing can be tested.
+ */
+export const COUNT_SURFACE: Record<AttentionKey, string> = {
+  orders: 'commerce.orders.list',
+  bookings: 'scheduling.bookings.list',
+  messages: 'chat.inbox',
+  invoices: 'invoicing.invoices.list',
+  formReplies: 'builder.forms',
+  stock: 'inventory.stock.list',
+  outOfStock: 'inventory.stock.list',
+  social: 'social.inbox',
+  approvals: 'social.approvals',
+};

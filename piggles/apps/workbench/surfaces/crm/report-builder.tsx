@@ -439,7 +439,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL} ref={accentRef}>
       <PaneToolbar
-        label="Report builder controls"
+        label="Report controls"
         primary={
           readOnly ? (
             <Button color="module" onClick={() => void handleDuplicate()}>

@@ -30,10 +30,15 @@ const EXPECTED: Record<string, string> = {
   Customers: 'customers',
   Companies: 'companies',
   'Open deals': 'openDeals',
-  'Pipeline value': 'pipelineValue',
+  // NOT "Pipeline value". A pipeline is what this console spells out as "how
+  // things move", so the tile named the figure with the one word the rename
+  // exists to keep off the screen — and a maker reading "Pipeline value $0"
+  // learns nothing at all.
+  'Value of open deals': 'pipelineValue',
   'Open tasks': 'openTasks',
   'Overdue tasks': 'overdueTasks',
-  'Active segments': 'activeSegments',
+  // NOT "Active segments". The pane it opens is called Groups of customers.
+  'Customer groups': 'activeSegments',
 };
 
 interface Tile {

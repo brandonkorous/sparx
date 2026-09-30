@@ -71,7 +71,7 @@ import {
 import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PaneScope } from '../../lib/dock/window-boundary';
-import { useViewer } from '../../lib/api/shell-data';
+import { useSites, useViewer } from '../../lib/api/shell-data';
 import { moduleLabel } from '../../lib/surfaces/nav';
 import { WORKBENCH_MODULES, type WorkbenchModule } from '../../components/module-scope';
 import {
@@ -84,6 +84,7 @@ import {
 } from '../../lib/api/team';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { describeReach, type ReachNames } from './reach';
 import { RefreshButton } from '../../components/refresh-button';
 import {
   ASSIGNABLE_ROLES,
@@ -139,27 +140,6 @@ function personState(person: RosterPerson): PersonState {
 
 function asModule(slug: string): WorkbenchModule | null {
   return (WORKBENCH_MODULES as readonly string[]).includes(slug) ? (slug as WorkbenchModule) : null;
-}
-
-/**
- * "What can this person reach", as a phrase rather than a count.
- *
- * "3 modules" is a number an owner then has to go and look up. The names of the
- * areas are the answer, so they are what the column says — truncated only once
- * the list gets long enough to stop being readable at a glance.
- */
-function describeReach(person: RosterPerson): string {
-  if (person.role === 'owner' || person.role === 'admin') return 'Everything';
-  if (person.kind === 'invitation') return 'Everything their role allows';
-  if (person.moduleAccessMode === 'all') return 'Everything their role allows';
-  if (person.modules.length === 0) return 'Nothing chosen yet';
-
-  const names = person.modules.map((slug) => {
-    const module = asModule(slug);
-    return module ? moduleLabel(module) : slug;
-  });
-  if (names.length <= 3) return names.join(', ');
-  return `${names.slice(0, 3).join(', ')} and ${String(names.length - 3)} more`;
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -337,10 +317,29 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
   const { people, ready, isError, refetch, isFetching, updatedAt } = useTeamRoster();
   const { data: viewer } = useViewer();
+  // Already in the cache: the site switcher in the chrome loads the same query
+  // before any pane exists, so naming a site here costs no request.
+  const { data: sites } = useSites();
 
   const resend = useResendInvitation();
   const revoke = useRevokeInvitation();
   const remove = useRemoveTeamMember();
+
+  /** The two name lookups the reach phrase needs. Memoized together because
+   *  they are one dependency of one sentence. */
+  const reachNames = useMemo<ReachNames>(
+    () => ({
+      moduleName: (slug: string) => {
+        const module = asModule(slug);
+        return module ? moduleLabel(module) : slug;
+      },
+      // A grant naming a site that has since been deleted still has to say
+      // something, and an id is not something.
+      siteName: (id: string) =>
+        (sites ?? []).find((site) => site.id === id)?.name ?? 'A site since removed',
+    }),
+    [sites]
+  );
 
   const canManage = canManageTeam(viewer?.role);
   const [inviting, setInviting] = useState(false);
@@ -575,11 +574,16 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
             <div className="flex-1" />
           </>
         }
-        controls={
+        primary={
+          // `primary`, not `controls`. The comment that used to sit here already
+          // called this "the primary action" and it was in the slot that FOLDS:
+          // on a pane this width the one thing a team screen exists for — adding
+          // somebody to it — was three clicks deep inside an overflow popover,
+          // behind a hamburger with no name on it. `primary` never folds.
+          //
+          // The label stays on one line and the button keeps its width, so a
+          // narrow pane shrinks the search box rather than stacking two words.
           canManage ? (
-            // Same reasoning as the count: the label stays on one line and the
-            // button keeps its width, so a narrow pane shrinks the search box
-            // rather than turning the primary action into two stacked words.
             <Button
               color="module"
               size="sm"
@@ -718,8 +722,15 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
                         </div>
                       </td>
                       <td>{roleLabel(person.role)}</td>
-                      <td className="hidden max-w-64 truncate @2xl:table-cell">
-                        {describeReach(person)}
+                      {/* The phrase is capped at 64 and clipped, which was fine
+                          while it named apps and got longer once it names sites
+                          too. `title` is what a clipped cell owes the reader:
+                          the whole sentence, without opening the person. */}
+                      <td
+                        className="hidden max-w-64 truncate @2xl:table-cell"
+                        title={describeReach(person, reachNames)}
+                      >
+                        {describeReach(person, reachNames)}
                       </td>
                       <td>
                         <Badge color={state.tone} variant="soft" size="sm">

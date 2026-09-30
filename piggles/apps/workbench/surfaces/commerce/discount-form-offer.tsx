@@ -162,6 +162,7 @@ export function DiscountOfferFields({
               render={
                 <div className="flex max-w-[10rem] items-center gap-2">
                   <Input
+                    aria-label="Percentage off"
                     color={percentError && touched ? 'error' : 'module'}
                     type="number"
                     min={0}
@@ -193,6 +194,7 @@ export function DiscountOfferFields({
                     $
                   </Text>
                   <MoneyTextInput
+                    aria-label="Amount off"
                     color={amountError && touched ? 'error' : 'module'}
                     text={draft.amountDollars}
                     onTextChange={(text) => {

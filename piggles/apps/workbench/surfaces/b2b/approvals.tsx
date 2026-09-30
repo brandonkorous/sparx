@@ -2,7 +2,7 @@
 
 // Approvals — orders held for someone to say yes.
 //
-// The top half is the QUEUE: orders a trade account placed that went over a
+// The top half is the QUEUE: orders a wholesale customer placed that went over a
 // threshold, so checkout held them instead of placing them. Each waits for a
 // yes or a no — approving places the order (and invoices it if they're on
 // terms), rejecting cancels it. The bottom half is the RULES that decide when an
@@ -35,6 +35,7 @@ import {
 import { faCheckCircle, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { afterPaneChange } from '../../lib/defer';
+import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -93,7 +94,7 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Approval controls"
+        label="Orders to approve controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -351,6 +352,7 @@ function DecisionDialog({
 
 function RulesSection() {
   const toast = useToast();
+  const confirm = useConfirm();
   const rulesQuery = useApprovalRules();
   const accountsQuery = useApprovalAccountChoices();
   const createRule = useCreateRule();
@@ -365,7 +367,7 @@ function RulesSection() {
 
   const accountItems = useMemo(
     () => [
-      { value: '', label: 'Every account' },
+      { value: '', label: 'Every customer' },
       ...(accountsQuery.data?.items ?? []).map((account) => ({
         value: account.id,
         label: account.companyName,
@@ -373,6 +375,39 @@ function RulesSection() {
     ],
     [accountsQuery.data]
   );
+
+  /**
+   * Removing a limit is the one action here that cannot be undone, and the
+   * control for it is a small icon a thumb-width from the on/off switch. What
+   * it takes away is the thing holding big orders back, so it says what stops
+   * happening rather than only asking twice. [[feedback_destructive_actions_confirm]]
+   */
+  const removeRule = async (rule: ApprovalRule) => {
+    const ok = await confirm({
+      title: `Remove the limit over ${rule.minAmountFormatted}?`,
+      description:
+        rule.accountName === null
+          ? 'No order will be held for sign-off on size alone. Every wholesale order goes straight ' +
+            'through, however large.'
+          : `No order from ${rule.accountName} will be held for sign-off again, however large.`,
+      confirmLabel: 'Remove the limit',
+      cancelLabel: 'Keep it',
+      color: 'danger',
+    });
+    if (!ok) return;
+    deleteRule.mutate(rule.id, {
+      onSuccess: () => {
+        toast.add({ title: 'Limit removed', type: 'success' });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not remove that limit',
+          description: approvalErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
 
   const onCreate = () => {
     createRule.mutate(
@@ -398,7 +433,7 @@ function RulesSection() {
   return (
     <FormSection
       title="When sign-off is needed"
-      description="Hold any order over a set amount for approval: across every account, or just one."
+      description="Hold any order over a set amount for approval: across every wholesale customer, or just one."
       action={
         !adding ? (
           <Button
@@ -434,12 +469,12 @@ function RulesSection() {
               />
             </Field>
             <Field>
-              <FieldLabel>For which account</FieldLabel>
+              <FieldLabel>For which customer</FieldLabel>
               <FieldControl
                 render={
                   <Select
                     color="module"
-                    aria-label="Which account this applies to"
+                    aria-label="Which customer this applies to"
                     value={accountId}
                     items={accountItems}
                     onValueChange={(next) => {
@@ -474,16 +509,27 @@ function RulesSection() {
         </div>
       ) : null}
 
+      {/* The queue above this draws PaneLoadError and PaneWaiting; this half drew
+          the word "Loading…" and one flat sentence. Two halves of one pane at
+          two standards, and the bare sentence had no retry on it, so a rules
+          list that failed to load left her nothing to press.
+          [[feedback_a_fix_leaves_its_neighbour_behind]] */}
       {rulesQuery.isError ? (
-        <Text className="text-sm">The rules could not be loaded just now.</Text>
+        <PaneLoadError
+          module={MODULE}
+          icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
+          title="Could not load your limits"
+          description="This is a problem reaching the server. Your limits are unaffected: they just could not be read just now."
+          onRetry={() => {
+            void rulesQuery.refetch();
+          }}
+        />
       ) : rulesQuery.isPending ? (
-        <Text className="text-sm" role="status">
-          Loading…
-        </Text>
+        <PaneWaiting module={MODULE} />
       ) : rules.length === 0 ? (
         !adding ? (
           <Text className="text-sm">
-            No rules yet, so no orders are held. Everything a trade account places goes straight
+            No rules yet, so no orders are held. Everything a wholesale customer places goes
             through. Add a rule to hold big orders for sign-off.
           </Text>
         ) : null
@@ -495,10 +541,29 @@ function RulesSection() {
               rule={rule}
               busy={updateRule.isPending || deleteRule.isPending}
               onToggle={(next) => {
-                updateRule.mutate({ id: rule.id, isActive: next });
+                // A switch that springs back and says nothing is the same
+                // screen as a switch that never moved. The list is only
+                // invalidated on success, so a failure reverts it silently.
+                updateRule.mutate(
+                  { id: rule.id, isActive: next },
+                  {
+                    onError: (error) => {
+                      toast.add({
+                        title: next
+                          ? 'Could not switch that limit on'
+                          : 'Could not switch that limit off',
+                        description: approvalErrorMessage(
+                          error,
+                          'The limit is unchanged, so orders are still being held the way they were.'
+                        ),
+                        type: 'error',
+                      });
+                    },
+                  }
+                );
               }}
               onDelete={() => {
-                deleteRule.mutate(rule.id);
+                void removeRule(rule);
               }}
             />
           ))}
@@ -524,7 +589,7 @@ function RuleRow({
       <span className="min-w-0 flex-1">
         <span className="block font-medium">Over {rule.minAmountFormatted}</span>
         <Text as="span" className="block text-sm">
-          {rule.accountName ?? 'Every account'}
+          {rule.accountName ?? 'Every customer'}
           {rule.requiredApproverName ? ` · ${rule.requiredApproverName} signs off` : ''}
         </Text>
       </span>

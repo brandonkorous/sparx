@@ -161,7 +161,7 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
           <Text className="mt-1">
             {productCopy(
               'crm.phone.connectIntro',
-              'Piggles rings your own phone first, and when you pick up it dials the customer and joins the two of you. So the call happens on a real handset with a real signal, and Piggles still records who was called, when, and for how long.'
+              'Piggles rings your own phone first, and when you pick up it dials the customer and joins the two of you. So the call happens on a real handset with a real signal, and Piggles still records who was called, when, and for how long. This works with a Twilio account, which is a phone service you sign up to yourself.'
             )}
           </Text>
 
@@ -220,8 +220,8 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                On your phone provider’s dashboard home page, in the account panel. It starts with
-                “AC” and is not a secret.
+                On your Twilio dashboard home page, in the account panel. It starts with “AC” and is
+                not a secret.
               </FieldDescription>
             </Field>
 
@@ -242,8 +242,8 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                Next to the Account SID, behind a “show” link. This one IS a secret: treat it like a
-                password.
+                Next to the Account SID on the same Twilio page, behind a “show” link. This one IS a
+                secret: treat it like a password.
               </FieldDescription>
             </Field>
 

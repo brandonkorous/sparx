@@ -193,7 +193,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Receivables list controls"
+        label="Owed to you controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

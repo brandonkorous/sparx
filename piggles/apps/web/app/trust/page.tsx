@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 const PILLARS = [
   {
     title: 'Your data is yours, and leaving is easy',
-    body: 'Export your customers, products, orders, invoices and everything you have written, whenever you like, in formats other software can actually open. You do not have to ask, you do not have to be canceling, and nobody will make it slow on purpose. Software that is hard to leave is relying on something other than being good.',
+    body: 'Export your customers, products, stock, orders, invoices, bookings and articles whenever you like, as spreadsheets other software can actually open, each from the list it lives on. You do not have to ask, you do not have to be canceling, and nobody will make it slow on purpose. Software that is hard to leave is relying on something other than being good.',
   },
   {
     title: 'Your business is separated from every other one',
@@ -88,7 +88,7 @@ const OPERATIONS = [
 const FAQ = [
   {
     q: 'Do you use my business data to train AI?',
-    a: 'No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else, and you can revoke it whenever you want.',
+    a: 'No. Not to train a model, not to improve a shared assistant, not anonymized, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else, and you can revoke it whenever you want.',
   },
   {
     q: 'Who at Piggles can see my information?',
@@ -96,15 +96,15 @@ const FAQ = [
   },
   {
     q: 'What happens to my data if I cancel?',
-    a: 'You can export everything before you go. After you cancel, your data is kept for a short window in case you change your mind or forgot to export, and then it is deleted, including from backups as they age out. If you want it gone sooner, ask and we will do it.',
+    a: 'You can export your records before you go. After you cancel, your data is kept for a short window in case you change your mind or forgot to export, and then it is deleted, including from backups as they age out. If you want it gone sooner, ask and we will do it.',
   },
   {
     q: 'Where is my data actually stored?',
-    a: 'In managed data centres run by a major cloud provider, in a region we can tell you. It is not on a machine in an office, and it is not spread across services nobody has counted.',
+    a: 'In managed data centers run by a major cloud provider, in a region we can tell you. It is not on a machine in an office, and it is not spread across services nobody has counted.',
   },
   {
     q: 'Is my customers’ information safe too?',
-    a: 'It is treated exactly like yours, because legally and practically it is your responsibility and we are handling it for you. Same separation, same encryption, same rules about who can see it, and their unsubscribes and deletion requests are honoured properly.',
+    a: 'It is treated exactly like yours, because legally and practically it is your responsibility and we are handling it for you. Same separation, same encryption, same rules about who can see it, and their unsubscribes and deletion requests are honored properly.',
   },
   {
     q: 'What if I need something in writing for a client?',

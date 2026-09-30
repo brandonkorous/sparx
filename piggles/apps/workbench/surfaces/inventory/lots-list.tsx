@@ -238,7 +238,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
           one line in a docked pane, so this is one of the rare bars that wraps.
           Nothing here is a create action. */}
       <PaneToolbar
-        label="Lots and serials controls"
+        label="Batches and serial numbers controls"
         search={
           /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
@@ -279,7 +279,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </ToggleGroup>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Show what is kept at"
               value={locationId}
               onChange={(event) => {

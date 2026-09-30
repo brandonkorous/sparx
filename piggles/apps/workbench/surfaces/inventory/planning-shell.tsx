@@ -140,7 +140,7 @@ export function PlanningShell({
           <>
             <NativeSelect
               size="sm"
-              className="max-w-48 shrink"
+              className="shrink"
               aria-label="Plan for stock kept at"
               value={locationId}
               onChange={(event) => {

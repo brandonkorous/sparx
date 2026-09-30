@@ -167,7 +167,7 @@ export interface SavedViewsMenuProps {
   sort?: { field: string; direction: 'asc' | 'desc' };
   /**
    * An example name, in this list's own vocabulary. Every list passes its own:
-   * a placeholder suggesting "New enquiries" on the Companies screen is the
+   * a placeholder suggesting "New inquiries" on the Companies screen is the
    * small tell that a control was built for somewhere else and reused here.
    */
   nameHint?: string;

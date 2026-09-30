@@ -759,6 +759,25 @@ export function bookedCustomerName(customer: BookedCustomer): string {
   return 'A customer';
 }
 
+/**
+ * What ONE booking's tab says.
+ *
+ * A booking is the one record in this console with no name of its own: it is a
+ * service, a person and a time. So every booking pane wore the same word and
+ * four of them open at once could not be told apart (issue 842).
+ *
+ * The person is what an owner scans a tab strip for, and the day is what tells
+ * two of the SAME person's bookings apart. When nobody was written down,
+ * `bookingWhoLabel` says so honestly, and "No one assigned" identifies nothing:
+ * there the service is the better half of the pair.
+ */
+export function bookingTabTitle(booking: Booking): string {
+  const who = bookingWhoLabel(booking);
+  const anonymous = who === 'No one assigned' || who === 'A customer';
+  const named = anonymous ? booking.service.name : who;
+  return `${named} · ${formatDay(booking.startAt, booking.timezone)}`;
+}
+
 /** The staff / rooms a booking is with, named. */
 export function bookingResourceLabel(booking: Booking): string {
   if (booking.resources.length === 0) return 'Not yet assigned';

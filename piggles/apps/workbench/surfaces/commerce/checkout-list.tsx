@@ -110,7 +110,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Checkout sessions list controls"
+        label="Half-finished checkouts controls"
         filters={[
           {
             label: 'Show',
@@ -141,22 +141,22 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error ? (
           <EmptyState
             icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
-            title="Could not load checkout sessions"
+            title="Could not load half-finished checkouts"
             description="This is a problem reaching the server. Your sales are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
-          <PaneWaiting label="Loading checkout sessions…" />
+          <PaneWaiting label="Loading half-finished checkouts…" />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title={
               !everHadOne
-                ? 'No checkout sessions'
+                ? 'No half-finished checkouts'
                 : filter === 'unfinished'
                   ? 'Nothing half-finished'
                   : filtered
                     ? 'Nothing at this step'
-                    : 'No checkout sessions'
+                    : 'No half-finished checkouts'
             }
             description={
               !everHadOne

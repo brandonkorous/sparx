@@ -3,7 +3,7 @@
 // ── WHY THIS IS ONE FILE AND NOT A MENU IN EACH PANE ────────────────────────
 //
 // Payment terms are ONE column on ONE record (`Company.paymentTerms`), and two
-// panes edit it: Customers › Companies, and the B2B module's trade account.
+// panes edit it: Customers › Companies, and the B2B module's wholesale customer.
 // They each carried their own hardcoded list, and the lists disagreed —
 // Companies offered `net15`, the trade pane did not. So a company set to 15 days
 // in one screen read back as **"No terms set"** in the other, which is not a

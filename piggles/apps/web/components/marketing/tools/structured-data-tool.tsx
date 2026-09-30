@@ -211,8 +211,13 @@ export function StructuredDataTool() {
                   value={business.region}
                   onChange={(v) => setBusiness({ ...business, region: v })}
                 />
+                {/* Same as the business card maker: the label is American and
+                    the stored key stays as it is, because this form lives in
+                    the visitor's own browser under
+                    'piggles.tools.schema.business' and is read back whole.
+                    [[feedback_copy_edit_breaks_identity_lookups]] */}
                 <TextField
-                  label="Postcode"
+                  label="Postal code"
                   value={business.postcode}
                   onChange={(v) => setBusiness({ ...business, postcode: v })}
                 />

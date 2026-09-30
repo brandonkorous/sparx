@@ -26,6 +26,7 @@ import {
   Card,
   Field,
   FieldControl,
+  FieldDescription,
   FieldLabel,
   Heading,
   Input,
@@ -67,16 +68,41 @@ import {
   type AvailabilityWindow,
   type AvailabilityWindowInput,
 } from './setup-data';
+import { DayInput } from '../../components/day-input';
+import {
+  anySeason,
+  seasonFromWire,
+  seasonHelp,
+  seasonToWire,
+  seasonValid,
+  withoutSeason,
+  type SeasonBounds,
+} from './season-window';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
-interface TimeWindow {
+interface TimeWindow extends SeasonBounds {
   start: string;
   end: string;
 }
 type WeekDraft = Record<number, TimeWindow[]>;
 
-const DEFAULT_WINDOW: TimeWindow = { start: '09:00', end: '17:00' };
+const DEFAULT_WINDOW: TimeWindow = { start: '09:00', end: '17:00', validFrom: '', validTo: '' };
+
+/** Every block in the week, flat. For the questions that are about the week
+ *  rather than about one day. */
+function allWindows(week: WeekDraft): TimeWindow[] {
+  const out: TimeWindow[] = [];
+  for (let day = 0; day <= 6; day += 1) out.push(...(week[day] ?? []));
+  return out;
+}
+
+/** The same week with one change applied to every block. */
+function mapWeek(week: WeekDraft, change: (window: TimeWindow) => TimeWindow): WeekDraft {
+  const next = emptyWeek();
+  for (let day = 0; day <= 6; day += 1) next[day] = (week[day] ?? []).map(change);
+  return next;
+}
 
 function emptyWeek(): WeekDraft {
   return { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
@@ -87,7 +113,14 @@ function weekFrom(windows: AvailabilityWindow[]): WeekDraft {
   for (const window of windows) {
     week[window.dayOfWeek] = [
       ...(week[window.dayOfWeek] ?? []),
-      { start: minutesToTime(window.startMinute), end: minutesToTime(window.endMinute) },
+      {
+        start: minutesToTime(window.startMinute),
+        end: minutesToTime(window.endMinute),
+        // The wire says `null` for no limit and `DayInput` says the empty string.
+        // Both halves of that translation live in one tested place, because
+        // losing a date in either direction is the defect this screen had.
+        ...seasonFromWire(window),
+      },
     ];
   }
   for (let day = 0; day <= 6; day += 1) {
@@ -96,13 +129,16 @@ function weekFrom(windows: AvailabilityWindow[]): WeekDraft {
   return week;
 }
 
-/** True when every window has a valid start and an end after it. */
+/** True when every window has a valid start, an end after it, and a date range
+ *  that can actually happen. A backwards range matches no day at all, so the
+ *  block would silently never apply. */
 function weekValid(week: WeekDraft): boolean {
   for (let day = 0; day <= 6; day += 1) {
     for (const window of week[day] ?? []) {
       const start = timeToMinutes(window.start);
       const end = timeToMinutes(window.end);
       if (start === null || end === null || end <= start) return false;
+      if (!seasonValid(window)) return false;
     }
   }
   return true;
@@ -115,7 +151,12 @@ function weekToWindows(week: WeekDraft): AvailabilityWindowInput[] {
       const start = timeToMinutes(window.start);
       const end = timeToMinutes(window.end);
       if (start === null || end === null || end <= start) continue;
-      out.push({ dayOfWeek: day, startMinute: start, endMinute: end });
+      out.push({
+        dayOfWeek: day,
+        startMinute: start,
+        endMinute: end,
+        ...seasonToWire(window),
+      });
     }
   }
   return out;
@@ -147,7 +188,18 @@ function exceptionRange(exception: AvailabilityException): string {
 
 /* ── The weekly-hours editor (one resource) ─────────────────────────────── */
 
-function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: WeekDraft) => void }) {
+function WeeklyHours({
+  week,
+  seasonal,
+  onChange,
+}: {
+  week: WeekDraft;
+  /** Whether the date pair is offered on each block. One decision for the whole
+   *  week, so a shop with ordinary hours never sees seven date controls it does
+   *  not want. */
+  seasonal: boolean;
+  onChange: (next: WeekDraft) => void;
+}) {
   const setDay = (day: number, windows: TimeWindow[]) => {
     onChange({ ...week, [day]: windows });
   };
@@ -228,6 +280,50 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
                         >
                           <Icon glyph={faXmark} className="size-4" aria-hidden />
                         </Button>
+                        {seasonal ? (
+                          <div className="flex w-full flex-wrap items-center gap-2">
+                            <Text as="span" className="text-sm">
+                              from
+                            </Text>
+                            <DayInput
+                              color={seasonValid(window) ? 'module' : 'error'}
+                              className="max-w-40"
+                              aria-label={`${day.label}: these hours start on`}
+                              value={window.validFrom}
+                              onValueChange={(value) => {
+                                setDay(
+                                  day.value,
+                                  windows.map((w, i) =>
+                                    i === index ? { ...w, validFrom: value } : w
+                                  )
+                                );
+                              }}
+                            />
+                            <Text as="span" className="text-sm">
+                              until
+                            </Text>
+                            <DayInput
+                              color={seasonValid(window) ? 'module' : 'error'}
+                              className="max-w-40"
+                              aria-label={`${day.label}: these hours end on`}
+                              value={window.validTo}
+                              onValueChange={(value) => {
+                                setDay(
+                                  day.value,
+                                  windows.map((w, i) =>
+                                    i === index ? { ...w, validTo: value } : w
+                                  )
+                                );
+                              }}
+                            />
+                            {!seasonValid(window) ? (
+                              <Text className="text-error text-sm">
+                                The second date comes before the first, so these hours would never
+                                apply.
+                              </Text>
+                            ) : null}
+                          </div>
+                        ) : null}
                       </div>
                     );
                   })}
@@ -503,15 +599,14 @@ function Closures({
             <FieldLabel>First {dateLabel}</FieldLabel>
             <FieldControl
               render={
-                <Input
-                  type="date"
+                <DayInput
                   color={rangeValid ? 'module' : 'error'}
                   className="max-w-44"
                   aria-label={`First ${dateLabel}`}
                   value={from}
-                  onChange={(event) => {
-                    setFrom(event.target.value);
-                    if (to < event.target.value) setTo(event.target.value);
+                  onValueChange={(value) => {
+                    setFrom(value);
+                    if (to < value) setTo(value);
                   }}
                 />
               }
@@ -521,15 +616,14 @@ function Closures({
             <FieldLabel>Last {dateLabel}</FieldLabel>
             <FieldControl
               render={
-                <Input
-                  type="date"
+                <DayInput
                   color={rangeValid ? 'module' : 'error'}
                   className="max-w-44"
                   aria-label={`Last ${dateLabel}`}
                   value={to}
                   min={from}
-                  onChange={(event) => {
-                    setTo(event.target.value);
+                  onValueChange={(value) => {
+                    setTo(value);
                   }}
                 />
               }
@@ -608,6 +702,9 @@ export function AvailabilitySurface() {
 
   const [draft, setDraft] = useState<WeekDraft>(emptyWeek);
   const [touched, setTouched] = useState(false);
+  // Seeded from what loaded, so a seasonal week she set through her assistant
+  // opens showing its dates rather than hiding them and then deleting them.
+  const [seasonal, setSeasonal] = useState(false);
 
   // Re-seed the draft from the server whenever a different resource's hours load,
   // unless the operator has edits in flight — the same shape as the settings
@@ -616,13 +713,27 @@ export function AvailabilitySurface() {
     setTouched(false);
   }, [resourceId]);
   useEffect(() => {
-    if (!touched && loadedWeek) setDraft(loadedWeek);
+    if (!touched && loadedWeek) {
+      setDraft(loadedWeek);
+      setSeasonal(anySeason(allWindows(loadedWeek)));
+    }
   }, [loadedWeek, touched]);
 
   const setWeek = (next: WeekDraft) => {
     setTouched(true);
     setDraft(next);
   };
+
+  /** Turning it OFF strips the dates off every block. That is an edit like any
+   *  other — nothing reaches the server until Save, and the sentence under the
+   *  switch says what Save will do — which is the whole difference between this
+   *  and the silent deletion the screen used to perform on its own. */
+  const setSeasonalMode = (next: boolean) => {
+    setSeasonal(next);
+    if (!next && anySeason(allWindows(draft))) setWeek(mapWeek(draft, withoutSeason));
+  };
+
+  const storedIsSeasonal = loadedWeek !== null && anySeason(allWindows(loadedWeek));
 
   const dirty = loadedWeek !== null && JSON.stringify(draft) !== JSON.stringify(loadedWeek);
   const valid = weekValid(draft);
@@ -694,7 +805,7 @@ export function AvailabilitySurface() {
           resourceList.length > 0 ? (
             <NativeSelect
               size="sm"
-              className="max-w-60 shrink"
+              className="shrink"
               aria-label="Whose hours to set"
               value={resourceId ?? ''}
               onChange={(event) => {
@@ -736,7 +847,17 @@ export function AvailabilitySurface() {
               title="Weekly hours"
               description={`The hours ${resourceName} can be booked, the same every week. Switch a day off to close it; add more than one block for a lunch break or a split shift.`}
             >
-              <WeeklyHours week={draft} onChange={setWeek} />
+              <Field>
+                <FieldLabel>Hours change with the seasons</FieldLabel>
+                <FieldControl
+                  render={
+                    <Switch color="module" checked={seasonal} onCheckedChange={setSeasonalMode} />
+                  }
+                />
+                <FieldDescription>{seasonHelp(seasonal, storedIsSeasonal)}</FieldDescription>
+              </Field>
+
+              <WeeklyHours week={draft} seasonal={seasonal} onChange={setWeek} />
               {dirty && !valid ? (
                 <Alert color="warning">
                   <AlertContent>

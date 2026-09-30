@@ -54,7 +54,7 @@ import {
   usePoApprovalRules,
   useUpdatePoApprovalRule,
 } from './po-approvals-data';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { moneyCents, moneyText, MoneyTextInput } from '../../components/money-input';
 
 /** The column the form is laid out in — the house width for a settings form. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -88,6 +88,15 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const rules = usePoApprovalRules(true);
   const existing = rules.data?.items.find((rule) => rule.id === id) ?? null;
 
+  // The tab's name, once the record is here. Sixty-one of this console's
+  // seventy-five detail panes do this; the ones that did not put identical
+  // words on every tab they opened, which is the one thing the strip is for.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const ruleName = existing?.name;
+  useEffect(() => {
+    if (ruleName) ctx.setTitle(ruleName);
+  }, [ruleName, ctx]);
+
   const suppliers = useSuppliers({ includeArchived: false, take: 250, skip: 0 });
   const locations = useStockLocations();
   const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
@@ -111,7 +120,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       name: existing.name,
       supplierId: existing.supplierId ?? '',
       warehouseId: existing.warehouseId ?? '',
-      minAmount: (existing.minAmountCents / 100).toString(),
+      minAmount: moneyText(existing.minAmountCents),
       requiredRole: existing.requiredRole ?? '',
       isActive: existing.isActive,
     };
@@ -149,7 +158,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           title: isNew ? 'Spending limit set' : 'Spending limit saved',
           description:
             minAmountCents === 0
-              ? 'Every purchase order will now wait for sign-off.'
+              ? 'Every order to a supplier will now wait for sign-off.'
               : `Orders of ${formatCents(minAmountCents)} or more will now wait for sign-off.`,
           type: 'success',
         });

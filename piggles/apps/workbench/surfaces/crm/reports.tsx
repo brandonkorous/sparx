@@ -31,6 +31,8 @@ import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
 import { faArrowUpRight, faChartColumn } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { channelKeyLabel } from '../../lib/console/channels';
+import { notKnownNote, splitLeadSources } from './lead-sources';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useTeamRoster } from '../../lib/api/team';
@@ -163,8 +165,13 @@ function Panel({
   return (
     <Card>
       <CardBody className="gap-3">
-        <div className="flex items-center justify-between gap-2">
-          <Heading level={2} className="text-base font-semibold">
+        {/* WRAPS, BECAUSE A PANEL HEADER CARRIES CONTROLS AND NOT JUST A NAME.
+            At 360px the "how things move" header held a title, a picker and a
+            link on one unwrapping row, and the link was sliced in half by the
+            card's own edge. A heading and its controls sit side by side while
+            there is room and stack when there is not. */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Heading level={2} className="min-w-0 text-base font-semibold">
             {title}
           </Heading>
           {action}
@@ -299,13 +306,14 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   const acqPoints = acquisition.data ?? [];
   const acqHasData = acqPoints.some((p) => p.newCustomers > 0);
   const funnelPeak = Math.max(1, ...(funnel.data ?? []).map((b) => b.count));
-  const leadPeak = Math.max(1, ...(leads.data?.bySource ?? []).map((r) => r.count));
+  const leadView = useMemo(() => splitLeadSources(leads.data?.bySource), [leads.data]);
+  const leadNote = notKnownNote(leadView.notKnown, leadView.total);
   const segPeak = Math.max(1, ...(segments.data?.segments ?? []).map((r) => r.memberCount));
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Reports controls"
+        label="Customer reports controls"
         status={
           <Text as="span" className="text-sm font-medium">
             How your customers are doing
@@ -351,7 +359,7 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               {/* Companies, not wholesale accounts. This counted `company` rows
                   under a trade label, so a shop whose customers work for seven
-                  different firms read "Wholesale accounts 7" while selling
+                  different firms read "Wholesale customers 7" while selling
                   wholesale to nobody. Measured: every tenant on the platform
                   with a company record has ZERO wholesale customers. The tile
                   now says what it counts, and matches the pane it opens. */}
@@ -366,7 +374,7 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 onOpen={go('crm.deals.list')}
               />
               <KpiTile
-                label="Pipeline value"
+                label="Value of open deals"
                 value={s ? formatMoney(s.pipelineValue) : '—'}
                 onOpen={go('crm.deals.list')}
               />
@@ -382,7 +390,7 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 onOpen={go('crm.tasks.list')}
               />
               <KpiTile
-                label="Active segments"
+                label="Customer groups"
                 value={s ? s.activeSegments.toLocaleString() : '—'}
                 onOpen={go('crm.segments.list')}
               />
@@ -406,8 +414,8 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {/* Task health */}
             <Panel
-              title="Tasks"
-              action={<PanelLink label="All tasks" onOpen={go('crm.tasks.list')} />}
+              title="Things to do"
+              action={<PanelLink label="All of them" onOpen={go('crm.tasks.list')} />}
             >
               {tasks.isPending ? (
                 <Loading />
@@ -453,15 +461,17 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {/* Pipeline funnel */}
             <Panel
-              title="Pipeline"
+              title="How things move"
               action={
                 (pipelines?.items.length ?? 0) > 0 ? (
-                  <div className="flex min-w-0 items-center gap-1">
-                    <div className="w-44">
+                  <div className="flex min-w-0 flex-wrap items-center gap-1">
+                    {/* `max-w-full` so the picker gives way rather than pushing
+                        the link off the card on a phone. */}
+                    <div className="w-44 max-w-full">
                       <Select
                         size="sm"
                         color="module"
-                        aria-label="Which pipeline"
+                        aria-label="Which board"
                         value={activePipeline ?? ''}
                         items={Object.fromEntries(
                           (pipelines?.items ?? []).map((p) => [p.id, p.name])
@@ -482,11 +492,11 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
               }
             >
               {!activePipeline ? (
-                <Empty>Create a pipeline to see its funnel.</Empty>
+                <Empty>Set up a board to see how work moves along it.</Empty>
               ) : funnel.isPending ? (
                 <Loading />
               ) : (funnel.data?.length ?? 0) === 0 ? (
-                <Empty>This pipeline has no stages yet.</Empty>
+                <Empty>This board has no steps yet.</Empty>
               ) : (
                 <div className="flex flex-col gap-3">
                   {funnel.data?.map((b) => (
@@ -543,33 +553,34 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
             <Panel title="Where new customers come from">
               {leads.isPending ? (
                 <Loading />
-              ) : (leads.data?.bySource.length ?? 0) === 0 ? (
+              ) : leadView.total === 0 ? (
                 <Empty>No new customers in this period yet.</Empty>
               ) : (
                 <div className="flex flex-col gap-3">
                   <Text className="text-sm">{leads.data?.rangeLabel}</Text>
-                  {leads.data?.bySource.map((row) => (
+                  {leadView.observed.map((row) => (
                     <ProportionRow
                       key={row.source}
-                      label={row.label}
+                      label={channelKeyLabel(row.source)}
                       value={row.count}
-                      peak={leadPeak}
+                      peak={leadView.peak}
                       trailing={`${row.count.toLocaleString()} · ${row.sharePct}%`}
                     />
                   ))}
+                  {leadNote ? <Text className="text-sm">{leadNote}</Text> : null}
                 </div>
               )}
             </Panel>
 
             {/* Segments */}
             <Panel
-              title="Audiences by size"
-              action={<PanelLink label="All audiences" onOpen={go('crm.segments.list')} />}
+              title="Customer groups by size"
+              action={<PanelLink label="All of them" onOpen={go('crm.segments.list')} />}
             >
               {segments.isPending ? (
                 <Loading />
               ) : (segments.data?.segments.length ?? 0) === 0 ? (
-                <Empty>No segments yet.</Empty>
+                <Empty>No customer groups yet.</Empty>
               ) : (
                 <div className="flex flex-col gap-3">
                   {segments.data?.segments.map((row) => (

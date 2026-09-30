@@ -54,9 +54,22 @@ export interface WinLossRow {
   totalWonValue: number;
 }
 
+/**
+ * THE API'S `label` IS LEFT OFF THIS TYPE ON PURPOSE.
+ *
+ * The response carries one, and it is written in the other console's words:
+ * "Storefront", "Admin", "B2B portal". This console already owns those words in
+ * `lib/console/channels.ts`, where they read "Your website", "Added by hand"
+ * and "Wholesale portal" — one vocabulary, kept in one file after the same fact
+ * turned up under four names (issue 260).
+ *
+ * The reports pane drew the API's wording and made a fifth. Dropping the field
+ * from the type is what stops the next pane doing it again: `row.label` no
+ * longer exists to reach for, so the only way to name a source is to ask this
+ * console what it calls one. `source` is the key and keys are not words.
+ */
 export interface LeadSourceRow {
   source: string;
-  label: string;
   count: number;
   sharePct: number;
 }

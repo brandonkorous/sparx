@@ -10,13 +10,20 @@
 // The filter chips are the questions this list gets opened to answer — "which
 // ones are running", "which had a payment fail" — each mapping to exactly one
 // stored status, so what's on screen is always one honest server answer.
+//
+// The toolbar's `+` is what makes any of the above reachable. Until issue 738
+// this list had no create action and its empty state said a customer would
+// start one at checkout — which nothing on any storefront could do, and no
+// endpoint existed for either. So the whole area sat over an empty table that
+// could never fill. [[feedback_screen_over_a_function_nobody_calls]]
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
-import { faRepeat } from '@fortawesome/pro-solid-svg-icons';
+import { faPlus, faRepeat } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -59,6 +66,10 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = data?.items ?? [];
   const total = data?.total;
   const filtered = filter !== 'all';
+  // Nothing anywhere, not merely nothing under this chip. The two empty
+  // states give opposite advice and telling them apart needs the unfiltered
+  // count, which only the All chip reports.
+  const nothingAtAll = rows.length === 0 && (total ?? 0) === 0;
 
   const resetWindow = () => {
     setPage(1);
@@ -69,10 +80,19 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('commerce.subscription.detail', { id: sub.id }, { target: targetFor(event) });
   };
 
+  // ONE object, two places: the toolbar's plus and the empty state's invitation,
+  // so the label cannot drift between the two ways in.
+  const startOne = {
+    label: 'Start a repeat order',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.subscription.new', {}, { target: targetFor(event) });
+    },
+  };
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Subscriptions list controls"
+        label="Repeat orders controls"
         status={<Icon glyph={faRepeat} className="size-4 shrink-0" aria-hidden />}
         filters={[
           {
@@ -87,6 +107,11 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             options: FILTERS,
           },
         ]}
+        primaryAction={{
+          ...startOne,
+          icon: faPlus,
+          title: 'Start a repeat order: hold Shift to open alongside, Alt for a new window',
+        }}
         // The status is the only thing narrowing this list, and the bar holds it.
         views={{ target: '/commerce/subscriptions' }}
         refresh={
@@ -110,14 +135,25 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : isLoading ? (
           <PaneWaiting label="Loading repeat orders…" />
         ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faRepeat} className="size-6" aria-hidden />}
-            title={filtered ? 'None match that' : 'No repeat orders yet'}
-            description={
-              filtered
-                ? `No repeat orders are marked “${active.label}”. Switch back to All to see the rest, including any still on a free trial.`
-                : 'When a customer sets up a product to be delivered on a schedule, their repeat order shows up here with what it’s worth each month.'
-            }
+          <ListEmptyState
+            module="commerce"
+            // A chip narrowed nothing when the whole list is empty, so it must
+            // not be blamed. "Switch back to All to see the rest" sent her to
+            // another empty screen and left her hunting for a list that was
+            // never there.
+            filtered={filtered && !nothingAtAll}
+            noResults={{
+              icon: <Icon glyph={faRepeat} className="size-6" aria-hidden />,
+              title: 'None match that',
+              description: `No repeat orders are marked “${active.label}”. Switch back to All to see the rest, including any still on a free trial.`,
+            }}
+            firstRun={{
+              icon: <Icon glyph={faRepeat} className="size-6" aria-hidden />,
+              title: 'No repeat orders yet',
+              description:
+                'A repeat order sends a customer the same things again and again, a candle every month or a box every quarter, and bills them each time. Set one up when somebody asks for it, and it runs itself from then on.',
+              action: startOne,
+            }}
           />
         ) : (
           <Table size="sm" hover>

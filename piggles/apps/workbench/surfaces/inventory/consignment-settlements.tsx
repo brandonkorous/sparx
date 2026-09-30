@@ -46,7 +46,7 @@ import { formatCents, plural } from './data';
 /** Registry module for this pane, so the brand draws Stock's own picture rather
  *  than the generic one. */
 const MODULE = 'inventory';
-import { settlementTone, useConsignmentSettlements, useUnsettledConsignment } from './demand-data';
+import { settlementState, useConsignmentSettlements, useUnsettledConsignment } from './demand-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -73,7 +73,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Consignment controls"
+        label="Paying for what sold controls"
         status={
           <Text className="text-sm">
             {owedCents > 0
@@ -125,7 +125,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
         </Alert>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto [&>*]:shrink-0">
         {/* ── What has not been settled ────────────────────────────────── */}
         <FormSection className="bg-module bg-soft" title="Not yet settled">
           <div className="p-0">
@@ -201,6 +201,10 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
             ) : rows.length === 0 ? (
               <PaneEmpty
                 module={MODULE}
+                // The SECOND empty region on this pane. Both sections are empty
+                // on a first run, and both drew the same picture, one above the
+                // other, in one viewport.
+                art={false}
                 icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
                 title="No settlement periods yet"
                 description="A settlement closes a stretch of time against one owner: everything of theirs that sold, at the cost agreed when it arrived, with a document to pay against."
@@ -249,8 +253,8 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                         {formatCents(row.totalCents, row.currency)}
                       </td>
                       <td className="whitespace-nowrap">
-                        <Badge color={settlementTone(row.status)} variant="soft" size="sm">
-                          {row.status}
+                        <Badge color={settlementState(row.status).tone} variant="soft" size="sm">
+                          {settlementState(row.status).label}
                         </Badge>
                       </td>
                     </tr>

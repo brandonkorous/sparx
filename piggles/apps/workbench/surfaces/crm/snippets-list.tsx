@@ -67,6 +67,12 @@ import {
  *  app's own picture rather than the generic one. */
 const MODULE = 'crm';
 
+/** ONE object, two places: the toolbar button and the invitation in the
+ *  first-run state. Split, the label drifts — this pane said "New
+ *  paragraph" above and "Save your first paragraph" below, for the same
+ *  action. Issue 729. */
+const CREATE_LABEL = 'Save a paragraph';
+
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
 /** Typed with or without the leading `;`, stored without it — so a tenant who
@@ -240,10 +246,12 @@ export function SnippetsListSurface() {
             </Text>
           </>
         }
+        statusReady={!snippets.isPending}
+        statusFailed={snippets.isError}
         primary={
           <Button color="module" size="sm" className="ml-auto shrink-0" onClick={startNew}>
             <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New paragraph
+            {CREATE_LABEL}
           </Button>
         }
         refresh={
@@ -284,11 +292,11 @@ export function SnippetsListSurface() {
               firstRun={{
                 title: 'Stop retyping your own opening hours',
                 description:
-                  'Save a paragraph once (your hours, your returns policy, your usual lead time) give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
+                  'Save a paragraph once: your hours, your returns policy, your usual lead time. Give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
                 actions: (
                   <Button color="module" onClick={startNew}>
                     <Icon glyph={faPlus} className="size-4" aria-hidden />
-                    Save your first paragraph
+                    {CREATE_LABEL}
                   </Button>
                 ),
               }}

@@ -1,5 +1,5 @@
 import type { PigglesGroup } from '@piggles/brand';
-import { appsInGroup, APPS } from '@piggles/config';
+import { APP_COUNT_WORD, APPS, appsInGroup, numberWord } from '@piggles/config';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { GROUP_COPY } from './groups';
 
@@ -7,27 +7,18 @@ import { GROUP_COPY } from './groups';
 // and tick, so the answer never looks stale. The figure below the rule only
 // moves when the button says so — and it always arrives at the same number.
 
-/** Spelled, not numeral: a numeral here would read as a second figure. */
-const WORDS = [
-  'no',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-  'ten',
-  'eleven',
-  'twelve',
-  'thirteen',
-  'fourteen',
-  'fifteen',
-];
-
-const count = (n: number) => WORDS[n] ?? String(n);
+/**
+ * Spelled, not numeral: a numeral here would read as a second figure.
+ *
+ * Zero is "no" rather than "zero", because "no apps, waiting" is how somebody
+ * actually says it. Every other number comes from the shared list.
+ *
+ * It used to be a private array that stopped at `'fifteen'` while the registry
+ * held SIXTEEN apps, so the one row that can name every app at once fell off
+ * the end and printed `16` — a numeral, on the page this comment exists to keep
+ * numerals off. A private copy of a list is a copy of a fact.
+ */
+const count = (n: number) => (n === 0 ? 'no' : numberWord(n));
 const Count = (n: number) => {
   const w = count(n);
   return w[0]!.toUpperCase() + w.slice(1);
@@ -100,10 +91,10 @@ export function AnswerReceipt({
         ))}
 
         {/* Hidden only when every group is ticked, where it would read
-            "no, waiting". With none ticked it says all fifteen. */}
+            "no, waiting". With none ticked it names the whole count. */}
         {others > 0 ? (
           <Row
-            label={picked.length ? 'The other apps' : 'All fifteen apps'}
+            label={picked.length ? 'The other apps' : `All ${APP_COUNT_WORD} apps`}
             note={picked.length ? `${count(others)}, waiting` : 'nothing switched off'}
           />
         ) : null}

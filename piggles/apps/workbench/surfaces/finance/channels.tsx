@@ -65,7 +65,7 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Channel breakdown controls"
+        label="Controls for where money comes from"
         filters={[
           {
             label: 'Time range',

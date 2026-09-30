@@ -10,7 +10,8 @@ import { useMemo } from 'react';
 import { useExceptions, useResourceWindows, useResourcesWindows } from './setup-data';
 import { closedBandsFor, worksOn, type ClosedBand } from './calendar-hours';
 import type { TimeWindow } from './calendar-grid';
-import { isSameDay, isToday, weekDays, weekdayHeading, type CalendarEvent } from './calendar-data';
+import { isToday, weekDays, weekdayHeading, type CalendarEvent } from './calendar-data';
+import { localDayKey, zoned } from './calendar-zone';
 import type { GridColumn } from './calendar-timegrid';
 
 export type View = 'week' | 'day';
@@ -35,7 +36,10 @@ export function weekColumns(anchor: Date, events: CalendarEvent[], shut: ShutHou
     header: <WeekHeader date={date} />,
     today: isToday(date),
     closed: shut.on(date),
-    events: events.filter((event) => isSameDay(new Date(event.startAt), date)),
+    // Its OWN zone's day: the same clock the block is placed on.
+    events: events.filter(
+      (event) => zoned(event.startAt, event.timezone).dayKey === localDayKey(date)
+    ),
   }));
 }
 
@@ -59,9 +63,11 @@ export function dayColumns(
   if (resources.length === 0) {
     return [{ key: 'all', header: headerText('All bookings'), events }];
   }
+  // Each column is one person, so each is shaded by that person's own hours.
   const columns: GridColumn[] = resources.map((resource) => ({
     key: resource.id,
     header: headerText(resource.name),
+    closed: shut.bands(anchor, resource.id),
     events: events.filter((event) => event.resourceIds.includes(resource.id)),
   }));
   const unassigned = events.filter((event) => event.resourceIds.length === 0);
@@ -76,6 +82,8 @@ export function dayColumns(
  *  is no single week to draw. */
 export interface ShutHours {
   on: (date: Date) => ClosedBand[] | undefined;
+  /** One person's shut hours on a date, for the day view's per-person columns. */
+  bands: (date: Date, resourceId: string) => ClosedBand[] | undefined;
   worksOn: (date: Date) => boolean;
   /** False while the hours are still arriving, so the empty state waits rather
    *  than guessing (RULE #4 — absence is not a measurement). */
@@ -84,7 +92,9 @@ export interface ShutHours {
 
 export function useShutHours(
   resourceId: string,
-  resources: { id: string }[],
+  // `timezone` is on every resource the API sends (its `resourceView`); the
+  // shut hours are that person's clock, not the viewer's.
+  resources: { id: string; timezone?: string | null }[],
   view: TimeWindow
 ): ShutHours {
   const one = useResourceWindows(resourceId || null);
@@ -98,23 +108,30 @@ export function useShutHours(
     () => (resourceId ? [resourceId] : resources.map((r) => r.id)),
     [resourceId, resources]
   );
+  const zones = useMemo(
+    () => new Map(resources.map((r) => [r.id, r.timezone ?? null])),
+    [resources]
+  );
 
   return useMemo(() => {
     if (ids.length === 0 || !rows || !closures) {
-      return { on: () => undefined, worksOn: () => true, known: false };
+      return { on: () => undefined, bands: () => undefined, worksOn: () => true, known: false };
     }
     return {
-      // Only a SINGLE person's day can be shaded: with several on screen at once
-      // there is no one set of hours to draw, and shading the union would claim
-      // the shop is open when only one chair is.
+      // A WEEK column is shaded for one person only: shading everyone's union
+      // would claim the shop is open when only one chair is.
       on: (date: Date) =>
-        resourceId ? closedBandsFor(date, resourceId, rows, closures, view) : undefined,
+        resourceId
+          ? closedBandsFor(date, resourceId, rows, closures, view, zones.get(resourceId))
+          : undefined,
+      bands: (date: Date, id: string) =>
+        closedBandsFor(date, id, rows, closures, view, zones.get(id)),
       // Anybody at all. On the everyone view "is this day workable" is the only
       // question the screen can answer, and it is the one being asked.
-      worksOn: (date: Date) => ids.some((id) => worksOn(date, id, rows, closures)),
+      worksOn: (date: Date) => ids.some((id) => worksOn(date, id, rows, closures, zones.get(id))),
       known: true,
     };
-  }, [ids, resourceId, rows, closures, view]);
+  }, [ids, resourceId, rows, closures, view, zones]);
 }
 
 /**
@@ -139,12 +156,14 @@ export function emptyLine(resourceId: string, view: View, anchor: Date, shut: Sh
   const days = view === 'week' ? weekDays(anchor) : [anchor];
   const open = days.filter((date) => shut.worksOn(date));
   if (open.length === 0) return shutLine(Boolean(resourceId), view);
-  if (!resourceId) {
+  if (!resourceId && view === 'week') {
     return 'Nothing is booked yet. New bookings appear here as soon as they are made.';
   }
   // Never "the parts left white": in dark mode the shut hours are the DARK ones
   // and the sentence would be backwards.
-  return 'The shaded parts are when they are not working. Nothing is booked in the rest yet.';
+  return resourceId
+    ? 'The shaded parts are when they are not working. Nothing is booked in the rest yet.'
+    : 'The shaded parts are when each person is not working. Nothing is booked in the rest yet.';
 }
 
 /** Nobody can be booked, said about one person or about the whole shop. */

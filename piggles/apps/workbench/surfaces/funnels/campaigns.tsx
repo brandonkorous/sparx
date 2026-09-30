@@ -4,7 +4,7 @@
 // runs, and how each one is doing.
 
 import { useMemo, useState } from 'react';
-import { Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { faArrowProgress, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PANE_SHELL, PaneToolbar } from '../../components/pane-toolbar';
@@ -27,6 +27,26 @@ const STATUS_FILTERS = [
   { value: 'paused', label: 'Paused' },
   { value: 'archived', label: 'Archived' },
 ];
+
+/** The filter chip's own words, so the empty state names the control she
+ *  pressed rather than a word only this file knows. */
+function statusWord(status: FunnelStatus | 'all'): string {
+  return STATUS_FILTERS.find((f) => f.value === status)?.label ?? 'that filter';
+}
+
+/**
+ * How many campaigns, and how many of them the filters are letting through.
+ *
+ * The bar's left side was empty, so the one fact a person wants before reading
+ * anything — how many are there — was only obtainable by counting the rows. And
+ * when a filter hides some, saying the filtered number alone would claim the
+ * others do not exist. [[feedback_never_present_absence_as_measurement]]
+ */
+function countWord(shown: number, total: number): string {
+  if (total === 0) return 'None set up yet';
+  if (shown === total) return total === 1 ? '1 campaign' : `${String(total)} campaigns`;
+  return `${String(shown)} of ${total === 1 ? '1 campaign' : `${String(total)} campaigns`}`;
+}
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -58,28 +78,20 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('funnels.campaign', { id }, { target: targetFor(event) });
   };
 
-  if (funnels.isError) {
-    return (
-      <div className={PANE_SHELL}>
-        <PaneLoadError
-          module="funnels"
-          title="Could not load your campaigns"
-          description={funnelErrorMessage(
-            funnels.error,
-            'This is a problem reaching the server. Nothing about your campaigns has changed.'
-          )}
-          onRetry={() => {
-            void funnels.refetch();
-          }}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Campaign list controls"
+        label="Campaigns controls"
+        status={
+          <>
+            <Icon glyph={faArrowProgress} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {countWord(matches.length, all.length)}
+            </Text>
+          </>
+        }
+        statusReady={!funnels.isPending}
+        statusFailed={funnels.isError}
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -128,7 +140,27 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {funnels.isPending ? (
+        {/* The failure branches INSIDE the content region, not around it.
+            This used to `return` before the toolbar, which drops the bar, the
+            search, the filters and New campaign along with the list — a bigger
+            claim than the truth, since none of those is broken and changing a
+            filter is a second way to re-run the read. pane-load-error.tsx says
+            so in its own header; this call site pre-dated it. */}
+        {funnels.isError ? (
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              module="funnels"
+              title="Could not load your campaigns"
+              description={funnelErrorMessage(
+                funnels.error,
+                'This is a problem reaching the server. Nothing about your campaigns has changed.'
+              )}
+              onRetry={() => {
+                void funnels.refetch();
+              }}
+            />
+          </Card>
+        ) : funnels.isPending ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneWaiting module="funnels" />
           </Card>
@@ -157,10 +189,34 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
           </Card>
         ) : matches.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
+            {/* WHICH of the two is hiding them. "Try different words" sent
+                somebody who had typed no words off to change words they never
+                typed — one outcome, two causes, one piece of advice that is
+                wrong half the time. [[feedback_one_outcome_two_causes]] */}
             <EmptyState
               icon={<Icon glyph={faArrowProgress} className="size-6" aria-hidden />}
-              title="No campaigns match that"
-              description="Try different words, or show every campaign again."
+              title="Nothing matches"
+              description={
+                needle && status !== 'all'
+                  ? `Nothing called "${search.trim()}" is showing under ${statusWord(status)}. Try other words, or show every campaign.`
+                  : needle
+                    ? `Nothing here is called "${search.trim()}". Try other words.`
+                    : `You have campaigns, but none of them is showing under ${statusWord(status)}.`
+              }
+              actions={
+                status === 'all' ? undefined : (
+                  <Button
+                    size="sm"
+                    color="module"
+                    variant="soft"
+                    onClick={() => {
+                      setStatus('all');
+                    }}
+                  >
+                    Show every campaign
+                  </Button>
+                )
+              }
             />
           </Card>
         ) : (
@@ -178,7 +234,7 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      {matches.length > 0 ? <RowOpenHint what="a campaign to open it" /> : null}
+      {matches.length > 0 && !funnels.isError ? <RowOpenHint what="a campaign to open it" /> : null}
     </div>
   );
 }

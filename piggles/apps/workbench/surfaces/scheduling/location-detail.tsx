@@ -18,7 +18,7 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { isNotFound, useLocation } from './setup-data';
+import { useLocation } from './setup-data';
 import { BLANK, draftFrom } from './location-draft';
 import { LocationEditor } from './location-editor';
 
@@ -38,17 +38,14 @@ function LocationLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { data, isPending, isError, error, refetch, isFetching, dataUpdatedAt } = useLocation(id);
 
   if (isError) {
-    const missing = isNotFound(error);
     return (
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
-          reason={missing ? 'missing' : 'unreachable'}
-          title={missing ? 'This place is gone' : 'Could not load this place'}
-          description={
-            missing
-              ? 'It was removed, or the link is out of date.'
-              : 'This is a problem reaching the server. The place itself is unaffected. Nothing has been lost.'
-          }
+          error={error}
+          title="Could not load this place"
+          description="This is a problem reaching the server. The place itself is unaffected. Nothing has been lost."
+          missingTitle="This place is gone"
+          missingDescription="It was removed, or the link is out of date."
           onRetry={() => {
             void refetch();
           }}

@@ -54,7 +54,6 @@ import {
   Text,
   Textarea,
   Timestamp,
-  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -79,7 +78,6 @@ import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { physicalLocations, useStockLocations, type StockLocation } from './data';
 import {
-  isNotFound,
   newDraftLineKey,
   plural,
   transferErrorMessage,
@@ -301,7 +299,7 @@ function LineEditorModal({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
           <DialogTitle>{isEdit ? 'Change quantity' : 'Add an item'}</DialogTitle>
 
-          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             {isEdit ? (
               <div className="border-base-300 bg-base-200 flex flex-col gap-0.5 rounded-lg border p-3">
                 <Text className="font-medium">{line.productTitle ?? 'Untitled product'}</Text>
@@ -507,7 +505,7 @@ function ReceiveModal({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
           <DialogTitle>Book this delivery in</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Text className="text-sm">
               These items are arriving at{' '}
               <span className="font-medium">
@@ -771,10 +769,10 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       description: `This takes ${plural(detail.totalQuantity, 'unit', 'units')} out of ${warehouseLabel(
         detail.fromWarehouseName,
         detail.fromWarehouseCode
-      )} and marks them in transit to ${warehouseLabel(
+      )} and marks ${detail.totalQuantity === 1 ? 'it' : 'them'} in transit to ${warehouseLabel(
         detail.toWarehouseName,
         detail.toWarehouseCode
-      )}. Neither location can sell them until they are received.`,
+      )}. Neither location can sell ${detail.totalQuantity === 1 ? 'it until it is' : 'them until they are'} received.`,
       confirmLabel: 'Send it',
       cancelLabel: 'Not yet',
       color: 'warning',
@@ -877,18 +875,15 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   /* ── Load / not-found guards ──────────────────────────────────────────── */
 
   if (!isNew && detailQuery.isError) {
-    const gone = isNotFound(detailQuery.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This transfer no longer exists' : 'Could not load this transfer'}
-            description={
-              gone
-                ? 'It has been removed. Any stock it moved is recorded in your movement history.'
-                : 'This is a problem reaching the server. Your transfer is unaffected. It just could not be read just now.'
-            }
+            error={detailQuery.error}
+            title="Could not load this transfer"
+            description="This is a problem reaching the server. Your transfer is unaffected. It just could not be read just now."
+            missingTitle="This transfer no longer exists"
+            missingDescription="It has been removed. Any stock it moved is recorded in your movement history."
             onRetry={() => {
               void detailQuery.refetch();
             }}
@@ -983,33 +978,6 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         // overflow popover under 672px. Enforced by scripts/check-toolbar-primary.mjs.
         primary={
           <>
-            {/* Goes on the tote, so the receiving end scans it rather than reading a
-            reference off a docket. */}
-            {detail ? (
-              <Tooltip content="Print a scannable label for the tote and the paperwork">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  shape="square"
-                  className="shrink-0"
-                  aria-label="Print a scannable label for this transfer"
-                  onClick={() => {
-                    ctx.open(
-                      'inventory.documents.label',
-                      {
-                        number: detail.number,
-                        title: 'Transfer',
-                        subtitle: `${detail.fromWarehouseName ?? ''} → ${detail.toWarehouseName ?? ''}`,
-                      },
-                      { target: 'beside' }
-                    );
-                  }}
-                >
-                  <Icon glyph={faPrint} className="size-4" aria-hidden />
-                </Button>
-              </Tooltip>
-            ) : null}
             {showCancel ? (
               <Button
                 size="sm"
@@ -1074,6 +1042,35 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </Button>
             ) : null}
           </>
+        }
+        /* Goes on the tote, so the receiving end scans it rather than reading a
+           reference off a docket.
+
+           A VALUE rather than bespoke JSX in a slot: it was in `primary`, which
+           is for the ONE commit action, and rendered there as a nameless printer
+           glyph. As an action it keeps its name at every width.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          detail
+            ? [
+                {
+                  label: 'Print a label',
+                  title: 'Print a scannable label for the tote and the paperwork',
+                  icon: faPrint,
+                  onClick: () => {
+                    ctx.open(
+                      'inventory.documents.label',
+                      {
+                        number: detail.number,
+                        title: 'Transfer',
+                        subtitle: `${detail.fromWarehouseName ?? ''} → ${detail.toWarehouseName ?? ''}`,
+                      },
+                      { target: 'beside' }
+                    );
+                  },
+                },
+              ]
+            : undefined
         }
         refresh={
           <RefreshButton

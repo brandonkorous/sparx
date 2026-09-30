@@ -4,6 +4,7 @@
 // left, what it charges and when on the right. Split out so business-details.tsx
 // can be about loading and saving rather than about eighteen fields.
 
+import { CountryField } from '../components/country-field';
 import { Checkbox, Field, FieldLabel, NativeSelect, Text } from '@wizeworks/silicaui-react';
 
 import { FormSection } from '../components/form-section';
@@ -27,7 +28,7 @@ export function BusinessMainColumn({
     <>
       <FormSection
         title="Business"
-        description="Who you are as a business. This is what gets printed on invoices, receipts and purchase orders. It is not the name of any of your sites."
+        description="Who you are as a business. This is what gets printed on invoices, receipts and the orders you send suppliers. It is not the name of any of your sites."
       >
         {/* No placeholder. Every placeholder in this form is a FORMAT hint
             ("Suite, unit, floor", "US", "USD") and a business name has no
@@ -83,13 +84,10 @@ export function BusinessMainColumn({
           <TextField label="State / region" value={form.region} onChange={set('region')} />
           <TextField label="Postal code" value={form.postalCode} onChange={set('postalCode')} />
         </div>
-        <TextField
-          label="Country"
-          value={form.country}
-          onChange={set('country')}
-          placeholder="US"
-          description="Two-letter country code, e.g. US, GB, AU."
-        />
+        {/* Picked by name. It was a box asking for "US, GB, AU" - our filing
+            system, on the form where a business writes down its own address.
+            Issue 721. */}
+        <CountryField value={form.country} onChange={set('country')} />
       </FormSection>
 
       <FormSection

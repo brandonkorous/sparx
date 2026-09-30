@@ -67,6 +67,11 @@ export interface ReadinessFacts {
   segmentId: string;
   builderEmailId: string;
   emailUnpublished: boolean;
+  /** The chosen email is a ready-made one Piggles sends by itself (an order
+   *  confirmation, a reminder), which can never go to a list. Only true for a
+   *  draft saved before the picker stopped offering them; the server refuses it
+   *  too (`assertBroadcastableEmail`). */
+  emailBuiltIn: boolean;
   recipientCount: number | undefined;
   /** `undefined` while the settings are still loading. */
   mailingAddress: MailingAddress;
@@ -82,6 +87,11 @@ export function missingPieces(facts: ReadinessFacts): string[] {
   if (facts.subject.trim() === '') missing.push('a subject line');
   if (!facts.segmentId) missing.push('who it goes to');
   if (!facts.builderEmailId) missing.push('an email to send');
+  if (facts.emailBuiltIn) {
+    missing.push(
+      'an email you wrote yourself (this one goes out by itself, one customer at a time)'
+    );
+  }
   if (facts.emailUnpublished) missing.push('a published email (this one is still a draft)');
   if (facts.segmentId && facts.recipientCount === 0) {
     missing.push('an audience with people in it');

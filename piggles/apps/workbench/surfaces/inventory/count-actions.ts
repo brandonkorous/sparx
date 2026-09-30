@@ -37,6 +37,9 @@ import { BIG_VARIANCE_UNITS } from './count-shared';
 export interface ChangedLine {
   line: CountLine;
   value: number;
+  /** Present only when the WORDS moved. Absent leaves a stored note
+   *  alone, which is what saving a corrected number must do. */
+  note?: string;
 }
 
 export function useCountActions(count: CountDetail, changed: ChangedLine[]) {
@@ -58,7 +61,15 @@ export function useCountActions(count: CountDetail, changed: ChangedLine[]) {
 
   const saveEntries = () =>
     enter.mutateAsync(
-      changed.map(({ line, value }) => ({ lineId: line.id, countedQuantity: value }))
+      changed.map(({ line, value, note }) => ({
+        lineId: line.id,
+        countedQuantity: value,
+        // Three states on the wire: the key is absent when the words were
+        // not touched, an empty string when a filled box was emptied, and
+        // the text otherwise. Spreading a `note: undefined` instead would
+        // still send the key on some clients and wipe the note.
+        ...(note !== undefined ? { note } : {}),
+      }))
     );
 
   const totalUnitVariance = count.lines.reduce(

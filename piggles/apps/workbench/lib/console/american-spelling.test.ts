@@ -38,6 +38,10 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
+// The repo's one list of British spellings, shared with
+// `scripts/check-american-spelling.mjs`. Plain data, no side effects.
+import { BRITISH_WORDS } from '../../../../../scripts/british-words.mjs';
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOTS = [resolve(HERE, '..', '..', 'surfaces'), resolve(HERE, '..', 'surfaces')];
 
@@ -57,84 +61,17 @@ const ROOTS = [resolve(HERE, '..', '..', 'surfaces'), resolve(HERE, '..', 'surfa
  * plausibly contain, whether or not anybody has typed one yet. A word that
  * cannot appear costs nothing to list; a word that CAN appear and is missing
  * costs exactly what it cost here. [[feedback_structural_checks_go_blind]]
+ *
+ * ── And it is ONE list now ────────────────────────────────────────────────
+ *
+ * It used to be a copy of the server's, kept in step by hand, and it had fallen
+ * out of step twice: the server knew `millimetre` and this did not, and neither
+ * knew `fulfil` while both knew `fulfilment` — so "ready to fulfil" shipped in a
+ * toast in both consoles with every check green. The words live in
+ * `scripts/british-words.mjs` and both guards read them from there, so adding
+ * one covers every surface at once.
  */
-const PAIRS: Record<string, string> = {
-  licence: 'license',
-  licences: 'licenses',
-  colour: 'color',
-  colours: 'colors',
-  coloured: 'colored',
-  favourite: 'favorite',
-  favourites: 'favorites',
-  favourited: 'favorited',
-  behaviour: 'behavior',
-  behaviours: 'behaviors',
-  organise: 'organize',
-  organised: 'organized',
-  organising: 'organizing',
-  organisation: 'organization',
-  organisations: 'organizations',
-  catalogue: 'catalog',
-  catalogues: 'catalogs',
-  fulfilment: 'fulfillment',
-  fulfilments: 'fulfillments',
-  analyse: 'analyze',
-  analysed: 'analyzed',
-  whilst: 'while',
-  cancelled: 'canceled',
-  cancelling: 'canceling',
-  cancellation: 'cancellation',
-  cheque: 'check',
-  cheques: 'checks',
-  centre: 'center',
-  centres: 'centers',
-  labelled: 'labeled',
-  labelling: 'labeling',
-  travelled: 'traveled',
-  travelling: 'traveling',
-  modelling: 'modeling',
-  enrolment: 'enrollment',
-  enrolments: 'enrollments',
-  instalment: 'installment',
-  instalments: 'installments',
-  labour: 'labor',
-  neighbour: 'neighbor',
-  neighbours: 'neighbors',
-  honour: 'honor',
-  flavour: 'flavor',
-  flavours: 'flavors',
-  humour: 'humor',
-  recognise: 'recognize',
-  recognised: 'recognized',
-  recognises: 'recognizes',
-  customise: 'customize',
-  customised: 'customized',
-  personalise: 'personalize',
-  personalised: 'personalized',
-  prioritise: 'prioritize',
-  prioritised: 'prioritized',
-  summarise: 'summarize',
-  summarised: 'summarized',
-  authorise: 'authorize',
-  authorised: 'authorized',
-  apologise: 'apologize',
-  utilise: 'utilize',
-  defence: 'defense',
-  offence: 'offense',
-  grey: 'gray',
-  programme: 'program',
-  programmes: 'programs',
-  metre: 'meter',
-  metres: 'meters',
-  litre: 'liter',
-  litres: 'liters',
-  judgement: 'judgment',
-  acknowledgement: 'acknowledgment',
-  practise: 'practice',
-  storey: 'story',
-  tyre: 'tire',
-  aluminium: 'aluminum',
-};
+const PAIRS: Record<string, string> = BRITISH_WORDS;
 
 /**
  * Words the SERVER speaks, which this side repeats exactly.
@@ -154,10 +91,21 @@ const WIRE_VALUES = new Set(['cancelled', 'cancellation']);
 
 const WORDS = Object.keys(PAIRS).join('|');
 
+/**
+ * Built ONCE, not per call.
+ *
+ * It used to be compiled inside `britishIn`, which was affordable while the
+ * scan was 7,400 string literals and is not now that `proseOn` brought another
+ * 18,000 lines with it: a 200-word alternation recompiled 26,000 times took the
+ * test past its 5s budget and it failed as a TIMEOUT, which reads exactly like
+ * a broken guard. `lastIndex` never survives a call because there is no `g`.
+ */
+const BRITISH_RE = new RegExp(String.raw`\b(` + WORDS + String.raw`)\b`, 'i');
+
 /** One British word inside a string literal, or null. Exported shape kept tiny
  *  so the matcher can be proven on known input before it is trusted on a tree. */
 function britishIn(text: string): string | null {
-  const found = new RegExp(String.raw`\b(` + WORDS + String.raw`)\b`, 'i').exec(text);
+  const found = BRITISH_RE.exec(text);
   return found ? found[1]!.toLowerCase() : null;
 }
 
@@ -202,7 +150,7 @@ function literalsOn(line: string): string[] {
  * Reading literals alone saw only the one that must never change.
  *
  * Deliberately narrow: text on one line, no braces, so an expression is never
- * mistaken for words.
+ * mistaken for words. `wrappedProse` below reads the rest.
  */
 function jsxTextOn(line: string): string[] {
   const out: string[] = [];
@@ -213,6 +161,58 @@ function jsxTextOn(line: string): string[] {
     if (text !== '') out.push(text);
   }
   return out;
+}
+
+/**
+ * A line that is NOTHING BUT WORDS, which in a `.tsx` file is JSX children and
+ * can be nothing else.
+ *
+ * ── WHY THIS HAD TO EXIST ───────────────────────────────────────────────────
+ *
+ * `jsxTextOn` wants the tags on the same line as the text. Prettier wraps at
+ * 100 characters, so every sentence longer than a short label ends up on a line
+ * of its own with no tag either side of it:
+ *
+ *     <FieldDescription>
+ *       Leave this empty and replies are labelled with the page the form sits on.
+ *     </FieldDescription>
+ *
+ * That sentence was on screen in Piggles while this guard was green, because the
+ * guard could not see the line it lives on. MEASURED 2026-09-25 across both
+ * consoles' `surfaces`, `lib/surfaces` and `components`: **7,412 JSX texts with
+ * their tags on the same line, and 18,244 prose lines without them.** The guard
+ * was reading 29% of the JSX copy in the console and reporting on all of it.
+ *
+ * Widening it found five: "labelled" here, and "neighbours", "personalise",
+ * "catalogue" and "recognises" in sparx. [[feedback_structural_checks_go_blind]]
+ *
+ * ── WHY THE TEST IS "NO CODE CHARACTERS", NOT "LOOKS LIKE A SENTENCE" ───────
+ *
+ * Anything a compiler cares about brings punctuation with it: a tag, a brace, a
+ * quote, an `=`, a `;`, a bracket. A line carrying none of those, inside a file
+ * the comment blanker has already been over, is prose. Requiring whitespace as
+ * well drops a bare identifier on its own line, which is code that happens to be
+ * spelled like a word.
+ */
+const CODE_PUNCTUATION = /[<>{}`'"=;()[\]]/;
+
+/**
+ * An object property written without quotes: `cancelled: 0,`,
+ * `externalId: organisation,`. It carries no bracket, quote or semicolon of its
+ * own, so the punctuation test above lets it through — and its key is a field
+ * name, which must not move. Found by running this matcher over the server
+ * trees, where it flagged three of them. [[feedback_a_copy_edit_breaks_identity_lookups]]
+ */
+const OBJECT_PROPERTY = /^[A-Za-z_$][\w$]*\s*:/;
+
+function proseOn(line: string): string[] {
+  const text = line.trim();
+  if (text === '') return [];
+  if (CODE_PUNCTUATION.test(text)) return [];
+  if (OBJECT_PROPERTY.test(text)) return [];
+  if (!/[A-Za-z]{2}/.test(text)) return [];
+  if (!/\s/.test(text)) return [];
+  return [text];
 }
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -240,13 +240,17 @@ function britishInCopy(): { hits: Hit[]; files: number; literals: number } {
     for (const file of walk(root)) {
       files += 1;
       const code = codeOnly(readFileSync(file, 'utf8'));
+      // Read each line's copy ONCE. It used to be read twice — once to build
+      // the alias set, once to scan — and `literalsOn`'s nested quantifiers are
+      // the expensive part of this test, so doubling them doubled the whole run.
+      const perLine = code
+        .split('\n')
+        .map((line) => [...literalsOn(line), ...jsxTextOn(line), ...proseOn(line)]);
       // Every literal in the file, so an alias pair is recognised wherever its
       // American twin happens to sit.
-      const literalsInFile = new Set(
-        code.split('\n').flatMap((line) => [...literalsOn(line), ...jsxTextOn(line)])
-      );
-      code.split('\n').forEach((line, i) => {
-        for (const text of [...literalsOn(line), ...jsxTextOn(line)]) {
+      const literalsInFile = new Set(perLine.flat());
+      perLine.forEach((texts, i) => {
+        for (const text of texts) {
           literals += 1;
           const british = britishIn(text);
           if (british === null) continue;

@@ -51,7 +51,7 @@ import { formatCents, plural, stockErrorMessage } from './data';
  *  than the generic one. */
 const MODULE = 'inventory';
 import {
-  settlementTone,
+  settlementState,
   useCancelSettlement,
   useCloseSettlement,
   useConsignmentSettlement,
@@ -133,8 +133,8 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
         }
         status={
           <>
-            <Badge color={settlementTone(data.status)} variant="soft">
-              {data.status}
+            <Badge color={settlementState(data.status).tone} variant="soft">
+              {settlementState(data.status).label}
             </Badge>
             <Text className="text-sm">
               {owner} · <Timestamp value={data.periodStart} format="absolute" /> →{' '}

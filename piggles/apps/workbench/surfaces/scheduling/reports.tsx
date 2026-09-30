@@ -492,7 +492,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
               module={MODULE}
               icon={<Icon glyph={faCalendarClock} className="size-6" aria-hidden />}
               title="Bookings aren&rsquo;t switched on"
-              description="These reports appear once the Bookings app is switched on. Turn it on to start taking appointments and see how the diary is doing."
+              description="This appears once the Bookings app is switched on. Turn it on to start taking appointments and see how the diary is doing."
             />
           </Card>
         </div>
@@ -506,7 +506,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
             <PaneLoadError
               module={MODULE}
               icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
-              title="Could not load your reports"
+              title="Could not load how bookings are going"
               description="This is a problem reaching the server. Your bookings are unaffected: the figures just could not be worked out just now."
               onRetry={() => {
                 void report.refetch();
@@ -658,7 +658,18 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Report controls"
+        label="Controls for how bookings are going"
+        status={
+          <>
+            <Icon glyph={faChartColumn} className="size-4 shrink-0" aria-hidden />
+            {/* WHICH period. The picker sits in `controls`, which folds into the
+                overflow on a narrow pane, so every figure here was over a
+                stretch of time nothing on screen named. */}
+            <Text as="span" className="shrink-0 text-sm whitespace-nowrap">
+              {RANGE_PRESETS.find((preset) => preset.days === rangeDays)?.label ?? 'This period'}
+            </Text>
+          </>
+        }
         controls={
           <NativeSelect
             size="sm"

@@ -109,7 +109,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Sending address list controls"
+        label="Sending addresses controls"
         search={
           /* The width sits on a WRAPPER: SearchInput forwards className to its
             inner <input>, so a class aimed at the control never reaches the
@@ -133,6 +133,8 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(all.length)} addresses`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"

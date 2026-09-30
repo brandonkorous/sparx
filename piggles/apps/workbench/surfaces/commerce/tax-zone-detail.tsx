@@ -53,7 +53,7 @@ import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { countryName, countryOptions, hasRegions, regionName, regionOptions } from './geo';
+import { countryName, countryOptions, hasRegions, regionName, regionOptions } from '../../lib/geo';
 import { SaveFailure } from '@/components/save-failure';
 import {
   formatBasisPoints,

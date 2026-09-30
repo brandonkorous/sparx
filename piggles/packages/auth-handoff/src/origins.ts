@@ -95,3 +95,45 @@ export function handoffEntryUrl(next?: string): string {
 export function internalPath(next: string | null | undefined): string | undefined {
   return safeInternalPath(next, '') || undefined;
 }
+
+/**
+ * Where to send somebody once they are signed in, read from a link that may
+ * spell that destination either of two ways.
+ *
+ * ── WHY TWO SPELLINGS ───────────────────────────────────────────────────────
+ *
+ * The ACCOUNT APP writes `next` — `handoffEntryUrl` above writes it, and so
+ * does its `same-origin-redirect.ts`. Better Auth writes `callbackURL`, the
+ * console writes `callbackURL`, and so do all four links that send an invited
+ * person to sign in: the two buttons on the invitation page, the "sign in as
+ * someone else" button beside them, and the OAuth consent screen.
+ *
+ * The sign-in page read only `next`. So "Sign in to join" signed the person in
+ * and did not join them: the destination it needed was sitting in the URL under
+ * the other name, the fallback took over, and they landed on the account home
+ * with the invitation still outstanding and nothing on screen saying so. The
+ * signup page read NEITHER, so somebody invited who did not yet have an account
+ * was put through setting up a business of their own instead (issue 881).
+ *
+ * Reading both is not untidiness. It is the only honest reading available: the
+ * parameter is already out in the world on invitation emails sent before today,
+ * and no rename reaches a link somebody was emailed last week. So writers use
+ * the house spelling and readers accept either.
+ *
+ * `next` wins when both are present: it is what this product writes itself, so
+ * a URL carrying both was built by us around one built by somebody else.
+ *
+ * Guarded by the same `safeInternalPath` as everything else here, because the
+ * value arrives in a URL anybody can edit and it becomes a redirect. An
+ * absolute one would make the account app an open redirector: a link that looks
+ * like getpiggles.com and lands somewhere else. Refusing means FALLING BACK
+ * rather than failing, because a tampered link should still sign the person in.
+ */
+export function returnPath(
+  params: Record<string, string | string[] | undefined>,
+  fallback = '/'
+): string {
+  const first = (value: string | string[] | undefined): string =>
+    Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
+  return safeInternalPath(first(params.next) || first(params.callbackURL), fallback);
+}

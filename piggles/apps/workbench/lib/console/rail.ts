@@ -19,7 +19,7 @@
 //
 // "This business does not take bookings" is a fact about the business, so every
 // teammate sees the same rail and only an owner or admin changes it. The
-// per-person layer is Favourites and Recent on the /v1/me spine, plus the access
+// per-person layer is Favorites and Recent on the /v1/me spine, plus the access
 // gate — a teammate restricted to Invoices still sees less than the owner does.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';

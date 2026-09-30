@@ -209,7 +209,7 @@ export const TOOLS: readonly PigglesTool[] = [
     slug: 'invoice',
     name: 'Invoice maker',
     tagline:
-      'An itemised invoice with your logo, your tax and the totals worked out: as a PDF you can print or attach. No account, nothing stamped across it.',
+      'An itemized invoice with your logo, your tax and the totals worked out: as a PDF you can print or attach. No account, nothing stamped across it.',
     description:
       'Free invoice generator. Add your details and your customer’s, list what you did, set the tax and any discount, and download a clean, print-ready PDF with your logo on it. The totals add themselves, any currency works, and your own details are remembered on this device for next time. No sign-up and no watermark.',
     keywords: [
@@ -327,7 +327,7 @@ export const TOOLS: readonly PigglesTool[] = [
     slug: 'quote',
     name: 'Quote maker',
     tagline:
-      'A tidy, itemised quote with your logo, the totals and a date it runs out: as a PDF you can send today.',
+      'A tidy, itemized quote with your logo, the totals and a date it runs out: as a PDF you can send today.',
     description:
       'Free quote and estimate generator. Put in your details and the customer’s, list the work, add tax and a valid-until date, and download a professional PDF with your logo. Totals calculate themselves, any currency works, and your own details are kept on this device for the next one. No sign-up, no watermark.',
     keywords: [

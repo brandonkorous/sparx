@@ -17,6 +17,7 @@
 
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes (mirrors PagePerformanceReport in api-rest) ─────────────────── */
 
@@ -132,7 +133,7 @@ export function formatCount(value: number): string {
 }
 
 export function formatMoney(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /** Load time as a person would say it. Seconds past one second, because "2.4

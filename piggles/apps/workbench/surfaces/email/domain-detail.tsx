@@ -432,22 +432,21 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
             <div className="flex-1" />
           </>
         }
-        primary={
-          <Button
-            size="sm"
-            variant="ghost"
-            color="danger"
-            shape="square"
-            aria-label="Remove this address"
-            title="Remove this address"
-            loading={remove.isPending}
-            onClick={() => {
+        /* A VALUE, not bespoke JSX. It sat in `primary`, which is
+           for the ONE commit action, and drew a bare red bin there.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={[
+          {
+            label: 'Remove',
+            title: 'Remove this address',
+            icon: faTrashCan,
+            tone: 'danger' as const,
+            loading: remove.isPending,
+            onClick: () => {
               void onDelete();
-            }}
-          >
-            <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-          </Button>
-        }
+            },
+          },
+        ]}
         controls={
           <>
             {isVerified ? null : (

@@ -4,7 +4,8 @@
 // gets it, which design carries it, what that looks like, who it comes from,
 // and when it goes.
 
-import { TheEmail, WhatYoureSending, WhoItGoesTo } from './broadcast-compose-message';
+import { TheEmail, WhoItGoesTo } from './broadcast-compose-message';
+import { WhatYoureSending } from './broadcast-compose-picker';
 import { WhatItLooksLike, WhenToSend, WhereItComesFrom } from './broadcast-compose-delivery';
 import type { ComposeBodyProps } from './broadcast-draft';
 

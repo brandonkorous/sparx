@@ -294,6 +294,7 @@ export interface RecomputeResult {
 export function useRecomputeScores() {
   const invalidate = useInvalidateScoring();
   return useMutation({
+    meta: { running: 'score your people again' },
     mutationFn: async (objectKey: string) => {
       let cursor: string | null = null;
       let scanned = 0;

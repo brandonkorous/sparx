@@ -72,17 +72,21 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     group: 'Customer',
     kind: 'account',
   },
-  'b2bAccount.pricingTier': { label: 'Price tier', group: 'Wholesale account', kind: 'text' },
+  'b2bAccount.pricingTier': {
+    label: 'Wholesale price',
+    group: 'Wholesale customer',
+    kind: 'text',
+  },
   'b2bAccount.creditUtilization': {
     label: 'Credit used (share)',
-    group: 'Wholesale account',
+    group: 'Wholesale customer',
     kind: 'number',
     hint: 'A share between 0 and 1: 0.8 means 80% of their limit is used.',
   },
-  'b2bAccount.fleetSize': { label: 'Fleet size', group: 'Wholesale account', kind: 'number' },
+  'b2bAccount.fleetSize': { label: 'Fleet size', group: 'Wholesale customer', kind: 'number' },
   'b2bAccount.status': {
     label: 'Account status',
-    group: 'Wholesale account',
+    group: 'Wholesale customer',
     kind: 'enum',
     options: [
       { value: 'active', label: 'Active' },
@@ -93,7 +97,7 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
   },
   'b2bAccount.paymentTerms': {
     label: 'Payment terms',
-    group: 'Wholesale account',
+    group: 'Wholesale customer',
     kind: 'enum',
     // Same presets the company form offers, from the one place they live. A
     // segment that could only be built on four of the terms a business can

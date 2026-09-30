@@ -210,7 +210,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       <PaneToolbar
-        label="Media library controls"
+        label="Photos and files controls"
         search={
           <SearchInput
             size="sm"

@@ -4,6 +4,7 @@ import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import type { PigglesTool } from './registry';
 import { toolAppLabel } from './registry';
+import { APP_COUNT_WORD } from '@piggles/config';
 
 /**
  * The close: what carries on where the tool stops.
@@ -35,7 +36,7 @@ export function ToolLadder({ tool }: { tool: PigglesTool }) {
       <div className="grid items-end gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
         <h2 className="text-3xl leading-tight font-extrabold text-balance sm:text-4xl lg:text-5xl">
           {label} is not an add-on and not an upgrade. It is{' '}
-          <span className="">one of fifteen apps</span> in the same {PRICE_LABEL} a month.
+          <span className="">one of {APP_COUNT_WORD} apps</span> in the same {PRICE_LABEL} a month.
         </h2>
 
         <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -49,7 +50,7 @@ export function ToolLadder({ tool }: { tool: PigglesTool }) {
             className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'lg' })}
             href="/apps"
           >
-            All fifteen
+            All {APP_COUNT_WORD}
           </Link>
         </div>
       </div>

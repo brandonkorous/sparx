@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSession } from '@wizeworks/auth';
 import { marketingUrl, PRODUCT } from '@piggles/config';
+import { returnPath } from '@piggles/auth-handoff';
 import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';
 import { SignUpForm } from '@/components/signup-form';
@@ -27,6 +28,12 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
   // the visitor allowed it to be recorded. Absent for anyone who declined, and
   // the signup works identically either way.
   const attribution = one(params.a);
+  // Where to go once the account exists. Onboarding unless the link says
+  // otherwise, and an invitation link always says otherwise: its "I'm new:
+  // create an account" button carries the invitation, and this page used to
+  // read no destination at all, so an invited person was put through setting up
+  // a business of their own and the invitation was never seen again (881).
+  const next = returnPath(params, '/onboarding');
 
   return (
     <AuthShell
@@ -36,7 +43,13 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
       aside={
         <p>
           Already have an account?{' '}
-          <Link href="/sign-in" className="text-primary font-semibold">
+          {/* Carries the destination back, the same way sign-in carries it
+              here. The two links are one loop, and a loop that drops its
+              payload at one end drops it. */}
+          <Link
+            href={next === '/onboarding' ? '/sign-in' : `/sign-in?next=${encodeURIComponent(next)}`}
+            className="text-primary font-semibold"
+          >
             Sign in
           </Link>
           .
@@ -85,7 +98,12 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
         </p>
       }
     >
-      <SignUpForm from={from} attribution={attribution} google={googleSignInAvailable()} />
+      <SignUpForm
+        from={from}
+        attribution={attribution}
+        next={next}
+        google={googleSignInAvailable()}
+      />
     </AuthShell>
   );
 }

@@ -187,7 +187,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Job profitability controls"
+        label="By job controls"
         controls={
           <>
             <NativeSelect

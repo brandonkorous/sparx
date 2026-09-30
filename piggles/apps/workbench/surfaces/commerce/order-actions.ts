@@ -7,7 +7,8 @@ import { useMutation, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { ORDERS_KEY } from './order-queries';
-import type { Order, OrderFulfillment, OrderPayment } from './order-types';
+import { TAKE_OFF_REASON } from './payment-undo';
+import type { Order, OrderAddress, OrderFulfillment, OrderPayment } from './order-types';
 
 /**
  * Record money the business took ITSELF — cash over the counter, a cheque, a
@@ -231,6 +232,101 @@ export function useCreateInvoiceForOrder(id: string) {
       // pane does, and so does the Invoices screen.
       void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
+    },
+  });
+}
+
+/**
+ * Where this order is going, and who it is billed to.
+ *
+ * ── WHY THIS WAS MISSING AND WHY THAT MATTERED ──────────────────────────────
+ *
+ * `PATCH /v1/orders/:id` has always taken `shippingAddress` and
+ * `billingAddress`. The order pane READ them — "Where it goes" prints both, and
+ * says **Not given** when there are none — and offered no way to fill one in.
+ * So an order with no address said so forever, and the shop could not post it.
+ *
+ * That is not a rare corner. An order made by turning an accepted quote into
+ * one arrives with no address at all, because a quote is a price and was never
+ * asked where the goods go. Measured 2026-09-22: O-000020, $504.00 of knitwear
+ * for a shop 3 miles away, with nowhere to send it and no box to type one in.
+ * [[feedback_screen_over_a_function_nobody_calls]]
+ *
+ * ADDRESSES ARE A SNAPSHOT, and stay one. This writes the order's own copy —
+ * it does not touch the customer's address book, and changing the customer's
+ * address later still never rewrites this order.
+ */
+export function useSetOrderAddresses(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: {
+      shippingAddress?: OrderAddress | null;
+      billingAddress?: OrderAddress | null;
+    }) => api.patch<Order>(`/v1/orders/${id}`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
+ * The shop's own note about this order.
+ *
+ * ── WHY THIS WAS MISSING AND WHY THAT MATTERED ──────────────────────────────
+ *
+ * `PATCH /v1/orders/:id` takes FOUR things. Two of them were wired above when a
+ * quote-turned-order arrived with nowhere to send it. The other two are the notes,
+ * and the order pane READ them: `OrderNotes` prints "From the customer" and "Your
+ * team's note" under a Notes heading, and returned NOTHING at all when both were
+ * empty. Both were empty on every order on the platform, measured 2026-09-29 at 0
+ * of 122, so that section had never once appeared and could not be made to.
+ *
+ * A note on an order is not a nicety for a shop that takes work over a counter.
+ * "Wants the cuffs shorter, spoke to her Tuesday." "Leave it with the neighbour."
+ * "Collecting Saturday, not Friday." There was nowhere to write any of it, and the
+ * pane had a heading promising there was. [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * Only the shop's own note is writable. The customer's note is a record of what
+ * somebody SAID, and a box that let the shop retype it would be a box for editing
+ * what a customer told them.
+ */
+export function useSetOrderNote(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    // Empty clears it. `null` is what the schema takes for "there is no note",
+    // and an empty string would be stored and then printed as a blank line under
+    // a heading. Same reason `useUpdateTracking` above sends null.
+    mutationFn: (note: string) =>
+      api.patch<Order>(`/v1/orders/${id}`, { internalNote: note.trim() || null }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
+ * Taking a payment off the order because the money never came in.
+ *
+ * The last of the order endpoints nothing called. See `payment-undo.ts` for what
+ * this is for, why it is offered only on money she took herself, and why the
+ * alternative she had until now made her books less true.
+ *
+ * The reason rides along on the record: the API stores it on the payment and the
+ * pane already prints it under the row, so the line says why it is off rather
+ * than only that it is.
+ */
+export function useTakePaymentOff(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (paymentId: string) =>
+      api.post<OrderPayment>(`/v1/orders/${id}/payments/${paymentId}/void`, {
+        reason: TAKE_OFF_REASON,
+      }),
+    onSuccess: () => {
+      // The order's own amountPaid and payment_status move with this, and so does
+      // the buyer's lifetime total, so the order is refetched rather than the
+      // payments list alone.
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
     },
   });
 }

@@ -52,7 +52,7 @@
 // ── THE PER-APP POSES ───────────────────────────────────────────────────────
 //
 // `mascotForApp` maps a Piggles app to its own empty-state pose, and as of the
-// 2026-08-15 art all fifteen are specific — a calendar propped beside a laptop
+// 2026-08-15 art every one is specific — a calendar propped beside a laptop
 // for Bookings, a counter for Customers, a shelf for Stock, a meeting room for
 // My Team. None of them falls through to a generic pose any more, which is why
 // the size above had to move: the specificity only exists if it is visible.

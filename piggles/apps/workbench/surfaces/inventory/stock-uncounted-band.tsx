@@ -28,6 +28,7 @@ import {
 
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { listCodes, type UncountedVariant } from './data';
+import { uncountedWords } from './uncounted-words';
 
 export function StockUncountedBand({
   ctx,
@@ -52,21 +53,18 @@ export function StockUncountedBand({
   const productIds = new Set(items.map((item) => item.productId));
   const onlyProduct = productIds.size === 1 && total <= items.length ? items[0] : null;
 
+  // All four of this band's sentences come from one place, and they are tested
+  // there. Two of them used to be written inline and had no singular form at
+  // all, so one uncounted shirt read "1 version ... so THEY are not below ...
+  // until somebody counts IT" over a button saying "Count them" (issue 856).
+  const words = uncountedWords(total, searching);
+
   return (
     <Alert color="info" variant="soft">
       <AlertContent>
-        <AlertTitle>
-          {total === 1
-            ? '1 version you sell has never been counted'
-            : `${String(total)} versions you sell have never been counted`}
-        </AlertTitle>
+        <AlertTitle>{words.title}</AlertTitle>
         <AlertDescription>
-          {searching
-            ? 'Your search matched them, but this list only holds what you have counted, so they are not below.'
-            : 'This list only holds what you have counted, so they are not below.'}{' '}
-          {total === 1
-            ? 'Until somebody counts it, your website sells it without limit.'
-            : 'Until somebody counts them, your website sells them without limit.'}{' '}
+          {words.whereTheyAre} {words.consequence}{' '}
           {listCodes(
             items.map((item) => item.sku),
             total
@@ -87,7 +85,7 @@ export function StockUncountedBand({
             );
           }}
         >
-          Count them
+          {words.action}
         </Button>
       ) : null}
     </Alert>

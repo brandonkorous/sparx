@@ -78,7 +78,7 @@ import {
   verdictLabel,
   verdictTone,
 } from './supplier-bills-data';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { moneyCents, moneyText, MoneyTextInput } from '../../components/money-input';
 
 export function SupplierBillDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = ctx.params.id ?? 'new';
@@ -99,12 +99,23 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   const data = bill.data;
 
+  // The tab's name, once the record is here.
+  //
+  // Every other record in this app does this — purchase orders, deliveries,
+  // transfers, counts, runs, settlements, lots, bins — and this one did not, so
+  // four supplier invoices open at once were four tabs all reading "Supplier
+  // invoice" with nothing to tell them apart, in the strip AND in the list of
+  // what is open. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  useEffect(() => {
+    if (data) ctx.setTitle(data.number);
+  }, [data, ctx]);
+
   const [reason, setReason] = useState('');
   const [paidAmount, setPaidAmount] = useState('');
 
   useEffect(() => {
     if (!data) return;
-    setPaidAmount((data.totalCents / 100).toString());
+    setPaidAmount(moneyText(data.totalCents));
   }, [data]);
 
   if (bill.isError) {

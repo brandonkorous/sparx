@@ -98,8 +98,8 @@ function PipelineLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <PaneLoadError
             error={error}
             noun="pipeline"
-            title="Could not load this pipeline"
-            description="This is a problem reaching the server, or the pipeline has been removed. Nothing has been changed."
+            title="Could not load this process"
+            description="This is a problem reaching the server, or the process has been removed. Nothing has been changed."
             onRetry={() => {
               void refetch();
             }}
@@ -169,7 +169,7 @@ function PipelineEditor({
   }, [savedIdentity, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New pipeline' : pipeline ? pipeline.name : 'Pipeline');
+    ctx.setTitle(isNew ? 'New process' : pipeline ? pipeline.name : 'Process');
   }, [ctx, isNew, pipeline]);
 
   const setName = (name: string) => {
@@ -182,10 +182,10 @@ function PipelineEditor({
     setIdentity((cur) => ({ ...cur, slug: slug.toLowerCase() }));
   };
 
-  const nameError = identity.name.trim() === '' ? 'Give the pipeline a name.' : null;
+  const nameError = identity.name.trim() === '' ? 'Give the process a name.' : null;
   const slugError =
     identity.slug.trim() === ''
-      ? 'Give the pipeline a short id.'
+      ? 'Give the process a short id.'
       : !SLUG_RE.test(identity.slug.trim())
         ? 'The id can use lowercase letters, numbers and dashes, and must start with a letter.'
         : null;
@@ -199,8 +199,8 @@ function PipelineEditor({
   useDirtySource(
     dirty && !create.isSuccess,
     isNew
-      ? 'This pipeline has not been created yet. Close anyway?'
-      : 'This pipeline has unsaved changes. Close anyway?'
+      ? 'This process has not been created yet. Close anyway?'
+      : 'This process has unsaved changes. Close anyway?'
   );
 
   const failure =
@@ -221,7 +221,7 @@ function PipelineEditor({
           afterPaneChange(() => {
             toast.add({
               title: `${created.name} created`,
-              description: 'Now add the stages a deal moves through.',
+              description: 'Now add the steps a deal moves through.',
               type: 'success',
             });
           });
@@ -232,7 +232,7 @@ function PipelineEditor({
     update.mutate(input, {
       onSuccess: () => {
         setTouched(false);
-        toast.add({ title: 'Pipeline saved', type: 'success' });
+        toast.add({ title: 'Process saved', type: 'success' });
       },
     });
   };
@@ -244,7 +244,7 @@ function PipelineEditor({
       {
         onError: (error) => {
           toast.add({
-            title: 'Could not add a stage',
+            title: 'Could not add a step',
             description: pipelineErrorMessage(error, 'Nothing was changed.'),
             type: 'error',
           });
@@ -267,7 +267,7 @@ function PipelineEditor({
     reorder.mutate(next, {
       onError: (error) => {
         toast.add({
-          title: 'Could not reorder the stages',
+          title: 'Could not reorder the steps',
           description: pipelineErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -280,8 +280,8 @@ function PipelineEditor({
     const ok = await confirm({
       title: `Archive ${pipeline.name}?`,
       description:
-        'This hides the pipeline from the list and from the deal editor. Deals already on it are kept. You can find it again by including archived pipelines in the list.',
-      confirmLabel: 'Archive this pipeline',
+        'This puts the process away, so it drops out of the list and out of the deal editor. Deals already on it are kept, and you can find it again by including the ones you have put away.',
+      confirmLabel: 'Put it away',
       cancelLabel: 'Keep it',
       color: 'warning',
     });
@@ -295,7 +295,7 @@ function PipelineEditor({
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not archive this pipeline',
+          title: 'Could not put this process away',
           description: pipelineErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -332,7 +332,7 @@ function PipelineEditor({
             disabled={Boolean(blocked) || (!isNew && !dirty)}
             onClick={submit}
           >
-            {isNew ? 'Create pipeline' : 'Save'}
+            {isNew ? 'Create process' : 'Save'}
           </Button>
         }
         refresh={
@@ -350,8 +350,8 @@ function PipelineEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A pipeline is your own set of stages a deal moves through. Name it, then add the
-              stages: from first contact to won or lost.
+              A process is your own set of steps a deal moves through. Name it, then add the steps:
+              from first contact to won or lost.
             </Text>
           ) : null}
 
@@ -374,6 +374,13 @@ function PipelineEditor({
               />
               {nameError && touched ? <FieldStatus status="error">{nameError}</FieldStatus> : null}
             </Field>
+            {/* SET ONCE, THEN LEFT ALONE. `bootstrapDefaultPipeline` finds
+                the starter sales process by this exact slug, so editing it
+                afterwards makes that lookup miss: the next module activation
+                creates a SECOND sales process with six fresh steps while every
+                deal stays on the first. Nothing here needs renaming either —
+                it is an id, it is never shown to a customer, and the name above
+                is the thing people read. */}
             <Field>
               <FieldLabel>Short id</FieldLabel>
               <FieldControl
@@ -381,9 +388,10 @@ function PipelineEditor({
                   <Input
                     color={slugError && touched ? 'error' : 'module'}
                     value={identity.slug}
-                    placeholder="new-b2b-acquisition"
+                    placeholder="repeat-orders"
                     spellCheck={false}
                     autoComplete="off"
+                    disabled={!isNew}
                     className="font-mono"
                     onChange={(event) => {
                       setSlug(event.target.value);
@@ -394,7 +402,11 @@ function PipelineEditor({
               {slugError && touched ? (
                 <FieldStatus status="error">{slugError}</FieldStatus>
               ) : (
-                <FieldDescription>A short, lowercase id used behind the scenes.</FieldDescription>
+                <FieldDescription>
+                  {isNew
+                    ? 'A short, lowercase id used behind the scenes. It is set now and stays put.'
+                    : 'A short, lowercase id used behind the scenes. It cannot change once things are using it.'}
+                </FieldDescription>
               )}
             </Field>
           </FormSection>
@@ -403,14 +415,14 @@ function PipelineEditor({
             <Alert color="info">
               <AlertContent>
                 <AlertDescription>
-                  Create the pipeline first, then its stages appear here to add and arrange.
+                  Create the process first, then its steps appear here to add and arrange.
                 </AlertDescription>
               </AlertContent>
             </Alert>
           ) : (
             <FormSection
-              title="Stages"
-              description="The steps a deal moves through, top to bottom. Mark the ones that mean the deal is won or lost."
+              title="Steps"
+              description="The steps something moves through here, top to bottom. Mark the ones that mean it is finished."
               action={
                 <Button
                   size="sm"
@@ -420,13 +432,13 @@ function PipelineEditor({
                   onClick={onAddStage}
                 >
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  Add a stage
+                  Add a step
                 </Button>
               }
             >
               {stages.length === 0 ? (
                 <Text className="text-sm">
-                  No stages yet. Add the first step a deal goes through, like “New lead”.
+                  No steps yet. Add the first one a deal goes through, like “New inquiry”.
                 </Text>
               ) : (
                 <div className="flex flex-col gap-2">
@@ -461,7 +473,7 @@ function PipelineEditor({
           {!isNew && pipeline && !isArchived ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
-                Archiving hides this pipeline. Deals already on it are kept.
+                Putting it away hides this process. Deals already on it are kept.
               </Text>
               <Button
                 size="sm"
@@ -545,7 +557,7 @@ function StageRow({
       {
         onError: (error) => {
           toast.add({
-            title: 'Could not save the stage',
+            title: 'Could not save the step',
             description: pipelineErrorMessage(error, 'Nothing was changed.'),
             type: 'error',
           });
@@ -574,11 +586,11 @@ function StageRow({
   };
 
   const onConfirmRemove = async () => {
-    const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another stage';
+    const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another step';
     const ok = await confirm({
       title: `Remove ${stage.name}?`,
       description: `Any deals still on this stage move to “${targetName}”. This cannot be undone, but no deal is lost.`,
-      confirmLabel: 'Remove stage',
+      confirmLabel: 'Remove step',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -588,7 +600,7 @@ function StageRow({
       {
         onError: (error) => {
           toast.add({
-            title: 'Could not remove the stage',
+            title: 'Could not remove the step',
             description: pipelineErrorMessage(error, 'Nothing was changed.'),
             type: 'error',
           });
@@ -608,7 +620,7 @@ function StageRow({
             variant="ghost"
             color="neutral"
             shape="square"
-            aria-label="Move stage up"
+            aria-label="Move step up"
             title="Move up"
             disabled={isFirst || reordering}
             onClick={onMoveUp}
@@ -620,7 +632,7 @@ function StageRow({
             variant="ghost"
             color="neutral"
             shape="square"
-            aria-label="Move stage down"
+            aria-label="Move step down"
             title="Move down"
             disabled={isLast || reordering}
             onClick={onMoveDown}
@@ -630,7 +642,7 @@ function StageRow({
         </div>
 
         <Field className="min-w-[10rem] flex-1">
-          <FieldLabel>Stage name</FieldLabel>
+          <FieldLabel>Step name</FieldLabel>
           <FieldControl
             render={
               <Input
@@ -649,7 +661,7 @@ function StageRow({
           <FieldLabel>Means</FieldLabel>
           <Select
             color="module"
-            aria-label="What this stage means"
+            aria-label="What this step means"
             value={stage.stageType}
             items={Object.fromEntries(stageTypesFor(objectKey).map((t) => [t.value, t.label]))}
             onValueChange={(next) => {
@@ -662,19 +674,26 @@ function StageRow({
           <FieldLabel>Chance</FieldLabel>
           <FieldControl
             render={
-              <Input
-                color="module"
-                type="number"
-                min={0}
-                max={100}
-                inputMode="numeric"
-                value={probability}
-                placeholder="%"
-                onChange={(event) => {
-                  setProbability(event.target.value);
-                }}
-                onBlur={commitProbability}
-              />
+              /* The % is a sibling, not the placeholder. As a placeholder it
+                 showed only while the box was EMPTY, so every filled row read
+                 "10", "25", "50" with nothing on screen saying what of. */
+              <div className="flex items-center gap-1">
+                <Input
+                  color="module"
+                  type="number"
+                  min={0}
+                  max={100}
+                  inputMode="numeric"
+                  value={probability}
+                  aria-label="Chance of winning, as a percentage"
+                  placeholder="0"
+                  onChange={(event) => {
+                    setProbability(event.target.value);
+                  }}
+                  onBlur={commitProbability}
+                />
+                <Text as="span">%</Text>
+              </div>
             }
           />
         </Field>
@@ -688,8 +707,8 @@ function StageRow({
           variant="ghost"
           color="danger"
           shape="square"
-          aria-label={isOnlyStage ? 'A pipeline must keep at least one stage' : 'Remove this stage'}
-          title={isOnlyStage ? 'A pipeline must keep at least one stage' : 'Remove this stage'}
+          aria-label={isOnlyStage ? 'A process must keep at least one step' : 'Remove this step'}
+          title={isOnlyStage ? 'A process must keep at least one step' : 'Remove this step'}
           disabled={isOnlyStage}
           onClick={() => {
             setRemoving((cur) => !cur);

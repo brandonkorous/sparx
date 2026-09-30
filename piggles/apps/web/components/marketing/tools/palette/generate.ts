@@ -23,7 +23,7 @@ export const SCHEMES: Record<Scheme, { label: string; blurb: string }> = {
     blurb: 'Two sides of the wheel. Loud, and unbeatable when one thing must stand out.',
   },
   analogous: {
-    label: 'Neighbours',
+    label: 'Neighbors',
     blurb: 'Colors that already live together. Calm, and hard to get wrong.',
   },
   triad: { label: 'Three-way', blurb: 'Evenly spaced. Lively without any two of them arguing.' },

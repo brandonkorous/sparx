@@ -34,8 +34,14 @@ export function JobCard({ job, ctx }: { job: Job; ctx: SurfaceContext }) {
 
   const body = (
     <>
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex min-w-0 items-center gap-2">
+      {/* Wraps rather than truncates. This card lives in the rail, which is
+          narrow by design, and on one line the label got ~55px: five finished
+          imports in a row all read "Importe… 28d ago Finished", which is the
+          time and the outcome of five runs nobody can tell apart. The label is
+          the only part that says WHAT ran, so it keeps a 10rem floor and the
+          time and badge drop under it when there is not room for both. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <span className="flex min-w-0 flex-1 basis-40 items-center gap-2">
           {job.status === 'running' ? (
             <Icon
               glyph={faSpinner}
@@ -47,7 +53,9 @@ export function JobCard({ job, ctx }: { job: Job; ctx: SurfaceContext }) {
           ) : (
             <Icon glyph={faCircleCheck} className="text-success size-4 shrink-0" aria-hidden />
           )}
-          <span className="truncate font-medium">{job.label}</span>
+          {/* Wraps rather than truncates: a label cut to "Importe…" says less
+              than nothing, and there are at most five of these on screen. */}
+          <span className="font-medium break-words">{job.label}</span>
         </span>
         <span className="flex shrink-0 items-center gap-2">
           {job.status === 'running' && job.progress !== null ? (

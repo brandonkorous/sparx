@@ -623,7 +623,7 @@ export function SocialCadenceSurface() {
       {/* Otherwise bare: the bar carries the pane's copy-link and anchors the beta
           module's standing notice. */}
       <PaneToolbar
-        label="Cadence controls"
+        label="Controls for how often you post"
         refresh={
           <RefreshButton
             isFetching={slots.isFetching || sets.isFetching || overview.isFetching}

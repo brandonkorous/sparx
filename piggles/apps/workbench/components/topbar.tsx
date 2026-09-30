@@ -17,7 +17,6 @@
 
 import {
   Button,
-  Kbd,
   Navbar,
   NavbarCenter,
   NavbarEnd,
@@ -34,6 +33,7 @@ import { NotificationCenter } from '@/components/notification-center';
 import { FeedbackButton } from '@/components/feedback/button';
 import { BusinessSwitcher } from '@/components/topbar/business-switcher';
 import { QuickAdd } from '@/components/topbar/quick-add';
+import { LauncherKey } from '@/components/shortcut-keys';
 import { SiteSwitcher } from '@/components/topbar/site-switcher';
 import { ViewerMenu } from '@/components/topbar/viewer-menu';
 import type { Theme, ThemeChoice } from '@/lib/theme';
@@ -146,7 +146,7 @@ export function Topbar({
           <Button className="w-full justify-start gap-2.5 font-normal" onClick={onOpenLauncher}>
             <Icon glyph={faMagnifyingGlass} className="size-4 shrink-0" aria-hidden />
             <span className="flex-1 truncate text-left">What do you want to do?</span>
-            <Kbd>⌘K</Kbd>
+            <LauncherKey />
           </Button>
         </div>
       </NavbarCenter>
@@ -155,7 +155,7 @@ export function Topbar({
         <WindowModeToggle windowMode={windowMode} onChangeWindowMode={onChangeWindowMode} />
         <QuickAdd />
 
-        {/* The favourite control lives on each pane's TAB, not here. A star in
+        {/* The favorite control lives on each pane's TAB, not here. A star in
             the app toolbar acts on "whichever pane has focus", which in a
             workbench holding five panes is a control with no visible subject. */}
 

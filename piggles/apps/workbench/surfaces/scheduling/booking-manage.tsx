@@ -6,6 +6,8 @@
 // Advancing it (confirm → check in → complete) is its position, so that lives in
 // the toolbar. The rare, hard-to-undo outcomes sit at the bottom under a divider.
 
+import { useEffect } from 'react';
+
 import { Badge, Text } from '@wizeworks/silicaui-react';
 
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -25,6 +27,7 @@ import { SaveFailure } from '@/components/save-failure';
 import {
   bookingResourceLabel,
   bookingStateMeta,
+  bookingTabTitle,
   bookingTypeLabel,
   formatWhen,
   type Booking,
@@ -71,6 +74,12 @@ export function BookingManage({
     terminal,
     lifecycleBusy,
   } = useBookingManage(ctx, booking);
+  // A booking has no name field, so the registry title was the only one it ever
+  // had and four open bookings read as four tabs saying "Booking" (issue 842).
+  useEffect(() => {
+    ctx.setTitle(bookingTabTitle(booking));
+  }, [ctx, booking]);
+
   const meta = bookingStateMeta(booking.status);
   // Whether anything CAN be sent, which is a question about an ACCOUNT and not
   // about a person: `reachableChannels` in the scheduling engine returns nothing

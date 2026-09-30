@@ -18,7 +18,17 @@ export interface OrderCustomer {
   companyName: string | null;
   email: string | null;
   companyId: string | null;
-  company: {
+  /**
+   * The wholesale business this order is for.
+   *
+   * NOT `company`. That name belongs to the customer's TYPED employer on the
+   * wire, and the Prisma client publishes it as a computed field which shadows
+   * the relation of the same name — so the join the order service used to make
+   * came back null on every order ever placed, and the "Wholesale customer"
+   * line below has never rendered for anybody (issue 751). The service attaches
+   * this after the query, under a name nothing can shadow.
+   */
+  b2bAccount: {
     id: string;
     companyName: string;
     paymentTerms: string | null;

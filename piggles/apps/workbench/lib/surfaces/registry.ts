@@ -10,7 +10,12 @@ import type { ComponentType } from 'react';
 import type { PigglesIcon } from '@piggles/ui';
 import type { WorkbenchModule } from '../../components/module-scope';
 import type { PaneDescriptor, SurfaceParams } from './descriptor';
-import { productHidesSurface, productSectionTitle, productSurfaceTitle } from '../product';
+import {
+  productCreateLabel,
+  productHidesSurface,
+  productSectionTitle,
+  productSurfaceTitle,
+} from '../product';
 
 /** Where a newly-opened pane should land. */
 export type OpenTarget =
@@ -139,6 +144,16 @@ export interface SurfaceDefinition {
   readonly createSurface?: string;
   /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
   readonly createLabel?: string;
+  /**
+   * Extra params the `+` opens the create surface with, on top of `id: 'new'`.
+   *
+   * For the case where ONE create surface serves two doors and they are not the
+   * same errand: the till is a counter sale from Orders and an order a shop rang
+   * through from Wholesale orders, and the tab has to say what was pressed
+   * rather than renaming the action on arrival (issue 743). Most rows leave it
+   * unset and open the surface plain.
+   */
+  readonly createParams?: SurfaceParams;
   // There is deliberately NO `useBadgeCount` here any more.
   //
   // It let a surface badge its own nav row from its own hook, which worked and
@@ -229,13 +244,42 @@ export function listedSurfaces(): SurfaceDefinition[] {
  * nowhere else. One lookup renames a screen in all seven places at once, and
  * there is no seventh place for one of them to be missed.
  *
- * A FUNCTION title is left alone deliberately. It is naming a record — "Order
- * #1043", a customer's own product name — which is the tenant's data rather than
- * the platform's vocabulary, and nothing a brand should be able to rewrite.
+ * A FUNCTION title was left alone on the grounds that it is naming a record —
+ * "Order #1043", a customer's own product name — which is the tenant's data
+ * rather than the platform's vocabulary, and nothing a brand should be able to
+ * rewrite. That is true of exactly ONE surface in the catalog. The other 32
+ * function titles return fixed words and nothing else:
+ *
+ *     title: (params) => (params.id === 'new' ? 'New purchase order' : 'Purchase order')
+ *
+ * Those are screen names, written for the other audience, and the sentence above
+ * was putting them out of the brand's reach. The tab on an order to a supplier
+ * read "Purchase order" until the pane's own `setTitle` arrived, and any menu row
+ * that asks `surfaceTitle()` for one of them still reads it. Issue 729.
+ *
+ * So the brand's word wins whenever there IS one, function or not, and the rule
+ * moves to vocabulary.ts where the entries live: a surface whose title names a
+ * RECORD must not be given an entry. There is one of those and it has none.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
  */
 export function resolveTitle(definition: SurfaceDefinition, params: SurfaceParams): string {
+  const brand = productSurfaceTitle(definition.key);
+  if (brand !== null && brand !== undefined) return brand;
   if (typeof definition.title === 'function') return definition.title(params);
-  return productSurfaceTitle(definition.key) ?? definition.title;
+  return definition.title;
+}
+
+/**
+ * What the `+` beside a nav row says, in this brand's words.
+ *
+ * The same lookup as `resolveTitle`, for the same reason: the label is copy a
+ * person reads, and the catalog's is written for the platform's audience. The
+ * rail said "Add a price list" next to a screen called Special prices, while the
+ * pane's own button two clicks away said "Add a special price" - one action,
+ * two names, depending which one you happened to press. Issue 729.
+ */
+export function resolveCreateLabel(definition: SurfaceDefinition): string | undefined {
+  return productCreateLabel(definition.key) ?? definition.createLabel;
 }
 
 /**

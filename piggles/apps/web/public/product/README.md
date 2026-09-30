@@ -100,7 +100,7 @@ public/product/stock/levels-desktop-light.png
 public/product/stock/counts-mobile-dark.png
 ```
 
-A **directory per app** — fifteen apps at eight files each is 120 images and a
+A **directory per app** — eight files for every app is well past a hundred images and a
 flat folder of that is unusable. `<surface>` is a NAME, not a number:
 `stock-1.png` tells a docs author nothing, and the point of the registry is that
 a docs page can ask for `counts` and get it. Theme and viewport live in the

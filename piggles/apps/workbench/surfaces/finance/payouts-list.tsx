@@ -167,7 +167,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Payouts list controls"
+        label="Money paid to you controls"
         controls={
           <>
             <Filter
@@ -232,18 +232,18 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <PaneLoadError
             icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
-            title="Could not load payouts"
+            title="Could not load what you were paid"
             description="Something went wrong reaching the server. Your deposits are unaffected. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
           />
         ) : isPending ? (
-          <PaneWaiting label="Loading payouts…" />
+          <PaneWaiting label="Loading what you were paid…" />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
-            title={filtering ? 'No payouts match those filters' : 'No payouts yet'}
+            title={filtering ? 'Nothing matches those filters' : 'Nothing paid out yet'}
             description={
               filtering
                 ? 'Try a different combination, or switch both filters back to All.'

@@ -26,8 +26,10 @@ import {
   Card,
   CardBody,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogTitle,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -54,13 +56,13 @@ export function AllAppsDialog({
         <DialogTitle>All apps</DialogTitle>
         {/* Describes what is ACTUALLY on the screen. The first version said
             "these are just the ones you have not switched on yet" while listing
-            all fifteen, on and off alike. */}
+            every one, on and off alike. */}
         <DialogDescription>
           Everything Piggles does. Every one of them is included and working. This only decides
           which are on your rail, and it never changes what you pay.
         </DialogDescription>
 
-        {/* Two columns from `sm` up. Fifteen rows in one column is a scroll for
+        {/* Two columns from `sm` up. Every app in one column is a scroll for
             something meant to be taken in at a glance. */}
         <ul className="mt-4 grid max-h-[60vh] gap-3 overflow-y-auto sm:grid-cols-2">
           {apps.map((entry) => (
@@ -69,6 +71,27 @@ export function AllAppsDialog({
             </li>
           ))}
         </ul>
+
+        {/* A way out, on the screen.
+
+            Every other dialog in this console carries one, because they are
+            forms and a form has a Cancel. This one is a BROWSE dialog — each
+            change lands the moment it is pressed, so there is nothing to cancel
+            — and it was given no control at all. On a desktop that is Escape or
+            a click on the backdrop. On a phone there is no Escape, and the
+            backdrop is a 16px strip down each side: under half the 44px tap
+            floor this console sets for itself.
+
+            The word is "Done", not "Cancel": nothing is being abandoned, and
+            offering to cancel a change that already happened is a lie about
+            what the button does.
+
+            Sticky, because the list is every app and it scrolls. */}
+        <DialogFooter sticky>
+          <DialogClose>
+            <Button variant="outline">Done</Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -118,15 +141,19 @@ function AppCard({ entry, baseline }: { entry: ConsoleApp; baseline: string[] })
 
   return (
     // The app's own hue, so this list reads as the rail does rather than as
-    // fifteen identical grey rows — carried by the ICON and the button, not by a
-    // tinted card. Fifteen cards in six hues would be competing washes rather
+    // a wall of identical grey rows — carried by the ICON and the button, not by
+    // a tinted card. A card per app in six hues would be competing washes rather
     // than wayfinding, and the chassis stays neutral for that reason (DESIGN.md).
     <AppScope app={entry.app.id} className="h-full">
       <Card className="h-full">
         <CardBody className="gap-2">
           <div className="flex items-center gap-2">
             <Icon glyph={glyph} className="text-module size-5 shrink-0" aria-hidden />
-            <span className="flex-1 text-lg font-bold">{entry.label}</span>
+            {/* A heading, not a bold span. It is the name of one app in a list
+                of every app, and it was the only thing on the card that could
+                have told somebody walking by heading which card they were on.
+                The dialog's own title is the h2 above it. */}
+            <h3 className="flex-1 text-lg font-bold">{entry.label}</h3>
             {entry.onRail ? (
               // State on a thing, which is what a Badge is for — not a label
               // introducing the heading beside it.
@@ -187,6 +214,16 @@ function AppAction({
           variant="outline"
           size="sm"
           loading={busy}
+          // Twelve of these are on screen at once, and every one of them read
+          // "Put away, button" with nothing to tell them apart — the card's
+          // heading is what says WHICH app, and a button's name has to stand on
+          // its own. The ADD half has always said "Add Campaigns"; only the
+          // half that takes something away was anonymous.
+          //
+          // The visible words start the label rather than sitting inside it, so
+          // somebody driving by voice can still say "put away" and be
+          // understood (WCAG 2.5.3). [[feedback_a_fix_leaves_its_neighbour_behind]]
+          aria-label={`Put away ${entry.label}`}
           onClick={() => {
             onChange(false);
           }}

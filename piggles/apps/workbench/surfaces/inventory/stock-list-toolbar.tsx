@@ -13,16 +13,10 @@ import { surfaceTitle } from '../../lib/surfaces/registry';
 import type { ToolbarFilter } from '../../components/pane-toolbar-filters';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SortDirection, StockLocation, StockSortKey } from './data';
+import type { StockLevelFilter } from './stock-list-level';
 
-/**
- * Which states of stock the list is narrowed to.
- *
- * Three values rather than two booleans, because they are the answers to ONE
- * question and the server makes them mutually exclusive: "running low" is paired
- * with `sellable_only`, so a level at zero is `out` and never also `low`. Two
- * independent toggles would offer a both-on combination that means neither.
- */
-export type StockLevelFilter = '' | 'low' | 'out';
+// Re-exported: the pane and its siblings ask the toolbar for these.
+export { parseLevel, type StockLevelFilter } from './stock-list-level';
 
 /** The words the STATE column badges on every row a choice returns, so the chip
  *  and the rows under it say the same thing. Home says "sold out" — the
@@ -115,14 +109,6 @@ export function parseSort(
   const [key, dir] = (raw ?? '').split(':');
   if (!key || (dir !== 'asc' && dir !== 'desc')) return null;
   return { key: key as StockSortKey, dir };
-}
-
-/** A `level` arriving from outside — a deep link from Home, or a saved view
- *  written before this was a three-way choice. Anything unrecognised means
- *  "no narrowing", never a guess. */
-export function parseLevel(raw: string | undefined): StockLevelFilter {
-  if (raw === 'low' || raw === 'out') return raw;
-  return '';
 }
 
 /**

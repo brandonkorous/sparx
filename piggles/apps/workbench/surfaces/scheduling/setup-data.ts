@@ -44,6 +44,7 @@ import { useMutation, useQueries, useQuery, useQueryClient } from '@wizeworks/qu
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
@@ -73,9 +74,7 @@ export function isNotFound(error: unknown): boolean {
 export function formatMoney(cents: number, currency: string): string {
   const code = (currency || 'usd').toUpperCase();
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(
-      cents / 100
-    );
+    return formatCentsAmount(cents, code);
   } catch {
     // An unknown currency code shouldn't blank the whole cell.
     return `${(cents / 100).toFixed(2)} ${code}`;
@@ -631,11 +630,21 @@ export interface AvailabilityWindow {
   validTo: string | null;
 }
 
-/** What a PUT sends for one day-window (no id — the whole week is replaced). */
+/**
+ * What a PUT sends for one day-window (no id — the whole week is replaced).
+ *
+ * THE DATES HAVE TO BE HERE BECAUSE THE SAVE REPLACES THE WEEK. They were not,
+ * and the server deletes every window for the resource before writing the ones it
+ * is given, so any seasonal bound on any day was destroyed by opening Availability
+ * and pressing Save — on a screen that never showed the dates at all (issue 866).
+ * `YYYY-MM-DD`, or null / omitted for no limit at that end.
+ */
 export interface AvailabilityWindowInput {
   dayOfWeek: number;
   startMinute: number;
   endMinute: number;
+  validFrom?: string | null;
+  validTo?: string | null;
 }
 
 export interface AvailabilityException {

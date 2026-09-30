@@ -1,4 +1,9 @@
 import type { AppMarketing } from './types';
+import { SITE_CHAPTERS } from './chapters/site';
+
+// My Site fronts the `builder` module. The first chapter lives here; the rest
+// are in ./chapters/site.ts, with the notes on what was checked and what was
+// deliberately left out.
 
 export const SITE: AppMarketing = {
   heading: 'A website you can change yourself, on a Tuesday, without phoning anybody.',
@@ -64,6 +69,7 @@ export const SITE: AppMarketing = {
         },
       ],
     },
+    ...SITE_CHAPTERS,
   ],
   worksWith: ['content', 'get_found', 'sell'],
   photo: {

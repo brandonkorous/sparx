@@ -56,7 +56,7 @@ export function NameCard({
           }
         />
         <FieldDescription>
-          Leave this empty and replies are labelled with the page the form sits on.
+          Leave this empty and replies are labeled with the page the form sits on.
         </FieldDescription>
       </Field>
     </FormSection>

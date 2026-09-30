@@ -24,7 +24,7 @@ describe('supplierOrdersEmptyWords', () => {
 
   it('speaks of one supplier in the singular', () => {
     const words = supplierOrdersEmptyWords(1, false);
-    expect(words.title).toBe('No supplier orders yet');
+    expect(words.title).toBe('Nothing is going to a supplier yet');
     expect(words.detail).toContain('your supplier ships');
     expect(words.detail).not.toContain('one of your suppliers');
   });

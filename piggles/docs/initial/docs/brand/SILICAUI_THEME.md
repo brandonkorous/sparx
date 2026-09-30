@@ -235,7 +235,7 @@ For chart palettes:
 # App group colors
 
 Piggles colors the **group**, not the app. Five group hues plus the brand cover all
-fifteen apps; apps within a group separate by icon and label, never by hue.
+the apps; apps within a group separate by icon and label, never by hue.
 
 | Group  | Hue                 | Apps                                        |
 | ------ | ------------------- | ------------------------------------------- |

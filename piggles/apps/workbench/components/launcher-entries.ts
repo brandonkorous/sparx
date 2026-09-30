@@ -107,7 +107,13 @@ export function useRecordEntries(
       const carriesId = routeAcceptsId(route);
       out.push({
         id: `record:${hit.key}`,
-        group: route.entityLabel ?? surface.title.toString(),
+        // `resolveTitle`, never the raw field: a surface may title itself with
+        // a FUNCTION of its params (the till is "Take a sale" or "Enter an
+        // order" depending which door opened it), and `.toString()` on one
+        // prints the arrow function's source as a group heading. It also misses
+        // this brand's word for the screen. Every entity route carries a label
+        // today, so this fallback is a trap rather than a path.
+        group: route.entityLabel ?? resolveTitle(surface, {}),
         label: hit.title || 'Untitled',
         subtitle: hit.subtitle,
         icon: surface.icon,

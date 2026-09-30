@@ -800,21 +800,6 @@ export function AutomationEditor({
               >
                 Save
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                className="shrink-0"
-                aria-label="Delete this automation"
-                title="Delete this automation"
-                loading={remove.isPending}
-                onClick={() => {
-                  void onDelete();
-                }}
-              >
-                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-              </Button>
             </>
           ) : (
             <Button
@@ -828,6 +813,26 @@ export function AutomationEditor({
               Create
             </Button>
           )
+        }
+        /* A VALUE, not bespoke JSX. As a button this was a bare red bin - and
+           on a narrow bar it either sits unlabelled beside Save or folds into
+           the overflow popover with no words at all.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          isNew
+            ? undefined
+            : [
+                {
+                  label: 'Delete',
+                  title: 'Delete this automation',
+                  icon: faTrashCan,
+                  tone: 'danger' as const,
+                  loading: remove.isPending,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
         }
       />
 

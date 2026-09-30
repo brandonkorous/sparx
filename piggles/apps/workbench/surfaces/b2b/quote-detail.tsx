@@ -19,11 +19,13 @@ import {
   Badge,
   Button,
   Card,
+  Heading,
   Text,
 } from '@wizeworks/silicaui-react';
 import { faArrowUpRightFromSquare, faBuilding } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ModuleScope } from '../../components/module-scope';
+import { Table } from '../../components/table';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -167,7 +169,19 @@ function QuoteView({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <Text>For {quoteParty(quote)}</Text>
+          {/* The quote's own number, on the quote. A read-only transaction
+              detail keeps its identity heading (DESIGN.md), and this pane had
+              none — the number lived in the tab title and nowhere on the page,
+              which is the one thing a shop reads back down the phone. */}
+          <div className="flex flex-col gap-1">
+            <Heading level={2}>{quote.number ?? 'Not numbered yet'}</Heading>
+            <Text className="text-sm">
+              {/* Null when there is neither a business nor a person on it.
+                  It used to read "For Unknown business", which claims a
+                  business exists and that we have mislaid which one. */}
+              {quoteParty(quote) ? `For ${quoteParty(quote)}` : 'Nobody is on this quote yet'}
+            </Text>
+          </div>
 
           {expired ? (
             <Alert color="warning">
@@ -180,6 +194,43 @@ function QuoteView({
               </AlertContent>
             </Alert>
           ) : null}
+
+          {/* A quote IS its list of lines. The pane used to show a total with
+              nothing under it, so the one screen for checking what a business
+              asked for could not answer that question, and she had to open the
+              pricing editor to read her own quote back. */}
+          <FormSection title="What is on it">
+            {quote.lines.length === 0 ? (
+              <Text className="text-sm">
+                Nothing has been put on this quote yet. Price and respond to add the first line.
+              </Text>
+            ) : (
+              <Table size="sm">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th className="text-right">Qty</th>
+                    <th className="hidden text-right @lg:table-cell">Each</th>
+                    <th className="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quote.lines.map((line) => (
+                    <tr key={line.id}>
+                      <td>{line.description}</td>
+                      <td className="text-right tabular-nums">{line.quantity}</td>
+                      <td className="hidden text-right tabular-nums @lg:table-cell">
+                        {formatMoney(line.unitPrice, quote.currency)}
+                      </td>
+                      <td className="text-right font-medium tabular-nums">
+                        {formatMoney(line.lineTotal, quote.currency)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </FormSection>
 
           <FormSection title="What it comes to">
             <div className="flex flex-col gap-2">

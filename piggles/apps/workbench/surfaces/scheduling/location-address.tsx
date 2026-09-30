@@ -15,6 +15,7 @@ import {
   FieldStatus,
   Input,
 } from '@wizeworks/silicaui-react';
+import { CountryField } from '../../components/country-field';
 import { FormSection } from '../../components/form-section';
 import type { Coordinates, Draft } from './location-draft';
 
@@ -104,14 +105,14 @@ function Pin({ draft, set, error }: { draft: Draft; set: SetField; error: string
         field="lat"
         draft={draft}
         set={set}
-        placeholder="51.5072"
+        placeholder="40.7128"
       />
       <PinField
         label="Longitude (optional)"
         field="lng"
         draft={draft}
         set={set}
-        placeholder="-0.1276"
+        placeholder="-74.0060"
         error={error}
       />
     </div>
@@ -132,13 +133,7 @@ export function LocationAddressSection({
       title="Where it is"
       description="Shown to customers on your booking page. Fill in as much as makes sense: a market stall and a clinic do not need the same lines."
     >
-      <AddressLine
-        label="Street"
-        field="line1"
-        draft={draft}
-        set={set}
-        placeholder="14 High Street"
-      />
+      <AddressLine label="Street" field="line1" draft={draft} set={set} placeholder="123 Main St" />
       <AddressLine
         label="Unit, floor or suite (optional)"
         field="line2"
@@ -150,7 +145,15 @@ export function LocationAddressSection({
         <AddressLine label="Town or city" field="city" draft={draft} set={set} />
         <AddressLine label="State, county or region" field="region" draft={draft} set={set} />
         <AddressLine label="Postal code" field="postalCode" draft={draft} set={set} />
-        <AddressLine label="Country" field="country" draft={draft} set={set} />
+        {/* Picked by name, not typed. This line had no guidance at all,
+            which is how one place came to be stored as "United States" while
+            every other address in every other table holds "US". Issue 721. */}
+        <CountryField
+          value={draft.country}
+          onChange={(next) => {
+            set('country', next);
+          }}
+        />
       </div>
 
       <Pin draft={draft} set={set} error={coordinates.error} />

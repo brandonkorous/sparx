@@ -4,23 +4,28 @@
 //
 // ── Why this exists at all ────────────────────────────────────────────────
 //
-// Warehouse mode says "scan the count sheet" and "scan the delivery
+// The scanning screen says "scan the count sheet" and "scan the delivery
 // paperwork". That instruction is a lie unless the number on those documents is
 // printed as something a scanner can read, and a purchase order printed from
 // sparx has only ever carried its number as text. So: one label, Code 128, big
 // enough to read from the top of a pallet.
 //
-// ── One surface for four documents, not four surfaces ─────────────────────
+// ── One surface for five documents, not five surfaces ─────────────────────
 //
-// A purchase order, a receipt, a transfer and a count all need exactly the same
-// thing: their reference as bars, their reference as text, and one line saying
-// what it is. There is no per-document variation worth four files, and four
-// files would guarantee the four drift apart.
+// A purchase order, a receipt, a transfer, a count and a pick list all need
+// exactly the same thing: their reference as bars, their reference as text, and
+// one line saying what it is. There is no per-document variation worth five
+// files, and five files would guarantee the five drift apart.
+//
+// The header used to say FOUR while the pane was opened by five, and the fifth
+// was the one the scan resolver had never been taught (issue 718). A count that
+// stops matching is the cheapest tell there is that something was added and the
+// rest of it was not.
 //
 // ── Deliberately not part of the PDF document builder ─────────────────────
 //
 // The PO document (`purchase-order-document.ts`) is what gets emailed to a
-// supplier — an external artefact with a brand on it. This is a sticker for our
+// supplier — an external artifact with a brand on it. This is a sticker for our
 // own dock. Putting a scannable code on the supplier's copy would be putting our
 // internal reference on someone else's desk, where it means nothing.
 
@@ -31,7 +36,7 @@ import { faPrint } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PrintSheet } from '../../components/print-sheet';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type SurfaceContext } from '../../lib/surfaces/registry';
 
 /** Copies, because a delivery gets one on the paperwork and one on the pallet. */
 const COPY_COUNTS = [1, 2, 4, 6];
@@ -67,6 +72,9 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const sizeSpec = SIZES.find((s) => s.value === size) ?? SIZES[0];
 
+  /** What this console calls the scanning screen — "Scanner mode" in Piggles. */
+  const scannerName = (surfaceTitle('inventory.warehouse') ?? 'Scanner mode').toLowerCase();
+
   const svg = useMemo(() => {
     if (!number) return null;
     try {
@@ -86,7 +94,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Document label controls"
+        label="Print a label controls"
         className="print:hidden"
         controls={
           <>
@@ -145,7 +153,12 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (
           <div className="flex flex-col gap-3">
             <Text className="text-sm print:hidden">
-              Stick one on the paperwork and one on the pallet. Scanning it in warehouse mode opens
+              {/* The scanning screen's name is read from the registry, not typed
+                  here: this brand renames it (vocabulary.ts calls it "Scanner
+                  mode") and a sentence that names a screen has to name the one
+                  the tab does. Typed in, it said "warehouse mode" - a screen
+                  with no such name anywhere in this console. */}
+              Stick one on the paperwork and one on the pallet. Scanning it in {scannerName} opens
               this {title.toLowerCase()} straight away.
             </Text>
 

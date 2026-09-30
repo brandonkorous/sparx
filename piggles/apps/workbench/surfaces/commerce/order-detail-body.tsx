@@ -1,8 +1,9 @@
 'use client';
 
 // The order pane's scrolling body, in the order it reads: what it is, what was
-// bought, who bought it, where it goes, what happened to the money, and only
-// then the two moves that cannot be taken back.
+// bought, who bought it, where it goes, anything anybody wrote down about it,
+// what happened to the money, and only then the two moves that cannot be taken
+// back.
 
 import { COLUMN, OrderIdentity } from './order-detail-blocks';
 import { DueDaySection } from './order-detail-due-day';
@@ -13,7 +14,8 @@ import { PaymentsSection, RefundsSection } from './order-detail-money';
 import { InvoicesSection } from './order-detail-invoices';
 import { HandoverSection } from './order-detail-handover';
 import { ReturnsSection } from './order-detail-returns';
-import { CancelRow, OrderNotes, RefundRow } from './order-detail-risk';
+import { CancelRow, RefundRow } from './order-detail-risk';
+import { OrderNotes } from './order-notes';
 import type { OrderFacts } from './order-detail-facts';
 import type { useOrderRisk } from './order-detail-actions';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -53,11 +55,16 @@ export function OrderBody(props: OrderBodyProps) {
         <SoldBySection type="order" sourceId={order.id} canSeePay={props.canSeeCommission} />
 
         <DestinationSection order={order} facts={facts} />
+        {/* Reads with what was bought and where it goes, because that is what it
+            is about, and because a box she TYPES in cannot sit directly above
+            Refund and Cancel. It used to be the last block before both (issue
+            874), which was harmless only while it could never render. */}
+        <OrderNotes order={order} />
         {/* The ask comes before the money, because that is the order the two
             happen in on a shop that takes no payment at checkout: you send the
             bill, then it gets paid. */}
         <InvoicesSection order={order} ctx={props.ctx} />
-        <PaymentsSection order={order} payments={props.payments} />
+        <PaymentsSection order={order} payments={props.payments} risk={props.risk} />
         <HandoverSection
           order={order}
           plan={facts.plan}
@@ -68,7 +75,6 @@ export function OrderBody(props: OrderBodyProps) {
             so this reads between the handover and what was given back. */}
         <ReturnsSection order={order} ctx={props.ctx} />
         <RefundsSection refunds={props.refunds} />
-        <OrderNotes order={order} />
         <RefundRow
           order={order}
           amount={facts.refundableAmount}

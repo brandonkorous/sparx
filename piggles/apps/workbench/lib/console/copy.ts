@@ -155,7 +155,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // but nothing is softened or shortened, because a person deciding whether to
   // connect their own mailbox is entitled to the whole of it.
   'crm.mailbox.personal.privacy':
-    'This is your own mailbox, so we keep only the messages to and from people already on your customer list. Everything else is thrown away as it is read, never saved, never searchable, never shown to your team.',
+    'This is your own mailbox, so we keep only the messages to and from people already on your customer list. Everything else is thrown away as it is read, never saved, never searchable, never shown to anybody else.',
   'crm.mailbox.shared.privacy':
     'A shared address is there to receive mail from people you have not met, so we keep everything that arrives, including messages from strangers. Do not connect a personal mailbox this way.',
   'crm.objectType.key':
@@ -301,8 +301,9 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
     Send one to yourself before you send one to everybody.`,
 
   'partner.guide.b2b.label': 'Wholesale',
-  'partner.guide.b2b.blurb': 'Trade accounts, their own prices, and somewhere for them to order.',
-  'partner.guide.b2b.steps': `Create a trade account for each shop they supply.
+  'partner.guide.b2b.blurb':
+    'Wholesale customers, their own prices, and somewhere for them to order.',
+  'partner.guide.b2b.steps': `Create a wholesale customer for each shop they supply.
     Give each account its own prices and how long it has to pay.
     Invite the buyers in.
     Put a trade order through yourself and check the price that comes out.`,
@@ -379,8 +380,11 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
     'This is still the starter wording. Read it through, make it fit your business, then mark it as checked.',
 
   // ── Selling elsewhere ────────────────────────────────────────────────────
+  // It said "can be connected in your settings" for as long as there was no
+  // Connect button anywhere — and no settings screen that connected one either
+  // (issue 733). Now it says what pressing the button does.
   'commerce.channels.hint':
-    'These shops are already set up here and can be connected in your settings.',
+    'Connect one and you sign in to that shop, allow it once, and come straight back. Your products start going across shortly afterwards.',
 
   // ── Calls ────────────────────────────────────────────────────────────────
   'crm.call.bridgeHint': 'Pick up and we will dial them and put you through.',
@@ -426,8 +430,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
     'Connect a stock source when the real count lives somewhere else: a spreadsheet you publish, another system, or something running on your own computers. Its numbers then come in and become what you sell against.',
 
   // ── What is happening ────────────────────────────────────────────────────
-  'pulse.activity.description':
-    'Everything you, your team and your customers have done, newest first.',
+  'pulse.activity.description': 'Everything that has happened in your business, newest first.',
   'pulse.jobs.description': 'Work we are doing in the background for you.',
 
   // ── Your site ────────────────────────────────────────────────────────────
@@ -611,7 +614,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'ai.prompt.newIntro':
     'Tell Piggles something about your business to use when it writes for you: how you like to sound, what to always mention, what never to say. You can switch any of it off later.',
   'ai.prompt.readOnly':
-    'You can read this, but changing how Piggles writes needs an owner or an admin.',
+    'You can read this, but changing how Piggles writes needs an owner or an admin. Ask one of them if something here needs changing.',
   'ai.prompts.intro':
     'The things Piggles keeps in mind whenever it writes for you. Your tone, the details you always want in, the words you never want used, right down to how the chat on your site sounds. Only the ones switched on are followed.',
   'ai.tools.notWriting':
@@ -725,7 +728,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── The console itself ───────────────────────────────────────────────────
   'notifications.intro':
-    'Choose what we tell you about, and whether it comes by email or just waits for you here. These are your own choices. Nobody else on your team is affected.',
+    'Choose what we tell you about, and whether it comes by email or just waits for you here. These are your own choices, and they change nothing for anybody else who signs in.',
   'sampleData.nothingOn':
     'You have not added any of the apps this would fill, so a load would only add a little. Add something like Sell or Bookings first and you will get the full set.',
 

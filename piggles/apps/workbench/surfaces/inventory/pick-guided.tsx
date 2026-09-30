@@ -142,7 +142,7 @@ export function PickGuidedSurface({ ctx }: { ctx: SurfaceContext }) {
         <Progress color="module-inventory" value={done} max={Math.max(1, walk.lineCount)} />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
         {current === null ? (
           <FinishedPanel walk={walk} ctx={ctx} skipped={skipped} />
         ) : (
@@ -473,7 +473,7 @@ function FinishedPanel({
           </AlertTitle>
           <AlertDescription>
             {walk.shortCount > 0
-              ? `${plural(walk.shortCount, 'line', 'lines')} came up short. Those shelves are on a count now. Everything else is on the trolley.`
+              ? `${plural(walk.shortCount, 'line', 'lines')} came up short. ${walk.shortCount === 1 ? 'That shelf is' : 'Those shelves are'} on a count now. Everything else is on the trolley.`
               : 'Everything was found. Take the trolley to the pack bench.'}
           </AlertDescription>
         </AlertContent>

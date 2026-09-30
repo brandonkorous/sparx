@@ -138,7 +138,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Could not open this delivery</AlertTitle>
             <AlertDescription>
-              The purchase order could not be read. Nothing has been booked in.
+              The order to the supplier could not be read. Nothing has been booked in.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -149,7 +149,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Receiving controls"
+        label="Scan a delivery controls"
         controls={
           <>
             {/* The consequence, colored as one. Everything else on this screen is
@@ -188,7 +188,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
         {/* Who and what, once, at the top. A receiver working two deliveries
             needs to be able to tell at a glance which one this screen is. */}
         <Card>
@@ -267,7 +267,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
             title="Nothing on this order"
-            description="This purchase order has no lines, so there is nothing to receive against it."
+            description="This order has no lines on it, so there is nothing to receive against it."
           />
         ) : (
           <Table size="sm">

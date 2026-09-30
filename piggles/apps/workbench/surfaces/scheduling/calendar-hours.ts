@@ -6,7 +6,10 @@
 // with hours set looked identical to a week with none (issue 084). This turns a
 // person's weekly hours plus their closures into quantised bands, in the same
 // 15-minute slot units the blocks use, so no inline style is involved.
+// Seasonal hours (issue 866) count: a window outside its dates opens nobody.
+// Closures are read on the person's own clock, not the viewer's (calendar-zone).
 
+import { localDayKey, zoned } from './calendar-zone';
 import { HEIGHT_PX, TOP_PX, SLOT_MIN, type TimeWindow } from './calendar-grid';
 import type { AvailabilityException, AvailabilityWindow } from './setup-data';
 import { customHoursOf } from './setup-data';
@@ -42,11 +45,14 @@ function band(startMin: number, endMin: number, view: TimeWindow, key: string, t
   return { key, topClass, heightClass, title };
 }
 
-/** Local midnight for a date, as milliseconds. */
-function dayStart(date: Date): number {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy.getTime();
+/** Whether a weekly window is in force on this date: its weekday, inside its
+ *  season if it has one. Either bound alone is open-ended. */
+function windowAppliesOn(window: AvailabilityWindow, date: Date): boolean {
+  if (window.dayOfWeek !== date.getDay()) return false;
+  const day = localDayKey(date);
+  if (window.validFrom && day < window.validFrom.slice(0, 10)) return false;
+  if (window.validTo && day > window.validTo.slice(0, 10)) return false;
+  return true;
 }
 
 /**
@@ -61,19 +67,26 @@ function dayStart(date: Date): number {
 function closureFor(
   date: Date,
   resourceId: string,
-  exceptions: AvailabilityException[]
+  exceptions: AvailabilityException[],
+  timezone?: string | null
 ): AvailabilityException | null {
-  const from = dayStart(date);
-  const to = from + 24 * 60 * 60 * 1000;
+  const day = localDayKey(date);
   for (const exception of exceptions) {
     if (exception.resourceId !== null && exception.resourceId !== resourceId) continue;
     if (exception.kind !== 'closed' && exception.kind !== 'custom_hours') continue;
-    const start = new Date(exception.startAt).getTime();
-    const end = new Date(exception.endAt).getTime();
-    if (Number.isNaN(start) || Number.isNaN(end)) continue;
-    if (start < to && end >= from) return exception;
+    if (covers(exception, day, timezone)) return exception;
   }
   return null;
+}
+
+/** Whether a closure touches this calendar day ON THE BUSINESS'S CLOCK. One
+ *  ending exactly at its midnight leaves the day alone. */
+function covers(exception: AvailabilityException, day: string, timezone?: string | null): boolean {
+  const start = zoned(exception.startAt, timezone);
+  const end = zoned(exception.endAt, timezone);
+  if (start.dayKey === '' || end.dayKey === '') return false;
+  if (start.dayKey > day) return false;
+  return end.dayKey > day || (end.dayKey === day && end.minutes > 0);
 }
 
 /** The hours this person is open on this date, after closures have their say. */
@@ -81,16 +94,17 @@ function openSpansOn(
   date: Date,
   resourceId: string,
   windows: AvailabilityWindow[],
-  exceptions: AvailabilityException[]
+  exceptions: AvailabilityException[],
+  timezone?: string | null
 ): OpenSpan[] {
-  const closure = closureFor(date, resourceId, exceptions);
+  const closure = closureFor(date, resourceId, exceptions, timezone);
   if (closure) {
     // Shut all day, or open on special hours that REPLACE the weekly pattern.
     const special = customHoursOf(closure);
     return special ? [{ startMinute: special.startMinute, endMinute: special.endMinute }] : [];
   }
   return windows
-    .filter((window) => window.dayOfWeek === date.getDay())
+    .filter((window) => window.resourceId === resourceId && windowAppliesOn(window, date))
     .map((window) => ({ startMinute: window.startMinute, endMinute: window.endMinute }))
     .sort((a, b) => a.startMinute - b.startMinute);
 }
@@ -108,10 +122,11 @@ export function closedBandsFor(
   resourceId: string,
   windows: AvailabilityWindow[],
   exceptions: AvailabilityException[],
-  view: TimeWindow
+  view: TimeWindow,
+  timezone?: string | null
 ): ClosedBand[] {
-  const closure = closureFor(date, resourceId, exceptions);
-  const spans = openSpansOn(date, resourceId, windows, exceptions);
+  const closure = closureFor(date, resourceId, exceptions, timezone);
+  const spans = openSpansOn(date, resourceId, windows, exceptions, timezone);
   const title = closure?.reason?.trim() ? closure.reason.trim() : 'Closed';
 
   if (spans.length === 0) {
@@ -149,7 +164,8 @@ export function worksOn(
   date: Date,
   resourceId: string,
   windows: AvailabilityWindow[],
-  exceptions: AvailabilityException[]
+  exceptions: AvailabilityException[],
+  timezone?: string | null
 ): boolean {
-  return openSpansOn(date, resourceId, windows, exceptions).length > 0;
+  return openSpansOn(date, resourceId, windows, exceptions, timezone).length > 0;
 }

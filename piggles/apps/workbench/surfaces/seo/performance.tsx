@@ -229,7 +229,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
-            title="Could not load your search performance"
+            title="Could not load how people find you"
             description="This is a problem reaching the server. Your site and its scores are unaffected."
             onRetry={() => {
               void audits.refetch();
@@ -240,7 +240,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     if (audits.isPending) {
-      return <PaneWaiting label="Loading your search performance…" />;
+      return <PaneWaiting label="Loading how people find you…" />;
     }
 
     if (nothingScored) {
@@ -486,7 +486,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Search performance controls"
+        label="Controls for how people find you"
         primary={
           <Button
             color="module"

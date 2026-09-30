@@ -577,7 +577,7 @@ export function CustomerNotesTab({
         isEmpty={rows.length === 0}
         icon={<Icon glyph={faNoteSticky} className="size-6" aria-hidden />}
         emptyTitle="No notes yet"
-        emptyDescription="Jot the first one down with the Note button above. It is only ever seen by your team."
+        emptyDescription="Jot the first one down with the Note button above. It is only ever seen inside your business."
       >
         <ul className="flex flex-col p-4">
           {rows.map((activity, index) => (

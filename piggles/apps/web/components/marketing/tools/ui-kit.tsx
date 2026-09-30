@@ -371,7 +371,7 @@ export function CodeOut({
       {title ? (
         <div className="mb-2 flex items-center justify-between gap-4">
           <h3 className="text-base font-bold">{title}</h3>
-          <CopyButton text={code} size="sm" variant="soft" />
+          <CopyButton text={code} size="sm" />
         </div>
       ) : null}
       <pre
@@ -383,7 +383,7 @@ export function CodeOut({
       {hint ? <p className="mt-2 text-base">{hint}</p> : null}
       {!title ? (
         <div className="mt-3">
-          <CopyButton text={code} variant="soft" />
+          <CopyButton text={code} />
         </div>
       ) : null}
     </div>

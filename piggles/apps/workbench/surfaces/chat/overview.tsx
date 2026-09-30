@@ -446,7 +446,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Messages overview controls"
+        label="Chat activity controls"
         refresh={
           <RefreshButton
             isFetching={

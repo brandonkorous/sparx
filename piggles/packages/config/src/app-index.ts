@@ -35,6 +35,79 @@ export const MODULE_GROUP: Record<ModuleKey, PigglesGroup> = Object.fromEntries(
 export const appsInGroup = (group: PigglesGroup): PigglesAppDef[] =>
   APPS.filter((a) => a.group === group).sort((x, y) => x.navOrder - y.navOrder);
 
+/**
+ * How many apps there are, and the word for it.
+ *
+ * THE MARKETING SITE SAID "fifteen" IN 42 PLACES AND THERE WERE SIXTEEN. Both
+ * were written in the same commit, so the number was never right: the /apps
+ * page headed itself "Fifteen apps. One subscription." over a grid of sixteen
+ * tiles a visitor could count, and the Terms said "every one of the fifteen
+ * apps" as a term of the subscription.
+ *
+ * The number belongs to the registry, so it is taken from the registry. A
+ * spelled count typed into a sentence is a copy of a fact that lives somewhere
+ * else, and it goes stale the first time somebody adds an app without grepping
+ * for the word. `check:app-count` fails the build if one is typed again.
+ * [[feedback_never_present_absence_as_measurement]]
+ *
+ * SPELLED, because these appear mid-sentence in marketing copy where a numeral
+ * reads as a price or a version. `pricing/page.tsx` says so in its own comment:
+ * mixed numerals in one passage read as an error.
+ */
+export const APP_COUNT: number = APPS.length;
+
+const COUNT_WORDS = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
+  'twenty',
+];
+
+/**
+ * A small number as the word for it, falling back to the numeral past twenty
+ * rather than inventing a word, because a wrong word is worse than a digit.
+ *
+ * Shared because a private copy of this list is how the count goes wrong twice:
+ * `answer-receipt.tsx` kept one that stopped at `'fifteen'`, so the moment a
+ * sixteenth app existed its "N, waiting" row printed a NUMERAL on a page that
+ * spells every other number on purpose.
+ */
+export const numberWord = (n: number): string => COUNT_WORDS[n] ?? String(n);
+
+/** "sixteen". */
+export const APP_COUNT_WORD: string = numberWord(APP_COUNT);
+
+/** "Sixteen", for the start of a sentence or a heading. */
+export const APP_COUNT_WORD_CAP: string =
+  APP_COUNT_WORD.charAt(0).toUpperCase() + APP_COUNT_WORD.slice(1);
+
+/**
+ * "fifteen" — every app EXCEPT the one being talked about.
+ *
+ * `/apps/[app]` closes twice with "So are the other fourteen", which is the
+ * total minus one and was typed by hand off a total that was itself wrong. Two
+ * hand-derived numbers in one sentence is two chances to be stale, and this one
+ * was wrong by two.
+ */
+export const OTHER_APPS_WORD: string = numberWord(Math.max(APP_COUNT - 1, 0));
+
 /** The rail a brand-new business sees. Onboarding narrows this further by asking
  *  what the business actually does — it HIDES, it never gates, and every app
  *  stays reachable from the launcher regardless. */

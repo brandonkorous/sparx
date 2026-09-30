@@ -15,7 +15,7 @@ const QUESTIONS = [
   },
   {
     q: 'Can I take my data with me if I leave?',
-    a: 'All of it, whenever you want, in formats other software can actually read: customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.',
+    a: 'Whenever you want, as spreadsheets other software can actually read: customers, products, stock, orders, invoices, bookings and your articles, each from the list it lives on. You do not have to ask, and you do not have to be leaving.',
   },
   {
     q: 'What if I run two businesses?',
@@ -23,7 +23,7 @@ const QUESTIONS = [
   },
   {
     q: 'Do you use my business data to train AI?',
-    a: 'No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else, and you can revoke it whenever you want.',
+    a: 'No. Not to train a model, not to improve a shared assistant, not anonymized, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else, and you can revoke it whenever you want.',
   },
   {
     q: 'Is there a discount for paying yearly?',

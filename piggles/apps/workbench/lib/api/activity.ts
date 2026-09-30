@@ -13,6 +13,7 @@
 
 import { useMemo } from 'react';
 import { useQuery } from '@wizeworks/query';
+import { activityWord } from '../console/activity-words';
 import { api } from './client';
 
 export interface ActivityItem {
@@ -174,7 +175,18 @@ export function useActivity(options: ActivityOptions = {}): {
     placeholderData: (previous) => previous,
   });
 
-  const items = query.data?.items;
+  const raw = query.data?.items;
+  // THE ONE PLACE THE PLATFORM'S WORDS ENTER THIS CONSOLE.
+  //
+  // The sentence arrives composed by the API in sparx's vocabulary, and this
+  // brand has its own for a chunk of it. Swapped here rather than in the two
+  // places that draw a row — the Pulse feed and the status bar's toasts —
+  // because a rename applied at the drawing is a rename one new caller away
+  // from being half-applied. Same boundary rule as `useReportFields`.
+  const items = useMemo(
+    () => raw?.map((item) => ({ ...item, title: activityWord(item.action, item.title) })),
+    [raw]
+  );
   const { refetch } = query;
   return useMemo(
     () => ({

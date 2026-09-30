@@ -24,6 +24,7 @@
 // reverse, so it sits in a quiet row under a divider after the work, never as a
 // loud card competing with the details someone came in to change.
 
+import { CountryField } from '../../components/country-field';
 import { useEffect, useMemo, useState } from 'react';
 import { shownInPlace } from '@wizeworks/query';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -63,6 +64,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -299,7 +301,7 @@ function PurchasingLinks({
   return (
     <FormSection
       title="What you buy from this supplier"
-      description="The items you source here, with the code and price this supplier charges. A purchase order to them starts from this list."
+      description="The items you source here, with the code and price this supplier charges. An order to them starts from this list."
       action={
         adding ? null : (
           <Button
@@ -319,7 +321,7 @@ function PurchasingLinks({
       {variants.length === 0 && !adding ? (
         <Text className="text-sm">
           Nothing recorded yet. Add the items you buy here so their supplier code and price fill in
-          automatically on a purchase order.
+          automatically on an order to this supplier.
         </Text>
       ) : null}
 
@@ -488,7 +490,7 @@ function SupplierPurchaseOrders({ supplierId, ctx }: { supplierId: string; ctx: 
 
   return (
     <FormSection
-      title="Purchase orders to this supplier"
+      title="Orders you have sent them"
       description="The most recent orders you have placed with them."
     >
       <ul className="flex flex-col gap-2">
@@ -674,18 +676,15 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed load REPLACES the form — never an empty one beside a dead Save.
   if (!isNew && supplier.isError) {
-    const gone = isNotFound(supplier.error);
     return (
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
-            reason={gone ? 'missing' : 'unreachable'}
-            title={gone ? 'This supplier no longer exists' : 'Could not load this supplier'}
-            description={
-              gone
-                ? 'It may have been removed. Its past orders are unaffected.'
-                : 'This is a problem reaching the server. The supplier record is unaffected.'
-            }
+            error={supplier.error}
+            title="Could not load this supplier"
+            description="This is a problem reaching the server. The supplier record is unaffected."
+            missingTitle="This supplier no longer exists"
+            missingDescription="It may have been removed. Its past orders are unaffected."
             onRetry={() => {
               void supplier.refetch();
             }}
@@ -909,25 +908,13 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 />
                 <FieldDescription>Sets an order&apos;s expected date.</FieldDescription>
               </Field>
-              <Field>
-                <FieldLabel>Currency</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.currency}
-                      placeholder="USD"
-                      spellCheck={false}
-                      maxLength={3}
-                      className="uppercase"
-                      onChange={(event) => {
-                        set('currency', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Three-letter code.</FieldDescription>
-              </Field>
+              <CurrencyField
+                value={form.currency}
+                onChange={(next) => {
+                  set('currency', next);
+                }}
+                description="What this supplier bills you in."
+              />
             </div>
           </FormSection>
 
@@ -1005,25 +992,15 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
               </Field>
-              <Field>
-                <FieldLabel>Country</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.country}
-                      placeholder="US"
-                      spellCheck={false}
-                      maxLength={2}
-                      className="uppercase"
-                      onChange={(event) => {
-                        set('country', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Two-letter country code.</FieldDescription>
-              </Field>
+              {/* Picked by name. It was a two-character box, which asks somebody to
+                  know that Germany is DE before they can say where a business
+                  is. Issue 721. */}
+              <CountryField
+                value={form.country}
+                onChange={(next) => {
+                  set('country', next);
+                }}
+              />
             </div>
           </FormSection>
 

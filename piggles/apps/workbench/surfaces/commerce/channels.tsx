@@ -13,10 +13,14 @@
 // removes OUR record of the shop's listings, but it does NOT take those listings
 // down on the shop itself. The confirm says so first.
 
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Card,
@@ -26,7 +30,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { faLinkSlash, faServer, faShop } from '@fortawesome/pro-solid-svg-icons';
+import { faLinkSlash, faPlug, faServer, faShop } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -38,8 +42,11 @@ import { productErrorMessage } from './products-data';
  *  than the generic one. */
 const MODULE = 'commerce';
 import {
+  channelErrorMessage,
   connectionState,
+  useChannelConnectUrl,
   useChannels,
+  useCompleteChannelConnect,
   useDisconnectChannel,
   type ChannelCatalogEntry,
   type ChannelConnection,
@@ -101,10 +108,10 @@ function ConnectionRow({
           </Text>
           <Text className="text-sm">
             {connection.mappingCount === 0
-              ? 'No product listings on it yet.'
+              ? 'Nothing is listed on it yet.'
               : connection.mappingCount === 1
-                ? '1 product listing rides on it.'
-                : `${String(connection.mappingCount)} product listings ride on it.`}
+                ? '1 product is listed on it.'
+                : `${String(connection.mappingCount)} products are listed on it.`}
           </Text>
           <Text className="text-sm">
             {connection.lastSyncedAt ? (
@@ -137,7 +144,16 @@ function ConnectionRow({
   );
 }
 
-function CatalogRow({ entry }: { entry: ChannelCatalogEntry }) {
+function CatalogRow({
+  entry,
+  connecting,
+  onConnect,
+}: {
+  entry: ChannelCatalogEntry;
+  /** Non-null while a popup is open, so only the row being connected shows it. */
+  connecting: string | null;
+  onConnect: ((slug: string) => void) | null;
+}) {
   const available = entry.availability === 'available';
   return (
     <div className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-3 last:border-b-0 last:pb-0">
@@ -147,16 +163,62 @@ function CatalogRow({ entry }: { entry: ChannelCatalogEntry }) {
         </Text>
         <Text className="text-sm">{entry.tagline}</Text>
       </div>
-      <Badge color={available ? 'success' : 'neutral'} variant="soft" size="sm">
-        {available ? 'Available' : PHASE_LABEL[entry.phase]}
-      </Badge>
+      {/* A shop that is ready gets the button that makes it true. Without one,
+          the green badge was a claim with nowhere to act on it — the API's
+          connect handshake shipped and nothing in either console called it
+          (issue 733). */}
+      {available && onConnect ? (
+        <Button
+          size="sm"
+          color="module"
+          aria-label={`Connect ${entry.name}`}
+          loading={connecting === entry.slug}
+          disabled={connecting !== null}
+          onClick={() => {
+            onConnect(entry.slug);
+          }}
+        >
+          <Icon glyph={faPlug} className="size-4" aria-hidden />
+          Connect
+        </Button>
+      ) : (
+        <Badge color={available ? 'success' : 'neutral'} variant="soft" size="sm">
+          {available ? 'Available' : PHASE_LABEL[entry.phase]}
+        </Badge>
+      )}
     </div>
   );
 }
 
+/** The shape the callback page posts back through `window.opener`. */
+interface CallbackMessage {
+  source: 'piggles-channel';
+  code?: string;
+  state?: string;
+  error?: string;
+}
+
+function isCallbackMessage(data: unknown): data is CallbackMessage {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as { source?: unknown }).source === 'piggles-channel'
+  );
+}
+
 export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
+  const toast = useToast();
   const channels = useChannels();
   const data = channels.data;
+
+  const connectUrl = useChannelConnectUrl();
+  const completeConnect = useCompleteChannelConnect();
+  /** Which row was pressed. The BUSY flag is derived below, not stored: a
+   *  stored one never clears when somebody closes the shop's window without
+   *  finishing, and the whole section stays disabled until the pane reloads.
+   *  Same shape as Your social accounts. */
+  const [connectingSlug, setConnectingSlug] = useState<string | null>(null);
+  const [connectFailure, setConnectFailure] = useState<string | null>(null);
 
   const nameBySlug = useMemo(() => {
     const map = new Map<string, string>();
@@ -164,14 +226,96 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
     return map;
   }, [data]);
 
+  const connecting = connectUrl.isPending || completeConnect.isPending;
+
   const connections = data?.connections ?? [];
   const available = (data?.catalog ?? []).filter((c) => c.availability === 'available');
   const comingSoon = (data?.catalog ?? []).filter((c) => c.availability !== 'available');
 
+  // Finish a connect once the popup posts the code back.
+  const runComplete = useCallback(
+    (code: string, state: string) => {
+      completeConnect.mutate(
+        { code, state },
+        {
+          onSuccess: (result) => {
+            setConnectingSlug(null);
+            toast.add({
+              title: `${nameBySlug.get(result.channel) ?? result.channel} connected`,
+              description: 'Your products start syncing to it shortly.',
+              type: 'success',
+            });
+          },
+          onError: (error) => {
+            setConnectingSlug(null);
+            setConnectFailure(
+              channelErrorMessage(error, 'Could not finish connecting. Nothing was changed.')
+            );
+          },
+        }
+      );
+    },
+    [completeConnect, toast, nameBySlug]
+  );
+
+  // A live handle to the runner, so the listener — registered once — always
+  // calls the current one without re-binding and dropping an open popup's
+  // message.
+  const completeRef = useRef(runComplete);
+  completeRef.current = runComplete;
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (!isCallbackMessage(event.data)) return;
+      if (event.data.error) {
+        setConnectingSlug(null);
+        setConnectFailure(
+          event.data.error === 'access_denied'
+            ? 'You canceled the sign-in, so nothing was connected.'
+            : `The shop reported a problem: ${event.data.error}`
+        );
+        return;
+      }
+      if (event.data.code && event.data.state) {
+        completeRef.current(event.data.code, event.data.state);
+      }
+    }
+    window.addEventListener('message', onMessage);
+    return () => {
+      window.removeEventListener('message', onMessage);
+    };
+  }, []);
+
+  const connect = (slug: string) => {
+    setConnectFailure(null);
+    setConnectingSlug(slug);
+    // Open the popup synchronously inside the click so the browser does not
+    // treat it as unsolicited; point it at the shop once the URL resolves.
+    const popup = window.open('', 'piggles-channel-connect', 'width=560,height=680');
+    const redirectUri = `${window.location.origin}/commerce/sales-channels/callback`;
+    connectUrl.mutate(
+      { slug, redirectUri },
+      {
+        onSuccess: ({ url }) => {
+          if (popup) popup.location.href = url;
+          else window.location.href = url;
+        },
+        onError: (error) => {
+          popup?.close();
+          setConnectingSlug(null);
+          setConnectFailure(
+            channelErrorMessage(error, 'Could not start the connection. Nothing was changed.')
+          );
+        },
+      }
+    );
+  };
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Sales channels controls"
+        label="Controls for where you sell"
         status={
           connections.length > 0 ? (
             <Badge color="success" variant="soft" size="sm">
@@ -200,7 +344,7 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <PaneLoadError
                 module={MODULE}
                 icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
-                title="Could not load your sales channels"
+                title="Could not load where you sell"
                 description={productErrorMessage(
                   channels.error,
                   'This is a problem reaching the server. Nothing about your connected shops has changed.'
@@ -221,6 +365,18 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                 able to connect. Connecting a shop syncs your products to it and brings its orders
                 back to you.
               </Text>
+
+              {/* A failed handshake happens in a popup that has already closed,
+                  so a toast would land on a screen nobody is looking at. It
+                  stays here until the next attempt clears it. */}
+              {connectFailure ? (
+                <Alert color="danger" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>Could not connect that shop</AlertTitle>
+                    <AlertDescription>{connectFailure}</AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : null}
 
               <FormSection title="Connected shops">
                 {connections.length === 0 ? (
@@ -248,12 +404,17 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                   title="Ready to connect"
                   description={productCopy(
                     'commerce.channels.hint',
-                    'These shops are set up in Piggles and can be connected from your settings.'
+                    'Connect one and you sign in to that shop, allow it once, and come straight back. Your products start going across shortly afterwards.'
                   )}
                 >
                   <div className="flex flex-col gap-3">
                     {available.map((entry) => (
-                      <CatalogRow key={entry.slug} entry={entry} />
+                      <CatalogRow
+                        key={entry.slug}
+                        entry={entry}
+                        connecting={connecting ? connectingSlug : null}
+                        onConnect={connect}
+                      />
                     ))}
                   </div>
                 </FormSection>
@@ -266,7 +427,12 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                 >
                   <div className="flex flex-col gap-3">
                     {comingSoon.map((entry) => (
-                      <CatalogRow key={entry.slug} entry={entry} />
+                      <CatalogRow
+                        key={entry.slug}
+                        entry={entry}
+                        connecting={null}
+                        onConnect={null}
+                      />
                     ))}
                   </div>
                 </FormSection>

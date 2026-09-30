@@ -3,7 +3,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth, signUpMerchant, SignUpError } from '@wizeworks/auth';
-import { normalizeEmail, PRODUCT } from '@piggles/config';
+import { normalizeEmail, PRODUCT, safeInternalPath } from '@piggles/config';
 import { acquisitionFrom } from '@/lib/attribution';
 import { writeConsent } from '@/lib/consent';
 import { text } from '@/lib/form';
@@ -77,6 +77,9 @@ export async function signUpAction(_prev: SignUpState, formData: FormData): Prom
   const password = typeof rawPassword === 'string' ? rawPassword : '';
   const from = text(formData, 'from');
   const attribution = text(formData, 'a');
+  // Run through the same guard the pages use: this arrived in a form field, so
+  // it is no more trustworthy than a query string, and it becomes a redirect.
+  const next = safeInternalPath(text(formData, 'next'), '/onboarding');
 
   if (!name) return { error: 'Please tell us your name.' };
   if (!email.includes('@')) return { error: 'That does not look like an email address.' };
@@ -153,5 +156,10 @@ export async function signUpAction(_prev: SignUpState, formData: FormData): Prom
   // OUTSIDE every try/catch: `redirect()` works by throwing a control-flow
   // signal, so a `catch` around it swallows the navigation and the form appears
   // to do nothing at all.
-  redirect('/onboarding');
+  //
+  // `/onboarding` unless the link that sent them here named somewhere else.
+  // An invitation does: it sends them back to the invitation, which they can
+  // now accept, instead of stranding them in setup for a business they were
+  // never trying to create (issue 881).
+  redirect(next);
 }

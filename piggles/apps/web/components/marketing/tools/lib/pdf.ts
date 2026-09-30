@@ -142,7 +142,7 @@ export class PdfDocument {
       size?: number;
       font?: PdfFont;
       color?: [number, number, number];
-      align?: 'left' | 'right' | 'centre';
+      align?: 'left' | 'right' | 'center';
       width?: number;
     } = {}
   ): this {
@@ -152,7 +152,7 @@ export class PdfDocument {
 
     let drawX = x;
     if (opts.align === 'right') drawX = x - textWidth(content, size, font);
-    else if (opts.align === 'centre') drawX = x - textWidth(content, size, font) / 2;
+    else if (opts.align === 'center') drawX = x - textWidth(content, size, font) / 2;
 
     this.ops.push(
       'BT',

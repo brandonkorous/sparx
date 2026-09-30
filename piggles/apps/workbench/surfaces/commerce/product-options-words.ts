@@ -11,7 +11,7 @@ export function consequenceLines(consequence: Consequence): string[] {
     const count = consequence.loose.length;
     lines.push('Shoppers stop choosing anything. This goes back to being sold one way.');
     lines.push(
-      `${countOf(count, 'version', 'versions')} stay${count === 1 ? 's' : ''} on sale with no choice attached (${skus(consequence.loose)}). Retire the ones you do not want on the Variants tab.`
+      `${countOf(count, 'version', 'versions')} stay${count === 1 ? 's' : ''} on sale with no choice attached (${skus(consequence.loose)}). Retire the ones you do not want on the Versions tab.`
     );
     return lines;
   }
@@ -37,13 +37,13 @@ export function consequenceLines(consequence: Consequence): string[] {
   if (consequence.returning.length > 0) {
     const count = consequence.returning.length;
     lines.push(
-      `${countOf(count, 'version', 'versions')} you stopped selling ${count === 1 ? 'comes' : 'come'} back with ${count === 1 ? 'its' : 'their'} price, code and stock: ${skus(consequence.returning.map((entry) => entry.variant))}. Put ${count === 1 ? 'it' : 'them'} on sale again from the Variants tab.`
+      `${countOf(count, 'version', 'versions')} you stopped selling ${count === 1 ? 'comes' : 'come'} back with ${count === 1 ? 'its' : 'their'} price, code and stock: ${skus(consequence.returning.map((entry) => entry.variant))}. Put ${count === 1 ? 'it' : 'them'} on sale again from the Versions tab.`
     );
   }
   if (consequence.blank > 0) {
     const count = consequence.blank;
     lines.push(
-      `${countOf(count, 'combination', 'combinations')} will have no price, so ${count === 1 ? 'it cannot' : 'they cannot'} be bought until you set ${count === 1 ? 'one' : 'them'} on the Variants tab.`
+      `${countOf(count, 'combination', 'combinations')} will have no price, so ${count === 1 ? 'it cannot' : 'they cannot'} be bought until you set ${count === 1 ? 'one' : 'them'} on the Versions tab.`
     );
   }
   if (consequence.retire.length > 0) {
@@ -84,7 +84,7 @@ export function committedToast(consequence: Consequence): Told {
   if (blank === 0 && back > 0) {
     return {
       title: 'This product is sold differently now',
-      description: `${countOf(back, 'version', 'versions')} came back with ${back === 1 ? 'its' : 'their'} price and code: put ${back === 1 ? 'it' : 'them'} on sale again on the Variants tab.`,
+      description: `${countOf(back, 'version', 'versions')} came back with ${back === 1 ? 'its' : 'their'} price and code: put ${back === 1 ? 'it' : 'them'} on sale again on the Versions tab.`,
       type: 'success',
     };
   }
@@ -92,7 +92,7 @@ export function committedToast(consequence: Consequence): Told {
     title: 'This product is sold differently now',
     description:
       blank > 0
-        ? `${countOf(blank, 'combination', 'combinations')} still ${blank === 1 ? 'needs a price' : 'need a price'}. Set them on the Variants tab.`
+        ? `${countOf(blank, 'combination', 'combinations')} still ${blank === 1 ? 'needs a price' : 'need a price'}. Set them on the Versions tab.`
         : 'Every combination has a price.',
     type: 'success',
   };
@@ -103,7 +103,7 @@ export function committedToast(consequence: Consequence): Told {
 export function rebindToast(count: number): Told {
   return {
     title: 'The choices were changed, but some versions lost their place',
-    description: `${countOf(count, 'version', 'versions')} now ${count === 1 ? 'has' : 'have'} no place in the grid. Open the Variants tab to put ${count === 1 ? 'it' : 'them'} right.`,
+    description: `${countOf(count, 'version', 'versions')} now ${count === 1 ? 'has' : 'have'} no place in the grid. Open the Versions tab to put ${count === 1 ? 'it' : 'them'} right.`,
     type: 'warning',
   };
 }

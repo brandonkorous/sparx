@@ -118,14 +118,14 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <EmptyState
           icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
-          title="Could not load your purchase orders"
+          title="Could not load your orders to suppliers"
           description="This is a problem reaching the server. Your orders are unaffected: the list just could not be read just now."
         />
       );
     }
 
     if (isLoading) {
-      return <PaneWaiting label="Loading purchase orders…" />;
+      return <PaneWaiting label="Loading orders to suppliers…" />;
     }
 
     if (rows.length === 0) {
@@ -139,9 +139,9 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             description: emptyAdvice(),
           }}
           firstRun={{
-            title: 'No purchase orders yet',
+            title: 'No orders to suppliers yet',
             description:
-              'A purchase order is what you send a supplier to buy stock. Start one, add the items and quantities, and place it when you are ready.',
+              'An order to a supplier is what you send them to buy stock. Start one, add the items and quantities, and place it when you are ready.',
             actions: (
               <Button
                 size="sm"
@@ -151,7 +151,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               >
                 <Icon glyph={faPlus} className="size-4" aria-hidden />
-                New purchase order
+                New order
               </Button>
             ),
           }}
@@ -231,12 +231,12 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Purchase order list controls"
+        label="Orders to suppliers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search purchase orders"
+              aria-label="Search orders to suppliers"
               placeholder="Order number, reference or supplier…"
               value={search}
               onValueChange={(next) => {
@@ -273,7 +273,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Filter by supplier"
               value={supplierId}
               onChange={(event) => {

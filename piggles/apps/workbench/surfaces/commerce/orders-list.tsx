@@ -9,23 +9,32 @@
 // It leads with **Take a sale**, because most of what this audience sells is
 // sold in the room. An order arriving from a website is one way in, not the way.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
 import { faBagShopping, faCashRegister } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { DownloadButton } from '../../components/download-button';
 import { RefreshButton } from '../../components/refresh-button';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useOrders, type Order, type OrderSortKey, type SortDirection } from './data';
-import { FILTERS, emptyAdvice, targetFor, type FilterValue } from './orders-list-filters';
+import {
+  FILTERS,
+  emptyAdvice,
+  parseOrderFilter,
+  targetFor,
+  type FilterValue,
+} from './orders-list-filters';
 import { OrdersTable } from './orders-table';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<FilterValue>('all');
+  // Seeded from the address so "3 orders are waiting to go out" opens on those
+  // three. Read ONCE: after the first render the chips own it.
+  const [filter, setFilter] = useState<FilterValue>(() => parseOrderFilter(ctx.params.show));
   // Newest first: an orders list is read from the top, and the top is today.
   const [sort, setSort] = useState<{ key: OrderSortKey; dir: SortDirection }>({
     key: 'placedAt',
@@ -42,10 +51,18 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const skip = (page - 1) * pageSize;
   const filtered = filter !== 'all' || search.trim() !== '';
 
+  // Params make a distinct pane, so a narrowed one opens as a SECOND tab beside
+  // any "Orders" already open. It says which it is, in the chip's own word,
+  // following the chips rather than the address so both routes read the same.
+  useEffect(() => {
+    const base = surfaceTitle('commerce.orders.list') ?? 'Orders';
+    ctx.setTitle(filter === 'all' ? base : `${base} · ${active.label.toLowerCase()}`);
+  }, [ctx, filter, active.label]);
+
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useOrders({
     q: search.trim(),
     status: active.status,
-    paymentStatus: active.paymentStatus,
+    owing: active.owing,
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -82,7 +99,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     // base-100 cards lifted onto it.
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Order list controls"
+        label="Orders controls"
         search={
           /* The width has to sit on a WRAPPER: SearchInput forwards className to
             its inner <input>, so a sizing class aimed at the control never
@@ -123,6 +140,23 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           },
         }}
+        controls={
+          /* Every order, and every line on them, as spreadsheets. The marketing
+            site promises a business can take its records with it. Lines are a
+            file of their own so "how many of X did I sell" can be summed. */
+          <>
+            <DownloadButton
+              label="Export"
+              filename="orders-export.csv"
+              path="/v1/export/orders?take=10000"
+            />
+            <DownloadButton
+              label="Export lines"
+              filename="order-lines-export.csv"
+              path="/v1/export/order-lines?take=10000"
+            />
+          </>
+        }
         primary={
           <Button color="module" size="sm" className="shrink-0" onClick={takeASale}>
             <Icon glyph={faCashRegister} className="size-4" aria-hidden />

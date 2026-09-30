@@ -5,6 +5,7 @@ import { HOME } from './home';
 import { SITE } from './site';
 import { CONTENT } from './content';
 import { GET_FOUND } from './get-found';
+import { CAMPAIGNS } from './campaigns';
 import { SELL } from './sell';
 import { STOCK } from './stock';
 import { PARTNERS } from './partners';
@@ -20,7 +21,7 @@ import { CONNECTIONS } from './connections';
 export type { AppMarketing, AppChapter, AppClaim } from './types';
 
 /**
- * Marketing copy for the fifteen app pages, one file each.
+ * Marketing copy for every app page, one file each.
  *
  * Was a single 561-line module. It is a directory because the copy grew — the
  * pages carry chapters now, so the largest apps read as something proportionate
@@ -35,6 +36,7 @@ export const APP_MARKETING: Record<PigglesAppId, AppMarketing> = {
   site: SITE,
   content: CONTENT,
   get_found: GET_FOUND,
+  campaigns: CAMPAIGNS,
   sell: SELL,
   stock: STOCK,
   partners: PARTNERS,

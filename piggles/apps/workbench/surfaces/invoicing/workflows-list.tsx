@@ -52,10 +52,12 @@ const STATE_FILTERS: { value: StateFilter; label: string }[] = [
   { value: 'all', label: 'All' },
 ];
 
-/** The sequence as one string, for the row's tooltip. The Stages column is
- *  hidden below @xl, so on a narrow pane this is the only way to read the chain
- *  without opening the workflow. */
+/** The sequence as one string — the row's tooltip, and the line under the name
+ *  on a pane too narrow for the Stages column. A workflow with no stages says so
+ *  rather than rendering as a blank, because an empty line there reads as "we
+ *  did not load it" instead of "nothing can be created on this". */
 function chainText(workflow: DocumentWorkflowDetail): string {
+  if (workflow.stages.length === 0) return 'No stages. Nothing can be created on it';
   return workflow.stages.map((stage) => stage.customerLabel).join(' › ');
 }
 
@@ -139,13 +141,13 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Workflow list controls"
+        label="Controls for what happens when"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search workflows"
-              placeholder="Search workflows…"
+              aria-label="Search what happens when"
+              placeholder="Search by name…"
               value={search}
               onValueChange={(next) => {
                 setSearch(next);
@@ -155,12 +157,12 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'New workflow',
+          label: 'Set up a path',
           icon: faPlus,
           onClick: (event) => {
             ctx.open('invoicing.workflow.edit', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New workflow: hold Shift to open alongside, Alt for a new window',
+          title: 'Set up a path: hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -168,7 +170,13 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
             key: 'state',
             value: state,
             onValueChange: (next) => {
-              setState((next as StateFilter | null) ?? 'active');
+              const chosen = (next as StateFilter | null) ?? 'active';
+              setState(chosen);
+              // Returning to Active takes the State column away, so a sort on
+              // it would have no header left to undo it with. The order it
+              // produced is meaningless there anyway: every row is active.
+              if (chosen === 'active')
+                setSort((current) => (current?.key === 'state' ? null : current));
               resetWindow();
             },
             options: STATE_FILTERS,
@@ -205,10 +213,10 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             icon={<Icon glyph={faCodeBranch} className="size-6" aria-hidden />}
-            title="Could not load your workflows"
+            title="Could not load these"
             description={workflowErrorMessage(
               error,
-              'Something went wrong reaching the server. Your workflows are unaffected and your documents keep working.'
+              'Something went wrong reaching the server. Nothing you have set up is affected and your documents keep working.'
             )}
             actions={
               <Button
@@ -223,17 +231,17 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
             }
           />
         ) : isPending ? (
-          <PaneWaiting label="Loading workflows…" />
+          <PaneWaiting label="Loading what you have set up…" />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faCodeBranch} className="size-6" aria-hidden />}
             title={
-              needle || state !== 'active' ? 'Nothing matches those filters' : 'No workflows yet'
+              needle || state !== 'active' ? 'Nothing matches those filters' : 'Nothing set up yet'
             }
             description={
               needle || state !== 'active'
                 ? 'Try a different word, or switch back to Active.'
-                : 'A workflow is the path a document takes (quote, then invoice, then paid) and what your customer sees at each step. Every business gets a couple to start with, so this being empty is unusual.'
+                : 'This is the path a document takes, from quote to invoice to paid, and what your customer sees at each step along it. Every business gets a couple to start with, so this being empty is unusual.'
             }
           />
         ) : (
@@ -245,7 +253,12 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     a value — so this column carries no header button. */}
                 <th className="hidden @xl:table-cell">Stages</th>
                 {header('stages', 'Steps', 'hidden @2xl:table-cell text-right')}
-                {header('state', 'State')}
+                {/* Only where it can differ. The server filters by state, so
+                    under the default Active view every row carries the same
+                    word and the column teaches nothing — a badge that never
+                    varies is noise wearing a component. Under Archived or All
+                    it is the thing you came to see. */}
+                {state === 'active' ? null : header('state', 'State')}
               </tr>
             </thead>
             <tbody>
@@ -282,6 +295,15 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         ) : null}
                       </span>
                       <span className="font-mono text-sm">{workflow.slug}</span>
+                      {/* The chain, where the Stages column cannot fit. This
+                          screen is called "what happens when", and on a narrow
+                          pane the column that answers that is the first one to
+                          go — leaving six names and nothing else. The tooltip
+                          carrying it is no help on a phone, which has no hover.
+                          Plain text rather than the badges: at 360px a wrapped
+                          row of pills is three times the height and says the
+                          same thing. */}
+                      <span className="text-sm @xl:hidden">{chainText(workflow)}</span>
                     </span>
                   </td>
                   <td className="hidden max-w-96 @xl:table-cell">
@@ -309,15 +331,17 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   <td className="hidden text-right tabular-nums @2xl:table-cell">
                     {workflow.stages.length}
                   </td>
-                  <td>
-                    <Badge
-                      color={workflow.archivedAt ? 'neutral' : 'success'}
-                      variant="soft"
-                      size="sm"
-                    >
-                      {workflow.archivedAt ? 'Archived' : 'Active'}
-                    </Badge>
-                  </td>
+                  {state === 'active' ? null : (
+                    <td>
+                      <Badge
+                        color={workflow.archivedAt ? 'neutral' : 'success'}
+                        variant="soft"
+                        size="sm"
+                      >
+                        {workflow.archivedAt ? 'Archived' : 'Active'}
+                      </Badge>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

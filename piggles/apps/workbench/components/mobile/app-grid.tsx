@@ -4,8 +4,8 @@
 //
 // ── WHY A GRID AND NOT A LIST ───────────────────────────────────────────────
 //
-// Fifteen apps in a column is four thumb-scrolls and reads as a menu. The same
-// fifteen in three columns fits one screen, and that is the whole point of this
+// Every app in one column is four thumb-scrolls and reads as a menu. The same
+// list in three columns fits one screen, and that is the whole point of this
 // sheet: the answer to "what else is there" has to be seeable, not scrollable
 // (piggles/CLAUDE.md RULE #2 — everything is included, and the only thing that
 // makes that true rather than stated is whether somebody can SEE it).
@@ -16,7 +16,7 @@
 //
 // ── THE TILES ARE NOT TINTED ────────────────────────────────────────────────
 //
-// Only the glyph carries its app's hue. Fifteen soft-tinted tiles is fifteen
+// Only the glyph carries its app's hue. A soft tint on every tile is a wall of
 // competing washes rather than wayfinding, which DESIGN.md rules out directly.
 // The tile is a plain outline; the color sits on the icon, where it separates.
 
@@ -51,6 +51,14 @@ export function AppGrid({ nav, attention, onPick }: AppGridProps) {
               // 96px — a comfortable thumb target that still fits five rows of
               // three on a phone without scrolling.
               className="min-h-24 flex-col gap-2 px-1 text-sm font-medium"
+              // The count in the corner is a SIBLING of this button, so a
+              // screen reader met "Invoices, button" and then a loose "9" with
+              // nothing joining the two. The tile's name carries it, in the
+              // same words the rail uses (issue 839). The visible label starts
+              // the name, so saying "Invoices" out loud still works.
+              aria-label={
+                waiting === null ? undefined : `${entry.label}, ${String(waiting)} waiting`
+              }
               onClick={() => {
                 onPick(entry.app.id);
               }}

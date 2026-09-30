@@ -1,10 +1,10 @@
 'use client';
 
 // ══════════════════════════════════════════════════════════════════════════
-// PRICE TIERS — named trade levels you set a discount on once.
+// WHOLESALE GROUPS — named sets of businesses you set a discount on once.
 //
-// A price tier is a level like "Trade", "Distributor" or "Key account": you set
-// how much it takes off, and then every account on that tier gets it — instead
+// A wholesale group is a set like "Trade", "Distributor" or "Key account": you
+// set how much it takes off, and every business in that group gets it — instead
 // of setting a discount on each customer by hand. A tier can also carry per-
 // product overrides (a fixed price or a bigger cut on specific items).
 //
@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -70,7 +71,7 @@ export function discountSummary(row: {
 }
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */

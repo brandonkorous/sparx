@@ -18,6 +18,15 @@ export interface FunnelStage {
   kind: StageKind;
   /** Which page counts as this step. `view` steps only. */
   path?: string;
+  /** What records this step on its own. Kept through every edit, never drawn raw. */
+  match?: StageMatch;
+}
+
+/** A step's rule: the same condition group automations use. Only read to say
+ *  in words what records the step (recorded-by.ts). */
+export interface StageMatch {
+  logic: 'AND' | 'OR';
+  conditions: ({ field: string; operator: string; value?: unknown } | StageMatch)[];
 }
 
 export interface Funnel {

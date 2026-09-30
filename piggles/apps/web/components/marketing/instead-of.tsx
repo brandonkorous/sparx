@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Section } from '@piggles/ui';
 import { PRICE_LABEL } from '@piggles/config/pricing';
+import { APP_COUNT_WORD } from '@piggles/config';
 
 // Ten bills against one, said spatially: a crowded column beside a single calm
 // panel. The argument IS the asymmetry, so the layout has to carry it.
@@ -75,8 +76,8 @@ export function InsteadOf() {
           <p className="mt-3 text-xl font-bold sm:text-2xl">a month</p>
 
           <p className="mt-7 text-lg">
-            One bill. One login. One renewal date. Ten of the fifteen apps you already have, doing
-            what that lot used to.
+            One bill. One login. One renewal date. Ten of the {APP_COUNT_WORD} apps you already
+            have, doing what that lot used to.
           </p>
 
           <Link

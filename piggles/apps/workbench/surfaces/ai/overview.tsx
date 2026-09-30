@@ -48,6 +48,7 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { getSurface, resolveTitle } from '../../lib/surfaces/registry';
 import { UsageChart } from './usage-chart';
 import {
   formatCount,
@@ -198,7 +199,14 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
               <StatValue className="text-2xl tabular-nums">
                 {formatPercent(s.successRate)}
               </StatValue>
-              <StatDesc>of calls in the last 30 days</StatDesc>
+              {/* The value is an em dash when nothing has been asked, and
+                  "— of calls in the last 30 days" is a sentence with a hole in
+                  it. Say which it is. */}
+              <StatDesc>
+                {s.successRate === null
+                  ? 'nothing has been asked yet'
+                  : 'of calls in the last 30 days'}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>Tools used</StatTitle>
@@ -360,9 +368,9 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
           />
           <AreaLink
             icon={<Icon glyph={faWrench} className="text-module size-5" aria-hidden />}
-            title="Permissions"
+            title={screenName('ai.tools', 'Permissions')}
             description="What an AI app you've connected may look up or change in your business. Switch off anything it shouldn't reach."
-            cta="Open Permissions"
+            cta={`Open ${screenName('ai.tools', 'Permissions')}`}
             onOpen={(event) => {
               open('ai.tools', event);
             }}
@@ -372,15 +380,48 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   };
 
+  /**
+   * What THIS console calls a screen, for a card that points at one.
+   *
+   * Read from the registry rather than spelled out: these two cards said
+   * "Permissions" and "Open Permissions" for `ai.tools`, which Piggles calls
+   * "What it may do" on its own tab and in its own rail. A card that names its
+   * destination by a word the destination does not use sends somebody looking for
+   * a screen that is not there. [[feedback_a_copy_edit_breaks_identity_lookups]]
+   */
+  function screenName(surface: string, fallback: string): string {
+    const definition = getSurface(surface);
+    return definition ? resolveTitle(definition, {}) : fallback;
+  }
+
+  const keysInUse = summary.data?.apiKeysActive ?? 0;
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="AI overview controls"
+        label="Controls for what is connected"
         status={
-          <Badge color="success" variant="soft" size="sm">
-            <span className="bg-success mr-1 inline-block size-2 rounded-full" aria-hidden />
-            Bridge online
-          </Badge>
+          // NOT a hardcoded green "Bridge online".
+          //
+          // That badge had no data behind it at all: `color="success"` and the
+          // words were literals, so it reported health it had never measured and
+          // could not have gone amber if the connection were down. The same
+          // defect `check:automation-health` exists for, where a rule with eight
+          // failed runs out of eight wore a green "On".
+          //
+          // And "bridge" is a word from inside the machine. What a shop owner
+          // wants from this bar is whether anything is connected, which is a
+          // fact this pane already holds.
+          <>
+            <Icon glyph={faPlug} className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="min-w-0 truncate text-sm">
+              {keysInUse === 0
+                ? 'No app connected yet'
+                : keysInUse === 1
+                  ? '1 key in use'
+                  : `${String(keysInUse)} keys in use`}
+            </Text>
+          </>
         }
         primary={
           <Button

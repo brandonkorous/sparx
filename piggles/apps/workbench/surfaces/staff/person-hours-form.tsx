@@ -18,6 +18,7 @@ import {
 import { afterPaneChange } from '../../lib/defer';
 import { staffErrorMessage, useCreateTimeEntry, useUpdateTimeEntry, type TimeEntry } from './data';
 import { toDateInput } from './format';
+import { DayInput } from '../../components/day-input';
 
 /** Decimal hours to whole minutes. "7.5" is seven and a half hours, because that
  *  is how a timesheet is read aloud and how the payroll export writes it. */
@@ -92,11 +93,10 @@ export function TimeEntryForm({
           <FieldLabel>Day</FieldLabel>
           <FieldControl
             render={
-              <Input
-                type="date"
+              <DayInput
                 value={day}
-                onChange={(event) => {
-                  setDay(event.target.value);
+                onValueChange={(value) => {
+                  setDay(value);
                 }}
               />
             }

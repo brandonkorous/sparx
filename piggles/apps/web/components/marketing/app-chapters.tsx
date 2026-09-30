@@ -40,7 +40,7 @@ function Connects({ names }: { names: string[] }) {
       <p className="text-lg font-bold">Connects to</p>
       <ul className="flex flex-wrap gap-2">
         {names.map((name) => (
-          <li key={name} className={badgeClasses({ color: 'module', variant: 'soft' })}>
+          <li key={name} className={badgeClasses({ color: 'module' })}>
             {name}
           </li>
         ))}

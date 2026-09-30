@@ -30,9 +30,16 @@
 // step for no gain, and the absence of an entry is the honest statement that
 // the platform got that one right. About half the catalog is in that category.
 //
-// A `(fn)` title — one that names a RECORD, like an order number or a product's
-// own name — cannot be overridden and should not be: that is the tenant's data,
-// not the platform's vocabulary. See `resolveTitle` in the shared registry.
+// A `(fn)` title CAN be overridden, and most of them should be. 32 of the 33 in
+// the catalog return fixed words — `(params) => params.id === 'new' ? 'New
+// purchase order' : 'Purchase order'` — which are screen names like any other,
+// and they were out of the brand's reach until issue 729 because `resolveTitle`
+// assumed a function title always names a record.
+//
+// ONE of them really does: `platform.migrate.run`, which reads a value out of
+// `params`. DO NOT give that one an entry, or a brand would be renaming the
+// tenant's own data. That is the whole rule, and it is a rule about the entry
+// rather than about the shape of the title.
 
 /**
  * Screen names, by surface key.
@@ -95,12 +102,23 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // "Price lists" is the same idea as a price book, which RULE #3 bans. These
   // are prices for particular customers, seasons or channels.
   'commerce.pricing.list': 'Special prices',
+  // The DETAIL too. Its own tab title arrives when the record loads, but the
+  // registry's name is what a menu row and the first second of the tab read, and
+  // it said "Price list" under a screen called Special prices. Issue 729.
+  'commerce.pricelist.detail': 'Special price',
   'commerce.account-credit.list': 'Credit on account',
   // Both of these lists are abandonment: a basket nobody finished, a checkout
   // nobody completed. Naming them by the object hid what they are FOR.
   'commerce.carts.list': 'Baskets left behind',
   'commerce.checkout-sessions.list': 'Half-finished checkouts',
   'commerce.subscriptions.list': 'Repeat orders',
+  // The detail and the create screen were left out when the list was named,
+  // so a shop owner searching "repeat orders" landed on a tab that said
+  // "Subscription" (issue 738). A screen a brand renames has to have ALL its
+  // screens renamed, or the word it was hiding comes back the moment you open
+  // one. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  'commerce.subscription.detail': 'Repeat order',
+  'commerce.subscription.new': 'New repeat order',
   'commerce.qa.list': 'Questions people ask',
   'commerce.channels.list': 'Where you sell',
   'commerce.shipping.list': 'Postage and delivery',
@@ -121,7 +139,16 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // ── Sell · wholesale ──────────────────────────────────────────────────────
   // "Accounts" collides with money in a product that also has a Money app.
   'b2b.accounts.list': 'Wholesale customers',
-  'b2b.pricing-tiers.list': 'Wholesale prices',
+  'b2b.account.detail': 'Wholesale customer',
+  // A GROUP, not a price. These were "Wholesale prices" and "Wholesale price",
+  // which put them one letter from `commerce.product.trade-pricing` — and the
+  // Sell app fronts commerce AND wholesale, so the launcher stacked the two
+  // under one heading with nothing to tell them apart. The screens are not the
+  // same kind of thing either: one is a set of shops you charge the same way,
+  // the other is what ONE product costs them. Named for what they are. Issue
+  // 740; `check:screen-name-collisions` holds it.
+  'b2b.pricing-tiers.list': 'Wholesale groups',
+  'b2b.pricing-tier.detail': 'Wholesale group',
   'b2b.approvals': 'Orders to approve',
 
   // ── Partners ──────────────────────────────────────────────────────────────
@@ -152,6 +179,7 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'inventory.movements.list': 'Every change',
   'inventory.lots.list': 'Batches and serial numbers',
   'inventory.purchase-orders.list': 'Orders to suppliers',
+  'inventory.purchase-orders.detail': 'Order to a supplier',
   'inventory.receiving.list': 'Booking stock in',
   'inventory.reorder': 'What to reorder',
   'inventory.picking.list': 'Picking walks',
@@ -164,6 +192,7 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'inventory.integrity': 'Things that do not add up',
   'inventory.units': 'Units of measure',
   'inventory.sources': 'Counts from elsewhere',
+  'inventory.sources.detail': 'Counts from elsewhere',
   'inventory.consignment': 'Paying for what sold',
   'inventory.stock.grid': 'Edit a lot at once',
   // Was "Waiting list", which is also what the Bookings diary calls its queue of
@@ -177,7 +206,9 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'crm.settings': 'How this app behaves',
   'crm.segments.list': 'Groups of customers',
   'crm.duplicates.list': 'Possible duplicates',
-  'crm.pipelines.list': 'How a deal moves',
+  // Not 'How a deal moves': this pane lists support queues too, and a help
+  // request is not a deal.
+  'crm.pipelines.list': 'How things move',
   'crm.tasks.list': 'Things to do',
   'crm.tickets.list': 'Help requests',
   // "Record types" and "object types" are both the schema talking. What the
@@ -197,16 +228,29 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'chat.overview': 'Chat activity',
   'email.broadcasts.list': 'Email campaigns',
   'email.sequences.list': 'Automatic emails',
+  'email.sequences.detail': 'Automatic email',
 
   // ── Bookings ──────────────────────────────────────────────────────────────
   'scheduling.resources.list': 'People and equipment',
+  'scheduling.resources.detail': 'Person or piece of equipment',
   'scheduling.reports': 'How bookings are going',
 
   // ── Invoices ──────────────────────────────────────────────────────────────
   'invoicing.workflows': 'What happens when',
   'invoicing.templates': 'How invoices look',
+  // Singular, because this one is ONE of them. The platform calls it a print
+  // template; nobody running a shop has ever called a page that.
+  'invoicing.template.edit': 'How a bill looks',
 
   // ── Money ─────────────────────────────────────────────────────────────────
+  // NOT an entry the brand could do without. The platform titles this pane
+  // "Your sparx bill", and without a name here the toolbar guard's fallback is
+  // that catalog title — which is how `label="Your sparx bill controls"` came to
+  // be written into this console by the act-281 sweep, and how the brand check
+  // came to be red at the start of this act. The pane already renamed its own
+  // TAB through `productCopy('finance.bill.title')`, which is a second mechanism
+  // doing this one's job and reaching only the tab.
+  'finance.subscription': 'What you pay us',
   'finance.payouts.list': 'Money paid to you',
   // "Profit" is the accountant's word and it is also slightly wrong for a sole
   // trader reading it. What they want to know is what they kept.
@@ -269,4 +313,26 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'platform.migrate': 'Move in from somewhere else',
   'platform.feedback.list': 'What you told us',
   'analytics.dashboards.list': 'Dashboards',
+};
+
+/**
+ * What the `+` beside a nav row says, where the platform's words are not ours.
+ *
+ * Only where it differs. A create label that is already plain and already right
+ * - "Plan a run", "Send something back", "Receive a delivery" - is left alone,
+ * for the same reason half the catalog has no entry above: restating it would
+ * make a second copy to keep in step for no gain.
+ *
+ * Each of these had a twin two clicks away. The rail said "Add a price list";
+ * the pane's own button said "Add a special price". One action, two names, and
+ * which one you read depended on which one you pressed. Issue 729.
+ */
+export const PIGGLES_CREATE_LABELS: Readonly<Record<string, string>> = {
+  'b2b.accounts.list': 'Add a wholesale customer',
+  'b2b.pricing-tiers.list': 'Add a wholesale group',
+  'commerce.pricing.list': 'Add a special price',
+  'commerce.subscriptions.list': 'Start a repeat order',
+  'email.broadcasts.list': 'New email campaign',
+  'inventory.purchase-orders.list': 'New order',
+  'inventory.sources': 'Connect somewhere else',
 };

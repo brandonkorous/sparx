@@ -103,7 +103,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="People & equipment list controls"
+        label="People and equipment controls"
         primaryAction={{
           label: 'Add one',
           icon: faPlus,

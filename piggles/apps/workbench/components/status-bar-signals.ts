@@ -88,7 +88,12 @@ export function useLastSaved(): string | null {
       // anybody had saved anything. This is the one place people look to check
       // their work is safe, so it must never report a save that is not theirs.
       // The flag is set on the mutation; see lib/api/write-meta.ts.
-      if (readWriteMeta(event.mutation.meta).housekeeping === true) return;
+      const meta = readWriteMeta(event.mutation.meta);
+      if (meta.housekeeping === true) return;
+      // Nor does an action she RAN. Re-running the stock check writes a result,
+      // not her work, and moving this clock for it would answer "did my work
+      // make it?" with a yes she did not earn.
+      if (meta.running !== undefined) return;
       setAt(new Date().toISOString());
     });
   }, [queryClient]);

@@ -171,4 +171,9 @@ export const BANNED_IN_PRODUCT_COPY = [
   // 'fitment' was not on it.
   'fitment',
   'redirect',
+  // Retired platform-wide, and it reached a screen anyway — the ready-made AI
+  // instruction library described "your storefront chat assistant" from a file
+  // in api-rest, which this check does not read. Same story as `fitment` above:
+  // the list is what a reviewer greps, and the word was not on it.
+  'storefront',
 ] as const;

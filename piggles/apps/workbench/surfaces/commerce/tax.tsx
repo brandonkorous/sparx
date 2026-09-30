@@ -32,7 +32,7 @@ import { FormSection } from '../../components/form-section';
 import { InlineWaiting } from '../../components/inline-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { countryName, regionName } from './geo';
+import { countryName, regionName } from '../../lib/geo';
 
 /** Registry module for this pane, so the brand draws Sell's own picture rather
  *  than the generic one. */

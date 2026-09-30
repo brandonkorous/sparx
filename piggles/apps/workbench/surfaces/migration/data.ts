@@ -295,6 +295,7 @@ export interface StartRunResult {
 export function useStartMigration() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { running: 'start the move' },
     mutationFn: (input: StartRunInput) => api.post<StartRunResult>('/v1/migration/runs', input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['migration', 'runs'] });

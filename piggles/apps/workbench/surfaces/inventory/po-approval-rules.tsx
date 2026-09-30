@@ -70,7 +70,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title="No spending limits set"
-          description="Every purchase order goes straight to the supplier the moment somebody sends it. Set a limit and orders of that much or more wait for a named person to approve them first: the usual reason is a business where more than one person can buy."
+          description="Every order to a supplier goes straight to them the moment somebody sends it. Set a limit and orders of that much or more wait for a named person to approve them first: the usual reason is a business where more than one person can buy."
           actions={
             <Button
               color="module"
@@ -137,7 +137,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Spending limit controls"
+        label="Spending limits controls"
         primary={
           <Button
             className="ml-auto"
@@ -177,8 +177,22 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-auto">{body()}</Card>
 
+      {/* The sentence NAMES another screen, so it offers to open it. Telling
+          somebody where their held order went and leaving them to find the
+          screen themselves is half an answer. */}
       <Text className="text-sm">
-        Orders waiting on a limit appear under Sign-offs. Nothing is ordered while an order waits.
+        Orders waiting on a limit appear under{' '}
+        <Button
+          variant="link"
+          size="sm"
+          className="px-0 align-baseline text-sm"
+          onClick={() => {
+            ctx.open('inventory.purchase-orders.approvals', {}, { target: 'tab' });
+          }}
+        >
+          Sign-offs
+        </Button>
+        . Nothing is ordered while an order waits.
       </Text>
     </div>
   );

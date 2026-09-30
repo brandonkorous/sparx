@@ -14,11 +14,13 @@ import {
   FieldLabel,
   Input,
   Select,
+  Text,
 } from '@wizeworks/silicaui-react';
 import { faArrowDown, faArrowUp, faTrash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { STAGE_KIND_LABEL } from './presentation';
 import type { FunnelStage, StageKind } from './types';
+import { recordedBy } from './recorded-by';
 
 /** What a person can choose. `convert` is absent: exactly one step converts, it
  *  is always last, and offering it invites a ladder the server will refuse. */
@@ -28,6 +30,14 @@ export interface StageRowProps {
   stage: FunnelStage;
   index: number;
   count: number;
+  /** Does this campaign have a landing page of its own? It decides whether
+   *  leaving the page field empty counts anything, so it decides what the hint
+   *  under that field is allowed to promise. */
+  hasLandingPage: boolean;
+  /** May this person change the ladder at all? Nothing below read this until
+   *  2026-09-25, so a viewer could retype every step, reorder them and delete
+   *  them, and only find out at the Save button that none of it could be kept. */
+  disabled: boolean;
   onChange: (next: FunnelStage) => void;
   onMove: (delta: number) => void;
   onRemove: () => void;
@@ -38,12 +48,14 @@ function RowControls({
   canMoveUp,
   canMoveDown,
   isConvert,
+  disabled,
   onMove,
   onRemove,
 }: {
   canMoveUp: boolean;
   canMoveDown: boolean;
   isConvert: boolean;
+  disabled: boolean;
   onMove: (delta: number) => void;
   onRemove: () => void;
 }) {
@@ -53,7 +65,8 @@ function RowControls({
         size="sm"
         shape="square"
         aria-label="Move this step up"
-        disabled={!canMoveUp}
+        title="Move this step up"
+        disabled={disabled || !canMoveUp}
         onClick={() => {
           onMove(-1);
         }}
@@ -64,7 +77,8 @@ function RowControls({
         size="sm"
         shape="square"
         aria-label="Move this step down"
-        disabled={!canMoveDown}
+        title="Move this step down"
+        disabled={disabled || !canMoveDown}
         onClick={() => {
           onMove(1);
         }}
@@ -77,7 +91,8 @@ function RowControls({
         variant="ghost"
         shape="square"
         aria-label="Remove this step"
-        disabled={isConvert}
+        title={isConvert ? 'The last step is the outcome and stays' : 'Remove this step'}
+        disabled={disabled || isConvert}
         onClick={onRemove}
       >
         <Icon glyph={faTrash} className="size-4" aria-hidden />
@@ -86,7 +101,16 @@ function RowControls({
   );
 }
 
-export function StageRow({ stage, index, count, onChange, onMove, onRemove }: StageRowProps) {
+export function StageRow({
+  stage,
+  index,
+  count,
+  hasLandingPage,
+  disabled,
+  onChange,
+  onMove,
+  onRemove,
+}: StageRowProps) {
   const isConvert = stage.kind === 'convert';
 
   return (
@@ -100,6 +124,7 @@ export function StageRow({ stage, index, count, onChange, onMove, onRemove }: St
                 size="sm"
                 color="module"
                 value={stage.name}
+                disabled={disabled}
                 onChange={(event) => {
                   onChange({ ...stage, name: event.target.value });
                 }}
@@ -107,30 +132,50 @@ export function StageRow({ stage, index, count, onChange, onMove, onRemove }: St
             }
           />
         </Field>
-        <div className="w-48">
-          <Select
-            size="sm"
-            aria-label="What this step counts"
-            value={stage.kind}
-            disabled={isConvert}
-            onValueChange={(value) => {
-              const kind = value as StageKind;
-              onChange({ ...stage, kind, ...(kind === 'view' ? {} : { path: undefined }) });
-            }}
-            items={(isConvert ? (['convert'] as StageKind[]) : CHOOSABLE).map((kind) => ({
-              value: kind,
-              label: STAGE_KIND_LABEL[kind],
-            }))}
+        {/* A LABEL somebody can see. This had an `aria-label` and nothing else,
+            so it sat flush against a labelled field as an unnamed dropdown: the
+            person reading the screen was the one who could not tell what it was
+            for, while the screen reader was told. */}
+        <Field className="w-48">
+          <FieldLabel>What it counts</FieldLabel>
+          <FieldControl
+            render={
+              <Select
+                size="sm"
+                value={stage.kind}
+                disabled={disabled || isConvert}
+                onValueChange={(value) => {
+                  const kind = value as StageKind;
+                  onChange({ ...stage, kind, ...(kind === 'view' ? {} : { path: undefined }) });
+                }}
+                items={(isConvert ? (['convert'] as StageKind[]) : CHOOSABLE).map((kind) => ({
+                  value: kind,
+                  label: STAGE_KIND_LABEL[kind],
+                }))}
+              />
+            }
           />
-        </div>
+        </Field>
         <RowControls
           canMoveUp={index > 0 && !isConvert}
           canMoveDown={index < count - 2 && !isConvert}
           isConvert={isConvert}
+          disabled={disabled}
           onMove={onMove}
           onRemove={onRemove}
         />
       </div>
+
+      {/* WHY three controls on this one row are greyed out. The last step is
+          the outcome the whole campaign is measured against, so it stays last
+          and stays put — true, load-bearing, and said nowhere on the screen
+          until now. A locked control with no reason reads as a broken one. */}
+      {isConvert ? (
+        <Text className="text-sm">
+          This is the outcome you are counting towards, so it stays at the bottom and cannot be
+          removed. You can still rename it.
+        </Text>
+      ) : null}
 
       {stage.kind === 'view' ? (
         <Field>
@@ -142,17 +187,27 @@ export function StageRow({ stage, index, count, onChange, onMove, onRemove }: St
                 color="module"
                 placeholder="/pricing"
                 value={stage.path ?? ''}
+                disabled={disabled}
                 onChange={(event) => {
                   onChange({ ...stage, path: event.target.value || undefined });
                 }}
               />
             }
           />
+          {/* A hint may only offer what the campaign actually has. This always
+              read "leave this empty to count the campaign's landing page" — and
+              a landing page is a server field that NOTHING in this console
+              sets, so for every campaign made here, leaving it empty counts
+              nobody and blocks the Turn it on button with a message about this
+              very field. [[feedback_a_promise_in_copy_is_a_contract]] */}
           <FieldDescription>
-            Leave this empty to count visits to the campaign&rsquo;s landing page.
+            {hasLandingPage
+              ? 'The address of the page on your site, starting with a slash. Leave it empty to count this campaign’s own landing page instead.'
+              : 'The address of the page on your site, starting with a slash — /spring-sale, or just / for your home page. This campaign has no page of its own, so a step with nothing here counts nobody.'}
           </FieldDescription>
         </Field>
       ) : null}
+      <Text className="text-sm">{recordedBy(stage)}</Text>
     </li>
   );
 }

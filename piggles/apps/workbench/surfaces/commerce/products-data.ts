@@ -75,6 +75,7 @@ import type {
 import { slugify, slugifyUpper } from '../../lib/slugify';
 import type { ProductDeposit } from './made-to-order-data';
 import { usePaymentConfig } from './providers-data';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes: the product itself ─────────────────────────────────────────── */
 
@@ -381,7 +382,7 @@ export interface BulkPriceTier {
  * One trade price: what a particular price list charges for one variant of this
  * product.
  *
- * A price list is a named set of prices for a channel or a trade account (a
+ * A price list is a named set of prices for a channel or a wholesale customer (a
  * wholesale sheet, a distributor's rates). A shopper on that list pays these
  * instead of the shelf price. The Pricing tab reads them ONLY to show them —
  * entries are authored on the price list itself, which is where the currency,
@@ -674,7 +675,12 @@ export function useProductMedia(productId: string) {
  * what stops somebody promising a customer a size they do not have.
  */
 export function sellable(level: ProductStockLevel): number {
-  return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
+  // FOUR terms. A unit on a quarantine or damaged shelf is in the building and
+  // cannot be sold to anybody, so it comes out here too.
+  return Math.max(
+    0,
+    level.onHand - level.allocated - level.safetyBuffer - (level.unsellableOnHand ?? 0)
+  );
 }
 
 /**
@@ -1614,7 +1620,7 @@ export function productState(product: {
         label: 'No price set',
         tone: 'warning',
         detail:
-          'This product is meant to be on sale, but it has no price, so nobody can buy it. Set one on the Variants tab to fix that.',
+          'This product is meant to be on sale, but it has no price, so nobody can buy it. Set one on the Versions tab to fix that.',
       };
     }
     return {
@@ -1634,7 +1640,7 @@ export function productState(product: {
 /* ── Formatting ─────────────────────────────────────────────────────────── */
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /** What a product costs, in one phrase. A product whose variants differ in price
@@ -2113,12 +2119,128 @@ export interface ConfiguratorTemplate extends ConfiguratorTemplateRow {
   addOns: ConfiguratorAddOn[];
 }
 
+/** A price change on a build answer, signed, or null when there is none. */
+export function deltaLabel(cents: number | undefined, currency: string): string | null {
+  if (cents === undefined || cents === 0) return null;
+  return cents > 0 ? `+${formatCents(cents, currency)}` : `−${formatCents(-cents, currency)}`;
+}
+
+/**
+ * What one build rule DOES, as a sentence, against the wording the shop owner
+ * typed rather than the keys underneath it.
+ *
+ * ── WHY IT LIVES HERE AND NOT BESIDE A PANE ────────────────────────────────
+ *
+ * Two panes print a build's rules — the product's own build panel and the full
+ * build editor — and each kept a byte-identical copy of this function. Four
+ * copies of one sentence across the two consoles, and both faults below sat in
+ * every one of them. A fix made beside one pane reaches one pane, so the
+ * sentence is written once, here, where both panes already read their other
+ * build words from.
+ *
+ * ── WHAT WAS WRONG WITH IT ─────────────────────────────────────────────────
+ *
+ * A rule that adds something to the order read "an extra is added to the
+ * order": it named nothing and dropped the count, although the action carries
+ * the exact version it adds AND how many, and the build already holds that
+ * version's product title. So a rule adding three gift boxes read word for
+ * word like a rule adding one of something else, and no screen she could open
+ * would tell her which (issue 797).
+ *
+ * A price rule with no amount on it read "the price changes by nothing": a
+ * sentence about a rule that does nothing, written as though something had
+ * happened. It now says the price is left alone.
+ */
+export function ruleSentence(
+  rule: ConfiguratorRule,
+  options: readonly ConfiguratorOption[],
+  currency: string,
+  addOns: readonly { variantId: string; productTitle: string | null }[] = []
+): string {
+  const labelOf = (key: string) => options.find((o) => o.key === key)?.label ?? key;
+  const answerOf = (optionKey: string, choiceKey: string) =>
+    options.find((o) => o.key === optionKey)?.choices.find((c) => c.key === choiceKey)?.label ??
+    choiceKey;
+
+  const conditions = rule.conditions.map((condition) => {
+    const question = labelOf(condition.optionKey);
+    const values = Array.isArray(condition.value)
+      ? condition.value.map((v) => answerOf(condition.optionKey, v)).join(' or ')
+      : answerOf(condition.optionKey, String(condition.value));
+    switch (condition.op) {
+      case 'not_in':
+        return `${question} is not ${values}`;
+      case 'gt':
+        return `${question} is more than ${values}`;
+      case 'lt':
+        return `${question} is less than ${values}`;
+      default:
+        return `${question} is ${values}`;
+    }
+  });
+
+  const actions = rule.actions.map((action) => {
+    switch (action.kind) {
+      case 'require':
+        return `${labelOf(action.optionKey)} must be answered`;
+      case 'hide':
+        return `${labelOf(action.optionKey)} is not asked`;
+      case 'show_only_choices':
+        return `${labelOf(action.optionKey)} only offers ${action.choiceKeys
+          .map((key) => answerOf(action.optionKey, key))
+          .join(', ')}`;
+      case 'price_adjust': {
+        const suffix = action.label ? ` (${action.label})` : '';
+        const amount = deltaLabel(action.deltaCents, currency);
+        return amount === null
+          ? `the price is left alone${suffix}`
+          : `the price changes by ${amount}${suffix}`;
+      }
+      case 'add_addon':
+        return `the order gets ${addOnWords(action.variantId, action.quantity, addOns)}`;
+      default:
+        return `it is refused: “${action.message}”`;
+    }
+  });
+
+  const joiner = rule.match === 'any' ? ' or ' : ' and ';
+  return `When ${conditions.join(joiner)}, ${actions.join(' and ')}.`;
+}
+
+/**
+ * The thing a rule adds, named and counted.
+ *
+ * The count leads because it is the word that changes what she owes her
+ * supplier, and the name is the build's own product title — never a SKU, which
+ * issue 182 already took off the bundle rows for the same reason.
+ */
+function addOnWords(
+  variantId: string,
+  quantity: number,
+  addOns: readonly { variantId: string; productTitle: string | null }[]
+): string {
+  const found = addOns.find((a) => a.variantId === variantId);
+  const name = found?.productTitle?.trim();
+  const many = Math.max(1, Math.round(quantity));
+  if (name === undefined || name === '') return many === 1 ? 'an extra' : `${String(many)} extras`;
+  return many === 1 ? name : `${String(many)} of ${name}`;
+}
+
 /** One component of a bundle. */
 export interface BundleComponent {
   id: string;
   variantId: string;
   variantSku: string;
   productTitle: string;
+  /** The version, said the way a person says it: "M · Moss". EMPTY for a
+   *  product that comes one way. The pane used to print `variantSku` here,
+   *  so every part of every bundle read as ASH-OVERSHIRT-M-MOSS — the thing
+   *  issue 182 fixed on the variant catalog and never reached the bundle. */
+  variantVersion: string;
+  /** What this part costs on its own. A bundle's whole point is what it
+   *  saves against these, and no screen could say without them. */
+  priceCents: number;
+  currency: string;
   defaultQuantity: number;
   isRequired: boolean;
   isSwappable: boolean;
@@ -2266,6 +2388,7 @@ export interface ConfiguratorPreview {
  */
 export function useConfiguratorPreview() {
   return useMutation({
+    meta: { running: 'try those choices' },
     mutationFn: (input: {
       templateId: string;
       selections: Record<string, string | string[] | number | boolean>;
@@ -2399,6 +2522,107 @@ export function useRemoveTierOverride(productId: string) {
   return useMutation({
     mutationFn: (input: { tierId: string; overrideId: string }) =>
       api.delete(`/v1/b2b/pricing-tiers/${input.tierId}/overrides/${input.overrideId}`),
+    onSuccess: () => {
+      invalidate(productId, 'b2b-pricing');
+    },
+  });
+}
+
+/**
+ * The businesses you sell to, for the "who gets this price" picker.
+ *
+ * A second request beside `useTradePricing`, and deliberately so: the pricing
+ * join answers "what is set on this product", which is what the pane RENDERS.
+ * Who you could set one FOR is a different question, only asked while the form
+ * is being filled in, and folding it into the read would make every open of the
+ * pane pay for a list most opens never use.
+ */
+export interface TradeAccountOption {
+  id: string;
+  companyName: string;
+  tierName: string | null;
+  status: string;
+}
+
+export function useTradeAccounts(enabled: boolean) {
+  return useQuery({
+    queryKey: ['b2b', 'accounts', 'price-picker'],
+    queryFn: () =>
+      api
+        .list<{
+          id: string;
+          companyName: string;
+          pricingTierName: string | null;
+          status: string;
+        }>('/v1/b2b/accounts', { take: 200 })
+        .then((r) =>
+          r.items.map((a): TradeAccountOption => ({
+            id: a.id,
+            companyName: a.companyName,
+            tierName: a.pricingTierName,
+            status: a.status,
+          }))
+        ),
+    enabled,
+  });
+}
+
+/**
+ * A price for ONE business on one version, with no end date.
+ *
+ * This route has existed since the module shipped and NOTHING in either console
+ * called it — the pane could delete an account price and could not make one, so
+ * its remove button had never had a row to press on. MEASURED 2026-09-19: 0
+ * rows in `b2b_account_product_overrides` across all 43 tenants. Issue 740.
+ */
+export function useAddAccountOverride(productId: string) {
+  const invalidate = useInvalidateProduct();
+  return useMutation({
+    mutationFn: (input: {
+      accountId: string;
+      variantId: string;
+      priceCents?: number;
+      discountPercentage?: number;
+    }) =>
+      api.post(`/v1/b2b/accounts/${input.accountId}/overrides`, {
+        variantId: input.variantId,
+        // The server enforces EXACTLY one of these two, so an undefined key must
+        // be absent rather than present-and-undefined.
+        ...(input.priceCents !== undefined ? { priceCents: input.priceCents } : {}),
+        ...(input.discountPercentage !== undefined
+          ? { discountPercentage: input.discountPercentage }
+          : {}),
+      }),
+    onSuccess: () => {
+      invalidate(productId, 'b2b-pricing');
+    },
+  });
+}
+
+/**
+ * A price agreed with one business for a stretch of time.
+ *
+ * The same hole as the account override: a delete path with no create path, and
+ * 0 rows in `commerce_contract_prices` platform-wide. A fixed amount only, by
+ * the server's schema — an agreement names a price, not a percentage.
+ */
+export function useAddContractPrice(productId: string) {
+  const invalidate = useInvalidateProduct();
+  return useMutation({
+    mutationFn: (input: {
+      companyId: string;
+      variantId: string;
+      priceCents: number;
+      validFrom: string;
+      validTo?: string;
+    }) =>
+      api.post('/v1/commerce/contract-prices', {
+        companyId: input.companyId,
+        variantId: input.variantId,
+        priceCents: input.priceCents,
+        validFrom: input.validFrom,
+        ...(input.validTo ? { validTo: input.validTo } : {}),
+      }),
     onSuccess: () => {
       invalidate(productId, 'b2b-pricing');
     },
@@ -2772,6 +2996,13 @@ export interface ProductSubscriber {
   /** THIS product's share of the subscription's monthly value, not the whole
    *  subscription's — a $200/mo box holding one $5 item counts $5 here. */
   monthlyRecurringRevenueCents: number;
+  /** The cadence, so a row can say what actually happens — "$58.00 every 2
+   *  months" — rather than only the monthly average of it. */
+  intervalUnit: string;
+  intervalCount: number;
+  deliveriesPerCycle: number;
+  /** What is charged EACH TIME the whole repeat order goes out. */
+  cycleAmountCents: number;
   currency: string;
   providerSlug: string;
   lines: { variantId: string; variantSku: string | null; quantity: number }[];
@@ -2781,7 +3012,10 @@ export interface ProductSubscriptions {
   counts: { active: number; paused: number; cancelled: number; pastDue: number };
   monthlyRecurringRevenueCents: number;
   currency: string | null;
-  unitsPerMonth: number;
+  /** How many of these go out in a YEAR on the repeat orders running now. A
+   *  year because a thing cannot be half sent: the monthly figure this replaced
+   *  rounded one every three months down to none. */
+  unitsPerYear: number;
   subscriptions: ProductSubscriber[];
   /** `subscription` means this product is SET UP to be sold on a repeating
    *  schedule. Carried so "set up, but nobody has subscribed yet" is
@@ -2796,6 +3030,32 @@ export function useProductSubscriptions(productId: string) {
       api.get<ProductSubscriptions>(`/v1/commerce/products/${productId}/subscriptions`),
     enabled: productId !== 'new',
   });
+}
+
+/**
+ * How often a repeat order goes out, in the words a shop owner uses.
+ *
+ * The cadence never reached the panel at all, so a scarf going out every two
+ * months was described as "$29.00 a month" directly above "Next delivery in 4
+ * months" — two sentences about one repeat order that cannot both be true, and
+ * neither of them the $58.00 her customer is actually charged (issue 795).
+ */
+export function cadenceWords(unit: string, count: number): string {
+  const single: Record<string, string> = {
+    day: 'a day',
+    week: 'a week',
+    month: 'a month',
+    year: 'a year',
+  };
+  const plural: Record<string, string> = {
+    day: 'days',
+    week: 'weeks',
+    month: 'months',
+    year: 'years',
+  };
+  if (count <= 1) return single[unit] ?? 'on a schedule';
+  const many = plural[unit];
+  return many === undefined ? 'on a schedule' : `every ${String(count)} ${many}`;
 }
 
 export function subscriptionState(status: string): { label: string; tone: Tone } {
@@ -2882,44 +3142,14 @@ export function useDeleteTranslation(productId: string) {
   });
 }
 
-/**
- * Canonicalize a language tag the way the server does — language lowercase,
- * script Titlecase, region UPPERCASE.
- *
- * Done here as well as there so the pane can key its draft rows on the SAME
- * string the server will store. Without it, typing `en-us` creates a draft row
- * under `en-us`, which comes back from the save as `en-US` — and the pane shows
- * the language twice with the operator's edit apparently lost.
- */
-export function canonicalLocale(raw: string): string {
-  const parts = raw.trim().replace(/_/g, '-').split('-').filter(Boolean);
-  return parts
-    .map((part, index) => {
-      if (index === 0) return part.toLowerCase();
-      // A four-letter subtag is a SCRIPT (Hans, Cyrl) and is Titlecase; two or
-      // three characters in a later position is a REGION and is uppercase.
-      if (part.length === 4) return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-      if (part.length === 2 || part.length === 3) return part.toUpperCase();
-      return part.toLowerCase();
-    })
-    .join('-');
-}
-
-/** A language tag in the reader's own language ("Spanish (Mexico)"), falling
- *  back to the tag itself when the browser has no name for it. */
-export function localeName(locale: string): string {
-  try {
-    return new Intl.DisplayNames(undefined, { type: 'language' }).of(locale) ?? locale;
-  } catch {
-    return locale;
-  }
-}
-
-/** Would the server accept this tag? Mirrors the BCP-47 shape the Locale schema
- *  enforces, so the pane can refuse it before spending a round trip. */
-export function isValidLocale(raw: string): boolean {
-  return /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?$/.test(canonicalLocale(raw));
-}
+// Naming, canonicalizing and checking a language tag all live in
+// `lib/languages.ts`, with the named shortlist the pickers offer. They were
+// written out twice — once here and once under `surfaces/cms/` — and the picker
+// that replaced the code box was built against only one of the copies, so this
+// pane went on asking a jewelry maker for "es, pt-BR, zh-Hans" (issue 793).
+// Re-exported so the pane keeps taking its language helpers from its own data
+// module.
+export { canonicalLocale, isValidLocale, localeName } from '../../lib/languages';
 
 /* ══════════════════════════════════════════════════════════════════════════
    FILING — the categories and collections a product belongs to.

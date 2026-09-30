@@ -41,7 +41,7 @@ import {
   type FeedbackSource,
 } from '../../lib/api/feedback';
 import { clearDraft, draftKey, publishDraft, readDraft } from '../../lib/drafts';
-import { summarizeContext } from './context';
+import { feedbackScreenName, summarizeContext } from './context';
 import { CATEGORY_COLOR, CATEGORY_ICON } from './format';
 
 /**
@@ -262,7 +262,7 @@ export function FeedbackCompose({
       <ContextPanel context={context} />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm">Replies arrive by email and in Your feedback.</p>
+        <p className="text-sm">Replies arrive by email and in {feedbackScreenName()}.</p>
         <div className="flex items-center gap-2">
           {/* Closing keeps the draft, so this is genuinely "later", not a
               discard — which is why nothing has to ask before it happens. */}

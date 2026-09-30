@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
-import { accountUrl, appsInGroup } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD, APP_COUNT_WORD_CAP, appsInGroup } from '@piggles/config';
 import { PageHero } from '@/components/marketing/page-hero';
 import { StepsFigure } from '@/components/marketing/hero/steps-figure';
 import { GROUP_COPY } from '@/components/marketing/groups';
@@ -79,10 +79,10 @@ const NOT_LOCKED = [
 const DAYS = [
   {
     title: 'No card, at all',
-    body: 'Not held, not authorised, not asked for. There is nothing to cancel if you decide it is not for you: the trial simply ends.',
+    body: 'Not held, not authorized, not asked for. There is nothing to cancel if you decide it is not for you: the trial simply ends.',
   },
   {
-    title: 'All fifteen apps, the whole time',
+    title: `All ${APP_COUNT_WORD} apps, the whole time`,
     body: 'A trial is not a smaller Piggles. Nothing is withheld to be sold to you later, because there is nothing above the one plan to sell.',
   },
   {
@@ -96,7 +96,7 @@ export default function HowItWorksPage() {
     <>
       <PageHero
         heading="Two questions, and then a business that already works."
-        lede="Fifteen apps is a lot to look at and nothing to set up. Signing up asks what the business is called and what you want to start with, and everything below is already done by the time you get there."
+        lede={`${APP_COUNT_WORD_CAP} apps is a lot to look at and nothing to set up. Signing up asks what the business is called and what you want to start with, and everything below is already done by the time you get there.`}
         figure={<StepsFigure />}
         assurances={['Free for 14 days', 'No card needed', 'Nobody rings you']}
       >
@@ -107,7 +107,7 @@ export default function HowItWorksPage() {
           Start free for 14 days
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
-          See all fifteen apps
+          See all {APP_COUNT_WORD} apps
         </Link>
       </PageHero>
 
@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
                       data-group={group}
                       className={`rounded-field border px-4 py-3 text-base font-semibold ${
                         on
-                          ? 'bg-module bg-soft border-module ink-module'
+                          ? 'bg-module text-module-content border-module'
                           : 'bg-base-100 border-base-300'
                       }`}
                     >
@@ -179,7 +179,7 @@ export default function HowItWorksPage() {
             <li
               key={group}
               data-group={group}
-              className="bg-module bg-soft border-base-300 rounded-section border p-6 sm:p-8"
+              className="bg-base-100 border-base-300 rounded-section border p-6 sm:p-8"
             >
               <h3 className="ink-module font-heading text-xl font-black sm:text-2xl">
                 {GROUP_COPY[group].title}

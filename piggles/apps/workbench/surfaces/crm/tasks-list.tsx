@@ -63,7 +63,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
       open: 'To do',
       completed: 'Done',
       cancelled: 'Canceled',
-      all: 'All tasks',
+      all: 'Everything',
     }),
     []
   );
@@ -75,7 +75,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'New task',
+    label: 'Add something to do',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('crm.task.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -84,14 +84,14 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Task list controls"
+        label="Things to do controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               color="module"
               size="sm"
-              aria-label="Search tasks"
-              placeholder="Search tasks…"
+              aria-label="Search things to do"
+              placeholder="Search things to do…"
               value={search}
               onValueChange={setSearch}
             />
@@ -102,7 +102,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New task: hold Shift to open alongside, Alt for a new window"
+            title="Add something to do: hold Shift to open alongside, Alt for a new window"
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -114,7 +114,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             <Select
               color="module"
               size="sm"
-              aria-label="Which tasks to show"
+              aria-label="Which ones to show"
               value={status}
               items={statusItems}
               onValueChange={(next) => {
@@ -148,7 +148,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <PaneLoadError
             icon={<Icon glyph={faListCheck} className="size-6" aria-hidden />}
-            title="Could not load your tasks"
+            title="Could not load your list"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
@@ -162,14 +162,14 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             filtered={filtered}
             noResults={{
               icon: <Icon glyph={faListCheck} className="size-6" aria-hidden />,
-              title: 'No tasks match those filters',
+              title: 'Nothing matches those filters',
               description:
-                'Try a different word, or change the filter: done and canceled tasks are hidden unless you ask for them.',
+                'Try a different word, or change the filter: anything done or dropped is hidden unless you ask for it.',
             }}
             firstRun={{
-              title: 'No tasks to do',
+              title: 'Nothing to do',
               description:
-                'Tasks are the things you need to do for a customer or a deal. Add your first one to keep track of follow-ups.',
+                'This is what you owe people: a call to return, a quote to chase, a sample to send. Add your first one and it shows up here with its due date.',
               action: createFirst,
             }}
           />
@@ -177,7 +177,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Table size="sm" hover>
             <thead>
               <tr>
-                <th>Task</th>
+                <th>What to do</th>
                 <th>Status</th>
                 <th className="text-right">Due</th>
                 <th className="hidden @lg:table-cell">For</th>

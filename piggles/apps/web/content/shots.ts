@@ -23,7 +23,7 @@ import type { PigglesAppId } from '@piggles/config';
 //   public/product/stock/levels-desktop-light.png
 //   public/product/stock/levels-mobile-dark.png
 //
-// A DIRECTORY PER APP, because fifteen apps at eight files each is 120 images
+// A DIRECTORY PER APP, because eight files for every app is well past a hundred images
 // and a flat folder of them is unusable. `<surface>` is a name rather than a
 // number — `stock-1.png` tells a docs author nothing, and the whole point of
 // this registry is that a docs page can ask for `counts` and get it.

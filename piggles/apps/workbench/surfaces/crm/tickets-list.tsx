@@ -137,7 +137,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Support queue controls"
+        label="Help requests controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

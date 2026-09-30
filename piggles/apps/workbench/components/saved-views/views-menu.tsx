@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-// A bookmark, not a star. A star means FAVOURITE — a thing you singled out — and
+// A bookmark, not a star. A star means FAVORITE — a thing you singled out — and
 // a saved view is not that: it is a question you can come back to. The column
 // chooser already owns the columns glyph, and the filter chips own the funnel.
 import { faBookmark } from '@fortawesome/pro-solid-svg-icons';

@@ -167,12 +167,25 @@ interface ProductAdapter {
    * voice, never a mechanical substitution. A screen's name is the shortest copy
    * in the product and the most read, so it gets the same care as a sentence.
    *
-   * Applies to STATIC titles only. A surface whose title is a function is naming
-   * a RECORD — "Order #1043", the customer's own words — and that is the
-   * tenant's data rather than the platform's vocabulary. Renaming it is not a
-   * thing a brand should be able to do, so the function always wins.
+   * Applies to a FUNCTION title too, which it did not until issue 729: 32 of the
+   * catalog's 33 function titles return fixed words and are screen names like
+   * any other. The one that names a RECORD — "Order #1043", the customer's own
+   * words — is the tenant's data rather than the platform's vocabulary, and the
+   * rule against renaming it is now a rule about not giving it an entry.
    */
   surfaceTitles: Readonly<Record<string, string>>;
+  /**
+   * What this product calls the ACTION on a nav row's `+`, keyed by the surface
+   * it creates into.
+   *
+   * `createLabel` is copy that reaches a person - a tooltip and the button's
+   * accessible name - and it was the one piece of the catalog with no seam, so
+   * the rail offered "Add a price list" beside a screen called Special prices
+   * and "New purchase order" beside Orders to suppliers. The panes' own buttons
+   * had already been written the other way, which is how one button came to have
+   * two names. Issue 729.
+   */
+  createLabels: Readonly<Record<string, string>>;
   /**
    * What this product calls each GROUP HEADING inside a nav panel, keyed by the
    * platform's own section string.
@@ -229,6 +242,7 @@ const adapter: ProductAdapter = {
   copy: {},
   hiddenFeatures: new Set(),
   surfaceTitles: {},
+  createLabels: {},
   sectionTitles: {},
   StateArt: null,
 };
@@ -320,10 +334,15 @@ export function productHidesFeature(key: string): boolean {
   return adapter.hiddenFeatures.has(key);
 }
 
-/** This brand's name for a screen, or `undefined` to use the platform's. Only
- *  consulted for STATIC titles — see `surfaceTitles`. */
+/** This brand's name for a screen, or `undefined` to use the platform's. */
 export function productSurfaceTitle(surfaceKey: string): string | undefined {
   return adapter.surfaceTitles[surfaceKey];
+}
+
+/** This brand's words for the `+` beside a nav row, or `undefined` for the
+ *  platform's. See `createLabels`. */
+export function productCreateLabel(surfaceKey: string): string | undefined {
+  return adapter.createLabels[surfaceKey];
 }
 
 /** This brand's name for a nav group heading, or `undefined` for the

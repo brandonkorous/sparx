@@ -59,7 +59,7 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <ModuleScope module="commerce" className={PANE_SHELL}>
         <PaneToolbar
-          label="Product translations actions"
+          label="Other languages actions"
           refresh={
             <RefreshButton
               isFetching={source.isFetching || translations.isFetching}

@@ -88,7 +88,7 @@ export function BookingNotes({
   return (
     <FormSection
       title="Notes"
-      description="What the customer sees, and a private note just for your team."
+      description="What the customer sees, and a private note nobody outside your business reads."
       action={
         <Button
           size="sm"

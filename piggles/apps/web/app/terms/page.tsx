@@ -5,6 +5,7 @@ import { brandLegal } from '@wizeworks/legal';
 import { PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { DocumentFigure } from '@/components/marketing/hero/document-figure';
+import { APP_COUNT_WORD } from '@piggles/config';
 
 // /terms — the agreement, in the same plain speech as the rest of the site.
 //
@@ -57,7 +58,7 @@ const CLAUSES: Clause[] = [
   {
     heading: 'What you get',
     paras: [
-      'One subscription gives you every one of the fifteen apps, from the first day. There are no tiers, no per-app charges and nothing behind an upgrade button. If it is one of the fifteen, it is included.',
+      `One subscription gives you every one of the ${APP_COUNT_WORD} apps, from the first day. There are no tiers, no per-app charges and nothing behind an upgrade button. If it is one of the ${APP_COUNT_WORD}, it is included.`,
       'One subscription covers one business, one location, one website on your own domain, and three people on your team. A second business is a second subscription: deliberately, because sharing customers and books between two businesses is a mistake that usually surfaces at tax time.',
       'We add things, change things and occasionally remove things. If we remove something you are relying on, we will tell you before it happens rather than after.',
     ],
@@ -91,8 +92,8 @@ const CLAUSES: Clause[] = [
     paras: [
       'Everything you put into Piggles (your customers, products, orders, invoices, pages, files and words) belongs to you. Nothing about using Piggles transfers ownership of it to us.',
       'We need a narrow permission to run the service: to store your information, back it up, and display and send it as the software is meant to. That permission exists only to operate Piggles for you, it goes no further, and it ends when you leave.',
-      'We do not sell your information, and we do not train AI on it, not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself.',
-      'You can export all of it whenever you want, in formats other software can actually read. You do not have to ask, and you do not have to be leaving.',
+      'We do not sell your information, and we do not train AI on it, not a model of ours, not a shared assistant, not anonymized, not aggregated. Any AI feature runs on a key you connect yourself.',
+      'You can export your customers, products, stock, orders, invoices, bookings and articles whenever you want, as spreadsheets other software can actually read. You do not have to ask, and you do not have to be leaving.',
     ],
   },
   {

@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════════════════════
 // APPROVALS — orders held for someone to say yes.
 //
-// When a trade account places an order over a threshold you've set, checkout
+// When a wholesale customer places an order over a threshold you've set, checkout
 // holds it instead of placing it, and it waits here for a member of staff to
 // approve or reject it. Approving places the order (and invoices it, if the
 // account is on terms); rejecting cancels it.
@@ -18,6 +18,7 @@
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -53,7 +54,7 @@ export const approvalKeys = {
 };
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function formatDateTime(value: string | null | undefined): string {
@@ -87,7 +88,7 @@ export function useApprovalRules() {
   });
 }
 
-/** Trade accounts, named, for scoping a rule to one business. */
+/** Wholesale customers, named, for scoping a rule to one business. */
 export function useApprovalAccountChoices() {
   return useQuery({
     queryKey: ['b2b', 'approval-rules', 'account-choices'],

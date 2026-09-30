@@ -63,6 +63,12 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ASSIGNABLE_ROLES, canManageTeam, roleDescription, roleLabel } from '../team/roles';
+// The one rule for "when did this person last sign in", shared with the Team
+// pane so the two cannot reach different conclusions about the same person from
+// the same two columns (issue 853).
+import { partnerSeenLine, neverUsedTheirAccess } from './partner-seen-line';
+import { describeAgo } from '../../lib/api/activity';
+import { formatDate } from './format';
 import {
   partnerAccessError,
   partnerInitials,
@@ -266,6 +272,17 @@ function PartnerRow({
         <Text className="text-sm">
           {roleLabel(person.role)} · {scopeSummary(person)}
         </Text>
+        {/* WHAT THEY HAVE DONE WITH IT. This pane hands an owner a "Withdraw
+            access" button and told her nothing she could decide it on. Both
+            facts were already fetched: when the key was given, and whether it
+            has ever been used. A key nobody has used is the loud case, so it
+            wears the warning tone rather than sitting in the same ink as the
+            role. [[feedback_fetched_but_never_rendered]] */}
+        {person.kind === 'member' ? (
+          <Text className={neverUsedTheirAccess(person) ? 'text-warning text-sm' : 'text-sm'}>
+            {partnerSeenLine(person, formatDate, describeAgo)}
+          </Text>
+        ) : null}
       </div>
 
       {canManage ? (

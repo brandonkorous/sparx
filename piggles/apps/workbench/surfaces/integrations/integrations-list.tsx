@@ -192,8 +192,12 @@ function IntegrationTile({
           </Badge>
         ) : null}
         {/* A contributor's integration says so plainly — a tenant is trusting somebody
-            other than sparx with their data, and that is theirs to know. */}
-        {integration.publisher !== 'sparx' ? (
+            other than us with their data, and that is theirs to know.
+            `firstParty` and not `publisher !== 'sparx'`: the publisher string is
+            filled with the tenant's own brand name before it gets here, so that
+            comparison never matched under Piggles and badged EVERY first-party
+            service, including the brand's own payment product. */}
+        {!integration.firstParty ? (
           <Badge color="info" variant="soft" size="sm">
             Community
           </Badge>
@@ -329,7 +333,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
           icon={<Icon glyph={faPlug} className="size-6" aria-hidden />}
-          title="Could not load your integrations"
+          title="Could not load your other software"
           description="This is a problem reaching the server. Your existing connections are unaffected and still working."
           onRetry={() => {
             void catalog.refetch();
@@ -345,12 +349,12 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Integration list controls"
+        label="Other software controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search integrations"
+              aria-label="Search other software"
               placeholder="Search services…"
               value={search}
               onValueChange={setSearch}
@@ -436,7 +440,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <div
             className="grid gap-2 @xl:grid-cols-2 @4xl:grid-cols-3 @6xl:grid-cols-4"
             role="status"
-            aria-label="Loading integrations"
+            aria-label="Loading your other software"
           >
             {Array.from({ length: 8 }, (_, i) => (
               <Skeleton key={i} className="h-28 w-full" />

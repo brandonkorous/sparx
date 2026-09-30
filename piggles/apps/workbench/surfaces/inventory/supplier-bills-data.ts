@@ -373,7 +373,7 @@ export function matchSummary(match: BillMatch): { label: string; tone: Tone; det
       label: 'Not checked',
       tone: 'neutral',
       detail:
-        'None of these lines points at a purchase order, so there is nothing to compare them against. Link the bill to an order to have it checked.',
+        'None of these lines points at an order you sent, so there is nothing to compare them against. Link the bill to an order to have it checked.',
     };
   }
   if (match.ok) {

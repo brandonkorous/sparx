@@ -45,6 +45,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import { ScorePanel } from './score-panel';
@@ -64,6 +65,7 @@ import {
   type Deal,
   type DealInput,
 } from './deals-data';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -291,7 +293,7 @@ function DealEditor({
   /* ── Validation ───────────────────────────────────────────────────────── */
 
   const titleError = draft.title.trim() === '' ? 'Give the deal a title.' : null;
-  const pipelineError = draft.pipelineId === '' ? 'Choose a pipeline.' : null;
+  const pipelineError = draft.pipelineId === '' ? 'Choose a process.' : null;
   const stageError = draft.stageId === '' ? 'Choose a stage.' : null;
   const valueError =
     draft.valueDollars.trim() !== '' && !(Number(draft.valueDollars) >= 0)
@@ -377,7 +379,7 @@ function DealEditor({
     const ok = await confirm({
       title: `Delete ${deal.title}?`,
       description:
-        'This is for a deal that should not exist: the usual way to finish a deal is to move it to a Won or Lost stage. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
+        'This is for a deal that should not exist: the usual way to finish a deal is to move it to a Won or Lost step. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
       confirmLabel: 'Delete this deal',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -438,8 +440,8 @@ function DealEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A deal is a sale you are working on. Put it on a pipeline, set what it is worth, and
-              move it along as it progresses.
+              A deal is a sale you are working on. Put it on a process, set what it is worth, and
+              move it along a step at a time.
             </Text>
           ) : null}
 
@@ -448,10 +450,10 @@ function DealEditor({
           {pipelineList.length === 0 ? (
             <Alert color="warning">
               <AlertContent>
-                <AlertTitle>No pipelines yet</AlertTitle>
+                <AlertTitle>No processes yet</AlertTitle>
                 <AlertDescription>
-                  A deal needs a pipeline to live on. Create one under Pipelines first, then come
-                  back.
+                  A deal needs a process to live on. Set one up under How things move first, then
+                  come back.
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -482,30 +484,18 @@ function DealEditor({
                 <FieldLabel>Value</FieldLabel>
                 <FieldControl
                   render={
-                    <div className="flex max-w-[14rem] items-center gap-2">
-                      <Input
-                        color={valueError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step="1"
-                        inputMode="decimal"
-                        value={draft.valueDollars}
-                        placeholder="0"
-                        onChange={(event) => {
-                          set('valueDollars', event.target.value);
-                        }}
-                      />
-                      <Input
-                        color="module"
-                        aria-label="Currency"
-                        value={draft.currency}
-                        spellCheck={false}
-                        className="max-w-[5rem] font-mono uppercase"
-                        onChange={(event) => {
-                          set('currency', event.target.value.toUpperCase().slice(0, 3));
-                        }}
-                      />
-                    </div>
+                    <Input
+                      color={valueError && touched ? 'error' : 'module'}
+                      type="number"
+                      min={0}
+                      step="1"
+                      inputMode="decimal"
+                      value={draft.valueDollars}
+                      placeholder="0"
+                      onChange={(event) => {
+                        set('valueDollars', event.target.value);
+                      }}
+                    />
                   }
                 />
                 {valueError && touched ? (
@@ -514,12 +504,21 @@ function DealEditor({
                   <FieldDescription>What the deal is worth if it closes.</FieldDescription>
                 )}
               </Field>
+              <CurrencyField
+                required
+                value={draft.currency}
+                onChange={(next) => {
+                  set('currency', next);
+                }}
+                description="What that value is in."
+              />
               <Field>
-                <FieldLabel>Likelihood</FieldLabel>
+                <FieldLabel>Chance</FieldLabel>
                 <FieldControl
                   render={
                     <div className="flex max-w-[10rem] items-center gap-2">
                       <Input
+                        aria-label="Likelihood"
                         color="module"
                         type="number"
                         min={0}
@@ -545,7 +544,7 @@ function DealEditor({
           <FormSection title="Where it is">
             <div className="grid gap-3 @md:grid-cols-2">
               <Field>
-                <FieldLabel>Pipeline</FieldLabel>
+                <FieldLabel>Process</FieldLabel>
                 <Select
                   color={pipelineError && touched ? 'error' : 'module'}
                   aria-label="Pipeline"
@@ -557,7 +556,7 @@ function DealEditor({
                 />
               </Field>
               <Field>
-                <FieldLabel>Stage</FieldLabel>
+                <FieldLabel>Step</FieldLabel>
                 <Select
                   color={stageError && touched ? 'error' : 'module'}
                   aria-label="Stage"
@@ -567,7 +566,9 @@ function DealEditor({
                     set('stageId', next as string);
                   }}
                 />
-                <FieldDescription>Where the deal sits on this pipeline right now.</FieldDescription>
+                <FieldDescription>
+                  Which step of this process the deal is on right now.
+                </FieldDescription>
               </Field>
             </div>
 
@@ -575,13 +576,12 @@ function DealEditor({
               <FieldLabel>Expected close date</FieldLabel>
               <FieldControl
                 render={
-                  <Input
+                  <DayInput
                     color="module"
-                    type="date"
                     className="max-w-[14rem]"
                     value={draft.expectedCloseDate}
-                    onChange={(event) => {
-                      set('expectedCloseDate', event.target.value);
+                    onValueChange={(value) => {
+                      set('expectedCloseDate', value);
                     }}
                   />
                 }

@@ -21,6 +21,7 @@ import {
 import { FormSection } from '../../components/form-section';
 import { productCopy } from '../../lib/product';
 import type { FormState } from './person-form';
+import { DayInput } from '../../components/day-input';
 
 export type SetField = <K extends keyof FormState>(key: K, value: FormState[K]) => void;
 
@@ -124,11 +125,10 @@ export function PersonIdentity({ form, set }: { form: FormState; set: SetField }
           <FieldLabel>Started</FieldLabel>
           <FieldControl
             render={
-              <Input
-                type="date"
+              <DayInput
                 value={form.startedOn}
-                onChange={(event) => {
-                  set('startedOn', event.target.value);
+                onValueChange={(value) => {
+                  set('startedOn', value);
                 }}
               />
             }

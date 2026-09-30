@@ -11,6 +11,7 @@
 // the journey, `leadStatus` is the micro work-state of a lead.
 
 import type { CustomerType, LeadStatus, LifecycleStage } from '@wizeworks/crm-schemas';
+import { formatAmount } from '../../lib/money-format';
 
 /** The best human name for a customer — real name, else company, else email,
  *  else a plain fallback. Never an empty string, so a row is never blank. */
@@ -27,8 +28,40 @@ export function customerName(c: {
   return 'Unnamed contact';
 }
 
+/**
+ * A name somebody typed into a picker, split into the two boxes the form has.
+ *
+ * The reverse of `customerName`, and it exists for one moment: she searched
+ * for a person who is not in the book yet, so the name is already typed and
+ * making her type it again is how the same person ends up in there twice
+ * (issue 745).
+ *
+ * Everything before the LAST space is the first name. "Mary Jane Vale" is
+ * "Mary Jane" and "Vale", not "Mary" and "Jane Vale", because a surname is
+ * one word far more often than a first name is. One word is a first name and
+ * no surname; both boxes stay editable, so a wrong guess costs a click.
+ */
+export function splitTypedName(typed: string): { firstName: string; lastName: string } {
+  const words = typed.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return { firstName: '', lastName: '' };
+  if (words.length === 1) return { firstName: words[0] ?? '', lastName: '' };
+  const lastName = words.pop() ?? '';
+  return { firstName: words.join(' '), lastName };
+}
+
 interface AxisMeta {
   label: string;
+  /**
+   * A REGISTERED color name, as spelled in the app's `@plugin` block — module
+   * hues are `module-<slug>`, not `<slug>`.
+   *
+   * This is a plain `string` because silica's own `SilicaColor` is
+   * `… | (string & {})`, so nothing here can be caught by the compiler. An
+   * unregistered name emits no class at all and the component falls back to
+   * grey, which looks like a deliberate choice and is why Wholesale and
+   * Individual read identically for months (issue 747). `check:colors` is the
+   * thing that actually catches it.
+   */
   color: string;
   description: string;
 }
@@ -44,14 +77,14 @@ export function customerTypeMeta(type: CustomerType): AxisMeta {
     case 'retail':
       return {
         label: 'Individual',
-        color: 'commerce',
+        color: 'module-commerce',
         description: 'A regular customer at your standard prices.',
       };
     case 'b2b':
       return {
         label: 'Wholesale',
-        color: 'b2b',
-        description: 'A business on a trade account, at agreed prices.',
+        color: 'module-b2b',
+        description: 'A business you supply, at the prices you agreed with them.',
       };
     case 'partner':
       return {
@@ -95,7 +128,7 @@ export function lifecycleStageMeta(stage: LifecycleStage): AxisMeta {
       return {
         label: 'Lead',
         color: 'info',
-        description: 'Made contact or enquired, beyond just subscribing.',
+        description: 'Made contact or inquired, beyond just subscribing.',
       };
     case 'marketing_qualified_lead':
       return {
@@ -179,7 +212,7 @@ export function leadStatusMeta(status: LeadStatus): AxisMeta {
 export function formatMoney(value: number | string | null | undefined, currency = 'USD'): string {
   const n = typeof value === 'string' ? Number(value) : (value ?? 0);
   if (!Number.isFinite(n)) return '—';
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(n);
+  return formatAmount(n, currency);
 }
 
 /** Two letters for a monogram, from whatever identity is present — name, then

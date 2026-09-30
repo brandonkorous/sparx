@@ -89,8 +89,25 @@ export interface BarcodeConflict {
   heldByProductTitle: string | null;
 }
 
+/**
+ * Everything a scan can be.
+ *
+ * A hand copy of `ALL_KINDS` in `@wizeworks/inventory/services/scan.ts`. The
+ * console talks to that over HTTP and depends on no package that could hold the
+ * list, so the copy stays and `scan-kinds.test.ts` holds it to the original -
+ * `pick_list` was missing from three copies at once, which is a printed barcode
+ * nothing can read. [[feedback_structural_checks_go_blind]]
+ */
 export type ScanKind =
-  'variant' | 'bin' | 'purchase_order' | 'goods_receipt' | 'transfer' | 'count' | 'lot' | 'serial';
+  | 'variant'
+  | 'bin'
+  | 'purchase_order'
+  | 'goods_receipt'
+  | 'transfer'
+  | 'count'
+  | 'pick_list'
+  | 'lot'
+  | 'serial';
 
 export interface ScanMatch {
   kind: ScanKind;
@@ -743,10 +760,11 @@ export function scanTone(outcome: ScanOutcome): 'success' | 'info' | 'warning' |
 const KIND_LABELS: Record<ScanKind, string> = {
   variant: 'Product',
   bin: 'Shelf',
-  purchase_order: 'Purchase order',
+  purchase_order: 'Order to a supplier',
   goods_receipt: 'Delivery',
   transfer: 'Transfer',
   count: 'Stock count',
+  pick_list: 'Pick list',
   lot: 'Batch',
   serial: 'Unit',
 };

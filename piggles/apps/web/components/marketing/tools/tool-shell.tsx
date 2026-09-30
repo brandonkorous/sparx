@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { faBadgeCheck, faGlobe, faLaptop, faUserXmark } from '@fortawesome/pro-solid-svg-icons';
 import type { PigglesIcon } from '@piggles/ui';
-import { accountUrl } from '@piggles/config';
+import { accountUrl, APP_COUNT_WORD_CAP } from '@piggles/config';
 import { CloseBand } from '../close-band';
 import type { PigglesTool } from './registry';
 import { toolGroup, toolPhoto } from './registry';
@@ -193,7 +193,7 @@ export function ToolShell({ tool, children }: { tool: PigglesTool; children: Rea
       <RelatedTools currentSlug={tool.slug} />
 
       <CloseBand
-        heading="Fifteen apps, one subscription, and none of this behind a paywall."
+        heading={`${APP_COUNT_WORD_CAP} apps, one subscription, and none of this behind a paywall.`}
         primary={{
           label: 'Start free for 14 days',
           href: accountUrl('signup', `tool-${tool.slug}`),

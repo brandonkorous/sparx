@@ -10,7 +10,7 @@
 //
 // ── ORDER: YOURS, THEN THE PRODUCT ──────────────────────────────────────────
 //
-// Favourites lead, then Recent — ONE ROW EACH, at every rail width, browsing
+// Favorites lead, then Recent — ONE ROW EACH, at every rail width, browsing
 // into the panel the same way an app does (./rail/shortcuts.tsx). Then every app,
 // in color families that no longer fold (./rail/app-groups.tsx). Everything else
 // is behind All apps in the footer.
@@ -39,10 +39,10 @@ import { AllAppsDialog } from './all-apps-dialog';
 import { AppScope } from './app-scope';
 import { AppGroups } from './rail/app-groups';
 import { CapacityNotice } from './rail/capacity-notice';
-import { Favourites, Recent } from './rail/shortcuts';
+import { Favorites, Recent } from './rail/shortcuts';
 import { LayoutsMenu } from './rail/layouts-menu';
 import { PlanCard } from './rail/plan-card';
-import { FAVOURITES_LIST, RECENT_LIST } from '@/lib/console/shortcut-lists';
+import { FAVORITES_LIST, RECENT_LIST } from '@/lib/console/shortcut-lists';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 
 interface AppRailProps {
@@ -135,11 +135,11 @@ export function AppRail({
             the whole product beneath them. Everything not on this rail is behind
             All apps in the footer. */}
         <SidebarContent ref={contentRef} className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
-          <Favourites
+          <Favorites
             expanded={expanded}
-            browsing={browsing === FAVOURITES_LIST}
+            browsing={browsing === FAVORITES_LIST}
             onBrowseList={() => {
-              onBrowse(FAVOURITES_LIST);
+              onBrowse(FAVORITES_LIST);
             }}
           />
 

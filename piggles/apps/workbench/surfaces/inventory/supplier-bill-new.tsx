@@ -46,8 +46,9 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
 import { usePurchaseOrder, usePurchaseOrders } from './purchase-orders-data';
 import { useCreateSupplierBill } from './supplier-bills-data';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { moneyCents, moneyText, MoneyTextInput } from '../../components/money-input';
 import { NOT_A_DATE, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -114,7 +115,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
       sku: line.variantSku,
       title: line.productTitle ?? line.description,
       quantity: String(line.quantityReceived > 0 ? line.quantityReceived : line.quantityOrdered),
-      unitCost: (line.unitCostCents / 100).toString(),
+      unitCost: moneyText(line.unitCostCents),
       agreedUnitCostCents: line.unitCostCents,
       receivedQuantity: line.quantityReceived,
     }));
@@ -225,7 +226,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
           description="The lines come across from the order already filled in, so you only change what they have actually charged differently."
         >
           <Field>
-            <FieldLabel>Purchase order</FieldLabel>
+            <FieldLabel>Order to a supplier</FieldLabel>
             <FieldControl
               render={
                 <NativeSelect
@@ -290,12 +291,11 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Invoice date</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={billedAt}
-                      onChange={(event) => {
-                        setBilledAt(event.target.value);
+                      onValueChange={(value) => {
+                        setBilledAt(value);
                       }}
                     />
                   }
@@ -306,12 +306,11 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Due</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={dueAt}
-                      onChange={(event) => {
-                        setDueAt(event.target.value);
+                      onValueChange={(value) => {
+                        setDueAt(value);
                       }}
                     />
                   }

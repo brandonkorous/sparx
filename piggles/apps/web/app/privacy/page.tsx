@@ -99,7 +99,7 @@ const NEVER = [
   },
   {
     title: 'We do not train AI on it',
-    body: 'Not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, so the data goes where you agreed and nowhere else, and you can disconnect it whenever you want.',
+    body: 'Not a model of ours, not a shared assistant, not anonymized, not aggregated. Any AI feature runs on a key you connect yourself, so the data goes where you agreed and nowhere else, and you can disconnect it whenever you want.',
   },
   {
     title: 'We never hold your card',
@@ -196,7 +196,7 @@ const IF_YOU_CONNECT = [
 const RIGHTS = [
   {
     title: 'Take it with you, whenever',
-    body: 'Customers, products, orders, invoices and everything you have written, in formats other software can actually open. You do not have to ask, you do not have to be leaving, and nobody will make it slow on purpose.',
+    body: 'Customers, products, stock, orders, invoices, bookings and your articles, as spreadsheets other software can actually open. You do not have to ask, you do not have to be leaving, and nobody will make it slow on purpose.',
   },
   {
     title: 'Correct it',
@@ -368,7 +368,7 @@ export default function PrivacyPage() {
           <div>
             <h2 className="text-3xl font-extrabold sm:text-4xl">Where it all sits</h2>
             <p className="mt-6 max-w-[60ch] text-lg">
-              In managed data centres run by major cloud providers, in a region we can tell you.
+              In managed data centers run by major cloud providers, in a region we can tell you.
               Several of the companies above operate internationally, so information reaching them
               may be handled outside the country you are in, which is normal for software of this
               kind and worth knowing rather than discovering.

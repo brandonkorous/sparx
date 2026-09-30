@@ -169,7 +169,7 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Inbound shipment controls"
+        label="On the way controls"
         controls={
           <NativeSelect
             size="sm"

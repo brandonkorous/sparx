@@ -52,7 +52,7 @@
 // hooks wired straight onto their nav rows, so the panel could show four waiting
 // while the rail above it showed nothing — the same question with two answers on
 // one screen. A count is measured once, and every level that shows it derives
-// from that (COUNT_SURFACE below, then components/rail/waiting.tsx).
+// from that (COUNT_SURFACE in home-counts, then components/rail/waiting.tsx).
 //
 // Which counts appear as HOME TILES is a separate, smaller list — `SIGNALS` in
 // surfaces/home.tsx — because a tile needs a written sentence and a greeting has
@@ -74,37 +74,8 @@ import { SOURCES, type AttentionKey, type Source } from './home-counts';
 
 // Re-exported: every existing importer asks `home-data` for these, and the
 // split above is about where they can be TESTED, not about who may read them.
-export { SOURCES } from './home-counts';
+export { COUNT_SURFACE, SOURCES } from './home-counts';
 export type { AttentionKey, Source } from './home-counts';
-
-/**
- * The SCREEN each count is about — the nav row that owns it.
- *
- * More than one count may name the same screen: Stock owns both "running low"
- * and "sold out". The rail sums them, which is only honest because the two
- * measurements are disjoint by construction — see `stock`'s `sellable_only`.
- *
- * Declared beside the count itself, because the count and the screen it
- * describes are one fact. The rail badges a screen from this, then sums the
- * screens into the app and the apps into the group, so all three levels are
- * derived from one line rather than declared three times
- * (components/rail/waiting.tsx).
- *
- * NOT the same as where Home's tile SENDS you, which is a separate judgement:
- * bookings are counted on the bookings list and dealt with on the calendar. See
- * `SIGNALS` in surfaces/home.tsx.
- */
-export const COUNT_SURFACE: Record<AttentionKey, string> = {
-  orders: 'commerce.orders.list',
-  bookings: 'scheduling.bookings.list',
-  messages: 'chat.inbox',
-  invoices: 'invoicing.invoices.list',
-  formReplies: 'builder.forms',
-  stock: 'inventory.stock.list',
-  outOfStock: 'inventory.stock.list',
-  social: 'social.inbox',
-  approvals: 'social.approvals',
-};
 
 /** Re-read on the same cadence a person would glance up — often enough to be
  *  current, rare enough that five tiles are not five requests a second. */

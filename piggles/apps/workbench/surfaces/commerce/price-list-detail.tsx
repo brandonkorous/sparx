@@ -9,7 +9,7 @@
 //
 //   1. WHAT it is        — a name, and the currency its prices are in.
 //   2. WHO gets it       — everyone on a channel, one customer group, or one
-//                          trade account; and when it goes live.
+//                          wholesale customer; and when it goes live.
 //   3. THE PRICES        — one line per product version: a fixed price, or a
 //                          percentage off the normal one.
 //
@@ -51,6 +51,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { SiteScopeField } from '../../components/site-scope-field';
+import { CurrencyField } from '../../components/currency-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '../../components/money-input';
 import { VariantPicker } from './variant-picker';
@@ -77,12 +78,9 @@ import {
 import { badDayIn, dayEndUtc, dayStartUtc } from '../../lib/today';
 import { createdWithoutPrices, saveFailureLine, type SavePoint } from './price-list-save-words';
 import { ChoiceListNote, choiceListState } from '../../components/choice-list-note';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-// The currencies offered when creating a list. A tenant selling in another
-// currency keeps it on load — see `currencyOptions`.
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'] as const;
 
 type Audience = 'everyone' | 'segment' | 'account';
 type EntryMode = 'fixed' | 'percent';
@@ -232,9 +230,9 @@ function PriceListLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             error={listQuery.error}
-            noun="price list"
-            title="Could not load this price list"
-            description="This is a problem reaching the server. The price list itself is unaffected. Nothing has been lost."
+            noun="special price"
+            title="Could not load this special price"
+            description="This is a problem reaching the server. The prices themselves are unaffected. Nothing has been lost."
             onRetry={() => {
               void listQuery.refetch();
               void entriesQuery.refetch();
@@ -305,7 +303,7 @@ function PriceListEditor({
   }, [saved, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New price list' : (list?.name ?? 'Price list'));
+    ctx.setTitle(isNew ? 'New special price' : (list?.name ?? 'Special price'));
   }, [ctx, isNew, list]);
 
   // The targeting option lists only load when they can actually be chosen — and
@@ -320,12 +318,12 @@ function PriceListEditor({
 
   /* ── Validation ───────────────────────────────────────────────────────── */
 
-  const nameError = draft.name.trim() === '' ? 'Give this price list a name.' : null;
+  const nameError = draft.name.trim() === '' ? 'Give this set of prices a name.' : null;
   const audienceError =
     draft.audience === 'segment' && !draft.customerSegmentId
       ? 'Choose which customer group gets these prices.'
       : draft.audience === 'account' && !draft.companyId
-        ? 'Choose which trade account gets these prices.'
+        ? 'Choose which wholesale customer gets these prices.'
         : null;
 
   const invalidEntry = draft.entries.find((entry) =>
@@ -376,8 +374,8 @@ function PriceListEditor({
   useDirtySource(
     dirty && !create.isSuccess,
     isNew
-      ? 'This price list has not been created yet. Close anyway?'
-      : 'This price list has unsaved changes. Close anyway?'
+      ? 'This special price has not been created yet. Close anyway?'
+      : 'This special price has unsaved changes. Close anyway?'
   );
 
   /* ── Save ─────────────────────────────────────────────────────────────── */
@@ -445,7 +443,7 @@ function PriceListEditor({
           }
         },
         onError: (error) => {
-          setFailure(priceListErrorMessage(error, 'Could not create this price list.'));
+          setFailure(priceListErrorMessage(error, 'Could not create this special price.'));
         },
       });
       return;
@@ -482,7 +480,7 @@ function PriceListEditor({
         if (payload.length > 0) await bulkSet.mutateAsync(payload);
 
         setTouched(false);
-        toast.add({ title: 'Price list saved', type: 'success' });
+        toast.add({ title: 'Saved', type: 'success' });
       } catch (error) {
         setFailure(priceListErrorMessage(error, saveFailureLine(point, deleted)));
         // A PART of this save committed, so what the pane believes is saved is
@@ -502,8 +500,8 @@ function PriceListEditor({
     const ok = await confirm({
       title: `Retire ${list.name}?`,
       description:
-        'The special prices on this list stop applying: the customers it covers go back to your normal prices. Orders already placed are unaffected. This cannot be undone.',
-      confirmLabel: 'Retire this price list',
+        'These prices stop applying: the customers they cover go back to your normal prices. Orders already placed are unaffected. This cannot be undone.',
+      confirmLabel: 'Retire it',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -517,7 +515,7 @@ function PriceListEditor({
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not retire this price list',
+          title: 'Could not retire this special price',
           description: priceListErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -569,14 +567,6 @@ function PriceListEditor({
 
   /* ── Options ──────────────────────────────────────────────────────────── */
 
-  // Keep whatever currency the list was created in selectable, even if it's not
-  // one of the common few — so opening an existing list never silently offers to
-  // change its currency.
-  const currencyOptions = useMemo(() => {
-    const set = new Set<string>([...CURRENCIES, draft.currency]);
-    return [...set].map((code) => ({ value: code, label: code }));
-  }, [draft.currency]);
-
   // The three everyday channels, plus the list's own if it's something else — so
   // a list scoped to, say, Subscriptions elsewhere round-trips without being
   // quietly widened to "everywhere".
@@ -592,7 +582,7 @@ function PriceListEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Price list actions"
+        label="Special price actions"
         status={
           !isNew && list ? (
             <Badge color={priceListState(list).tone} variant="soft" size="sm">
@@ -609,7 +599,7 @@ function PriceListEditor({
             disabled={Boolean(nameError) || (!isNew && !dirty)}
             onClick={submit}
           >
-            {isNew ? 'Create price list' : 'Save'}
+            {isNew ? 'Create it' : 'Save'}
           </Button>
         }
         refresh={
@@ -629,13 +619,13 @@ function PriceListEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A price list gives certain customers their own prices: a wholesale sheet for the
+              A special price gives certain customers their own prices: a wholesale sheet for the
               businesses you supply, or a members’ rate. Set who it is for, then the price of each
               product for them.
             </Text>
           ) : null}
 
-          <SaveFailure title="Could not save this price list" message={failure} />
+          <SaveFailure title="Could not save this special price" message={failure} />
 
           {/* 1 — What it is */}
           <FormSection title="Name">
@@ -679,25 +669,15 @@ function PriceListEditor({
               />
             </Field>
 
-            <Field>
-              <FieldLabel>Currency</FieldLabel>
-              <FieldControl
-                render={
-                  <div className="max-w-40">
-                    <Select
-                      color="module"
-                      aria-label="Currency for these prices"
-                      value={draft.currency}
-                      items={currencyOptions}
-                      onValueChange={(next) => {
-                        set('currency', String(next));
-                      }}
-                    />
-                  </div>
-                }
-              />
-              <FieldDescription>The currency every price on this list is set in.</FieldDescription>
-            </Field>
+            <CurrencyField
+              label="Currency for these prices"
+              required
+              value={draft.currency}
+              onChange={(next) => {
+                set('currency', next);
+              }}
+              description="The currency every price on this list is set in."
+            />
           </FormSection>
 
           {/* 2 — Who gets it */}
@@ -717,7 +697,7 @@ function PriceListEditor({
                       items={[
                         { value: 'everyone', label: 'Everyone (on the channel below)' },
                         { value: 'segment', label: 'One customer group' },
-                        { value: 'account', label: 'One trade account' },
+                        { value: 'account', label: 'One wholesale customer' },
                       ]}
                       onValueChange={(next) => {
                         set('audience', (next as Audience) ?? 'everyone');
@@ -727,7 +707,7 @@ function PriceListEditor({
                 }
               />
               <FieldDescription>
-                A customer group is a saved set of customers; a trade account is one business you
+                A customer group is a saved set of customers; a wholesale customer is one business
                 supply. Both are set up under Customers.
               </FieldDescription>
             </Field>
@@ -770,14 +750,14 @@ function PriceListEditor({
 
             {draft.audience === 'account' ? (
               <Field>
-                <FieldLabel>Trade account</FieldLabel>
+                <FieldLabel>Wholesale customer</FieldLabel>
                 <FieldControl
                   render={
                     <div className="max-w-sm">
                       <Select
                         color={audienceError && touched ? 'error' : 'module'}
-                        aria-label="Which trade account"
-                        placeholder="Choose a trade account"
+                        aria-label="Which wholesale customer"
+                        placeholder="Choose a wholesale customer"
                         value={draft.companyId ?? ''}
                         items={(accountsQuery.data?.items ?? []).map((option) => ({
                           value: option.id,
@@ -796,8 +776,8 @@ function PriceListEditor({
                   <ChoiceListNote
                     state={choiceListState(accountsQuery)}
                     words={{
-                      none: 'You have no trade accounts yet. Add one under Wholesale accounts, then choose it here.',
-                      noun: 'trade accounts',
+                      none: 'You have no wholesale customers yet. Add one under Wholesale customers, then choose it here.',
+                      noun: 'wholesale customers',
                     }}
                   />
                 )}
@@ -858,13 +838,12 @@ function PriceListEditor({
                 <FieldLabel>Start date</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={draft.startDate}
                       aria-label="Start date"
-                      onChange={(event) => {
-                        set('startDate', event.target.value);
+                      onValueChange={(value) => {
+                        set('startDate', value);
                       }}
                     />
                   }
@@ -875,13 +854,12 @@ function PriceListEditor({
                 <FieldLabel>End date</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color={dateError ? 'error' : 'module'}
-                      type="date"
                       value={draft.endDate}
                       aria-label="End date"
-                      onChange={(event) => {
-                        set('endDate', event.target.value);
+                      onValueChange={(value) => {
+                        set('endDate', value);
                       }}
                     />
                   }
@@ -904,7 +882,7 @@ function PriceListEditor({
               set('propertyIds', next);
             }}
             title="Which of your sites these prices apply on"
-            description="You run more than one website. Keep a price list to the business it belongs to, or it will set what customers pay at the other one's checkout."
+            description="You run more than one website. Keep a set of prices to the business it belongs to, or it will set what customers pay at the other one's checkout."
             everyLabel="Use these prices on every site"
           />
 
@@ -1061,7 +1039,7 @@ function PriceListEditor({
                   }}
                 >
                   <Icon glyph={faTag} className="size-4" aria-hidden />
-                  Retire this price list
+                  Retire this special price
                 </Button>
               </div>
             </div>

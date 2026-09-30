@@ -538,6 +538,7 @@ export function useGenerateRecurring() {
 export function useRecomputeProfit() {
   const invalidate = useInvalidateSpend();
   return useMutation({
+    meta: { running: 'work your profit out again' },
     mutationFn: (range: { from: string; to: string }) =>
       api.post<{ recomputed: number }>('/v1/finance/profit/recompute', range),
     onSuccess: invalidate,
@@ -701,6 +702,7 @@ export async function downloadAccountingExport(params: {
 
 export function useImportPreview() {
   return useMutation({
+    meta: { running: 'read that file' },
     mutationFn: (body: Record<string, unknown>) =>
       api.post<ImportPreview>('/v1/finance/accounting/import/preview', body),
   });

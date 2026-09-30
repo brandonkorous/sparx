@@ -282,7 +282,7 @@ function NotYetScannable({
           <AlertTitle>Everything can be scanned now</AlertTitle>
           <AlertDescription>
             {made.generated > 0
-              ? `${plural(made.generated, 'code', 'codes')} created. The labels are below, ready to print.`
+              ? `${plural(made.generated, 'code', 'codes')} created. ${made.generated === 1 ? 'The label is' : 'The labels are'} below, ready to print.`
               : 'Nothing was left to give a code to.'}
           </AlertDescription>
         </AlertContent>
@@ -439,7 +439,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       {/* `print:hidden` — the controls are not part of the sheet. */}
       <PaneToolbar
-        label="Product label controls"
+        label="Product labels controls"
         className="print:hidden"
         refresh={
           <RefreshButton

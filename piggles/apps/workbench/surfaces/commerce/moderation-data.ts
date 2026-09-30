@@ -126,6 +126,16 @@ export interface QuestionListRow {
   customer: QueueCustomer | null;
   /** The name they signed it with, for someone asking without an account. */
   displayName: string | null;
+  /**
+   * How many answers this question already has — nobody's, yours, or another
+   * shopper's.
+   *
+   * A COUNT rather than the answers, because the table needs one word. It is
+   * here because moderation status and answered-ness are different things and
+   * the row only ever carried the first: a question can sit on the product page
+   * with silence under it, and "Shown" says nothing about that (issue 734).
+   */
+  answerCount: number;
 }
 
 /** One row of the reviews TABLE. */
@@ -245,10 +255,26 @@ function listQuery<TSort extends string>(params: ModerationPageParams<TSort>) {
  * window is ONE query — never accumulated pages, never a client-side sort of a
  * loaded window (which would sort one page and call it the answer).
  */
-export function useQuestionsList(params: ModerationPageParams<QuestionSort>) {
+/**
+ * The questions window, plus the one axis only questions have.
+ *
+ * `unanswered` is NOT a status. A question can be waiting, shown or hidden and
+ * still have nobody's reply under it, so it narrows whatever status is already
+ * chosen rather than replacing it. Sent only when true, so the ordinary window
+ * asks exactly what it used to.
+ */
+export interface QuestionPageParams extends ModerationPageParams<QuestionSort> {
+  unanswered?: boolean;
+}
+
+export function useQuestionsList(params: QuestionPageParams) {
   return useQuery({
     queryKey: moderationKeys.questionsList(params),
-    queryFn: () => api.list<QuestionListRow>('/v1/commerce/questions', listQuery(params)),
+    queryFn: () =>
+      api.list<QuestionListRow>('/v1/commerce/questions', {
+        ...listQuery(params),
+        ...(params.unanswered === true ? { unanswered: true } : {}),
+      }),
     placeholderData: (previous) => previous,
   });
 }

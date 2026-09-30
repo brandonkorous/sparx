@@ -1,5 +1,5 @@
 import { OG_SIZE, renderOg } from '@piggles/brand/og';
-import { PRODUCT } from '@piggles/config';
+import { APP_COUNT_WORD_CAP, PRODUCT } from '@piggles/config';
 import { MASCOT_POSES } from '@piggles/mascot';
 
 // ONE card for the whole console, and that is the right number.
@@ -16,7 +16,7 @@ export const alt = `${PRODUCT.name}: the console you run your business from`;
 export default function Image() {
   return renderOg({
     title: 'Where the work happens',
-    subtitle: 'Fifteen apps, one window, and whatever needs you first already on the screen.',
+    subtitle: `${APP_COUNT_WORD_CAP} apps, one window, and whatever needs you first already on the screen.`,
     footer: PRODUCT.hosts.console,
     // Head down, absorbed, mid-task. The console is the one surface that is not
     // greeting anybody — they are already here and already working.
