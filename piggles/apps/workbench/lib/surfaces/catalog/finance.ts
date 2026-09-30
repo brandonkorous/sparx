@@ -13,7 +13,7 @@
 //     takings would be a tax on data they already bought, so these ride along
 //     with whichever selling module produced them. A tenant with none of those
 //     has no payments to show, so hiding them is also the honest answer.
-//   • Your sparx bill  — NEVER gated. It is where someone goes to buy a module;
+//   • What you pay us  — NEVER gated. It is where someone goes to buy a module;
 //     putting it behind one is a locked door with the key inside.
 //   • Spend + profitability (docs/148 §5) — the billable `finance` module, and
 //     the only part of this group that requires it. Note that "requires it" is
@@ -222,7 +222,7 @@ export const FINANCE_SURFACES: SurfaceDefinition[] = [
   /* ── What you pay sparx ────────────────────────────────────────────────── */
   {
     key: 'finance.subscription',
-    title: 'Your sparx bill',
+    title: 'What you pay us',
     module: 'finance',
     // Never gated: this is where someone goes to BUY a module.
     requiresModules: [],
