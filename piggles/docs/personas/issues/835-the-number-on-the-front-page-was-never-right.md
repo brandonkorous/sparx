@@ -33,11 +33,11 @@ since copied it.
 
 **42 live sentences across 24 files**, in three apps:
 
-| Where                    | Sentences | Worst of them                                              |
-| ------------------------ | --------: | ---------------------------------------------------------- |
-| meetpiggles              |        38 | the /apps headline, the /pricing headline, the OG images   |
-| The account app          |         2 | "All fifteen apps, one price." on the sign-up panel        |
-| The console              |         1 | the workbench OG image, on every link anybody shares       |
+| Where           | Sentences | Worst of them                                            |
+| --------------- | --------: | -------------------------------------------------------- |
+| meetpiggles     |        38 | the /apps headline, the /pricing headline, the OG images |
+| The account app |         2 | "All fifteen apps, one price." on the sign-up panel      |
+| The console     |         1 | the workbench OG image, on every link anybody shares     |
 
 And one of them is not marketing:
 

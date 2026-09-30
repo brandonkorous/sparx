@@ -14,12 +14,12 @@
 **Other software**, the card shelf where a business connects its payment
 processor, its carrier and its sales channels. Under Card payments:
 
-| | |
-| --- | --- |
+|                     |                                      |
+| ------------------- | ------------------------------------ |
 | **Manual payments** | by **sparx** · Connected · Community |
-| **Piggles Pay** | by Piggles · Recommended · Community |
-| **Custom gateway** | by **sparx** · Community |
-| **sparx Shipping** | by **sparx** · Community |
+| **Piggles Pay**     | by Piggles · Recommended · Community |
+| **Custom gateway**  | by **sparx** · Community             |
+| **sparx Shipping**  | by **sparx** · Community             |
 
 A company she has never heard of, on the screen where she decides who handles
 her money, two cards along from one that got it right.
@@ -59,7 +59,9 @@ comment explains what it is for:
 It was decided like this:
 
 ```tsx
-{integration.publisher !== 'sparx' ? <Badge>Community</Badge> : null}
+{
+  integration.publisher !== 'sparx' ? <Badge>Community</Badge> : null;
+}
 ```
 
 `publisher` is filled with the tenant's brand name two functions upstream. In
@@ -102,7 +104,7 @@ to 369 without a word, because it matches `label="…"` and silently skips a
 `label={…}`. Measured after teaching it to count them: **20 toolbars across both
 consoles are named by an expression this scan cannot read.**
 
-Small, and the shapes are mostly `` label={`${NOUN} actions`} `` derived from the
+Small, and the shapes are mostly ``label={`${NOUN} actions`}`` derived from the
 pane's own noun — but the number is printed in the green line now rather than
 missing from the denominator. The same lesson as issue 817, one layer down.
 [[feedback_structural_checks_go_blind]]

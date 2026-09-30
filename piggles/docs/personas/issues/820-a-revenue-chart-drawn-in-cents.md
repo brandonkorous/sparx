@@ -45,8 +45,7 @@ is a day that adds up against a $2,391 month.
 ## The chart told a screen reader it was something else
 
 ```tsx
-<Chart option={option} className="h-80! w-full"
-       aria-label="Visitors and page views over time" />
+<Chart option={option} className="h-80! w-full" aria-label="Visitors and page views over time" />
 ```
 
 Hardcoded from the Traffic dashboard this chart was first built for, and it
@@ -94,10 +93,10 @@ instead.
 The dashboards were a sixth, reading a copy of the table in `api-rest` that had
 drifted in both directions a second copy always drifts:
 
-| | |
-| --- | --- |
+|         |                                                                                                        |
+| ------- | ------------------------------------------------------------------------------------------------------ |
 | `admin` | said **"Added by your team"**; the console's table says "Added by hand" and carries a paragraph on why |
-| `pos` | **missing entirely**, so a till sale would have drawn the raw key `pos` |
+| `pos`   | **missing entirely**, so a till sale would have drawn the raw key `pos`                                |
 
 The missing key is the same failure as `marketplace` falling out of the lead
 source table four days ago: a second copy of a label table goes stale at the next

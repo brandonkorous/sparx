@@ -87,7 +87,11 @@ export function ProductsListToolbar({
       // Every product as a spreadsheet: the marketing site promises you can take
       // your catalog with you.
       controls={
-        <DownloadButton label="Export" filename="products.csv" path="/v1/export/products?take=10000" />
+        <DownloadButton
+          label="Export"
+          filename="products.csv"
+          path="/v1/export/products?take=10000"
+        />
       }
       refresh={
         <RefreshButton isFetching={isFetching} updatedAt={updatedAt} onRefresh={onRefresh} />

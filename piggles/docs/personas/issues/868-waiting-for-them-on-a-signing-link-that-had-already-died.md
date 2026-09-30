@@ -18,11 +18,16 @@ sending a quote"
 
 ```ts
 export interface DocumentSignature {
-  id, signerName, signerEmail, status,
-  requestedAt,
-  expiresAt,        // never null. Not drawn.
-  viewedAt,         // written by the signing page. Not drawn.
-  signedAt, declinedAt, declineReason,
+  id;
+  signerName;
+  signerEmail;
+  status;
+  requestedAt;
+  expiresAt; // never null. Not drawn.
+  viewedAt; // written by the signing page. Not drawn.
+  signedAt;
+  declinedAt;
+  declineReason;
 }
 ```
 
@@ -75,7 +80,10 @@ expiry check. So the console's own read never corrects it either:
 ```ts
 export async function listForDocument(ctx, documentId) {
   return withTenant(ctx, (tx) =>
-    tx.billingDocumentSignature.findMany({ where: { documentId }, orderBy: { requestedAt: 'desc' } })
+    tx.billingDocumentSignature.findMany({
+      where: { documentId },
+      orderBy: { requestedAt: 'desc' },
+    })
   );
 }
 ```

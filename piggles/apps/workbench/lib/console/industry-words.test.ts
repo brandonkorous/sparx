@@ -37,7 +37,9 @@ function offeredSlugs(): string[] {
   const source = readFileSync(STARTERS, 'utf8');
   const start = source.indexOf('const STARTERS: IndustryStarter[] = [');
   if (start < 0) throw new Error('STARTERS array not found — the file has been restructured');
-  return [...source.slice(start).matchAll(/^\s{4}slug: '([a-z-]+)',$/gm)].map((m) => m[1] as string);
+  return [...source.slice(start).matchAll(/^\s{4}slug: '([a-z-]+)',$/gm)].map(
+    (m) => m[1] as string
+  );
 }
 
 describe('what Piggles says a line of work sets up', () => {

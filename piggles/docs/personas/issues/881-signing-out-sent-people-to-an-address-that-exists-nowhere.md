@@ -22,7 +22,7 @@ And one directory away, `lib/same-origin-redirect.ts`, whose entire header is
 about that line:
 
 > _"The obvious spelling is `NextResponse.redirect(new URL('/sign-in',
-> request.url))`, and it shipped, and it sent every visitor to
+request.url))`, and it shipped, and it sent every visitor to
 > `https://0.0.0.0:3000/sign-in?next=%2Fhandoff`. `request.url` is built from
 > the address the server is BOUND to, and a pod binds to `HOSTNAME=0.0.0.0` on
 > `PORT=3000`. Behind Caddy that is invisible in development and total in

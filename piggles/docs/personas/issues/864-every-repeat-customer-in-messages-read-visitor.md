@@ -186,7 +186,7 @@ linked" from "no customer has ever been linked, and none can be". The panel was
 internally consistent, the endpoint returned 200, the shape matched, and the
 answer was always the same one. [[feedback_absent_behaves_like_fine]]
 
-The tell was the *server doing work for it*: a five-row order query, written
+The tell was the _server doing work for it_: a five-row order query, written
 deliberately, feeding a field the console declared and never drew. Somebody
 built both halves of this panel and neither half could run.
 

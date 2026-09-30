@@ -139,8 +139,7 @@ The date-compare test is deliberately not just one case: `YYYY-MM-DD` is
 fixed-width and big-endian so a string compare is a day compare, which looks like
 a shortcut, so a year boundary is pinned both ways.
 
-**Checks:** typecheck 0 on both workbenches. Tests: piggles scheduling 2 files /
-17. ESLint and prettier clean on both consoles' scheduling surfaces.
+**Checks:** typecheck 0 on both workbenches. Tests: piggles scheduling 2 files / 17. ESLint and prettier clean on both consoles' scheduling surfaces.
 
 ## Files
 

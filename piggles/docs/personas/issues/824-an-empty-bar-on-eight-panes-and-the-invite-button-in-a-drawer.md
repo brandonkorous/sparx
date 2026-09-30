@@ -33,15 +33,15 @@ it passed. Both consoles. Fixed in both.
 Every pane in this console says what it is showing, on the left of its toolbar.
 These did not:
 
-| pane | says now |
-| --- | --- |
-| Dashboards | a count |
-| Dashboard | **Sales · Last 30 days** — both its controls fold on a narrow pane, so at that width it was a wall of figures with nothing naming them |
-| What kind of business | the line of work you have picked, which is the pane's single fact |
-| AI connections | whether an AI account is connected, which is what everything else on the pane depends on |
-| Notifications | Saved / Not saved yet, beside a Save button |
-| Teammate | that person's role |
-| Link | the reason, in a word — it was the ONE pane in 370 with no toolbar at all |
+| pane                  | says now                                                                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboards            | a count                                                                                                                                |
+| Dashboard             | **Sales · Last 30 days** — both its controls fold on a narrow pane, so at that width it was a wall of figures with nothing naming them |
+| What kind of business | the line of work you have picked, which is the pane's single fact                                                                      |
+| AI connections        | whether an AI account is connected, which is what everything else on the pane depends on                                               |
+| Notifications         | Saved / Not saved yet, beside a Save button                                                                                            |
+| Teammate              | that person's role                                                                                                                     |
+| Link                  | the reason, in a word — it was the ONE pane in 370 with no toolbar at all                                                              |
 
 The link one is worth stating plainly: the pane reached by somebody who has just
 clicked something that did not work was the pane with no chrome telling them
@@ -51,12 +51,12 @@ where they were.
 
 Counted across both consoles once the pattern was clear:
 
-|  |  |
-| --- | --- |
-| `<PaneToolbar>` elements | 689 |
+|                                                           |         |
+| --------------------------------------------------------- | ------- |
+| `<PaneToolbar>` elements                                  | 689     |
 | **with nothing on the left** (no `status`, no `controls`) | **171** |
-| of those, panes that show a LIST | **72** |
-| of those, everything else | 92 |
+| of those, panes that show a LIST                          | **72**  |
+| of those, everything else                                 | 92      |
 
 **72 list panes do not say how many rows they have**, and one of them is
 `commerce/orders-list` — the screen a shop owner opens more than any other.

@@ -42,12 +42,12 @@ reason to leave a sentence wrong once somebody has read it.
 Rendering all **509** actions the scan can see, **96** came out unreadable. Four
 kinds, each a claim about the convention rather than a matter of taste:
 
-| | what the convention printed |
-| --- | --- |
-| **an abbreviation or a run-together word** | `B2b ar created` · `Bom created` · `Accountcredit takenback` · `Variant uoms set` · `Sla policy created` · `Giftcard issued` |
+|                                                          | what the convention printed                                                                                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **an abbreviation or a run-together word**               | `B2b ar created` · `Bom created` · `Accountcredit takenback` · `Variant uoms set` · `Sla policy created` · `Giftcard issued`                 |
 | **a developer's verb for something done on your behalf** | `Template seeded` · `Pipeline bootstrapped` · `Emails provisioned` · `Pages starter backfilled` · `Layout upserted` · `Return dispositioned` |
-| **no subject left once the module is dropped** | `Line added` · `Stage reordered` · `Definition created` · `Document snapshot frozen` |
-| **two actions on one sentence** | see below |
+| **no subject left once the module is dropped**           | `Line added` · `Stage reordered` · `Definition created` · `Document snapshot frozen`                                                         |
+| **two actions on one sentence**                          | see below                                                                                                                                    |
 
 "Accountcredit takenback" is the one to sit with. It is not jargon, it is not a
 term of art: it is two words with the space taken out and a third that is not a
@@ -55,12 +55,12 @@ word, printed at a business owner, in a list of what has happened to her money.
 
 ## Four collisions, and two that mattered
 
-| the sentence | what it covered |
-| --- | --- |
+| the sentence         | what it covered                                                        |
+| -------------------- | ---------------------------------------------------------------------- |
 | Subscription created | `commerce.subscription.created` **and** `webhook.subscription.created` |
-| Collection created | a group of products **and** a folder of photos |
-| Settings updated | `crm.settings.updated` **and** `email.settings.updated` |
-| Member removed | the tenant's own Team screen **and** a WizeWorks operator |
+| Collection created   | a group of products **and** a folder of photos                         |
+| Settings updated     | `crm.settings.updated` **and** `email.settings.updated`                |
+| Member removed       | the tenant's own Team screen **and** a WizeWorks operator              |
 
 The first is a customer's repeat order and a developer's callback under one name.
 The last is worse than it looks: an operator row carries **no actor name** (the
@@ -85,18 +85,18 @@ screen that narrates the whole business spoke the platform's language.
 `useActivity` — the single point where the feed enters this console, rather than
 at the two places that draw a row.
 
-| the API says | Piggles says |
-| --- | --- |
-| Fitment product set | What a product fits was set |
-| Configuration template created | Build-your-own set up |
-| Segment created | Group of customers created |
-| Pipeline bootstrapped | A starter process set up |
-| Deal stage changed | Deal moved to another step |
-| Bill of materials created | Recipe created |
-| Variant created | Version created |
-| Order fulfillment created | Order handed over |
-| Warehouse created | Location added |
-| Broadcast sent | Email campaign sent |
+| the API says                   | Piggles says                |
+| ------------------------------ | --------------------------- |
+| Fitment product set            | What a product fits was set |
+| Configuration template created | Build-your-own set up       |
+| Segment created                | Group of customers created  |
+| Pipeline bootstrapped          | A starter process set up    |
+| Deal stage changed             | Deal moved to another step  |
+| Bill of materials created      | Recipe created              |
+| Variant created                | Version created             |
+| Order fulfillment created      | Order handed over           |
+| Warehouse created              | Location added              |
+| Broadcast sent                 | Email campaign sent         |
 
 Two of those need their reasoning written down.
 
@@ -139,8 +139,8 @@ no room for both.
 
 **"Everything you, your team and your customers have done."** Devi has no team.
 Three sentences on this pane assumed one; all three read better without it, and
-the new one covers a sole trader and a shop of twelve alike: *"Everything that
-has happened in your business, newest first."*
+the new one covers a sole trader and a shop of twelve alike: _"Everything that
+has happened in your business, newest first."_
 
 **One screen, two words for one thing.** Chasing "version" as the Piggles word
 for a variant turned up `product-options-words.ts`, which says version eight
@@ -170,11 +170,11 @@ wrote. Same shape as issue 815.
 
 Every row in the table is one of two mistakes:
 
-| | rows |
-| --- | --- |
-| notifications in total | 7 |
-| `The <brand> team replied to your feedback` | 5 |
-| `inventory.depleted`, no subject, no link | 2 |
+|                                             | rows |
+| ------------------------------------------- | ---- |
+| notifications in total                      | 7    |
+| `The <brand> team replied to your feedback` | 5    |
+| `inventory.depleted`, no subject, no link   | 2    |
 
 The five name a brand resolved before the per-tenant lookup existed (issue 128),
 so a Piggles account holder was told **"The sparx team"** replied, inside the

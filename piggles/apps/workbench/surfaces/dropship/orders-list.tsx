@@ -23,14 +23,7 @@ import { PaneLoadError } from '../../components/pane-load-error';
 /** Registry module for this surface, so an empty state draws this app's own
  *  picture rather than a small grey glyph. */
 const MODULE = 'dropship';
-import {
-  Badge,
-  Button,
-  Card,
-  SearchInput,
-  Select,
-  Timestamp,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Timestamp } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';

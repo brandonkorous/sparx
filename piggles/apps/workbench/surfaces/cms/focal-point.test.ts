@@ -72,7 +72,7 @@ describe('centre means nobody chose', () => {
     expect(isAutomatic({ x: 0.51, y: 0.5 })).toBe(false);
   });
 
-  it('is not automatic at any of the other eight tiles', () => {
+  it('is not automatic at any tile off centre', () => {
     for (const c of FOCAL_CELLS.filter((c) => !c.automatic)) {
       expect(isAutomatic(c)).toBe(false);
     }

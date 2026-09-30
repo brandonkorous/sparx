@@ -41,12 +41,12 @@ its own content region and never carried up to its chrome.
 
 Measured 2026-09-25 across both consoles:
 
-|  |  |
-| --- | --- |
-| toolbars with a status slot | 225 |
-| of those, printing a count off an array with a `?? []` fallback | 43 |
-| **guarded** | **2** |
-| **not guarded** | **41** |
+|                                                                 |        |
+| --------------------------------------------------------------- | ------ |
+| toolbars with a status slot                                     | 225    |
+| of those, printing a count off an array with a `?? []` fallback | 43     |
+| **guarded**                                                     | **2**  |
+| **not guarded**                                                 | **41** |
 
 The two that were right are `crm/duplicates.tsx` in each console, which says
 **"Checking…"** while it is checking. One pane had worked out the answer and it

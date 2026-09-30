@@ -26,27 +26,27 @@ anywhere in her own console.
 registry — for Piggles, straight out of the APPS list the rail itself is built
 from. Six surfaces kept their own table instead. For `commerce` alone:
 
-| where | reads |
-| --- | --- |
-| **`lib/surfaces/nav.ts`** (the one, via the registry) | **Sell** |
-| `automations/automations-catalog.ts` | Selling |
-| `integrations/data.ts` | Selling |
-| `sites/site-manage-scope.tsx` | Selling |
-| `industry/data.ts` | Online store |
-| `sample-data/data.ts` | Online store |
-| `builder/blueprints-words.ts` | Store |
+| where                                                 | reads        |
+| ----------------------------------------------------- | ------------ |
+| **`lib/surfaces/nav.ts`** (the one, via the registry) | **Sell**     |
+| `automations/automations-catalog.ts`                  | Selling      |
+| `integrations/data.ts`                                | Selling      |
+| `sites/site-manage-scope.tsx`                         | Selling      |
+| `industry/data.ts`                                    | Online store |
+| `sample-data/data.ts`                                 | Online store |
+| `builder/blueprints-words.ts`                         | Store        |
 
 Six names, and the one a shop owner actually navigates by is the only one the
 other six do not use. The rest of the table is the same story:
 
-| slug | the rail says | the copies said |
-| --- | --- | --- |
-| `email` | **Messages** | Email (×4) |
-| `ai` | **Connections** | AI (×4) |
-| `finance` | **Money** | Finance (×2) |
-| `inventory` | **Stock** | Stock (×2), Inventory (×2) |
-| `social` | **Get Found** | Social posts, Social posting |
-| `staff` | **My Team** | Your team |
+| slug        | the rail says   | the copies said              |
+| ----------- | --------------- | ---------------------------- |
+| `email`     | **Messages**    | Email (×4)                   |
+| `ai`        | **Connections** | AI (×4)                      |
+| `finance`   | **Money**       | Finance (×2)                 |
+| `inventory` | **Stock**       | Stock (×2), Inventory (×2)   |
+| `social`    | **Get Found**   | Social posts, Social posting |
+| `staff`     | **My Team**     | Your team                    |
 
 This is the same defect as one till sale reading four ways on four screens
 (issue 260), one level up: not a fact about an order, but the name of the app the

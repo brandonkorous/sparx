@@ -47,7 +47,8 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'product-description',
     name: 'Product description writer',
-    description: 'Turns a few notes into a finished product description that says what it does for the buyer.',
+    description:
+      'Turns a few notes into a finished product description that says what it does for the buyer.',
     category: 'product',
     body: [
       'Write a product description for "{{product_name}}".',
@@ -70,7 +71,8 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'win-back-email',
     name: 'Win-back email',
-    description: 'A warm note to somebody who has not bought in a while, with a reason to come back.',
+    description:
+      'A warm note to somebody who has not bought in a while, with a reason to come back.',
     category: 'email',
     body: [
       'Write a short win-back email to {{customer_name}}, who last purchased {{last_purchase}}.',
@@ -146,7 +148,8 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'social-post',
     name: 'Social post',
-    description: 'Writes a short social post that suits the place it is going, and asks for something.',
+    description:
+      'Writes a short social post that suits the place it is going, and asks for something.',
     category: 'social',
     body: [
       'Write a {{platform}} post about: {{topic}}.',
