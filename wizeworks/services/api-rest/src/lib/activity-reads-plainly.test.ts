@@ -84,7 +84,7 @@ function auditActions(): { actions: string[]; scanned: number } {
       for (const line of readFileSync(file, 'utf8').split('\n')) {
         if (!/\baction:/.test(line) && !/[Aa]udit/.test(line)) continue;
         for (const m of line.matchAll(/'([a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+)'/g)) {
-          found.add(m[1] as string);
+          found.add(m[1]!);
         }
       }
     }
@@ -200,7 +200,8 @@ describe('what has been happening', () => {
       // One word is a sentence with half of it missing: "Adjusted", "Published".
       if (sentence.split(' ').length < 2) offenders.push(`${action}  →  "${sentence}"`);
       // And it has to start like a sentence, not like the middle of one.
-      if (sentence.length > 0 && sentence[0] !== sentence[0]?.toUpperCase()) {
+      const first = sentence.charAt(0);
+      if (first !== first.toUpperCase()) {
         offenders.push(`${action}  →  "${sentence}" does not start with a capital`);
       }
     }

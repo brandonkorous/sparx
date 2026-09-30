@@ -48,7 +48,7 @@ function auditActions(): Set<string> {
       for (const line of readFileSync(file, 'utf8').split('\n')) {
         if (!/\baction:/.test(line) && !/[Aa]udit/.test(line)) continue;
         for (const m of line.matchAll(/'([a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+)'/g)) {
-          found.add(m[1] as string);
+          found.add(m[1]!);
         }
       }
     }

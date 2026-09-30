@@ -38,7 +38,7 @@ function offeredSlugs(): string[] {
   const start = source.indexOf('const STARTERS: IndustryStarter[] = [');
   if (start < 0) throw new Error('STARTERS array not found — the file has been restructured');
   return [...source.slice(start).matchAll(/^\s{4}slug: '([a-z-]+)',$/gm)].map(
-    (m) => m[1] as string
+    (m) => m[1]!
   );
 }
 

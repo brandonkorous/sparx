@@ -36,7 +36,7 @@ describe('where a sale came from, on a dashboard', () => {
       join(import.meta.dirname, '..', '..', 'lib', 'console', 'channels.ts'),
       'utf8'
     );
-    const keys = [...source.matchAll(/^\s{2}([a-z_]+):\s/gm)].map((m) => m[1] as string);
+    const keys = [...source.matchAll(/^\s{2}([a-z_]+):\s/gm)].map((m) => m[1]!);
     // The denominator. A regex that matched nothing would pass in silence.
     expect(keys.length).toBeGreaterThan(12);
     for (const key of keys) {

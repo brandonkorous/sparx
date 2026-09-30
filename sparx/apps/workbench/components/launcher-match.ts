@@ -35,7 +35,7 @@ export interface Entry {
  * (lib/product.ts).
  */
 export function groupLabel(module: string): string {
-  return moduleLabel(module as WorkbenchModule);
+  return moduleLabel(module);
 }
 
 /** The modifier held at selection decides where the pane lands. */

@@ -54,7 +54,9 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 // a stated reason. This copy did neither.
 const STATUS_ITEMS: Record<string, string> = {
   all: 'All orders',
-  ...Object.fromEntries(FILTERS.filter((f) => f.status).map((f) => [f.status, f.label])),
+  ...Object.fromEntries(
+    FILTERS.filter((f) => f.status).map((f): [string, string] => [f.status ?? '', f.label]),
+  ),
 };
 
 export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
