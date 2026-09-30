@@ -54,6 +54,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
+import { openServerHtml } from '../../lib/api/html-artifact';
 import { resolvePurchasePrice } from '@wizeworks/commerce-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { usePriceLadder } from './supplier-performance-data';
@@ -1472,6 +1473,31 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
            this" - three rows with words and one without.
            scripts/check-toolbar-glyph.mjs holds the line. */
         actions={[
+          // The order itself, on the business's letterhead, to hand or send to
+          // the supplier. Placing an order sends nothing, and its words say
+          // "print it or pass it on", so this is the half of that promise the
+          // screen has to keep. Drafts too: people print one to check it.
+          ...(detail
+            ? [
+                {
+                  label: 'Print the order',
+                  title: 'Open the order to print or save as a PDF for your supplier',
+                  icon: faPrint,
+                  onClick: () => {
+                    openServerHtml(`/v1/inventory/purchase-orders/${detail.id}/document`).catch(
+                      (error: unknown) => {
+                        toast.add({
+                          title: 'Could not open the print view',
+                          description:
+                            error instanceof Error ? error.message : 'Try again in a moment.',
+                          type: 'error',
+                        });
+                      }
+                    );
+                  },
+                },
+              ]
+            : []),
           ...(detail && status !== 'draft'
             ? [
                 {

@@ -56,7 +56,7 @@ import {
 } from './po-approvals-data';
 import { poApprovalsEmptyWords } from './po-approvals-empty';
 
-type QueueStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
+type QueueStatus = 'pending' | 'approved' | 'rejected' | 'cancelled' | 'all';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -194,8 +194,12 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
             <th>Order</th>
             <th className="text-right whitespace-nowrap">Amount</th>
             <th className="hidden whitespace-nowrap @lg:table-cell">Asked by</th>
-            <th className="whitespace-nowrap">{status === 'pending' ? 'Waiting' : 'Outcome'}</th>
-            {status === 'pending' ? <th className="w-0" /> : null}
+            <th className="whitespace-nowrap">
+              {status === 'pending' ? 'Waiting' : status === 'all' ? 'Where it got to' : 'Outcome'}
+            </th>
+            {/* The column of buttons belongs wherever a waiting row can appear,
+                which on Everything is beside rows that are already decided. */}
+            {status === 'pending' || status === 'all' ? <th className="w-0" /> : null}
           </tr>
         </thead>
         <tbody>
@@ -244,7 +248,10 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                 </span>
               </td>
               <td className="whitespace-nowrap">
-                {status === 'pending' ? (
+                {/* On the ROW's own state, not the filter's. Everything mixes
+                    the two, and a waiting row there still has to read as
+                    waiting. */}
+                {row.status === 'pending' ? (
                   <Badge color={waitingTone(row.waitingDays)} variant="soft" size="sm">
                     {row.waitingDays === null
                       ? 'just now'
@@ -263,7 +270,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 )}
               </td>
-              {status === 'pending' ? (
+              {status === 'pending' || status === 'all' ? (
                 <td
                   className="w-0 whitespace-nowrap"
                   onClick={(event) => {
@@ -273,33 +280,40 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                     event.stopPropagation();
                   }}
                 >
+                  {/* A decided row keeps the empty cell so the column stays
+                      straight, but offers nothing to press: on Everything the
+                      two kinds of row sit together. */}
                   <span className="flex gap-1">
-                    {/* Approve is the point of the screen, so it is solid and
+                    {row.status !== 'pending' ? null : (
+                      <>
+                        {/* Approve is the point of the screen, so it is solid and
                         colored; the dismiss half of the pair is the one that
                         earns neutral (DESIGN.md RULE #4). */}
-                    <Button
-                      size="sm"
-                      color="success"
-                      loading={decide.isPending}
-                      onClick={() => {
-                        onApprove(row);
-                      }}
-                    >
-                      <Check className="size-4" aria-hidden />
-                      Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      color="neutral"
-                      onClick={() => {
-                        setRejecting(row);
-                        setReason('');
-                      }}
-                    >
-                      <X className="size-4" aria-hidden />
-                      Send back
-                    </Button>
+                        <Button
+                          size="sm"
+                          color="success"
+                          loading={decide.isPending}
+                          onClick={() => {
+                            onApprove(row);
+                          }}
+                        >
+                          <Check className="size-4" aria-hidden />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          color="neutral"
+                          onClick={() => {
+                            setRejecting(row);
+                            setReason('');
+                          }}
+                        >
+                          <X className="size-4" aria-hidden />
+                          Send back
+                        </Button>
+                      </>
+                    )}
                   </span>
                 </td>
               ) : null}
@@ -336,6 +350,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
               <option value="approved">Signed off</option>
               <option value="rejected">Turned down</option>
               <option value="cancelled">Withdrawn</option>
+              <option value="all">Everything</option>
             </NativeSelect>
           </>
         }

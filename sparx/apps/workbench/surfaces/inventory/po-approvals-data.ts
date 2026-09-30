@@ -99,7 +99,15 @@ export function usePoApprovalRules(includeInactive = false) {
   });
 }
 
-export function usePoApprovalQueue(status: 'pending' | 'approved' | 'rejected' | 'cancelled') {
+export type QueueStatus = 'pending' | 'approved' | 'rejected' | 'cancelled' | 'all';
+
+/** `all` is passed THROUGH, not left out. Omitting `status` on this route means
+ *  "the queue", which defaults to pending — the decided rows are history and a
+ *  to-do list does not want them. Only naming an order used to reach the whole
+ *  trail, so the route learned the word `all` for the case where no order is
+ *  named. Sent back has had an "Everything" view since it shipped; this queue
+ *  had four filters and no way to see them together. */
+export function usePoApprovalQueue(status: QueueStatus) {
   return useQuery({
     queryKey: approvalKeys.queue(status),
     queryFn: () =>

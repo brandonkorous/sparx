@@ -11,11 +11,60 @@
 import { CompleteTaskInput, CreateTaskInput, UpdateTaskInput } from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, Task } from '@wizeworks/db';
+import { localCalendarParts, localWallToUtc, nextLocalDay } from '@wizeworks/time';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
+
+/* ── When a task is DUE ─────────────────────────────────────────────────── */
+
+/**
+ * The moment a task set "N days from now" is actually late.
+ *
+ * A deadline on a to-do list is a DAY. "Get to it today" means by the end of
+ * today, and "by tomorrow" means by the end of tomorrow - it does not mean the
+ * same minute of the clock that some event happened to fire on.
+ *
+ * Both automation call sites did `Date.now() + days * 86_400_000`, which gives
+ * neither. With `dueInDays: 0` - the value the config schema DEFAULTS to - the
+ * deadline is the instant of creation, so the task appeared on her list wearing
+ * a red "Overdue" badge before anybody could have read it. Measured on the
+ * development database: two of Devi's three tasks were created and due within
+ * SEVEN MILLISECONDS of each other. With `dueInDays: 1` it is no better, just
+ * quieter: a quote approved at 2am makes a task that turns red at 2am, hours
+ * before the shop opens.
+ *
+ * In the BUSINESS's zone, like every other deadline the platform states. The
+ * SLA clock had already learned this and says why: "a promise bootstrapped in
+ * UTC quietly counts those hours somewhere else - for a shop in Denver every
+ * deadline lands six hours early, and the first anyone hears of it is a request
+ * that went red overnight."
+ */
+export function dueAtForDays(dueInDays: number, timeZone: string, now = new Date()): Date {
+  let day = localCalendarParts(now.getTime(), timeZone);
+  for (let i = 0; i < Math.max(0, Math.trunc(dueInDays)); i += 1) day = nextLocalDay(day);
+  // The end of a day is the start of the next one, a millisecond earlier. Going
+  // through `localWallToUtc` rather than adding hours is what keeps the day a
+  // DST change falls on 23 or 25 hours long instead of always 24.
+  const after = nextLocalDay(day);
+  return new Date(localWallToUtc(after.year, after.month1, after.day, 0, timeZone) - 1);
+}
+
+/** The business's own zone, or UTC while nobody has said. The same read
+ *  `ticket-service` makes for an SLA deadline. */
+export async function businessTimeZone(ctx: ServiceContext): Promise<string> {
+  return withTenant(ctx, async (tx) => {
+    const business = await tx.tenantBusiness.findFirst({ select: { timezone: true } });
+    return business?.timezone ?? 'UTC';
+  });
+}
+
+/** `dueAtForDays` with the zone looked up. What an automation calls. */
+export async function dueAtIn(ctx: ServiceContext, dueInDays: number): Promise<Date> {
+  return dueAtForDays(dueInDays, await businessTimeZone(ctx));
+}
 
 export interface ListTasksFilter {
   q?: string;
@@ -295,10 +344,14 @@ export async function getTodayForUser(
   ctx: ServiceContext,
   args: { userId: string }
 ): Promise<Task[]> {
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-  const endOfDay = new Date();
-  endOfDay.setHours(23, 59, 59, 999);
+  // In the BUSINESS's zone. `new Date().setHours(0,0,0,0)` is midnight where the
+  // SERVER happens to stand, which in production is UTC: for a shop in Denver
+  // "today" then began at 6pm yesterday and ends at 6pm today, so an evening
+  // task drops out of Today while she is still working.
+  const zone = await businessTimeZone(ctx);
+  const today = localCalendarParts(Date.now(), zone);
+  const startOfDay = new Date(localWallToUtc(today.year, today.month1, today.day, 0, zone));
+  const endOfDay = dueAtForDays(0, zone);
   return withTenant(ctx, (tx) =>
     tx.task.findMany({
       where: {

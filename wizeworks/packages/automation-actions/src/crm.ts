@@ -34,8 +34,6 @@ import {
   resolveTenantActor,
 } from './entity.js';
 
-const MS_PER_DAY = 86_400_000;
-
 const TagConfig = z.object({
   tags: z.array(z.string().min(1)).min(1),
 });
@@ -228,9 +226,12 @@ export const installCrmActions = installOnce((): void => {
             'there is nobody on your team to fall back to.'
         );
       }
+      // The END of that day in the business's zone, not this millisecond plus
+      // N times 24 hours. `dueInDays: 0` used to mean "due now", so the task
+      // arrived on her list already overdue.
       const dueAt =
         cfg.dueInDays !== undefined
-          ? new Date(Date.now() + cfg.dueInDays * MS_PER_DAY).toISOString()
+          ? (await taskService.dueAtIn(ctx, cfg.dueInDays)).toISOString()
           : undefined;
       const task = await taskService.create(
         { tenantId: ctx.tenantId, userId: assignee, tx: ctx.tx },

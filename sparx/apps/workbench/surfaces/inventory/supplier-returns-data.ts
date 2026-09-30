@@ -280,3 +280,60 @@ export function chaseTone(days: number | null): Tone {
   if (days >= 14) return 'warning';
   return 'info';
 }
+
+/* ── Is this one still a chase? ─────────────────────────────────────────── */
+
+/**
+ * Whether the return has FINISHED, whichever way it finished.
+ *
+ * The server has written this rule down three times and the screens had never
+ * been told. `listSupplierReturns` builds the chase list from
+ * `{ status: 'sent', creditReceivedCents: null }`, counts the "you are owed"
+ * headline against that same `where`, and documents `awaitingCreditDays` as
+ * "null before it is sent, and null once it is resolved".
+ *
+ * That last null is what broke three cells. It covers THREE different returns
+ * at once - one never sent, one credited, one written off - and the cell under
+ * the heading "Waiting" was written for the first of them. A return credited in
+ * full fell into the same branch and printed the day the goods LEFT, so a
+ * settled return read "2 weeks ago" under a word that asks how long something
+ * has been outstanding, four inches from a toolbar correctly saying "Nothing
+ * outstanding". Branch on the STATE, never on the absence of a number.
+ */
+export function returnIsSettled(status: string): boolean {
+  return status === 'credited' || status === 'closed' || status === 'cancelled';
+}
+
+/**
+ * What the ending is CALLED, or null while the return is still open.
+ *
+ * This lived privately in the detail pane, where it had already fixed one of
+ * the three cells. The list two files away still carried the defect it was
+ * written to describe, so the rule lives out here now and both screens read it.
+ */
+export function returnSettledTitle(status: string): string | null {
+  switch (status) {
+    case 'credited':
+      return 'Credited';
+    case 'closed':
+      return 'Written off';
+    case 'cancelled':
+      return 'Called off';
+    default:
+      return null;
+  }
+}
+
+/**
+ * The heading over `creditExpectedCents`.
+ *
+ * That number is the size of the CLAIM and it never changes. Whether she is
+ * still OWED it very much does: "You are owed $18.00" printed beside "settled
+ * in full" is the screen telling her to go and chase money that had already
+ * arrived. A draft has not left the shelf yet, so she is not owed it either.
+ */
+export function returnClaimTitle(status: string): string {
+  if (returnIsSettled(status)) return 'You asked for';
+  if (status === 'draft') return 'To claim back';
+  return 'You are owed';
+}

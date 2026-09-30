@@ -190,13 +190,20 @@ export function supplierState(
         detail: 'Still setting up the connection. This usually clears on its own in a moment.',
       };
     case 'error':
+      // ONE SENTENCE FOR A HANDFUL OF DIFFERENT FAILURES. The worker catches
+      // whatever went wrong, writes `status: 'error'` and keeps no reason, so
+      // this can only describe the CLASS. It used to name a single cause
+      // outright - "Check the address is right" - which sent her to re-check a
+      // perfectly good address when the file had never been fetched at all.
+      // Storing the reason needs a column on the supplier; until there is one,
+      // these say what is known and name more than one way in.
       return {
         label: 'Needs attention',
         tone: 'danger',
         detail:
           type === 'csv'
-            ? 'We could not read this supplier’s file. Check the address is right and that the file opens for anybody, not just for people signed in to their system.'
-            : 'We could not get in. This is usually a key that has been changed or turned off at the supplier’s end, so get a new one from them and put it in below.',
+            ? 'We could not read this supplier’s file the last time we tried. Usually the address has changed, or the file only opens for people signed in to their system. Check the address below opens for anybody, then try again.'
+            : 'We could not reach this supplier the last time we tried. Usually the key below has been changed or turned off at their end, though their system being down looks the same from here. Get a new key from them if it has changed, then try again.',
       };
     case 'disconnected':
       return {
@@ -769,4 +776,76 @@ export function presetRange(preset: RangePreset): AnalyticsRange {
  *  a bad credential, an already-imported product), else a plain fallback. */
 export function dropshipErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
+}
+
+/* ── Which blanks mean "clear it" ───────────────────────────────────────── */
+
+/**
+ * The credential values to SEND on a save.
+ *
+ * A blank box means two opposite things and the field's own `type` is what
+ * tells them apart. A `password` is never shown back to her, so an empty one
+ * means "leave the stored key alone": sending it would wipe a working
+ * connection every time she edited anything else. Every other field shows its
+ * value in full, so an empty one is a box she deliberately cleared.
+ *
+ * The bag was filtered as ONE bag, which dropped both alike. Clearing a column
+ * mapping sent nothing, the API merged nothing over it, and the old value came
+ * straight back under a toast reading "Supplier saved".
+ *
+ * The API had already found this on the way OUT and split it the same way:
+ * "'Credentials' is one bag and it was returned as one bag: nothing. That is
+ * right for the four `password` fields across the catalog and wrong for the
+ * other NINETEEN, which are a store id, a shop id, a feed address and fifteen
+ * SPREADSHEET COLUMN NAMES." The trip back was still one bag.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ */
+export function credentialsToSend(
+  draft: Record<string, string>,
+  fields: readonly VendorCredentialField[]
+): Record<string, string> {
+  const plain = new Set(fields.filter((f) => f.type !== 'password').map((f) => f.key));
+  return Object.fromEntries(
+    Object.entries(draft).filter(([key, value]) => {
+      if (value.trim() !== '') return true;
+      // Blank. Send it only for a box she can SEE. A key this build does not
+      // recognize is treated as a secret, because wiping something we cannot
+      // describe is the worse of the two mistakes.
+      return plain.has(key);
+    })
+  );
+}
+
+/**
+ * The first required credential she has left empty, or undefined.
+ *
+ * On a NEW supplier every box starts empty, so an absent key is a box she has
+ * not filled in. On an EXISTING one the draft holds only what she has TOUCHED,
+ * so an absent key means "unchanged" and only a key that is present and blank
+ * is a box she emptied on purpose. Reading those two the same way is why this
+ * check used to run on new suppliers alone: on an existing one it would have
+ * called every untouched field missing.
+ *
+ * Without it on the edit path, a required column could be cleared and saved,
+ * and the sync then failed before it ever fetched the file while the pane said
+ * "We could not read this supplier's file. Check the address is right."
+ */
+export function credentialIsMissing(
+  draft: Record<string, string>,
+  field: VendorCredentialField,
+  isNew: boolean
+): boolean {
+  if (!field.required) return false;
+  if (!isNew && !(field.key in draft)) return false;
+  return (draft[field.key] ?? '').trim() === '';
+}
+
+/** The first one, for the bar that never scrolls. Same rule, read per field by
+ *  the boxes themselves so the bar and the box cannot disagree. */
+export function missingRequiredCredential(
+  draft: Record<string, string>,
+  fields: readonly VendorCredentialField[],
+  isNew: boolean
+): VendorCredentialField | undefined {
+  return fields.find((field) => credentialIsMissing(draft, field, isNew));
 }

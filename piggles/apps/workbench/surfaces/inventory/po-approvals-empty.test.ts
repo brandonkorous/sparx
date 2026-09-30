@@ -82,4 +82,21 @@ describe('poApprovalsEmptyWords', () => {
       );
     }
   });
+
+  it('does not say a state was not reached when there is no state', () => {
+    // "Everything" is the one filter with nothing to reach. The other three
+    // share "No order has reached this state", which under Everything would be
+    // telling her that nothing reached everything.
+    const words = poApprovalsEmptyWords('all', [limit()], money);
+
+    expect(words.title).toBe('No order has ever been held for sign-off');
+    expect(words.detail).not.toContain('reached this state');
+  });
+
+  it('keeps the four decided filters on the plain sentence', () => {
+    for (const status of ['approved', 'rejected', 'cancelled']) {
+      const words = poApprovalsEmptyWords(status, [limit()], money);
+      expect(words.title).toBe('Nothing here');
+    }
+  });
 });

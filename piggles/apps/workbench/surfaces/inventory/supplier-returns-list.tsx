@@ -17,15 +17,7 @@
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  Text,
-  Timestamp,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, NativeSelect, Text } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faBoxOpen, faCirclePlus, faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -35,6 +27,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import {
   chaseTone,
+  returnIsSettled,
   returnReasonLabel,
   returnReasonTone,
   returnStatusLabel,
@@ -126,7 +119,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th className="whitespace-nowrap">Why</th>
             <th className="whitespace-nowrap">State</th>
             <th className="hidden whitespace-nowrap @lg:table-cell">Waiting</th>
-            <th className="text-right whitespace-nowrap">Owed</th>
+            <th className="text-right whitespace-nowrap">Asked for</th>
           </tr>
         </thead>
         <tbody>
@@ -169,10 +162,16 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Badge>
               </td>
               <td className="hidden whitespace-nowrap @lg:table-cell">
-                {row.awaitingCreditDays === null ? (
-                  <Text className="text-sm">
-                    {row.sentAt ? <Timestamp value={row.sentAt} format="relative" /> : 'Not sent'}
-                  </Text>
+                {/* Branch on the STATE. `awaitingCreditDays` goes null for three
+                    different returns and only one of them has never been sent;
+                    reading the null alone printed the day the goods left, under
+                    a heading that asks how long a credit has been outstanding.
+                    A finished return is not waiting, and the State column beside
+                    this one already says how it finished. */}
+                {returnIsSettled(row.status) ? (
+                  <Text className="text-sm">&mdash;</Text>
+                ) : row.awaitingCreditDays === null ? (
+                  <Text className="text-sm">Not sent</Text>
                 ) : (
                   <Badge color={chaseTone(row.awaitingCreditDays)} variant="soft" size="sm">
                     {row.awaitingCreditDays === 0

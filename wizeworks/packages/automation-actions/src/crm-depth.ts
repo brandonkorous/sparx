@@ -42,8 +42,6 @@ import {
   resolveTenantActor,
 } from './entity.js';
 
-const MS_PER_DAY = 86_400_000;
-
 // ─── crm.create_record ───────────────────────────────────────────────────────
 
 const CreateRecordConfig = z.object({
@@ -347,7 +345,10 @@ export function installCrmDepthActions(): void {
           description: cfg.description
             ? interpolateFields(cfg.description, effect.fields)
             : undefined,
-          dueAt: new Date(Date.now() + cfg.dueInDays * MS_PER_DAY).toISOString(),
+          // See `taskService.dueAtForDays`: a deadline is the end of a DAY in
+          // the business's zone. This config defaults `dueInDays` to 0, which
+          // on the old arithmetic meant "already late".
+          dueAt: (await taskService.dueAtIn(ctx, cfg.dueInDays)).toISOString(),
           priority: cfg.priority,
           assignedToUserId: assignee,
           customerId,

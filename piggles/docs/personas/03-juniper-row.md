@@ -1,6 +1,6 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.23
+**Version:** 6.24
 **Author:** Brandon Korous
 **Last Updated:** 2026-09-30
 
@@ -16462,3 +16462,136 @@ name of one of its own screens.
 
 The good thing here is much better than I expected. The wrong things were all
 sentences.
+
+## Act 316 — a roll of linen they already paid me back for
+
+I finished with the bills and carried on down the Partners menu. Everything left
+on it is small: one return, two sign-offs, one supplier I set up to ship direct,
+six deliveries. It is the quiet end of the week, which is when I actually look
+at this stuff.
+
+### The return they had already settled
+
+One roll of linen, water stained down the selvedge about four metres in. Ellen
+at Ashcombe told me to send it back and she would credit it. She did, eleven
+days ago, the full eighteen dollars.
+
+Here is that return on my screen:
+
+```
+Return                        Why              State      Waiting       Owed
+RTV-000001 · Ashcombe Mills   Arrived damaged  Credited   2 weeks ago   $18.00
+                                                                        paid in full
+```
+
+Credited. Waiting a fortnight. Eighteen dollars owed. Paid in full. All on one
+row, and the bar across the top of the same screen said **Nothing outstanding**.
+
+Four inches. Two answers.
+
+I opened it, and the card on the left said **You are owed $18.00** while the one
+next to it said they had credited eighteen dollars, settled in full.
+
+I know they paid me. I am not going to ring Ellen about it. But if that had been
+three hundred dollars and four months ago, I would have had to go and check, and
+then I would have rung her, and then I would have felt stupid.
+
+### A box I emptied, that filled itself back in
+
+Highline Knitwear send direct to my customers. Their feed stopped working, and
+the screen said to check the address.
+
+While I was in there I cleared one of the column boxes to try something. Pressed
+Save. It said **Saved just now**. The old value was back in the box.
+
+I did it again slower, watching. Same thing. Saved, and not saved.
+
+That one is a small thing that makes me distrust the whole screen. If it will
+quietly ignore me on a box I can see, what is it doing on the ones I cannot?
+
+### It told me to check something that was fine
+
+The reason the feed had stopped, according to the screen:
+
+> We could not read this supplier's file. Check the address is right and that
+> the file opens for anybody.
+
+I checked the address. Three times. It is right, because I pasted it from the
+email they sent me.
+
+It turns out the console does not actually know why it failed. It knows it
+failed. There are half a dozen things that can go wrong and it says the same
+sentence for all of them, and the sentence names one of them as though it had
+looked.
+
+### Something that is not an invoice
+
+Sixty brass buckles from Fairfield. I booked in fifty-eight of them — two had
+the plating scratched down to the brass, so those went in the notes and the
+courier billed me fourteen dollars separately.
+
+The delivery screen is one of the best in here. It works out that the buckles
+really cost me $3.84 each once the carriage is spread over them, and it says so
+in three numbers I can read across without adding anything up.
+
+But the first of the three columns is headed **Invoiced**, and it says $3.60.
+Directly below it the screen names Fairfield's actual invoice, FT-INV-2291,
+which charges **$3.84**.
+
+Both numbers are right. It is the word that is wrong: nobody had invoiced me
+anything at the point I booked those buckles in. That is the whole reason the
+invoice gets checked against the delivery afterwards.
+
+### Three things to do and all three red
+
+```
+Onboard new B2B account: Loom and Larder           Overdue    Sep 20
+Advance to next stage: Q-000017                    Overdue    Sep 22
+Q-000016 was approved: take it to the next step    Overdue    Sep 30
+```
+
+The last one is dated today. It is twelve o'clock. I have not missed it.
+
+That one turns out to be the same illness as the bill last week, one step back.
+The console did not put a wrong date on it; something upstream had decided the
+task was due the exact millisecond it was created. It arrived on my list already
+red. Seven milliseconds old and already telling me off.
+
+### Two sign-offs I could not read together
+
+Back in September I turned down an order to Ashcombe — twelve shirts at
+twenty-four dollars — and wrote why: _ask them for a price on twenty-four first,
+we nearly always pay less per shirt at two dozen._ Then I asked again at
+twenty-four and signed it off.
+
+That is one decision with two halves. The screen has a view for the turned-down
+half and a view for the signed-off half and no view with both in it, so the note
+I wrote sits in one place and what I did about it sits in another.
+
+**Sent back**, the screen directly underneath it in the same menu, has had an
+Everything view the whole time.
+
+### What was good
+
+The sign-offs screen makes me type a reason before it will let me turn something
+down, and does not ask for one when I say yes. That is exactly the right way
+round. Three weeks later the note I wrote is what made the story readable.
+
+The duplicates screen is the best empty state in here. It does not just say
+there are none — it tells me what it looked for, and then tells me something I
+did not know: that the same person shopping on two of my sites is two records on
+purpose, not a mess I need to clean up. Marguerite Adeyemi is in there four
+times, once for each site, and the screen is right not to flag her.
+
+And the wholesale account screen told me, in one sentence, why Loom and Larder
+cannot order on terms: _they still owe you $1,193.00, and cannot order on terms
+until you put an amount here._ I have been meaning to sort that out.
+
+### Where I am
+
+Six things wrong in an afternoon, and none of them stopped me working. Five were
+sentences: a word over a number, a heading that named the wrong document, advice
+about a cause nobody had checked. One was a box that ignored me.
+
+The numbers underneath were right nearly every time. It is the words on top that
+keep telling me things that are not so.

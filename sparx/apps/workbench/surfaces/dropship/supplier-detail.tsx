@@ -58,6 +58,9 @@ import {
   type Supplier,
   type SupplierType,
   type Vendor,
+  credentialIsMissing,
+  credentialsToSend,
+  missingRequiredCredential,
   type VendorCredentialField,
 } from './dropship-data';
 
@@ -350,12 +353,12 @@ function SupplierEditor({
 
   const nameError = draft.name.trim() === '' ? 'Give the supplier a name.' : null;
   const typeError = isNew && !vendor ? 'Choose a supplier type first.' : null;
-  const missingCredential =
-    isNew && vendor
-      ? credentialFields.find((f) => f.required && (draft.credentials[f.key] ?? '').trim() === '')
-      : undefined;
+  // Runs on an EXISTING supplier too. It used to be new-only, so a required
+  // column could be emptied and saved; the sync then threw before it ever
+  // reached the network while the pane advised her to go and check the address.
+  const missingCredential = missingRequiredCredential(draft.credentials, credentialFields, isNew);
   const credentialError = missingCredential
-    ? `Enter the ${missingCredential.label.toLowerCase()}: it is needed to connect.`
+    ? `“${missingCredential.label}” is needed to connect.`
     : null;
   const scopeError =
     !draft.allSites && draft.siteScope.length === 0
@@ -417,11 +420,10 @@ function SupplierEditor({
       return;
     }
 
-    // Only send credential fields that were actually typed — a blank field keeps
-    // the stored secret (the API merges what it receives over the stored bag).
-    const typedCredentials = Object.fromEntries(
-      Object.entries(draft.credentials).filter(([, v]) => v.trim() !== '')
-    );
+    // A blank box keeps the stored value for a SECRET and clears it for anything
+    // she can read. Filtering the bag as one bag meant a cleared column mapping
+    // went back to what it was, under a toast reading "Supplier saved".
+    const typedCredentials = credentialsToSend(draft.credentials, credentialFields);
     update.mutate(
       {
         name: draft.name.trim(),
@@ -646,11 +648,9 @@ function SupplierEditor({
                   }
                 >
                   {credentialFields.map((field) => {
-                    const invalid =
-                      isNew &&
-                      touched &&
-                      field.required &&
-                      (draft.credentials[field.key] ?? '').trim() === '';
+                    // The same rule the bar at the top reads, so a box she
+                    // cleared is marked as well as named.
+                    const invalid = touched && credentialIsMissing(draft.credentials, field, isNew);
                     return (
                       <Field key={field.key}>
                         <FieldLabel>{field.label}</FieldLabel>

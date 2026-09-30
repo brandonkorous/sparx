@@ -37,7 +37,11 @@ const RulesQuery = z.object({
 });
 
 const QueueQuery = z.object({
-  status: z.enum(['pending', 'approved', 'rejected', 'cancelled']).optional(),
+  // `all` is not a state an approval can be in — it is the absence of the
+  // filter, named so a caller can ask for it. Without it the only way to reach
+  // the whole trail was to name one order, so a queue could be read four ways
+  // and never as a whole.
+  status: z.enum(['pending', 'approved', 'rejected', 'cancelled', 'all']).optional(),
   purchase_order_id: z.string().uuid().optional(),
   required_approver_user_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
@@ -101,16 +105,20 @@ const poApprovalRoutes: FastifyPluginAsync = async (app) => {
     // again. Defaulting that to pending returned an empty list for every order
     // that had been dealt with, which is how the buyer's own pane came to show
     // nothing at all after their order was sent back — over a dialog that had
-    // promised them "the buyer sees it". There was no value of `status` that
-    // meant "all", so asking for the trail was not possible at all.
-    const wholeTrail = q.purchase_order_id !== undefined && q.status === undefined;
+    // promised them "the buyer sees it".
+    //
+    // `status=all` now says it outright, for either question. Sent back has had
+    // an "Everything" view since it shipped; this queue had four filters and no
+    // way to see a history across them, because the route had no word for it.
+    const wholeTrail =
+      q.status === 'all' || (q.purchase_order_id !== undefined && q.status === undefined);
     // `ok(result)`: `pending` is the count of everything still waiting whatever
     // this page is filtered to — the badge on the nav item — so it belongs in
     // the body rather than in pagination meta.
     return reply.send(
       ok(
         await inventoryService.listPoApprovals(toInventoryContext(request), {
-          ...(wholeTrail ? {} : { status: q.status ?? 'pending' }),
+          ...(wholeTrail || q.status === 'all' ? {} : { status: q.status ?? 'pending' }),
           ...(q.purchase_order_id ? { purchaseOrderId: q.purchase_order_id } : {}),
           ...(q.required_approver_user_id
             ? { requiredApproverUserId: q.required_approver_user_id }

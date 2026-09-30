@@ -76,6 +76,7 @@ import {
 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { openServerHtml } from '../../lib/api/html-artifact';
 import { PurchaseOrderProcurement } from './purchase-order-procurement';
 import { FormSection } from '../../components/form-section';
 import { PaneScope } from '../../lib/dock/window-boundary';
@@ -1465,6 +1466,30 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
            this" - three rows with words and one without.
            scripts/check-toolbar-glyph.mjs holds the line. */
         actions={[
+          // The order itself, on the business's letterhead, to hand or send to
+          // the supplier. Placing an order sends nothing, so this is how it
+          // reaches them. Drafts too: people print one to check it.
+          ...(detail
+            ? [
+                {
+                  label: 'Print the order',
+                  title: 'Open the order to print or save as a PDF for your supplier',
+                  icon: Printer,
+                  onClick: () => {
+                    openServerHtml(`/v1/inventory/purchase-orders/${detail.id}/document`).catch(
+                      (error: unknown) => {
+                        toast.add({
+                          title: 'Could not open the print view',
+                          description:
+                            error instanceof Error ? error.message : 'Try again in a moment.',
+                          type: 'error',
+                        });
+                      }
+                    );
+                  },
+                },
+              ]
+            : []),
           ...(detail && status !== 'draft'
             ? [
                 {

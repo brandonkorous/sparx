@@ -1238,7 +1238,9 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 <tr>
                   <th>Item</th>
                   <th className="text-right whitespace-nowrap">Units</th>
-                  <th className="hidden text-right whitespace-nowrap @md:table-cell">Invoiced</th>
+                  <th className="hidden text-right whitespace-nowrap @md:table-cell">
+                    Goods, each
+                  </th>
                   <th className="hidden text-right whitespace-nowrap @lg:table-cell">
                     Plus getting it here
                   </th>
@@ -1280,10 +1282,11 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                       </td>
                       {/* PER UNIT, because the columns either side of it are per
                           unit and a table is read across. This held the line's
-                          whole share, so 58 buckles read "$3.60 invoiced, plus
-                          $14.00, really cost $3.84 each" — three numbers that
-                          cannot be added (issue 502). The line's total is still
-                          said underneath whenever more than one unit landed. */}
+                          whole share, so 58 buckles read "$3.60 for the goods,
+                          plus $14.00, really cost $3.84 each" — three numbers
+                          that cannot be added (issue 502). The line's total is
+                          still said underneath whenever more than one unit
+                          landed. */}
                       <td className="hidden text-right tabular-nums @lg:table-cell">
                         {line.allocatedChargeCents > 0 && line.quantityReceived > 0 ? (
                           <span className="flex flex-col items-end gap-0.5">

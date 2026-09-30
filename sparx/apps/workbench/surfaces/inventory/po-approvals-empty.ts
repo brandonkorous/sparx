@@ -40,6 +40,15 @@ export function poApprovalsEmptyWords(
   limits: PoApprovalLimit[],
   formatMoney: (cents: number) => string
 ): PoApprovalsEmpty {
+  if (status === 'all') {
+    // Not "nothing has reached this state" — on Everything there is no state to
+    // reach. This is the only filter that can say nothing has EVER happened.
+    return {
+      title: 'No order has ever been held for sign-off',
+      detail: 'Nothing has been asked for, signed off, turned down or withdrawn.',
+    };
+  }
+
   if (status !== 'pending') {
     return {
       title: 'Nothing here',

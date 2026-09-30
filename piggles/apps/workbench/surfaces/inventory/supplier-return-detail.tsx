@@ -79,6 +79,8 @@ import {
   returnReasonTone,
   returnStatusLabel,
   returnStatusTone,
+  returnSettledTitle,
+  returnClaimTitle,
   useCancelSupplierReturn,
   useCloseSupplierReturn,
   useCreateSupplierReturn,
@@ -525,12 +527,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
  * A return that has stopped being a chase, and which of the three ways it
  * stopped. Absent while it is still open, which the card reads as "Waiting".
  */
-const SETTLED_TITLE: Record<string, string> = {
-  credited: 'Credited',
-  closed: 'Written off',
-  cancelled: 'Called off',
-};
-
 function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const existing = useSupplierReturn(id);
   const update = useUpdateSupplierReturn(id);
@@ -554,7 +550,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }, [data]);
 
   if (!data) return null;
-  const settledTitle = SETTLED_TITLE[data.status] ?? null;
+  const settledTitle = returnSettledTitle(data.status);
 
   const fail = (title: string) => (error: unknown) => {
     afterCommit(() => {
@@ -686,7 +682,13 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
       <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
-          <StatTitle>You are owed</StatTitle>
+          {/* NOT a fixed string. `creditExpectedCents` is the size of the
+              CLAIM and never moves; whether she is still OWED it does. This
+              card read "You are owed $18.00" beside a card reading "settled in
+              full", sending her to chase money that had already arrived. The
+              stat on the right had been taught this and its two neighbours had
+              not. */}
+          <StatTitle>{returnClaimTitle(data.status)}</StatTitle>
           <StatValue>{formatCents(data.creditExpectedCents, data.currency)}</StatValue>
           <StatDesc>at what you paid for these units</StatDesc>
         </Stat>
