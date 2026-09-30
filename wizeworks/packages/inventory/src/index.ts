@@ -22,8 +22,27 @@ export type {
 export { publishInventoryEvent, indexInventoryEntity } from './events';
 export type { InventoryTopic, InventoryEventInput } from './events';
 
+/**
+ * The one list of what a scan can be.
+ *
+ * Exported so the REST route and the MCP tool stop hand-copying it into a
+ * `z.enum`. A kind missing from a copy is a document nobody can scan.
+ */
+export { ALL_KINDS as SCAN_KINDS } from './services/scan';
 export { computeAvailability } from './services/availability';
 export type { AvailabilityLevel, VariantAvailability } from './services/availability';
+
+/**
+ * HOW AN ITEM IS NAMED, for anything outside this package that has to say what a
+ * variant is.
+ *
+ * Re-exported for the automation resolver, which was building its own answer out
+ * of `product.title` alone and so told an owner her whole product line was out of
+ * stock when one size of thirty-six had run out (issue 861). The module's own
+ * header is the argument for why there is exactly one of these.
+ */
+export { variantLabel, VARIANT_LABEL_SELECT } from './services/variant-label';
+export type { LabelledVariant } from './services/variant-label';
 
 // Resync a product's denormalized `inStock`/`lowStock` flags from current levels +
 // variant policies. `Product.inStock` defaults to false and was previously only ever
@@ -50,7 +69,14 @@ export {
 // One CSV writer and one CSV reader (docs/146 Phase 10.3 + 10.6). Exported
 // because api-rest serves the exports and accepts the uploads, and a second
 // implementation on that side is exactly how an export stops re-importing.
-export { toCsv, parseCsv, csvCell, csvSafeText, csvField, csvInt } from './csv';
+export { toCsv, parseCsv, csvCell, csvMoney, csvSafeText, csvField, csvInt } from './csv';
+// A calendar date is not a moment. See the header of `calendar-date.ts`.
+export {
+  calendarDate,
+  calendarDateOrNull,
+  calendarDateToUtc,
+  calendarDayEndUtc,
+} from './calendar-date';
 export type { CsvTable, CsvValue, CsvParseResult } from './csv';
 
 export type {

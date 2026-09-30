@@ -235,8 +235,85 @@ describe('out of stock → in-app notification', () => {
     await runAutomationTick(deps, appDb);
 
     const n = await ownerDb.notification.findFirstOrThrow({ where: { tenantId } });
+    // The product on its own, because this product has ONE version and no
+    // options to name it by. That is the fallback `item.name` exists for, and it
+    // is the case a second placeholder in the template would have broken: a
+    // `platform.notify` title refuses to send when a placeholder comes back
+    // empty, so the simplest shops would have got no notice at all (issue 861).
     expect(n.title).toBe('Trail Runner 40L Pack is out of stock');
     expect(n.severity).toBe('warning');
     expect(n.kind).toBe('inventory.depleted');
+  });
+
+  it('names the VERSION that ran out, not the whole product', async () => {
+    // THE BUG. On Juniper Row the bell read "The Everyday Tee is out of stock"
+    // when 1 of its 36 versions had hit zero and 83 tees were on the shelf. The
+    // seed's own comment, four lines under the title, already said the link must
+    // point at the variant because "the product page would open a page on which
+    // most sizes are fine" — the same argument, applied to the link and not the
+    // sentence. [[feedback_a_fix_leaves_its_neighbour_behind]]
+    const { tenantId } = await seedTenant();
+    await ownerDb.tenant.update({
+      where: { id: tenantId },
+      data: { settings: { modules: { inventory: { enabled: true } } } },
+    });
+    await seedSystemAutomations({ tenantId }, { module: 'inventory' });
+
+    const product = await ownerDb.product.create({
+      data: {
+        tenantId,
+        title: 'The Everyday Tee',
+        handle: `p-${crypto.randomBytes(4).toString('hex')}`,
+        status: 'active',
+      },
+      select: { id: true },
+    });
+
+    // Two options, declared out of alphabetical order on purpose: the label has
+    // to come out in the order the shop set up (Size then Color), which is what
+    // `position` is for and what a plain string_agg would get wrong.
+    const size = await ownerDb.productOption.create({
+      data: { tenantId, productId: product.id, name: 'Size', position: 0 },
+      select: { id: true },
+    });
+    const color = await ownerDb.productOption.create({
+      data: { tenantId, productId: product.id, name: 'Color', position: 1 },
+      select: { id: true },
+    });
+    const medium = await ownerDb.productOptionValue.create({
+      data: { tenantId, optionId: size.id, value: 'Medium', position: 1 },
+      select: { id: true },
+    });
+    const black = await ownerDb.productOptionValue.create({
+      data: { tenantId, optionId: color.id, value: 'Black', position: 0 },
+      select: { id: true },
+    });
+
+    const variant = await ownerDb.productVariant.create({
+      data: {
+        tenantId,
+        productId: product.id,
+        sku: `SKU-${crypto.randomBytes(3).toString('hex')}`,
+        priceCents: 4_500,
+        currency: 'USD',
+        optionAssignments: {
+          // A pure join row: no tenantId of its own, it is scoped by the variant.
+          create: [{ optionValueId: medium.id }, { optionValueId: black.id }],
+        },
+      },
+      select: { id: true },
+    });
+
+    await handleTrigger(
+      evt('inventory.depleted', tenantId, { variantId: variant.id, onHand: 0 }),
+      deps
+    );
+    await runAutomationTick(deps, appDb);
+
+    const n = await ownerDb.notification.findFirstOrThrow({ where: { tenantId } });
+    expect(n.title).toBe('The Everyday Tee (Medium / Black) is out of stock');
+    // And the link still points at the version, which the seed already had right.
+    expect(n.entityType).toBe('variant');
+    expect(n.entityId).toBe(variant.id);
   });
 });

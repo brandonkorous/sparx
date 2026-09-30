@@ -184,7 +184,32 @@ export async function updateRule(
   return toRuleView(rule);
 }
 
-/** Deactivate a rule (soft — `isActive=false`, preserving its audit history). */
+/**
+ * Remove a rule.
+ *
+ * This used to set `isActive = false` and call itself a soft delete "preserving
+ * its audit history". It preserved nothing: nothing in the schema points at a
+ * rule id, and an approval decision is logged as a `CrmActivity` row naming the
+ * ORDER, not the rule that held it. What the soft delete actually did was make
+ * the bin and the on/off switch beside it the same button, one of which said
+ * something else.
+ *
+ * MEASURED 2026-09-20. A $2,500 limit was added through the console, removed
+ * through its own bin with a confirm that read "No order from Loom and Larder
+ * will be held for sign-off again", and the row came straight back on the list
+ * marked Off. In the database: `is_active = f`, still there. `listRules`
+ * returns every rule whatever its switch, so a limit could never leave the
+ * screen, and 38 of the 43 rules on this machine sit switched off with no way
+ * to clear any of them. [[feedback_a_promise_in_copy_is_a_contract]]
+ *
+ * The same feature for buying (`deletePoApprovalRule`, purchase-order spending
+ * limits) has really deleted its rows since the day it was written, and writes
+ * an audit row while doing it. Two spellings of one idea, and only one of them
+ * kept its word. [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * Switching a limit off is still there and is still the reversible option; it
+ * is the PATCH above.
+ */
 export async function deleteRule(ctx: B2bContext, id: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const existing = await tx.purchaseApprovalRule.findFirst({
@@ -192,7 +217,7 @@ export async function deleteRule(ctx: B2bContext, id: string): Promise<void> {
       select: { id: true },
     });
     if (!existing) throw notFound('Approval rule not found');
-    await tx.purchaseApprovalRule.update({ where: { id }, data: { isActive: false } });
+    await tx.purchaseApprovalRule.delete({ where: { id } });
   });
 }
 
@@ -217,7 +242,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
     ]),
   };
 
-  const { orders, total } = await withTenant(ctx, async (tx) => {
+  const { orders, total, accounts } = await withTenant(ctx, async (tx) => {
     const [orders, total] = await Promise.all([
       tx.order.findMany({
         where,
@@ -228,13 +253,17 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
           currency: true,
           createdAt: true,
           customer: {
+            // NOT `company: { select: … }`. The Prisma client publishes a
+            // computed `company` on customer (the typed employer string), and
+            // the computed one wins — so that join came back null on every row
+            // and this queue has never named a business (issue 751). The name
+            // is fetched below, in one query for the page.
             select: {
               id: true,
               firstName: true,
               lastName: true,
               email: true,
               companyId: true,
-              company: { select: { id: true, companyName: true } },
             },
           },
         },
@@ -244,7 +273,23 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
       }),
       tx.order.count({ where }),
     ]);
-    return { orders, total };
+    // One query for the page, keyed by id. A lookup per row would be an N+1
+    // on a screen whose whole job is a queue.
+    const accountIds = [
+      ...new Set(
+        orders
+          .map((o) => o.customer.companyId)
+          .filter((id): id is string => id !== null && id !== undefined)
+      ),
+    ];
+    const accounts =
+      accountIds.length === 0
+        ? []
+        : await tx.company.findMany({
+            where: { id: { in: accountIds } },
+            select: { id: true, companyName: true },
+          });
+    return { orders, total, accounts: new Map(accounts.map((a) => [a.id, a.companyName])) };
   });
 
   type OrderRow = (typeof orders)[number];
@@ -262,7 +307,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
         (o.customer.email ?? null),
       customerEmail: o.customer.email,
       companyId: o.customer.companyId,
-      companyName: o.customer.company?.companyName ?? null,
+      companyName: o.customer.companyId ? (accounts.get(o.customer.companyId) ?? null) : null,
     })),
     total,
     skip: input.skip,

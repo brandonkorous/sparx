@@ -112,6 +112,49 @@ export async function defaultPropertyIdsToActiveSite(
   body.propertyIds = [await resolveActiveSite()];
 }
 
+/**
+ * Default a record that BELONGS TO ONE SITE to the ACTIVE site (issue 878).
+ *
+ * An order, and a standing order that will mint orders for years. Named
+ * "owning site" rather than "scope" to keep it apart from the plural helper
+ * above: a catalog item is VISIBLE on sites, this record BELONGS to one.
+ *
+ * Shaped like `defaultPropertyIdsToActiveSite` above and deliberately NOT the
+ * same rule, because a missing site does not mean the same thing on the two
+ * kinds of record:
+ *
+ *   · A catalog item with no site is SHARED — visible on every site, which is a
+ *     real and useful state, and the reason that helper leaves a single-site
+ *     tenant alone.
+ *   · An order with no site is in NOBODY's figures. Every per-site read selects
+ *     `property_id IN (…)`, which no null row satisfies, and `order-service.ts`
+ *     reads a null there as an order belonging to a business that has since been
+ *     deleted — so it is withheld from every member whose access is limited to
+ *     named sites. There is no "shared sale".
+ *
+ * So this one defaults at ANY site count. It is also why this defaults rather
+ * than requires: a caller that names no site is not making a claim about one,
+ * and refusing the sale would be a worse answer than filing it where the person
+ * ringing it up is standing.
+ *
+ * `null` is honored verbatim, the same as an explicit id. A caller that goes to
+ * the trouble of sending null is saying the sale belongs to no site, which is
+ * a different statement from saying nothing at all.
+ *
+ * Checkout already resolves this for itself (`checkout-service.ts`, BUG-004 —
+ * "every primary-site order was site-less and vanished from every site-scoped
+ * money view"). That fix never reached its neighbours: the manual/till route
+ * here, and the quote conversion in `billing-document-conversion-service.ts`.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ */
+export async function defaultOwningSiteToActiveSite(
+  body: Record<string, unknown>,
+  resolveActiveSite: () => Promise<string>
+): Promise<void> {
+  if (body.propertyId !== undefined) return;
+  body.propertyId = await resolveActiveSite();
+}
+
 /** The tenant's PRIMARY property id. Every tenant has exactly one (guaranteed by
  *  migration 20260626000000_properties + the partial-unique index). */
 export async function resolvePrimaryPropertyId(tenantId: string): Promise<string> {
@@ -302,4 +345,56 @@ export async function resolveActivePropertyName(
       : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true } })
   );
   return row?.name?.trim() ?? '';
+}
+
+/**
+ * The modules this SITE has switched off, from `Property.moduleScope`.
+ *
+ * Set on the site's own settings screen under "What this site shows", whose
+ * copy promises "Switch off anything this site has no use for. It stays
+ * available on your other sites." That promise was not kept anywhere: the field
+ * was written, stored, and projected into the public tenant payload, and the
+ * only thing that read it was the site MCP tool catalog. A journal with Selling
+ * switched off kept its cart, its checkout, every product page, a Shop link in
+ * its own header and every one of those URLs in its sitemap.
+ * [[feedback_a_promise_in_copy_is_a_contract]]
+ *
+ * NOT cached. A person flips a switch and looks at their site; a TTL here would
+ * make the setting appear broken for as long as it ran. It is one indexed read
+ * on routes that already make several.
+ *
+ * Anything unreadable comes back as an EMPTY list: a field that fails to arrive
+ * must never dark part of a live site. [[feedback_never_present_absence_as_measurement]]
+ */
+export async function siteDisabledModules(
+  tenantId: string,
+  propertyId?: string | null
+): Promise<string[]> {
+  const row = await withTenant({ tenantId }, (tx) =>
+    propertyId
+      ? tx.property.findUnique({ where: { id: propertyId }, select: { moduleScope: true } })
+      : tx.property.findFirst({ where: { isPrimary: true }, select: { moduleScope: true } })
+  );
+  const scope = row?.moduleScope;
+  return Array.isArray(scope)
+    ? scope.filter((slug): slug is string => typeof slug === 'string')
+    : [];
+}
+
+/**
+ * Whether a module is on for this SITE — the account has it, AND the site has
+ * not switched it off.
+ *
+ * Both halves, because they answer different questions and both can say no. A
+ * tenant who does not pay for Selling has no shop anywhere; a tenant who does,
+ * on a site that switched it off, has a shop everywhere but there.
+ */
+export async function moduleOnForSite(
+  tenantId: string,
+  propertyId: string | null | undefined,
+  slug: string,
+  tenantHasIt: boolean
+): Promise<boolean> {
+  if (!tenantHasIt) return false;
+  return !(await siteDisabledModules(tenantId, propertyId)).includes(slug);
 }

@@ -14,6 +14,7 @@ import { Suspense } from 'react';
 
 import { SaveCardFlow } from '@/components/checkout/save-card-flow';
 import { resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,9 @@ export const metadata: Metadata = {
 export default async function SaveCardPage() {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-6 py-8">

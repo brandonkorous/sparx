@@ -201,7 +201,7 @@ export const INVOICING_ESTIMATE_APPROVED_TASK: SystemAutomationSpec = {
     {
       type: 'crm.create_task',
       config: {
-        title: 'Advance to next stage: {{invoice.number}}',
+        title: '{{invoice.number}} was approved: take it to the next step',
         assigneeField: 'invoice.assignedUserId',
         dueInDays: 0,
       },

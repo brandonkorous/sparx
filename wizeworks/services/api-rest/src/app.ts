@@ -105,6 +105,7 @@ import revisionRoutes from './routes/v1/content/revisions.js';
 import previewTokenRoutes from './routes/v1/content/preview-tokens.js';
 import contentReportRoutes from './routes/v1/content/reports.js';
 import contentAnalyticsRoutes from './routes/v1/content/content-analytics.js';
+import contentExportRoutes from './routes/v1/content/export.js';
 import navigationRoutes from './routes/v1/navigation/menus.js';
 import redirectRoutes from './routes/v1/redirects/index.js';
 import authorRoutes from './routes/v1/authors/index.js';
@@ -167,6 +168,7 @@ import mediaAssetRoutes from './routes/v1/media/assets.js';
 import mediaCollectionRoutes from './routes/v1/media/collections.js';
 import crmRoutes from './routes/v1/crm/index.js';
 import orderRoutes from './routes/v1/orders.js';
+import orderExportRoutes from './routes/v1/orders-export.js';
 import invoicingRoutes from './routes/v1/invoicing/index.js';
 import financeRoutes from './routes/v1/finance/index.js';
 import staffRoutes from './routes/v1/staff/index.js';
@@ -961,6 +963,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(previewTokenRoutes);
   await app.register(contentReportRoutes);
   await app.register(contentAnalyticsRoutes);
+  await app.register(contentExportRoutes);
   await app.register(navigationRoutes);
   await app.register(redirectRoutes);
   await app.register(authorRoutes);
@@ -1033,6 +1036,7 @@ export async function createApp(): Promise<FastifyInstance> {
   // Shared order root — gated on Commerce OR B2B OR CRM, not owned by any of
   // them. Registered alongside the modules rather than inside one.
   await app.register(orderRoutes);
+  await app.register(orderExportRoutes);
   await app.register(invoicingRoutes);
   await app.register(financeRoutes);
   await app.register(staffRoutes);

@@ -48,15 +48,34 @@ function fitmentPreset(dict: FitmentDictionarySummary): ModulePreset {
   };
 }
 
-// "Make → Model → Engine · Year" + "4 makes" — the at-a-glance shape + scale.
+/** How many steps a shopper walks down, for scanning a shelf of fourteen lists.
+ *
+ *  The level NAMES are deliberately not here. Every description already says
+ *  them, in the owner's own words: "A shopper picks their make, model and
+ *  engine, and you can narrow it further by year." Repeating that as
+ *  "Make, then Model, then Engine, plus Year" said nothing new, and in five of
+ *  the fourteen it said it in a DIFFERENT word than the sentence above it
+ *  (`Brand` against "the make of their phone", `Species` against "the animal",
+ *  `Class` against "the kind of machine", `Department` against "who they are
+ *  buying for", `Discipline` against "the kind of riding they do").
+ *
+ *  It also did not fit. silicaui calls a badge "a small pill for labels, counts
+ *  and statuses": fixed height, no vertical padding, `white-space: nowrap`.
+ *  A sentence fragment in one is clipped, not wrapped — docked at 360px the old
+ *  string was cut to "Make, then Model, then Engine, plu" and ran 53px past the
+ *  card. The count of steps is a token, which is what a pill is for, and it is
+ *  the one thing about the shape the sentence makes you work out for yourself
+ *  (issue 806). */
+export function stepWords(levelCount: number): string {
+  return levelCount === 1 ? '1 step' : `${String(levelCount)} steps`;
+}
+
+// "3 steps" + "4 makes": how deep it goes, and how much is already filled in.
 function fitmentChips(dict: FitmentDictionarySummary): ModulePresetSummaryChip[] {
   const levels = dict.dimensions.filter((d) => d.kind === 'level').map((d) => d.label);
-  const ranges = dict.dimensions.filter((d) => d.kind === 'range').map((d) => d.label);
-  const chain = levels.join(' → ');
-  const shape = ranges.length ? `${chain} · ${ranges.join(', ')}` : chain;
   const firstLevel = (levels[0] ?? 'item').toLowerCase();
   return [
-    { label: shape, tone: 'neutral' },
+    { label: stepWords(levels.length), tone: 'neutral' },
     { label: `${dict.rootCount} ${pluralizeLabel(firstLevel, dict.rootCount)}`, tone: 'module' },
   ];
 }

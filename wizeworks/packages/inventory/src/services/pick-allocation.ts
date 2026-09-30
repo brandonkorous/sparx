@@ -250,14 +250,31 @@ export async function allocationsForOrderLine(
     usesBins: boolean;
   }
 ): Promise<AllocationResult> {
-  const lot =
-    input.strategy === 'fefo'
-      ? await resolveFefoLot(tx, {
-          tenantId: input.tenantId,
-          variantId: input.variantId,
-          warehouseId: input.warehouseId,
-        })
-      : null;
+  // NOT gated on the strategy any more, and this is a SAFETY rule rather than a
+  // preference.
+  //
+  // `resolveFefoLot` is the only thing anywhere in the sell path that excludes an
+  // expired or recalled batch, and it ran only for `fefo`. MEASURED 2026-09-19:
+  // **87 of 87 warehouses on this database are `fifo`** and not one is `fefo`, so
+  // that exclusion had never run for anybody — while 4 expired batches holding
+  // 137 units sat in them, fully shippable. Expiring stock told the owner, in a
+  // red alert, "that stock is excluded from picking automatically, so nothing
+  // will ship it". [[feedback_a_promise_in_copy_is_a_contract]]
+  //
+  // The reasoning this file already gives for recalls is the same reasoning:
+  // "a strategy that would ship it only if there is nothing else is a strategy
+  // that ships it on the day it matters most."
+  //
+  // What changes for a NON-fefo warehouse: nothing at all for an item with no
+  // dated lots, because the query returns null for those, which is most items.
+  // For an item that HAS dated lots, the pick now names a batch that is in date
+  // instead of naming no batch and leaving the picker to take whatever box is
+  // nearest — which was the expired one.
+  const lot = await resolveFefoLot(tx, {
+    tenantId: input.tenantId,
+    variantId: input.variantId,
+    warehouseId: input.warehouseId,
+  });
 
   if (!input.usesBins) {
     return {

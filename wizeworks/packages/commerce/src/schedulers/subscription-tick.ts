@@ -35,6 +35,20 @@ export interface SubscriptionTickResult {
    *  only the merchant can fix these, so running a dunning ladder would email
    *  the customer about someone else's problem. */
   unbillable: number;
+  /**
+   * Came due, and nothing happened to it.
+   *
+   * This counter used to not exist: `skipped` was the one outcome with no
+   * bucket, so a pass where EVERY renewal did nothing reported `due: 12` and
+   * twelve zeroes, with no errors — a perfectly healthy-looking tick over a
+   * business that billed nobody. A count nobody keeps is an outcome nobody can
+   * see. [[feedback_never_present_absence_as_measurement]]
+   *
+   * It is ordinary in small numbers (a concurrent tick got there first, an
+   * order was paid between the two passes). It is a problem when it equals
+   * `due`.
+   */
+  skipped: number;
   /** Anything that threw. The tick continues; the subscription is picked up
    *  again next pass because its date is still in the past. */
   errors: { subscriptionId: string; message: string }[];
@@ -66,13 +80,17 @@ export async function runSubscriptionTick(input: {
     exhausted: 0,
     actionRequired: 0,
     unbillable: 0,
+    skipped: 0,
     errors: [],
   };
 
   const dueIds = await subscriptionService.findDueOccurrences(ctx, asOf, limit);
   result.due = dueIds.length;
   for (const id of dueIds) {
-    await runOne(result, id, () => subscriptionBilling.runDueOccurrence(ctx, id));
+    // `asOf` goes all the way down. The selector above and the "is it due" test
+    // inside have to read one clock, or an operator's dry-run date finds rows
+    // here and the renewal refuses every one of them against the real one.
+    await runOne(result, id, () => subscriptionBilling.runDueOccurrence(ctx, id, asOf));
   }
 
   const retryIds = await findDueRetries(ctx, asOf, limit);
@@ -149,6 +167,7 @@ async function runOne(
         result.unbillable += 1;
         break;
       case 'skipped':
+        result.skipped += 1;
         break;
     }
   } catch (err) {

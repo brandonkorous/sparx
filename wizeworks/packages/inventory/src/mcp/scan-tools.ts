@@ -16,36 +16,31 @@ import {
 } from '@wizeworks/commerce-schemas';
 
 import { inventoryService } from '../services';
+import { ALL_KINDS, type ScanKind } from '../services/scan';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
 
 const Uuid = z.string().uuid();
 
-const SCAN_KINDS = [
-  'variant',
-  'bin',
-  'purchase_order',
-  'goods_receipt',
-  'transfer',
-  'count',
-  'lot',
-  'serial',
-] as const;
+/* Not re-declared here. This list was typed out again in this file and again in
+   the REST route, and `pick_list` reached none of the three copies - so the walk
+   sheet printed a barcode nothing could read. */
+const SCAN_KIND_VALUES = ALL_KINDS as [ScanKind, ...ScanKind[]];
 
 const lookUpScan: McpToolDefinition = {
   name: 'resolve_scan',
   description:
-    'What a scanned or typed code IS. Tries every reading of the same physical code: a UPC-A that a scanner reported as EAN-13, a zero-suppressed UPC-E, a SKU printed as a Code 128, and returns everything it matched: products (with how many units one scan of that code means), shelves, purchase orders, transfers, counts, lots and serial numbers. Returns several matches rather than guessing when a value is honestly ambiguous. Narrow it with `expect` when you already know what kind of thing you are looking at.',
+    'What a scanned or typed code IS. Tries every reading of the same physical code: a UPC-A that a scanner reported as EAN-13, a zero-suppressed UPC-E, a SKU printed as a Code 128, and returns everything it matched: products (with how many units one scan of that code means), shelves, purchase orders, deliveries, transfers, counts, walk sheets, lots and serial numbers. Returns several matches rather than guessing when a value is honestly ambiguous. Narrow it with `expect` when you already know what kind of thing you are looking at.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
     value: z.string().min(1).max(256),
-    expect: z.array(z.enum(SCAN_KINDS)).optional(),
+    expect: z.array(z.enum(SCAN_KIND_VALUES)).optional(),
     warehouseId: Uuid.optional(),
   }),
   run: (ctx, input) => {
     const i = input as {
       value: string;
-      expect?: (typeof SCAN_KINDS)[number][];
+      expect?: ScanKind[];
       warehouseId?: string;
     };
     return inventoryService.resolveScan(ctx, i.value, {

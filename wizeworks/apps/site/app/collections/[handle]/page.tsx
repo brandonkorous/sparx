@@ -26,7 +26,9 @@ import {
 } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { metadataTitle, socialTitle } from '@/lib/page-title';
 import { applyRedirect } from '@/lib/redirects';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
@@ -63,11 +65,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       accent: site.theme?.colorPrimary,
       platformBrand: site.platformBrand,
     });
+  const title = collection.seoTitle ?? collection.name;
   return {
-    title: collection.seoTitle ?? collection.name,
+    title: metadataTitle(title, site.name),
     description: collection.seoDescription ?? collection.description ?? undefined,
     openGraph: {
-      title: collection.seoTitle ?? collection.name,
+      title: socialTitle(title, site.name),
       description: collection.seoDescription ?? collection.description ?? undefined,
       images: [{ url: image }],
     },
@@ -77,6 +80,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CollectionDetailPage({ params, searchParams }: PageProps) {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
   const { handle } = await params;
   const sp = (await searchParams) ?? {};
 

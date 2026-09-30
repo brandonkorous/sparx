@@ -72,12 +72,12 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
   // ── CTA band — accent full-width call to action ───────────────────────────────
   entry({
     key: 'cta_band',
-    name: 'CTA band',
+    name: 'Action band',
     category: 'marketing',
     kind: 'common',
     icon: 'megaphone',
     description:
-      'A full-width accent band with a headline, a supporting line, and a primary + secondary action: centered.',
+      'A full-width colored strip with a headline, one line underneath and two buttons, all centered. Use it to ask for the one thing you most want people to do.',
     surfaces: ['page', 'site'],
     tags: ['cta', 'call to action', 'band', 'banner', 'convert', 'marketing'],
     tree: el(
@@ -306,7 +306,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'messages-square',
     description:
-      'A responsive grid of three testimonial cards. Each a quote with the person who said it. Collapses to one column.',
+      'Three cards side by side, each a quote with the name of the person who said it. They stack into one column on a phone.',
     surfaces: ['page', 'site'],
     tags: ['testimonials', 'reviews', 'quotes', 'social proof', 'grid', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -428,7 +428,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'layout-grid',
     description:
-      'A responsive three-up grid of features. Each an icon tile, a heading, and a line of supporting copy.',
+      'Three things you offer, side by side, each with a small picture, a heading and a line underneath. They stack into one column on a phone.',
     surfaces: ['page', 'site'],
     tags: ['features', 'benefits', 'icons', 'grid', 'value props', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -507,7 +507,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'gallery-horizontal-end',
     description:
-      'A centered caption above a responsive row of muted placeholder logos: drop in real customer marks later.',
+      'A centered line of text above a row of faded stand-in logos, which wraps to fit the screen. Swap in your real customers later.',
     surfaces: ['page', 'site'],
     tags: ['logos', 'logo cloud', 'customers', 'trusted by', 'social proof', 'marketing'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -708,7 +708,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'bar-chart-3',
     description:
-      'A band of four headline metrics with labels on a contrasting neutral surface: responsive, two-up then four-up.',
+      'A band of four headline figures with a label under each, on a contrasting background. Two side by side on a phone, four on a wide screen.',
     surfaces: ['page', 'site'],
     tags: ['stats', 'metrics', 'numbers', 'kpi', 'band', 'marketing'],
     tree: el(
@@ -737,7 +737,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'users-round',
     description:
-      'A responsive grid of four team cards: photo, name, role, and a small social row. Collapses to one column.',
+      'Four team cards side by side: photo, name, what they do, and a small row of social links. They stack into one column on a phone.',
     surfaces: ['page', 'site'],
     tags: ['team', 'people', 'about', 'staff', 'members', 'grid', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {

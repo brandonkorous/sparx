@@ -244,7 +244,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Divider with label — two rules flanking centered text ─────────────────────
   entry({
     key: 'divider_label',
-    name: 'Divider: labelled',
+    name: 'Divider: labeled',
     category: 'layout',
     kind: 'common',
     icon: 'separator-horizontal',
@@ -361,7 +361,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'layout-grid',
     description:
-      'A responsive three-column grid of panels. One column on narrow, two at medium, three when wide.',
+      'A three-column grid of panels: one column on a phone, two on a tablet, three on a wide screen.',
     surfaces: ['page', 'site'],
     tags: ['grid', 'three column', 'columns', 'features', 'layout'],
     tree: el('section', 'w-full px-6 py-12', {
@@ -439,7 +439,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'layout-dashboard',
     description:
-      'A responsive grid of image-over-title cards for a collection, gallery, or catalog: two up at medium, three when wide.',
+      'A grid of cards with the picture above the title, for a collection, a gallery or a catalog: two side by side on a tablet, three on a wide screen.',
     surfaces: ['page', 'site'],
     tags: ['cards', 'grid', 'gallery', 'collection', 'catalog', 'layout'],
     tree: el('section', 'w-full px-6 py-12', {

@@ -35,7 +35,8 @@
     "db:report:record-pages": "tsx scripts/report-record-page-collisions.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+    "clean": "rm -rf .turbo dist *.tsbuildinfo",
+    "db:backfill:design-page-titles": "tsx scripts/backfill-design-page-titles.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.2.0",

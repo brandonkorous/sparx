@@ -82,6 +82,135 @@ describe('content entry lifecycle', () => {
     expect(revisions[0]?.kind).toBe('autosave');
   });
 
+  // ── Which of her sites show a page (issue 867) ───────────────────────────
+  //
+  // The endpoint has always carried this: GET-one returns `propertyIds`, its own
+  // comment naming the control it is for ("the editor needs the current site
+  // scope to pre-fill its 'Visible on sites' control"), and POST/PATCH accept
+  // `property_ids`. No console ever drew or sent it. Measured 2026-09-28: 154
+  // junction rows across 143 entries, so the feature is in daily use through the
+  // create default — one tenant has 7 sites and 24 of its 30 pages pinned to 6 of
+  // them, and its owner had no way to see which.
+
+  it('PATCH sets which sites show a page, and echoes them back', async () => {
+    const second = await withTenant({ tenantId: tenant.tenantId }, (tx) =>
+      tx.property.create({
+        data: {
+          tenantId: tenant.tenantId,
+          name: 'Second site',
+          slug: 'second-site',
+          isPrimary: false,
+          status: 'active',
+          settings: {},
+        },
+        select: { id: true },
+      })
+    );
+
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+      payload: { property_ids: [second.id] },
+    });
+    expect(res.statusCode).toBe(200);
+    // THE ECHO IS THE POINT. Without it the editor reads `undefined`, which the
+    // "every site" shape spells as the empty list, so the pane would show "every
+    // site" the instant she pinned a page to one and the next save would widen it.
+    expect(res.json().data.propertyIds).toEqual([second.id]);
+
+    const stored = await withTenant({ tenantId: tenant.tenantId }, (tx) =>
+      tx.contentEntryProperty.findMany({ where: { entryId }, select: { propertyId: true } })
+    );
+    expect(stored.map((row) => row.propertyId)).toEqual([second.id]);
+
+    const fetched = await app.inject({
+      method: 'GET',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+    });
+    expect(fetched.json().data.propertyIds).toEqual([second.id]);
+  });
+
+  it('PATCH with an empty list means every site', async () => {
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+      payload: { property_ids: [] },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.propertyIds).toEqual([]);
+  });
+
+  it('a PATCH that says nothing about sites leaves them alone', async () => {
+    // The partial-update footgun. An omitted key must not be read as "clear it",
+    // or every ordinary save from an editor without the control would unpin every
+    // page on the platform.
+    const site = await withTenant({ tenantId: tenant.tenantId }, (tx) =>
+      tx.property.findFirstOrThrow({ where: { isPrimary: true }, select: { id: true } })
+    );
+    await app.inject({
+      method: 'PATCH',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+      payload: { property_ids: [site.id] },
+    });
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+      payload: { slug: 'lifecycle-renamed' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.propertyIds).toEqual([site.id]);
+  });
+
+  it('the LIST carries which sites show each page, pinned and not', async () => {
+    // Issue 870. The editor got this control in 867; the list it is opened FROM
+    // still drew nothing, so a page every one of her businesses publishes looked
+    // exactly like one belonging to the site she was standing on. She sees the
+    // list first, and she decides what to open from it.
+    const site = await withTenant({ tenantId: tenant.tenantId }, (tx) =>
+      tx.property.findFirstOrThrow({ where: { isPrimary: true }, select: { id: true } })
+    );
+
+    await app.inject({
+      method: 'PATCH',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+      payload: { property_ids: [site.id] },
+    });
+
+    const pinned = await app.inject({
+      method: 'GET',
+      url: '/v1/content/entries',
+      headers: authHeader(token),
+    });
+    expect(pinned.statusCode).toBe(200);
+    const pinnedRow = pinned.json().data.find((row: { id: string }) => row.id === entryId);
+    expect(pinnedRow).toBeDefined();
+    expect(pinnedRow.propertyIds).toEqual([site.id]);
+
+    // And the other shape. "Every site" is the EMPTY list, not a missing key:
+    // a row whose scope never arrived is indistinguishable from a row on every
+    // site, which is the whole distinction the column exists to draw.
+    await app.inject({
+      method: 'PATCH',
+      url: `/v1/content/entries/${entryId}`,
+      headers: authHeader(token),
+      payload: { property_ids: [] },
+    });
+
+    const everywhere = await app.inject({
+      method: 'GET',
+      url: '/v1/content/entries',
+      headers: authHeader(token),
+    });
+    const everyRow = everywhere.json().data.find((row: { id: string }) => row.id === entryId);
+    expect(everyRow.propertyIds).toEqual([]);
+  });
+
   it('POST /publish flips status to published + sets publishedAt', async () => {
     const res = await app.inject({
       method: 'POST',

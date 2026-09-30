@@ -244,7 +244,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Dramatic and low-lit for shows and events.',
     description:
-      'A dark house with a spotlight-violet primary: the room going quiet before the lights come up. For music, theatre, comedy, and ticketed events that sell a night out.',
+      'A dark house with a spotlight-violet primary: the room going quiet before the lights come up. For music, theater, comedy, and ticketed events that sell a night out.',
   },
   signal: {
     industry: 'Tech & Electronics',
@@ -391,7 +391,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A tinted oat page with olive and sage for natural goods.',
     description:
-      'A visibly warm oat ground (not white with a rumour of cream) with a near-black primary that flips to oat inside dark bands, plus olive and sage support. Soft serif over a geometric sans. For natural, sustainable, and wellness products sold on calm.',
+      'A visibly warm oat ground (not white with a rumor of cream) with a near-black primary that flips to oat inside dark bands, plus olive and sage support. Soft serif over a geometric sans. For natural, sustainable, and wellness products sold on calm.',
   },
   romp: {
     industry: 'Apparel & Basics',

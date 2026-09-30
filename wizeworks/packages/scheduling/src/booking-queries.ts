@@ -188,6 +188,10 @@ export interface CalendarEvent {
   status: string;
   startAt: string;
   endAt: string;
+  /** The zone the booking was made in. A diary places the block on THIS clock,
+   *  the same one its own text is written in; placed on the viewer's clock, a
+   *  10:00 appointment drew at 3 AM for anyone seven hours away. */
+  timezone: string;
   color: string | null;
   customerId: string | null;
   /**
@@ -277,6 +281,7 @@ export async function getCalendar(
       status: b.status,
       startAt: b.startAt.toISOString(),
       endAt: b.endAt.toISOString(),
+      timezone: b.timezone,
       color: b.service.color ?? b.resources[0]?.resource.color ?? null,
       customerId: b.customerId,
       customerName: whoFor(b, customers.get(b.customerId ?? '') ?? null),

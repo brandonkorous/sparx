@@ -23,6 +23,7 @@
 // escalation atomically with its run-step record.
 
 import { withTenant } from '@wizeworks/db';
+import { OWED_DOCUMENT_WHERE } from './billing-document-service';
 
 import { daysPastDue, startOfBusinessDay } from './billing-ar';
 import { businessTimeZone } from './business-clock';
@@ -127,7 +128,15 @@ export async function escalateAccount(
       where: {
         companyId: accountId,
         deletedAt: null,
-        status: { in: ['unpaid', 'partial', 'overdue'] },
+        // Through the shared rule. The line above this used to claim "balance > 0
+        // + a due DATE before today excludes drafts/paid/void" — true of paid and
+        // void STATUS, and silent about a draft-stage document or a quote, which
+        // carry `unpaid` and a balance like anything else. Nothing was being
+        // chased wrongly (no offer on the platform carries a due date, measured
+        // 2026-09-28), but this writes `status: 'overdue'` and feeds the dunning
+        // ladder, so the claim has to be enforced rather than relied upon
+        // (issue 857).
+        ...OWED_DOCUMENT_WHERE,
         dueAt: { not: null, lt: startOfToday },
         balance: { gt: 0 },
       },

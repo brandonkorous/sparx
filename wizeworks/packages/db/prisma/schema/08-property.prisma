@@ -310,6 +310,9 @@ model Property {
   // SetNull on delete (orders outlive their site); they are NOT a fork.
   orders Order[]
   carts  Cart[]
+  // A standing order signed up on this site. Its renewals inherit the site from
+  // here, which is the only record that still knows (issue 878).
+  subscriptions Subscription[]
 
   // Per-site customer MEMBERSHIPS (docs/58 D2) — shoppers who belong to this site.
   customerMemberships Customer[]

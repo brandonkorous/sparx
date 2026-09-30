@@ -42,7 +42,7 @@ const STARTERS: IndustryStarter[] = [
     slug: 'apparel',
     name: 'Apparel & fashion',
     description:
-      'A clothing store: size charts, an apparel catalog, US sales tax, tiered shipping, keystone markup, a VIP segment, and a newsletter + sale campaign.',
+      'A clothing store: size charts, an apparel catalog, US sales tax, tiered shipping, keystone markup, a VIP segment, and a newsletter and a sale campaign.',
     iconKey: 'shirt',
     tags: ['clothing', 'fashion', 'retail', 'boutique'],
     presets: [
@@ -115,7 +115,7 @@ const STARTERS: IndustryStarter[] = [
     slug: 'auto-parts',
     name: 'Auto parts & accessories',
     description:
-      'A parts store with vehicle fitment: year/make/model + tires & wheels lookups, a quote→invoice flow, an FAQ, tax, shipping, and keystone markup.',
+      'A parts store with vehicle fitment: year, make and model plus tire and wheel lookups, quotes that become invoices, an FAQ, tax, shipping, and keystone markup.',
     iconKey: 'car',
     tags: ['automotive', 'parts', 'accessories', 'powersports'],
     presets: [
@@ -139,7 +139,7 @@ const STARTERS: IndustryStarter[] = [
     slug: 'salon',
     name: 'Beauty & salon',
     description:
-      'An appointment-based salon or spa: cut/color/manicure services with a cancellation policy, a VIP segment, testimonials, manual payments, and a promo email.',
+      'An appointment-based salon or spa: cut, color and manicure services with a cancellation policy, a VIP segment, testimonials, manual payments, and a promo email.',
     iconKey: 'scissors',
     tags: ['salon', 'spa', 'beauty', 'barber', 'appointments'],
     presets: [
@@ -219,7 +219,7 @@ const STARTERS: IndustryStarter[] = [
     slug: 'wholesale',
     name: 'Wholesale & distribution',
     description:
-      'A B2B distributor: wholesale pricing tiers, purchase approval, a B2B sales pipeline, deposit/progress invoicing, free-over-threshold shipping, and net-terms-friendly defaults.',
+      'A B2B distributor: wholesale pricing tiers, purchase approval, a B2B sales pipeline, deposit and progress invoicing, free-over-threshold shipping, and net-terms-friendly defaults.',
     iconKey: 'warehouse',
     tags: ['wholesale', 'distribution', 'b2b', 'trade', 'supplier'],
     presets: [

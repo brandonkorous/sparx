@@ -30,7 +30,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+    "clean": "rm -rf .turbo dist *.tsbuildinfo",
+    "db:backfill:plain-descriptions": "tsx scripts/backfill-plain-descriptions.ts"
   },
   "dependencies": {
     "@wizeworks/auth": "workspace:*",

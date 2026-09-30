@@ -168,3 +168,42 @@ describe('the difference is null until the books are entered', () => {
     expect(words.unexplainedCents).toBe(100_000 - (96_792 + 1_000));
   });
 });
+
+/**
+ * "498 UNITS ON HAND — $1,064.49", BUILT FROM 123 OF THEM.
+ *
+ * The top row is where a reader forms the impression of what her stock is
+ * worth, and its Covering cell named every unit she holds beside a figure that
+ * only covers the ones with a cost behind them. Juniper Row: 375 of 498 units
+ * have nothing recorded about what they cost.
+ *
+ * The screen does say so, in the uncosted line, five rows further down and
+ * after the total has already been read.
+ */
+describe('what the top figure covers', () => {
+  it('names the units actually behind it when some have no cost', () => {
+    const { lines } = reconciliationWords({
+      ...NOTHING,
+      totalUnits: 498,
+      totalValueCents: 106449,
+      uncostedUnits: 375,
+    });
+    const ours = lines.find((line) => line.kind === 'sparx_value');
+    expect(ours?.reference).toBe('123 of 498 units on hand');
+  });
+
+  it('names them all when every one of them has a cost', () => {
+    const { lines } = reconciliationWords({
+      ...NOTHING,
+      totalUnits: 498,
+      totalValueCents: 106449,
+      uncostedUnits: 0,
+    });
+    expect(lines.find((line) => line.kind === 'sparx_value')?.reference).toBe('498 units on hand');
+  });
+
+  it('still counts one unit as one unit', () => {
+    const { lines } = reconciliationWords({ ...NOTHING, totalUnits: 1, uncostedUnits: 0 });
+    expect(lines.find((line) => line.kind === 'sparx_value')?.reference).toBe('1 unit on hand');
+  });
+});

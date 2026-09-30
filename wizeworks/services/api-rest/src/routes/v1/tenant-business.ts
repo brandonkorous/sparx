@@ -52,7 +52,7 @@ const country = z
 const currency = z
   .string()
   .trim()
-  .length(3)
+  .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
   .transform((v) => v.toUpperCase())
   .nullable()
   .optional();

@@ -201,6 +201,9 @@ export function submitShipping(
     shippingProviderSlug: string;
     shippingService?: string;
     shippingCarrier?: string;
+    /** Anything the buyer wants the shop to know. Sent even when empty, so the
+     *  box can be cleared. */
+    customerNote?: string;
   }
 ): Promise<CheckoutSession> {
   return call(`/v1/public/commerce/checkout/${sessionId}/shipping`, tenantSlug, {

@@ -134,7 +134,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Pulse Pro Wireless Earbuds',
       handle: 'pulse-pro-wireless-earbuds',
       description:
-        '<p>Active noise-canceling true-wireless earbuds with dual-driver acoustics and adaptive transparency mode. Six microphones with a wind-reduction mesh keep your voice clear on calls, and the low-latency game mode drops audio lag to 60ms so the sound matches what is on screen.</p><p>Eight hours of playback per charge and 32 total with the pocketable case, plus USB-C and Qi wireless charging. IPX5 sweat resistance and three sizes of ear tips mean they stay put through a run or a commute.</p>',
+        'Active noise-canceling true-wireless earbuds with dual-driver acoustics and adaptive transparency mode. Six microphones with a wind-reduction mesh keep your voice clear on calls, and the low-latency game mode drops audio lag to 60ms so the sound matches what is on screen.\n\nEight hours of playback per charge and 32 total with the pocketable case, plus USB-C and Qi wireless charging. IPX5 sweat resistance and three sizes of ear tips mean they stay put through a run or a commute.',
       productType: 'Earbuds',
       productTypeKey: 'electronics',
       attributes: {
@@ -271,7 +271,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Aero TKL Mechanical Keyboard',
       handle: 'aero-tkl-mechanical-keyboard',
       description:
-        '<p>A hot-swappable tenkeyless mechanical keyboard with a gasket-mounted plate and sound-dampening foam, tuned for a deep, muted typing feel right out of the box. Pre-lubed linear switches and PBT double-shot keycaps mean it sounds and feels finished: no aftermarket mods required.</p><p>Connect over 2.4GHz wireless, Bluetooth for up to three devices, or USB-C wired with full N-key rollover. Per-key RGB and onboard memory let you carry your layout and lighting between machines without software.</p>',
+        'A hot-swappable tenkeyless mechanical keyboard with a gasket-mounted plate and sound-dampening foam, tuned for a deep, muted typing feel right out of the box. Pre-lubed linear switches and PBT double-shot keycaps mean it sounds and feels finished: no aftermarket mods required.\n\nConnect over 2.4GHz wireless, Bluetooth for up to three devices, or USB-C wired with full N-key rollover. Per-key RGB and onboard memory let you carry your layout and lighting between machines without software.',
       productType: 'Keyboard',
       productTypeKey: 'electronics',
       attributes: {
@@ -367,7 +367,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'PortHub 8-in-1 USB-C Hub',
       handle: 'porthub-8-in-1-usb-c-hub',
       description:
-        '<p>An 8-in-1 USB-C docking hub that turns one port into a full workstation: 4K HDMI at 60Hz, gigabit Ethernet, two USB-A 3.2 ports, a USB-C data port, SD and microSD card readers, and 100W pass-through charging so your laptop keeps powering up while it is docked.</p><p>The aluminum shell doubles as a heat sink to stay cool under load, and the captive braided cable tucks away when not in use. Plug-and-play on macOS, Windows, ChromeOS, and iPad with no drivers.</p>',
+        'An 8-in-1 USB-C docking hub that turns one port into a full workstation: 4K HDMI at 60Hz, gigabit Ethernet, two USB-A 3.2 ports, a USB-C data port, SD and microSD card readers, and 100W pass-through charging so your laptop keeps powering up while it is docked.\n\nThe aluminum shell doubles as a heat sink to stay cool under load, and the captive braided cable tucks away when not in use. Plug-and-play on macOS, Windows, ChromeOS, and iPad with no drivers.',
       productType: 'Adapter',
       productTypeKey: 'electronics',
       attributes: {
@@ -446,7 +446,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'ClearView 4K Webcam',
       handle: 'clearview-4k-webcam',
       description:
-        '<p>A 4K Ultra HD webcam with a Sony sensor, autofocus, and HDR that holds your face evenly lit even with a bright window behind you. AI auto-framing keeps you centered as you move, and the dual noise-canceling microphones cut keyboard clatter on calls.</p><p>Streams 4K at 30fps or smooth 1080p at 60fps, with a privacy shutter that physically covers the lens. The universal clip grips laptops and monitors, and a tripod thread underneath lets you mount it however you like.</p>',
+        'A 4K Ultra HD webcam with a Sony sensor, autofocus, and HDR that holds your face evenly lit even with a bright window behind you. AI auto-framing keeps you centered as you move, and the dual noise-canceling microphones cut keyboard clatter on calls.\n\nStreams 4K at 30fps or smooth 1080p at 60fps, with a privacy shutter that physically covers the lens. The universal clip grips laptops and monitors, and a tripod thread underneath lets you mount it however you like.',
       productType: 'Webcam',
       productTypeKey: 'electronics',
       attributes: {
@@ -527,7 +527,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Vault Portable SSD',
       handle: 'vault-portable-ssd',
       description:
-        '<p>A pocket-sized portable SSD that sustains up to 1,050 MB/s read and 1,000 MB/s write over USB 3.2 Gen 2: fast enough to edit 4K video straight off the drive. The shock-resistant silicone bumper and IP55 dust-and-water rating let it survive a drop or a rainy commute.</p><p>Hardware AES-256 encryption keeps your files locked if it goes missing, and it ships pre-formatted to work with both Mac and Windows out of the box. Both USB-C and USB-A cables are in the box.</p>',
+        'A pocket-sized portable SSD that sustains up to 1,050 MB/s read and 1,000 MB/s write over USB 3.2 Gen 2: fast enough to edit 4K video straight off the drive. The shock-resistant silicone bumper and IP55 dust-and-water rating let it survive a drop or a rainy commute.\n\nHardware AES-256 encryption keeps your files locked if it goes missing, and it ships pre-formatted to work with both Mac and Windows out of the box. Both USB-C and USB-A cables are in the box.',
       productType: 'External Drive',
       productTypeKey: 'electronics',
       attributes: {
@@ -643,7 +643,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Luma Smart LED Bulb',
       handle: 'luma-smart-led-bulb',
       description:
-        '<p>A Wi-Fi smart LED bulb with 16 million colors and tunable white from a warm 2700K to a crisp 6500K, dimmable down to 1% for movie nights. No hub required. It connects straight to your 2.4GHz network and pairs with the major voice assistants for hands-free control.</p><p>Standard A19 shape and E26 base drop into any lamp or fixture. Schedules, scenes, and sunrise wake-up routines run on the bulb itself, so they fire even if your phone is off the network.</p>',
+        'A Wi-Fi smart LED bulb with 16 million colors and tunable white from a warm 2700K to a crisp 6500K, dimmable down to 1% for movie nights. No hub required. It connects straight to your 2.4GHz network and pairs with the major voice assistants for hands-free control.\n\nStandard A19 shape and E26 base drop into any lamp or fixture. Schedules, scenes, and sunrise wake-up routines run on the bulb itself, so they fire even if your phone is off the network.',
       productType: 'Smart Lighting',
       productTypeKey: 'electronics',
       attributes: {
@@ -730,7 +730,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'ChargeCore 20K Power Bank',
       handle: 'chargecore-20k-power-bank',
       description:
-        '<p>A 20,000mAh power bank that pushes 65W out of its USB-C port: enough to fast-charge most laptops, not just phones. Two extra ports let you top up three devices at once, and the built-in digital display shows exactly how much charge is left so you are never guessing.</p><p>It recharges itself at 45W, going from empty to full in about an hour and a half. The grippy matte shell and rounded edges make it easy to slip in a bag, and pass-through charging means you can power a device while the bank itself is plugged in.</p>',
+        'A 20,000mAh power bank that pushes 65W out of its USB-C port: enough to fast-charge most laptops, not just phones. Two extra ports let you top up three devices at once, and the built-in digital display shows exactly how much charge is left so you are never guessing.\n\nIt recharges itself at 45W, going from empty to full in about an hour and a half. The grippy matte shell and rounded edges make it easy to slip in a bag, and pass-through charging means you can power a device while the bank itself is plugged in.',
       productType: 'Power Bank',
       productTypeKey: 'electronics',
       attributes: {
@@ -810,7 +810,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'RiseDesk Aluminum Laptop Stand',
       handle: 'risedesk-aluminum-laptop-stand',
       description:
-        '<p>A folding aluminum laptop stand that lifts your screen to eye level to take the strain off your neck and shoulders. The open-back design channels airflow under the laptop so it runs cooler and quieter, and silicone pads grip both the desk and your laptop so nothing slides.</p><p>It adjusts through several height and angle stops, then folds flat to the size of a paperback for travel. Rated to hold laptops up to 17 inches and supports tablets too.</p>',
+        'A folding aluminum laptop stand that lifts your screen to eye level to take the strain off your neck and shoulders. The open-back design channels airflow under the laptop so it runs cooler and quieter, and silicone pads grip both the desk and your laptop so nothing slides.\n\nIt adjusts through several height and angle stops, then folds flat to the size of a paperback for travel. Rated to hold laptops up to 17 inches and supports tablets too.',
       productType: 'Stand',
       productTypeKey: 'electronics',
       attributes: {
@@ -888,7 +888,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'BoomMini Bluetooth Speaker',
       handle: 'boommini-bluetooth-speaker',
       description:
-        '<p>A palm-sized Bluetooth speaker that punches well above its size thanks to a passive bass radiator and an upward-firing driver. IP67 dust and waterproofing means it survives the pool, the shower, and the trail. It even floats if it goes overboard.</p><p>Twelve hours of playback per charge over Bluetooth 5.3, with a built-in mic for speakerphone calls. Pair two together for true stereo, and clip it to a bag with the included carabiner loop.</p>',
+        'A palm-sized Bluetooth speaker that punches well above its size thanks to a passive bass radiator and an upward-firing driver. IP67 dust and waterproofing means it survives the pool, the shower, and the trail. It even floats if it goes overboard.\n\nTwelve hours of playback per charge over Bluetooth 5.3, with a built-in mic for speakerphone calls. Pair two together for true stereo, and clip it to a bag with the included carabiner loop.',
       productType: 'Speaker',
       productTypeKey: 'electronics',
       attributes: {
@@ -967,7 +967,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Work-From-Home Starter Kit',
       handle: 'work-from-home-starter-kit',
       description:
-        '<p>Everything you need to turn any room into a real home office, bundled and discounted: the ClearView 4K webcam so you look sharp on every call, the Aero TKL mechanical keyboard for all-day typing comfort, and the PortHub 8-in-1 USB-C hub to wire it all into a single laptop port.</p><p>Buy the kit and save versus picking each piece on its own. One box, one click, a finished desk.</p>',
+        'Everything you need to turn any room into a real home office, bundled and discounted: the ClearView 4K webcam so you look sharp on every call, the Aero TKL mechanical keyboard for all-day typing comfort, and the PortHub 8-in-1 USB-C hub to wire it all into a single laptop port.\n\nBuy the kit and save versus picking each piece on its own. One box, one click, a finished desk.',
       productType: 'Kits',
       productTypeKey: 'electronics',
       attributes: {
@@ -1006,7 +1006,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Raptor Wireless Gaming Mouse',
       handle: 'raptor-wireless-gaming-mouse',
       description:
-        '<p>A lightweight 58-gram wireless gaming mouse with a 26,000 DPI optical sensor and a 1,000Hz polling rate over its low-latency 2.4GHz dongle: wired-fast response with none of the cable drag. Optical switches rated for 70 million clicks remove the double-click failures that kill mechanical switches.</p><p>PTFE feet glide effortlessly, six programmable buttons map to whatever you need, and a single charge lasts up to 90 hours. Top up over USB-C or play wired while it charges.</p>',
+        'A lightweight 58-gram wireless gaming mouse with a 26,000 DPI optical sensor and a 1,000Hz polling rate over its low-latency 2.4GHz dongle: wired-fast response with none of the cable drag. Optical switches rated for 70 million clicks remove the double-click failures that kill mechanical switches.\n\nPTFE feet glide effortlessly, six programmable buttons map to whatever you need, and a single charge lasts up to 90 hours. Top up over USB-C or play wired while it charges.',
       productType: 'Mouse',
       productTypeKey: 'electronics',
       attributes: {

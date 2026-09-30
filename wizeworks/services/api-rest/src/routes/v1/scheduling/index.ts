@@ -10,6 +10,7 @@ import schedulingSeriesRoutes from './series.js';
 import schedulingWaitlistRoutes from './waitlist.js';
 import schedulingClassRoutes from './classes.js';
 import schedulingReportRoutes from './reports.js';
+import schedulingExportRoutes from './export.js';
 
 const schedulingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(schedulingServiceRoutes);
@@ -23,6 +24,7 @@ const schedulingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(schedulingWaitlistRoutes);
   await app.register(schedulingClassRoutes);
   await app.register(schedulingReportRoutes);
+  await app.register(schedulingExportRoutes);
 };
 
 export default schedulingRoutes;

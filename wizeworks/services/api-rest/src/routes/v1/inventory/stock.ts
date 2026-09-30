@@ -132,6 +132,7 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
             onHand: true,
             allocated: true,
             safetyBuffer: true,
+            unsellableOnHand: true,
             reorderPoint: true,
             reorderQuantity: true,
             updatedAt: true,
@@ -162,6 +163,12 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
       allocated: r.allocated,
       available: r.onHand - r.allocated,
       safetyBuffer: r.safetyBuffer,
+      // Units in the building that nothing may be taken off — quarantine,
+      // damaged, awaiting repair. Sent because the console has to subtract it to
+      // answer "how many can I sell", and could not: the field was never on the
+      // wire, so every "can sell" figure counted the damaged ones. Additive, so
+      // an integrator reading this row is unaffected.
+      unsellableOnHand: r.unsellableOnHand,
       reorderPoint: r.reorderPoint,
       reorderQuantity: r.reorderQuantity,
       updatedAt: r.updatedAt.toISOString(),

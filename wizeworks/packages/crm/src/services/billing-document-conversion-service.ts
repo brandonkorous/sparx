@@ -77,6 +77,17 @@ export async function convertToOrder(
         tenantId: ctx.tenantId,
         customerId,
         orderNumber,
+        // The site this sale belongs to, carried across from the quote.
+        //
+        // `BillingDocument.propertyId` is NOT NULL, so there is always one to
+        // carry and never a case to admit. `Order.propertyId` is nullable, and
+        // a null there means something quite specific elsewhere in this file's
+        // neighbourhood: `order-service.ts` reads it as an order belonging to a
+        // business that no longer exists, and hides it from every member whose
+        // access is limited to named sites. Leaving the field off did not
+        // merely lose a label — it took the sale out of that site's takings and
+        // out of the order list of the person who made it (issue 878).
+        propertyId: doc.propertyId,
         status: 'placed',
         paymentStatus: 'unpaid',
         channel: input.channel ?? 'admin',

@@ -12,6 +12,7 @@ import {
   CreateSubscriptionInput,
   CreateSurchargeRuleInput,
   GrantAccountCreditInput,
+  TakeBackAccountCreditInput,
   IssueGiftCardInput,
   MarkupScope,
   ModerateReviewInput,
@@ -59,7 +60,10 @@ const CreateProductWithPriceInput = z.object({
   vendor: z.string().max(127).optional(),
   tags: z.array(z.string().min(1).max(63)).max(50).default([]),
   compareAtPriceCents: z.number().int().min(0).optional(),
-  currency: z.string().length(3).default('USD'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('USD'),
   seoTitle: z.string().max(255).optional(),
   seoDescription: z.string().max(512).optional(),
   categoryIds: z.array(z.string().uuid()).max(20).default([]),
@@ -258,6 +262,21 @@ const grantAccountCredit: McpToolDefinition = {
   run: (ctx, input) => discountService.grantAccountCredit(ctx, input),
 };
 
+/** The way back from a mistyped grant. `amountCents` is POSITIVE and says how
+ *  much to REMOVE; the server refuses more than the balance and names it. Its
+ *  own tool rather than a negative grant, because an assistant asked to "fix"
+ *  a credit must not be one character away from doubling it. */
+const takeBackAccountCredit: McpToolDefinition = {
+  name: 'take_back_account_credit',
+  description:
+    "Take store credit back off a customer's account, as an audited entry in their history. Use " +
+    'this to correct a grant that was wrong. Never more than they currently hold.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: TakeBackAccountCreditInput,
+  run: (ctx, input) => discountService.takeBackAccountCredit(ctx, input),
+};
+
 const createSubscription: McpToolDefinition = {
   name: 'create_subscription',
   description:
@@ -395,6 +414,7 @@ export const writeTools: AnyMcpTool[] = [
   bulkUpdateProductStatus,
   issueGiftCard,
   grantAccountCredit,
+  takeBackAccountCredit,
   createSubscription,
   updateSubscriptionItems,
   updateSubscriptionSchedule,

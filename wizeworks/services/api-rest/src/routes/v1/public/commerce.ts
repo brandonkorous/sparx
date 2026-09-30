@@ -30,7 +30,12 @@ import { notFound } from '@wizeworks/api-core/errors';
 import { prisma, withTenant } from '@wizeworks/db';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { computeAvailability } from '@wizeworks/inventory';
-import { preorderState } from '@wizeworks/commerce-schemas';
+import {
+  bundlePartsTotalCents,
+  bundleSetPriceCents,
+  plainTextOrNull,
+  preorderState,
+} from '@wizeworks/commerce-schemas';
 import {
   depositFromColumns,
   madeToOrderService,
@@ -316,6 +321,58 @@ function siteRating(
   return { averageRating: reviewCount > 0 ? ratingSum / reviewCount : null, reviewCount };
 }
 
+/**
+ * Everything needed to price a SET, selected on the wrapper product.
+ *
+ * A bundle's price is what its parts come to under the rule its owner chose.
+ * The wrapper product's own `priceCents` / `priceMinCents` is a placeholder
+ * nobody was ever asked to fill in — a real gift set read $0.00 on its own
+ * product page while the cart charged $158.10, because the pricing pipeline
+ * knows about bundles and these two read shapes did not.
+ *
+ * Selected on the PRODUCT rather than resolved per viewer, because a set's
+ * price does not depend on who is looking. The anonymous card and PDP stay
+ * viewer-independent and cacheable, which a `pricingService.resolve` call per
+ * variant would have cost them.
+ */
+const BUNDLE_PRICE_SELECT = {
+  select: {
+    pricingMode: true,
+    fixedPriceCents: true,
+    percentOffSum: true,
+    components: {
+      select: { defaultQuantity: true, variant: { select: { priceCents: true } } },
+    },
+  },
+  take: 1,
+} as const;
+
+interface BundleWrapperRow {
+  pricingMode: string;
+  fixedPriceCents: number | null;
+  percentOffSum: number | null;
+  components: { defaultQuantity: number; variant: { priceCents: number } }[];
+}
+
+/** What this product costs when it is a SET, or null when it is not one.
+ *  The SAME two functions the pricing pipeline charges with, so the page and
+ *  the till cannot disagree. */
+function setPriceOf(rows: BundleWrapperRow[] | undefined): number | null {
+  const bundle = rows?.[0];
+  if (!bundle || bundle.components.length === 0) return null;
+  return bundleSetPriceCents({
+    pricingMode: bundle.pricingMode,
+    partsTotalCents: bundlePartsTotalCents(
+      bundle.components.map((c) => ({
+        priceCents: c.variant.priceCents,
+        quantity: c.defaultQuantity,
+      }))
+    ),
+    fixedPriceCents: bundle.fixedPriceCents,
+    percentOffSum: bundle.percentOffSum,
+  });
+}
+
 function publicProduct(row: {
   id: string;
   title: string;
@@ -334,19 +391,25 @@ function publicProduct(row: {
   updatedAt: Date;
   images?: { mediaAssetId: string; alt: string | null }[];
   variants?: { id: string }[];
+  bundlesAsWrapper?: BundleWrapperRow[];
   reviewRollups?: { sumRating: number; reviewCount: number }[];
 }) {
   const rating = siteRating(row.reviewRollups, row.averageRating, row.reviewCount);
+  // A set has ONE price, so both ends of the card's range are it.
+  const setPrice = setPriceOf(row.bundlesAsWrapper);
   return {
     id: row.id,
     title: row.title,
     handle: row.handle,
-    description: row.description,
+    // Plain text, always. The column holds what the packs wrote before the
+    // schema normalized it, and this response is what a headless client, the
+    // MCP catalog read and the site's own loader all see (issue 848).
+    description: plainTextOrNull(row.description),
     vendor: row.vendor,
     productType: row.productType,
     tags: row.tags,
-    priceMinCents: row.priceMinCents,
-    priceMaxCents: row.priceMaxCents,
+    priceMinCents: setPrice ?? row.priceMinCents,
+    priceMaxCents: setPrice ?? row.priceMaxCents,
     inStock: row.inStock,
     averageRating: rating.averageRating,
     reviewCount: rating.reviewCount,
@@ -1327,6 +1390,7 @@ function productSelect(propertyId?: string, locale?: string) {
     // default first, then lowest position — `isDefault` alone leaves ties in a
     // nondeterministic order, which would make a buy box add a different variant
     // on different requests.
+    bundlesAsWrapper: BUNDLE_PRICE_SELECT,
     variants: {
       where: { deletedAt: null },
       orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
@@ -1395,6 +1459,7 @@ function fullProductSelect(propertyId: string, locale?: string) {
         },
       },
     },
+    bundlesAsWrapper: BUNDLE_PRICE_SELECT,
     variants: {
       where: { deletedAt: null },
       // Default first, then position — same order as productSelect, so this row's
@@ -1508,6 +1573,8 @@ function mapFullProduct(
   // `attributes` for individual field binds and the ordered `attributeSections`
   // for the auto-render repeat. No type / no schema → empty, and the PDP renders
   // no attribute block (fully backward compatible).
+  // A set has ONE price, whichever of its wrapper's versions is asked for.
+  const setPrice = setPriceOf(result.bundlesAsWrapper);
   const schema = result.productTypeKey ? schemasByKey?.get(result.productTypeKey) : undefined;
   const projection = schema
     ? projectProductAttributes(schema, (result.attributes ?? {}) as Record<string, unknown>)
@@ -1582,7 +1649,12 @@ function mapFullProduct(
         id: v.id,
         sku: v.sku,
         title: v.title,
-        priceCents: v.priceCents,
+        // A SET's price, when this product is one. The buy box read the
+        // wrapper variant's own number, which is a placeholder nobody set:
+        // MEASURED 2026-09-19, a real gift set said $0.00 on its product
+        // page and $158.10 in the cart one click later. A price shown that
+        // is not the price charged is worse than either number alone.
+        priceCents: setPrice ?? v.priceCents,
         compareAtPriceCents: v.compareAtPriceCents,
         // Present only for a signed-in customer whose active B2B membership
         // resolves a different price than the flat retail one above — null for

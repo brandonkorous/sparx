@@ -190,6 +190,10 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/commerce/checkouts', surface: 'commerce.checkout-sessions.list' },
   { path: '/commerce/checkouts/:id', surface: 'commerce.checkout-session.detail' },
   { path: '/commerce/subscriptions', surface: 'commerce.subscriptions.list' },
+  // Its own segment rather than `/commerce/subscriptions/new`, which the `:id`
+  // route below would swallow — the same shape `/commerce/sale` takes for the
+  // same reason. Singular, because the address is about the one being made.
+  { path: '/commerce/repeat-order', surface: 'commerce.subscription.new' },
   {
     path: '/commerce/subscriptions/:id',
     surface: 'commerce.subscription.detail',
@@ -544,6 +548,8 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/invoicing/workflows', surface: 'invoicing.workflows' },
   { path: '/invoicing/workflows/:id', surface: 'invoicing.workflow.edit' },
   { path: '/invoicing/templates', surface: 'invoicing.templates' },
+  { path: '/invoicing/templates/:id', surface: 'invoicing.template.edit' },
+  { path: '/invoicing/templates/:id/preview', surface: 'invoicing.template.preview' },
 
   /* ── Money ────────────────────────────────────────────────────────────── */
   { path: '/finance/payments', surface: 'finance.payments.list' },

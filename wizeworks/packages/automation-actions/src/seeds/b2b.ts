@@ -9,7 +9,8 @@
 import type { SystemAutomationSpec } from '@wizeworks/automation';
 
 export const B2B_OVERDUE_ESCALATION: SystemAutomationSpec = {
-  name: 'B2B overdue escalation',
+  name: 'Chase overdue wholesale invoices',
+  previousNames: ['B2B overdue escalation'],
   description:
     'Daily dunning ladder: marks past-due invoices overdue, places an account on credit hold once an invoice is 14 days overdue, and suspends it at 30 days. Locked, the platform owns this credit invariant.',
   trigger: {
@@ -35,18 +36,25 @@ export const B2B_OVERDUE_ESCALATION: SystemAutomationSpec = {
   status: 'active',
 };
 
-/** Open an onboarding task when a new B2B account is created. Assigned to the
- *  account's rep, falling back to the tenant owner. Managed (no email). */
+/** Open a set-up task when a new wholesale customer is added. Assigned to their
+ *  rep, falling back to the tenant owner. Managed (no email).
+ *
+ *  The task names the WORK, not the record: a customer created this way has no
+ *  credit limit, and `credit_limit` is `NOT NULL DEFAULT 0`, so until somebody
+ *  sets one they are refused at checkout on every order placed on terms
+ *  (issue 807). "Set up prices and terms" is that job. */
 export const B2B_NEW_ACCOUNT_TASK: SystemAutomationSpec = {
-  name: 'New B2B account onboarding task',
-  description: 'Opens an onboarding task, due tomorrow, when a B2B account is created.',
+  name: 'New wholesale customer: set-up task',
+  previousNames: ['New B2B account onboarding task'],
+  description:
+    'Opens a task to set up prices and terms, due tomorrow, when a wholesale customer is added.',
   trigger: { kind: 'event', eventType: 'crm.b2b_account.created' },
   conditions: { logic: 'AND', conditions: [] },
   actions: [
     {
       type: 'crm.create_task',
       config: {
-        title: 'Onboard new B2B account: {{b2bAccount.companyName}}',
+        title: 'Set up prices and terms for {{b2bAccount.companyName}}',
         assigneeField: 'b2bAccount.assignedRepId',
         dueInDays: 1,
       },
@@ -61,8 +69,9 @@ export const B2B_NEW_ACCOUNT_TASK: SystemAutomationSpec = {
  *  `crm.b2b_account.created`). Addressed to the account's primary contact.
  *  Transactional. */
 export const B2B_ACCOUNT_APPROVED: SystemAutomationSpec = {
-  name: 'B2B account approved',
-  description: 'Emails the account’s primary contact when a B2B account is approved.',
+  name: 'Welcome a new wholesale customer',
+  previousNames: ['B2B account approved'],
+  description: 'Emails their main contact when a wholesale customer is approved to start ordering.',
   trigger: { kind: 'event', eventType: 'crm.b2b_account.created' },
   conditions: {
     logic: 'AND',
@@ -84,7 +93,8 @@ export const B2B_ACCOUNT_APPROVED: SystemAutomationSpec = {
  *  `stage_changed` needs since several stages share `stageType: 'draft'`.
  *  Transactional. */
 export const B2B_QUOTE_RECEIVED: SystemAutomationSpec = {
-  name: 'B2B quote received',
+  name: 'Quote received: email the customer',
+  previousNames: ['B2B quote received'],
   description: 'Emails the customer their quote details when a quote is submitted.',
   trigger: { kind: 'event', eventType: 'crm.billing_document.stage_changed' },
   conditions: {
@@ -110,8 +120,9 @@ export const B2B_QUOTE_RECEIVED: SystemAutomationSpec = {
  *  the B2B AR substrate (`net-terms-ar`) so it doesn't overlap the standalone
  *  invoicing reminder. Transactional. */
 export const B2B_INVOICE_DUE_NUDGE: SystemAutomationSpec = {
-  name: 'B2B invoice due reminder',
-  description: 'Emails the account three days before a net-terms invoice is due.',
+  name: 'Remind before a wholesale invoice is due',
+  previousNames: ['B2B invoice due reminder'],
+  description: 'Emails a wholesale customer three days before an invoice on terms falls due.',
   trigger: {
     kind: 'schedule',
     schedule: { cadence: 'daily', atMinuteUtc: 0 },
@@ -146,7 +157,8 @@ export const B2B_INVOICE_DUE_NUDGE: SystemAutomationSpec = {
  *  Draft (never shown to the customer, so never worth an expiry nudge).
  *  Transactional. */
 export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
-  name: 'B2B quote expiring',
+  name: 'Warn before a quote runs out',
+  previousNames: ['B2B quote expiring'],
   description: 'Emails the customer when a submitted quote is within 48 hours of expiring.',
   trigger: {
     kind: 'schedule',
@@ -181,8 +193,8 @@ export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
  *  approver at their organization (docs/impl transactional-email §4 P3). The event
  *  carries the order, so it resolves through the order source. Transactional. */
 export const B2B_ORDER_APPROVED_EMAIL: SystemAutomationSpec = {
-  name: 'B2B order approved: email',
-  previousNames: ['B2B order approved — email'],
+  name: 'Wholesale order approved: email the buyer',
+  previousNames: ['B2B order approved: email', 'B2B order approved — email'],
   description: 'Emails the buyer when their pending order is approved.',
   trigger: { kind: 'event', eventType: 'b2b.order.approved' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -199,8 +211,8 @@ export const B2B_ORDER_APPROVED_EMAIL: SystemAutomationSpec = {
 /** Tell the buyer when their pending-approval order is rejected (→ cancelled).
  *  Transactional. */
 export const B2B_ORDER_REJECTED_EMAIL: SystemAutomationSpec = {
-  name: 'B2B order rejected: email',
-  previousNames: ['B2B order rejected — email'],
+  name: 'Wholesale order turned down: email the buyer',
+  previousNames: ['B2B order rejected: email', 'B2B order rejected — email'],
   description: 'Emails the buyer when their pending order is not approved.',
   trigger: { kind: 'event', eventType: 'b2b.order.rejected' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },

@@ -9,7 +9,9 @@ import { Button, Step, Steps } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import { readyDayLabel, type StorefrontPaymentMode } from '@/lib/made-to-order-copy';
-import type { CheckoutMadeToOrder } from '@/lib/checkout-client';
+import type { Address, CheckoutMadeToOrder, ShippingRate } from '@/lib/checkout-client';
+import type { CartLine, CartTotals } from '../cart-provider';
+import { OrderSummary } from './order-summary';
 
 // Named CheckoutStep, not Step: silica's <Step> is the stepper node component.
 export type CheckoutStep = 'contact' | 'shipping' | 'payment' | 'done';
@@ -57,7 +59,7 @@ export function StepIndicator({
 
 export function EmptyCart() {
   return (
-    <div className="text-base-content grid min-h-[40vh] place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
+    <div className="text-base-content grid min-h-[40vh] place-items-center gap-3 py-[clamp(3rem,8vw,6rem)] text-center">
       <span className="text-[2.5rem] opacity-50" aria-hidden="true">
         🛒
       </span>
@@ -91,13 +93,22 @@ export function EmptyCart() {
  * email is coming when we know none is.
  */
 export function Confirmation({
+  orderId,
   orderNumber,
   paymentMode = 'card',
   /** Nothing is being posted, so "we'll send it" would be the wrong promise. */
   collecting,
   madeToOrder,
   currency,
+  lines,
+  totals,
+  rate,
+  address,
+  signedIn,
 }: {
+  /** The order's own id, for the link to it. `placeOrder` has always returned
+   *  one; checkout used to drop it on the floor one line later. */
+  orderId: string;
   orderNumber: string;
   paymentMode?: StorefrontPaymentMode;
   collecting: boolean;
@@ -106,6 +117,14 @@ export function Confirmation({
    *  screen before they close the tab. */
   madeToOrder?: CheckoutMadeToOrder;
   currency?: string;
+  /** What was bought, taken before the cart is emptied. */
+  lines: CartLine[];
+  totals: CartTotals;
+  /** How it is coming, and where. Null when it is being collected. */
+  rate: ShippingRate | null;
+  address: Address | null;
+  /** Only a signed-in shopper has an order page to be sent to. */
+  signedIn: boolean;
 }) {
   const ready = madeToOrder?.readyOn ? readyDayLabel(madeToOrder.readyOn) : null;
   // "You paid X today" describes a CARD CHARGE. A shop on manual payments took
@@ -117,7 +136,10 @@ export function Confirmation({
   // not splitting it, and a number nobody collected is never printed as money.
   const owing = paymentMode === 'card' && (madeToOrder?.balanceCents ?? 0) > 0;
   return (
-    <div className="text-base-content grid min-h-[50vh] place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
+    // No px-6. The checkout page already sets a 24px gutter, and adding a
+    // second one here inset this screen twice as far as the four steps before
+    // it — on a phone that is 48px of nothing down each side.
+    <div className="text-base-content grid min-h-[50vh] place-items-center gap-3 py-[clamp(3rem,8vw,6rem)] text-center">
       <span className="text-[2.5rem] opacity-50" aria-hidden="true">
         🎉
       </span>
@@ -141,9 +163,59 @@ export function Confirmation({
           {formatMoney(madeToOrder.balanceCents, currency)} is due when you collect.
         </p>
       ) : null}
-      <Button render={<Link href="/products" />} color="primary" className="mt-2">
-        Continue shopping
-      </Button>
+
+      {/* The receipt. This screen used to carry an order number and nothing
+          else — not what was bought, not what it cost, not where it was going —
+          and on a shop that takes money in person no email follows it either,
+          so the number was the entire record of the sale. The same summary that
+          stood beside every step stands under it now, so the last screen agrees
+          with the four before it. */}
+      <div className="mt-4 w-full max-w-[420px] text-left">
+        <OrderSummary
+          lines={lines}
+          totals={totals}
+          currency={currency ?? 'USD'}
+          {...(madeToOrder ? { madeToOrder } : {})}
+          paymentMode={paymentMode}
+        />
+      </div>
+
+      {rate !== null || address !== null ? (
+        <div className="text-base-content w-full max-w-[420px] text-left">
+          {rate !== null ? (
+            <p className="m-0">
+              <strong>{collecting ? 'Collecting:' : 'Coming by:'}</strong> {rate.service}
+              {rate.estimatedDays !== null ? ` · about ${String(rate.estimatedDays)} days` : ''}
+            </p>
+          ) : null}
+          {address !== null ? (
+            <p className="m-0">
+              <strong>Going to:</strong> {addressLine(address)}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="mt-2 flex flex-wrap justify-center gap-3">
+        {signedIn ? (
+          <Button render={<Link href={`/account/orders/${orderId}`} />} color="primary">
+            See your order
+          </Button>
+        ) : null}
+        <Button
+          render={<Link href="/products" />}
+          {...(signedIn ? { variant: 'outline' as const } : { color: 'primary' as const })}
+        >
+          Continue shopping
+        </Button>
+      </div>
     </div>
   );
+}
+
+/** One line, the way an envelope reads. */
+function addressLine(a: Address): string {
+  return [a.name, a.line1, a.line2, [a.city, a.region, a.postalCode].filter(Boolean).join(' ')]
+    .filter((part) => typeof part === 'string' && part.trim() !== '')
+    .join(', ');
 }

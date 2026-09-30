@@ -52,8 +52,8 @@ const uploadImage: MediaMcpTool = {
   name: 'upload_image',
   description:
     `Upload an image (raw bytes) into the tenant's media library and get a URL to place on a site. The image ` +
-    `is stored and transcoded to optimised web variants. Use the returned \`url\` as a Builder Image node's \`src\` ` +
-    `or a Section \`bgImage\`. Allowed types: ${allowedMimeList}. Max ${maxKiB} KiB (optimise/downscale first: web ` +
+    `is stored and transcoded to optimized web variants. Use the returned \`url\` as a Builder Image node's \`src\` ` +
+    `or a Section \`bgImage\`. Allowed types: ${allowedMimeList}. Max ${maxKiB} KiB (optimize/downscale first: web ` +
     `images should be small; for a larger or already-hosted image use set_image_from_url instead).`,
   scope: 'write:builder',
   confirmation: false,

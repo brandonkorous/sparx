@@ -151,7 +151,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         key: 'before_after',
         label: 'Before and after',
         icon: 'image',
-        hint: 'Two photographs side by side, each labelled. The strongest thing a trade business can show.',
+        hint: 'Two photographs side by side, each labeled. The strongest thing a trade business can show.',
         make: gallery.beforeAfter,
       },
       {
@@ -240,7 +240,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         key: 'spec_list',
         label: 'Specification',
         icon: 'article',
-        hint: 'The plain facts (material, size, lead time, guarantee) as a labelled list.',
+        hint: 'The plain facts (material, size, lead time, guarantee) as a labeled list.',
         make: compare.specList,
       },
       {
@@ -260,7 +260,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         key: 'how_it_works',
         label: 'Steps',
         icon: 'layout',
-        hint: 'Four steps from first contact to finished, so an enquiry stops feeling like a leap.',
+        hint: 'Four steps from first contact to finished, so an inquiry stops feeling like a leap.',
         make: process.howItWorks,
       },
       {
@@ -409,7 +409,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
     items: [
       {
         key: 'enquiry_form',
-        label: 'Enquiry form',
+        label: 'Inquiry form',
         icon: 'article',
         hint: 'Name, email, phone and room to explain. Submissions land in your Form submissions inbox.',
         make: convert.enquiryForm,
@@ -556,7 +556,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         key: 'directory',
         label: 'Section directory',
         icon: 'grid',
-        hint: 'The onward sections of a big site, grouped and labelled: links a search engine can actually read.',
+        hint: 'The onward sections of a big site, grouped and labeled: links a search engine can actually read.',
         make: publishing.directory,
       },
     ],

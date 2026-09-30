@@ -10,6 +10,8 @@ import { z } from 'zod';
 
 import { Uuid } from '@wizeworks/crm-schemas';
 
+import { PlainTextField } from './plain-text';
+
 import {
   Barcode,
   Currency,
@@ -274,7 +276,11 @@ export type SeoFields = z.infer<typeof SeoFields>;
 export const CreateProductInput = z.object({
   title: z.string().min(1).max(255),
   handle: Handle.optional(), // auto-derived from title if absent
-  description: z.string().max(50_000).nullish(), // rich text (HTML allowed)
+  // PLAIN TEXT, normalized on parse. The comment here used to read "rich text
+  // (HTML allowed)" while the console edited it in a bare textarea and the site
+  // rendered it as text, so the sample packs wrote tags and shoppers read them
+  // (issue 848). See ./plain-text for the rule and why a bare tag strip is wrong.
+  description: PlainTextField(50_000).nullish(),
   status: ProductStatus.default('draft'),
   productType: z.string().max(127).nullish(),
   // The typed product-type link (docs/143) — mirrors ContentEntry.typeKey. When
@@ -341,7 +347,7 @@ export const UpdateProductInput = CreateProductInput.partial()
     propertyIds: z.array(Uuid).max(50).optional(),
     // These fields are nullable in the DB — the update form sends null to clear them.
     // .partial() alone only allows undefined, so we extend with .nullish() here.
-    description: z.string().max(50_000).nullish(),
+    description: PlainTextField(50_000).nullish(),
     productType: z.string().max(127).nullish(),
     // Nullish so a save can clear the typed link (→ untyped, renders no attributes).
     productTypeKey: ProductTypeKey.nullish(),
@@ -408,7 +414,7 @@ export type BulkTagProductsInput = z.infer<typeof BulkTagProductsInput>;
 export const UpsertProductTranslationInput = z.object({
   locale: Locale,
   title: z.string().min(1).max(255),
-  description: z.string().max(50_000).nullish(),
+  description: PlainTextField(50_000).nullish(),
   seoTitle: z.string().max(255).nullish(),
   seoDescription: z.string().max(512).nullish(),
 });

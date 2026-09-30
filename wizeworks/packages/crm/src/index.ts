@@ -28,3 +28,28 @@ export {
 export * as crmSchedulers from './schedulers';
 export type { ServiceContext, NotFoundError, ValidationError } from './errors';
 export { CrmNotFoundError, CrmValidationError, CrmConflictError } from './errors';
+
+// Which workflows hold a price OFFER rather than a BILL, and what each is
+// called. Defined once in @wizeworks/crm-schemas and re-exported here so a
+// package that already depends on the CRM (the automation resolvers, say) can
+// read the rule without keeping its own copy of the slug. `check:price-offers`
+// fails on any second copy — see the note there, and issue 764.
+export {
+  B2B_QUOTE_WORKFLOW_SLUG,
+  CUSTOMER_ESTIMATE_WORKFLOW_SLUG,
+  isPriceOfferWorkflow,
+  billingDocumentNoun,
+  NOT_OWED_STAGE_TYPES,
+  PRICE_OFFER_WORKFLOW_SLUGS,
+  isOwedDocument,
+} from '@wizeworks/crm-schemas/builtins';
+
+// The same rule as a QUERY: what counts as money somebody owes. Eight reads
+// across four packages each spelled their own version and every one of them was
+// the payment status alone, so a quote was a receivable (issue 857).
+export { OWED_DOCUMENT_WHERE } from './services/billing-document-service';
+
+// The order-side twin of the rule above, and for the same reason: "is money
+// still owed" was asked as a payment column value, so a cancelled order counted
+// and a part-paid one did not (issue 859).
+export { OWING_ORDER_WHERE } from './services/order-service';

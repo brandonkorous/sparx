@@ -30,7 +30,11 @@ import type { LabelResult } from './shipping-provider-bridge';
 import { offerableRates, profilePresenceFor } from './shipping-profile-match';
 import type { ItemProfileLinks, ProfilePresence } from './shipping-profile-match';
 // Imported (not just re-exported) because `quoteForCart` below composes them.
-import { resolvePackageForItems, resolveShipFromAddress } from './shipping-request-resolver';
+import {
+  DEFAULT_ITEM_WEIGHT_GRAMS,
+  resolvePackageForItems,
+  resolveShipFromAddress,
+} from './shipping-request-resolver';
 import { listInstallations } from './provider-service';
 import { collectionOption } from './collection-option';
 
@@ -744,6 +748,29 @@ export interface LiveRateReadiness {
    *  `resolveShipFromAddress` ("…incomplete (missing city, postal code) — finish
    *  it under Inventory → Warehouses…"). Null when complete. */
   shipFromIssue: string | null;
+  /**
+   * How many sellable things a shopper could buy that have to be posted.
+   *
+   * The storefront's own rule — an active, undeleted product, an undeleted
+   * version, `requiresShipping` — so this counts what can actually reach a
+   * quote rather than everything in the catalogue.
+   */
+  shippableItems: number;
+  /**
+   * How many of those nobody has said the weight of, at EITHER level.
+   *
+   * The same fallback chain `resolvePackageForItems` walks (version → product →
+   * a nominal default), so a product-level weight covers its versions here
+   * exactly as it does at rating time. A count that disagreed with the resolver
+   * would warn about quotes that are fine and stay quiet about ones that are
+   * not.
+   *
+   * Measured at the time this was added: **1,280 of 2,369 across 40 tenants,
+   * and 36 of those had not one weight recorded** (issue 873).
+   */
+  itemsMissingWeight: number;
+  /** What each of those is priced at instead. See `DEFAULT_ITEM_WEIGHT_GRAMS`. */
+  assumedWeightGrams: number;
 }
 
 /**
@@ -756,11 +783,43 @@ export interface LiveRateReadiness {
  * the reason it doesn't. This is the signal the Shipping surface uses to warn
  * them: a carrier is connected but the ship-from is incomplete. It never throws —
  * a readiness probe must not fail the page it informs.
+ *
+ * It answers a SECOND silence the same way (issue 873). A weight nobody recorded
+ * falls back to a nominal one so a quote is always obtainable, which is right
+ * for the shopper and, again, leaves the merchant in the dark: a rate that says
+ * "Priced by weight" is priced off a guess, and so is every live carrier quote.
+ * The counts here are what the two screens say out loud.
  */
 export async function getLiveRateReadiness(ctx: ServiceContext): Promise<LiveRateReadiness> {
   const carriers = await listInstallations(ctx, { kind: 'shipping', enabled: true }).catch(
     () => []
   );
+
+  // Two counts rather than one, because "none of them" and "some of them" are
+  // different sentences and the second needs the denominator to be worth
+  // reading. Both fall back to 0 — a readiness probe must not fail the page it
+  // informs, and 0 missing is the quiet answer.
+  const weights = await withTenant(ctx, async (tx) => {
+    const shippable = {
+      requiresShipping: true,
+      deletedAt: null,
+      // The storefront's rule for a product a shopper can actually buy.
+      product: { status: 'active', deletedAt: null },
+    } as const;
+    const [total, missing] = await Promise.all([
+      tx.productVariant.count({ where: shippable }),
+      tx.productVariant.count({
+        // The resolver's chain: a weight on the version, else one on the
+        // product, else the default. Missing means NEITHER was set.
+        where: {
+          ...shippable,
+          weightGrams: null,
+          product: { ...shippable.product, weightGrams: null },
+        },
+      }),
+    ]);
+    return { total, missing };
+  }).catch(() => ({ total: 0, missing: 0 }));
 
   let shipFromComplete = false;
   let shipFromIssue: string | null = null;
@@ -782,6 +841,9 @@ export async function getLiveRateReadiness(ctx: ServiceContext): Promise<LiveRat
     carrierSlugs: carriers.map((c) => c.providerSlug),
     shipFromComplete,
     shipFromIssue: shipFromComplete ? null : shipFromIssue,
+    shippableItems: weights.total,
+    itemsMissingWeight: weights.missing,
+    assumedWeightGrams: DEFAULT_ITEM_WEIGHT_GRAMS,
   };
 }
 

@@ -13,6 +13,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 import { SigningPanel } from './signing-panel';
 
 // Never prerendered and never cached. A signing page that renders a stale
@@ -29,6 +30,9 @@ export const metadata: Metadata = {
 export default async function SignPage({ params }: { params: Promise<{ token: string }> }) {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'crm');
   const { token } = await params;
 
   return (

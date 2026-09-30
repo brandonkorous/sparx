@@ -79,6 +79,7 @@ export type CommerceTopic = Extract<
   | 'giftcard.redeemed'
   | 'accountcredit.granted'
   | 'accountcredit.spent'
+  | 'accountcredit.taken_back'
   | 'configuration.requested'
   | 'configuration.quoted'
   | 'configuration.accepted'

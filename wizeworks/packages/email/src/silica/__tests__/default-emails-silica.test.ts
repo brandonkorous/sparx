@@ -163,7 +163,7 @@ describe('the provisioned default emails, on silica', () => {
     expect(refunded.html).toContain('Refund amount');
     expect(refunded.html).toContain('$88.00');
 
-    // Delivered is a success; cancelled is an error; payment-failed is a warning.
+    // Delivered is a success; canceled is an error; payment-failed is a warning.
     const delivered = renderSilicaEmail(
       { doc: docFor('order-delivered'), to: 'a@b.test', data: orderData },
       { brand }
@@ -174,7 +174,7 @@ describe('the provisioned default emails, on silica', () => {
       { doc: docFor('order-cancelled'), to: 'a@b.test', data: orderData },
       { brand }
     );
-    expect(cancelled.html).toContain('Cancelled');
+    expect(cancelled.html).toContain('Canceled');
     // The FIXED error semantic red, independent of the (teal) brand hue.
     expect(cancelled.html).toContain('#b91c1c');
 
@@ -238,7 +238,7 @@ describe('the provisioned default emails, on silica', () => {
       { doc: docFor('subscription-cancelled'), to: 'a@b.test', data: subData },
       { brand }
     );
-    expect(cancelled.html).toContain('Cancelled');
+    expect(cancelled.html).toContain('Canceled');
     expect(cancelled.html).toContain('#b91c1c'); // fixed error red
   });
 

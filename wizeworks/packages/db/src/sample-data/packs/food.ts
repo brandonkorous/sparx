@@ -178,7 +178,7 @@ export const foodPack: SampleDataPack = {
       title: 'Single-Origin Ethiopia Yirgacheffe',
       handle: 'single-origin-ethiopia-yirgacheffe',
       description:
-        '<p>A bright, washed Yirgacheffe from the Gedeo zone, roasted light to keep its signature florals intact. Expect jasmine and bergamot on the nose, a clean lemon-tea acidity, and a finish that lingers like stone fruit. This is the bag we hand someone who says they "don\'t like coffee", because they\'ve never had it taste like this.</p><p>Roasted to order in small batches and shipped within 48 hours, so the bag in your hand is days off the roaster, not weeks. Best from days 4 through 21 after the roast date stamped on the valve seal.</p>',
+        'A bright, washed Yirgacheffe from the Gedeo zone, roasted light to keep its signature florals intact. Expect jasmine and bergamot on the nose, a clean lemon-tea acidity, and a finish that lingers like stone fruit. This is the bag we hand someone who says they "don\'t like coffee", because they\'ve never had it taste like this.\n\nRoasted to order in small batches and shipped within 48 hours, so the bag in your hand is days off the roaster, not weeks. Best from days 4 through 21 after the roast date stamped on the valve seal.',
       productType: 'Coffee',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -313,7 +313,7 @@ export const foodPack: SampleDataPack = {
       title: 'Single-Origin Colombia Huila',
       handle: 'single-origin-colombia-huila',
       description:
-        '<p>A crowd-pleasing washed Colombia from smallholder farms around Pitalito, Huila, roasted medium for balance. Caramel sweetness, a round red-apple acidity, and a cocoa finish make it the everyday bag that works in any brewer: drip, French press, or espresso.</p><p>If you keep one coffee in the house, this is it. Forgiving to brew, equally good black or with a splash of milk, and roasted in small batches so every bag ships fresh.</p>',
+        'A crowd-pleasing washed Colombia from smallholder farms around Pitalito, Huila, roasted medium for balance. Caramel sweetness, a round red-apple acidity, and a cocoa finish make it the everyday bag that works in any brewer: drip, French press, or espresso.\n\nIf you keep one coffee in the house, this is it. Forgiving to brew, equally good black or with a splash of milk, and roasted in small batches so every bag ships fresh.',
       productType: 'Coffee',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -432,7 +432,7 @@ export const foodPack: SampleDataPack = {
       title: 'House Espresso Blend: "Lamplight"',
       handle: 'house-espresso-blend-lamplight',
       description:
-        '<p>Our signature espresso blend: a Brazil-and-Guatemala base for body and chocolate, lifted with a touch of washed Ethiopian for sparkle. Roasted medium-dark to pull thick, syrupy shots with notes of dark chocolate, toasted almond, and a brown-sugar sweetness that cuts beautifully through milk.</p><p>Built for the home espresso machine but every bit as good in a moka pot or press. Give it three to five days off the roast to degas before you pull your first shot.</p>',
+        'Our signature espresso blend: a Brazil-and-Guatemala base for body and chocolate, lifted with a touch of washed Ethiopian for sparkle. Roasted medium-dark to pull thick, syrupy shots with notes of dark chocolate, toasted almond, and a brown-sugar sweetness that cuts beautifully through milk.\n\nBuilt for the home espresso machine but every bit as good in a moka pot or press. Give it three to five days off the roast to degas before you pull your first shot.',
       productType: 'Coffee',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -554,7 +554,7 @@ export const foodPack: SampleDataPack = {
       title: 'Loose-Leaf Earl Grey Supreme',
       handle: 'loose-leaf-earl-grey-supreme',
       description:
-        '<p>A proper Earl Grey: a brisk Ceylon-and-Assam black tea base scented with natural bergamot oil and finished with a scatter of blue cornflower petals. Bold enough to take milk, fragrant enough to drink straight with a twist of lemon. No artificial flavoring. Just real oil of bergamot.</p><p>Sold loose by weight in a resealable tin-tie pouch. One heaping teaspoon per cup, steeped 3 to 4 minutes in just-off-boil water.</p>',
+        'A proper Earl Grey: a brisk Ceylon-and-Assam black tea base scented with natural bergamot oil and finished with a scatter of blue cornflower petals. Bold enough to take milk, fragrant enough to drink straight with a twist of lemon. No artificial flavoring. Just real oil of bergamot.\n\nSold loose by weight in a resealable tin-tie pouch. One heaping teaspoon per cup, steeped 3 to 4 minutes in just-off-boil water.',
       productType: 'Tea',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -634,7 +634,7 @@ export const foodPack: SampleDataPack = {
       title: 'Small-Batch Habanero-Mango Hot Sauce',
       handle: 'small-batch-habanero-mango-hot-sauce',
       description:
-        "<p>A bright, fruit-forward hot sauce that leads with ripe mango and ends with a clean habanero burn. Fermented in small batches for a week before bottling, which rounds the heat and builds a tangy depth you don't get from a quick-blend sauce. Medium-hot: enough to make you notice, never enough to ruin the dish.</p><p>Spectacular on tacos, grilled chicken, eggs, and (trust us) a wedge of sharp cheddar. Five ounces in a glass bottle with a drip-control cap.</p>",
+        "A bright, fruit-forward hot sauce that leads with ripe mango and ends with a clean habanero burn. Fermented in small batches for a week before bottling, which rounds the heat and builds a tangy depth you don't get from a quick-blend sauce. Medium-hot: enough to make you notice, never enough to ruin the dish.\n\nSpectacular on tacos, grilled chicken, eggs, and (trust us) a wedge of sharp cheddar. Five ounces in a glass bottle with a drip-control cap.",
       productType: 'Condiment',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -714,7 +714,7 @@ export const foodPack: SampleDataPack = {
       title: 'Maple-Pecan Grain-Free Granola',
       handle: 'maple-pecan-grain-free-granola',
       description:
-        "<p>A clustery, grain-free granola built on almonds, pecans, coconut, and pumpkin seeds, bound with real maple syrup and a whisper of sea salt. Baked low and slow for big, crunchy clusters that hold up in milk or yogurt instead of dissolving into dust. No oats, no refined sugar, no filler.</p><p>Twelve ounces in a resealable pouch. Wonderful over Greek yogurt with fresh berries, or eaten by the handful straight from the bag (we won't tell).</p>",
+        "A clustery, grain-free granola built on almonds, pecans, coconut, and pumpkin seeds, bound with real maple syrup and a whisper of sea salt. Baked low and slow for big, crunchy clusters that hold up in milk or yogurt instead of dissolving into dust. No oats, no refined sugar, no filler.\n\nTwelve ounces in a resealable pouch. Wonderful over Greek yogurt with fresh berries, or eaten by the handful straight from the bag (we won't tell).",
       productType: 'Snack',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -803,7 +803,7 @@ export const foodPack: SampleDataPack = {
       title: 'Extra-Virgin Olive Oil: Cold-Pressed',
       handle: 'extra-virgin-olive-oil-cold-pressed',
       description:
-        '<p>A single-estate, cold-pressed extra-virgin olive oil from a family grove in Jaén, Spain, pressed within hours of harvest. Grassy and peppery with a green-almond finish and the throat-catching tickle that tells you the polyphenols are alive. Harvest date (not just a "best by") is stamped on every tin.</p><p>500 ml in a light-blocking tin to protect it from oxidation. Finish soups, dress salads, or pour over warm bread; save the neutral oil for the frying pan.</p>',
+        'A single-estate, cold-pressed extra-virgin olive oil from a family grove in Jaén, Spain, pressed within hours of harvest. Grassy and peppery with a green-almond finish and the throat-catching tickle that tells you the polyphenols are alive. Harvest date (not just a "best by") is stamped on every tin.\n\n500 ml in a light-blocking tin to protect it from oxidation. Finish soups, dress salads, or pour over warm bread; save the neutral oil for the frying pan.',
       productType: 'Oil',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -885,7 +885,7 @@ export const foodPack: SampleDataPack = {
       title: 'Raw Wildflower Honey',
       handle: 'raw-wildflower-honey',
       description:
-        "<p>Unfiltered, unpasteurized wildflower honey from hives in the Willamette Valley, bottled raw to keep its pollen, enzymes, and complex floral character intact. Amber and thick with a layered sweetness that shifts with the season's blooms: clover one batch, blackberry the next. It may crystallize over time; that is the mark of real raw honey, not a flaw.</p><p>Twelve ounces in a glass jar. Stir into tea, drizzle over the granola, or spoon onto a cheese board. Not for infants under one year.</p>",
+        "Unfiltered, unpasteurized wildflower honey from hives in the Willamette Valley, bottled raw to keep its pollen, enzymes, and complex floral character intact. Amber and thick with a layered sweetness that shifts with the season's blooms: clover one batch, blackberry the next. It may crystallize over time; that is the mark of real raw honey, not a flaw.\n\nTwelve ounces in a glass jar. Stir into tea, drizzle over the granola, or spoon onto a cheese board. Not for infants under one year.",
       productType: 'Sweetener',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -965,7 +965,7 @@ export const foodPack: SampleDataPack = {
       title: 'Single-Origin Dark Chocolate Bar: 72%',
       handle: 'single-origin-dark-chocolate-bar-72',
       description:
-        '<p>A bean-to-bar 72% dark chocolate made from single-origin Ecuadorian Nacional cacao, stone-ground and conched for three days for a silken snap and a clean finish. Tasting notes of dried cherry, toasted hazelnut, and a faint floral lift. Only three ingredients: cacao, cane sugar, and cocoa butter.</p><p>A generous 2.5 oz bar, hand-wrapped. Let a square melt slowly on the tongue rather than chewing to catch the full arc of flavor.</p>',
+        'A bean-to-bar 72% dark chocolate made from single-origin Ecuadorian Nacional cacao, stone-ground and conched for three days for a silken snap and a clean finish. Tasting notes of dried cherry, toasted hazelnut, and a faint floral lift. Only three ingredients: cacao, cane sugar, and cocoa butter.\n\nA generous 2.5 oz bar, hand-wrapped. Let a square melt slowly on the tongue rather than chewing to catch the full arc of flavor.',
       productType: 'Chocolate',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -1047,7 +1047,7 @@ export const foodPack: SampleDataPack = {
       title: 'Morning Ritual Gift Box',
       handle: 'morning-ritual-gift-box',
       description:
-        '<p>The cure for "I don\'t know what to get them." Our Morning Ritual gift box pairs a bag of fresh single-origin coffee, a pouch of clustery maple-pecan granola, and a jar of raw wildflower honey in a kraft box with a hand-tied ribbon and a card you can personalize at checkout.</p><p>It is the breakfast we\'d want delivered to our own door, and it saves versus buying the three pieces on their own. Ships in protective packaging with everything dated fresh.</p>',
+        'The cure for "I don\'t know what to get them." Our Morning Ritual gift box pairs a bag of fresh single-origin coffee, a pouch of clustery maple-pecan granola, and a jar of raw wildflower honey in a kraft box with a hand-tied ribbon and a card you can personalize at checkout.\n\nIt is the breakfast we\'d want delivered to our own door, and it saves versus buying the three pieces on their own. Ships in protective packaging with everything dated fresh.',
       productType: 'Gift Box',
       productTypeKey: 'food_beverage',
       attributes: {

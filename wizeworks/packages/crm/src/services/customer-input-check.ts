@@ -28,7 +28,7 @@ const FIELD_LABEL: Record<string, string> = {
   address1: 'Address line 1',
   city: 'City',
   province: 'State / region',
-  zip: 'Postcode',
+  zip: 'Postal code',
   country: 'Country',
 };
 

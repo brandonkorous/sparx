@@ -428,7 +428,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'clipboard-check',
     description:
-      'A few questions that end in a personalised answer for the visitor, and a real lead score for you. People finish these far more often than a plain contact form.',
+      'A few questions that end in a personalized answer for the visitor, and a real lead score for you. People finish these far more often than a plain contact form.',
     surfaces: ['page', 'site'],
     tags: ['quiz', 'score', 'assessment', 'qualify', 'lead', 'form', 'questions'],
     tree: atom(

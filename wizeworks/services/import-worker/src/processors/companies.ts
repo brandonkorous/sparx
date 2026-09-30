@@ -7,6 +7,16 @@
 // The owner column is resolved to a real team member where one exists and left
 // unassigned where one does not. An import does not get to invite people into a
 // tenant as a side effect.
+//
+// THE COLUMNS ARE THE CANONICAL FIELD KEYS. `ENTITY_FIELDS.companies` in
+// @wizeworks/migration is what the Move-in mapper offers, and `COMPANY_COLUMNS` below
+// is what this file reads; the processor test holds the two equal. Phone, address and
+// created date were once offered and never read, so every company a CRM move carried
+// lost them while the mapper showed them as mapped.
+//
+// A blank cell never clears what a company already has: every field is written only
+// when the file has a value for it, and an industry is ADDED to the company's tags
+// rather than replacing them, as a website's domain is added to its domains.
 
 import { companyService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
@@ -33,11 +43,22 @@ function websiteOf(value: string | undefined): string | undefined {
   return domain === undefined ? undefined : `https://${domain}`;
 }
 
+/** Every column this processor reads. Equal to the canonical field keys; see above. */
+export const COMPANY_COLUMNS = [
+  'name',
+  'domain',
+  'industry',
+  'employees',
+  'annual_revenue',
+  'owner_email',
+  'description',
+] as const;
+
 async function findExisting(
   ctx: { tenantId: string },
   name: string,
   domain: string | undefined
-): Promise<{ id: string } | null> {
+): Promise<{ id: string; tags: string[]; domains: string[] } | null> {
   return withTenant(ctx, (tx) =>
     tx.company.findFirst({
       where: {
@@ -47,7 +68,7 @@ async function findExisting(
           ...(domain === undefined ? [] : [{ domains: { has: domain } }]),
         ],
       },
-      select: { id: true },
+      select: { id: true, tags: true, domains: true },
     })
   );
 }
@@ -85,16 +106,26 @@ export const companiesProcessor: EntityProcessor = {
           .filter((line) => line !== '')
           .join('\n\n');
 
+        const industryTags = toList(row.industry).slice(0, 1);
+        const tags = [...new Set([...(existing?.tags ?? []), ...industryTags])];
+
+        // A company can own several email domains (a group, an acquired brand); the
+        // file names one, so it joins the list instead of replacing it.
+        const domains =
+          domain === undefined
+            ? undefined
+            : [...new Set([...(existing?.domains ?? []), domain])].slice(0, 20);
+
         const input = {
           companyName: name.slice(0, 255),
           ...(websiteOf(row.domain) !== undefined ? { website: websiteOf(row.domain) } : {}),
-          ...(domain !== undefined ? { domains: [domain] } : {}),
+          ...(domains !== undefined ? { domains } : {}),
           ...(assignedRepId !== null ? { assignedRepId } : {}),
           ...(toInteger(row.employees) !== undefined
             ? { fleetSize: toInteger(row.employees) }
             : {}),
           ...(notes === '' ? {} : { notes: notes.slice(0, 10_000) }),
-          tags: toList(row.industry).slice(0, 1),
+          ...(industryTags.length > 0 ? { tags } : {}),
         };
 
         if (existing !== null) {

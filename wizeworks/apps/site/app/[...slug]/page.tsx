@@ -6,12 +6,14 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { metadataTitle, socialTitle } from '@/lib/page-title';
 import { getPageBySlug } from '@/lib/content';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
-import { getPublishedSilicaPage, treeHasHostNode } from '@/lib/silica';
+import { getPublishedSilicaPage, hostKeysIn, treeHasHostNode } from '@/lib/silica';
+import { siteShowsPage } from '@/lib/site-modules';
 import { buildSilicaHost, pageOutOfRange, silicaSiteIdentity } from '@/lib/silica-data';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
@@ -71,7 +73,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
     // browser tab. `ogTitle` below keeps the brand, because openGraph has no template
     // and a social card is seen with none of the site around it.
     const title = clean(silicaPage.seoTitle) ?? silicaPage.name;
-    const ogTitle = `${title} · ${site.name}`;
+    const ogTitle = socialTitle(title, site.name);
     const description = clean(silicaPage.seoDescription);
     const canonical = clean(silicaPage.canonical);
     const ogImage =
@@ -84,7 +86,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
         platformBrand: site.platformBrand,
       });
     return {
-      title,
+      title: metadataTitle(title, site.name),
       ...(description ? { description } : {}),
       ...(canonical ? { alternates: { canonical } } : {}),
       openGraph: {
@@ -114,7 +116,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
     // Same rule as the silica branch above: the layout template owns the ` · <site>`
     // suffix, so the page title must not carry one of its own.
     const title = clean(builderPage.seoTitle) ?? builderPage.name;
-    const ogTitle = `${title} · ${site.name}`;
+    const ogTitle = socialTitle(title, site.name);
     const description = clean(builderPage.seoDescription);
     const canonical = clean(builderPage.canonical);
     // Author-set OG URL wins; otherwise a tenant-branded generated card
@@ -129,7 +131,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
         platformBrand: site.platformBrand,
       });
     return {
-      title,
+      title: metadataTitle(title, site.name),
       ...(description ? { description } : {}),
       ...(canonical ? { alternates: { canonical } } : {}),
       openGraph: {
@@ -154,12 +156,12 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   const title = seoTitle ?? bodyTitle;
 
   return {
-    title: title ?? { absolute: site.name },
+    title: title ? metadataTitle(title, site.name) : { absolute: site.name },
     ...(seoDescription ? { description: seoDescription } : {}),
     // CMS pages carry no image of their own — give them a tenant-branded
     // generated social card (docs/50 §5).
     openGraph: {
-      title: title ? `${title} · ${site.name}` : site.name,
+      title: title ? socialTitle(title, site.name) : site.name,
       ...(seoDescription ? { description: seoDescription } : {}),
       images: [
         {
@@ -202,6 +204,14 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (silicaPage) {
+    // WHAT THE PAGE IS FOR, not what it is called.
+    //
+    // A tenant names their product grid "Shop", or "Our things", or nothing at
+    // all, so the slug answers nothing — the `commerce.plp` core inside it
+    // answers everything. A site with Selling switched off under "What this site
+    // shows" refuses the pages whose reason to exist is selling, and keeps the
+    // ones that merely link to them. See `siteShowsPage`.
+    if (!siteShowsPage(site, { hostKeys: hostKeysIn(silicaPage.root) })) notFound();
     const { resolver, paging } = await buildSilicaHost(site.slug, silicaPage.root, {
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,

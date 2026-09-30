@@ -40,6 +40,7 @@ import {
   type SellThroughResult,
 } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
+import { VARIANT_LABEL_COLUMNS, VARIANT_LABEL_JOINS } from './variant-label';
 import type { TxClient } from '@wizeworks/db';
 
 import type { ServiceContext } from '../errors';
@@ -95,7 +96,15 @@ export interface SellThroughRow extends SellThroughResult {
   variantId: string;
   warehouseId: string;
   sku: string;
-  title: string;
+  /** What the thing IS, and WHICH ONE of it. Two fields, never one: the product
+   *  alone cannot tell two sizes apart and the version alone does not say what
+   *  it is a version of. These reports squashed them with COALESCE(v.title,
+   *  p.title), and `v.title` is null for 746 of 2,416 variants on this database,
+   *  so every row of one product read as the product name with only a code to
+   *  tell them apart. All 108 of Juniper Row's variants are in that set.
+   *  Issue 681. */
+  productTitle: string | null;
+  variantName: string | null;
   warehouseCode: string;
 }
 
@@ -116,7 +125,8 @@ interface SellThroughSqlRow {
   variant_id: string;
   warehouse_id: string;
   sku: string;
-  title: string;
+  productTitle: string | null;
+  variantName: string | null;
   warehouse_code: string;
   units_sold: bigint;
   units_end: bigint;
@@ -161,17 +171,17 @@ export async function sellThroughReport(
         UNION
         SELECT variant_id, warehouse_id FROM held
       )
-      SELECT p.variant_id, p.warehouse_id,
-             v.sku, COALESCE(v.title, pr.title) AS title,
+      SELECT pr.variant_id, pr.warehouse_id,
+             v.sku, ${VARIANT_LABEL_COLUMNS},
              w.code AS warehouse_code,
              COALESCE(s.units_sold, 0)::bigint AS units_sold,
              COALESCE(h.units_end, 0)::bigint  AS units_end
-      FROM pairs p
-      JOIN commerce_product_variants v ON v.id = p.variant_id AND v.deleted_at IS NULL
-      JOIN commerce_products pr ON pr.id = v.product_id
-      JOIN inventory_warehouses w ON w.id = p.warehouse_id AND w.deleted_at IS NULL
-      LEFT JOIN sold s ON s.variant_id = p.variant_id AND s.warehouse_id = p.warehouse_id
-      LEFT JOIN held h ON h.variant_id = p.variant_id AND h.warehouse_id = p.warehouse_id
+      FROM pairs pr
+      JOIN commerce_product_variants v ON v.id = pr.variant_id AND v.deleted_at IS NULL
+      ${VARIANT_LABEL_JOINS}
+      JOIN inventory_warehouses w ON w.id = pr.warehouse_id AND w.deleted_at IS NULL
+      LEFT JOIN sold s ON s.variant_id = pr.variant_id AND s.warehouse_id = pr.warehouse_id
+      LEFT JOIN held h ON h.variant_id = pr.variant_id AND h.warehouse_id = pr.warehouse_id
       ORDER BY COALESCE(s.units_sold, 0) DESC, v.sku ASC
     `;
 
@@ -193,7 +203,8 @@ export async function sellThroughReport(
         variantId: row.variant_id,
         warehouseId: row.warehouse_id,
         sku: row.sku,
-        title: row.title,
+        productTitle: row.productTitle,
+        variantName: row.variantName,
         warehouseCode: row.warehouse_code,
         ...sellThrough({ unitsSold: sold, unitsOnHandAtEnd: end }),
       });
@@ -214,7 +225,15 @@ export async function sellThroughReport(
 export interface GmroiRow extends GmroiResult {
   variantId: string;
   sku: string;
-  title: string;
+  /** What the thing IS, and WHICH ONE of it. Two fields, never one: the product
+   *  alone cannot tell two sizes apart and the version alone does not say what
+   *  it is a version of. These reports squashed them with COALESCE(v.title,
+   *  p.title), and `v.title` is null for 746 of 2,416 variants on this database,
+   *  so every row of one product read as the product name with only a code to
+   *  tell them apart. All 108 of Juniper Row's variants are in that set.
+   *  Issue 681. */
+  productTitle: string | null;
+  variantName: string | null;
   unitsSold: number;
   /** Units sold that no order line could be matched to, so their revenue is not
    *  in the figure beside them. Non-zero means the margin is a floor. */
@@ -245,7 +264,8 @@ export interface GmroiReport {
 interface GmroiSqlRow {
   variant_id: string;
   sku: string;
-  title: string;
+  productTitle: string | null;
+  variantName: string | null;
   units_sold: bigint;
   revenue_cents: bigint;
   cogs_cents: bigint;
@@ -344,7 +364,7 @@ export async function gmroiReport(
           AND (${warehouse}::uuid IS NULL OR l.warehouse_id = ${warehouse}::uuid)
         GROUP BY l.variant_id
       )
-      SELECT a.variant_id, v.sku, COALESCE(v.title, p.title) AS title,
+      SELECT a.variant_id, v.sku, ${VARIANT_LABEL_COLUMNS},
              a.units_sold, a.revenue_cents, a.cogs_cents,
              a.unattributed_units, a.uncosted_units,
              COALESCE(
@@ -356,7 +376,7 @@ export async function gmroiReport(
              )::bigint AS avg_inventory_cents
       FROM agg a
       JOIN commerce_product_variants v ON v.id = a.variant_id AND v.deleted_at IS NULL
-      JOIN commerce_products p ON p.id = v.product_id
+      ${VARIANT_LABEL_JOINS}
       LEFT JOIN held h ON h.variant_id = a.variant_id
       LEFT JOIN basis b ON b.variant_id = a.variant_id
       ORDER BY (a.revenue_cents - a.cogs_cents) DESC, v.sku ASC
@@ -431,7 +451,8 @@ export async function gmroiReport(
       rows: rows.map((row) => ({
         variantId: row.variant_id,
         sku: row.sku,
-        title: row.title,
+        productTitle: row.productTitle,
+        variantName: row.variantName,
         unitsSold: Number(row.units_sold),
         unattributedUnits: Number(row.unattributed_units),
         ...gmroi({
@@ -603,7 +624,15 @@ export interface StockoutFrequencyRow {
   variantId: string;
   warehouseId: string;
   sku: string;
-  title: string;
+  /** What the thing IS, and WHICH ONE of it. Two fields, never one: the product
+   *  alone cannot tell two sizes apart and the version alone does not say what
+   *  it is a version of. These reports squashed them with COALESCE(v.title,
+   *  p.title), and `v.title` is null for 746 of 2,416 variants on this database,
+   *  so every row of one product read as the product name with only a code to
+   *  tell them apart. All 108 of Juniper Row's variants are in that set.
+   *  Issue 681. */
+  productTitle: string | null;
+  variantName: string | null;
   warehouseCode: string;
   episodeCount: number;
   daysOut: number;
@@ -631,7 +660,8 @@ interface StockoutSqlRow {
   variant_id: string;
   warehouse_id: string;
   sku: string;
-  title: string;
+  productTitle: string | null;
+  variantName: string | null;
   warehouse_code: string;
   at: Date;
   balance_after: number | null;
@@ -691,11 +721,11 @@ export async function stockoutFrequencyReport(
         UNION ALL
         SELECT variant_id, warehouse_id, created_at, balance_after FROM inwin
       )
-      SELECT pts.variant_id, pts.warehouse_id, v.sku, COALESCE(v.title, pr.title) AS title,
+      SELECT pts.variant_id, pts.warehouse_id, v.sku, ${VARIANT_LABEL_COLUMNS},
              w.code AS warehouse_code, pts.created_at AS at, pts.balance_after
       FROM pts
       JOIN commerce_product_variants v ON v.id = pts.variant_id AND v.deleted_at IS NULL
-      JOIN commerce_products pr ON pr.id = v.product_id
+      ${VARIANT_LABEL_JOINS}
       JOIN inventory_warehouses w ON w.id = pts.warehouse_id AND w.deleted_at IS NULL
       ORDER BY pts.variant_id, pts.warehouse_id, pts.created_at
     `;
@@ -705,7 +735,8 @@ export async function stockoutFrequencyReport(
       variantId: string;
       warehouseId: string;
       sku: string;
-      title: string;
+      productTitle: string | null;
+      variantName: string | null;
       warehouseCode: string;
       points: { at: Date; balanceAfter: number | null }[];
     }
@@ -717,7 +748,8 @@ export async function stockoutFrequencyReport(
         variantId: point.variant_id,
         warehouseId: point.warehouse_id,
         sku: point.sku,
-        title: point.title,
+        productTitle: point.productTitle,
+        variantName: point.variantName,
         warehouseCode: point.warehouse_code,
         points: [],
       };
@@ -741,7 +773,8 @@ export async function stockoutFrequencyReport(
         variantId: bucket.variantId,
         warehouseId: bucket.warehouseId,
         sku: bucket.sku,
-        title: bucket.title,
+        productTitle: bucket.productTitle,
+        variantName: bucket.variantName,
         warehouseCode: bucket.warehouseCode,
         episodeCount: result.episodeCount,
         daysOut: Math.round(result.daysOut * 10) / 10,

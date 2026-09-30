@@ -1,3 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 import { useMutation as tanstackUseMutation } from '@tanstack/react-query';
 
@@ -89,5 +93,44 @@ describe('shownInPlace', () => {
 
     handlers.onError = typeof shownInPlace === 'function';
     expect(callerHandledError(meta)).toBe(true);
+  });
+});
+
+// ─── `mutate` and `mutateAsync` are not the same promise ─────────────────────
+//
+// `mutate` SWALLOWS the rejection: a caller who passes no `onError` has said
+// nothing about the failure, so the net has to speak or the write is silent.
+// `mutateAsync` REJECTS: its caller either caught it and said something of their
+// own, or did not and has an unhandled rejection. Either way the net speaking
+// too is the duplicate the reporter's header warns about — and it was happening
+// on every one of them, because a try/catch passes no `onError` and looked
+// exactly like a call site that had said nothing.
+//
+// Seen on Juniper Row 2026-09-22 (persona issue 771): one failed walk arrived as
+// "Could not create a walk · Nothing on this order is a product you stock…" AND
+// "That didn't save · That didn't save. Check what you entered and try again."
+// stacked on one screen. Measured: 113 `mutateAsync` call sites in one console,
+// 2 of them passing an `onError`.
+//
+// Hooks need a renderer this package does not carry, so this reads the source,
+// the way `pick-expiry-gate.test.ts` does.
+describe('who owns a failed write', () => {
+  const source = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'mutation.ts'), 'utf8');
+
+  it('reads the file it is asserting about', () => {
+    expect(source.length).toBeGreaterThan(2000);
+    expect(source).toContain('export function useMutation');
+  });
+
+  it('lets `mutate` fall to the net when the caller said nothing', () => {
+    expect(source).toMatch(
+      /const mutate = useCallback\([\s\S]{0,400}?handlers\.onError = typeof callOptions\?\.onError === 'function';/
+    );
+  });
+
+  it('treats every `mutateAsync` as a caller holding the error', () => {
+    expect(source).toMatch(
+      /const mutateAsync = useCallback\(\s*\([^)]*\) => \{\s*handlers\.onError = true;/
+    );
   });
 });

@@ -458,7 +458,19 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
           tenantId,
           userId: before.userId,
           kind: 'feedback.replied',
-          title: `The ${brandIdentity.name} team replied to your feedback`,
+          // NO BRAND NAME IN THE TITLE, on purpose.
+          //
+          // It read `The ${brandIdentity.name} team replied…`, which is correct
+          // only while the lookup above is correct, and it was not: rows written
+          // before that lookup existed still say "The sparx team" to Piggles
+          // account holders, in their own console, forever (issue 128).
+          //
+          // A notification is only ever read inside the brand's own console, so
+          // the brand is already on the screen around it and the title has
+          // nothing to add by repeating it. A sentence that cannot name the
+          // wrong brand is a stronger guard than a lookup that must not fail.
+          // [[feedback_a_copy_edit_breaks_identity_lookups]]
+          title: 'We replied to your feedback',
           body: preview,
           entityType: 'feedback',
           entityId: id,

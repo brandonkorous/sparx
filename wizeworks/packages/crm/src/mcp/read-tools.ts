@@ -107,7 +107,7 @@ export const getInactiveCustomers: McpToolDefinition = {
 export const getCompanies: McpToolDefinition = {
   name: 'get_companies',
   description:
-    'List the companies this business works with: the organisations its contacts belong to. Returns each one with its trade terms (credit limit, what is used, pricing tier) when the b2b module is on; those read as zero for a business that does not sell on account.',
+    'List the companies this business works with: the organizations its contacts belong to. Returns each one with its trade terms (credit limit, what is used, pricing tier) when the b2b module is on; those read as zero for a business that does not sell on account.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({

@@ -68,6 +68,25 @@ interface IndexerEnvelope {
 // (customer → rich collection, activity) map to nothing. (docs/39 §6.1)
 const CRM_UNIVERSAL_BY_ENTITY: Record<string, { entityType: string; idField: string }> = {
   b2b_account: { entityType: 'b2b_account', idField: 'companyId' },
+  // An invoice is looked for by its NUMBER, and the number is the one thing a
+  // person has in front of them when they come looking.
+  //
+  // Indexing a billing document used to happen at the ROUTE layer, in six
+  // hand-written `indexEntity` calls in api-rest's invoicing/documents.ts. That
+  // works for the routes that have one and not at all for the routes that do
+  // not: `POST /v1/orders/:id/invoices` (Make an invoice, from an order) and
+  // `POST /v1/b2b/invoices` (Raise an invoice, wholesale) both raise a real,
+  // numbered invoice and neither indexed it. MEASURED 2026-09-20: of one shop's
+  // twelve invoices, the two raised through those routes were the two that could
+  // not be found by their numbers. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  //
+  // Every `crm.billing_document.*` topic already carries `documentId`, so hanging
+  // the reindex off the EVENT instead covers every route that exists and every
+  // route anybody adds. The six route-level calls stay: three of them are now
+  // belt-and-braces (a second upsert of the same document is idempotent), and
+  // three cover actions whose service publishes no event at all — update, send,
+  // and delete.
+  billing_document: { entityType: 'billing_document', idField: 'documentId' },
   quote: { entityType: 'quote', idField: 'quoteId' },
   pipeline: { entityType: 'pipeline', idField: 'pipelineId' },
   deal: { entityType: 'deal', idField: 'dealId' },
@@ -271,8 +290,28 @@ class PubSubTeePlatformBus implements PlatformEventBus {
 // in api-rest, where this same bridge is installed — so the tee fires there. The
 // engagement resolvers (automation-actions/resolvers.ts) hydrate the customer for
 // them. Everything else stays in-process (teeing it would publish to a dead topic).
+//
+// `order.placed` is the catalog topic for a new order, and it is teed because
+// `orderService.create` now publishes it for every caller that is not the
+// checkout (which announces its own, and holds it back for a wholesale order
+// waiting on sign-off). Without this line that publish would stop at the
+// in-process bus, where nothing subscribes it, and an order typed in at the
+// till would stay invisible to the search indexer and the dropship router
+// exactly as it was before.
+//
+// `order.created` USED to be in this set and is not any more. It is the CRM
+// spine's own in-process signal — the consumer in consumers/order-events.ts
+// reads it to write the timeline row — and it is not in the event catalog
+// (wizeworks/packages/events/src/types.ts), so nothing on the broker can
+// subscribe it and no tenant can key an automation on it. Teeing it put a
+// subject on the bus that LOOKED like an announcement and reached nobody,
+// which is exactly how an order made anywhere but the checkout came to be
+// announced to nothing at all. Removing it changes no delivery: the tee is
+// additional to `this.inner.publish(event)` a few lines down, which is what
+// the in-process consumer is listening to. `check:broker-topics` now fails
+// on any topic teed here that the catalog does not name.
 const PLATFORM_TEE_TOPICS: ReadonlySet<string> = new Set([
-  'order.created',
+  'order.placed',
   'order.paid',
   'order.cancelled',
   'order.payment.recorded',

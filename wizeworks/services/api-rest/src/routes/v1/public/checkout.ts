@@ -91,6 +91,10 @@ const ShippingBody = z.object({
   // re-quote even when the carrier's single-use ref has rotated (BUG-010).
   shippingService: z.string().min(1).max(255).optional(),
   shippingCarrier: z.string().min(1).max(255).optional(),
+  // Anything the buyer wants the shop to know about this order. Ends up on
+  // `Order.customerNote`, which the console prints under "From the customer"
+  // (issue 874).
+  customerNote: z.string().max(2000).optional(),
 });
 
 // The storefront's checkout form collects the recipient's name into this
@@ -247,6 +251,10 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       shippingProviderSlug: body.shippingProviderSlug,
       ...(body.shippingService ? { shippingService: body.shippingService } : {}),
       ...(body.shippingCarrier ? { shippingCarrier: body.shippingCarrier } : {}),
+      // Sent whenever the key is present, INCLUDING as an empty string: that is
+      // a shopper deleting what they wrote, and dropping it would make the box
+      // impossible to empty.
+      ...(body.customerNote !== undefined ? { customerNote: body.customerNote } : {}),
     });
     return ok(await checkoutService.get(ctx, sessionId));
   });

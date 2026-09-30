@@ -85,7 +85,7 @@ export const pipedrive: VendorAdapter = {
     {
       id: 'pipedrive.organizations',
       entity: 'companies',
-      label: 'Organisations',
+      label: 'Organizations',
       file: 'organizations.csv',
       where: 'Contacts → Organizations → ⋯ → Export data',
       format: 'csv',

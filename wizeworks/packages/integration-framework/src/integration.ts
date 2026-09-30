@@ -117,7 +117,9 @@ export function bundleToIntegrationDescriptors(bundle: ProviderBundle): Integrat
       name: metadata.displayName,
       vendor: metadata.vendor,
       blurb: metadata.description,
-      publisher: 'sparx',
+      // See PLATFORM_TOKEN in @wizeworks/brand-core; spelled out because this
+      // package does not depend on it. `fillPlatformName` replaces it per tenant.
+      publisher: '{platform}',
       availability,
       unavailableReason: reason,
       // Every shipped bundle captures keys in a form; none of them is OAuth yet.

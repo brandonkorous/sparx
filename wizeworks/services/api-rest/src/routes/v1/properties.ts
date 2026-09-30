@@ -79,6 +79,25 @@ interface PropertyView {
    * is the failure this field exists to end.
    */
   pageCount?: number;
+  /**
+   * How many of this site's pages are PUBLISHED, on the LIST only.
+   *
+   * A separate number from `pageCount`, because they answer different questions and
+   * a site can be nine pages of work that no visitor has ever been shown. Juniper
+   * Row had four such sites — nine, nine, twelve and zero pages, none of them
+   * published — and every one of them was answering the public with the code
+   * starter, because `wizeworks/apps/site` falls back to it for any property with no
+   * published tree. The only screen that shows all her sites at once printed a
+   * clickable web address for each and said nothing (issue 851).
+   *
+   * Counted from `publishedAt`, which agrees exactly with the two published-tree
+   * columns on all 468 rows of the development database — and is a scalar, so it
+   * needs none of Prisma's JSON-null gymnastics.
+   *
+   * Zero here means "counted, and none", the same contract `pageCount` carries.
+   * Undefined on the single-property GET, for the same reason it is there.
+   */
+  publishedPageCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -102,7 +121,8 @@ function toView(
     createdAt: Date;
     updatedAt: Date;
   },
-  pageCount?: number
+  pageCount?: number,
+  publishedPageCount?: number
 ): PropertyView {
   return {
     id: row.id,
@@ -118,6 +138,7 @@ function toView(
     brandOverride: parseBrandOverride(row.brandOverride),
     moduleScope: parseModuleScope(row.moduleScope),
     ...(pageCount === undefined ? {} : { pageCount }),
+    ...(publishedPageCount === undefined ? {} : { publishedPageCount }),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -241,17 +262,29 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/properties', async (request) => {
     const auth = requireRole(request, 'viewer');
-    const [rows, pages] = await withTenant({ tenantId: auth.tenantId }, async (tx) => [
+    const [rows, pages, published] = await withTenant({ tenantId: auth.tenantId }, async (tx) => [
       await tx.property.findMany({ orderBy: [{ isPrimary: 'desc' }, { name: 'asc' }] }),
       // ONE grouped count for every site, rather than a count per row: this list
       // is read on nearly every boot, and N+1 counts on a tenant with a dozen
       // sites would be a dozen round trips to answer "is this site empty".
       await tx.builderPage.groupBy({ by: ['propertyId'], _count: { _all: true } }),
+      // A SECOND grouped count, on the same terms and for the same reason —
+      // "has a visitor ever been shown this site" is a different question from
+      // "is this site empty", and a site can be nine pages of work and no
+      // answer to the second (issue 851).
+      await tx.builderPage.groupBy({
+        by: ['propertyId'],
+        where: { publishedAt: { not: null } },
+        _count: { _all: true },
+      }),
     ]);
     // A site with no pages is absent from a groupBy, so it has to default to 0
     // HERE, where zero genuinely means "counted, and there are none".
     const countOf = new Map(pages.map((g) => [g.propertyId, g._count._all] as const));
-    return ok(rows.map((row) => toView(row, countOf.get(row.id) ?? 0)));
+    const publishedOf = new Map(published.map((g) => [g.propertyId, g._count._all] as const));
+    return ok(
+      rows.map((row) => toView(row, countOf.get(row.id) ?? 0, publishedOf.get(row.id) ?? 0))
+    );
   });
 
   // Create an additional web property (site). Mints its always-on

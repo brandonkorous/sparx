@@ -29,7 +29,7 @@ export function WordsTile() {
           link
         </Link>{' '}
         has to be findable without being shouted, and <strong>bold</strong> has to be heavier than
-        its neighbours without turning into a headline.
+        its neighbors without turning into a headline.
       </p>
 
       <ul className="list-disc pl-5 text-base">

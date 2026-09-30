@@ -36,7 +36,10 @@ export const CreateServiceInput = z.object({
   bufferBeforeMin: z.number().int().min(0).max(1440).default(0),
   bufferAfterMin: z.number().int().min(0).max(1440).default(0),
   priceCents: z.number().int().min(0).default(0),
-  currency: z.string().length(3).default('usd'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('usd'),
   // >1 for classes (roster size). Appointments / reservations / rentals keep 1.
   capacity: z.number().int().min(1).max(100000).default(1),
   assignmentStrategy: AssignmentStrategy.default('any_available'),

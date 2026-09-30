@@ -13,6 +13,7 @@ import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { socialTitle } from '@/lib/page-title';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -72,7 +73,11 @@ export async function generateMetadata({ searchParams }: RootPageProps): Promise
     title,
     ...(description ? { description } : {}),
     ...(canonical ? { alternates: { canonical } } : {}),
-    openGraph: { title, ...(description ? { description } : {}), images: [{ url: ogImage }] },
+    openGraph: {
+      title: socialTitle(title, site.name),
+      ...(description ? { description } : {}),
+      images: [{ url: ogImage }],
+    },
     robots: silicaHome.noindex ? { index: false, follow: false } : { index: true, follow: true },
   };
 }

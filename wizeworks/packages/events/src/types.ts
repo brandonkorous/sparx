@@ -235,6 +235,9 @@ export type EventType =
   | 'giftcard.redeemed'
   | 'accountcredit.granted'
   | 'accountcredit.spent'
+  // Store credit taken back off an account by hand. NOT a `spent` — nobody
+  // bought anything, the shop corrected a grant it should not have made.
+  | 'accountcredit.taken_back'
   // Configurator
   | 'configuration.requested'
   | 'configuration.quoted'

@@ -431,6 +431,25 @@ export interface PublishedSilicaFrameDto {
   commerceEnabled?: boolean;
   schedulingEnabled?: boolean;
   cmsEnabled?: boolean;
+  /**
+   * The modules THIS SITE has switched off under "What this site shows" — not the
+   * account's. A business running a shop and a journal off one account switches
+   * Selling off on the journal, and the journal stops being a shop.
+   *
+   * Optional, and an absent value means NOTHING is switched off: a field that
+   * fails to arrive must never take part of a live site down with it.
+   */
+  disabledModules?: string[];
+  /**
+   * The site's OWN page paths that those switches refuse.
+   *
+   * A storefront can work out that `/cart` is the cart on any site. It cannot
+   * work out that a page a tenant called "Shop" is a product grid — only the
+   * server can, by looking at what is inside it. Without this the header keeps a
+   * link to a page the site now refuses, which is a 404 the business put in its
+   * own chrome. Empty on any site that has switched nothing off.
+   */
+  hiddenPaths?: string[];
 }
 
 /** A published silica PAGE body + the meta the storefront titles/routes it by.

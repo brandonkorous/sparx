@@ -39,6 +39,7 @@
 // reconciliation that reports a zero difference because it has nothing to
 // compare against is the single most dangerous number this phase could produce.
 
+import { calendarDate, calendarDateOrNull } from '../calendar-date';
 import { withTenant } from '@wizeworks/db';
 
 import type { ServiceContext } from '../errors';
@@ -268,12 +269,12 @@ export async function glReconciliationReport(
     const ledgerValueCents = snapshot?.balanceCents ?? null;
 
     return {
-      asOf: asOf.toISOString(),
+      asOf: calendarDate(asOf),
       currency: snapshot?.currency ?? valuation.currency,
       sparxValueCents: valuation.totalValueCents,
       ledgerValueCents,
       ledgerAccountName: snapshot?.accountName ?? null,
-      ledgerAsOf: snapshot ? snapshot.asOf.toISOString() : null,
+      ledgerAsOf: calendarDateOrNull(snapshot?.asOf),
       ledgerSource: snapshot?.source ?? null,
       explainedCents,
       unexplainedCents,
@@ -379,7 +380,7 @@ function toSnapshotRow(row: {
 }): GlSnapshotRow {
   return {
     id: row.id,
-    asOf: row.asOf.toISOString(),
+    asOf: calendarDate(row.asOf),
     accountName: row.accountName,
     accountCode: row.accountCode,
     balanceCents: row.balanceCents,

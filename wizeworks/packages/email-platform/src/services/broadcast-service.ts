@@ -78,6 +78,51 @@ async function loadPublishedBuilderEmail(
   };
 }
 
+/**
+ * Refuse a built-in email as the body of a broadcast.
+ *
+ * A KEYED Builder email (`order-confirmation`, `payment-failed`,
+ * `invoicing-overdue`, …) is one the platform sends by itself, to ONE person,
+ * when ONE thing happens to them. Its words are about that event ("your order
+ * has shipped") and its merge tags read that event's data, which no member of a
+ * mailing list has. Nothing refused one here: the composer offered all
+ * forty-five beside the owner's own newsletters, the create/update/send path
+ * took whatever id it was handed, and the local database already held a draft
+ * broadcast pointing at `welcome-customer`. Choosing "Payment failed" by
+ * mistake would have told every subscriber on the list their payment had
+ * failed.
+ *
+ * Checked in the SERVICE, not the route, because this service has three
+ * callers that are not the console: the MCP `send_broadcast` tool (create and
+ * send in one call), the MCP management tools, and the preset installer. The
+ * console hides these emails from its picker; this is what makes that true for
+ * everyone else.
+ *
+ * An id that matches no row is left to the existing send-time check
+ * (`EmailNotFoundError`): the reference is soft, and this guard is about what a
+ * real row IS, not whether it exists yet.
+ */
+async function assertBroadcastableEmail(
+  ctx: ServiceContext,
+  builderEmailId: string | null | undefined
+): Promise<void> {
+  if (!builderEmailId) return;
+  const row = await withTenant(ctx, (tx) =>
+    tx.builderEmail.findUnique({
+      where: { id: builderEmailId },
+      select: { key: true, name: true },
+    })
+  );
+  if (row?.key != null) {
+    throw new EmailValidationError(
+      `"${row.name}" is sent automatically, to one customer at a time, when something ` +
+        'happens to them, like an order or a booking. It is written about that one moment, ' +
+        'so it can’t go to a whole audience. Choose an email you wrote yourself.',
+      [{ field: 'builderEmailId', message: 'This email is sent automatically by an event.' }]
+    );
+  }
+}
+
 export interface ListBroadcastsQuery {
   q?: string;
   /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
@@ -138,6 +183,7 @@ export async function create(
   propertyId: string | null = null
 ): Promise<Broadcast> {
   const input = CreateBroadcastInput.parse(rawInput);
+  await assertBroadcastableEmail(ctx, input.builderEmailId);
   const row = await withTenant(ctx, async (tx) => {
     const created = await tx.broadcast.create({
       data: {
@@ -183,6 +229,7 @@ export async function update(
   if (existing.status !== 'draft') {
     throw new EmailValidationError('Only draft broadcasts can be edited.');
   }
+  await assertBroadcastableEmail(ctx, input.builderEmailId);
   return withTenant(ctx, (tx) =>
     tx.broadcast.update({
       where: { id },
@@ -280,6 +327,9 @@ async function enqueueAndMark(
   if (!broadcast.builderEmailId) {
     throw new EmailValidationError('Attach a designed email before sending.');
   }
+  // Again at send, not only at create/update: a draft saved before the guard
+  // existed can already point at a built-in email (one did, in local data).
+  await assertBroadcastableEmail(ctx, broadcast.builderEmailId);
 
   const [recipients, settings] = await Promise.all([
     expandRecipients(ctx, broadcast),

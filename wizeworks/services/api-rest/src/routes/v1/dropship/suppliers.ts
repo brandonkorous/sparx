@@ -21,6 +21,7 @@ import { createPublisher, publishEvent, type PublisherLogger } from '@wizeworks/
 import { createAdapter, VENDOR_CATALOG } from '@wizeworks/dropship';
 import type { PricingRule, SupplierAdapter, SupplierType } from '@wizeworks/dropship';
 import { applyPricingRule } from '@wizeworks/dropship';
+import { plainTextOrNull } from '@wizeworks/commerce-schemas';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
 
 const pubLogger: PublisherLogger = {
@@ -143,6 +144,26 @@ function credentialsArePresent(vendorSlug: string, credentials: unknown): boolea
   });
 }
 
+/**
+ * The stored credential values a person is allowed to SEE.
+ *
+ * Only `type: 'password'` is withheld. Across the whole vendor catalog that is
+ * four fields (one API key each for Printify, Printful, DSers and Spocket);
+ * everything else is a store id, a shop id, a feed address, or one of the CSV
+ * vendor's fifteen column names. Measured 2026-09-25: 4 secret, 19 plain.
+ */
+function nonSecretCredentials(vendorSlug: string, credentials: unknown): Record<string, string> {
+  const bag = (credentials as Record<string, string> | null) ?? {};
+  const fields = VENDOR_BY_TYPE.get(vendorSlug as SupplierType)?.credentialFields ?? [];
+  const out: Record<string, string> = {};
+  for (const field of fields) {
+    if (field.type === 'password') continue;
+    const value = bag[field.key];
+    if (typeof value === 'string' && value !== '') out[field.key] = value;
+  }
+  return out;
+}
+
 function toSupplierView(s: {
   id: string;
   name: string;
@@ -175,6 +196,17 @@ function toSupplierView(s: {
     // Whether a usable token is on file (see credentialsArePresent). The edit
     // form uses this to avoid ever forcing a re-entry just to change other fields.
     credentialsSet: credentialsArePresent(s.type, s.credentials),
+    // The values that are NOT secrets, so the form can show what was set.
+    //
+    // "Credentials" is one bag and it was returned as one bag: nothing. That is
+    // right for the four `password` fields across the catalog and wrong for the
+    // other NINETEEN, which are a store id, a shop id, a feed address and
+    // fifteen SPREADSHEET COLUMN NAMES. A column name is not a secret, and
+    // hiding it means a business cannot check the mapping it typed without
+    // typing it again — under a sentence reading "Already stored securely and
+    // never shown", which for the CSV vendor (0 secret fields, 15 plain) is
+    // describing nothing that is there.
+    credentialValues: nonSecretCredentials(s.type, s.credentials),
     vendorLabel: vendor?.label ?? s.type,
     // Empty = enabled on every site (the default). A non-empty list restricts
     // the connection to those properties.
@@ -392,7 +424,9 @@ export function toDropshipProductView(dp: {
     id: dp.id,
     supplierProductId: dp.supplierProductId,
     title: dp.title,
-    description: dp.description,
+    // Printful and DSers both send HTML here. It is previewed and imported into
+    // a PLAIN-TEXT column, so it is normalized at both ends (issue 848).
+    description: plainTextOrNull(dp.description),
     images: (dp.images as string[]) ?? [],
     variants: dp.variants,
     costPriceCents: dp.costPriceCents,
@@ -465,7 +499,7 @@ async function createCommerceProductFromDropship(
       tenantId,
       title: data.title,
       handle,
-      description: data.description ?? null,
+      description: plainTextOrNull(data.description),
       status: 'draft',
       fulfillmentType: 'physical',
       inStock: anyVariantAvailable,

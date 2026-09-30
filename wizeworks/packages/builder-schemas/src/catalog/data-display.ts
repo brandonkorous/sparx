@@ -169,7 +169,8 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     category: 'data-display',
     kind: 'common',
     icon: 'tags',
-    description: 'A wrapping row of status badges spanning the semantic color roles.',
+    description:
+      'A row of small colored labels for showing status, in every color your design uses. It wraps onto a second line when it runs out of room.',
     surfaces: ['page', 'site'],
     tags: ['badge', 'pill', 'tag', 'status', 'label', 'data-display'],
     tree: el('div', 'flex w-full flex-wrap items-center gap-2', {
@@ -190,7 +191,8 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     category: 'data-display',
     kind: 'common',
     icon: 'users',
-    description: 'A stack of overlapping member avatars with a trailing overflow count.',
+    description:
+      'A row of overlapping profile pictures, with a count at the end for anybody who did not fit.',
     surfaces: ['page', 'site'],
     tags: ['avatar', 'group', 'team', 'members', 'stack', 'data-display'],
     tree: el('div', 'flex w-full items-center gap-3', {
@@ -222,7 +224,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevron-down',
     description:
-      'A stack of expandable panels built on native disclosure: no scripting. The chevron rotates as each opens.',
+      'A stack of panels that open one at a time. Each shows a short heading, and the rest appears when somebody taps it.',
     surfaces: ['page', 'site'],
     tags: ['accordion', 'faq', 'disclosure', 'expand', 'collapse', 'data-display'],
     tree: el(
@@ -258,7 +260,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'table',
     description:
-      'A semantic table with a header row and zebra-striped body rows for tabular records.',
+      'A table with a heading row on top and every other row shaded, so a long list stays easy to read across.',
     surfaces: ['page', 'site'],
     tags: ['table', 'grid', 'rows', 'records', 'data-display'],
     tree: el('div', 'w-full overflow-x-auto rounded-box border border-base-200', {
@@ -447,7 +449,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'gallery-horizontal',
     description:
-      'A horizontal scroll-snap rail of cards: swipe or scroll to advance, no scripting required.',
+      'A row of cards that slides sideways. People swipe it on a phone or scroll it on a computer, and each card settles into place.',
     surfaces: ['page', 'site'],
     tags: ['carousel', 'slider', 'scroll', 'gallery', 'snap', 'data-display'],
     tree: el('div', 'flex w-full snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2', {
@@ -502,7 +504,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'list',
     description:
-      'A semantic term/detail list for record attributes: label left, value right, ruled between rows.',
+      'Pairs of facts, the name on the left and the answer on the right, with a line between each. Good for sizes, materials and delivery.',
     surfaces: ['page', 'site'],
     tags: ['description', 'detail', 'attributes', 'spec', 'key value', 'data-display'],
     tree: el(

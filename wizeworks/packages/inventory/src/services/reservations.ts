@@ -24,6 +24,7 @@ import type { ServiceContext } from '../errors';
 import { CART_TTL_SECONDS_DEFAULT, syncProductInStock, variantLabel } from './internal';
 import { recordOversellIncidentDetached, recordOversellIncidentOnTx } from './integrity';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
+import { sellableUnits } from './low-stock';
 import { assertPreorderHeadroomOnTx } from './preorders';
 
 export interface ReservationResult {
@@ -36,6 +37,9 @@ interface LockedLevel {
   on_hand: number;
   allocated: number;
   safety_buffer: number;
+  /** Units on a shelf nothing may be sold from. Read under the same lock as the
+   *  rest: it is a term in the availability decision, not a display figure. */
+  unsellable_on_hand: number;
 }
 
 /**
@@ -147,7 +151,7 @@ export async function reserveOnTx(
     ON CONFLICT (variant_id, warehouse_id) DO NOTHING
   `;
   const locked = await tx.$queryRaw<LockedLevel[]>`
-    SELECT on_hand, allocated, safety_buffer
+    SELECT on_hand, allocated, safety_buffer, unsellable_on_hand
     FROM inventory_levels
     WHERE variant_id = ${input.variantId}::uuid AND warehouse_id = ${warehouseId}::uuid
     FOR UPDATE
@@ -158,8 +162,18 @@ export async function reserveOnTx(
   }
 
   // Net the safety buffer (docs/28 §5.3): the last N units are withheld from sale,
-  // so a `deny` variant can't be reserved into the buffer.
-  const available = current.on_hand - current.allocated - current.safety_buffer;
+  // so a `deny` variant can't be reserved into the buffer. And net the quarantine
+  // shelf with it: a damaged or awaiting-repair unit is counted in on-hand
+  // because it is genuinely in the building, and it cannot be sold to anybody.
+  //
+  // This line had three terms while every surface that DISPLAYS availability had
+  // four, so the shop showed the right number and this guard enforced a looser
+  // one. `low-stock.ts` has said since it was written that without the fourth
+  // term "routing a returned item to the quarantine shelf moves it on a screen
+  // and leaves it on sale"; that is this line, which is the screen it was left on.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const available =
+    current.on_hand - current.allocated - current.safety_buffer - current.unsellable_on_hand;
 
   // Record the shortfall BEFORE deciding what to do about it (docs/146 Phase 1).
   // Both outcomes are worth a row and they are different events: `blocked` is
@@ -521,16 +535,23 @@ export async function pickWarehouseFor(
     return list.includes(channel);
   });
 
-  // Available stock for this variant across the candidate warehouses, net of each
-  // level's safety buffer (the allocator won't pick a warehouse it can only fill
-  // by dipping into the withheld buffer).
+  // Free stock for this variant across the candidate warehouses. The allocator
+  // won't pick a warehouse it can only fill by dipping into the withheld buffer,
+  // and it must not pick one it can only fill off the quarantine shelf either:
+  // that warehouse cannot ship, so the order is routed somewhere it will sit.
+  // The fourth term was missing here and the sentence above only named the
+  // third. [[feedback_a_fix_leaves_its_neighbour_behind]]
   const levels = await tx.inventoryLevel.findMany({
     where: { variantId: input.variantId, warehouseId: { in: candidates.map((w) => w.id) } },
-    select: { warehouseId: true, onHand: true, allocated: true, safetyBuffer: true },
+    select: {
+      warehouseId: true,
+      onHand: true,
+      allocated: true,
+      safetyBuffer: true,
+      unsellableOnHand: true,
+    },
   });
-  const availableBy = new Map(
-    levels.map((l) => [l.warehouseId, l.onHand - l.allocated - l.safetyBuffer])
-  );
+  const availableBy = new Map(levels.map((l) => [l.warehouseId, sellableUnits(l)]));
   const canFulfill = (id: string): boolean => (availableBy.get(id) ?? 0) >= input.quantity;
 
   // (a) channel-default warehouse that can fulfill, richest first.

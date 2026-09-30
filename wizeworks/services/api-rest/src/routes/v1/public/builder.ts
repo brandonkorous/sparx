@@ -28,8 +28,9 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { notFound } from '@wizeworks/api-core/errors';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { tryVerifySitePreview } from '../../../lib/preview.js';
-import { resolvePublicPropertyId } from '../../../lib/property.js';
+import { resolvePublicPropertyId, siteDisabledModules } from '../../../lib/property.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
+import { siteHiddenPaths } from '../../../lib/site-hidden-paths.js';
 
 // `property` (a stable property slug) scopes the read to one of the tenant's web
 // PROPERTIES/sites (docs/49). Omitted → the tenant's primary site, so single-site
@@ -157,7 +158,18 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const stage = previewStage(app, request, tenantId);
-    const [frame, commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
+    // ── THE FLAGS ARE PER SITE, NOT PER ACCOUNT ─────────────────────────────
+    //
+    // Each one asks two questions at once: does the ACCOUNT have this module,
+    // and has THIS SITE switched it off under "What this site shows". Both can
+    // say no, for different reasons, and either one means the same thing to a
+    // visitor: the chrome must not offer it and the route must not serve it.
+    //
+    // They were account-only, so a business running a shop and a journal off one
+    // account could switch Selling off on the journal and watch nothing happen
+    // — the switch saved, and the journal kept its Shop link, its cart and every
+    // product URL in its sitemap. [[feedback_a_promise_in_copy_is_a_contract]]
+    const [frame, tenantCommerce, tenantScheduling, tenantCms, siteOff] = await Promise.all([
       // `path` asks for the chrome THIS route wears rather than the site default
       // (docs/silicaui/01 §5) — a landing page can have none. Omitted by any caller that just
       // wants the default, which is every caller that predates per-page frames.
@@ -173,8 +185,27 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
       // publisher-only tenant had neither while Commerce and Scheduling both had a
       // flag here, so their posts were reachable only by typing the URL.
       isModuleEnabled(tenantId, 'cms'),
+      siteDisabledModules(tenantId, propertyId),
     ]);
-    return ok({ ...frame, commerceEnabled, schedulingEnabled, cmsEnabled });
+    const onHere = (slug: string, tenantHasIt: boolean) => tenantHasIt && !siteOff.includes(slug);
+    return ok({
+      ...frame,
+      commerceEnabled: onHere('commerce', tenantCommerce),
+      // Scheduling is NOT one of the eight switches a site can turn off, so only
+      // the account's answer counts here. Listing it among the scopeable modules
+      // is a decision, not a gap to close by guessing.
+      schedulingEnabled: tenantScheduling,
+      cmsEnabled: onHere('cms', tenantCms),
+      // Every switch this site has thrown, so the storefront can gate the parts
+      // that are not chrome: the routes, the authored pages, and the links.
+      disabledModules: siteOff,
+      // And the site's OWN page paths that those switches refuse. The storefront
+      // can work out that `/cart` is the cart on any site; it cannot work out
+      // that a page called "Shop" is a product grid, so a header link to it
+      // would be a 404 the business put in its own chrome. Costs nothing on a
+      // site that has switched nothing off, which is almost every site.
+      hiddenPaths: await siteHiddenPaths(tenantId, propertyId, siteOff),
+    });
   });
 
   app.get('/v1/public/builder/silica/home', async (request) => {

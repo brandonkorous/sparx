@@ -120,7 +120,10 @@ const AssetField = BaseField.extend({
 const CurrencyField = BaseField.extend({
   type: z.literal('currency'),
   /** Pre-filled currency code for new values. The stored value carries its own. */
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   min: z.number().optional(),
   max: z.number().optional(),
 });
@@ -143,7 +146,10 @@ const CalculatedField = BaseField.extend({
   resultType: z.enum(['number', 'currency']).optional(),
   /** Decimal places to round to. Omitted = no rounding. */
   precision: z.number().int().min(0).max(6).optional(),
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
 });
 
 // `object` and `repeater` need recursion. Zod 4 handles this via z.lazy().

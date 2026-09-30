@@ -58,6 +58,24 @@ export function csvSafeText(value: string | null | undefined): string | null {
   return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
 }
 
+/**
+ * Money, for a column a person will read and add up.
+ *
+ * Every amount in this package is stored in the smallest unit, because that is
+ * the only way to keep arithmetic exact. Writing that number straight into a
+ * spreadsheet is a different decision, and it was the wrong one: a shop with
+ * GBP 1,934.56 of stock got a column called `total_cost_cents` containing
+ * `193456`, in the file she is emailed once a month.
+ *
+ * Two decimal places and no grouping separator, no symbol: a spreadsheet reads
+ * `1934.56` as a number and `GBP 1,934.56` as text, and a column of text cannot
+ * be summed. The currency belongs in the column NAME or its own column.
+ */
+export function csvMoney(cents: number | null | undefined): string | null {
+  if (cents === null || cents === undefined || !Number.isFinite(cents)) return null;
+  return (cents / 100).toFixed(2);
+}
+
 export interface CsvTable {
   /** Without the `.csv` — the route adds the extension and the tenant prefix. */
   name: string;

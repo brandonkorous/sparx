@@ -132,7 +132,7 @@ export async function openFormDeal(ctx: ServiceContext, input: OpenFormDealInput
   if (!entryStage) return;
 
   const who = firstNonBlank([sub.name, sub.email], 'Website lead');
-  const formLabel = firstNonBlank([sub.formName], 'Website enquiry');
+  const formLabel = firstNonBlank([sub.formName], 'Website inquiry');
   await dealService.create(ctx, {
     pipelineId: pipeline.id,
     stageId: entryStage.id,
@@ -186,7 +186,7 @@ export async function openFormRequest(
   if (!sub || sub.status === 'spam' || !sub.customerId) return;
 
   const who = firstNonBlank([sub.name, sub.email], 'Someone on your site');
-  const formLabel = firstNonBlank([sub.formName], 'Website enquiry');
+  const formLabel = firstNonBlank([sub.formName], 'Website inquiry');
 
   await ticketService.create(ctx, {
     subject: `${formLabel}: ${who}`,

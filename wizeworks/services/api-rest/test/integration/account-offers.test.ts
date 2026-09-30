@@ -53,7 +53,33 @@ describe('what a shop offers a shopper', () => {
 
   it('offers neither at a shop that takes no bookings and has no B2B', async () => {
     // Juniper Row exactly. Both panels vanish from the account nav.
-    expect(await loadOffers(ctx, shopper)).toEqual({ bookings: false, b2b: false });
+    expect(await loadOffers(ctx, shopper)).toEqual({
+      bookings: false,
+      b2b: false,
+      // Nothing switched off, so the shop's own parts of the account stand.
+      selling: true,
+      requests: true,
+    });
+  });
+
+  it('takes the shop out of the account nav on a site with Selling switched off', async () => {
+    // An owner saying "no selling here" is an INSTRUCTION, not evidence, and it
+    // outranks the evidence rule the rest of this function follows: Orders,
+    // Returns, Wishlist and Payment methods have no place on a journal, however
+    // many orders the account has on its other sites.
+    const offers = await loadOffers(ctx, shopper, ['commerce']);
+    expect(offers.selling).toBe(false);
+    expect(offers.requests).toBe(true);
+  });
+
+  it('takes requests out on a site with Customers switched off', async () => {
+    expect((await loadOffers(ctx, shopper, ['crm'])).requests).toBe(false);
+  });
+
+  it('leaves every offer standing when nothing is switched off', async () => {
+    const offers = await loadOffers(ctx, shopper, []);
+    expect(offers.selling).toBe(true);
+    expect(offers.requests).toBe(true);
   });
 
   it('offers bookings once ONE service is bookable online', async () => {
@@ -107,5 +133,9 @@ describe('what a shop offers a shopper', () => {
       tx.customer.update({ where: { id: shopper }, data: { companyId: company.id } })
     );
     expect((await loadOffers(ctx, shopper)).b2b).toBe(true);
+
+    // ...and goes again on a site that has switched Wholesale off, even though
+    // the customer really does belong to a trade account.
+    expect((await loadOffers(ctx, shopper, ['b2b'])).b2b).toBe(false);
   });
 });

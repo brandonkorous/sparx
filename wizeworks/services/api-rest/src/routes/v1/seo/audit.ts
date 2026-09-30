@@ -15,7 +15,11 @@ import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
-import type { EntityType } from '@wizeworks/seo-audit';
+import type { EntityType, Scorecard } from '@wizeworks/seo-audit';
+// Re-says a stored card in today's words without changing a single finding. The
+// stored `fix_first` column is a COPY of one check's advice, so it aged with the
+// labels (issue 863).
+import { refreshCard } from '@wizeworks/seo-audit';
 
 import { auditAndStore, storedPath } from '../../../lib/seo-audit.js';
 import { resolveListScope } from '../../../lib/property.js';
@@ -44,11 +48,33 @@ interface AuditListRow {
   title: string | null;
   path: string | null;
   computedAt: Date;
+  /** The stored scorecard, selected so the `fixFirst` SENTENCE can be re-said in
+   *  today's words. `fix_first` is a column holding a copy of one check's advice
+   *  at the moment the page was scored, so it aged the way the labels did — this
+   *  is the row that read "Add a single H1 — it tells search engines the page's
+   *  main topic" on a console whose own vocabulary says "One main heading"
+   *  (issue 863). */
+  card: unknown;
 }
 
 // Per-type cap on a single reindex pass — a guard against an unbounded scan, not
 // a real limit at Phase-1 catalog sizes. A larger site moves this to a job.
 const REINDEX_LIMIT = 500;
+
+/**
+ * One stored card's "fix first" line, re-said in today's words.
+ *
+ * Null when the blob is not a card this build understands, which is a real answer
+ * for a row written by a future version or corrupted by hand — the caller keeps
+ * the stored sentence rather than showing nothing.
+ */
+function refreshedFixFirst(card: unknown, entityType: string): string | null {
+  if (card === null || typeof card !== 'object') return null;
+  if (!ENTITY_TYPES.includes(entityType as EntityType)) return null;
+  const checks = (card as { checks?: unknown }).checks;
+  if (!Array.isArray(checks)) return null;
+  return refreshCard(card as Scorecard, entityType as EntityType).fixFirst ?? null;
+}
 
 const seoAuditRoutes: FastifyPluginAsync = (app) => {
   // ── Live audit (compute + store) ──────────────────────────────────────────
@@ -85,7 +111,7 @@ const seoAuditRoutes: FastifyPluginAsync = (app) => {
         SELECT
           a.id, a.entity_type AS "entityType", a.entity_id AS "entityId",
           a.score, a.grade, a.fix_first AS "fixFirst", a.title, a.path,
-          a.computed_at AS "computedAt"
+          a.computed_at AS "computedAt", a.card
         FROM seo_audits a
         WHERE ${auditsOnSiteSql(propertyId)}
           AND (${type ?? null}::text IS NULL OR a.entity_type = ${type ?? null}::text)
@@ -93,7 +119,17 @@ const seoAuditRoutes: FastifyPluginAsync = (app) => {
         ORDER BY a.score ASC, a.computed_at DESC
       `
     );
-    return ok(rows.map((row) => ({ ...row, path: storedPath(row.path) })));
+    return ok(
+      rows.map(({ card, ...row }) => ({
+        ...row,
+        path: storedPath(row.path),
+        // Said in today's words. The card itself is not returned — this list shows
+        // a score, a grade and one sentence — so only the sentence is refreshed.
+        // A card too old or too odd to read leaves the stored line alone rather
+        // than blanking it: a worse sentence beats no sentence.
+        fixFirst: refreshedFixFirst(card, row.entityType) ?? row.fixFirst,
+      }))
+    );
   });
 
   // ── Reindex the whole site ────────────────────────────────────────────────

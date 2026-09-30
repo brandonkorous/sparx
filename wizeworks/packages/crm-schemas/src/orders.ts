@@ -20,6 +20,57 @@ export const UNCOUNTED_ORDER_STATUS: OrderStatus = 'cancelled';
 export const OrderPaymentStatus = z.enum(['unpaid', 'partially_paid', 'paid', 'refunded']);
 export type OrderPaymentStatus = z.infer<typeof OrderPaymentStatus>;
 
+// ─── "Is there still money to collect on this order?" ─────────────────────────
+//
+// NOT the same question as `paymentStatus === 'unpaid'`, and the two disagree in
+// both directions:
+//
+//   a CANCELLED order carries 'unpaid' forever      → nothing is owed
+//   a PART-PAID order carries 'partially_paid'      → something IS owed
+//
+// The console already had this right for ONE order: `amountDue()` beside the
+// order pane opens "What is still collectable on this order" and excludes a
+// cancelled or refunded one, because "both would otherwise report the FULL total
+// as outstanding and put a 'still owed' banner on a sale nobody should be
+// chasing". The LIST that filters for exactly that asked for a column value
+// instead, so the pane and the list disagreed about the same order.
+// [[feedback_a_fix_leaves_its_neighbour_behind]]
+//
+// Measured 2026-09-28, platform-wide: of the 91 orders the old filter returned,
+// 18 owed nothing (11 of them cancelled) across 10 of the 12 tenants that have
+// orders, and 2 that DID owe were missing.
+
+/** The payment states where some of the money has not arrived. A part-paid order
+ *  belongs here: the order pane says of it, in as many words, "some is still
+ *  owed". */
+export const OWING_PAYMENT_STATUSES: readonly OrderPaymentStatus[] = ['unpaid', 'partially_paid'];
+
+/** The order states where the money is not collectable whatever the payment
+ *  column says. Cancelled is never going to be paid; refunded has been handed
+ *  back. `UNCOUNTED_ORDER_STATUS` above is the same idea for a customer's
+ *  figures, and is the narrower of the two on purpose. */
+export const NOT_COLLECTABLE_ORDER_STATUSES: readonly OrderStatus[] = ['cancelled', 'refunded'];
+
+/**
+ * Whether this order still has money to collect, decided from the two stored
+ * words alone — which is what a database query can ask.
+ *
+ * It agrees with `amountDue() > 0` on every order EXCEPT one shape: part paid
+ * AND part refunded, where whether anything is left needs the three amounts and
+ * not the words. That case says so on its own row — the payment cell reads
+ * "Part refunded · Nothing is owed" or "Part paid, part back · There is still an
+ * amount owed" — so it is shown rather than hidden, which is the same honest
+ * default `isPriceOfferWorkflow` takes: guessing would hide money.
+ * Measured 2026-09-28: 2 such orders exist on the whole platform.
+ */
+export function isOwingOrder(order: {
+  status: string | null | undefined;
+  paymentStatus: string | null | undefined;
+}): boolean {
+  if (NOT_COLLECTABLE_ORDER_STATUSES.includes(order.status as OrderStatus)) return false;
+  return OWING_PAYMENT_STATUSES.includes(order.paymentStatus as OrderPaymentStatus);
+}
+
 // `marketplace` is the high-level bucket for external sales channels + sparx.market
 // (the specific channel lives in `source`, e.g. tiktok_shop) — docs/106 §4.4.
 export const OrderChannel = z.enum([
@@ -106,6 +157,10 @@ export const ListOrdersInput = z.object({
   // the totals above them describe one population (issue 332).
   countedOnly: z.boolean().optional(),
   paymentStatus: OrderPaymentStatus.optional(),
+  // "Still owed" as ONE question rather than a column value — see isOwingOrder.
+  // A filter and not a paymentStatus value because the answer needs the order
+  // status too: a cancelled order carries 'unpaid' and is owed by nobody.
+  owing: z.boolean().optional(),
   channel: OrderChannel.optional(),
   propertyId: Uuid.optional(), // origin-site filter (docs/58 — the dashboard Site filter)
   // The member's REACHABLE sites (docs/131 §3.3), set by the route from the

@@ -42,7 +42,10 @@ const CouponSchema = z
     name: z.string().min(1).max(200),
     percentOff: z.number().positive().max(100).optional(),
     amountOffCents: z.number().int().positive().optional(),
-    currency: z.string().length(3).optional(),
+    currency: z
+      .string()
+      .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+      .optional(),
     duration: z.enum(['forever', 'once', 'repeating']),
     durationInMonths: z.number().int().positive().max(60).optional(),
   })

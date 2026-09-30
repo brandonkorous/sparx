@@ -23,6 +23,7 @@ export function CollectionStep({
   onBack,
   onSubmit,
   busy,
+  ...props
 }: {
   rates: ShippingRate[];
   chosen: ShippingRate | null;
@@ -33,6 +34,8 @@ export function CollectionStep({
   onBack: () => void;
   onSubmit: (e: React.FormEvent) => void;
   busy: boolean;
+  note: string;
+  onNoteChange: (next: string) => void;
 }) {
   return (
     <form onSubmit={onSubmit} className="flex max-w-[560px] flex-col gap-4">
@@ -62,6 +65,27 @@ export function CollectionStep({
           ? `We'll call ${contactPhone} when it's ready.`
           : "We'll email you when it's ready."}
       </p>
+
+      {/* The one thing on this screen only the buyer can answer. It reaches the
+          shop as the order's own note, and it is stored on the session the moment
+          this step is submitted, so a gateway that navigates this tab away cannot
+          swallow it (issue 874). */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="checkout-note" className="text-base-content font-medium">
+          Anything we should know? (optional)
+        </label>
+        <textarea
+          id="checkout-note"
+          className="textarea w-full"
+          rows={3}
+          maxLength={2000}
+          value={props.note}
+          placeholder="When you’ll collect, who else might pick it up, anything else."
+          onChange={(e) => {
+            props.onNoteChange(e.target.value);
+          }}
+        />
+      </div>
 
       <div className="flex gap-3">
         <Button type="button" variant="ghost" onClick={onBack}>

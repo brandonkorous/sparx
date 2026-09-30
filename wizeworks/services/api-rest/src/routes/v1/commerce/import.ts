@@ -7,12 +7,14 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withRequestTenant } from '@wizeworks/api-core/db';
+import { listEnabledModules } from '@wizeworks/auth';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { notFound } from '@wizeworks/api-core/errors';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 import { productService, discountService } from '@wizeworks/commerce';
+import { discountExportRow, discountRowFromFile } from '@wizeworks/migration';
 
 const PathJobId = z.object({ jobId: z.string().uuid() });
 
@@ -54,7 +56,9 @@ const importExportRoutes: FastifyPluginAsync = async (app) => {
           status: 'pending',
           fileName: input.fileName ?? null,
           rowCount: input.rows.length,
-          options: input.options ?? {},
+          // The tenant's modules ride along so the worker knows whether a product's
+          // old address can become a site redirect (see ProcessorOptions.modules).
+          options: { ...(input.options ?? {}), modules: await listEnabledModules(auth.tenantId) },
           rawRows: input.rows,
           actorId: auth.actorId ?? null,
         },
@@ -151,12 +155,19 @@ const importExportRoutes: FastifyPluginAsync = async (app) => {
 
   // ──────────────────────────────────────────────────────────────────────
   // POST /v1/commerce/discounts/import
+  //
+  // The rows are stored in the canonical discount columns — the ONE vocabulary the
+  // discounts processor reads, shared with the Move-in mapper. A file saved from
+  // the export before it wrote those columns (`name`, `value_cents`,
+  // `value_percent`, `start_at`, `end_at`, `total_usage_limit`) is translated here,
+  // so an old export still imports the way it was written.
   // ──────────────────────────────────────────────────────────────────────
   app.post('/v1/commerce/discounts/import', async (request, reply) => {
     const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
 
-    const input = SubmitImportBody.parse(request.body);
+    const parsed = SubmitImportBody.parse(request.body);
+    const input = { ...parsed, rows: parsed.rows.map(discountRowFromFile) };
 
     const job = await withRequestTenant(request, async (tx) =>
       tx.importJob.create({
@@ -222,33 +233,31 @@ const importExportRoutes: FastifyPluginAsync = async (app) => {
 
   // ──────────────────────────────────────────────────────────────────────
   // GET /v1/export/discounts
+  //
+  // Written in the canonical discount columns, so the file drops straight back into
+  // the import above or into Move in. Every discount, not the first page: the list
+  // service caps a page at 250, and an export that stopped there said nothing about
+  // the rest.
   // ──────────────────────────────────────────────────────────────────────
   app.get('/v1/export/discounts', async (request, reply) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
 
     const ctx = toCommerceContext(request);
-    const { items: discounts } = await discountService.listDiscounts(ctx, { take: 250 });
+    const PAGE = 250;
+    const discounts: Awaited<ReturnType<typeof discountService.listDiscounts>>['items'] = [];
+    for (let skip = 0; ; skip += PAGE) {
+      const { items, total } = await discountService.listDiscounts(ctx, {
+        take: PAGE,
+        skip,
+        sortBy: 'createdAt',
+        order: 'asc',
+      });
+      discounts.push(...items);
+      if (items.length < PAGE || discounts.length >= total) break;
+    }
 
-    const rows = discounts.map((d) => ({
-      code: d.code ?? '',
-      name: d.name,
-      description: d.description ?? '',
-      type: d.type,
-      scope: d.scope,
-      value_cents: d.valueCents != null ? String(d.valueCents) : '',
-      value_percent: d.valuePercent != null ? String(d.valuePercent) : '',
-      currency: d.currency ?? '',
-      status: d.status,
-      start_at: d.startAt ?? '',
-      end_at: d.endAt ?? '',
-      total_usage_limit: d.totalUsageLimit != null ? String(d.totalUsageLimit) : '',
-      per_customer_limit: String(d.perCustomerLimit),
-      usage_count: String(d.usageCount),
-      updated_at: d.updatedAt,
-    }));
-
-    const csv = toCsv(rows);
+    const csv = toCsv(discounts.map(discountExportRow));
     reply.header('Content-Type', 'text/csv; charset=utf-8');
     reply.header('Content-Disposition', 'attachment; filename="discounts-export.csv"');
     return reply.send(csv);

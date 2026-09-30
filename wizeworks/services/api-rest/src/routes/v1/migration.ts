@@ -36,7 +36,7 @@ import {
   type EntityModule,
 } from '@wizeworks/migration';
 import { guardedFetch } from '../../lib/guarded-fetch.js';
-import { isModuleEnabled } from '@wizeworks/auth';
+import { isModuleEnabled, listEnabledModules } from '@wizeworks/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
@@ -380,6 +380,14 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
     // Ordered so dependencies land first — see ENTITY_ORDER.
     accepted.sort((a, b) => orderOf(a.entity) - orderOf(b.entity));
 
+    // Handed to every job: a processor that writes into ANOTHER module's tables (a
+    // product's old address becoming a site redirect) needs to know that module is
+    // on, and the worker has no gate of its own to ask.
+    const modules = await listEnabledModules(auth.tenantId);
+    // A product file's quantity and a stock levels file are the same stock counted
+    // twice; when both arrive together the per-location file is the one that counts.
+    const stockLevelsInRun = accepted.some((entry) => entry.entity === 'inventory_levels');
+
     let sequence = 0;
     for (const entry of accepted) {
       const report = validateRows(entry.entity, entry.rows);
@@ -409,6 +417,10 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
                 dryRun: input.dryRun === true,
                 ...(input.vendor === undefined ? {} : { vendor: input.vendor }),
                 ...(input.propertyId === undefined ? {} : { propertyId: input.propertyId }),
+                modules,
+                ...(entry.entity === 'products' && stockLevelsInRun
+                  ? { stockLevelsInRun: true }
+                  : {}),
               },
               rawRows: chunk,
               actorId: auth.actorId ?? null,

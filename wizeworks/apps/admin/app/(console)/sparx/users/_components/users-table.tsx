@@ -95,7 +95,12 @@ export function UsersTable({ users }: { users: OperatorUserListItem[] }) {
             </TableCell>
             <TableCell>
               <Text size="sm" variant="muted">
-                {user.lastLoginAt ? formatRelative(user.lastLoginAt) : 'Never'}
+                {/* "Never" was a claim this column could not support. Nothing wrote
+                    `users.last_login_at` between the first migration and issue 853,
+                    so every row in this roster said it, about users who sign in
+                    daily. It is populated from the sign-in hook now, and an empty
+                    one means the sign-in predates that. */}
+                {user.lastLoginAt ? formatRelative(user.lastLoginAt) : 'Not known'}
               </Text>
             </TableCell>
           </TableRow>

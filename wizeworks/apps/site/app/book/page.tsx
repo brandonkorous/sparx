@@ -15,12 +15,24 @@ import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage, resolveSchedulingEnabled } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { metadataTitle, socialTitle } from '@/lib/page-title';
 
 // KEEPS `force-dynamic` while the content routes dropped it (docs/127 §6). Appointment
 // availability is the one storefront read where a stale answer is visible to the
 // customer as a bookable slot that is already taken — they pick it, and the booking
 // fails at submit. Worth an origin render per visit.
 export const dynamic = 'force-dynamic';
+
+/**
+ * The words on the tab when the tenant has not written their own.
+ *
+ * The same words the PAGE draws: the booking block's heading defaults to "Book
+ * with us" (`silica-catalog/src/host-nodes.ts`) and the tab said "Book an
+ * appointment", which a bakery taking table reservations does not do and a
+ * builder booking a survey does not either. One page had two defaults and only
+ * one of them assumed an industry.
+ */
+const BOOK_TITLE = 'Book with us';
 
 /**
  * The booking page's OWN title and description, the same as every other page.
@@ -33,7 +45,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function generateMetadata(): Promise<Metadata> {
   const site = await resolveSite();
-  if (!site) return { title: 'Book an appointment' };
+  if (!site) return { title: BOOK_TITLE };
   // A dark site tells a crawler nothing about the tenant. The layout says the
   // same, but a route's metadata overrides a layout's, so it has to be said
   // here too (issue 503).
@@ -44,13 +56,13 @@ export async function generateMetadata(): Promise<Metadata> {
     return trimmed && trimmed.length > 0 ? trimmed : undefined;
   };
   // No ` · <site>` suffix here: the root layout's title template already appends it.
-  const title = clean(published?.seoTitle) ?? 'Book an appointment';
+  const title = clean(published?.seoTitle) ?? BOOK_TITLE;
   const description = clean(published?.seoDescription);
   return {
-    title,
+    title: metadataTitle(title, site.name),
     ...(description ? { description } : {}),
     openGraph: {
-      title: `${title} · ${site.name}`,
+      title: socialTitle(title, site.name),
       ...(description ? { description } : {}),
     },
   };

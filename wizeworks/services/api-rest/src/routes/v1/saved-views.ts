@@ -21,7 +21,7 @@
 // else asked, which is the shape of problem the saved-view PRESETS already have
 // (they seed by module and are read by nothing).
 //
-// Not module-gated — this is shell state, the sibling of favourites and recents.
+// Not module-gated — this is shell state, the sibling of favorites and recents.
 // A `viewer` may save a view: filtering a list you are allowed to read, and
 // naming that filter, is not a privileged act.
 

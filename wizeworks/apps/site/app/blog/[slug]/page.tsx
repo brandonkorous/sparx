@@ -22,7 +22,9 @@ import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { metadataTitle, socialTitle } from '@/lib/page-title';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -79,11 +81,11 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
   const noindex = typeof seo.robots === 'string' && seo.robots.includes('noindex');
   const indexable = post.status === 'published' && !noindex;
   return {
-    title,
+    title: metadataTitle(title, site.name),
     ...(description ? { description } : {}),
     ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: {
-      title,
+      title: socialTitle(title, site.name),
       ...(description ? { description } : {}),
       images: [{ url: ogImage }],
     },
@@ -94,6 +96,9 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
 export default async function BlogPostPage({ params, searchParams }: BlogPageProps) {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'cms');
   const { slug } = await params;
   const sp = (await searchParams) ?? {};
   const previewToken = sp.sparxPreview;

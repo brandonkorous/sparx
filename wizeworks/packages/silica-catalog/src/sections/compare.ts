@@ -213,7 +213,7 @@ export function inclusionList(): Node {
     el('ul', 'flex flex-col', {
       children: [
         line('A visit to measure up, at a time that suits you'),
-        line('A written quote with every line itemised'),
+        line('A written quote with every line itemized'),
         line('All materials, delivered to site'),
         line('Fitting by the same people who made it'),
         line('Removal and disposal of the old fittings'),

@@ -132,9 +132,9 @@ export const SUBSCRIPTION_RESUMED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_CANCELLED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription cancelled: email',
-  previousNames: ['Subscription cancelled — email'],
-  description: 'Emails the customer when their subscription is cancelled.',
+  name: 'Subscription canceled: email',
+  previousNames: ['Subscription cancelled: email', 'Subscription cancelled — email'],
+  description: 'Emails the customer when their subscription is canceled.',
   trigger: { kind: 'event', eventType: 'subscription.cancelled' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
   actions: [

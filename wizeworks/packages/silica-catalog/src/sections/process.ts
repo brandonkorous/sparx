@@ -45,7 +45,7 @@ export function howItWorks(): Node {
         ),
         step(
           'You get a written price',
-          'Itemised, fixed, and valid for sixty days. No pressure to decide.'
+          'Itemized, fixed, and valid for sixty days. No pressure to decide.'
         ),
         step('We do the work', 'Booked in when you are ready, finished when we said it would be.'),
       ],
@@ -111,7 +111,7 @@ export function whatHappensNext(): Node {
     gridThree([
       beat(
         'Within a few hours',
-        'A real person reads it and replies. Not an automatic acknowledgement.'
+        'A real person reads it and replies. Not an automatic acknowledgment.'
       ),
       beat(
         'Within two days',

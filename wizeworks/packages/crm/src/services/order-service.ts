@@ -20,10 +20,12 @@ import {
   CreateOrderInput,
   ListOrdersInput,
   UNCOUNTED_ORDER_STATUS,
+  NOT_COLLECTABLE_ORDER_STATUSES,
+  OWING_PAYMENT_STATUSES,
   UpdateOrderInput,
 } from '@wizeworks/crm-schemas';
 import { afterCommit, nameSearchClauses, withTenant } from '@wizeworks/db';
-import type { Order, OrderItem, Prisma } from '@wizeworks/db';
+import type { Order, OrderItem, Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { publishPlatformEvent } from '../consumers/platform-bus';
@@ -44,7 +46,27 @@ export interface OrderCustomerSummary {
   companyName: string | null;
   email: string | null;
   companyId: string | null;
-  company: {
+  /**
+   * The wholesale business this order is for, attached AFTER the query.
+   *
+   * It used to be a plain `company: { select: … }` on the customer, and it came
+   * back `null` on every order ever placed. `Customer.company` is a relation in
+   * the schema AND a computed field on the Prisma client — `@wizeworks/db`'s
+   * `withDerivedFields` publishes `company` as the customer's typed
+   * `companyName` string, because that is the wire name 120 payloads already
+   * use — and the computed one wins. MEASURED 2026-09-20:
+   *
+   *     company read directly    { companyName: 'Loom and Larder' }
+   *     relation via customer    { companyId: '9b6d…', company: null }
+   *     same join in raw SQL     [{ company_name: 'Loom and Larder' }]
+   *
+   * So the join was dead and silent, and the order detail's "Wholesale
+   * customer: …" line has never rendered for anybody (issue 751).
+   *
+   * Under a name of its own it cannot be shadowed. One extra query per page of
+   * orders, not one per row.
+   */
+  b2bAccount: {
     id: string;
     companyName: string;
     paymentTerms: string | null;
@@ -59,10 +81,63 @@ const ORDER_CUSTOMER_SELECT = {
   companyName: true,
   email: true,
   companyId: true,
-  // paymentTerms rides along so the B2B lens can show what an order is owed
-  // under without a second query.
-  company: { select: { id: true, companyName: true, paymentTerms: true, status: true } },
+  // NOTE: no `company: { select: … }` here. It looks right, it typechecks, and
+  // it comes back null on every row — see `b2bAccount` above. `check:shadowed`
+  // fails the build if anybody adds it back.
 } as const;
+
+/** The businesses behind a page of orders, in one query, keyed by id.
+ *
+ *  `paymentTerms` rides along so the B2B lens can show what an order is owed
+ *  under without a second trip. */
+async function accountsFor(
+  tx: TxClient,
+  rows: { customer: { companyId: string | null } | null }[]
+): Promise<Map<string, OrderCustomerSummary['b2bAccount']>> {
+  const ids = [
+    ...new Set(
+      rows
+        .map((r) => r.customer?.companyId)
+        .filter((id): id is string => id !== null && id !== undefined)
+    ),
+  ];
+  if (ids.length === 0) return new Map();
+  const accounts = await tx.company.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, companyName: true, paymentTerms: true, status: true },
+  });
+  return new Map(accounts.map((a) => [a.id, a]));
+}
+
+/** The customer exactly as `ORDER_CUSTOMER_SELECT` fetches it — before its
+ *  business is put back on. */
+type PlainOrderCustomer = Omit<OrderCustomerSummary, 'b2bAccount'>;
+
+/** Put each row's business on its customer, or null when it has none. */
+function withAccounts<T extends { customer: PlainOrderCustomer | null }>(
+  rows: T[],
+  accounts: Map<string, OrderCustomerSummary['b2bAccount']>
+): (Omit<T, 'customer'> & { customer: OrderCustomerSummary })[] {
+  return rows.map((row) => ({
+    ...row,
+    customer: {
+      ...row.customer,
+      b2bAccount: (row.customer?.companyId ? accounts.get(row.customer.companyId) : null) ?? null,
+    } as OrderCustomerSummary,
+  }));
+}
+
+/** One order, with its business attached. Used by every write path that hands
+ *  a whole order back, so a freshly written order reads the same as a fetched
+ *  one — a shape that differs by which door you came through is the next
+ *  version of issue 751. */
+async function oneWithAccount<T extends { customer: PlainOrderCustomer | null }>(
+  tx: TxClient,
+  row: T
+): Promise<Omit<T, 'customer'> & { customer: OrderCustomerSummary }> {
+  const [only] = withAccounts([row], await accountsFor(tx, [row]));
+  return only as Omit<T, 'customer'> & { customer: OrderCustomerSummary };
+}
 
 export interface OrderWithItems extends Order {
   items: OrderItem[];
@@ -76,6 +151,21 @@ export interface OrderWithItems extends Order {
 export interface OrderListRow extends Order {
   customer: OrderCustomerSummary;
 }
+
+/**
+ * "There is still money to collect on this order", as a query.
+ *
+ * The one place this question is asked in SQL. It used to be asked as
+ * `paymentStatus: 'unpaid'`, which is a column value and not the question: a
+ * cancelled order carries 'unpaid' for the rest of its life, and a part-paid one
+ * does not carry it at all. The rule and the reasoning live in
+ * `isOwingOrder` — this is the same rule in the shape a `where` needs, so the
+ * two cannot drift.
+ */
+export const OWING_ORDER_WHERE: Prisma.OrderWhereInput = {
+  status: { notIn: [...NOT_COLLECTABLE_ORDER_STATUSES] },
+  paymentStatus: { in: [...OWING_PAYMENT_STATUSES] },
+};
 
 // ─────────────────────────────────────────────────────────────────────────
 // Reads
@@ -125,13 +215,21 @@ export async function list(
       // whether the WHOLE typed string was inside one column: "Jo Kim" is not
       // inside "Jo" and not inside "Kim", so a box labelled "Order number or
       // customer…" answered "No orders match that" over two of her orders.
-      AND: nameSearchClauses(filter.q, (term) => [
-        { orderNumber: { contains: term, mode: 'insensitive' as const } },
-        { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
-        { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
-        { customer: { companyName: { contains: term, mode: 'insensitive' as const } } },
-        { customer: { email: { contains: term, mode: 'insensitive' as const } } },
-      ]),
+      // AND rather than a spread of its two keys, because a spread would
+      // OVERWRITE `status` above — so `?status=placed&owing=true` would quietly
+      // drop the status and answer a wider question than it was asked. As a
+      // conjunct it composes: "placed AND still owed" is a real question, and one
+      // the chips cannot ask because they are a single-select row.
+      AND: [
+        ...nameSearchClauses(filter.q, (term) => [
+          { orderNumber: { contains: term, mode: 'insensitive' as const } },
+          { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
+          { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
+          { customer: { companyName: { contains: term, mode: 'insensitive' as const } } },
+          { customer: { email: { contains: term, mode: 'insensitive' as const } } },
+        ]),
+        ...(filter.owing ? [OWING_ORDER_WHERE] : []),
+      ],
     };
     const [items, total] = await Promise.all([
       tx.order.findMany({
@@ -147,7 +245,8 @@ export async function list(
       }),
       tx.order.count({ where }),
     ]);
-    return { items, total };
+    // One more query for the whole page, never one per row.
+    return { items: withAccounts(items, await accountsFor(tx, items)), total };
   });
 }
 
@@ -156,12 +255,14 @@ export async function get(ctx: ServiceContext, orderId: string): Promise<OrderWi
   // /v1/crm/customers is CRM-gated, so a commerce-only or B2B-only tenant could
   // not resolve the buyer's name on their own order at all. Joining it makes the
   // order detail self-sufficient across all three order lenses.
-  const order = await withTenant(ctx, (tx) =>
-    tx.order.findUnique({
+  const order = await withTenant(ctx, async (tx) => {
+    const found = await tx.order.findUnique({
       where: { id: orderId },
       include: { items: true, customer: { select: ORDER_CUSTOMER_SELECT } },
-    })
-  );
+    });
+    if (!found) return null;
+    return oneWithAccount(tx, found);
+  });
   if (!order) throw new CrmNotFoundError('Order', orderId);
   return order;
 }
@@ -170,7 +271,24 @@ export async function get(ctx: ServiceContext, orderId: string): Promise<OrderWi
 // Writes
 // ─────────────────────────────────────────────────────────────────────────
 
-export async function create(ctx: ServiceContext, rawInput: unknown): Promise<OrderWithItems> {
+/** How a caller that is not the checkout controls the placement announcement.
+ *
+ *  `announce: false` is for a caller that must decide for itself WHEN the order
+ *  becomes real to the rest of the platform. There is exactly one: the storefront
+ *  checkout, which holds a wholesale order back for sign-off and publishes
+ *  `b2b.order.pending_approval` in its place. Everything else — the till, an
+ *  order typed in over the phone, a repeat order coming round again, any caller
+ *  of `POST /v1/orders` — is real the moment it is written, and announcing it is
+ *  this function's job rather than each caller's. */
+export interface CreateOrderOptions {
+  announce?: boolean;
+}
+
+export async function create(
+  ctx: ServiceContext,
+  rawInput: unknown,
+  options: CreateOrderOptions = {}
+): Promise<OrderWithItems> {
   const input = CreateOrderInput.parse(rawInput);
   const totals = computeTotals(
     input.items,
@@ -267,7 +385,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
     // one shop never reached the buyer at all — see customer-rollup.ts.
     await recomputeCustomerCommerce(tx, ctx.tenantId, created.customerId);
 
-    return created;
+    return oneWithAccount(tx, created);
   });
 
   // Upstream platform event — the order-event consumer picks this up and writes
@@ -300,6 +418,40 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
       },
     })
   );
+
+  // …and `order.placed`, which is the one the REST of the platform listens to.
+  //
+  // `order.created` above is this package's own in-process signal, and only
+  // that: the CRM consumer reads it to write the timeline row and the customer
+  // stats. It is NOT in the event catalog (wizeworks/packages/events/src/types.ts
+  // lists order.placed / paid / fulfilled / delivered / cancelled / refunded,
+  // and CLAUDE.md says in as many words that there is no `order.created`), so
+  // nothing outside this process can subscribe it. `order.placed` is the
+  // catalog topic the search indexer, the dropship router and every automation
+  // keyed on "a new order" read.
+  //
+  // Until now the ONLY publisher of it was `checkout-service`, so an order made
+  // any other way was announced to nobody. MEASURED 2026-09-20 against the
+  // running database, for one shop: 18 orders, 16 of them in the search index.
+  // The two missing were the two most recent — one typed in at the till, one
+  // raised by a repeat order coming round — and searching either order number
+  // in the console answered with the numbers either side of it and not the one
+  // she asked for, while the order itself sat open in the next pane.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  //
+  // The payload matches checkout's so the consumers cannot tell which caller
+  // wrote the order, which is the point: an order is an order.
+  if (options.announce !== false) {
+    await afterCommit('publish order.placed', () =>
+      publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: 'order.placed',
+        tenantId: ctx.tenantId,
+        occurredAt: placedAt,
+        payload: { orderId: order.id, orderNumber: order.orderNumber },
+      })
+    );
+  }
 
   return order;
 }

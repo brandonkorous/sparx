@@ -16,6 +16,11 @@
 import { headers } from 'next/headers';
 import { cache } from 'react';
 import { DEFAULT_PLATFORM_BRAND, platformBrandIdentity } from '@wizeworks/brand-core';
+import { isLocalDevHost, zoneSiteRoute, type SiteRoute } from './site-host';
+
+// Re-exported so every existing caller of `lib/site-context` keeps its import.
+// The decode itself moved to ./site-host, which the edge proxy can also read.
+export { zoneSiteRoute, type SiteRoute };
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 // ── THE ZONES THIS DEPLOYMENT SERVES ────────────────────────────────────────
@@ -38,16 +43,6 @@ const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 //     half-finished migration. sparx had two paths to the same answer and
 //     Piggles had one.
 //
-// Same parsing as api-rest's `OWNED_ZONES`, deliberately: two readers of one
-// variable that disagree about its format is its own bug.
-const ZONE_LIST = (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone')
-  .split(',')
-  .map((zone) => zone.trim().toLowerCase())
-  .filter((zone) => zone.length > 0);
-
-/** Every zone this deployment serves tenant sites for, in declaration order. */
-const OWNED_ZONES: readonly string[] = ZONE_LIST.length > 0 ? ZONE_LIST : ['sparx.zone'];
-
 /** Per-tenant theme overrides. Every field is nullable — null means "fall
  *  back to the default theme token" (see lib/theme.ts). Mirrors the
  *  CommerceSiteTheme model. */
@@ -134,6 +129,20 @@ export interface ResolvedSite {
   // timeline is public. Defaults 'active' for an older api-rest that omits it, so a
   // storefront is NEVER dark on missing data.
   billingPhase: SiteBillingPhase;
+  // What this SITE has switched off, set on its own settings screen under
+  // "What this site shows". A tenant running a shop and a journal off one
+  // account turns Selling off on the journal, and the journal stops being a
+  // shop: no cart, no checkout, no product pages, and no links to any of them.
+  //
+  // api-rest has shipped this on every page load since the field was added, with
+  // a comment saying the storefront gates routes on it. The storefront did not:
+  // this interface never declared the field, so it was dropped at this boundary
+  // and every switch on that screen saved and did nothing. See `site-modules.ts`
+  // for the route table and the gate. [[feedback_screen_over_a_function_nobody_calls]]
+  //
+  // Defaults to [] on an older api-rest that omits it — nothing is ever hidden
+  // on missing data, the same rule `billingPhase` follows above.
+  disabledModules: string[];
 }
 
 /** Mirror of @wizeworks/billing's BillingPhase — redeclared locally so the storefront
@@ -181,66 +190,6 @@ const DEFAULT_CONSENT: SiteConsent = {
   policyVersion: '1',
 };
 
-/** The site a request routes to: which TENANT and which of its web PROPERTIES
- *  (sites). `propertySlug` is null for the tenant's primary site (api-rest then
- *  defaults to it), so single-site tenants need no property at all. */
-export interface SiteRoute {
-  tenantSlug: string;
-  propertySlug: string | null;
-  /**
-   * The zone this route was decoded from, when it came from a zone host.
-   *
-   * Null for a custom domain and for the dev override, because neither carries
-   * a brand claim: a custom domain is matched EXACTLY against the domains table,
-   * which is itself the proof of ownership.
-   *
-   * Present, it is a claim that has to be CHECKED — see `resolveSite`. A zone
-   * host is self-describing about the tenant and says nothing true about the
-   * brand, so on its own it would let either brand's zone serve either brand's
-   * tenant.
-   */
-  zone: string | null;
-}
-
-/** Decode one of OUR `*.sparx.zone` subdomains into its tenant + property.
- *
- *  These hosts are SELF-DESCRIBING — api-rest's `mintZoneHost` encodes the tenant
- *  (and property) directly in the hostname — so we resolve them from the host
- *  alone, with no API round-trip. That makes zone hosts immune to a stale or
- *  unreachable `site-by-host` lookup (the domains table is just a mirror of this
- *  deterministic minting). Custom domains, whose mapping is arbitrary, return null
- *  here and fall through to the domains table.
- *
- *    `<tenant>.<zone>`            → primary site            (propertySlug null)
- *    `<property>.<tenant>.<zone>` → that tenant's named site
- *
- *  ...for EVERY zone this deployment owns — `sparx.zone` and `piggles.site`
- *  today. The zone is matched first and stripped, so the label decoding below is
- *  identical whichever brand the host belongs to.
- *
- *  A legacy flat `<tenant>-<property>` host is a single label here, so it decodes
- *  as a (usually non-existent) tenant slug and 404s — deprecated in favour of the
- *  dotted form (migration 20260707000000); the dotted host is now canonical. */
-export function zoneSiteRoute(host: string | null | undefined): SiteRoute | null {
-  if (!host) return null;
-  const noPort = host.split(':')[0]?.toLowerCase();
-  if (!noPort) return null;
-  // Which of our zones is this host in? A host in none of them is a custom
-  // domain and belongs to step 3, whose mapping is arbitrary and only the
-  // domains table knows.
-  const zone = OWNED_ZONES.find((z) => noPort === z || noPort.endsWith(`.${z}`));
-  if (!zone || noPort === zone) return null;
-  const labels = noPort.slice(0, -`.${zone}`.length).split('.');
-  if (labels.length === 1 && labels[0]) {
-    return { tenantSlug: labels[0], propertySlug: null, zone };
-  }
-  if (labels.length === 2 && labels[0] && labels[1]) {
-    return { tenantSlug: labels[1], propertySlug: labels[0], zone };
-  }
-  // Three+ labels aren't a shape we mint.
-  return null;
-}
-
 // Ask api-rest to map a CUSTOM-domain Host header → { tenantSlug, propertySlug }
 // via the non-RLS domains table (docs/49 §5). Only reached for hosts that are NOT
 // one of our own zone subdomains (those are decoded structurally by
@@ -262,20 +211,6 @@ async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
   } catch {
     return null;
   }
-}
-
-// Hosts with no per-tenant DNS — the ONLY place the dev `?tenant=`/`?property=`
-// override (relayed by the proxy as x-tenant-slug/x-property-slug) may steer site
-// selection. Mirrors wizeworks/apps/site/proxy.ts `isLocalDevHost` (port-tolerant).
-function isLocalDevHost(host: string): boolean {
-  const h = host.split(':')[0]?.toLowerCase() ?? '';
-  return (
-    h === 'localhost' ||
-    h === '127.0.0.1' ||
-    h === '0.0.0.0' ||
-    h === '::1' ||
-    h.endsWith('.localhost')
-  );
 }
 
 // Resolves the active site (tenant + property). The PUBLIC HOST is authoritative:
@@ -449,6 +384,12 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // Defaults 'active' on an older api-rest that omits it — a site is NEVER
       // suspended on missing data (only an explicit 'suspended' darkens it).
       billingPhase: data.billingPhase ?? 'active',
+      // Same rule: [] on an older api-rest, so nothing is ever hidden because a
+      // field failed to arrive. Filtered to strings because this drives what a
+      // visitor can reach, and one bad element must not take a route with it.
+      disabledModules: Array.isArray(data.disabledModules)
+        ? data.disabledModules.filter((slug): slug is string => typeof slug === 'string')
+        : [],
     };
   } catch {
     return null;

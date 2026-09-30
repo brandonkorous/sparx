@@ -117,7 +117,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'layout-grid',
     description:
-      'A responsive grid that repeats a shoppable card once per product. Points at the whole catalog by default: re-point it to a collection or category in the Data panel.',
+      'A grid of cards, one per product, each one ready to buy from. It fits itself to the screen. Points at your whole catalog to start with: send it to one collection or category in the Data panel.',
     surfaces: ['page', 'site'],
     tags: ['products', 'grid', 'collection', 'catalog', 'shop', 'repeater', 'commerce'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -154,7 +154,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'sparkles',
     description:
-      'A two-column hero for one product: a large image beside its title, story, and a complete buy-box (price, variants, quantity, add to cart). Pin it to the product to feature.',
+      'One product, made big: a large picture beside its name, its story, and everything somebody needs to buy it (price, the choices you offer, how many, and Add to cart). Point it at the product you want to feature.',
     surfaces: ['page', 'site'],
     tags: ['product', 'featured', 'spotlight', 'hero', 'buy box', 'pdp', 'commerce'],
     tree: el('section', 'w-full px-4 py-16', {

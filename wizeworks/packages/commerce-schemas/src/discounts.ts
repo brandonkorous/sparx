@@ -155,6 +155,29 @@ export const GrantAccountCreditInput = z.object({
 });
 export type GrantAccountCreditInput = z.infer<typeof GrantAccountCreditInput>;
 
+/**
+ * Taking store credit back off an account.
+ *
+ * `amountCents` is POSITIVE and says how much to REMOVE; the ledger line it
+ * writes is negative. Deliberately a SEPARATE input from
+ * `GrantAccountCreditInput` rather than allowing a negative amount there: the
+ * grant endpoint is the audited word for giving money away, and on a field
+ * whose whole meaning flips with one leading character, a sign is far too easy
+ * to send by accident. Two endpoints, two intentions, two audit actions.
+ *
+ * It exists because a grant is otherwise permanent. Type 1850 where you meant
+ * 18.50 and the customer is holding $1,850 of your money with nothing in the
+ * console able to take it back — `deltaCents` is signed and the reason enum
+ * has carried `adjust` from the start, so the ledger always expected this.
+ */
+export const TakeBackAccountCreditInput = z.object({
+  customerId: Uuid,
+  amountCents: MoneyCents.refine((v) => v > 0, 'Amount to take back must be positive'),
+  currency: Currency,
+  note: z.string().max(2000).nullish(),
+});
+export type TakeBackAccountCreditInput = z.infer<typeof TakeBackAccountCreditInput>;
+
 export const SpendAccountCreditInput = z.object({
   customerId: Uuid,
   cartId: Uuid,

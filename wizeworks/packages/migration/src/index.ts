@@ -21,6 +21,13 @@ export {
 } from './canonical';
 
 export {
+  DISCOUNT_FILE_COLUMNS,
+  discountExportRow,
+  discountRowFromFile,
+  type ExportableDiscount,
+} from './discount-file';
+
+export {
   clean,
   isAmbiguousDate,
   isBlank,

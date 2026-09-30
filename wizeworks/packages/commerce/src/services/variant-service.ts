@@ -1242,9 +1242,8 @@ async function validateOptionValueSet(
     const missing = optionValueIds.filter((id) => !found.has(id));
     throw new CommerceValidationError(
       missing.length === 1 ? 'Unknown option value' : 'Unknown option values',
-      [
-      { field: 'optionValueIds', message: `Not part of product: ${missing.join(', ')}` },
-    ]);
+      [{ field: 'optionValueIds', message: `Not part of product: ${missing.join(', ')}` }]
+    );
   }
 
   const byOption = new Map<string, number>();
@@ -1310,6 +1309,22 @@ async function transitionDeletedAt(
       where: { id: variantId },
       data: { deletedAt, ...(deletedAt !== null ? { isDefault: false } : {}) },
     });
+
+    // Retiring clears `isDefault`, so bringing back the version that WAS shown
+    // first left the product with none shown first at all: stop and restore a
+    // one-version product and the storefront had nothing to preselect, and the
+    // console lost its "Shown first" badge. A restore therefore takes the flag
+    // when no live version holds it. Only then: a product that already shows
+    // another version first keeps that choice.
+    if (deletedAt === null) {
+      const shownFirst = await tx.productVariant.findFirst({
+        where: { productId: before.productId, deletedAt: null, isDefault: true },
+        select: { id: true },
+      });
+      if (!shownFirst) {
+        await tx.productVariant.update({ where: { id: variantId }, data: { isDefault: true } });
+      }
+    }
 
     await refreshProductPriceRange(tx, before.productId);
 

@@ -89,4 +89,57 @@ describe('the invoice email', () => {
     expect(html).not.toContain('WizeWorks');
     expect(text).toContain('Sent with');
   });
+  // ── A QUOTE IS NOT A BILL ────────────────────────────────────────────────
+  //
+  // This template is the copy of the document that LEAVES the building, and it
+  // sent a quote as an invoice: the caller handed it the stage's customerLabel,
+  // which on a price-offer workflow holds the offer's STANDING, so a quote for
+  // $504 arrived headed "Draft Q-000017 from Juniper Row Textiles LLC" with a
+  // due date of the day it was sent. A wholesale bookkeeper files that to pay.
+  // Issue 765; the same root cause as 764, one renderer further out.
+  const OFFER = {
+    billToName: 'Tamsin Vale',
+    fromName: 'Juniper Row Textiles LLC',
+    documentLabel: 'Quote',
+    priceOffer: true,
+    documentNumber: 'Q-000017',
+    total: 504,
+    balance: 504,
+    currency: 'USD',
+    dueAt: null,
+    validUntil: null,
+    lines: [
+      {
+        title: 'Marlow Knit, mixed sizes, spring range',
+        subtitle: '12 × $42.00',
+        amount: '$504.00',
+      },
+    ],
+    summary: [{ label: 'Subtotal', value: '$504.00' }],
+    note: null,
+  };
+
+  it('never asks a quote to be paid, and never gives it a deadline', async () => {
+    const { subject, text } = await render(OFFER);
+    expect(subject).toBe('Quote Q-000017 from Juniper Row Textiles LLC');
+    expect(text).toContain('here is quote Q-000017');
+    expect(text).toContain('Nothing is owed on it. It is a price, not a bill.');
+    expect(text).not.toContain('due');
+    expect(text).not.toContain('Due');
+    expect(text).not.toContain('owed of');
+    expect(text).not.toContain('Still owed');
+  });
+
+  it('says how long the price stands when the business set a date', async () => {
+    const { text } = await render({ ...OFFER, validUntil: '2026-10-31T12:00:00Z' });
+    expect(text).toContain('This price holds until October 31, 2026.');
+    expect(text).toContain('Good until October 31, 2026');
+  });
+
+  it('still bills a real invoice: the fix is scoped to the offer', async () => {
+    const { subject, text } = await render();
+    expect(subject).toBe('Invoice INV-000148 from Rosa Flowers');
+    expect(text).toContain('It is due by September 3, 2026.');
+    expect(text).toContain('Still owed');
+  });
 });

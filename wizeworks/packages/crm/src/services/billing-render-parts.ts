@@ -9,9 +9,33 @@ import type { Prisma } from '@wizeworks/db';
 
 import type { BillingRenderParty } from './billing-document-html';
 
+/** One stored string becomes one or more printed lines.
+ *
+ *  The console asks for the billing address in a TEXTAREA whose own placeholder
+ *  is two lines ("Street" / "City, State ZIP"), so what it stores is one string
+ *  holding the newlines the person typed. That string was pushed here as a
+ *  single line, and HTML turns a newline inside one element into a space — so an
+ *  address typed on three lines printed as "2140 NE Alberta St Portland, OR
+ *  97211 US" on the customer's copy, directly under the SELLER address, which
+ *  arrives as an array and printed on three lines correctly. Measured
+ *  2026-09-22 on INV-000018: 21 of the 37 documents holding an address had one.
+ *
+ *  A screen that invites line breaks and then removes them is the promise in its
+ *  own placeholder going unkept. [[feedback_honor_the_users_choice]] Splitting
+ *  here rather than at each field covers `address`, a pre-split `lines` entry
+ *  that itself holds a break, and anything added later.
+ */
+function pushLines(into: string[], value: string): void {
+  for (const part of value.split(/\r?\n/)) {
+    const line = part.trim();
+    if (line.length > 0) into.push(line);
+  }
+}
+
 /** Flatten an author-set billTo/shipTo JSON blob into a display block. Tolerant:
  *  accepts a `name`/`company` plus either a pre-split `lines`/`addressLines`
- *  array or the common discrete address fields. */
+ *  array or the common discrete address fields. A value holding newlines becomes
+ *  one printed line per line typed. */
 export function partyFromJson(json: unknown, heading: string): BillingRenderParty | null {
   if (json === null || typeof json !== 'object') return null;
   const o = json as Record<string, unknown>;
@@ -20,26 +44,38 @@ export function partyFromJson(json: unknown, heading: string): BillingRenderPart
     return typeof v === 'string' ? v : '';
   };
 
-  const name = s('name') || s('company') || s('companyName');
+  // `recipientName` is what a checkout-captured SHIP-TO carries, and it was not
+  // read — so a package whose address block came from an order printed to an
+  // address with nobody's name on it. Found 2026-09-22 on INV-000001, whose
+  // ship-to holds "Marguerite Adeyemi" and printed none.
+  // [[feedback_fetched_but_never_rendered]]
+  const name = s('name') || s('company') || s('companyName') || s('recipientName');
   const lines: string[] = [];
+  const push = (value: string): void => {
+    pushLines(lines, value);
+  };
 
   const explicit = o.lines ?? o.addressLines;
   if (Array.isArray(explicit)) {
-    for (const l of explicit) if (typeof l === 'string') lines.push(l);
+    for (const l of explicit) if (typeof l === 'string') push(l);
   } else {
-    if (s('company') && s('company') !== name) lines.push(s('company'));
-    if (s('attention')) lines.push(`Attn: ${s('attention')}`);
+    if (s('company') && s('company') !== name) push(s('company'));
+    if (s('attention')) push(`Attn: ${s('attention')}`);
     if (s('line1') || s('address1') || s('address')) {
-      lines.push(s('line1') || s('address1') || s('address'));
+      push(s('line1') || s('address1') || s('address'));
     }
-    if (s('line2') || s('address2')) lines.push(s('line2') || s('address2'));
-    const cityLine = [s('city'), s('state') || s('region'), s('postalCode') || s('zip')]
-      .filter(Boolean)
-      .join(', ');
-    if (cityLine) lines.push(cityLine);
-    if (s('country')) lines.push(s('country'));
-    if (s('email')) lines.push(s('email'));
-    if (s('phone')) lines.push(s('phone'));
+    if (s('line2') || s('address2')) push(s('line2') || s('address2'));
+    // "Portland, OR 97214" — a comma after the town, a SPACE before the code.
+    // Joining all three with a comma printed "Portland, OR, 97214", which is not
+    // how an address is written anywhere, and this block is what a customer
+    // reads off the top of their bill.
+    const town = [s('city'), s('state') || s('region')].filter(Boolean).join(', ');
+    const code = s('postalCode') || s('zip');
+    const cityLine = [town, code].filter(Boolean).join(' ');
+    if (cityLine) push(cityLine);
+    if (s('country')) push(s('country'));
+    if (s('email')) push(s('email'));
+    if (s('phone')) push(s('phone'));
   }
 
   if (!name && lines.length === 0) return null;

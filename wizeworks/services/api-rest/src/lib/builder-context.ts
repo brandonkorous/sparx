@@ -11,7 +11,7 @@ import type { PropertyContext, ServiceContext, SiteChromeOptions } from '@wizewo
 import { isModuleEnabled } from '@wizeworks/auth';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import { moduleDisabled } from '@wizeworks/api-core/errors';
-import { resolvePropertyId, requireTenantProperty } from './property.js';
+import { resolvePropertyId, requireTenantProperty, siteDisabledModules } from './property.js';
 
 // Tenant-wide builder ctx (NO property scope) — for the builder services that are
 // NOT per-property: emails, the tenant component library, and the binding catalog
@@ -69,13 +69,32 @@ export async function toBuilderContextFor(
  * it. Scheduling and CMS fail CLOSED: both are opt-in, so a blip must not invent a
  * Book or Journal link pointing at an index with nothing behind it.
  */
-export async function siteChromeOptions(tenantId: string): Promise<SiteChromeOptions> {
-  const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
+export async function siteChromeOptions(
+  tenantId: string,
+  // WHICH SITE. Given one, a module that site has switched off under "What this
+  // site shows" counts as off here too — so a journal with Selling switched off
+  // gets no Shop link in its starter chrome and no product URLs in its sitemap.
+  // Omitted, this answers for the account alone, which is what every authoring
+  // caller wants: the builder shows an author everything their account has.
+  propertyId?: string | null
+): Promise<SiteChromeOptions> {
+  const [commerceEnabled, schedulingEnabled, cmsEnabled, off] = await Promise.all([
     isModuleEnabled(tenantId, 'commerce').catch(() => true),
     isModuleEnabled(tenantId, 'scheduling').catch(() => false),
     isModuleEnabled(tenantId, 'cms').catch(() => false),
+    // Fails to an EMPTY list, like every other read of this field: a site must
+    // never lose part of itself because a lookup blipped.
+    propertyId
+      ? siteDisabledModules(tenantId, propertyId).catch((): string[] => [])
+      : Promise.resolve<string[]>([]),
   ]);
-  return { commerceEnabled, schedulingEnabled, cmsEnabled };
+  return {
+    commerceEnabled: commerceEnabled && !off.includes('commerce'),
+    // Scheduling is not one of the eight switches a site can throw, so only the
+    // account's answer counts.
+    schedulingEnabled,
+    cmsEnabled: cmsEnabled && !off.includes('cms'),
+  };
 }
 
 /** Throws MODULE_DISABLED (→ 404 envelope) if the caller's tenant doesn't have

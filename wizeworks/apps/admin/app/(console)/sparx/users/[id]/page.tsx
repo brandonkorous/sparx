@@ -108,7 +108,9 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
             (user.homeTenantSlug ?? '—')
           )}{' '}
           · Joined {formatDate(user.createdAt)} · Last seen{' '}
-          {user.lastLoginAt ? formatRelative(user.lastLoginAt) : 'never'}
+          {/* Not "never": nothing wrote this column until issue 853, so it said that
+              about every user on the platform, including ones signed in at the time. */}
+          {user.lastLoginAt ? formatRelative(user.lastLoginAt) : 'not known'}
         </Text>
       </Stack>
 

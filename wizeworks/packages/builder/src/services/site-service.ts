@@ -2071,8 +2071,13 @@ export interface PageDocument {
  * `wizeworks/apps/site` falls back to the code starter for any property that has
  * published no silica (lib/silica.ts), so a legacy-tier row is NOT a blank page —
  * it is a real page every visitor is reading. Opening it empty told the author
- * their home page did not exist while the live one said "edit every word to make
- * it yours", and their first Save would have replaced it sight unseen.
+ * their home page did not exist while the live one was serving a full home page to
+ * the public, and their first Save would have replaced it sight unseen.
+ *
+ * This comment used to quote the starter's own headline back, and that headline was
+ * "This is your homepage; edit every word to make it yours" — an instruction to the
+ * owner, on the page her customers were reading. Issue 851 rewrote the starter in the
+ * VISITOR's voice, so the quote is gone and the point it was making stands.
  *
  * Matched the way the storefront matches: a record template by its record type,
  * any other page by its address. Ids are re-minted, because these trees are
@@ -2760,6 +2765,58 @@ export interface InstallPageInput {
   noindex?: boolean;
 }
 
+/**
+ * The per-page columns an install is allowed to write — and the two it is not.
+ *
+ * ── A DESIGN GIVES YOU A LOOK. YOUR NAME IS YOURS. ─────────────────────────────
+ *
+ * Issue 210 settled this for the brand override: installing a template used to stamp
+ * the sample company's `businessName` and tagline onto the real business, and it
+ * stopped. `seoTitle` and `seoDescription` are the same value in a different column,
+ * and they were never reached — so every design went on writing the demo company's
+ * name into the one place that is hardest to notice and most public.
+ *
+ * All 191 shipped bundles carry them, 1,173 of each. 158 name a business that does
+ * not exist. Measured live: 52 PUBLISHED pages across six sites, including two of
+ * Juniper Row's — nine pages each titled "Kestrel" and "Vérane", with descriptions
+ * to match ("Search Kestrel for a product, a collection or a page"). That is the
+ * browser tab, the search result, the link preview and the bookmark name, all
+ * naming somebody else's company (issue 852).
+ *
+ * The body copy an install brings is a different thing and stays: it is visible, it
+ * is editable, and the Home panel from 849 now names it. A title is none of those.
+ *
+ * ── THE FALLBACK IS ALREADY BETTER, AND ALREADY ARGUED ─────────────────────────
+ *
+ * Dropped, the page renders from her own data and keeps doing so if she renames:
+ * the root layout sets `title: { default: site.name, template: '%s · ' + site.name }`,
+ * so Home is "Juniper Row Archive" and About is "About · Juniper Row Archive". The
+ * description is OMITTED, which that layout already argued for in the same words —
+ * a crawler with no description writes a snippet from the page, "which is always
+ * truer than a template guess about what kind of business this is". A demo
+ * company's name is worse than a guess.
+ *
+ * `canonical`, `ogImage` and `noindex` stay: no bundle ships one (0 of 191), so
+ * nothing changes, and none of them can name a business.
+ */
+export function installedPageColumns(page: InstallPageInput): {
+  kind?: string;
+  recordType: string | null;
+  recordSubtype: string | null;
+  canonical?: string | null;
+  ogImage?: string | null;
+  noindex?: boolean;
+} {
+  return {
+    ...(page.kind ? { kind: page.kind } : {}),
+    recordType: page.recordType ?? null,
+    recordSubtype: page.recordSubtype ?? null,
+    ...(page.canonical !== undefined ? { canonical: page.canonical } : {}),
+    ...(page.ogImage !== undefined ? { ogImage: page.ogImage } : {}),
+    ...(page.noindex !== undefined ? { noindex: page.noindex } : {}),
+  };
+}
+
 /** The stored slug for a collection page. The DEFAULT product page takes the derived
  *  record address (`/products/:handle`); a per-TYPE page (docs/143) can't share that slug
  *  — `(tenant, property, slug)` is unique — so it gets a synthetic, non-routable variant
@@ -2837,19 +2894,8 @@ export async function installSite(
   await withTenant(ctx, async (tx) => {
     for (const p of pages) {
       const isCollection = p.kind === 'collection';
-      await tx.builderPage.update({
-        where: { id: p.id },
-        data: {
-          ...(p.kind ? { kind: p.kind } : {}),
-          recordType: p.recordType ?? null,
-          recordSubtype: p.recordSubtype ?? null,
-          ...(p.seoTitle !== undefined ? { seoTitle: p.seoTitle } : {}),
-          ...(p.seoDescription !== undefined ? { seoDescription: p.seoDescription } : {}),
-          ...(p.canonical !== undefined ? { canonical: p.canonical } : {}),
-          ...(p.ogImage !== undefined ? { ogImage: p.ogImage } : {}),
-          ...(p.noindex !== undefined ? { noindex: p.noindex } : {}),
-        },
-      });
+      // No `seoTitle`/`seoDescription` — see `installedPageColumns`.
+      await tx.builderPage.update({ where: { id: p.id }, data: installedPageColumns(p) });
       // A recordType default is exclusive per (property, recordType) — clear any
       // incumbent before promoting this one, or two templates both claim the type
       // and which one renders becomes row-order luck. Only a subtype-LESS page can be
@@ -2896,19 +2942,9 @@ export async function addPage(ctx: PropertyContext, page: InstallPageInput): Pro
   // does — so a collection template added by an update binds to its recordType and wins
   // as the default for it.
   await withTenant(ctx, async (tx) => {
-    await tx.builderPage.update({
-      where: { id },
-      data: {
-        ...(page.kind ? { kind: page.kind } : {}),
-        recordType: page.recordType ?? null,
-        recordSubtype: page.recordSubtype ?? null,
-        ...(page.seoTitle !== undefined ? { seoTitle: page.seoTitle } : {}),
-        ...(page.seoDescription !== undefined ? { seoDescription: page.seoDescription } : {}),
-        ...(page.canonical !== undefined ? { canonical: page.canonical } : {}),
-        ...(page.ogImage !== undefined ? { ogImage: page.ogImage } : {}),
-        ...(page.noindex !== undefined ? { noindex: page.noindex } : {}),
-      },
-    });
+    // The same allow-list `installSite` uses, from the same function, so the two
+    // seams cannot drift on which columns a design may write.
+    await tx.builderPage.update({ where: { id }, data: installedPageColumns(page) });
     // Only a subtype-LESS page can be THE default for its record type (docs/143).
     if (page.kind === 'collection' && page.isDefault && page.recordType && !page.recordSubtype) {
       await tx.builderPage.updateMany({

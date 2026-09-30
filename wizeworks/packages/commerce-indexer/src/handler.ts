@@ -236,14 +236,32 @@ export async function handleEvent(
     // Generic indexing signal any module emits post-commit. Dispatch by
     // entity_type to the projector registry; re-project + upsert (or delete
     // when the projector reports the record is gone).
+    // `b2b.invoice.created` rides the same path. A wholesale receivable IS a
+    // BillingDocument on the `net-terms-ar` workflow, with the same id — so the
+    // generic projector already knows how to index one, and this topic is just
+    // a second name for "a billing document now exists".
+    //
+    // It is here because indexing a billing document otherwise happens at the
+    // ROUTE layer, in api-rest's invoicing/documents.ts, and NONE of the three
+    // publishers of this topic goes through that file: the wholesale Raise an
+    // invoice route, a sign-off being approved, and a checkout placed on terms.
+    // MEASURED 2026-09-20: a $120 invoice raised for a shop that morning could
+    // not be found by its number four minutes later, while every invoice raised
+    // on the Invoices screen could. [[feedback_a_fix_leaves_its_neighbour_behind]]
+    case 'b2b.invoice.created':
     case 'search.entity.changed': {
-      const entityType = stringProp(event.data, 'entityType');
-      const recordId = stringProp(event.data, 'recordId');
-      const op = stringProp(event.data, 'op') ?? 'upsert';
+      const wholesaleInvoice = event.type === 'b2b.invoice.created';
+      const entityType = wholesaleInvoice
+        ? 'billing_document'
+        : stringProp(event.data, 'entityType');
+      const recordId = wholesaleInvoice
+        ? stringProp(event.data, 'invoiceId')
+        : stringProp(event.data, 'recordId');
+      const op = wholesaleInvoice ? 'upsert' : (stringProp(event.data, 'op') ?? 'upsert');
       if (!entityType || !recordId) {
         logger.warn(
           { type: event.type },
-          'search.entity.changed missing entityType/recordId; skipping'
+          'indexing event missing the entity it is about; skipping'
         );
         return { outcome: 'skipped' };
       }

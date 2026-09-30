@@ -88,9 +88,23 @@ export function useMutation<
     [baseMutate, handlers]
   );
 
+  // `mutateAsync` REJECTS, which is the whole difference between it and
+  // `mutate`. Its caller is holding the error by definition — they awaited it
+  // inside a try/catch and said something of their own, or they did not and have
+  // an unhandled rejection, which is a fault at the call site rather than a
+  // silent write. Either way the net speaking on top is the duplicate the
+  // reporter's own header warns about, and it was happening everywhere: 46 call
+  // sites in one console catch a `mutateAsync` and only 2 pass an `onError`, so
+  // a failed walk arrived as "Could not create a walk" AND "That didn't save"
+  // stacked on one screen (persona issue 771).
+  //
+  // This is not the "cannot tell, so speak" case the tests describe. We CAN
+  // tell: `mutate` swallows the rejection and `mutateAsync` hands it over, and
+  // the net still keeps `mutate` — plus the crash report is unconditional either
+  // way, so nothing goes unseen by us.
   const mutateAsync = useCallback(
     (variables: TVariables, callOptions?: MutateOptions<TData, TError, TVariables, TContext>) => {
-      handlers.onError = typeof callOptions?.onError === 'function';
+      handlers.onError = true;
       return baseMutateAsync(variables, callOptions);
     },
     [baseMutateAsync, handlers]

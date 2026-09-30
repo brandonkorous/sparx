@@ -32,6 +32,12 @@ import type { TxClient } from '@wizeworks/db';
 import { InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
+import {
+  VARIANT_LABEL_COLUMNS,
+  VARIANT_LABEL_JOINS,
+  VARIANT_LABEL_SELECT,
+  variantLabel,
+} from './variant-label';
 
 // ─── Reconciliation ────────────────────────────────────────────────────────────
 
@@ -55,6 +61,7 @@ export interface ReconciliationDriftRow {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
   warehouseCode: string | null;
@@ -493,7 +500,7 @@ export async function listReconciliationDrifts(
       ...(filter.warehouseId ? { warehouseId: filter.warehouseId } : {}),
     };
     const include = {
-      variant: { select: { sku: true, title: true, product: { select: { title: true } } } },
+      variant: { select: VARIANT_LABEL_SELECT },
       warehouse: { select: { name: true, code: true } },
     };
     const [rows, total] = await Promise.all([
@@ -511,8 +518,7 @@ export async function listReconciliationDrifts(
         id: r.id,
         runId: r.runId,
         variantId: r.variantId,
-        variantSku: r.variant?.sku ?? null,
-        productTitle: r.variant?.product?.title ?? r.variant?.title ?? null,
+        ...variantLabel(r.variant),
         warehouseId: r.warehouseId,
         warehouseName: r.warehouse?.name ?? null,
         warehouseCode: r.warehouse?.code ?? null,
@@ -678,6 +684,7 @@ export interface OversellIncidentRow {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
   warehouseCode: string | null;
@@ -733,7 +740,7 @@ export async function listOversellIncidents(
       ...(occurredAt ? { occurredAt } : {}),
     };
     const include = {
-      variant: { select: { sku: true, title: true, product: { select: { title: true } } } },
+      variant: { select: VARIANT_LABEL_SELECT },
       warehouse: { select: { name: true, code: true } },
     };
     const [rows, total] = await Promise.all([
@@ -750,8 +757,7 @@ export async function listOversellIncidents(
       items: rows.map((r) => ({
         id: r.id,
         variantId: r.variantId,
-        variantSku: r.variant?.sku ?? null,
-        productTitle: r.variant?.product?.title ?? r.variant?.title ?? null,
+        ...variantLabel(r.variant),
         warehouseId: r.warehouseId,
         warehouseName: r.warehouse?.name ?? null,
         warehouseCode: r.warehouse?.code ?? null,
@@ -792,6 +798,7 @@ export interface OversellSummary {
     variantId: string;
     variantSku: string | null;
     productTitle: string | null;
+    variantName: string | null;
     incidents: number;
     unitsShort: number;
   }[];
@@ -809,6 +816,7 @@ interface TopVariantRow {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  variantName: string | null;
   incidents: number;
   unitsShort: number;
 }
@@ -836,15 +844,15 @@ export async function oversellSummary(
     const top = await tx.$queryRaw<TopVariantRow[]>`
       SELECT i.variant_id            AS "variantId",
              v.sku                   AS "variantSku",
-             COALESCE(p.title, v.title) AS "productTitle",
+             ${VARIANT_LABEL_COLUMNS},
              COUNT(*)::int           AS "incidents",
              COALESCE(SUM(i.shortfall), 0)::int AS "unitsShort"
         FROM inventory_oversell_incidents i
         JOIN commerce_product_variants v ON v.id = i.variant_id
-        LEFT JOIN commerce_products p ON p.id = v.product_id
+        ${VARIANT_LABEL_JOINS}
        WHERE i.tenant_id = ${ctx.tenantId}::uuid
          AND i.occurred_at >= ${since}
-       GROUP BY i.variant_id, v.sku, p.title, v.title
+       GROUP BY i.variant_id, v.sku, p.title, v.title, opts.label
        ORDER BY COUNT(*) DESC, SUM(i.shortfall) DESC
        LIMIT 10
     `;

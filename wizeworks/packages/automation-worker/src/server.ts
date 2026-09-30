@@ -34,7 +34,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import pino from 'pino';
 import { z } from 'zod';
 import { env } from './env.js';
-import { ingest, reconcileSeeds, runTick } from './runtime.js';
+import { ingest, reconcileSeeds, runTick, scanCampaigns } from './runtime.js';
 
 export const logger = pino({
   level: env.LOG_LEVEL,
@@ -125,8 +125,12 @@ export async function handleReconcileRequest(
     res.end('Forbidden');
     return;
   }
-  const summary = await reconcileSeeds(logger);
-  logger.info(summary, 'reconcile-seeds complete');
+  const seeds = await reconcileSeeds(logger);
+  logger.info(seeds, 'reconcile-seeds complete');
+  // Same daily slot: put people in campaigns whose first step is "went quiet".
+  const campaigns = await scanCampaigns(logger);
+  logger.info(campaigns, 'campaign scan complete');
+  const summary = { ...seeds, campaigns };
   res.statusCode = 200;
   res.setHeader('content-type', 'application/json');
   res.end(JSON.stringify(summary));

@@ -194,7 +194,7 @@ export function priceList(): Node {
       children: [
         item(
           'Measure and quote',
-          'A visit, full measurements, and a written itemised price.',
+          'A visit, full measurements, and a written itemized price.',
           'Free'
         ),
         item(

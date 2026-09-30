@@ -22,6 +22,8 @@ export interface DeliveryStepProps {
   /** Null = "somewhere else", i.e. the form below is the answer. */
   savedId: string | null;
   onPickSaved: (id: string | null) => void;
+  /** Who is buying. Used for a saved address that carries no recipient name. */
+  contactName: string;
   address: Address;
   onAddressChange: (next: Address) => void;
   /** Only offered to a signed-in shopper: there is nowhere to save it to
@@ -37,6 +39,9 @@ export interface DeliveryStepProps {
   onBack: () => void;
   onSubmit: (e: React.FormEvent) => void;
   busy: boolean;
+  /** Anything the buyer wants the shop to know about this order. */
+  note: string;
+  onNoteChange: (next: string) => void;
 }
 
 export function DeliveryStep(props: DeliveryStepProps) {
@@ -50,7 +55,12 @@ export function DeliveryStep(props: DeliveryStepProps) {
       </h2>
 
       {book.length > 0 ? (
-        <SavedAddressChoices addresses={book} selectedId={savedId} onSelect={props.onPickSaved} />
+        <SavedAddressChoices
+          addresses={book}
+          selectedId={savedId}
+          onSelect={props.onPickSaved}
+          fallbackName={props.contactName}
+        />
       ) : null}
 
       {typing ? (
@@ -77,6 +87,27 @@ export function DeliveryStep(props: DeliveryStepProps) {
         currency={props.currency}
         legend="How you’ll get your order"
       />
+
+      {/* The one thing on this screen only the buyer can answer. It reaches the
+          shop as the order's own note, and it is stored on the session the moment
+          this step is submitted, so a gateway that navigates this tab away cannot
+          swallow it (issue 874). */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="checkout-note" className="text-base-content font-medium">
+          Anything we should know? (optional)
+        </label>
+        <textarea
+          id="checkout-note"
+          className="textarea w-full"
+          rows={3}
+          maxLength={2000}
+          value={props.note}
+          placeholder="Where to leave it, a gift message, anything else."
+          onChange={(e) => {
+            props.onNoteChange(e.target.value);
+          }}
+        />
+      </div>
 
       <div className="flex gap-3">
         <Button type="button" variant="ghost" onClick={props.onBack}>

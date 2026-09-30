@@ -322,7 +322,7 @@ export const updateTask: McpToolDefinition = {
 export const createCompany: McpToolDefinition = {
   name: 'create_company',
   description:
-    'Add a company: the organisation a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricing tier) only mean anything to a business selling on account: set them and customers become authorised buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
+    'Add a company: the organization a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricing tier) only mean anything to a business selling on account: set them and customers become authorized buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateCompanyInput,

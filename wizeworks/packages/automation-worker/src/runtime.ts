@@ -32,8 +32,10 @@ import {
   type ReconcileSummary,
 } from '@wizeworks/automation-actions';
 import {
+  getScanner,
   handleTrigger,
   installBuiltins,
+  resolveFields,
   runAutomationTick,
   runScheduleTick,
   type EngineDeps,
@@ -44,7 +46,7 @@ import {
 import { installCrmPubSubBridge } from '@wizeworks/crm/pubsub';
 import { prisma, withTenant } from '@wizeworks/db';
 import { activeModules, isModuleEnabled } from '@wizeworks/modules';
-import { installFunnelLibrary } from '@wizeworks/funnels';
+import { advanceOnEvent, captureFromScan, installFunnelLibrary } from '@wizeworks/funnels';
 import { drainDueEnrollments, type DrainResult } from '@wizeworks/email-sequences';
 import { createPublisher } from '@wizeworks/events';
 import type { Logger } from 'pino';
@@ -106,6 +108,57 @@ export async function runTick(logger: Logger): Promise<TickSummary> {
  */
 export async function reconcileSeeds(logger: Logger): Promise<ReconcileSummary> {
   return reconcileSystemSeeds(prisma, logger);
+}
+
+export interface CampaignScanSummary {
+  tenants: number;
+  entered: number;
+  failed: number;
+}
+
+/**
+ * The daily pass for campaigns whose first step is a state, not an event
+ * ("has not bought for four months"). Rides the same daily CronJob as the seed
+ * reconcile. Each tenant is its own try: one bad tenant never stops the rest.
+ */
+export async function scanCampaigns(logger: Logger): Promise<CampaignScanSummary> {
+  const deps = makeDeps(logger);
+  const scan = getScanner('customer');
+  const tenants = await prisma.$queryRaw<{ tenant_id: string }[]>`
+    SELECT tenant_id FROM find_tenants_with_active_module(${'funnels'})
+  `;
+  const summary: CampaignScanSummary = { tenants: tenants.length, entered: 0, failed: 0 };
+  if (!scan) return summary;
+  const now = new Date();
+  for (const { tenant_id: tenantId } of tenants) {
+    try {
+      const rows = await withTenant({ tenantId }, async (tx) =>
+        (await tx.funnel.count({ where: { status: 'active' } })) === 0
+          ? []
+          : scan({ tenantId, tx, deps, causeDepth: 0 })
+      );
+      if (rows.length === 0) continue;
+      const entered = await captureFromScan(
+        { tenantId },
+        rows.map((r) => r.fields),
+        now
+      );
+      for (const { payload } of entered) {
+        await deps.publisher.publish({
+          type: 'funnel.entered',
+          tenantId,
+          actorId: null,
+          occurredAt: now.toISOString(),
+          data: payload,
+        });
+      }
+      summary.entered += entered.length;
+    } catch (err) {
+      summary.failed += 1;
+      logger.warn({ tenantId, err }, 'campaign scan failed for a tenant');
+    }
+  }
+  return summary;
 }
 
 /** The module slug a `module.activated` envelope carries, if any. */
@@ -183,4 +236,53 @@ export async function ingest(envelope: TriggerEnvelope, logger: Logger): Promise
   }
 
   await handleTrigger(envelope, deps);
+  await advanceCampaigns(envelope, deps, logger);
 }
+
+/**
+ * Move people through every running campaign this event touches: put them in,
+ * move them along, finish them (docs/151, docs/152 G3). This worker already sees
+ * every event, and campaign rules use the same condition language as automations.
+ * A failure throws so the broker redelivers; each step is recorded once.
+ */
+async function advanceCampaigns(
+  envelope: TriggerEnvelope,
+  deps: EngineDeps,
+  logger: Logger
+): Promise<void> {
+  const { tenantId, type } = envelope;
+  if (!(await isModuleEnabled(tenantId, 'funnels'))) return;
+  const payload = (envelope.data ?? {}) as Record<string, unknown>;
+  // Most events arrive for tenants with no running campaign: skip the entity read.
+  const fields = await withTenant({ tenantId }, async (tx) =>
+    (await tx.funnel.count({ where: { status: 'active' } })) === 0
+      ? null
+      : resolveFields({ tenantId, tx, deps, causeDepth: 0 }, type, payload)
+  );
+  if (!fields) return;
+  const at = new Date(envelope.occurredAt);
+  const advances = await advanceOnEvent(
+    { tenantId },
+    { type, occurredAt: Number.isNaN(at.getTime()) ? new Date() : at, fields }
+  );
+  for (const { kind, payload: data } of advances) {
+    const announce = ANNOUNCED[kind];
+    if (!announce) continue;
+    await deps.publisher.publish({
+      type: announce,
+      tenantId,
+      actorId: null,
+      occurredAt: new Date().toISOString(),
+      data,
+    });
+  }
+  if (advances.length > 0) {
+    logger.info({ tenantId, type, count: advances.length }, 'campaign steps recorded');
+  }
+}
+
+/** Only joining and finishing are announced, the same rule as the API path. */
+const ANNOUNCED: Partial<Record<string, 'funnel.entered' | 'funnel.converted'>> = {
+  capture: 'funnel.entered',
+  convert: 'funnel.converted',
+};

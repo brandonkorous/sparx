@@ -43,7 +43,7 @@ import {
   validationError,
 } from '@wizeworks/api-core/errors';
 
-import { resolvePublicPropertyId } from '../../../lib/property.js';
+import { resolvePublicPropertyId, siteDisabledModules } from '../../../lib/property.js';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { requireCustomerId, relaySetCookies } from '../../../lib/customer-session.js';
 
@@ -185,8 +185,15 @@ async function loadProfile(
  *  brands ships every module on, so a flag would hide nothing there. */
 export async function loadOffers(
   ctx: CustomerAuthContext,
-  customerId: string
-): Promise<{ bookings: boolean; b2b: boolean }> {
+  customerId: string,
+  // What THIS SITE has switched off under "What this site shows". An owner
+  // saying "no selling here" is not evidence, it is an instruction, and it
+  // outranks the evidence rule above: a journal with Selling switched off must
+  // not offer Orders, Returns, Wishlist or Payment methods in its account nav,
+  // however many orders the account has elsewhere.
+  disabledModules: readonly string[] = []
+): Promise<{ bookings: boolean; b2b: boolean; selling: boolean; requests: boolean }> {
+  const off = new Set(disabledModules);
   return withTenant(ctx, async (tx) => {
     const [service, customer] = await Promise.all([
       // The same predicate the booking surface itself uses to serve a service.
@@ -199,7 +206,12 @@ export async function loadOffers(
         select: { companyId: true },
       }),
     ]);
-    return { bookings: service !== null, b2b: customer?.companyId != null };
+    return {
+      bookings: service !== null,
+      b2b: customer?.companyId != null && !off.has('b2b'),
+      selling: !off.has('commerce'),
+      requests: !off.has('crm'),
+    };
   });
 }
 
@@ -298,9 +310,13 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/me', async (request) => {
     const ctx = await accountContext(request);
     const customerId = await requireCustomerId(request, ctx, 'account:read');
+    // WHICH SITE they are signed in on. The account area is one screen on many
+    // sites, and a business running a shop and a journal off one account has
+    // already said which of them sells.
+    const propertyId = await activeProperty(request, ctx.tenantId);
     const [customer, offers] = await Promise.all([
       loadProfile(ctx, customerId),
-      loadOffers(ctx, customerId),
+      loadOffers(ctx, customerId, await siteDisabledModules(ctx.tenantId, propertyId)),
     ]);
     if (!customer) throw notFound('Customer', customerId);
     return ok({ customer, offers });

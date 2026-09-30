@@ -27,6 +27,20 @@ model CheckoutSession {
   customerName     String? @map("customer_name") @db.VarChar(255)
   acceptsMarketing Boolean @default(false) @map("accepts_marketing")
 
+  // What the buyer wants the shop to know about THIS order: "leave it with the
+  // neighbor", "it is a gift, no receipt", "collecting Saturday not Friday".
+  // Copied onto `Order.customerNote` at complete(), which the console has always
+  // printed under "From the customer" and which nothing could ever write: 0 of
+  // 122 orders carried one (issue 874).
+  //
+  // IT LIVES ON THE SESSION, NOT IN THE PAGE. A hosted-redirect gateway sends the
+  // shopper away from the tab (`window.location.href = intent.redirectUrl`), so
+  // anything still in React state is gone by the time the order is written. A box
+  // that asks "anything we should know?" and then silently drops the answer for
+  // some shops' gateways is worse than no box.
+  // [[feedback_a_promise_in_copy_is_a_contract]]
+  customerNote String? @map("customer_note") @db.Text
+
   // Address snapshots persisted on the session so the storefront can
   // replay them between steps without re-fetching from CustomerAddress.
   shippingAddress Json? @map("shipping_address")

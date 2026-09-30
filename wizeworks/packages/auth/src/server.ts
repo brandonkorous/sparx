@@ -13,6 +13,7 @@ import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
 import { ac, roles } from './org-roles';
+import { isPasswordStep } from './sign-in-step';
 
 /**
  * Which brand an organization belongs to.
@@ -139,6 +140,26 @@ function createAuth() {
       requireEmailVerification: false,
       minPasswordLength: 8,
       autoSignIn: true,
+      // ── A RESET ENDS EVERY OTHER SESSION ──────────────────────────────────
+      //
+      // This was UNSET, which better-auth reads as `false`, and the asymmetry is
+      // what makes it a defect rather than a preference: the IN-CONSOLE password
+      // change already passes `revokeOtherSessions` defaulted to TRUE (both
+      // workbenches, `app/api/account/password/route.ts`). So the product had
+      // decided what changing a password means — and the one path that exists
+      // for "somebody else knows my password", the emailed reset, was the path
+      // that left them signed in.
+      //
+      // The blast radius is the session window, and it is long: `expiresIn` is
+      // 30 days below with `updateAge` of one day, so the row slides forward
+      // every time it is used. A stolen session that keeps being used never
+      // expires on its own, and the owner's one self-service remedy did nothing
+      // to it. [[feedback_a_fix_leaves_its_neighbour_behind]]
+      //
+      // Nothing is lost by the person doing the reset: better-auth's
+      // `/reset-password` mints no session, and this form sends them to
+      // /sign-in either way.
+      revokeSessionsOnPasswordReset: true,
       sendResetPassword: async ({ user, url }) => {
         // Publish an `email.send` Pub/Sub event — email-worker pulls it,
         // renders via @wizeworks/email, and relays through the active provider.
@@ -354,14 +375,76 @@ function createAuth() {
           // non-blocking: a notification failure must never affect sign-in. `create`
           // fires on a genuine sign-in, NOT on the 5-min cookie refresh (that's
           // `session.update`), so this doesn't email on every request.
-          after: async (session) => {
+          after: async (session, context) => {
+            const s = session as unknown as {
+              id: string;
+              userId: string;
+              ipAddress?: string;
+              userAgent?: string;
+            };
+
+            // ── WHEN THIS PERSON LAST SIGNED IN ─────────────────────────────
+            //
+            // `users.last_login_at` has existed since the very first migration
+            // (20260527000000_init) and NOTHING has ever written it: 0 of 76 users
+            // on the development database carry a value, four months in. Six
+            // screens across three apps read it, and every one of them renders the
+            // empty column as a statement — the console's teammate pane says "Has
+            // not signed in yet", the staff console says "Never". The account owner
+            // read that about herself while signed in (issue 853).
+            //
+            // This is the hook that already knows: `create` fires on a genuine
+            // sign-in and NOT on the 5-minute cookie refresh, which is why the
+            // new-device email below rides it rather than emailing every request.
+            //
+            // ── BUT A PASSWORD IS NOT A SIGN-IN WHEN 2FA IS ON ───────────────
+            //
+            // Measured by signing in as a real 2FA account and stopping at the
+            // challenge: `session.create` fires at the PASSWORD step, the row does
+            // not survive into the sessions table, and the challenge is still on
+            // screen. Writing there would put a date under "Last signed in" for
+            // somebody who had the password and never got past the second factor —
+            // which is a worse sentence than the empty one this set out to fix.
+            //
+            // So the write is gated the way the two-factor notice four blocks up
+            // gates itself, and for the same reason its comment calls exact: the
+            // db hook's `context` is better-auth's endpoint context, so
+            // `context.path` names the endpoint that created this session.
+            //
+            // It skips ONE case — the password endpoint for an account that has 2FA
+            // switched on — and writes for everything else. That direction matters:
+            // an endpoint nobody listed here still records a sign-in, so a new way
+            // in (a social provider, a passkey, a magic link) is never silently
+            // dropped, and the only thing an incomplete list can cost is the
+            // precision of one timestamp. A deny-list that has to be exhaustive to
+            // be safe is how a guard goes blind.
+            // [[feedback_structural_checks_go_blind]]
+            const path = (context as { path?: string } | null)?.path;
+            const awaitingSecondFactor =
+              isPasswordStep(path) &&
+              (await authPrisma.user
+                .findUnique({ where: { id: s.userId }, select: { twoFactorEnabled: true } })
+                .then((u) => u?.twoFactorEnabled === true)
+                .catch(() => false));
+
+            // Best-effort, in its own try/catch, and FIRST — a failed stats write
+            // must never cost somebody their sign-in, and it must not be able to
+            // take the security email down with it either.
+            if (!awaitingSecondFactor) {
+              try {
+                await authPrisma.user.update({
+                  where: { id: s.userId },
+                  data: { lastLoginAt: new Date() },
+                });
+              } catch {
+                // swallow — never block a sign-in on a column nobody is waiting for.
+                // The READER treats an empty column as "not known" rather than as
+                // "never signed in", so a swallowed failure here cannot put the
+                // false sentence back (issue 853).
+              }
+            }
+
             try {
-              const s = session as unknown as {
-                id: string;
-                userId: string;
-                ipAddress?: string;
-                userAgent?: string;
-              };
               if (!s.userAgent) return; // no way to identify the device → skip
               const priorWithSameDevice = await authPrisma.session.count({
                 where: { userId: s.userId, userAgent: s.userAgent, id: { not: s.id } },

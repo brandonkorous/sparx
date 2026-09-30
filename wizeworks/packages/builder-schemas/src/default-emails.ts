@@ -329,9 +329,9 @@ const orderDelivered = (): BuilderNode =>
 
 const orderCancelled = (): BuilderNode =>
   body([
-    heading('Your order was cancelled'),
+    heading('Your order was canceled'),
     para(
-      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} has been cancelled. Order total: {{order.total}}.'
+      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} has been canceled. Order total: {{order.total}}.'
     ),
     conditional('order.cancelReason', [para('Reason: {{order.cancelReason}}')]),
     para(
@@ -432,9 +432,9 @@ const subscriptionResumed = (): BuilderNode =>
 
 const subscriptionCancelled = (): BuilderNode =>
   body([
-    heading('Your subscription was cancelled'),
+    heading('Your subscription was canceled'),
     para(
-      'Hi {{customer.firstName ?? "there"}}. Your subscription has been cancelled and no further orders will ship.'
+      'Hi {{customer.firstName ?? "there"}}. Your subscription has been canceled and no further orders will ship.'
     ),
     conditional('subscription.currentPeriodEnd', [
       para('You’ll keep access until {{subscription.currentPeriodEnd}}.'),
@@ -568,9 +568,9 @@ const bookingRescheduled = (): BuilderNode =>
 
 const bookingCancelled = (): BuilderNode =>
   body([
-    heading('Your booking was cancelled'),
+    heading('Your booking was canceled'),
     para(
-      'Hi {{customer.firstName ?? "there"}}. Your {{booking.service}} scheduled for {{booking.when}} has been cancelled.'
+      'Hi {{customer.firstName ?? "there"}}. Your {{booking.service}} scheduled for {{booking.when}} has been canceled.'
     ),
     conditional('booking.cancellationReason', [para('Reason: {{booking.cancellationReason}}')]),
     button('Book another time', '{{booking.bookUrl}}'),
@@ -844,10 +844,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   },
   {
     key: 'order-cancelled',
-    name: 'Order cancelled',
+    name: 'Order canceled',
     type: 'transactional',
     category: 'order',
-    subject: 'Your order {{order.number}} was cancelled',
+    subject: 'Your order {{order.number}} was canceled',
     preheader: 'About your recent order.',
     sources: ['customer', 'order', 'tenant'],
     refs: ['customerId', 'orderId'],
@@ -959,10 +959,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   },
   {
     key: 'subscription-cancelled',
-    name: 'Subscription cancelled',
+    name: 'Subscription canceled',
     type: 'transactional',
     category: 'subscription',
-    subject: 'Your subscription was cancelled',
+    subject: 'Your subscription was canceled',
     preheader: 'About your recent subscription.',
     sources: ['customer', 'subscription', 'tenant'],
     refs: ['customerId', 'subscriptionId'],
@@ -1091,10 +1091,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   },
   {
     key: 'booking-cancelled',
-    name: 'Booking cancelled',
+    name: 'Booking canceled',
     type: 'transactional',
     category: 'scheduling',
-    subject: 'Your booking was cancelled',
+    subject: 'Your booking was canceled',
     preheader: 'About your {{booking.service}}.',
     sources: ['customer', 'booking', 'tenant'],
     refs: ['customerId', 'bookingId'],

@@ -4,15 +4,15 @@
 // four-way if/else in the handler, each arm carrying its own copy of the same
 // result-writing loop, which is why the list stayed at four for as long as it did.
 //
-// The three original processors that predate the `EntityProcessor` shape are wrapped
-// rather than rewritten: they work, they are tested, and the wrapper is honest about
+// The one original processor that still predates the `EntityProcessor` shape is wrapped
+// rather than rewritten: it works, it is tested, and the wrapper is honest about
 // what it can and cannot preview.
 
 import type { Logger } from 'pino';
 
 import { processB2bAccountRows } from './b2b_accounts';
 import { customersProcessor } from './customers';
-import { processDiscountRows } from './discounts';
+import { discountsProcessor } from './discounts';
 import { companiesProcessor } from './companies';
 import { contentProcessor } from './content';
 import { dealsProcessor } from './deals';
@@ -38,8 +38,8 @@ import type {
  * Wrap a pre-`EntityProcessor` row function.
  *
  * Its preview reports every row as `create`, which is deliberately the pessimistic
- * answer: these three resolve their own natural keys inside the write path, so the
- * only way to know create-from-update would be to run them. Saying "create" and then
+ * answer: it resolves its own natural keys inside the write path, so the
+ * only way to know create-from-update would be to run it. Saying "create" and then
  * updating is a smaller surprise than the reverse, and the row-level result after the
  * run tells the tenant exactly what happened.
  */
@@ -80,7 +80,7 @@ const ALL: EntityProcessor[] = [
   suppliersProcessor,
   purchaseOrdersProcessor,
   customersProcessor,
-  wrapLegacy('discounts', 'commerce', processDiscountRows),
+  discountsProcessor,
   wrapLegacy('b2b_accounts', 'b2b', processB2bAccountRows),
 ];
 

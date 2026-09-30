@@ -21,6 +21,7 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 
+import { countNoteWrite } from './count-note';
 import { ensureVariantExists, ensureWarehouseActive } from './internal';
 import { resolveLineUom, toBaseUnits } from './units-of-measure';
 import {
@@ -362,7 +363,11 @@ export async function enterCounts(
           // same scale `expectedQuantity` is on (docs/146 Phase 6.2). A line
           // with no unit has a factor of 1 and nothing changes.
           countedQuantity: toBaseUnits(e.countedQuantity, factorByLine.get(e.lineId) ?? 1),
-          ...(e.note !== undefined ? { note: e.note } : {}),
+          // Three states, not two: see `countNoteWrite`. Written inline as
+          // `e.note !== undefined` this quietly stored an empty box as an empty
+          // string, which counts as a filled note on every later reading of
+          // this table.
+          ...countNoteWrite(e.note),
         },
       });
     }

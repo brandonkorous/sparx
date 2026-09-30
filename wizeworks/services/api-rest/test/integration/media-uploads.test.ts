@@ -175,6 +175,39 @@ describe('media uploads', () => {
     expect(del.json().error.message).toContain('author profile');
   });
 
+  it('PATCH answers with the COUNTED usage, not the unwritten column', async () => {
+    const create = await app.inject({
+      method: 'POST',
+      url: '/v1/media/uploads',
+      headers: authHeader(token),
+      payload: { filename: 'described.jpg', mime_type: 'image/jpeg', byte_size: 8 },
+    });
+    const assetId = create.json().data.asset.id;
+    // A real reference, with the column left at the 0 nothing ever overwrites.
+    // The PATCH used to serialize that 0 with a null breakdown, so a console
+    // writing its cache from the response re-enabled Delete on a used picture.
+    await withTenant({ tenantId: tenant.tenantId }, async (tx) => {
+      await tx.author.create({
+        data: {
+          tenantId: tenant.tenantId,
+          slug: `described-owner-${assetId.slice(0, 8)}`,
+          displayName: 'Described Owner',
+          avatarAssetId: assetId,
+        },
+      });
+    });
+
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: `/v1/media/assets/${assetId}`,
+      headers: authHeader(token),
+      payload: { alt_text: 'A described picture.' },
+    });
+    expect(patch.statusCode).toBe(200);
+    expect(patch.json().data.usage_count).toBe(1);
+    expect(patch.json().data.usage_breakdown.authors).toBe(1);
+  });
+
   it('allows delete when a stale usage_count claims a reference that is gone', async () => {
     const create = await app.inject({
       method: 'POST',

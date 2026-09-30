@@ -9,11 +9,19 @@
 // name a parent that does not exist yet and every export writes them in whatever
 // order the database happened to return. Sorting by depth first is what turns
 // "Home > Shirts > Tees" into a real tree instead of three orphans.
+//
+// The columns read are the canonical field keys (`ENTITY_FIELDS.categories` and
+// `.collections`), held equal by `contract.test.ts`. A category's position and image,
+// and a collection's image, used to be offered and dropped; the image becomes the
+// banner. A collection's published yes/no is off the list: a collection here has no
+// switch for that (it is on every site unless limited to some), so there is nothing
+// to save it to.
 
 import { categoryService, collectionService } from '@wizeworks/commerce';
 import { withTenant } from '@wizeworks/db';
-import { toList, toSlug } from '@wizeworks/migration';
+import { toInteger, toList, toSlug } from '@wizeworks/migration';
 
+import { ingestImage, linkedNotice } from './images';
 import { Resolver } from './resolve';
 import {
   eachRow,
@@ -25,7 +33,7 @@ import {
 } from './types';
 
 /** A free handle for `name`, avoiding anything already taken. */
-async function freeHandle(
+export async function freeHandle(
   ctx: ProcessorContext,
   table: 'category' | 'collection',
   desired: string
@@ -47,6 +55,24 @@ async function freeHandle(
     if (taken === null) return candidate;
   }
   return `${base}-${Date.now().toString(36)}`;
+}
+
+/**
+ * The banner image a row names, brought across like every other imported image.
+ * Returns the asset to link and, when it could only be linked to the old platform
+ * rather than copied, the sentence the run report owes the tenant.
+ */
+async function bannerOf(
+  ctx: ProcessorContext,
+  url: string | undefined
+): Promise<{ heroMediaId?: string; note?: string }> {
+  const address = (url ?? '').trim();
+  if (address === '') return {};
+  const image = await ingestImage(ctx, address);
+  return {
+    heroMediaId: image.assetId,
+    ...(!image.copied && image.reason !== undefined ? { note: linkedNotice(image.reason) } : {}),
+  };
 }
 
 /** How deep in the tree a row sits, so parents are created before children. */
@@ -86,6 +112,9 @@ export const categoriesProcessor: EntityProcessor = {
         // segment is the immediate parent either way.
         const parentName = (row.parent ?? '').split('>').pop()?.trim() ?? '';
         const parentId = parentName === '' ? null : await resolver.categoryByName(parentName);
+        const position = toInteger(row.position);
+        const banner = await bannerOf(ctx, row.image_url);
+        const note = banner.note === undefined ? {} : { errorMsg: banner.note };
 
         const input = {
           name: name.slice(0, 127),
@@ -93,11 +122,13 @@ export const categoriesProcessor: EntityProcessor = {
             ? { description: row.description.slice(0, 10_000) }
             : {}),
           ...(parentId === null ? {} : { parentId }),
+          ...(position !== undefined && position >= 0 ? { position } : {}),
+          ...(banner.heroMediaId === undefined ? {} : { heroMediaId: banner.heroMediaId }),
         };
 
         if (existingId !== null) {
           await categoryService.update(ctx, existingId, input);
-          results.push({ rowIndex, status: 'updated', naturalKey: name });
+          results.push({ rowIndex, status: 'updated', naturalKey: name, ...note });
           continue;
         }
 
@@ -109,7 +140,7 @@ export const categoriesProcessor: EntityProcessor = {
               : await freeHandle(ctx, 'category', name),
         });
         resolver.rememberCategory(name, created.id);
-        results.push({ rowIndex, status: 'imported', naturalKey: name });
+        results.push({ rowIndex, status: 'imported', naturalKey: name, ...note });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         logger.warn({ err: error, rowIndex }, 'category row failed');
@@ -158,14 +189,18 @@ export const collectionsProcessor: EntityProcessor = {
           return { rowIndex, status: 'skipped', naturalKey: name };
         }
 
+        const banner = await bannerOf(ctx, row.image_url);
         const input = {
           name: name.slice(0, 127),
           ...(row.description !== undefined && row.description !== ''
             ? { description: row.description.slice(0, 10_000) }
             : {}),
-          type: 'manual' as const,
+          ...(banner.heroMediaId === undefined ? {} : { heroMediaId: banner.heroMediaId }),
         };
 
+        // `type` only on create. It used to be sent on every update too, and turning
+        // a rule-driven collection into a hand-picked one is not something a
+        // spreadsheet row should do by being imported twice.
         let collectionId: string;
         if (existing !== null) {
           await collectionService.update(ctx, existing.id, input);
@@ -173,6 +208,7 @@ export const collectionsProcessor: EntityProcessor = {
         } else {
           const created = await collectionService.create(ctx, {
             ...input,
+            type: 'manual' as const,
             handle: await freeHandle(ctx, 'collection', (row.slug ?? '').trim() || name),
           });
           collectionId = created.id;
@@ -205,15 +241,19 @@ export const collectionsProcessor: EntityProcessor = {
           }
         }
 
+        const notes = [
+          ...(members.length > 0 && matched < members.length
+            ? [
+                `${matched} of ${members.length} products in this collection were found. Import your products first if any are missing.`,
+              ]
+            : []),
+          ...(banner.note === undefined ? [] : [banner.note]),
+        ];
         return {
           rowIndex,
           status: existing === null ? 'imported' : 'updated',
           naturalKey: name,
-          ...(members.length > 0 && matched < members.length
-            ? {
-                errorMsg: `${matched} of ${members.length} products in this collection were found. Import your products first if any are missing.`,
-              }
-            : {}),
+          ...(notes.length > 0 ? { errorMsg: notes.join(' ') } : {}),
         };
       },
       (rowIndex, message) => ({ rowIndex, status: 'error', errorMsg: message })

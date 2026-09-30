@@ -73,7 +73,7 @@ const amountCents = z.int();
  *  than two that never sum together. */
 const currency = z
   .string()
-  .length(3)
+  .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
   .transform((value) => value.toUpperCase());
 
 /** A hex swatch the tenant chose for their own category. User-picked data, not a

@@ -410,7 +410,10 @@ export const CreateSupplierReturnInput = z.object({
   rmaNumber: z.string().trim().max(64).nullish(),
   carrier: z.string().trim().max(80).nullish(),
   trackingNumber: z.string().trim().max(120).nullish(),
-  currency: z.string().length(3).default('USD'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('USD'),
   notes: z.string().max(2000).nullish(),
   lines: z.array(SupplierReturnLineInput).min(1).max(500),
 });
@@ -470,7 +473,10 @@ export const CreateSupplierBillInput = z.object({
   number: z.string().trim().min(1).max(40),
   billedAt: z.string().datetime(),
   dueAt: z.string().datetime().nullish(),
-  currency: z.string().length(3).default('USD'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('USD'),
   fxRate: z
     .string()
     .trim()

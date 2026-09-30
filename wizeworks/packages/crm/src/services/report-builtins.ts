@@ -12,6 +12,26 @@
 // reports over ONE object, on purpose). What ships here is the subset that is
 // honestly expressible, which is what makes them truthful as examples: every
 // one of them is something a tenant could have built themselves.
+//
+// ── EDITING A DESCRIPTION HERE CHANGES NOTHING ANYBODY IS READING ───────────
+//
+// `seedBuiltinReports` installs what is MISSING and leaves existing rows alone,
+// for a good reason stated on it: a tenant may have shared one or hung it on a
+// dashboard. The cost is that this file is a template for new tenants and
+// nothing else, so a wording fix here never reaches a tenant who already has
+// the report.
+//
+// It had already happened. Every em dash in these descriptions was replaced
+// with a colon at some point, and on 2026-09-25 the stored rows still held the
+// em dashes: 35 rows across 7 tenants, every one of them with
+// `created_at = updated_at`, so not one had ever been touched by the business
+// it belonged to. A shop owner was reading wording this file had not carried
+// for months. [[feedback_data_is_a_deploy_stage]]
+//
+// So a wording change here needs a migration beside it that refreshes the rows
+// nobody has edited, matched on `builtin_slug` and gated on
+// `created_at = updated_at`. See
+// `20270518000000_the_ready_made_reports_say_what_this_file_says`.
 
 import { withTenant } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
@@ -35,7 +55,7 @@ const NO_FILTER = { logic: 'AND', conditions: [] };
 export const BUILTIN_REPORTS: BuiltinReport[] = [
   {
     slug: 'deals-by-stage',
-    name: 'Deals by stage',
+    name: 'Where your deals are',
     description:
       'How many open deals are sitting at each step of your process, and what they are worth. The classic “where is everything?” view.',
     objectKey: 'deal',
@@ -52,7 +72,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'deals-won-by-month',
     name: 'Deals won each month',
     description:
-      'Closed-won value month by month over the last year: whether you are growing, and by how much.',
+      'What you won, month by month, over the last year: whether you are growing, and by how much.',
     objectKey: 'deal',
     filters: { logic: 'AND', conditions: [{ field: 'closedAt', operator: 'is_set' }] },
     groupBy: { field: 'closedAt', bucket: 'month' },
@@ -63,7 +83,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
   {
     slug: 'new-customers-by-month',
     name: 'New customers each month',
-    description: 'How many people joined your list each month over the last year.',
+    description: 'How many people you took on each month over the last year.',
     objectKey: 'contact',
     filters: NO_FILTER,
     groupBy: { field: 'createdAt', bucket: 'month' },
@@ -73,9 +93,9 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
   },
   {
     slug: 'customers-by-stage',
-    name: 'Customers by stage',
+    name: 'How far along your customers are',
     description:
-      'Everyone on your list grouped by where they have got to: leads, customers, the ones who went quiet.',
+      'Everybody you hold a record for, grouped by how far along they are: the ones you are still talking to, the ones who bought, the ones who went quiet.',
     objectKey: 'contact',
     filters: NO_FILTER,
     groupBy: { field: 'lifecycleStage' },
@@ -87,7 +107,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'spend-by-company',
     name: 'Spend by company',
     description:
-      'Lifetime spend added up by the company people work for: where your money actually comes from.',
+      'Everything each company has spent with you, added up: where your money actually comes from.',
     objectKey: 'contact',
     filters: { logic: 'AND', conditions: [{ field: 'company', operator: 'is_set' }] },
     groupBy: { field: 'company' },
@@ -102,7 +122,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'requests-by-urgency',
     name: 'Requests by urgency',
     description:
-      'Open support requests grouped by how urgent they are: what your team should pick up first.',
+      'Requests nobody has answered yet, grouped by how urgent they are: what to pick up first.',
     objectKey: 'ticket',
     filters: { logic: 'AND', conditions: [{ field: 'resolvedAt', operator: 'is_not_set' }] },
     groupBy: { field: 'priority' },
@@ -114,7 +134,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'requests-opened-by-week',
     name: 'Requests opened each week',
     description:
-      'How much is coming in, week by week, over the last quarter: whether your support load is growing.',
+      'How many requests came in week by week over the last quarter: whether more is arriving than before.',
     objectKey: 'ticket',
     filters: NO_FILTER,
     groupBy: { field: 'createdAt', bucket: 'week' },
@@ -124,8 +144,8 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
   },
   {
     slug: 'open-tasks-by-owner',
-    name: 'Open tasks by owner',
-    description: 'Who is carrying what. Unfinished tasks grouped by the person they belong to.',
+    name: 'Who is carrying what',
+    description: 'Everything still to do, grouped by the person it belongs to.',
     objectKey: 'task',
     filters: { logic: 'AND', conditions: [{ field: 'completedAt', operator: 'is_not_set' }] },
     groupBy: { field: 'assignedToUserId' },

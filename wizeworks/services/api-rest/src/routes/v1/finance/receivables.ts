@@ -22,7 +22,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { requireInvoicingModule } from '../../../lib/invoicing-context.js';
 import { resolveListScope } from '../../../lib/property.js';
-import { daysPastDue } from '@wizeworks/crm';
+import { daysPastDue, OWED_DOCUMENT_WHERE } from '@wizeworks/crm';
 
 const BUCKET_KEYS = ['current', 'd1_30', 'd31_60', 'd61_90', 'd90_plus'] as const;
 
@@ -102,7 +102,10 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
       tx.billingDocument.findMany({
         where: {
           deletedAt: null,
-          status: { in: ['unpaid', 'partial', 'overdue'] },
+          // Money somebody owes, asked through the one rule rather than through
+          // the payment status alone — an unsent quote is `unpaid` with a
+          // balance and is not a receivable (issue 857).
+          ...OWED_DOCUMENT_WHERE,
           balance: { gt: 0 },
           ...(scope ? { propertyId: scope } : {}),
         },

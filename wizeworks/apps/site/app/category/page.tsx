@@ -15,6 +15,7 @@ import { SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -27,6 +28,9 @@ export const metadata: Metadata = { title: 'Categories' };
 export default async function CategoryIndexPage() {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
 
   const propertySlug = await resolveActivePropertySlug();
   // The tenant's published categories shell, else the code shell wrapping the pinned

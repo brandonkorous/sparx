@@ -1,150 +1,275 @@
-// Discount row processor for CSV/Excel import.
+// Discounts.
 //
-// Natural key: code (discount code). Automatic discounts (no code) are created
-// but cannot be upserted by code — they get a new row each import.
+// THE COLUMNS ARE THE CANONICAL FIELD KEYS: `ENTITY_FIELDS.discounts` in
+// @wizeworks/migration, and nothing else. Two callers hand rows to this file — the
+// Move-in mapper, and the discount CSV endpoint in api-rest — and the two used to
+// speak different languages. This file read the old export's own column names
+// (`name`, `value_cents`, `value_percent`, `start_at`, `end_at`,
+// `total_usage_limit`) while the mapper offered `title`, `value`, `starts_at`,
+// `ends_at`, `usage_limit`, so every discount a Move-in carried failed "name is
+// required" and its value, dates, minimum spend and limit were dropped. The CSV
+// endpoint now translates a file saved from the old export into these keys on the way
+// in (`discountRowFromFile`), and the export writes these keys, so one list serves
+// both. `contract.test.ts` measures what this file reads and holds it equal to
+// that list.
 //
-// Required columns: name. type defaults to 'percent' if omitted.
-//
-// Column aliases (case-insensitive):
-//   code, name, description, type, scope, value_cents, value_percent, currency,
-//   status, start_at, end_at, total_usage_limit, per_customer_limit
+// Natural key: the code. A blank cell never clears what a discount already has —
+// every field is written only when the file has a value for it — and a status in the
+// file only ever switches a discount ON: "expired" or "disabled" on a discount that
+// is live here is the file being older than the discount, not an instruction to stop
+// a promotion somebody is running.
 
-import type { Logger } from 'pino';
 import { discountService } from '@wizeworks/commerce';
 import { withTenant } from '@wizeworks/db';
+import { toCents, toDecimal, toInteger, toIsoDate } from '@wizeworks/migration';
 
-export interface DiscountRow {
-  code?: string;
-  name?: string;
-  description?: string;
-  type?: string;
-  scope?: string;
-  value_cents?: string;
-  value_percent?: string;
-  currency?: string;
-  status?: string;
-  start_at?: string;
-  end_at?: string;
-  total_usage_limit?: string;
-  per_customer_limit?: string;
-  [key: string]: string | undefined;
+import {
+  eachRow,
+  type EntityProcessor,
+  type ImportRow,
+  type PreviewResult,
+  type ProcessorContext,
+  type RowResult,
+} from './types';
+
+/** The file's discount types, and what each one is called here. */
+const TYPES: Record<string, 'percent' | 'fixed' | 'free_shipping'> = {
+  percentage: 'percent',
+  fixed_amount: 'fixed',
+  free_shipping: 'free_shipping',
+};
+
+/** Statuses that switch a discount on. The start and end dates still decide when it
+ *  applies, so a scheduled one is safe to switch on now. */
+const SWITCHED_ON = new Set(['active', 'scheduled']);
+
+const MAX_CODE = 63;
+
+interface ExistingDiscount {
+  id: string;
+  status: string;
+  type: string;
+  conditions: unknown;
 }
 
-export interface RowResult {
-  rowIndex: number;
-  status: 'imported' | 'updated' | 'skipped' | 'error';
-  naturalKey?: string;
-  errorMsg?: string;
+interface Condition {
+  kind: string;
+  [key: string]: unknown;
 }
 
-// Trim a CSV cell; a blank/whitespace-only cell becomes undefined so it falls
-// to the column default rather than persisting an empty string.
 function blank(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
-  if (trimmed === undefined || trimmed === '') return undefined;
-  return trimmed;
+  return trimmed === undefined || trimmed === '' ? undefined : trimmed;
 }
 
-type DiscountType = 'percent' | 'fixed' | 'free_shipping' | 'buy_x_get_y' | 'bundle';
-type DiscountScope = 'order' | 'product' | 'collection' | 'shipping';
+/** What a row says, checked, with the reason it cannot be saved when it cannot. */
+type ReadDiscount =
+  | { error: string }
+  | {
+      code: string;
+      /** Every field the row has a value for, in the service's names. */
+      fields: Record<string, unknown>;
+      /** The minimum spend, in cents, when the row names one. */
+      minimumCents: number | undefined;
+      switchOn: boolean;
+      notes: string[];
+    };
 
-function normalizeType(val: string | undefined): DiscountType {
-  const valid: DiscountType[] = ['percent', 'fixed', 'free_shipping', 'buy_x_get_y', 'bundle'];
-  return valid.includes(val as DiscountType) ? (val as DiscountType) : 'percent';
-}
-
-function normalizeScope(val: string | undefined): DiscountScope {
-  const valid: DiscountScope[] = ['order', 'product', 'collection', 'shipping'];
-  return valid.includes(val as DiscountScope) ? (val as DiscountScope) : 'order';
-}
-
-function parseCents(val: string | undefined): number | undefined {
-  if (!val || val.trim() === '') return undefined;
-  const n = Math.round(parseFloat(val.replace(/[$,]/g, '')) * 100);
-  return isNaN(n) ? undefined : n;
-}
-
-function parseNum(val: string | undefined): number | undefined {
-  if (!val || val.trim() === '') return undefined;
-  const n = parseFloat(val.replace(/[%,]/g, ''));
-  return isNaN(n) ? undefined : n;
-}
-
-function parseInt10(val: string | undefined): number | undefined {
-  if (!val || val.trim() === '') return undefined;
-  const n = parseInt(val, 10);
-  return isNaN(n) ? undefined : n;
-}
-
-export async function processDiscountRows(
-  ctx: { tenantId: string },
-  rows: DiscountRow[],
-  opts: { upsert: boolean },
-  logger: Logger
-): Promise<RowResult[]> {
-  const results: RowResult[] = [];
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]!;
-    const code = blank(row.code)?.toUpperCase();
-    const naturalKey = code ?? `row-${i + 1}`;
-    const log = logger.child({ rowIndex: i, code });
-
-    if (!row.name?.trim()) {
-      results.push({ rowIndex: i, status: 'error', naturalKey, errorMsg: 'name is required' });
-      continue;
-    }
-
-    try {
-      const existing = code
-        ? await withTenant(ctx, (tx) =>
-            tx.discount.findFirst({
-              where: { tenantId: ctx.tenantId, code, deletedAt: null },
-              select: { id: true, status: true },
-            })
-          )
-        : null;
-
-      const base = {
-        name: row.name.trim(),
-        description: blank(row.description),
-        type: normalizeType(row.type),
-        scope: normalizeScope(row.scope),
-        valueCents: parseCents(row.value_cents),
-        valuePercent: parseNum(row.value_percent),
-        currency: blank(row.currency)?.toUpperCase(),
-        startAt: blank(row.start_at),
-        endAt: blank(row.end_at),
-        totalUsageLimit: parseInt10(row.total_usage_limit),
-        perCustomerLimit: parseInt10(row.per_customer_limit) ?? 1,
-      };
-
-      if (existing && opts.upsert) {
-        await discountService.updateDiscount(ctx, existing.id, base);
-        if (row.status === 'active' && existing.status !== 'active') {
-          await discountService.activateDiscount(ctx, existing.id);
-        } else if (row.status === 'archived' && existing.status !== 'archived') {
-          await discountService.archiveDiscount(ctx, existing.id);
-        }
-        results.push({ rowIndex: i, status: 'updated', naturalKey });
-        log.debug('updated');
-      } else if (existing && !opts.upsert) {
-        results.push({ rowIndex: i, status: 'skipped', naturalKey });
-        log.debug('skipped (upsert off)');
-      } else {
-        const { id } = await discountService.createDiscount(ctx, { ...base, code: code ?? null });
-        if (row.status === 'active') {
-          await discountService.activateDiscount(ctx, id);
-        }
-        results.push({ rowIndex: i, status: 'imported', naturalKey });
-        log.debug('imported');
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      log.warn({ err }, 'row error');
-      results.push({ rowIndex: i, status: 'error', naturalKey, errorMsg: msg });
-    }
+function readDiscountRow(row: ImportRow, existing: ExistingDiscount | null): ReadDiscount {
+  const code = blank(row.code)?.toUpperCase();
+  if (code === undefined) return { error: 'This discount has no code.' };
+  if (code.length > MAX_CODE) {
+    return {
+      error: `The code “${code}” is ${code.length} characters long; a discount code can be at most ${MAX_CODE}.`,
+    };
   }
 
-  return results;
+  const notes: string[] = [];
+  const fields: Record<string, unknown> = {};
+
+  const title = blank(row.title);
+  // A discount needs a name, and a file often has only the code. The code is what
+  // the tenant already calls it, so it stands in rather than the row failing.
+  if (title !== undefined) fields.name = title.slice(0, 127);
+  else if (existing === null) fields.name = code;
+
+  const description = blank(row.description);
+  if (description !== undefined) fields.description = description.slice(0, 2000);
+
+  const typeText = blank(row.type)?.toLowerCase();
+  const type = typeText === undefined ? undefined : TYPES[typeText];
+  if (typeText !== undefined && type === undefined) {
+    return {
+      error: `A “${typeText}” discount cannot be imported from a file, because what it gives away is a set of product rules a spreadsheet row does not carry. Set it up by hand.`,
+    };
+  }
+  if (type === undefined && existing === null) {
+    return {
+      error:
+        'This row does not say whether the discount is a percentage, an amount off, or free shipping.',
+    };
+  }
+  if (type !== undefined) fields.type = type;
+  const effectiveType = type ?? existing?.type;
+
+  const value = toDecimal(row.value);
+  if (blank(row.value) !== undefined && value === undefined) {
+    return { error: `“${blank(row.value)}” is not a number, so the discount has no value.` };
+  }
+  if (value !== undefined) {
+    if (effectiveType === 'percent') {
+      if (value <= 0 || value > 100) {
+        return {
+          error: `A percentage discount has to be between 0 and 100; this one is ${value}.`,
+        };
+      }
+      fields.valuePercent = value;
+    } else if (effectiveType === 'fixed') {
+      if (value <= 0)
+        return { error: `An amount off has to be more than zero; this one is ${value}.` };
+      fields.valueCents = Math.round(value * 100);
+    }
+  } else if (existing === null && (effectiveType === 'percent' || effectiveType === 'fixed')) {
+    return {
+      error:
+        effectiveType === 'percent'
+          ? 'This percentage discount does not say how much it takes off.'
+          : 'This discount does not say how much it takes off.',
+    };
+  }
+
+  const currency = blank(row.currency);
+  if (currency !== undefined) {
+    if (/^[A-Za-z]{3}$/.test(currency)) fields.currency = currency.toUpperCase();
+    else
+      notes.push(`“${currency}” is not a currency code like USD, so the currency was left unset.`);
+  }
+
+  let minimumCents: number | undefined;
+  const minimum = toCents(row.minimum_amount);
+  if (minimum !== undefined && minimum > 0) minimumCents = minimum;
+
+  const usageLimit = toInteger(row.usage_limit);
+  if (usageLimit !== undefined) {
+    if (usageLimit > 0) fields.totalUsageLimit = usageLimit;
+    else notes.push('A usage limit has to be at least 1, so the file’s limit was not applied.');
+  }
+
+  const perCustomer = toInteger(row.per_customer_limit);
+  if (perCustomer !== undefined) {
+    if (perCustomer > 0) fields.perCustomerLimit = perCustomer;
+    else
+      notes.push('Uses per customer has to be at least 1, so the file’s number was not applied.');
+  }
+
+  const startsAt = toIsoDate(row.starts_at);
+  if (startsAt !== undefined) fields.startAt = startsAt;
+  const endsAt = toIsoDate(row.ends_at);
+  if (endsAt !== undefined) fields.endAt = endsAt;
+
+  const status = blank(row.status)?.toLowerCase();
+  return {
+    code,
+    fields,
+    minimumCents,
+    switchOn: status !== undefined && SWITCHED_ON.has(status),
+    notes,
+  };
 }
+
+/** The discount's rules with the minimum spend replaced, every other rule kept. */
+function withMinimum(existing: unknown, minimumCents: number): Condition[] {
+  const kept = Array.isArray(existing)
+    ? (existing as Condition[]).filter((condition) => condition.kind !== 'min_subtotal_cents')
+    : [];
+  return [...kept, { kind: 'min_subtotal_cents', value: minimumCents }];
+}
+
+async function findByCode(ctx: ProcessorContext, code: string): Promise<ExistingDiscount | null> {
+  return withTenant(ctx, (tx) =>
+    tx.discount.findFirst({
+      where: { tenantId: ctx.tenantId, code, deletedAt: null },
+      select: { id: true, status: true, type: true, conditions: true },
+    })
+  );
+}
+
+export const discountsProcessor: EntityProcessor = {
+  entity: 'discounts',
+  module: 'commerce',
+
+  async run(ctx, rows, options, logger) {
+    return eachRow<RowResult>(
+      rows,
+      logger,
+      async (row, rowIndex) => {
+        const code = blank(row.code)?.toUpperCase();
+        const existing = code === undefined ? null : await findByCode(ctx, code);
+        const read = readDiscountRow(row, existing);
+        if ('error' in read) {
+          return {
+            rowIndex,
+            status: 'error',
+            ...(code === undefined ? {} : { naturalKey: code }),
+            errorMsg: read.error,
+          };
+        }
+
+        const note = read.notes.length > 0 ? { errorMsg: read.notes.join(' ') } : {};
+
+        if (existing !== null) {
+          if (!options.upsert) return { rowIndex, status: 'skipped', naturalKey: read.code };
+          await discountService.updateDiscount(ctx, existing.id, {
+            ...read.fields,
+            ...(read.minimumCents === undefined
+              ? {}
+              : { conditions: withMinimum(existing.conditions, read.minimumCents) }),
+          });
+          if (read.switchOn && existing.status !== 'active') {
+            await discountService.activateDiscount(ctx, existing.id);
+          }
+          return { rowIndex, status: 'updated', naturalKey: read.code, ...note };
+        }
+
+        const { id } = await discountService.createDiscount(ctx, {
+          ...read.fields,
+          code: read.code,
+          ...(read.minimumCents === undefined
+            ? {}
+            : { conditions: withMinimum([], read.minimumCents) }),
+          ...(ctx.propertyId == null ? {} : { propertyIds: [ctx.propertyId] }),
+        });
+        if (read.switchOn) await discountService.activateDiscount(ctx, id);
+        return { rowIndex, status: 'imported', naturalKey: read.code, ...note };
+      },
+      (rowIndex, message) => ({ rowIndex, status: 'error', errorMsg: message })
+    );
+  },
+
+  async preview(ctx, rows, logger) {
+    return eachRow<PreviewResult>(
+      rows,
+      logger,
+      async (row, rowIndex) => {
+        const code = blank(row.code)?.toUpperCase();
+        const existing = code === undefined ? null : await findByCode(ctx, code);
+        const read = readDiscountRow(row, existing);
+        if ('error' in read) {
+          return {
+            rowIndex,
+            action: 'error',
+            ...(code === undefined ? {} : { naturalKey: code }),
+            errorMsg: read.error,
+          };
+        }
+        return {
+          rowIndex,
+          action: existing === null ? 'create' : 'update',
+          naturalKey: read.code,
+          ...(read.notes.length > 0 ? { errorMsg: read.notes.join(' ') } : {}),
+        };
+      },
+      (rowIndex, message) => ({ rowIndex, action: 'error', errorMsg: message })
+    );
+  },
+};

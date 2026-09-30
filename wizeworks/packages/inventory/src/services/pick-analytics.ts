@@ -94,6 +94,18 @@ export interface PickThroughputReport {
     scanVerifiedRate: number;
     shortLineRate: number;
     boxesPacked: number;
+    /**
+     * Whether this business has EVER confirmed a pick by scan, in any period.
+     *
+     * "0% confirmed by scan" has two causes with opposite remedies. A warehouse
+     * with scanners that stopped using them wants to hear about it in red; a
+     * shop that has never owned one is being told off for not buying hardware
+     * nobody offered to sell it, on a screen it opened to see how its week went.
+     *
+     * The window cannot tell them apart - both are zero - so this looks outside
+     * it. [[feedback_one_outcome_two_causes]]
+     */
+    everScanned: boolean;
   };
   pickers: PickerThroughput[];
   bins: BinShortfall[];
@@ -331,6 +343,16 @@ export async function pickThroughput(
     const totalVerified = pickerRows.reduce((s, p) => s + p.linesScanVerified, 0);
     const totalMinutes = pickerRows.reduce((s, p) => s + p.activeMinutes, 0);
 
+    // Deliberately unfiltered by date, warehouse or picker: the question is
+    // whether this business scans AT ALL, and narrowing it would answer a
+    // different one.
+    const everScanned =
+      totalVerified > 0 ||
+      (await tx.pickListLine.findFirst({
+        where: { tenantId: ctx.tenantId, verifiedByScan: true },
+        select: { id: true },
+      })) !== null;
+
     return {
       from: from.toISOString(),
       to: to.toISOString(),
@@ -345,6 +367,7 @@ export async function pickThroughput(
         scanVerifiedRate: ratio(totalVerified, totalLines + totalShort),
         shortLineRate: ratio(totalShort, totalLines + totalShort),
         boxesPacked: packerRows.reduce((s, p) => s + p.boxesPacked, 0),
+        everScanned,
       },
       pickers: pickerRows,
       bins: binRows.map((b) => ({

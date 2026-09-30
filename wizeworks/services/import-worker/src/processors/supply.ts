@@ -10,6 +10,14 @@
 // No competitor on the roster exports either one, which is exactly why they are
 // here: this is the path for the ERP or spreadsheet a tenant keeps ALONGSIDE their
 // store, through the manual column mapper. Almost every small distributor has one.
+//
+// The columns read are the canonical field keys (`ENTITY_FIELDS.suppliers` and
+// `.purchase_orders`), held equal by `contract.test.ts`. A supplier's minimum order is
+// off the list: a supplier here carries no minimum order value (a minimum is set per
+// item, as a quantity, on the supplier's price for it). A purchase order's status
+// and ordered date are off it too: an imported order arrives as a draft, because
+// "sent" and "received" are steps that move stock and stamp dates as they happen,
+// and a row cannot replay them.
 
 import { inventoryService } from '@wizeworks/inventory';
 import { withTenant } from '@wizeworks/db';
@@ -38,6 +46,12 @@ async function freeSupplierCode(ctx: ProcessorContext, desired: string): Promise
     if (taken === null) return candidate;
   }
   return `SUP-${Date.now().toString(36).toUpperCase()}`;
+}
+
+/** A three-letter currency code, or undefined for a blank or unreadable cell. */
+function currencyOf(value: string | undefined): string | undefined {
+  const text = (value ?? '').trim();
+  return /^[A-Za-z]{3}$/.test(text) ? text.toUpperCase() : undefined;
 }
 
 async function findSupplier(
@@ -93,6 +107,7 @@ export const suppliersProcessor: EntityProcessor = {
           ...(toInteger(row.lead_time_days) !== undefined
             ? { leadTimeDays: toInteger(row.lead_time_days) }
             : {}),
+          ...(currencyOf(row.currency) === undefined ? {} : { currency: currencyOf(row.currency) }),
         };
 
         let supplierId: string;
@@ -170,6 +185,27 @@ interface GatheredPo {
   lines: ImportRow[];
 }
 
+/**
+ * The purchase order a file's PO number already landed as.
+ *
+ * Matched on `reference`, which is where an import puts the old system's number: a
+ * purchase order's own `number` is minted here (PO-0001, …) and never equals it. This
+ * lookup used to ask for a `poNumber` column that a purchase order does not have,
+ * which the type check let through and the database refuses, so every purchase
+ * order in every file failed on that one line before anything was read.
+ */
+async function findPurchaseOrder(
+  ctx: ProcessorContext,
+  poNumber: string
+): Promise<{ id: string } | null> {
+  return withTenant(ctx, (tx) =>
+    tx.purchaseOrder.findFirst({
+      where: { tenantId: ctx.tenantId, reference: poNumber.slice(0, 120) },
+      select: { id: true },
+    })
+  );
+}
+
 function gatherPos(rows: ImportRow[]): GatheredPo[] {
   const byNumber = new Map<string, GatheredPo>();
   for (let index = 0; index < rows.length; index++) {
@@ -213,12 +249,7 @@ export const purchaseOrdersProcessor: EntityProcessor = {
       try {
         const { head, poNumber } = group;
 
-        const existing = await withTenant(ctx, (tx) =>
-          tx.purchaseOrder.findFirst({
-            where: { tenantId: ctx.tenantId, poNumber },
-            select: { id: true },
-          })
-        );
+        const existing = await findPurchaseOrder(ctx, poNumber);
         if (existing !== null && !options.upsert) {
           for (const rowIndex of group.rowIndexes) {
             results.push({ rowIndex, status: 'skipped', naturalKey: poNumber });
@@ -298,6 +329,9 @@ export const purchaseOrdersProcessor: EntityProcessor = {
             ? { expectedArrivalAt: toIsoDate(head.expected_at) }
             : {}),
           ...(head.po_number === undefined ? {} : { reference: head.po_number.slice(0, 120) }),
+          ...(currencyOf(head.currency) === undefined
+            ? {}
+            : { currency: currencyOf(head.currency) }),
           ...(head.note !== undefined && head.note !== '' ? { notes: head.note } : {}),
           lines: lineData,
         });
@@ -346,12 +380,7 @@ export const purchaseOrdersProcessor: EntityProcessor = {
       let action: PreviewResult['action'] = 'create';
       let errorMsg: string | undefined;
       try {
-        const existing = await withTenant(ctx, (tx) =>
-          tx.purchaseOrder.findFirst({
-            where: { tenantId: ctx.tenantId, poNumber: group.poNumber },
-            select: { id: true },
-          })
-        );
+        const existing = await findPurchaseOrder(ctx, group.poNumber);
         if (existing !== null) {
           action = 'skip';
           errorMsg = 'Already here: an existing purchase order is never overwritten.';

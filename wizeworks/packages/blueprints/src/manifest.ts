@@ -479,7 +479,10 @@ export const SchedulingServiceDecl = z.object({
   bufferAfterMin: z.number().int().min(0).max(1440).default(0),
   priceCents: MoneyCents.default(0),
   /** ISO-4217 lowercase (the scheduling column form, e.g. 'usd'). */
-  currency: z.string().length(3).default('usd'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('usd'),
   /** >1 = a class roster; appointments/reservations/rentals keep 1. */
   capacity: z.number().int().min(1).max(100_000).default(1),
   slotIntervalMin: z.number().int().min(1).max(1440).default(15),

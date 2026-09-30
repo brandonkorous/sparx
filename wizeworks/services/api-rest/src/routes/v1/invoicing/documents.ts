@@ -38,7 +38,7 @@ import { ok, paged } from '@wizeworks/api-core/envelope';
 import { ApiError } from '@wizeworks/api-core/errors';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
-import { reachableSiteIds } from '../../../lib/property.js';
+import { reachableSiteIds, resolveListScope } from '../../../lib/property.js';
 import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
 import { sendInvoice, InvoiceSendError } from '../../../lib/invoice-mail.js';
 
@@ -92,11 +92,26 @@ const SnapshotPathIds = z.object({ id: z.string().uuid(), snapshotId: z.string()
  * Null on anything finalized before the column existed; the resolver falls back
  * to the live business, which is the only answer available for those.
  */
-async function frozenIssuerOf(ctx: { tenantId: string }, documentId: string): Promise<unknown> {
+/**
+ * The two facts a print needs from the document row itself: who issued it, and
+ * WHICH BUSINESS raised it.
+ *
+ * One read rather than two, because they are always wanted together — the frozen
+ * issuer supplies the masthead's words and the site supplies the letterhead they
+ * are set in, and a print that resolved one without the other would put this
+ * business's paper under that business's name.
+ */
+async function printFactsOf(
+  ctx: { tenantId: string },
+  documentId: string
+): Promise<{ issuedBy: unknown; propertyId: string | null }> {
   const doc = await withTenant(ctx, (tx) =>
-    tx.billingDocument.findUnique({ where: { id: documentId }, select: { issuedBy: true } })
+    tx.billingDocument.findUnique({
+      where: { id: documentId },
+      select: { issuedBy: true, propertyId: true },
+    })
   );
-  return doc?.issuedBy ?? null;
+  return { issuedBy: doc?.issuedBy ?? null, propertyId: doc?.propertyId ?? null };
 }
 
 /** The unsaved draft the editor previews. Everything is optional on purpose — the
@@ -112,8 +127,24 @@ const DraftLineBody = z.object({
 });
 
 const DraftPreviewBody = z.object({
+  /**
+   * Preview the SAVED document with this id instead of a typed draft.
+   *
+   * The preview pane sends it whenever no editor is publishing — with the
+   * editor closed, or torn into another window and not yet open. The field did
+   * not exist, so Zod stripped it and the route rendered the empty object that
+   * was left: a numberless "Invoice", marked Unpaid, with no lines and a
+   * balance of $0.00, over a real document with real lines. The pane's own
+   * comment promised the opposite (issue 764).
+   */
+  documentId: z.string().uuid().nullish(),
   stageId: z.string().uuid().nullish(),
   title: z.string().nullish(),
+  // Which KIND of document is being previewed. Zod strips what it does not
+  // name, so leaving this out meant the editor could send it and the renderer
+  // would never see it — every preview fell through to the invoice defaults
+  // (issue 764).
+  workflowSlug: z.string().max(63).nullish(),
   number: z.string().nullish(),
   status: z.string().nullish(),
   currency: z.string().nullish(),
@@ -435,11 +466,12 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const ctx = toInvoicingContext(request);
     const { id } = PathId.parse(request.params);
-    const [data, brand] = await Promise.all([
+    const [data, facts] = await Promise.all([
       billingRenderService.buildRenderData(ctx, id),
-      frozenIssuerOf(ctx, id).then((issuedBy) => resolveInvoiceBrand(ctx, issuedBy)),
+      printFactsOf(ctx, id),
     ]);
-    const html = await renderTenantInvoiceHtml(ctx, data, brand);
+    const brand = await resolveInvoiceBrand(ctx, facts.issuedBy);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand, facts.propertyId);
     void reply.header('Content-Type', 'text/html; charset=utf-8');
     void reply.header(
       'Content-Disposition',
@@ -458,11 +490,12 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const ctx = toInvoicingContext(request);
     const { id, snapshotId } = SnapshotPathIds.parse(request.params);
-    const [data, brand] = await Promise.all([
+    const [data, facts] = await Promise.all([
       billingRenderService.buildRenderDataFromSnapshot(ctx, snapshotId),
-      frozenIssuerOf(ctx, id).then((issuedBy) => resolveInvoiceBrand(ctx, issuedBy)),
+      printFactsOf(ctx, id),
     ]);
-    const html = await renderTenantInvoiceHtml(ctx, data, brand);
+    const brand = await resolveInvoiceBrand(ctx, facts.issuedBy);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand, facts.propertyId);
     void reply.header('Content-Type', 'text/html; charset=utf-8');
     void reply.header(
       'Content-Disposition',
@@ -479,15 +512,26 @@ const documentRoutes: FastifyPluginAsync = (app) => {
   // Read-only by construction — it writes nothing, so `viewer` is the right role
   // and an in-progress draft never touches the database.
   app.post('/v1/invoicing/documents/preview', async (request, reply) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireInvoicingModule(request);
     const ctx = toInvoicingContext(request);
     const draft = DraftPreviewBody.parse(request.body ?? {});
-    const [data, brand] = await Promise.all([
-      buildRenderDataFromDraft(ctx, draft),
+    const [data, brand, propertyId] = await Promise.all([
+      // A saved document is rendered from what is STORED, by the same builder
+      // the emailed and printed copies use, so a preview with no editor open
+      // is the real artifact rather than a recomputation of nothing.
+      draft.documentId
+        ? billingRenderService.buildRenderData(ctx, draft.documentId)
+        : buildRenderDataFromDraft(ctx, draft),
       resolveInvoiceBrand(ctx),
+      // A saved document's letterhead is ITS business's; an invoice still being
+      // typed has no business yet, so it wears the one for the site the editor
+      // is open in -- which is the site it will be raised by.
+      draft.documentId
+        ? printFactsOf(ctx, draft.documentId).then((facts) => facts.propertyId)
+        : resolveListScope(auth, undefined, request.headers['x-sparx-property-id']),
     ]);
-    const html = await renderTenantInvoiceHtml(ctx, data, brand);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand, propertyId);
     void reply.header('Content-Type', 'text/html; charset=utf-8');
     // The editor embeds this in an iframe on every keystroke — never store it.
     void reply.header('Cache-Control', 'no-store');

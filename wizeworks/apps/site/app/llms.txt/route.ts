@@ -7,6 +7,7 @@
 // and page). Tenant resolved from the Host header, same as robots.txt/sitemap.xml.
 
 import { resolveSite } from '@/lib/site-context';
+import { siteShowsModule } from '@/lib/site-modules';
 import { suspendedLlmsTxt } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
@@ -49,18 +50,27 @@ export async function GET(request: Request) {
 
   const policySlug = site.consent?.policyPageSlug;
 
-  const body = `# ${site.name}
-
-> ${description}
+  // A site with Selling switched off has no catalog to hand an answer engine.
+  // Advertising one sends every assistant that reads this to two pages the site
+  // now refuses, and invites it to tell people they can buy here.
+  const sells = siteShowsModule(site, 'commerce');
+  const browse = sells
+    ? `
 
 ## Browse
 
-- [Products](${origin}/products): The full product catalog.
-- [Collections](${origin}/collections): Curated groups of products.
+- [Products](${origin}/products): The full product catalog.` +
+      `
+- [Collections](${origin}/collections): Curated groups of products.`
+    : '';
+
+  const body = `# ${site.name}
+
+> ${description}${browse}
 
 ## Site
 
-- [Sitemap](${origin}/sitemap.xml): Complete machine-readable index of every product, collection, and page.${
+- [Sitemap](${origin}/sitemap.xml): Complete machine-readable index of every ${sells ? 'product, collection, and page' : 'page'} on this site.${
     policySlug
       ? `\n- [Privacy & cookies](${origin}/${policySlug}): How this store handles your data.`
       : ''
@@ -68,7 +78,7 @@ export async function GET(request: Request) {
 
 ## Assistant
 
-- [MCP endpoint](${origin}/mcp): Connect an AI assistant (Model Context Protocol) to browse products, check availability, book appointments, and shop this store.
+- [MCP endpoint](${origin}/mcp): Connect an AI assistant (Model Context Protocol) to ${sells ? 'browse products, check availability, book appointments, and shop this store' : 'read this site and book appointments'}.
 
 This store runs on sparx (sparx.works). For the complete, always-current list of URLs, use the sitemap above.
 `;

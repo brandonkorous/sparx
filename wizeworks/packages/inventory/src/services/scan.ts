@@ -2,9 +2,21 @@
 //
 // One function behind every scan-first workflow in the phase. A person in a
 // warehouse points a gun at something and it is a product, a shelf, a purchase
-// order, a transfer, a count sheet, a lot label or a serial plate — and they
-// should not have to tell the software which, because they can already see it
-// and the software can work it out.
+// order, a delivery, a transfer, a count sheet, a walk sheet, a lot label or a
+// serial plate — and they should not have to tell the software which, because
+// they can already see it and the software can work it out.
+//
+// ── A kind missing from here is a printed barcode nothing can read ──────────
+//
+// `pick_list` was not in this list, and two files said in their own headers that
+// it was: warehouse mode's Pick job explained that it is deliberately not
+// scan-first because "scanning a printed walk sheet still works: it resolves
+// through the Look-it-up job like any other document", and the label surface
+// printed a Code 128 on the walk sheet under the sentence "scanning it in
+// warehouse mode opens this pick list straight away". Neither was true. The
+// sticker printed, the scan came back "Nothing matches PICK-000003", and the
+// advice under it said to add the code to the item.
+// [[feedback_a_promise_in_copy_is_a_contract]]
 //
 // ── It returns MATCHES, plural, and does not guess ───────────────────────────
 //
@@ -28,7 +40,15 @@ import type { ServiceContext } from '../errors';
 
 /** Everything a scan can be. Ordered as the resolver ranks them. */
 export type ScanKind =
-  'variant' | 'bin' | 'purchase_order' | 'goods_receipt' | 'transfer' | 'count' | 'lot' | 'serial';
+  | 'variant'
+  | 'bin'
+  | 'purchase_order'
+  | 'goods_receipt'
+  | 'transfer'
+  | 'count'
+  | 'pick_list'
+  | 'lot'
+  | 'serial';
 
 interface ScanMatchBase {
   kind: ScanKind;
@@ -71,7 +91,7 @@ export interface BinScanMatch extends ScanMatchBase {
 }
 
 export interface DocumentScanMatch extends ScanMatchBase {
-  kind: 'purchase_order' | 'goods_receipt' | 'transfer' | 'count';
+  kind: 'purchase_order' | 'goods_receipt' | 'transfer' | 'count' | 'pick_list';
   status: string;
 }
 
@@ -107,13 +127,23 @@ export interface ScanResolution {
   matches: ScanMatch[];
 }
 
-const ALL_KINDS: ScanKind[] = [
+/**
+ * Everything a scan can be, in the order the resolver ranks them.
+ *
+ * Exported because it was copied by hand into the REST route's `z.enum` and the
+ * MCP tool's, and a list in three places is a list that drifts. Both now read
+ * this one. The two consoles keep their own copy - they talk to this over HTTP
+ * and depend on no package that could hold it - and a source-reading test holds
+ * those to this file. [[feedback_structural_checks_go_blind]]
+ */
+export const ALL_KINDS: ScanKind[] = [
   'variant',
   'bin',
   'purchase_order',
   'goods_receipt',
   'transfer',
   'count',
+  'pick_list',
   'lot',
   'serial',
 ];
@@ -265,12 +295,12 @@ export async function resolveScan(
     }
 
     // Documents. One query per kind rather than a UNION, because each carries a
-    // different second line and the readability is worth four cheap indexed
+    // different second line and the readability is worth five cheap indexed
     // lookups on a value that has already failed the product path.
     // A goods receipt has NO status column, and that is correct rather than an
     // omission: a receipt is a record of something that already happened, not a
     // document with a lifecycle. It reports 'received' so the caller does not
-    // have to special-case one of the four.
+    // have to special-case one of the five.
     const documents: {
       kind: DocumentScanMatch['kind'];
       table: string;
@@ -296,6 +326,12 @@ export async function resolveScan(
         statusExpr: 'status',
       },
       { kind: 'count', table: 'inventory_counts', label: 'Stock count', statusExpr: 'status' },
+      {
+        kind: 'pick_list',
+        table: 'inventory_pick_lists',
+        label: 'Pick list',
+        statusExpr: 'status',
+      },
     ];
     for (const doc of documents) {
       if (!wanted.has(doc.kind)) continue;

@@ -38,12 +38,23 @@ import type { ServiceContext } from '../errors';
 
 import { applyCustomFields, loadCustomFieldDefinitions } from './custom-fields';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
+import { sellableUnits } from './low-stock';
+import { VARIANT_LABEL_SELECT, variantLabel } from './variant-label';
 
 export interface StockGridRow {
   variantId: string;
   warehouseId: string;
   sku: string;
-  title: string;
+  /** What the thing IS — the product, which a person recognises. Null only when
+   *  the product behind the row has been deleted. */
+  productTitle: string | null;
+  /** WHICH ONE of them — "M / Bone". Null for a product with a single unnamed
+   *  version, where a second line would only repeat the first.
+   *
+   *  TWO fields and never one: this grid shows twelve rows of one overshirt at a
+   *  time, so the product alone cannot tell them apart and the version alone
+   *  does not say what it is a version of. variant-label.ts, issue 681. */
+  variantName: string | null;
   warehouseCode: string;
   warehouseName: string;
   onHand: number;
@@ -109,7 +120,7 @@ export async function stockGrid(
       tx.inventoryLevel.findMany({
         where,
         include: {
-          variant: { select: { sku: true, title: true, product: { select: { title: true } } } },
+          variant: { select: VARIANT_LABEL_SELECT },
           warehouse: { select: { code: true, name: true } },
         },
         orderBy: [{ variant: { sku: 'asc' } }],
@@ -127,24 +138,37 @@ export async function stockGrid(
       .filter((level) =>
         filter.lowOnly ? level.reorderPoint !== null && level.onHand <= level.reorderPoint : true
       )
-      .map((level) => ({
-        variantId: level.variantId,
-        warehouseId: level.warehouseId,
-        sku: level.variant.sku,
-        title: level.variant.title ?? level.variant.product.title,
-        warehouseCode: level.warehouse.code,
-        warehouseName: level.warehouse.name,
-        onHand: level.onHand,
-        allocated: level.allocated,
-        available: level.onHand - level.allocated - level.safetyBuffer,
-        reorderPoint: level.reorderPoint,
-        reorderQuantity: level.reorderQuantity,
-        safetyBuffer: level.safetyBuffer,
-        unitCostCents: level.unitCostCents,
-        avgCostCents: level.avgCostCents,
-        abcClass: level.abcClass,
-        customFields: readCustomFields(definitions, level.customFields),
-      }));
+      .map((level) => {
+        // The grid used to send `variant.title ?? product.title`, and since no
+        // variant here has a title of its own that resolved to the PRODUCT on
+        // every row: twelve lines reading "The Ash Overshirt" and nothing to
+        // tell a size from a color. The option values were in the database the
+        // whole time. MEASURED 2026-09-18, Juniper Row: 76 stock rows, 0 variant
+        // titles, every one of them carrying "Size: M, Color: Bone".
+        const name = variantLabel(level.variant);
+        return {
+          variantId: level.variantId,
+          warehouseId: level.warehouseId,
+          sku: level.variant.sku,
+          productTitle: name.productTitle,
+          variantName: name.variantName,
+          warehouseCode: level.warehouse.code,
+          warehouseName: level.warehouse.name,
+          onHand: level.onHand,
+          allocated: level.allocated,
+          // The one definition, not a fourth spelling of it: this line subtracted
+          // the buffer and not the quarantine shelf, which is neither the public
+          // `available` (`onHand - allocated`) nor what is actually free to use.
+          available: sellableUnits(level),
+          reorderPoint: level.reorderPoint,
+          reorderQuantity: level.reorderQuantity,
+          safetyBuffer: level.safetyBuffer,
+          unitCostCents: level.unitCostCents,
+          avgCostCents: level.avgCostCents,
+          abcClass: level.abcClass,
+          customFields: readCustomFields(definitions, level.customFields),
+        };
+      });
 
     return { rows, total, customFields: definitions };
   });
@@ -363,6 +387,9 @@ export async function stockGridCsv(
     headers: [
       'sku',
       'item',
+      // The version is its own column rather than glued to the item. A person
+      // sorting this sheet by size cannot do it against "The Ash Overshirt".
+      'version',
       'warehouse',
       'on_hand',
       'reorder_point',
@@ -373,7 +400,8 @@ export async function stockGridCsv(
     ],
     rows: page.rows.map((row) => [
       row.sku,
-      csvSafeText(row.title),
+      csvSafeText(row.productTitle ?? ''),
+      csvSafeText(row.variantName ?? ''),
       row.warehouseCode,
       row.onHand,
       row.reorderPoint,

@@ -59,7 +59,10 @@ const CreateInput = z.object({
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
   companyId: z.string().uuid().optional(),
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   taxRate: z.number().min(0).max(1).optional(),
   shippingTotal: z.number().min(0).optional(),
   surchargeTotal: z.number().min(0).optional(),
@@ -238,7 +241,7 @@ const managementTools: InvoicingMcpTool[] = [
   {
     name: 'create_billing_template',
     description:
-      'Create a billing document print/PDF template (the branded layout an invoice/estimate renders with).',
+      'Create a billing document print/PDF template (the branded layout an invoice/estimate renders with). Pass propertyId to give one business its own letterhead; omit it for a template every site can use.',
     scope: 'write:invoicing',
     confirmation: true,
     input: CreateBillingTemplateInput,
@@ -267,7 +270,8 @@ const managementTools: InvoicingMcpTool[] = [
   },
   {
     name: 'set_default_billing_template',
-    description: 'Make a billing template the default for new documents.',
+    description:
+      'Make a billing template the default for the business it belongs to. Other businesses keep theirs.',
     scope: 'write:invoicing',
     confirmation: true,
     input: z.object({ templateId: uuid() }),

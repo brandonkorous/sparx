@@ -25,7 +25,11 @@ import type { FastifyRequest } from 'fastify';
 import { prisma, withTenant } from '@wizeworks/db';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import { publish } from '@wizeworks/api-core/pubsub';
-import { billingDocumentStageService } from '@wizeworks/crm';
+import {
+  billingDocumentNoun,
+  billingDocumentStageService,
+  isPriceOfferWorkflow,
+} from '@wizeworks/crm';
 
 export class InvoiceSendError extends Error {}
 
@@ -127,11 +131,23 @@ export async function sendInvoice(
       include: {
         lines: { orderBy: { sortOrder: 'asc' } },
         stage: { select: { customerLabel: true } },
+        // Which KIND of document this is. A quote and an invoice are the same
+        // row on two different workflows, and the stage cannot tell them apart:
+        // on `invoice` its customerLabel is the document's NAME ("Invoice",
+        // "Receipt"), on `b2b-quotes` it is the offer's STANDING ("Draft",
+        // "Accepted"). Only the workflow answers the question. See issue 764.
+        workflow: { select: { slug: true } },
         customer: { select: { email: true, firstName: true, lastName: true } },
       },
     })
   );
-  if (!doc) throw new InvoiceSendError('That invoice no longer exists.');
+  if (!doc) throw new InvoiceSendError('That document no longer exists.');
+
+  // An OFFER of a price, or a DEMAND for money? Everything below that reads as
+  // billing language -- the deadline, the label on the email, the words in it --
+  // turns on this one answer.
+  const priceOffer = isPriceOfferWorkflow(doc.workflow.slug);
+  const noun = billingDocumentNoun(doc.workflow.slug);
 
   const billTo = (doc.billTo ?? {}) as { name?: string; email?: string };
   const to = billTo.email ?? doc.customer?.email ?? null;
@@ -142,7 +158,7 @@ export async function sendInvoice(
   }
   if (!doc.number) {
     throw new InvoiceSendError(
-      'This document has no number yet, so there is nothing for the customer to quote back. Move it to a stage that numbers it first.'
+      `This ${noun} has no number yet, so there is nothing for the customer to quote back. Move it to a stage that numbers it first.`
     );
   }
 
@@ -161,11 +177,20 @@ export async function sendInvoice(
   // customer has the document NOW. A payer on terms already has a date from
   // stage entry and keeps it -- `dueAt` is only filled when it is still empty,
   // so a date she set by hand always wins.
-  const dueAt =
-    doc.dueAt ??
-    (await withTenant({ tenantId: auth.tenantId }, (tx) =>
-      billingDocumentStageService.dueDateFromTerms(tx, doc, new Date())
-    ));
+  //
+  // AND ONLY ON A BILL. A quote asks for nothing, so there is no date on which
+  // it falls due -- and this code filling one in anyway is how a quote sent on
+  // September 22nd arrived stamped "Due September 22nd", was written into
+  // `due_at`, and came back out of the renderer as "Valid until Sep 22, 2026":
+  // an offer that expired the moment it was made. An offer runs OUT
+  // (`valid_until`), which is the business's own choice and is never invented
+  // here. Two different columns, two different promises. See Issue 765.
+  const dueAt = priceOffer
+    ? null
+    : (doc.dueAt ??
+      (await withTenant({ tenantId: auth.tenantId }, (tx) =>
+        billingDocumentStageService.dueDateFromTerms(tx, doc, new Date())
+      )));
 
   // WHO THIS IS FROM, as it was when the document was issued.
   //
@@ -212,13 +237,21 @@ export async function sendInvoice(
     props: {
       billToName: billTo.name ?? undefined,
       fromName,
-      // The tenant's own word for this stage — "Invoice", "Bill", "Statement".
-      documentLabel: doc.stage.customerLabel || 'Invoice',
+      // On a BILL, the tenant's own word for this stage — "Invoice", "Bill",
+      // "Statement". On a price offer the stage label is the offer's STANDING
+      // ("Draft", "Accepted"), which named the email "Draft Q-000017 from
+      // Juniper Row" and called it a draft in every sentence. The workflow is
+      // the only thing that knows, so the noun comes from there. Issue 765.
+      documentLabel: priceOffer
+        ? noun.charAt(0).toUpperCase() + noun.slice(1)
+        : doc.stage.customerLabel || 'Invoice',
+      priceOffer,
       documentNumber: doc.number,
       total,
       balance,
       currency,
-      dueAt: dueAt.toISOString(),
+      dueAt: dueAt?.toISOString() ?? null,
+      validUntil: doc.validUntil?.toISOString() ?? null,
       lines: doc.lines.map((line) => ({
         title: line.description,
         subtitle: quantityLine(Number(line.quantity), Number(line.unitPrice), currency),
@@ -238,9 +271,10 @@ export async function sendInvoice(
       where: { id: documentId },
       data: {
         metadata: { ...metadata, sentAt: new Date().toISOString(), sentTo: to },
-        // Only when it had none. Written here rather than before the send so a
-        // mail that fails leaves the document exactly as it was.
-        ...(doc.dueAt === null ? { dueAt } : {}),
+        // Only when it had none, and only on a bill. Written here rather than
+        // before the send so a mail that fails leaves the document exactly as
+        // it was.
+        ...(dueAt !== null && doc.dueAt === null ? { dueAt } : {}),
       },
     })
   );

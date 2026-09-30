@@ -52,6 +52,10 @@ export const EVENTS = [
   'order.refunded',
   'search.reindex.requested',
   'search.entity.changed',
+  // A wholesale invoice announces itself on its own catalog topic, and the three
+  // things that raise one all publish it directly onto the broker rather than
+  // through a route that indexes. See the case in handler.ts.
+  'b2b.invoice.created',
 ];
 
 /**

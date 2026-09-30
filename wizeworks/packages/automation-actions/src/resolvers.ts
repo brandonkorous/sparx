@@ -24,7 +24,16 @@ import {
   type TenantCtx,
 } from '@wizeworks/automation';
 
-import { businessTimeZone, daysPastDue } from '@wizeworks/crm';
+import {
+  B2B_QUOTE_WORKFLOW_SLUG,
+  businessTimeZone,
+  daysPastDue,
+  OWED_DOCUMENT_WHERE,
+} from '@wizeworks/crm';
+
+// HOW AN ITEM IS NAMED — the one module that answers it, rather than a sixth
+// local attempt built out of `product.title` (issue 861).
+import { variantLabel, VARIANT_LABEL_SELECT } from '@wizeworks/inventory';
 
 import { fieldValueToString } from './entity.js';
 
@@ -147,7 +156,11 @@ async function resolveContact(
 // b2b-quotes workflow, the `quote.*` fields "Quote received"/"Quote expiring"
 // templates key on — one hydrator per event, two field namespaces.
 
-const B2B_QUOTES_WORKFLOW_SLUG = 'b2b-quotes';
+// Not a local copy: the rule about which workflows hold an offer rather than a
+// bill lives once, in @wizeworks/crm-schemas, and is re-exported by the CRM
+// barrel this package already depends on. Four separate copies is how a quote
+// came to print as an unpaid invoice (issue 764).
+const B2B_QUOTES_WORKFLOW_SLUG = B2B_QUOTE_WORKFLOW_SLUG;
 
 const BILLING_SELECT = {
   id: true,
@@ -161,6 +174,7 @@ const BILLING_SELECT = {
   assignedUserId: true,
   customerId: true,
   companyId: true,
+  propertyId: true,
   workflow: { select: { slug: true } },
   stage: { select: { stageType: true, name: true } },
   // Whether the customer has actually been given this document. There is no
@@ -264,6 +278,8 @@ async function hydrateBillingDocument(ctx: TenantCtx, docId: string): Promise<Re
   });
   if (!d) return {};
   return {
+    // The issuing business (docs/131 §3.6): every document is issued by a site.
+    [PROPERTY_FIELD]: d.propertyId,
     ...billingFields(d, Date.now(), await businessTimeZone(ctx.tx, ctx.tenantId)),
     ...(d.workflow.slug === B2B_QUOTES_WORKFLOW_SLUG ? quoteFields(d) : {}),
     ...(await resolveContact(ctx, { customerId: d.customerId, companyId: d.companyId })),
@@ -621,6 +637,50 @@ async function hydrateBooking(ctx: TenantCtx, bookingId: string): Promise<Resolv
   };
 }
 
+// ─── cart + review (commerce) ─────────────────────────────────────────────────
+
+/** A basket and who it belongs to. A guest basket has no customer, so the
+ *  address typed at checkout is the only way to know who left it. */
+async function hydrateCart(ctx: TenantCtx, cartId: string): Promise<ResolvedFields> {
+  const cart = await ctx.tx.cart.findUnique({
+    where: { id: cartId },
+    select: { id: true, customerId: true, propertyId: true, totalCents: true, channel: true },
+  });
+  if (!cart) return {};
+  const fields: ResolvedFields = {
+    [PROPERTY_FIELD]: cart.propertyId,
+    'cart.id': cart.id,
+    'cart.total': cart.totalCents / 100,
+    'cart.channel': cart.channel,
+    ...(await resolveContact(ctx, { customerId: cart.customerId })),
+  };
+  if (!fields['customer.email']) {
+    const session = await ctx.tx.checkoutSession.findFirst({
+      where: { cartId, customerEmail: { not: null } },
+      orderBy: { createdAt: 'desc' },
+      select: { customerEmail: true },
+    });
+    if (session?.customerEmail) fields['customer.email'] = session.customerEmail;
+  }
+  return fields;
+}
+
+/** A review and who wrote it. */
+async function hydrateReview(ctx: TenantCtx, reviewId: string): Promise<ResolvedFields> {
+  const review = await ctx.tx.productReview.findUnique({
+    where: { id: reviewId },
+    select: { id: true, rating: true, status: true, customerId: true, propertyId: true },
+  });
+  if (!review) return {};
+  return {
+    [PROPERTY_FIELD]: review.propertyId,
+    'review.id': review.id,
+    'review.rating': review.rating,
+    'review.status': review.status,
+    ...(await resolveContact(ctx, { customerId: review.customerId })),
+  };
+}
+
 // ─── chat conversation (event + scan) ─────────────────────────────────────────
 
 const CONVERSATION_SELECT = {
@@ -675,9 +735,38 @@ async function hydrateInventory(
   if (!variantId) return {};
   const v = await ctx.tx.productVariant.findUnique({
     where: { id: variantId },
-    select: { id: true, sku: true, product: { select: { id: true, title: true } } },
+    select: {
+      id: true,
+      ...VARIANT_LABEL_SELECT,
+      // VARIANT_LABEL_SELECT asks the product for its title; the inventory
+      // template set also exposes `product.id`, so this widens that one relation
+      // rather than declaring a second `product` key that would silently replace
+      // it (TS2783, which is how this was caught).
+      product: { select: { id: true, title: true } },
+    },
   });
   if (!v) return {};
+  // WHAT TO CALL THE THING THAT RAN OUT.
+  //
+  // `product.title` alone is what every inventory template used, and these events
+  // are about ONE VERSION of a product. On Juniper Row the bell said "The Everyday
+  // Tee is out of stock" when 1 of its 36 versions had hit zero and 83 tees were
+  // on the shelf. The seed's own comment, four lines under the title it got wrong,
+  // says the link must point at the variant because "the product page would open a
+  // page on which most sizes are fine" — which is the same argument, applied to
+  // the link and not the sentence. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  //
+  // ONE field rather than a second placeholder in every template, because a
+  // `platform.notify` title REFUSES TO SEND if any of its placeholders comes back
+  // empty. A product with a single unnamed version has no option label, so
+  // "{{product.title}} ({{variant.name}})" would have silently stopped the notice
+  // for exactly the simplest shops. This always resolves: the version in brackets
+  // when there is one to name, the product on its own when there is not.
+  const named = variantLabel(v);
+  const itemName =
+    named.variantName === null
+      ? (named.productTitle ?? null)
+      : `${named.productTitle ?? ''} (${named.variantName})`.trim();
   // The inventory.low / .depleted event carries the on-hand level; fall back to
   // null rather than a second query if it's absent.
   const onHand =
@@ -691,9 +780,16 @@ async function hydrateInventory(
   const warehouseId = typeof payload.warehouseId === 'string' ? payload.warehouseId : null;
   return {
     'product.id': v.product.id,
-    'product.title': v.product.title,
+    'product.title': named.productTitle,
     'variant.id': v.id,
-    'variant.sku': v.sku,
+    'variant.sku': named.variantSku,
+    /** Which version it is, on its own — "Medium / Black". Null on a product with
+     *  one unnamed version, which is why a template should reach for
+     *  `item.name` instead. */
+    'variant.name': named.variantName,
+    /** The whole subject of the sentence, and the one an inventory template should
+     *  use: never empty, and never the product when a version is what ran out. */
+    'item.name': itemName,
     'warehouse.id': warehouseId,
     'inventory.quantity': onHand,
     'inventory.available': typeof payload.available === 'number' ? payload.available : null,
@@ -772,6 +868,9 @@ async function hydrateFormSubmission(
     def?.config && typeof def.config === 'object' && !Array.isArray(def.config) ? def.config : {};
   const { first, last } = splitName(s.name);
   const fields: ResolvedFields = {
+    // Which business the form is on (docs/131 §3.1), so a site-scoped rule or
+    // campaign can act on it. Null for a form with no site.
+    [PROPERTY_FIELD]: s.propertyId,
     'form.submissionId': s.id,
     'form.nodeId': s.formNodeId,
     'form.formName': s.formName,
@@ -1126,6 +1225,11 @@ const TICKET_EVENTS = [
 // Scheduling (docs/144 §9). `booking.created` is the one the plan named; the
 // rest come free from the same hydrator and are the ones a business asks for
 // next ("when they cancel, tell the rep").
+// Baskets and checkouts carry only ids; these give a campaign (and any rule)
+// the person behind them.
+const CART_EVENTS = ['cart.abandoned', 'cart.recovered', 'checkout.started'];
+const REVIEW_EVENTS = ['review.submitted', 'review.published'];
+
 const BOOKING_EVENTS = [
   'booking.created',
   'booking.confirmed',
@@ -1165,6 +1269,12 @@ export const installEntityResolvers = installOnce((): void => {
   }
   for (const ev of FORM_EVENTS) {
     registerResolver(ev, byId(['submissionId', 'id'], hydrateFormSubmission));
+  }
+  for (const ev of CART_EVENTS) {
+    registerResolver(ev, byId(['cartId', 'id'], hydrateCart));
+  }
+  for (const ev of REVIEW_EVENTS) {
+    registerResolver(ev, byId(['reviewId', 'id'], hydrateReview));
   }
 
   // A customer wrote to us (docs/144 §5, §7.4). The trigger behind "when
@@ -1358,7 +1468,9 @@ export const installEntityResolvers = installOnce((): void => {
     const docs = await ctx.tx.billingDocument.findMany({
       where: {
         deletedAt: null,
-        status: { in: ['unpaid', 'partial', 'overdue'] },
+        // The same rule the receivables figures use, so an automation cannot
+        // email a reminder about a quote (issue 857).
+        ...OWED_DOCUMENT_WHERE,
         dueAt: { not: null },
       },
       select: BILLING_SELECT,

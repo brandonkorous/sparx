@@ -16,6 +16,7 @@ import {
   type ProductSearchDocument,
 } from '@wizeworks/search';
 import { withTenant } from '@wizeworks/db';
+import { plainTextOrNull } from '@wizeworks/commerce-schemas';
 import type { CustomerType } from '@wizeworks/crm-schemas';
 
 import type { ServiceContext } from './errors';
@@ -164,7 +165,9 @@ export async function projectProduct(
       tenant_id: ctx.tenantId,
       product_id: product.id,
       title: product.title,
-      description: product.description ?? undefined,
+      // Plain text. Indexing the raw column made `p`, `strong` and `li` into
+      // searchable words and put tags in the result snippet (issue 848).
+      description: plainTextOrNull(product.description) ?? undefined,
       handle: product.handle,
       status: product.status as 'draft' | 'active' | 'archived',
       product_type: product.productType ?? undefined,

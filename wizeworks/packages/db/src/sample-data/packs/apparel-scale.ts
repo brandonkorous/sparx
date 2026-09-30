@@ -346,8 +346,8 @@ export function apparelScaleProducts(): SampleProduct[] {
       title,
       handle,
       description:
-        `<p>A ${fabric.name.toLowerCase()} ${garment.name.toLowerCase()} cut for everyday wear, shown in ${color.toLowerCase()}. ${garment.blurb}</p>` +
-        `<p>Pre-washed for a stable fit and finished to layer through the season. Part of the full line: the same make and hand across every piece.</p>`,
+        `A ${fabric.name.toLowerCase()} ${garment.name.toLowerCase()} cut for everyday wear, shown in ${color.toLowerCase()}. ${garment.blurb}\n\n` +
+        `Pre-washed for a stable fit and finished to layer through the season. Part of the full line: the same make and hand across every piece.\n\n`,
       productType: garment.type,
       productTypeKey: 'apparel',
       attributes,

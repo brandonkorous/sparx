@@ -26,7 +26,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevron-down',
     description:
-      'A trigger button that reveals a panel of links: CSS-native disclosure, no script. Closes when focus leaves.',
+      'A button that opens a small panel of links underneath it, and closes again when somebody clicks away.',
     surfaces: ['page', 'site'],
     tags: ['dropdown', 'menu', 'disclosure', 'popover', 'actions'],
     tree: el('details', 'relative inline-block', {
@@ -200,7 +200,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'circle-ellipsis',
     description:
-      'A compact row of round, icon-only buttons for quick reactions or share targets: labelled for assistive tech.',
+      'A compact row of round, icon-only buttons for quick reactions or share targets: labeled for assistive tech.',
     surfaces: ['page', 'site'],
     tags: ['icon button', 'round', 'share', 'social', 'reactions', 'actions'],
     tree: el('div', 'flex items-center gap-2', {
@@ -318,7 +318,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'plus',
     description:
-      'A single high-emphasis round button for the primary page action: large, filled, with a labelled icon.',
+      'A single high-emphasis round button for the primary page action: large, filled, with a labeled icon.',
     surfaces: ['page', 'site'],
     tags: ['fab', 'floating action', 'add', 'compose', 'primary', 'actions'],
     tree: el(

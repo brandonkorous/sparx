@@ -4,7 +4,7 @@
 //   GET    /v1/b2b/approval-rules              → list all rules
 //   POST   /v1/b2b/approval-rules              → create rule
 //   PATCH  /v1/b2b/approval-rules/:id          → update (threshold, approver, isActive)
-//   DELETE /v1/b2b/approval-rules/:id          → deactivate
+//   DELETE /v1/b2b/approval-rules/:id          → remove (really; the switch is the PATCH)
 //
 //   GET    /v1/b2b/approval-queue              → pending_approval orders
 //   POST   /v1/b2b/approval-queue/:orderId/approve  → approve + place order
@@ -77,7 +77,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
     return reply.send(ok(await approvalService.updateRule(ctx, id, request.body)));
   });
 
-  // ── Delete (deactivate) rule ──────────────────────────────────────────────
+  // ── Remove rule ───────────────────────────────────────────────────────────
   app.delete('/v1/b2b/approval-rules/:id', async (request, reply) => {
     await requireB2bModule(request);
     requireRole(request, 'admin');

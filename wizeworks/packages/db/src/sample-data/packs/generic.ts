@@ -107,7 +107,7 @@ export const genericPack: SampleDataPack = {
       title: 'Classic Notebook',
       handle: 'classic-notebook',
       description:
-        '<p>A clean, hardcover A5 notebook that works as well in a meeting as it does on a coffee shop table. The lay-flat binding means it stays open while you write, and the 120gsm paper takes fountain pen, gel, and ballpoint without bleeding through.</p><p>192 pages, an elastic closure, a ribbon bookmark, and a back pocket for loose notes and cards. Pick ruled for everyday writing or dotted for sketches, bullet journaling, and planning.</p>',
+        'A clean, hardcover A5 notebook that works as well in a meeting as it does on a coffee shop table. The lay-flat binding means it stays open while you write, and the 120gsm paper takes fountain pen, gel, and ballpoint without bleeding through.\n\n192 pages, an elastic closure, a ribbon bookmark, and a back pocket for loose notes and cards. Pick ruled for everyday writing or dotted for sketches, bullet journaling, and planning.',
       productType: 'Stationery',
       vendor: 'House Goods',
       tags: ['notebook', 'stationery', 'a5', 'everyday'],
@@ -213,7 +213,7 @@ export const genericPack: SampleDataPack = {
       title: 'Ceramic Mug',
       handle: 'ceramic-mug',
       description:
-        '<p>A satisfyingly heavy 12oz stoneware mug with a comfortable handle and a glaze that holds its color through years of dishwasher cycles. The slightly wider base keeps it stable on a busy desk.</p><p>Microwave- and dishwasher-safe. Sold in classic white or matte black. Both look great with a logo or left clean.</p>',
+        'A satisfyingly heavy 12oz stoneware mug with a comfortable handle and a glaze that holds its color through years of dishwasher cycles. The slightly wider base keeps it stable on a busy desk.\n\nMicrowave- and dishwasher-safe. Sold in classic white or matte black. Both look great with a logo or left clean.',
       productType: 'Drinkware',
       vendor: 'House Goods',
       tags: ['mug', 'drinkware', 'ceramic', 'coffee'],
@@ -314,7 +314,7 @@ export const genericPack: SampleDataPack = {
       title: 'Canvas Tote Bag',
       handle: 'canvas-tote-bag',
       description:
-        '<p>A sturdy 12oz cotton canvas tote built for actual hauling: groceries, books, a laptop, a beach day. Reinforced stitching at the strap joins where cheaper totes give out, and long 28" handles clear your shoulder.</p><p>Roomy main compartment with an interior slip pocket. Throw it in the wash when it needs it and it comes out looking lived-in, not worn out.</p>',
+        'A sturdy 12oz cotton canvas tote built for actual hauling: groceries, books, a laptop, a beach day. Reinforced stitching at the strap joins where cheaper totes give out, and long 28" handles clear your shoulder.\n\nRoomy main compartment with an interior slip pocket. Throw it in the wash when it needs it and it comes out looking lived-in, not worn out.',
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['tote', 'bag', 'canvas', 'reusable'],
@@ -385,7 +385,7 @@ export const genericPack: SampleDataPack = {
       title: 'Sticker Pack',
       handle: 'sticker-pack',
       description:
-        '<p>A set of ten die-cut vinyl stickers: waterproof, UV-resistant, and dishwasher-safe, so they survive water bottles, laptops, and notebooks without fading or peeling. Matte finish, no cheap glossy glare.</p><p>The easy way to add a little personality to anything flat. Peels clean if you ever change your mind.</p>',
+        'A set of ten die-cut vinyl stickers: waterproof, UV-resistant, and dishwasher-safe, so they survive water bottles, laptops, and notebooks without fading or peeling. Matte finish, no cheap glossy glare.\n\nThe easy way to add a little personality to anything flat. Peels clean if you ever change your mind.',
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['stickers', 'vinyl', 'accessories', 'fun'],
@@ -458,7 +458,7 @@ export const genericPack: SampleDataPack = {
       title: 'Insulated Water Bottle',
       handle: 'insulated-water-bottle',
       description:
-        '<p>A 20oz double-wall vacuum-insulated stainless steel bottle that keeps drinks cold for 24 hours and hot for 12. The powder-coat finish resists fingerprints and chips, and the leakproof lid sips clean: no splash, no drip down the side.</p><p>Fits a standard cup holder, takes ice cubes through the wide mouth, and is built to live in a bag without leaking. Hand-wash to keep the finish its best.</p>',
+        'A 20oz double-wall vacuum-insulated stainless steel bottle that keeps drinks cold for 24 hours and hot for 12. The powder-coat finish resists fingerprints and chips, and the leakproof lid sips clean: no splash, no drip down the side.\n\nFits a standard cup holder, takes ice cubes through the wide mouth, and is built to live in a bag without leaking. Hand-wash to keep the finish its best.',
       productType: 'Drinkware',
       vendor: 'House Goods',
       tags: ['water bottle', 'insulated', 'drinkware', 'stainless steel'],
@@ -535,7 +535,7 @@ export const genericPack: SampleDataPack = {
       title: 'Enamel Pin',
       handle: 'enamel-pin',
       description:
-        '<p>A hard enamel pin with a polished metal finish and crisp, raised color fill: the good kind that feels like a keepsake, not a giveaway. Backed with a rubber clutch that actually holds, so it stays put on a jacket, bag, or lanyard.</p><p>About 1.25 inches, individually carded. A small, easy add-on that people genuinely keep.</p>',
+        'A hard enamel pin with a polished metal finish and crisp, raised color fill: the good kind that feels like a keepsake, not a giveaway. Backed with a rubber clutch that actually holds, so it stays put on a jacket, bag, or lanyard.\n\nAbout 1.25 inches, individually carded. A small, easy add-on that people genuinely keep.',
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['pin', 'enamel', 'accessories', 'gift'],
@@ -599,7 +599,7 @@ export const genericPack: SampleDataPack = {
       title: 'Starter Pack',
       handle: 'starter-pack',
       description:
-        '<p>Our most popular trio in one bundle: the Classic Notebook, a Ceramic Mug, and a Canvas Tote, the everyday-carry set that makes a great gift or a clean welcome kit. Buy them together and save versus picking each one on its own.</p>',
+        'Our most popular trio in one bundle: the Classic Notebook, a Ceramic Mug, and a Canvas Tote, the everyday-carry set that makes a great gift or a clean welcome kit. Buy them together and save versus picking each one on its own.',
       productType: 'Bundles',
       vendor: 'House Goods',
       tags: ['bundle', 'starter', 'gift', 'value'],

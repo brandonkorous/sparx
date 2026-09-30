@@ -27,7 +27,8 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { queryBool } from '@wizeworks/api-core/query';
-import { inventoryService } from '@wizeworks/inventory';
+import { inventoryService, SCAN_KINDS } from '@wizeworks/inventory';
+import type { ScanKind } from '@wizeworks/inventory';
 import {
   CreateVariantBarcodeInput,
   GenerateVariantBarcodesInput,
@@ -62,16 +63,10 @@ const UnbarcodedQuery = z.object({
   offset: z.coerce.number().int().min(0).optional(),
 });
 
-const SCAN_KINDS = [
-  'variant',
-  'bin',
-  'purchase_order',
-  'goods_receipt',
-  'transfer',
-  'count',
-  'lot',
-  'serial',
-] as const;
+/* Not re-declared here. This list used to be typed out again in this file and
+   again in the MCP tool, and `pick_list` was added to none of the three - so a
+   walk sheet printed a barcode that nothing could read. */
+const SCAN_KIND_VALUES = SCAN_KINDS as [ScanKind, ...ScanKind[]];
 
 const ScanQuery = z.object({
   value: z.string().trim().min(1).max(256),
@@ -82,7 +77,7 @@ const ScanQuery = z.object({
 
 const ScanBody = z.object({
   value: z.string().trim().min(1).max(256),
-  expect: z.array(z.enum(SCAN_KINDS)).optional(),
+  expect: z.array(z.enum(SCAN_KIND_VALUES)).optional(),
   warehouseId: z.string().uuid().optional(),
 });
 
@@ -102,12 +97,12 @@ const ScanEventsQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
-function parseExpect(raw: string | undefined): (typeof SCAN_KINDS)[number][] | undefined {
+function parseExpect(raw: string | undefined): ScanKind[] | undefined {
   if (!raw) return undefined;
   const kinds = raw
     .split(',')
     .map((s) => s.trim())
-    .filter((s): s is (typeof SCAN_KINDS)[number] => (SCAN_KINDS as readonly string[]).includes(s));
+    .filter((s): s is ScanKind => (SCAN_KINDS as readonly string[]).includes(s));
   return kinds.length > 0 ? kinds : undefined;
 }
 

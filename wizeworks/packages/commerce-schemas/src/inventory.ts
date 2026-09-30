@@ -315,7 +315,10 @@ export const CreateSupplierInput = z.object({
   // net-N / cod / prepaid — free-form within the column width, mirrors billing.
   paymentTerms: z.string().max(20).optional(),
   leadTimeDays: z.number().int().nonnegative().max(3650).optional(),
-  currency: z.string().length(3).default('USD'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('USD'),
   notes: z.string().max(5000).optional(),
   isActive: z.boolean().default(true),
 });
@@ -327,7 +330,10 @@ export type CreateSupplierInput = z.infer<typeof CreateSupplierInput>;
 // cost quoted in another currency. Keep in sync with every `.default()` in
 // CreateSupplierInput.
 export const UpdateSupplierInput = CreateSupplierInput.partial().extend({
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   isActive: z.boolean().optional(),
 });
 export type UpdateSupplierInput = z.infer<typeof UpdateSupplierInput>;
@@ -387,7 +393,10 @@ export type PurchaseOrderLineInput = z.infer<typeof PurchaseOrderLineInput>;
 export const CreatePurchaseOrderInput = z.object({
   supplierId: Uuid,
   warehouseId: Uuid,
-  currency: z.string().length(3).default('USD'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('USD'),
   paymentTerms: z.string().max(20).nullish(),
   reference: z.string().max(120).nullish(),
   expectedArrivalAt: z.string().datetime().nullish(),
@@ -402,7 +411,10 @@ export type CreatePurchaseOrderInput = z.infer<typeof CreatePurchaseOrderInput>;
 // cost/SKU snapshots are taken against it).
 export const UpdatePurchaseOrderInput = z.object({
   warehouseId: Uuid.optional(),
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   paymentTerms: z.string().max(20).nullable().optional(),
   reference: z.string().max(120).nullable().optional(),
   expectedArrivalAt: z.string().datetime().nullable().optional(),
@@ -632,7 +644,18 @@ export type AddCountLineInput = z.infer<typeof AddCountLineInput>;
 export const CountEntryInput = z.object({
   lineId: Uuid,
   countedQuantity: z.number().int().nonnegative(),
-  note: z.string().max(2000).optional(),
+  /**
+   * Why this line came out the way it did: "four went to the Saturday market",
+   * "two were damaged". Optional, and NULLISH rather than merely optional, so
+   * the three states stay distinct on the wire: absent leaves a stored note
+   * alone, an empty string or null clears it, text replaces it. `countNoteWrite`
+   * in @wizeworks/inventory is the one place that decides between them.
+   *
+   * Applying a count rewrites the stock numbers and writes a movement per
+   * correction, so without this the figures survive and the reason does not
+   * (issue 876).
+   */
+  note: z.string().max(2000).nullish(),
 });
 export type CountEntryInput = z.infer<typeof CountEntryInput>;
 

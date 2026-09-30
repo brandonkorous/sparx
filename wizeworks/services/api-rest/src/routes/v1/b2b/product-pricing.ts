@@ -7,11 +7,20 @@
 // discount). This endpoint joins them once, keyed on the product, so a pricing
 // panel renders in a single call rather than a request per tier + per account.
 //
-// It is READ-ONLY on purpose: every write already has a home on the resource that
-// owns it. The join lives in @wizeworks/b2b's pricingTierService.getProductPricing so
-// REST + MCP report the exact same picture (one service, many transports); the
-// waterfall it describes is resolve_b2b_price()'s (account override → contract
-// price → tier override → tier blanket discount → list).
+// It is READ-ONLY on purpose: every write has a home on the resource that owns
+// it. That was written as though it settled the question and it did not — the
+// routes existed and NO console screen called two of them, so a shop could
+// delete an agreed price it had no way to create and both tables held 0 rows
+// across all 43 tenants (issue 740). The console's wholesale price pane now
+// posts to `/v1/b2b/accounts/:id/overrides` and `/v1/commerce/contract-prices`.
+//
+// The join lives in @wizeworks/b2b's pricingTierService.getProductPricing so REST +
+// MCP report the exact same picture (one service, many transports). The order
+// that actually charges is `pricingService.resolve`'s, and it is NOT
+// resolve_b2b_price()'s: a contract price is looked up first and RETURNS, so an
+// agreement beats everything, and resolve_b2b_price() (account override → tier
+// override → tier blanket discount) decides the rest. This comment said the
+// opposite and so did the pane above it (issue 742).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';

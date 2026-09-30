@@ -23,6 +23,7 @@
 // customer / B2B account record.
 
 import { withTenant } from '@wizeworks/db';
+import { billingDocumentNoun, isPriceOfferWorkflow } from '@wizeworks/crm-schemas/builtins';
 
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
@@ -70,6 +71,12 @@ export async function buildRenderData(
       where: { id: documentId },
       include: {
         stage: { select: { customerLabel: true } },
+        // Which KIND of document this is. A quote and an invoice are the same
+        // row on two different workflows, and only the workflow can tell them
+        // apart — the stage label cannot, because on the quotes workflow it
+        // holds a STANDING ("Draft", "Quoted") and on the invoice workflow it
+        // holds a NAME ("Invoice", "Receipt").
+        workflow: { select: { slug: true } },
         lines: { orderBy: { sortOrder: 'asc' } },
         payments: { orderBy: { receivedAt: 'asc' } },
       },
@@ -100,8 +107,15 @@ export async function buildRenderData(
     const billTo = await resolveBillTo(tx, doc.billTo, doc.customerId, doc.companyId);
     const shipTo = partyFromJson(doc.shipTo, 'Ship to');
 
+    // An offer is called what it is, and its stage label becomes the standing
+    // in the pill. A bill keeps the behavior it has always had: the stage's own
+    // customer label names it, and the pill says whether it has been paid.
+    const priceOffer = isPriceOfferWorkflow(doc.workflow.slug);
+    const noun = billingDocumentNoun(doc.workflow.slug);
+
     return {
-      title: doc.stage.customerLabel,
+      title: priceOffer ? noun.charAt(0).toUpperCase() + noun.slice(1) : doc.stage.customerLabel,
+      ...(priceOffer ? { standing: doc.stage.customerLabel, priceOffer: true } : {}),
       number: doc.number,
       status: doc.status,
       currency: doc.currency,
@@ -143,6 +157,23 @@ export async function buildRenderDataFromSnapshot(
     if (!snap) throw new CrmNotFoundError('BillingDocumentSnapshot', snapshotId);
 
     const payload = snap.snapshot as unknown as BillingSnapshotPayload;
+
+    // Which KIND of document this is, read LIVE rather than from the frozen
+    // payload. That is safe here and only here: a document's workflow is set at
+    // create and never changes (the editor offers the picker only while the
+    // document is new, and the number series is allocated against it), so the
+    // answer is the same forever. Nothing else is read live — the lines, the
+    // totals and the party all come from the snapshot, which is the §10
+    // substance-permanence guarantee. The alternative was a payload field that
+    // every snapshot frozen before today would be missing, which would leave
+    // old accepted quotes reprinting as unpaid invoices (issue 764).
+    const home = await tx.billingDocument.findUnique({
+      where: { id: payload.document.id },
+      select: { workflow: { select: { slug: true } } },
+    });
+    const priceOffer = isPriceOfferWorkflow(home?.workflow.slug);
+    const noun = billingDocumentNoun(home?.workflow.slug);
+
     const typeLabels = await lineTypeLabels(
       tx,
       payload.lines.map((l) => l.lineTypeId)
@@ -166,7 +197,10 @@ export async function buildRenderDataFromSnapshot(
     const shipTo = partyFromJson(payload.party.shipTo, 'Ship to');
 
     return {
-      title: payload.stage.customerLabel,
+      title: priceOffer
+        ? noun.charAt(0).toUpperCase() + noun.slice(1)
+        : payload.stage.customerLabel,
+      ...(priceOffer ? { standing: payload.stage.customerLabel, priceOffer: true } : {}),
       number: snap.documentNumber ?? payload.document.number,
       status: payload.document.status,
       currency: payload.document.currency,

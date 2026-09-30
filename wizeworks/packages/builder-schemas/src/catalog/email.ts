@@ -84,11 +84,12 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
   // ── CTA — accent band with a contrasting button ───────────────────────────────
   entry({
     key: 'email_cta',
-    name: 'CTA band',
+    name: 'Action band',
     category: 'marketing',
     kind: 'common',
     icon: 'megaphone',
-    description: 'A full-width accent band with a headline and a high-contrast call-to-action.',
+    description:
+      'A full-width colored strip in an email, with a headline and one button that stands out against it.',
     surfaces: ['email'],
     tags: ['cta', 'call to action', 'band', 'convert', 'email'],
     tree: atom('Section', 'flex flex-col gap-4 rounded-lg bg-primary p-8 text-center', {}, [
@@ -114,7 +115,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'receipt',
     description:
-      'A line-item table over the order/cart/quote/invoice items with a total: bound to `order.items` by default.',
+      'A table of what somebody ordered, one row each, with the total at the bottom. It fills itself in from the order.',
     surfaces: ['email'],
     tags: ['order', 'summary', 'receipt', 'line items', 'invoice', 'total', 'email'],
     tree: atom('Section', 'flex flex-col gap-3 p-2', {}, [

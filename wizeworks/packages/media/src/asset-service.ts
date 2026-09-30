@@ -148,7 +148,7 @@ export async function createImageAssetFromBytes(
   if (input.data.length > MAX_UPLOAD_IMAGE_BYTES) {
     throw new MediaValidationError(
       `Image is ${(input.data.length / 1024).toFixed(0)} KiB; the upload cap is ${MAX_UPLOAD_IMAGE_BYTES / 1024} KiB. ` +
-        'Optimise/downscale it (web images should be well under this), or host it and use set_image_from_url.'
+        'Optimize/downscale it (web images should be well under this), or host it and use set_image_from_url.'
     );
   }
 

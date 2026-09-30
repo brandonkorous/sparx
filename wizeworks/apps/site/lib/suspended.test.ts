@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
+import { readFileSync } from 'node:fs';
+
 import {
+  SUSPENDED_BODY,
+  SUSPENDED_HEADING,
   SUSPENDED_METADATA,
+  SUSPENDED_TITLE,
   suspendedLlmsTxt,
+  suspendedPage,
   suspendedRobotsTxt,
   suspendedSitemapXml,
 } from './suspended';
@@ -23,6 +29,9 @@ describe('a dark site asks a crawler to come back later', () => {
     ['robots.txt', suspendedRobotsTxt],
     ['sitemap.xml', suspendedSitemapXml],
     ['llms.txt', suspendedLlmsTxt],
+    // The page was the one left out, and it is the only one of the four that
+    // ever becomes a search result (issue 844).
+    ['the page', suspendedPage],
   ] as const;
 
   it.each(answers)('%s answers 503, not 404 and not 200', (_name, make) => {
@@ -69,5 +78,54 @@ describe('a dark page does not ask to be deleted', () => {
     // Neutral, and not the tenant's real title: the overlay must not sit in a
     // search result under the business's own name and description.
     expect(SUSPENDED_METADATA.title).toBe('Temporarily unavailable');
+  });
+});
+
+describe('the page says the same thing as the files beside it', () => {
+  it('is served as a document, not as plain text', () => {
+    expect(suspendedPage().headers.get('content-type')).toContain('text/html');
+  });
+
+  it('carries the two sentences and nothing about a bill', async () => {
+    const body = await suspendedPage().text();
+    expect(body).toContain(SUSPENDED_HEADING);
+    expect(body).toContain(SUSPENDED_BODY);
+    expect(body).toContain(`<title>${SUSPENDED_TITLE}</title>`);
+  });
+
+  it('never names the business, the platform, or the reason', async () => {
+    // A visitor must not learn from a shop's own website that it has a billing
+    // problem, and a platform-branded takeover of a dark site would advertise
+    // exactly that.
+    const body = (await suspendedPage().text()).toLowerCase();
+    for (const word of ['sparx', 'piggles', 'billing', 'subscription', 'payment', 'invoice']) {
+      expect(body).not.toContain(word);
+    }
+  });
+
+  it('depends on nothing the edge does not have', async () => {
+    // This is returned from the proxy, where the app's Tailwind bundle, the font
+    // package and the tenant's theme all do not exist. A stylesheet link here
+    // would render the overlay unstyled in production and correctly in every
+    // test that only reads the words.
+    const body = await suspendedPage().text();
+    expect(body).not.toContain('<link');
+    expect(body).not.toContain('--st-');
+    expect(body).toContain('<style>');
+  });
+});
+
+describe('the two renderers of one screen', () => {
+  it('the React backstop reads its words from here rather than repeating them', () => {
+    // A dark page is drawn twice: the proxy's 503 above, and the root layout's
+    // component for anything the proxy could not identify. Two copies of one
+    // sentence is how one of them keeps the old words after a copy edit.
+    const component = readFileSync(
+      new URL('../components/site-suspended.tsx', import.meta.url),
+      'utf8'
+    );
+    expect(component).toContain('SUSPENDED_HEADING');
+    expect(component).toContain('SUSPENDED_BODY');
+    expect(component).not.toContain('Back soon');
   });
 });

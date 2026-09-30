@@ -21,14 +21,26 @@ import { type ApplyCtx, daysAgo } from './context';
 
 const SAMPLE_PROMPT_PREFIX = 'sample-';
 
-/** A small industry-flavored prompt set when the pack doesn't author its own. */
+/**
+ * A small industry-flavored prompt set when the pack doesn't author its own.
+ *
+ * THE NAMES AND DESCRIPTIONS HERE MIRROR `default-prompts.ts`, on purpose. The
+ * demo rows sit in the same list as the real library and a person reads them
+ * side by side, so two names for one thing reads as two things.
+ *
+ * Kept in step the hard way: `20270520000000` renamed these rows in every
+ * database, and this file went on writing the old words, so every demo tenant
+ * created after it would have got 'Support assistant persona' back. A migration
+ * that fixes rows without fixing the writer buys one release of quiet.
+ * [[feedback_data_is_a_deploy_stage]]
+ */
 function derivePrompts(pack: SampleDataPack): SampleAiPrompt[] {
   const biz = pack.label;
   return [
     {
       key: 'support-persona',
-      name: 'Support assistant persona',
-      description: 'Voice + guardrails the storefront chat assistant uses.',
+      name: 'How the chat assistant sounds',
+      description: 'The voice the chat assistant on your site uses, and what it must never say.',
       category: 'persona',
       body: [
         `You are the customer-support assistant for {{business_name}}, a ${biz.toLowerCase()} business.`,
@@ -40,7 +52,8 @@ function derivePrompts(pack: SampleDataPack): SampleAiPrompt[] {
     {
       key: 'product-description',
       name: 'Product description writer',
-      description: 'Turns a few details into polished, benefit-led product copy.',
+      description:
+        'Turns a few notes into a finished product description that says what it does for the buyer.',
       category: 'product',
       body: 'Write a product description for "{{product_name}}".\n\nDetails:\n{{key_features}}\n\nLead with the customer benefit, two short paragraphs then a 3–5 item feature list. Avoid hype words.',
       variables: [
@@ -51,7 +64,8 @@ function derivePrompts(pack: SampleDataPack): SampleAiPrompt[] {
     {
       key: 'win-back-email',
       name: 'Win-back email',
-      description: 'Re-engages a lapsed customer with a warm, low-pressure nudge.',
+      description:
+        'A warm note to somebody who has not bought in a while, with a reason to come back.',
       category: 'email',
       body: 'Write a short win-back email to {{customer_name}} (last ordered {{last_purchase}}). Offer: {{incentive}}. Under 120 words, friendly subject line, one clear call to action.',
       variables: [

@@ -1,0 +1,27 @@
+-- A letterhead belongs to one business.
+--
+-- `20261221000000_billing_documents_per_site` gave print templates a
+-- `property_id` and added a per-site partial-unique index, so that a tenant
+-- running several unrelated businesses could give each one its own letterhead.
+-- It then tried to remove the tenant-wide index that had been in force since
+-- `20260806000000_invoicing_templates`:
+--
+--     DROP INDEX IF EXISTS "billing_document_templates_one_default_per_tenant";
+--
+-- That name has never existed. The index is called
+-- `billing_document_templates_tenant_default_unique`, so the drop removed
+-- nothing, `IF EXISTS` reported success, and both indexes have been live
+-- together ever since. Two UNIQUEs on the same rows means the STRICTER one
+-- decides, so "one default per site" has in practice been "one default for the
+-- whole account" the entire time -- the exact outcome the earlier migration was
+-- written to end.
+--
+-- Nothing has to be backfilled. Every existing row carries `property_id` NULL
+-- (the shared tier, available to every site), which is the correct reading of a
+-- template authored when there was one business, and the per-site index already
+-- permits exactly one default there.
+--
+-- A guard now refuses an `IF EXISTS` drop that names nothing:
+-- scripts/check-migration-drops.mjs.
+
+DROP INDEX IF EXISTS "billing_document_templates_tenant_default_unique";

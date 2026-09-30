@@ -81,7 +81,14 @@ export interface StockProvenance {
   onHand: number;
   allocated: number;
   safetyBuffer: number;
-  /** on_hand − allocated − buffer. What a `deny` variant may actually sell. */
+  /** Units here that nothing may be sold from — quarantine, damaged, awaiting
+   *  repair. Reported, not just subtracted: this pane's whole job is to take the
+   *  number apart, and a term it nets out silently is a subtraction that does not
+   *  add up on screen. One unit on the shelf, none spoken for, none held back, and
+   *  "free to sell 0" reads as the software being wrong. */
+  unsellableOnHand: number;
+  /** on_hand − allocated − buffer − unsellable. What a `deny` variant may
+   *  actually sell. */
   sellable: number;
   /** Per-channel resolution when a channel was asked about. */
   channel: {
@@ -297,6 +304,7 @@ export async function stockProvenance(
       onHand: level.onHand,
       allocated: level.allocated,
       safetyBuffer: level.safetyBuffer,
+      unsellableOnHand: level.unsellableOnHand,
       sellable,
       channel,
 

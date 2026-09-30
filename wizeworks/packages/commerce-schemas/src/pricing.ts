@@ -140,6 +140,11 @@ export type PriceResolutionRequest = z.infer<typeof PriceResolutionRequest>;
 export const PriceTraceStep = z.object({
   source: z.enum([
     'variant_base',
+    // The thing being bought is a SET, so its list price is what its parts
+    // come to under the rule its owner chose. Replaces `variant_base` rather
+    // than stacking on it: the wrapper variant's own number is a placeholder
+    // nobody set.
+    'bundle_price',
     'price_list',
     'bulk_tier',
     'contract_price',

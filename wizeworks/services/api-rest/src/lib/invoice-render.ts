@@ -71,15 +71,26 @@ export async function resolveInvoiceBrand(
   };
 }
 
-/** Render a document's print-HTML through the tenant's ACTIVE published template
- *  (the builder-authored path, §10), or the built-in code default renderer when no
- *  template is published. The single render entry point for the `…/pdf` routes. */
+/** Render a document's print-HTML through the ACTIVE published template for the
+ *  business that issued it (the builder-authored path, §10), or the built-in code
+ *  default renderer when none is published. The single render entry point for the
+ *  `…/pdf` routes. */
 export async function renderTenantInvoiceHtml(
   ctx: ServiceContext,
   data: BillingRenderData,
-  brand: BillingRenderBrand
+  brand: BillingRenderBrand,
+  /**
+   * The site that RAISED this document, not the one the viewer is working in.
+   *
+   * A letterhead carries a business's name, so an invoice from the trade counter
+   * has to print on the trade counter's paper whichever site its owner happens to
+   * have open — and the emailed copy and the PDF are rendered by a worker with no
+   * viewer at all. Omitted only where there is no document: the template preview,
+   * which supplies its own.
+   */
+  propertyId?: string | null
 ): Promise<string> {
-  const active = await billingTemplateService.getActivePublishedTree(ctx);
+  const active = await billingTemplateService.getActivePublishedTree(ctx, propertyId);
   if (active) return renderInvoiceTree(active.tree as unknown as BuilderNode, data, brand);
   return renderBillingDocumentHtml(data, brand);
 }

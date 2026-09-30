@@ -115,7 +115,16 @@ export function reconciliationWords(m: ReconciliationMeasurement): Reconciliatio
       description: 'What your stock is valued at here, from your deliveries and sales',
       amountCents: m.totalValueCents,
       source: 'sparx',
-      reference: `${count(m.totalUnits, 'unit', 'units')} on hand`,
+      // What the AMOUNT covers, which is not the same as what she holds. Three
+      // quarters of Juniper Row's units have no cost behind them, so this cell
+      // read "498 units on hand" beside a figure built from 123 of them, and the
+      // row is where a reader forms the impression of what her stock is worth.
+      // The uncosted line below says so, five rows further down, after she has
+      // already read the total. [[feedback_never_present_absence_as_measurement]]
+      reference:
+        m.uncostedUnits > 0
+          ? `${String(m.totalUnits - m.uncostedUnits)} of ${count(m.totalUnits, 'unit', 'units')} on hand`
+          : `${count(m.totalUnits, 'unit', 'units')} on hand`,
     },
     {
       kind: 'goods_received_not_invoiced',

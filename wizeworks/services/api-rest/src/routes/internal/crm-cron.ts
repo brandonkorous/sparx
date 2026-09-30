@@ -10,7 +10,7 @@
 //   • POST /internal/crm/overdue-reminders    → emitOverdueTaskReminders (per active tenant)
 //   • POST /internal/crm/segment-recompute    → segmentService.recomputeFull (per active tenant)
 //   • POST /internal/crm/mailbox-sync         → syncTenantMailboxes (per active tenant)
-//   • POST /internal/crm/sla-sweep            → ticketSlaSweep.sweepTenant (per active tenant)
+//   • POST /internal/crm/sla-sweep            → ticketSlaSweep.sweepTenant + signatureService.expireStale (per active tenant)
 //
 // Per-tenant loops are sequential. CRM-active tenant count is tiny in
 // Phase 1; sequential keeps DB load predictable and lets one failing
@@ -18,7 +18,7 @@
 
 import { timingSafeEqual } from 'node:crypto';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
-import { crmSchedulers, segmentService, ticketSlaSweep } from '@wizeworks/crm';
+import { crmSchedulers, segmentService, signatureService, ticketSlaSweep } from '@wizeworks/crm';
 
 import { env } from '../../env.js';
 import { syncTenantMailboxes } from '../../lib/crm-mailbox-sync.js';
@@ -119,9 +119,12 @@ const crmCronRoutes: FastifyPluginAsync = (app) => {
   // overlapping run or a pod that dies halfway announces nothing twice.
   app.post('/internal/crm/sla-sweep', async (request) => {
     authorize(request);
-    const summary = await forEachActiveTenant((tenantId) =>
-      ticketSlaSweep.sweepTenant({ tenantId })
-    );
+    const summary = await forEachActiveTenant(async (tenantId) => {
+      // Signing links that ran out. `expireStale` was written for this walk and
+      // never called, so an expired link stayed "pending" in the table.
+      const expiredSignatures = await signatureService.expireStale({ tenantId });
+      return { ...(await ticketSlaSweep.sweepTenant({ tenantId })), expiredSignatures };
+    });
     return { success: true, data: summary };
   });
 

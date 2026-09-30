@@ -13,6 +13,7 @@ import { InventoryNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
 
 import { ensureVariantExists } from './internal';
+import { VARIANT_LABEL_SELECT, variantLabel } from './variant-label';
 
 export interface SupplierVariantRow {
   id: string;
@@ -134,7 +135,14 @@ export async function removeSupplierVariant(
 export interface VariantLookupRow {
   variantId: string;
   sku: string;
+  /** What the thing IS. */
   productTitle: string | null;
+  /** WHICH ONE of them — "L / Ink". Null for a product with a single unnamed
+   *  version. It was never returned, so the recipe editor confirmed a pick as
+   *  "ASH-OVERSHIRT-L-INK / The finished item": a code and a placeholder, with
+   *  the name and the version both sitting in the row that was read to get it.
+   *  variant-label.ts, issue 681. */
+  variantName: string | null;
 }
 
 /** Resolve a variant by its SKU (the natural key buyers know). Powers the
@@ -146,11 +154,17 @@ export async function lookupVariantBySku(
   const variant = await withTenant(ctx, (tx) =>
     tx.productVariant.findFirst({
       where: { sku, deletedAt: null },
-      select: { id: true, sku: true, product: { select: { title: true } } },
+      select: { id: true, ...VARIANT_LABEL_SELECT },
     })
   );
   if (!variant) throw new InventoryNotFoundError('ProductVariant', sku);
-  return { variantId: variant.id, sku: variant.sku, productTitle: variant.product?.title ?? null };
+  const name = variantLabel(variant);
+  return {
+    variantId: variant.id,
+    sku: variant.sku,
+    productTitle: name.productTitle,
+    variantName: name.variantName,
+  };
 }
 
 async function ensureSupplierExists(tx: TxClient, supplierId: string): Promise<void> {

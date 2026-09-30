@@ -27,7 +27,7 @@ import {
   type CheckoutSession,
   type ShippingRate,
 } from '@/lib/checkout-client';
-import { useCart } from '../cart-provider';
+import { useCart, type CartLine, type CartTotals } from '../cart-provider';
 import { useCustomer } from '../customer-provider';
 import { EMPTY_ADDRESS } from './address-form';
 import { PaymentStep } from './payment-step';
@@ -38,6 +38,18 @@ import { CollectionStep } from './collection-step';
 import { DeliveryStep } from './delivery-step';
 import { useAddressBook } from './use-address-book';
 import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
+
+/** The sale, as the confirmation screen needs it. */
+interface PlacedOrder {
+  orderId: string;
+  orderNumber: string;
+  lines: CartLine[];
+  totals: CartTotals;
+  currency: string;
+  rate: ShippingRate | null;
+  /** Null when the order is being collected: there is nowhere to send it. */
+  address: Address | null;
+}
 
 export function CheckoutFlow({
   tenantSlug,
@@ -83,13 +95,20 @@ export function CheckoutFlow({
   const [quoted, setQuoted] = useState(false);
   const [chosenRate, setChosenRate] = useState<ShippingRate | null>(null);
 
-  const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  // What was bought, kept at the moment it was bought. `cart.reset()` runs in
+  // the same breath, so the confirmation screen has no cart to read and the
+  // session is about to be irrelevant — and that screen is the only record of
+  // the sale on a shop that sends no email.
+  const [placed, setPlaced] = useState<PlacedOrder | null>(null);
   const collectedOrder = useRef(false);
 
   const book = useAddressBook({ tenantSlug, customer, contactName: contact.name });
 
-  const cartReady = cart.cartId !== null;
-  const cartEmpty = cartReady && cart.lines.length === 0;
+  // `cart.known`, not `cart.cartId !== null`. A shopper who has never put
+  // anything in a basket has no cart id, and reading that as "still loading"
+  // left checkout showing a full form over a $0.00 total with its button stuck
+  // on "Saving…" forever, because the session it waits for needs a cart.
+  const cartEmpty = cart.known && cart.lines.length === 0;
 
   // Fill in what we already know about a signed-in shopper. Only into empty
   // fields: this must never overwrite something they have started typing.
@@ -153,6 +172,12 @@ export function CheckoutFlow({
   // Start on the address they already gave us. Once, and only while the form
   // is still untouched — a shopper who has begun typing has answered the
   // question, and their usual address arriving late must not overwrite it.
+  // What the buyer wants the shop to know about this order. Asked for on the
+  // delivery / collection step and stored on the SESSION when that step is
+  // submitted, because a hosted-redirect gateway navigates this tab away and
+  // takes every bit of React state with it (issue 874).
+  const [note, setNote] = useState('');
+
   const prefilled = useRef(false);
   useEffect(() => {
     if (prefilled.current || !book.preferred || address.line1 !== '') return;
@@ -196,7 +221,7 @@ export function CheckoutFlow({
       // No address, deliberately. Nothing is being posted, so there is nothing
       // to post it to, and a placeholder here is what put a fictional street on
       // a collection order (issue 064).
-      setSession(await sendRate(tenantSlug, session.sessionId, rate));
+      setSession(await sendRate(tenantSlug, session.sessionId, rate, note));
       collectedOrder.current = true;
       setStep('payment');
     } catch (err) {
@@ -248,7 +273,7 @@ export function CheckoutFlow({
       // rate is known, so we never file an address for an order that then
       // could not be delivered anyway.
       await book.keepIfAsked(address);
-      setSession(await sendRate(tenantSlug, session.sessionId, rate, address));
+      setSession(await sendRate(tenantSlug, session.sessionId, rate, note, address));
       collectedOrder.current = isCollectionRate(rate);
       setStep('payment');
     } catch (err) {
@@ -258,22 +283,36 @@ export function CheckoutFlow({
     }
   }
 
-  function handlePaid(orderNum: string) {
-    setOrderNumber(orderNum);
+  function handlePaid(order: { orderId: string; orderNumber: string }) {
+    setPlaced({
+      orderId: order.orderId,
+      orderNumber: order.orderNumber,
+      lines: cart.lines,
+      totals: session?.totals ?? cart.totals,
+      currency: session?.currency ?? cart.currency,
+      rate: chosenRate,
+      address: collectedOrder.current ? null : address,
+    });
     setStep('done');
     cart.reset();
   }
 
   if (cartEmpty && step !== 'done') return <EmptyCart />;
 
-  if (step === 'done' && orderNumber) {
+  if (step === 'done' && placed) {
     return (
       <Confirmation
-        orderNumber={orderNumber}
+        orderId={placed.orderId}
+        orderNumber={placed.orderNumber}
         paymentMode={session?.paymentMode ?? shopPaymentMode}
         collecting={collectedOrder.current}
         {...(session?.madeToOrder ? { madeToOrder: session.madeToOrder } : {})}
-        currency={session?.currency ?? cart.currency}
+        currency={placed.currency}
+        lines={placed.lines}
+        totals={placed.totals}
+        rate={placed.rate}
+        address={placed.address}
+        signedIn={customer !== null}
       />
     );
   }
@@ -306,6 +345,8 @@ export function CheckoutFlow({
             onBack={() => setStep('contact')}
             onSubmit={handleCollection}
             busy={busy}
+            note={note}
+            onNoteChange={setNote}
           />
         ) : null}
 
@@ -317,6 +358,7 @@ export function CheckoutFlow({
               book.select(id);
               chooseAddress(book.addressFor(id) ?? { ...EMPTY_ADDRESS, name: contact.name });
             }}
+            contactName={contact.name}
             address={address}
             onAddressChange={chooseAddress}
             canSave={book.canSave}
@@ -330,6 +372,8 @@ export function CheckoutFlow({
             onBack={() => setStep('contact')}
             onSubmit={handleDelivery}
             busy={busy}
+            note={note}
+            onNoteChange={setNote}
           />
         ) : null}
 
@@ -369,6 +413,7 @@ export function CheckoutFlow({
           madeToOrder={session?.madeToOrder ?? cart.madeToOrder}
           paymentMode={session?.paymentMode ?? shopPaymentMode}
           shippingSettled={settled}
+          pendingShippingCents={chosenRate ? chosenRate.amountCents : null}
         />
       </aside>
     </div>
@@ -383,6 +428,7 @@ function sendRate(
   tenantSlug: string,
   sessionId: string,
   rate: ShippingRate,
+  note: string,
   address?: Address
 ): Promise<CheckoutSession> {
   return submitShipping(tenantSlug, sessionId, {
@@ -391,5 +437,8 @@ function sendRate(
     shippingProviderSlug: rate.providerSlug,
     shippingService: rate.service,
     shippingCarrier: rate.carrier,
+    // Always sent, never conditional: an empty box is a shopper clearing what
+    // they wrote, and a conditional here would make the note unclearable.
+    customerNote: note.trim(),
   });
 }

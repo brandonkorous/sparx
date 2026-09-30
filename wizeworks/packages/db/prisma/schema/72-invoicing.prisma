@@ -193,9 +193,17 @@ model BillingDocument {
   paidAt      DateTime? @map("paid_at") @db.Timestamptz
   overdueDays Int       @default(0) @map("overdue_days")
 
+  /// The note PRINTED ON THE DOCUMENT. `billing-document-html` renders it under
+  /// a "Notes" heading and `billing-snapshot` freezes it into the issued copy, so
+  /// this is the one the customer reads.
   notes          String?   @db.Text
-  // Customer-visible note (mirrors the retired Quote's split of an internal vs.
-  // customer-facing note) — `notes` above stays staff-internal.
+  /// INERT on a billing document: nothing writes it and nothing renders it.
+  /// Carried over from the retired Quote model's internal/customer note split.
+  /// This comment used to say the reverse, that `notes` above was staff-internal
+  /// and this one was customer-visible. That is not true of this model, and
+  /// following it would put the customer's note somewhere no customer can see.
+  /// `customerNote` IS live on Order, Return and Quote. The same finding is
+  /// written on the Zod schema in crm-schemas/src/invoicing.ts.
   customerNote   String?   @map("customer_note") @db.Text
   declinedReason String?   @map("declined_reason") @db.VarChar(500)
   validUntil     DateTime? @map("valid_until") @db.Timestamptz
@@ -225,7 +233,7 @@ model BillingDocument {
   // Nullable, because most invoices are not for an order — a consulting bill, a
   // deposit, a repair. SetNull rather than Cascade: a finalized invoice is a
   // financial record and outlives the order it refers to.
-  orderId         String?   @map("order_id") @db.Uuid
+  orderId String? @map("order_id") @db.Uuid
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz

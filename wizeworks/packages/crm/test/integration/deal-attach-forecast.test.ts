@@ -37,9 +37,9 @@ describe('deal attach + forecast', () => {
 
     const pipeline = await pipelineService.bootstrapDefaultPipeline(test.ctx);
     pipelineId = pipeline.id;
-    leadStageId = pipeline.stages.find((s) => s.name === 'Lead')!.id;
-    qualifiedStageId = pipeline.stages.find((s) => s.name === 'Qualified')!.id;
-    wonStageId = pipeline.stages.find((s) => s.name === 'Closed Won')!.id;
+    leadStageId = pipeline.stages.find((s) => s.sortOrder === 0)!.id;
+    qualifiedStageId = pipeline.stages.find((s) => s.sortOrder === 1)!.id;
+    wonStageId = pipeline.stages.find((s) => s.stageType === 'won')!.id;
 
     const customer = await customerService.create(test.ctx, {
       type: 'b2b',

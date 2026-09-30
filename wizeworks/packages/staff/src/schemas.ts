@@ -52,7 +52,10 @@ export const payRateSchema = z
     // enforces zero on `none`; validating it here means the caller gets a clear
     // 400 rather than a constraint violation.
     amountCents: z.number().int().min(0).max(2_000_000_000),
-    currency: z.string().length(3).optional(),
+    currency: z
+      .string()
+      .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+      .optional(),
     // Employer burden as a percentage. Capped at 200 for the same reason the
     // CHECK caps it: a typo of 2200 would triple a year of wages silently.
     burdenPercent: z.number().min(0).max(200).optional(),
@@ -198,7 +201,10 @@ export const commissionSchema = z.object({
   basisCents: z.number().int().min(0),
   ratePercent: z.number().min(0).max(100).nullish(),
   amountCents: z.number().int().min(0),
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   earnedOn: z.coerce.date(),
   propertyId: z.string().uuid().nullish(),
   note: z.string().max(2000).nullish(),

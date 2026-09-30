@@ -11,6 +11,7 @@ import {
   ListBillingDocumentsInput,
   UpdateBillingDocumentInput,
 } from '@wizeworks/crm-schemas';
+import { NOT_OWED_STAGE_TYPES, PRICE_OFFER_WORKFLOW_SLUGS } from '@wizeworks/crm-schemas/builtins';
 // `Prisma` as a VALUE, not a type-only import: `Prisma.DbNull` is a runtime
 // sentinel, and it is the only way to ask a nullable Json column whether a key
 // is present.
@@ -131,7 +132,13 @@ export async function list(
       // filter exactly, which is the point.
       ...(filter.pastDue
         ? {
-            status: { in: ['unpaid', 'partial', 'overdue'] },
+            // Through the shared rule, so "late" cannot mean something this
+            // screen's own Outstanding figure disagrees with. The due-date
+            // clause below already kept quotes out by accident — no quote or
+            // estimate on the platform carries a due date, because an offer runs
+            // OUT rather than falling DUE — but "by accident" is not a rule, and
+            // the sentence above claiming this excluded drafts was about status.
+            ...OWED_DOCUMENT_WHERE,
             balance: { gt: 0 },
             // A document due TODAY is not late. Comparing instants makes it late
             // partway through its own due date — the trap `daysPastDue` exists
@@ -352,12 +359,40 @@ export interface AgingReport {
   totalCount: number;
 }
 
+/**
+ * WHAT COUNTS AS MONEY SOMEBODY OWES — as a query, in one place.
+ *
+ * Eight queries across four packages asked this and every one of them asked it
+ * as `status in (unpaid | partial | overdue)`. That is the PAYMENT state, and a
+ * quote nobody has sent carries `unpaid` and a balance exactly like an invoice,
+ * because the status machine is payment-derived and knows nothing about
+ * workflows (`billing-ar.ts` says so in its first paragraph).
+ *
+ * So every quote and estimate on the platform was counted as a receivable
+ * (issue 857): $9,345.64 over 16 documents, and 39% of what one shop's console
+ * told her she was owed. The rule that tells a bill from an offer has existed
+ * since issue 764 and has a guard against second copies — it simply was never
+ * asked here.
+ *
+ * Spread this rather than repeating its clauses: a ninth query that spells its
+ * own version is the shape of the bug it fixes.
+ */
+export const OWED_DOCUMENT_WHERE: Prisma.BillingDocumentWhereInput = {
+  status: { in: ['unpaid', 'partial', 'overdue'] },
+  workflow: { slug: { notIn: [...PRICE_OFFER_WORKFLOW_SLUGS] } },
+  stage: { stageType: { notIn: [...NOT_OWED_STAGE_TYPES] } },
+};
+
 /** AR aging report (docs/87 §8): open billing documents bucketed by days past
  *  due. Lives on the invoicing surface but is the canonical AR view that B2B /
  *  Commerce dashboards pull from. Scope it to one B2B account (`companyId`) or
  *  to all B2B AR (`b2bOnly`, e.g. the B2B Invoices page) — otherwise it spans every
- *  open document. Reads only `unpaid | partial | overdue` — `paid`/`void` carry no
- *  balance. */
+ *  open document.
+ *
+ *  Selects through `OWED_DOCUMENT_WHERE`, so a quote is not a receivable. This
+ *  read `status in (unpaid | partial | overdue)` alone, under a comment saying
+ *  "paid/void carry no balance" — true, and about the wrong question. A quote
+ *  nobody has sent carries `unpaid` and a balance too (issue 857). */
 export async function aging(
   ctx: ServiceContext,
   filter: { companyId?: string; b2bOnly?: boolean } = {}
@@ -371,7 +406,7 @@ export async function aging(
     const rows = await tx.billingDocument.findMany({
       where: {
         deletedAt: null,
-        status: { in: ['unpaid', 'partial', 'overdue'] },
+        ...OWED_DOCUMENT_WHERE,
         ...scope,
       },
       select: { balance: true, dueAt: true },
@@ -442,7 +477,16 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
       : workflow.stages[0];
     if (!stage) throw new CrmNotFoundError('DocumentStage', input.stageId ?? '(first)');
 
-    await assertPartyExists(tx, input.customerId ?? null, input.companyId ?? null);
+    const { inheritedCompanyId } = await assertPartyExists(
+      tx,
+      input.customerId ?? null,
+      input.companyId ?? null
+    );
+    // A caller that named the account wins; one that named only a person gets
+    // the account that person buys for. Never the other way round — a document
+    // deliberately addressed to one account must not be moved to another
+    // because of who happened to ask for it.
+    const companyId = input.companyId ?? inheritedCompanyId;
 
     // The ISSUING site (docs/131 §3.6) — set once at create and never changed,
     // because it is what `numberSeq` is allocated against. Re-homing a document
@@ -457,7 +501,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         workflowId: workflow.id,
         stageId: stage.id,
         customerId: input.customerId ?? null,
-        companyId: input.companyId ?? null,
+        companyId,
         assignedUserId: input.assignedUserId ?? null,
         currency: input.currency,
         taxRate: input.taxRate,
@@ -537,20 +581,28 @@ export async function update(
       throw new CrmValidationError('This document is locked for editing at its current stage.');
     }
 
+    // The account to attach when the caller moved the document to a person who
+    // buys for one, and did not name an account itself. Same rule as create.
+    let adoptedCompanyId: string | null = null;
     if (input.customerId !== undefined || input.companyId !== undefined) {
       const customerId = input.customerId !== undefined ? input.customerId : before.customerId;
       const companyId = input.companyId !== undefined ? input.companyId : before.companyId;
       if (!customerId && !companyId) {
         throw new CrmValidationError('A billing document must bill a customer or a B2B account.');
       }
-      await assertPartyExists(tx, customerId, companyId);
+      const { inheritedCompanyId } = await assertPartyExists(tx, customerId, companyId);
+      if (input.companyId === undefined && !before.companyId) adoptedCompanyId = inheritedCompanyId;
     }
 
     await tx.billingDocument.update({
       where: { id: documentId },
       data: {
         ...(input.customerId !== undefined ? { customerId: input.customerId } : {}),
-        ...(input.companyId !== undefined ? { companyId: input.companyId } : {}),
+        ...(input.companyId !== undefined
+          ? { companyId: input.companyId }
+          : adoptedCompanyId
+            ? { companyId: adoptedCompanyId }
+            : {}),
         ...(input.assignedUserId !== undefined ? { assignedUserId: input.assignedUserId } : {}),
         ...(input.currency !== undefined ? { currency: input.currency } : {}),
         ...(input.taxRate !== undefined ? { taxRate: input.taxRate } : {}),
@@ -691,19 +743,33 @@ export async function recomputeTotals(
 
 /** Throw a clean NOT_FOUND if a referenced party doesn't exist for this tenant,
  *  instead of letting an FK violation surface. */
+/**
+ * Check the party a document bills, and report the trade account behind them.
+ *
+ * The returned `inheritedCompanyId` is the wholesale account the CUSTOMER buys
+ * for, when the caller named a person and not an account. It matters because
+ * every B2B view of a document is keyed on `companyId`: the Quotes list, the
+ * wholesale invoice list, and the account's own portal all ask "which business
+ * is this for" and get nothing from a document that only knows the person who
+ * asked. Fourteen of the fifteen quotes on the dev machine had no account on
+ * them, and so appeared in nobody's Quotes list (issue 763).
+ */
 async function assertPartyExists(
   tx: Prisma.TransactionClient,
   customerId: string | null,
   companyId: string | null
-): Promise<void> {
+): Promise<{ inheritedCompanyId: string | null }> {
+  let inheritedCompanyId: string | null = null;
   if (customerId) {
     const customer = await tx.customer.findUnique({ where: { id: customerId } });
     if (customer?.deletedAt !== null) throw new CrmNotFoundError('Customer', customerId);
+    inheritedCompanyId = customer.companyId;
   }
   if (companyId) {
     const account = await tx.company.findUnique({ where: { id: companyId } });
     if (!account) throw new CrmNotFoundError('Company', companyId);
   }
+  return { inheritedCompanyId };
 }
 
 function round2(n: number): number {

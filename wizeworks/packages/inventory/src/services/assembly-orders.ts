@@ -41,6 +41,7 @@ import { Prisma, withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { VARIANT_LABEL_SELECT, variantLabel } from './variant-label';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -50,6 +51,7 @@ import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
 
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
+import { sellableUnits } from './low-stock';
 import type { MovementResult } from './ledger';
 
 // ─── Row shapes ────────────────────────────────────────────────────────────────
@@ -59,6 +61,9 @@ export interface AssemblyLineRow {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  /** WHICH ONE of it — "M / Natural". A run's lines are what comes off the
+   *  shelf, and two lengths of one linen read the same without it (issue 681). */
+  variantName: string | null;
   quantityPerBatch: number;
   scrapPercent: number;
   quantityRequired: number;
@@ -78,6 +83,8 @@ export interface AssemblyOrderRow {
   outputVariantId: string;
   outputSku: string | null;
   outputTitle: string | null;
+  /** WHICH VERSION the run makes. */
+  outputVariantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
   quantityPlanned: number;
@@ -100,11 +107,11 @@ export interface AssemblyOrderDetail extends AssemblyOrderRow {
 
 const DETAIL_INCLUDE = {
   bom: { select: { name: true } },
-  outputVariant: { select: { sku: true, product: { select: { title: true } } } },
+  outputVariant: { select: VARIANT_LABEL_SELECT },
   warehouse: { select: { name: true } },
   lines: {
     orderBy: { position: 'asc' },
-    include: { variant: { select: { sku: true, product: { select: { title: true } } } } },
+    include: { variant: { select: VARIANT_LABEL_SELECT } },
   },
 } satisfies Prisma.AssemblyOrderInclude;
 
@@ -877,7 +884,25 @@ async function releaseHolds(tx: TxClient, assemblyOrderId: string): Promise<void
 }
 
 /** Refuse a hold the shelf cannot cover, and say by how much. "Not enough
- *  stock" without a number sends someone to count it themselves. */
+ *  stock" without a number sends someone to count it themselves.
+ *
+ *  FREE means {@link sellableUnits}, not `onHand - allocated - safetyBuffer`.
+ *  This function selected `unsellableOnHand` and then left it out of the
+ *  arithmetic, so a run could reserve stock sitting on a quarantine or damaged
+ *  shelf. MEASURED 2026-09-19, Juniper Row: one brass buckle on hand at the
+ *  Fulfillment Center, all of it unsellable, 59 good ones at the Main
+ *  Warehouse. The recipe screen said "you could make 0" and this guard let the
+ *  hold through anyway, which is the advisory number and the enforcing one
+ *  disagreeing with the enforcing one being the loose one.
+ *
+ *  `low-stock.ts` has said since it was written that it is "the one definition"
+ *  and that every read path routes through it. It said READ path; this is a
+ *  write guard, and it was never converted. [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ *  A build is not a sale, but all four terms still apply: the units are here,
+ *  something else has claimed some, the buffer is deliberately withheld from
+ *  commitments (which is why the line already subtracted it), and a damaged
+ *  unit cannot go into a garment any more than it can go into a box. */
 async function assertEnoughAvailable(
   tx: TxClient,
   params: { variantId: string; warehouseId: string; quantity: number }
@@ -888,20 +913,43 @@ async function assertEnoughAvailable(
     },
     select: { onHand: true, allocated: true, safetyBuffer: true, unsellableOnHand: true },
   });
-  const available = Math.max(
-    0,
-    (level?.onHand ?? 0) - (level?.allocated ?? 0) - (level?.safetyBuffer ?? 0)
-  );
+  const available = level ? sellableUnits(level) : 0;
   if (available < params.quantity) {
     const variant = await tx.productVariant.findFirst({
       where: { id: params.variantId },
       select: { sku: true },
     });
     throw new InventoryConflictError(
-      `Not enough ${variant?.sku ?? 'stock'} to commit to this run: it needs ${String(params.quantity)} and ${String(available)} ${available === 1 ? 'is' : 'are'} free here.`,
+      `Not enough ${variant?.sku ?? 'stock'} to commit to this run: it needs ${String(params.quantity)} and ${String(available)} ${available === 1 ? 'is' : 'are'} free here.${spokenFor(level)}`,
       'quantity'
     );
   }
+}
+
+/** Why the shelf holds more than the run may have. One outcome, several causes:
+ *  "0 free" beside a shelf a person can see one unit on reads as the count
+ *  being wrong, and sends them to recount something that is correct. Each
+ *  clause is only added when that term is actually doing the withholding. */
+function spokenFor(
+  level: {
+    onHand: number;
+    allocated: number;
+    safetyBuffer: number;
+    unsellableOnHand: number;
+  } | null
+): string {
+  if (!level || level.onHand <= 0) return '';
+  const held: string[] = [];
+  if (level.allocated > 0) held.push(`${String(level.allocated)} already spoken for`);
+  if (level.unsellableOnHand > 0)
+    held.push(`${String(level.unsellableOnHand)} on a shelf nothing may be used from`);
+  if (level.safetyBuffer > 0) held.push(`${String(level.safetyBuffer)} held back as a buffer`);
+  if (held.length === 0) return '';
+  const list =
+    held.length === 1
+      ? held[0]
+      : `${held.slice(0, -1).join(', ')} and ${String(held[held.length - 1])}`;
+  return ` There ${level.onHand === 1 ? 'is' : 'are'} ${String(level.onHand)} here, with ${String(list)}.`;
 }
 
 /** A part-completed run pulls proportionally less, rounded up: pulling short and
@@ -937,6 +985,7 @@ function serializeRow(order: OrderWithAll): AssemblyOrderRow {
     outputVariantId: order.outputVariantId,
     outputSku: order.outputVariant?.sku ?? null,
     outputTitle: order.outputVariant?.product?.title ?? null,
+    outputVariantName: variantLabel(order.outputVariant).variantName,
     warehouseId: order.warehouseId,
     warehouseName: order.warehouse?.name ?? null,
     quantityPlanned: order.quantityPlanned,
@@ -962,6 +1011,7 @@ function serializeDetail(order: OrderWithAll): AssemblyOrderDetail {
       variantId: l.variantId,
       variantSku: l.variant?.sku ?? null,
       productTitle: l.variant?.product?.title ?? null,
+      variantName: variantLabel(l.variant).variantName,
       quantityPerBatch: l.quantityPerBatch,
       scrapPercent: Number(l.scrapPercent),
       quantityRequired: l.quantityRequired,

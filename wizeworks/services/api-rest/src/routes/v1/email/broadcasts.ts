@@ -159,7 +159,15 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     return ok({
       ready: true as const,
       to: recipient.email,
-      from: await buildFrom(ctx.tenantId, identity.fromName, identity.fromAddress),
+      // THIS broadcast's site, the same one the send passes. Without it a blank
+      // sender name fell back to the PRIMARY site's name, so a second shop's
+      // preview showed the first shop signing an email the send would not.
+      from: await buildFrom(
+        ctx.tenantId,
+        identity.fromName,
+        identity.fromAddress,
+        broadcast.propertyId
+      ),
       subject: rendered.subject,
       html: rendered.html,
       text: rendered.text,

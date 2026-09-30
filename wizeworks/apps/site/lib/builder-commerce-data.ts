@@ -19,6 +19,7 @@ import {
   type DataSources,
 } from '@wizeworks/builder-schemas';
 import type { BuilderProduct } from '@wizeworks/builder-render';
+import { plainText } from '@wizeworks/commerce-schemas';
 
 import {
   getCategoryRecordsFull,
@@ -44,7 +45,7 @@ export function productToBuilderRecord(
     title: p.title,
     price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
     compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
-    description: p.description ?? '',
+    description: plainText(p.description),
     images: p.images
       .map((img) => ({
         url: mediaUrl(img.mediaAssetId, tenantSlug) ?? '',
@@ -93,7 +94,7 @@ function entityRecordToBuilder(
     id: rec.id,
     name: rec.name,
     handle: rec.handle,
-    description: rec.description ?? '',
+    description: plainText(rec.description),
     image: url ? { url, alt: rec.name } : null,
   };
 }

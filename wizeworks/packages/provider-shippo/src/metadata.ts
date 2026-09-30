@@ -41,10 +41,10 @@ export const shippoMetadata: ProviderMetadataDescriptor = {
 
 export const sparxShippingMetadata: ProviderMetadataDescriptor = {
   slug: SPARX_SHIPPING_SLUG,
-  displayName: 'sparx Shipping',
+  displayName: '{platform} Shipping',
   description:
     'One-click shipping with discounted USPS, UPS, and FedEx rates. No carrier accounts needed.',
-  vendor: 'sparx',
+  vendor: '{platform}',
   kinds: ['shipping'],
   supportedCurrencies: ['USD'],
   supportedCountries: ['US'],

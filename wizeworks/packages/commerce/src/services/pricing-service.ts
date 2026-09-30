@@ -20,6 +20,8 @@
 
 import {
   BulkSetPriceListEntriesInput,
+  bundlePartsTotalCents,
+  bundleSetPriceCents,
   CreateBulkPriceTierInput,
   CreateContractPriceInput,
   CreatePriceListInput,
@@ -692,7 +694,33 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
   return withTenant(ctx, async (tx) => {
     const variant = await tx.productVariant.findFirst({
       where: { id: input.variantId, deletedAt: null },
-      select: { id: true, priceCents: true, currency: true },
+      select: {
+        id: true,
+        priceCents: true,
+        currency: true,
+        // Is this thing a SET? Fetched in the SAME query rather than behind an
+        // `if`, so pricing a cart of ordinary garments costs no extra round
+        // trip. `@@unique([bundleProductId])` means at most one row.
+        product: {
+          select: {
+            bundlesAsWrapper: {
+              select: {
+                id: true,
+                pricingMode: true,
+                fixedPriceCents: true,
+                percentOffSum: true,
+                components: {
+                  select: {
+                    defaultQuantity: true,
+                    variant: { select: { priceCents: true } },
+                  },
+                },
+              },
+              take: 1,
+            },
+          },
+        },
+      },
     });
     if (!variant) throw new CommerceNotFoundError('Variant', input.variantId);
     if (variant.currency !== input.currency) {
@@ -709,6 +737,48 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
       deltaCents: variant.priceCents,
       resultingUnitPriceCents: unitPriceCents,
     });
+
+    // 0.5. A SET.
+    //
+    // The console has collected three ways to price a bundle since the day it
+    // shipped — add up the parts, a flat price, a percentage off — and NOTHING
+    // read any of them. No cart, no checkout, no storefront: a shop could build
+    // a gift set, set it to 15% off, watch it save, and sell it for whatever
+    // number happened to sit on the wrapper product, which is a placeholder
+    // nobody was ever asked to fill in.
+    //
+    // This is the same fault as the B2B pricing tier two steps below, written
+    // up in its own comment: a setting saved in the dashboard while every real
+    // price stayed at list. [[feedback_screen_over_a_function_nobody_calls]]
+    //
+    // It REPLACES the base rather than stacking on it, and everything after
+    // this point — contract price, price list, bulk tier, discounts — layers on
+    // top exactly as before. So a price list that names the wrapper variant
+    // still wins, which is right: that is somebody deciding what the set costs,
+    // against a figure derived from its parts.
+    const bundle = variant.product.bundlesAsWrapper[0];
+    if (bundle && bundle.components.length > 0) {
+      const setPriceCents = bundleSetPriceCents({
+        pricingMode: bundle.pricingMode,
+        partsTotalCents: bundlePartsTotalCents(
+          bundle.components.map((c) => ({
+            priceCents: c.variant.priceCents,
+            quantity: c.defaultQuantity,
+          }))
+        ),
+        fixedPriceCents: bundle.fixedPriceCents,
+        percentOffSum: bundle.percentOffSum,
+      });
+      const delta = setPriceCents - unitPriceCents;
+      unitPriceCents = setPriceCents;
+      trace.push({
+        source: 'bundle_price',
+        sourceId: bundle.id,
+        deltaCents: delta,
+        resultingUnitPriceCents: unitPriceCents,
+        note: `Set of ${String(bundle.components.length)}`,
+      });
+    }
 
     // 1. Contract price (B2B-only, highest priority)
     if (input.companyId) {
@@ -877,6 +947,51 @@ export async function resolveCart(
     );
   }
   return out;
+}
+
+/**
+ * Price a basket for a customer you can NAME — the counter's version of
+ * `resolveCart`.
+ *
+ * The difference is the one line in the middle. A cart knows the account
+ * already; a person at a till knows a CUSTOMER, and whether that customer is
+ * priced as part of a business is a question with a real answer: an ACTIVE
+ * membership row, never the `Customer.companyId` pointer on its own
+ * (`resolveActiveB2bAccountId`, and the reason is written there). Making every
+ * caller remember that is how one of them forgets.
+ *
+ * Added for the till, which read the variant's list price and posted it
+ * straight through, so a shop with a signed agreement was quoted full retail at
+ * its own counter while its website charged the agreed figure. Issue 737.
+ */
+export async function resolveForCustomer(
+  ctx: ServiceContext,
+  input: {
+    channel: 'storefront' | 'b2b_portal' | 'admin' | 'subscription';
+    currency: string;
+    customerId: string;
+    /** The site the sale is being taken at (docs/131 §4). */
+    propertyId?: string;
+    lines: { variantId: string; quantity: number }[];
+  }
+): Promise<PricedLine[]> {
+  const companyId = await withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({
+      where: { id: input.customerId, deletedAt: null },
+      select: { companyId: true },
+    });
+    return resolveActiveB2bAccountId(tx, input.customerId, customer?.companyId);
+  });
+
+  return resolveCart(ctx, {
+    channel: input.channel,
+    currency: input.currency,
+    customerId: input.customerId,
+    ...(companyId ? { companyId } : {}),
+    customerSegmentIds: [],
+    ...(input.propertyId ? { propertyId: input.propertyId } : {}),
+    lines: input.lines,
+  });
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────

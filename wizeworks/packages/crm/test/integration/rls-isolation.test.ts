@@ -50,7 +50,7 @@ describe('cross-tenant RLS isolation', () => {
     // Also exercise a deal — different model, same policy template. Catches
     // policy-drift regressions where one table gets ENABLE but not FORCE.
     const pipeline = await pipelineService.bootstrapDefaultPipeline(aliceCtx);
-    const leadStage = pipeline.stages.find((s) => s.name === 'Lead')!;
+    const leadStage = pipeline.stages.find((s) => s.sortOrder === 0)!;
     const deal = await dealService.create(aliceCtx, {
       pipelineId: pipeline.id,
       stageId: leadStage.id,

@@ -106,7 +106,7 @@ export function accountingCatalog(): AccountingProviderDescriptor[] {
       connect: 'file',
       availability: 'available',
       blurb:
-        'Download your spending as a spreadsheet, with every column labelled. Works with any accounting package, and with an accountant who just wants the numbers.',
+        'Download your spending as a spreadsheet, with every column labeled. Works with any accounting package, and with an accountant who just wants the numbers.',
       exportColumns: exportColumns('csv'),
     },
     // QuickBooks and Xero have LIVE adapters (docs/146 Phase 10.7–10.8). Whether
@@ -117,9 +117,9 @@ export function accountingCatalog(): AccountingProviderDescriptor[] {
     live(
       'quickbooks_online',
       'QuickBooks Online',
-      'Send stock journals, bills and expenses straight to QuickBooks Online.'
+      'Send stock journals straight to QuickBooks Online.'
     ),
-    live('xero', 'Xero', 'Send stock journals, bills and expenses straight to Xero.'),
+    live('xero', 'Xero', 'Send stock journals straight to Xero.'),
     soon(
       'quickbooks_desktop',
       'QuickBooks Desktop',

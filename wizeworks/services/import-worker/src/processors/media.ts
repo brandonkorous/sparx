@@ -4,6 +4,11 @@
 // skeleton. The fetching, de-duplication and fallback all live in `./images`, shared
 // with the product processor so a catalogue's galleries and a media library behave
 // identically; this file is the entity wrapper around it.
+//
+// The columns read are the canonical field keys (`ENTITY_FIELDS.media`), held equal
+// by `contract.test.ts`. A caption is saved onto the file. Title and upload date are
+// off that list: a file here has no title of its own (its name and alt text are what
+// it carries), and the date it was added is stamped when it arrives.
 
 import { withTenant } from '@wizeworks/db';
 
@@ -29,6 +34,20 @@ export const mediaProcessor: EntityProcessor = {
           ...(row.filename !== undefined ? { filename: row.filename } : {}),
           ...(row.alt !== undefined ? { alt: row.alt } : {}),
         });
+
+        // The caption, on a file this import brought in, or on one already here when
+        // the import is allowed to update what it finds. Written directly: it is a
+        // plain field the library edits the same way, and no media service input
+        // carries it.
+        const caption = (row.caption ?? '').trim();
+        if (caption !== '' && (!result.reused || options.upsert)) {
+          await withTenant(ctx, (tx) =>
+            tx.mediaAsset.update({
+              where: { id: result.assetId },
+              data: { caption: caption.slice(0, 2000) },
+            })
+          );
+        }
 
         if (result.reused) {
           return {

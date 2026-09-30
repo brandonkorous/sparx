@@ -13,7 +13,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { nameSearchClauses, productSiteVisibilityWhere } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
-import { depositFromColumns } from '@wizeworks/commerce';
+import { depositFromColumns, VARIANT_OPTION_SELECT, variantOptions } from '@wizeworks/commerce';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
@@ -128,6 +128,12 @@ function reviewOrderBy(
 const ListQuestionsQuery = z.object({
   status: z.string().optional(),
   q: z.string().trim().min(1).max(200).optional(),
+  // "Which ones has nobody answered" is a different axis from `status`, and it
+  // is the one a shop actually works from: a question can be ON the product page
+  // and still have silence under it. Answered-ness lives in a child table, so a
+  // caller cannot derive it from a page of rows — the server answers it here,
+  // the same reason `unfinished` exists on the checkout-session list above.
+  unanswered: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   sort_by: QuestionSort.optional(),
@@ -195,17 +201,12 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
           // empty on every seeded variant, so a till reading only `title` shows
           // ten identical rows for one product's sizes. The lattice point is the
           // real answer and it is one join away.
-          optionAssignments: {
-            select: {
-              optionValue: {
-                select: {
-                  value: true,
-                  position: true,
-                  option: { select: { name: true, position: true } },
-                },
-              },
-            },
-          },
+          //
+          // The select and the sort live in `@wizeworks/commerce` now, because
+          // the bundle component list needed the same answer and had been
+          // reading raw SKUs instead. One function, or a second screen learns
+          // this separately again.
+          optionAssignments: VARIANT_OPTION_SELECT,
           product: {
             select: {
               id: true,
@@ -231,10 +232,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         title: r.title,
         // Ordered the way the shop authored its options, so every variant of a
         // product reads its axes in the same order ("L · Oat", never "Oat · L").
-        options: r.optionAssignments
-          .map((a) => a.optionValue)
-          .sort((a, b) => a.option.position - b.option.position || a.position - b.position)
-          .map((v) => ({ name: v.option.name, value: v.value })),
+        options: variantOptions(r.optionAssignments),
         isDefault: r.isDefault,
         priceCents: r.priceCents,
         currency: r.currency,
@@ -543,6 +541,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const skip = q.skip ?? 0;
     const where: Prisma.ProductQuestionWhereInput = {
       ...(q.status ? { status: q.status } : {}),
+      ...(q.unanswered === true ? { answers: { none: {} } } : {}),
       ...(q.q
         ? {
             OR: [
@@ -573,6 +572,11 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
             displayName: true,
             customer: { select: { id: true, firstName: true, lastName: true, email: true } },
             product: { select: { id: true, title: true, handle: true } },
+            // A COUNT, not the answers themselves: the table needs to say
+            // whether anybody has replied, and pulling every answer body for
+            // every row to learn that would be a second table's worth of text
+            // down the wire to render one word.
+            _count: { select: { answers: true } },
           },
         }),
         tx.productQuestion.count({ where }),
@@ -589,6 +593,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         productTitle: r.product?.title ?? null,
         productHandle: r.product?.handle ?? null,
         displayName: r.displayName,
+        answerCount: r._count.answers,
         customer: r.customer
           ? {
               id: r.customer.id,

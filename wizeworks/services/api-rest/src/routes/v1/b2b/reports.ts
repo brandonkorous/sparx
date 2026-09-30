@@ -21,6 +21,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant, type TxClient } from '@wizeworks/db';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
+import { OWED_DOCUMENT_WHERE } from '@wizeworks/crm';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
@@ -159,11 +160,17 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         // Open B2B accounts-receivable — billing_documents scoped to a Company
         // (docs/87 §15; the legacy b2b_invoices table was retired). `balance` nets
         // out partial payments, so the aging below reflects true outstanding AR.
+        //
+        // Through `OWED_DOCUMENT_WHERE`, which is what makes that last clause
+        // true. The query SIX LINES ABOVE counts open quotes by `stage.stageType`;
+        // this one used to select on payment status alone, so the same quote was
+        // counted once as an open quote and again as money owed, in one
+        // `Promise.all` (issue 857).
         tx.billingDocument.findMany({
           where: {
             companyId: { not: null },
             deletedAt: null,
-            status: { in: ['unpaid', 'partial', 'overdue'] },
+            ...OWED_DOCUMENT_WHERE,
           },
           select: { balance: true, dueAt: true },
         }),

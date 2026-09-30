@@ -38,7 +38,11 @@ export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
   actions: [
     {
       type: 'email.send_internal',
-      config: { subject: 'Low inventory: {{product.title}} · {{inventory.quantity}} remaining' },
+      // Same fix as the out-of-stock bell, and it matters more here because this
+      // one lands in her email: `product.title` named the product on an event
+      // about one version of it (issue 861). "Low inventory" went too — the
+      // console calls this Stock, and an owner is not a stock controller.
+      config: { subject: 'Running low: {{item.name}} · {{inventory.quantity}} left' },
     },
   ],
   locked: false,
@@ -221,9 +225,9 @@ export const COMMERCE_ORDER_DELIVERED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
-  name: 'Order cancelled: email',
-  previousNames: ['Order cancelled — email'],
-  description: 'Emails the customer when their order is cancelled.',
+  name: 'Order canceled: email',
+  previousNames: ['Order cancelled: email', 'Order cancelled — email'],
+  description: 'Emails the customer when their order is canceled.',
   trigger: { kind: 'event', eventType: 'order.cancelled' },
   conditions: {
     logic: 'AND',

@@ -14,7 +14,20 @@ import { inventoryService } from '@wizeworks/inventory';
 import { CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 
-const DEFAULT_ITEM_WEIGHT_GRAMS = 500;
+/**
+ * The weight a line is priced at when NOBODY has said what it weighs.
+ *
+ * Exported because it is a number the merchant is charged on, so the screen
+ * that warns them has to be able to say it. It was private, and the warning
+ * would then have had to repeat the figure — two copies of the same assumption
+ * is how the sentence ends up describing a quote that is no longer computed
+ * that way (issue 873).
+ *
+ * Keeping a quote obtainable is the right call; doing it silently was not.
+ * `getLiveRateReadiness` counts how many sellable things fall back to this, and
+ * both consoles say so at the moment the choice is made.
+ */
+export const DEFAULT_ITEM_WEIGHT_GRAMS = 500;
 const DEFAULT_ITEM_DIMENSION_MM = 100; // 10cm cube — used only when a merchant hasn't set real dims.
 
 /** Resolves the tenant's ship-from address from their default (or an

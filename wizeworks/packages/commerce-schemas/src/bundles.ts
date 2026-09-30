@@ -226,3 +226,66 @@ export const ResolvedConfiguration = z.object({
   selectionsEcho: ConfigurationSelection.shape.selections,
 });
 export type ResolvedConfiguration = z.infer<typeof ResolvedConfiguration>;
+
+/* ── What a set costs ───────────────────────────────────────────────────── */
+
+/** One part of a set, priced. */
+export interface BundlePart {
+  priceCents: number;
+  quantity: number;
+}
+
+/**
+ * What the parts come to at their own prices.
+ *
+ * EVERY part, required or not. "Optional" here means the storefront may swap
+ * or drop it at pick time, and there is nowhere for a shopper to say they did,
+ * so pricing as though they had would undercharge every real sale. The day a
+ * cart line can carry "this set, without the scarf" is the day this takes a
+ * selection argument.
+ */
+export function bundlePartsTotalCents(parts: readonly BundlePart[]): number {
+  return parts.reduce(
+    (sum, part) => sum + Math.max(0, part.priceCents) * Math.max(0, part.quantity),
+    0
+  );
+}
+
+export interface BundlePriceInput {
+  /** A `BundlePricingMode`, typed loosely because every caller reads it off a
+   *  database row where it is a `VarChar(20)`. An unrecognized value falls back
+   *  to the parts' total rather than throwing: this is priced on a live
+   *  storefront, and a set whose mode string was renamed under it should cost
+   *  what its parts cost, not nothing. */
+  pricingMode: string;
+  partsTotalCents: number;
+  fixedPriceCents?: number | null;
+  percentOffSum?: number | null;
+}
+
+/**
+ * What a shopper pays for a set, from the rule its owner chose.
+ *
+ * ONE function, called by the pricing pipeline that charges the shopper AND by
+ * the console form that promises her a number. Two copies of this arithmetic
+ * would be two answers to "what does the set cost", and the one she reads while
+ * setting it up is the one she would never think to doubt.
+ *
+ * A mode that needs a number it has not got falls back to the parts' total
+ * rather than to zero. `assertBundlePricingCoherent` rejects that combination
+ * on the way in, so it should be unreachable — but "unreachable" and "free" are
+ * different, and a set that silently costs nothing is the worse of the two
+ * outcomes by a distance.
+ */
+export function bundleSetPriceCents(input: BundlePriceInput): number {
+  const parts = Math.max(0, Math.round(input.partsTotalCents));
+  if (input.pricingMode === 'fixed') {
+    return input.fixedPriceCents == null ? parts : Math.max(0, Math.round(input.fixedPriceCents));
+  }
+  if (input.pricingMode === 'percent_off_sum') {
+    if (input.percentOffSum == null) return parts;
+    const off = Math.min(100, Math.max(0, input.percentOffSum));
+    return Math.max(0, Math.round((parts * (100 - off)) / 100));
+  }
+  return parts;
+}

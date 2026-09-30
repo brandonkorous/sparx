@@ -859,7 +859,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
 
   // Owner/admin, mirroring the module routes: what the rail carries is a
   // decision about the business, not a personal view. Per-person shortcuts are
-  // favourites and recents on the /v1/me spine.
+  // favorites and recents on the /v1/me spine.
   app.put('/v1/tenant/rail', async (request) => {
     const auth = requireRole(request, 'admin');
     const { apps } = RailPut.parse(request.body);

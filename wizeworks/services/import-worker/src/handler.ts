@@ -75,6 +75,9 @@ const JobOptions = z
     vendor: z.string().max(64).optional(),
     migrationRunId: z.string().max(64).optional(),
     propertyId: z.string().uuid().nullable().optional(),
+    /** The tenant's modules when the job was created — see ProcessorOptions. */
+    modules: z.array(z.string().max(64)).max(100).optional(),
+    stockLevelsInRun: z.boolean().optional(),
   })
   .passthrough();
 
@@ -184,6 +187,8 @@ export async function handle(payload: ImportJobEvent, logger: Logger): Promise<H
             {
               upsert: options.upsert !== false,
               ...(options.vendor === undefined ? {} : { vendor: options.vendor }),
+              ...(options.modules === undefined ? {} : { modules: options.modules }),
+              ...(options.stockLevelsInRun === true ? { stockLevelsInRun: true } : {}),
             },
             log
           );

@@ -137,12 +137,28 @@ const entryRoutes: FastifyPluginAsync = (app) => {
           orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
           take,
           skip: q.skip ?? 0,
+          // The LIST needs the site scope as much as the editor does. On a
+          // multi-site tenant a row is either pinned to some of her sites or on
+          // all of them, and the list drew no difference between the two: a page
+          // every one of her businesses publishes looked exactly like one
+          // belonging to the site she was standing on (issue 870).
+          //
+          // Issue 867 deferred this as "a join on a 250-row query". Measured, it
+          // is 154 junction rows platform-wide with at most 2 per entry, so the
+          // whole table is smaller than one page of results.
+          include: { propertyLinks: { select: { propertyId: true } } },
         }),
         tx.contentEntry.count({ where }),
       ])
     );
 
-    return paged(rows.map(serializeEntry), { total, per_page: q.take ?? 50 });
+    return paged(
+      rows.map((row) => ({
+        ...serializeEntry(row),
+        propertyIds: row.propertyLinks.map((l) => l.propertyId),
+      })),
+      { total, per_page: q.take ?? 50 }
+    );
   });
 
   // ──────────────────────────────────────────────────────────────────────
@@ -285,7 +301,18 @@ const entryRoutes: FastifyPluginAsync = (app) => {
     await indexContentEntry(auth, id);
 
     void reply.header('ETag', computeEntryEtag(updated));
-    return ok(serializeEntry(updated));
+    // THE SITE SCOPE COMES BACK TOO. The editor holds it in its draft now, and a
+    // response that left it out would read as `undefined`, which the "every site"
+    // shape spells as the empty list — so the pane would show "every site" the
+    // instant she saved a page pinned to one, and the NEXT save would widen it for
+    // real. The GET already does this; the write has to agree with it.
+    const links = await withRequestTenant(request, (tx) =>
+      tx.contentEntryProperty.findMany({ where: { entryId: id }, select: { propertyId: true } })
+    );
+    return ok({
+      ...serializeEntry(updated),
+      propertyIds: links.map((l) => l.propertyId),
+    });
   });
 
   // ──────────────────────────────────────────────────────────────────────

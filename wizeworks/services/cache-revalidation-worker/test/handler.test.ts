@@ -30,6 +30,28 @@ describe('planRevalidation', () => {
     }
   });
 
+  it('purges a tenant whose platform subscription moved', () => {
+    // SEEN ON SCREEN 2026-09-25: four businesses' sites were dark because their
+    // trials had lapsed. Their subscriptions were set active in the database and
+    // `robots.txt` answered 200 straight away, while the PAGES went on serving
+    // "Back soon" — the storefront's tenant payload carries `billingPhase` and is
+    // fetched with `revalidate: 300`.
+    //
+    // Nothing purged it, because this function had no billing case: an owner who
+    // pays watches her own website stay dark with no explanation.
+    expect(planRevalidation('tenant.subscription.changed')).toBe('site');
+  });
+
+  it('leaves commerce subscriptions alone', () => {
+    // `subscription.*` are a SHOP's own customers' commerce subscriptions — a
+    // different thing with a confusingly similar name, and nothing about them
+    // changes whether the site is served at all. The guard above must not be
+    // satisfied by purging on both.
+    for (const type of ['subscription.created', 'subscription.renewed', 'subscription.paused']) {
+      expect(planRevalidation(type)).toBeNull();
+    }
+  });
+
   it('maps Site Builder publish events to the site scope', () => {
     expect(planRevalidation('sitebuilder.published')).toBe('site');
     expect(planRevalidation('sitebuilder.rolled_back')).toBe('site');

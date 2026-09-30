@@ -66,8 +66,42 @@ const ListContractPricesQuery = z.object({
   b2b_account_id: z.string().uuid(),
 });
 
+// What this customer pays for these things, today, on this site. The counter's
+// question, and the ONLY way to ask it from the console — the till used to read
+// the variant's list price and post it through, so a shop with an agreed price
+// was quoted full retail at the till it sells from (issue 737).
+//
+// A read that takes a body, because a basket is a list and a query string is
+// the wrong shape for one. POST is the verb; nothing is written.
+const QuoteLinesBody = z.object({
+  customerId: z.string().uuid(),
+  property_id: z.string().uuid().optional(),
+  channel: z.enum(['storefront', 'b2b_portal', 'admin', 'subscription']).default('admin'),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .default('USD'),
+  lines: z
+    .array(
+      z.object({
+        variantId: z.string().uuid(),
+        quantity: z.number().int().positive().max(100_000),
+      })
+    )
+    .min(1)
+    // One price resolution is one query chain, so a basket is bounded. Nobody
+    // rings up 251 different things at a counter; a bulk import does, and it
+    // has its own path.
+    .max(250),
+});
+
 const AccountCreditLedgerParams = z.object({ customerId: z.string().uuid() });
-const AccountCreditLedgerQuery = z.object({ currency: z.string().length(3).optional() });
+const AccountCreditLedgerQuery = z.object({
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const pricingRoutes: FastifyPluginAsync = async (app) => {
@@ -228,6 +262,22 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     reply.code(204);
   });
 
+  // What a named customer pays (issue 737)
+  app.post('/v1/commerce/pricing/quote', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const body = QuoteLinesBody.parse(request.body);
+    return ok(
+      await pricingService.resolveForCustomer(toCommerceContext(request), {
+        channel: body.channel,
+        currency: body.currency.toUpperCase(),
+        customerId: body.customerId,
+        ...(body.property_id ? { propertyId: body.property_id } : {}),
+        lines: body.lines,
+      })
+    );
+  });
+
   // Discounts
   app.get('/v1/commerce/discounts', async (request) => {
     requireRole(request, 'viewer');
@@ -334,6 +384,17 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
     return ok(await discountService.grantAccountCredit(toCommerceContext(request), request.body));
+  });
+
+  // Taking it back. Its own endpoint rather than a negative amount on `grant`:
+  // the two are different intentions with different audit actions, and a sign
+  // is one character away from the opposite of what the caller meant.
+  app.post('/v1/commerce/account-credit/take-back', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    return ok(
+      await discountService.takeBackAccountCredit(toCommerceContext(request), request.body)
+    );
   });
 
   // One customer's store-credit balance + its ledger. Static `/grant` is

@@ -30,6 +30,7 @@ import { MotionController } from '@/components/motion-controller';
 import { SiteSuspended } from '@/components/site-suspended';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
 import { SilicaChrome } from '@/components/silica-chrome';
+import { pruneHiddenLinks } from '@/lib/site-modules';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
 import { SiteBuilderRuntime } from '@/components/site-builder-runtime';
@@ -309,6 +310,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // BASE_SILICA_THEME`, which answers that concern outright: there is no branch left to
   // get wrong, and no page can render unthemed. Don't reintroduce the gate.
   // Depends on silicaFrame, so it stays sequential behind it.
+  // ── THE CHROME MUST NOT LINK TO PAGES THIS SITE REFUSES ──────────────────
+  //
+  // A site switches Selling off under "What this site shows", and its own header
+  // is still offering Shop and its footer Orders / Returns / Cart. Every one of
+  // those is now a 404 the business put in its own chrome, which is worse than
+  // the page simply being gone.
+  //
+  // Two sources, because they answer different halves: the ROUTE table knows
+  // `/cart` is the cart on every site, and `hiddenPaths` carries this site's own
+  // page paths — only the server can see that a page called "Shop" is a product
+  // grid. Both are empty on a site that has switched nothing off, and the prune
+  // then returns the tree it was given, unchanged and un-copied.
+  const chromeRoot = silicaFrame.frame
+    ? pruneHiddenLinks(silicaFrame.frame.root, site, silicaFrame.hiddenPaths ?? [])
+    : null;
+
   const silicaHost =
     site && silicaFrame.frame
       ? await buildSilicaHost(site.slug, silicaFrame.frame.root, {
@@ -568,9 +585,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         404 with the code-authored starter frame, so `silicaFrame.frame` is
                         non-null whenever `site` is. The no-site case is the `:` arm at the
                         bottom of this file and is unaffected. */}
-                    {silicaFrame.frame ? (
+                    {chromeRoot ? (
                       <SilicaChrome
-                        frame={silicaFrame.frame.root}
+                        frame={chromeRoot}
                         symbols={silicaFrame.symbols}
                         host={silicaHost?.resolver}
                         // The chrome's host cores (the brand mark) render live from the

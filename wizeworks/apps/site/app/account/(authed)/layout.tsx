@@ -22,20 +22,27 @@ interface AccountNavItem {
   offered?: (offers: AccountOffers) => boolean;
 }
 
+// `offers` answers PER SITE now, so `selling` and `requests` are how a site that
+// has switched a module off under "What this site shows" keeps it out of this
+// nav. Without them a journal with Selling switched off still listed Orders,
+// Returns, Wishlist and Payment methods — four links to pages it refuses to
+// serve, which is a 404 the business put in its own account area.
 const NAV: AccountNavItem[] = [
   { label: 'Overview', href: '/account' },
-  { label: 'Orders', href: '/account/orders' },
+  { label: 'Orders', href: '/account/orders', offered: (o) => o.selling },
   // Ships with the account area rather than being something a tenant has to
   // build: a return she cannot start herself becomes an email to the shop.
-  { label: 'Returns', href: '/account/returns' },
+  { label: 'Returns', href: '/account/returns', offered: (o) => o.selling },
   // Same reasoning as Returns: any shop may be asked to quote for work.
-  { label: 'Estimates', href: '/account/estimates' },
+  { label: 'Estimates', href: '/account/estimates', offered: (o) => o.requests },
   { label: 'Bookings', href: '/account/bookings', offered: (o) => o.bookings },
   // Support. Every shop has customers who need to ask something.
-  { label: 'Requests', href: '/account/requests' },
-  { label: 'Wishlist', href: '/account/wishlist' },
+  { label: 'Requests', href: '/account/requests', offered: (o) => o.requests },
+  { label: 'Wishlist', href: '/account/wishlist', offered: (o) => o.selling },
+  // Not gated: an address is the business's record of where this person lives,
+  // and it is used by anything that has to reach them, not only by an order.
   { label: 'Addresses', href: '/account/addresses' },
-  { label: 'Payment methods', href: '/account/payment-methods' },
+  { label: 'Payment methods', href: '/account/payment-methods', offered: (o) => o.selling },
   { label: 'Profile', href: '/account/profile' },
   { label: 'B2B Account', href: '/account/b2b', offered: (o) => o.b2b },
 ];

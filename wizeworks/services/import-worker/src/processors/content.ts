@@ -18,6 +18,11 @@
 //   drafts everything makes their live site look empty on migration day. Both are
 //   irreversible-feeling to the person watching it happen, so the file's own status
 //   is honoured exactly.
+//
+// The columns read are the canonical field keys (`ENTITY_FIELDS.content`), held equal
+// by `contract.test.ts`, plus any `custom:` field a vendor adapter carried through by
+// name. The old address becomes a redirect to the new one. "Updated" is off the list:
+// the date an entry last changed is stamped by every save, the import's included.
 
 import { withTenant } from '@wizeworks/db';
 import {
@@ -29,6 +34,7 @@ import {
 } from '@wizeworks/cms';
 import { toIsoDate, toSlug } from '@wizeworks/migration';
 
+import { redirectOldAddress } from './redirects';
 import {
   eachRow,
   type EntityProcessor,
@@ -38,6 +44,26 @@ import {
 } from './types';
 
 type EntryKind = 'post' | 'page';
+
+/** The type an entry lands in, and the address pattern its pages are served at. */
+interface ResolvedType {
+  key: string;
+  urlPattern: string | null;
+}
+
+/**
+ * Types the site serves from a fixed route whatever their pattern says. Kept in step
+ * with the sitemap's list, which is the platform's statement of where an entry lives.
+ */
+const IMPLICIT_URL_PATTERNS: Record<string, string> = {
+  blog_post: '/blog/{slug}',
+};
+
+/** Where an entry of this type is served, or null for a type with no public page. */
+function pathFor(type: ResolvedType, slug: string): string | null {
+  const pattern = type.urlPattern ?? IMPLICIT_URL_PATTERNS[type.key];
+  return pattern?.includes('{slug}') === true ? pattern.replace('{slug}', slug) : null;
+}
 
 /** Keys we will adopt if the tenant already has a type that means this. Ordered by
  *  how likely the tenant meant it — an existing `article` type is a better home for
@@ -64,12 +90,12 @@ const SCHEMA_FOR: Record<EntryKind, { key: string; label: string; type: string }
   ],
 };
 
-async function resolveTypeKey(
+async function resolveType(
   tenantId: string,
   actorId: string | null,
   kind: EntryKind,
-  cache: Map<EntryKind, string>
-): Promise<string> {
+  cache: Map<EntryKind, ResolvedType>
+): Promise<ResolvedType> {
   const cached = cache.get(kind);
   if (cached !== undefined) return cached;
 
@@ -78,8 +104,9 @@ async function resolveTypeKey(
     EXISTING_KEYS[kind].some((key) => key.toLowerCase() === type.key.toLowerCase())
   );
   if (match !== undefined) {
-    cache.set(kind, match.key);
-    return match.key;
+    const resolved = { key: match.key, urlPattern: match.url_pattern };
+    cache.set(kind, resolved);
+    return resolved;
   }
 
   const created = await createContentType(
@@ -96,8 +123,9 @@ async function resolveTypeKey(
       schema: { fields: SCHEMA_FOR[kind] } as never,
     }
   );
-  cache.set(kind, created.contentType.key);
-  return created.contentType.key;
+  const resolved = { key: created.contentType.key, urlPattern: created.contentType.url_pattern };
+  cache.set(kind, resolved);
+  return resolved;
 }
 
 function kindOf(row: ImportRow): EntryKind {
@@ -121,8 +149,11 @@ function bodyOf(row: ImportRow): Record<string, unknown> {
   if ((row.tags ?? '') !== '') body.tags = row.tags;
   // Anything the vendor adapter carried through as a tenant's own field. Webflow and
   // Framer collections are mostly these, so dropping them would drop the collection.
-  for (const [key, value] of Object.entries(row)) {
-    if (!key.startsWith('custom:') || value === undefined || value === '') continue;
+  // Only the `custom:` keys are read, so the contract test sees exactly which of the
+  // standard columns this file uses.
+  for (const key of Object.keys(row).filter((name) => name.startsWith('custom:'))) {
+    const value = row[key];
+    if (value === undefined || value === '') continue;
     body[key.slice('custom:'.length)] = value;
   }
   return body;
@@ -133,7 +164,7 @@ export const contentProcessor: EntityProcessor = {
   module: 'cms',
 
   async run(ctx, rows, options, logger) {
-    const typeCache = new Map<EntryKind, string>();
+    const typeCache = new Map<EntryKind, ResolvedType>();
     const actorId = ctx.userId ?? null;
     const propertyIds = ctx.propertyId == null ? undefined : [ctx.propertyId];
 
@@ -156,7 +187,17 @@ export const contentProcessor: EntityProcessor = {
         }
 
         const kind = kindOf(row);
-        const typeKey = await resolveTypeKey(ctx.tenantId, actorId, kind, typeCache);
+        const type = await resolveType(ctx.tenantId, actorId, kind, typeCache);
+        const typeKey = type.key;
+
+        // Its old address, redirected to where it lives now, so links keep working.
+        const redirectTo = async (): Promise<{ errorMsg?: string }> => {
+          if ((row.source_url ?? '').trim() === '') return {};
+          const path = pathFor(type, slug);
+          if (path === null) return {};
+          const note = await redirectOldAddress(ctx, options, row.source_url, path);
+          return note === null ? {} : { errorMsg: note };
+        };
 
         const existing = await withTenant(ctx, (tx) =>
           tx.contentEntry.findFirst({
@@ -182,7 +223,7 @@ export const contentProcessor: EntityProcessor = {
             ...(Object.keys(seo).length > 0 ? { seo } : {}),
             ...(propertyIds !== undefined ? { propertyIds } : {}),
           });
-          return { rowIndex, status: 'updated', naturalKey: slug };
+          return { rowIndex, status: 'updated', naturalKey: slug, ...(await redirectTo()) };
         }
 
         const { entry } = await createEntry(
@@ -212,7 +253,7 @@ export const contentProcessor: EntityProcessor = {
           );
         }
 
-        return { rowIndex, status: 'imported', naturalKey: slug };
+        return { rowIndex, status: 'imported', naturalKey: slug, ...(await redirectTo()) };
       },
       (rowIndex, message) => ({ rowIndex, status: 'error', errorMsg: message })
     );

@@ -27,12 +27,12 @@ export interface PromptTemplateSeed {
 export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'support-persona',
-    name: 'Support assistant persona',
+    name: 'How the chat assistant sounds',
     description:
-      'The voice + guardrails for your storefront chat assistant. The live-chat AI reads the active enabled persona to ground every reply.',
+      'The voice your site’s chat assistant uses, and what it must never say. Whichever one of these is switched on is the one it follows.',
     category: 'persona',
     body: [
-      'You are the customer-support assistant for {{business_name}}, embedded in its storefront chat.',
+      'You are the customer-support assistant for {{business_name}}, answering in the chat on its site.',
       '',
       'Voice: warm, concise, and genuinely helpful, never pushy. Write the way a knowledgeable shop owner talks: plain language, short sentences, no corporate filler.',
       '',
@@ -47,7 +47,7 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'product-description',
     name: 'Product description writer',
-    description: 'Turns a few bullet points into a polished, benefit-led product description.',
+    description: 'Turns a few notes into a finished product description that says what it does for the buyer.',
     category: 'product',
     body: [
       'Write a product description for "{{product_name}}".',
@@ -70,7 +70,7 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'win-back-email',
     name: 'Win-back email',
-    description: 'Re-engages a lapsed customer with a warm, low-pressure nudge and an incentive.',
+    description: 'A warm note to somebody who has not bought in a while, with a reason to come back.',
     category: 'email',
     body: [
       'Write a short win-back email to {{customer_name}}, who last purchased {{last_purchase}}.',
@@ -105,7 +105,7 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'support-reply',
     name: 'Support reply draft',
-    description: 'Drafts an on-brand reply to a customer support message.',
+    description: 'Drafts a reply to a customer, in your own voice.',
     category: 'support',
     body: [
       'Draft a reply to this customer message:',
@@ -126,8 +126,8 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   },
   {
     key: 'seo-meta',
-    name: 'SEO title + meta description',
-    description: 'Generates a search-optimized page title and meta description.',
+    name: 'Page title and search summary',
+    description: 'Writes the title and the short summary a search engine shows under it.',
     category: 'seo',
     body: [
       'Write an SEO title and meta description for a page about: {{page_topic}}.',
@@ -146,7 +146,7 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
   {
     key: 'social-post',
     name: 'Social post',
-    description: 'Writes a short, platform-appropriate social post with a call to action.',
+    description: 'Writes a short social post that suits the place it is going, and asks for something.',
     category: 'social',
     body: [
       'Write a {{platform}} post about: {{topic}}.',

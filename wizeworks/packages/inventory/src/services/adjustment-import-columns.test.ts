@@ -76,3 +76,77 @@ describe('the import column vocabulary', () => {
     ).toBe(true);
   });
 });
+
+/**
+ * EVERY HEADING THE TEMPLATE WRITES MUST BE ONE THE PARSER READS BACK.
+ *
+ * 10.6 says an export re-imports without editing, and the only thing holding
+ * that up is that the two lists agree. They agree by hand: the template writes
+ * a heading, `COLUMNS` lists the spellings the parser accepts, and nothing
+ * checked that the first is in the second.
+ *
+ * It came within one commit of breaking. The counting sheet's headings were
+ * rewritten for the person who prints it (`on_hand` to "On the shelf"), which
+ * is right, and it is exactly the change that silently ends the round trip if
+ * the parser is not taught the new word at the same time.
+ *
+ * `Item` and `Version` are informational and deliberately not in `COLUMNS`:
+ * a person needs to see what they are counting and the parser needs to not
+ * care. Custom-field columns are keyed `cf_<key>` and read by their own path.
+ */
+describe('the counting sheet re-imports', () => {
+  /** The literal headings `adjustmentTemplate` writes. */
+  function templateHeaders(): string[] {
+    const at = source.indexOf("name: 'stock-count'");
+    expect(at, 'the stock-count template moved or was renamed').toBeGreaterThan(-1);
+    const start = source.indexOf('headers: [', at);
+    const end = source.indexOf('],', start);
+    expect(end, 'the template headers list is no longer closed').toBeGreaterThan(start);
+    return [...source.slice(start, end).matchAll(/'([^']+)'/g)].flatMap((m) =>
+      m[1] === undefined ? [] : [m[1]]
+    );
+  }
+
+  /** Every spelling in the `COLUMNS` literal, lower-cased the way `parseCsv` keys. */
+  function acceptedSpellings(): string[] {
+    const start = source.indexOf('const COLUMNS = {');
+    const end = source.indexOf('} as const;', start);
+    return [...source.slice(start, end).matchAll(/'([^']+)'/g)].flatMap((m) =>
+      m[1] === undefined ? [] : [m[1].toLowerCase()]
+    );
+  }
+
+  /** Written for the person carrying the sheet, not for the database. */
+  const INFORMATIONAL = new Set(['item', 'version']);
+
+  const headers = templateHeaders();
+  const accepted = acceptedSpellings();
+
+  it('writes a sheet with headings on it', () => {
+    // The denominator, so a refactor that empties either list fails here rather
+    // than passing over nothing. [[feedback_structural_checks_go_blind]]
+    expect(headers.length).toBeGreaterThanOrEqual(6);
+    expect(accepted.length).toBeGreaterThanOrEqual(20);
+  });
+
+  it.each(headers.filter((h) => !INFORMATIONAL.has(h.toLowerCase())))(
+    'reads the "%s" column back in',
+    (header) => {
+      expect(
+        accepted.includes(header.toLowerCase()),
+        `The counting sheet writes a "${header}" column and COLUMNS does not accept ` +
+          `that spelling, so a sheet exported today no longer re-imports. Add it as ` +
+          `the first alias for its field.`
+      ).toBe(true);
+    }
+  );
+
+  it('says the headings in words a person carrying the sheet would use', () => {
+    for (const header of headers) {
+      expect(
+        header,
+        `"${header}" is a database column name on a sheet somebody prints`
+      ).not.toMatch(/_/);
+    }
+  });
+});

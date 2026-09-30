@@ -269,7 +269,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'message-square',
     description:
-      'A small label that appears above a trigger on hover, using a CSS group: no JavaScript.',
+      'A small label that appears above something when somebody rests the pointer on it. Use it to explain an icon.',
     surfaces: ['page', 'site'],
     tags: ['tooltip', 'hint', 'popover', 'hover', 'help', 'feedback'],
     tree: el('div', 'flex w-full items-center justify-center p-8', {

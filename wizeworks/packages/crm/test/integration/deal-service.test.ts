@@ -26,10 +26,10 @@ describe('dealService', () => {
     // closedAt + closedReason behaviour on terminal moves.
     const pipeline = await pipelineService.bootstrapDefaultPipeline(test.ctx);
     pipelineId = pipeline.id;
-    leadStageId = pipeline.stages.find((s) => s.name === 'Lead')!.id;
-    qualifiedStageId = pipeline.stages.find((s) => s.name === 'Qualified')!.id;
-    wonStageId = pipeline.stages.find((s) => s.name === 'Closed Won')!.id;
-    lostStageId = pipeline.stages.find((s) => s.name === 'Closed Lost')!.id;
+    leadStageId = pipeline.stages.find((s) => s.sortOrder === 0)!.id;
+    qualifiedStageId = pipeline.stages.find((s) => s.sortOrder === 1)!.id;
+    wonStageId = pipeline.stages.find((s) => s.stageType === 'won')!.id;
+    lostStageId = pipeline.stages.find((s) => s.stageType === 'lost')!.id;
 
     const customer = await customerService.create(test.ctx, {
       type: 'b2b',

@@ -119,9 +119,15 @@ model MediaVariant {
   // core crop ratios — '1:1' (feed square) | '4:5' (feed portrait) | '9:16'
   // (story/reel) | '16:9' (landscape) — a focal-point-aware cover crop the media
   // worker derives so a post's image arrives correctly framed on each platform
-  // without the tenant cropping it by hand. The composer previews these + exposes
-  // the draggable focal point (media_assets.focal_point_x/y); the social-worker
-  // picks the crop nearest each target platform's required ratio.
+  // without the tenant cropping it by hand. The composer previews these; the
+  // social-worker picks the crop nearest each target platform's required ratio.
+  //
+  // The focal point itself (media_assets.focal_point_x/y) is chosen in the MEDIA
+  // LIBRARY, on the file's own pane. This comment used to say the composer
+  // "exposes the draggable focal point", which named a control nobody had built:
+  // no screen in either console could write those columns, and 0 of 3,221 images
+  // carried a moved point. Nine tiles now do it there (issue 869), and dead
+  // centre still means "nobody chose", which is the branch the worker reads.
   aspect String? @db.VarChar(12)
 
   byteSize  BigInt   @map("byte_size")

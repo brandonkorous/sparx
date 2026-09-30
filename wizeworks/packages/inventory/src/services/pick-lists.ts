@@ -102,6 +102,27 @@ interface PickableLine {
 }
 
 /**
+ * Why a walk could not be built out of lines that name no product, in the words
+ * of whoever pressed the button.
+ *
+ * Three sentences rather than one with a number slotted into it: "1 line(s)"
+ * counts the way a programmer does, and the verb after it has to agree either
+ * way. (`scripts/check-counted-in-words.mjs` caught this one in the act.)
+ */
+function unstockedRefusal(unstocked: number, staged: number): string {
+  if (staged === 0) {
+    return 'Nothing on this order is a product you stock, so there is no shelf to walk to. Put the product on the line, or send it by hand from the order itself.';
+  }
+  const lines =
+    unstocked === 1
+      ? 'One line on this order is not a product you stock'
+      : `${String(unstocked)} lines on this order are not products you stock`;
+  const them = unstocked === 1 ? 'it' : 'them';
+  const those = unstocked === 1 ? 'that line' : 'those lines';
+  return `${lines}, so there is no shelf to walk to. A walk that left ${them} out would be picked and shipped short. Put the product on ${those}, or send the whole order by hand from the order itself.`;
+}
+
+/**
  * Build a walk from a set of orders.
  *
  * Refuses more than it accepts, on purpose. A pick list that quietly leaves
@@ -136,6 +157,9 @@ export async function generatePickList(
       orders.map((o) => o.orderItemId)
     );
 
+    // Lines that are still owed to the customer and cannot go on a walk.
+    const unstocked: PickableLine[] = [];
+
     const staged: {
       line: PickableLine;
       binId: string | null;
@@ -150,16 +174,22 @@ export async function generatePickList(
       if (remaining <= 0) continue;
 
       if (!line.variantId) {
-        // A free-text order line has no stock record to walk to.
-        if (!input.includeUnstocked) continue;
-        staged.push({
-          line,
-          binId: null,
-          lotId: null,
-          quantity: remaining,
-          pickSequence: Number.MAX_SAFE_INTEGER,
-          short: 0,
-        });
+        // A free-text order line names no product, so there is no stock record,
+        // no shelf, and nothing to walk to. Collected rather than skipped: this
+        // function refuses rather than quietly leaving something out, and a walk
+        // missing half an order is exactly the ship-short its own header warns
+        // about.
+        //
+        // There WAS an `includeUnstocked` flag here that put such a line on the
+        // walk unallocated. It could never have worked: the row it built carried
+        // `variantId: null` into `inventory_pick_list_lines.variant_id`, which is
+        // NOT NULL with a foreign key, so setting the flag traded a plain refusal
+        // for a database error. Nothing in either console ever set it, and the
+        // MCP tool offered it to anyone driving the server from the outside.
+        // The comment further down asserting free-text lines never reach the row
+        // builder described the opposite of what the code did.
+        // [[feedback_verify_capability_in_code_not_docs]]
+        unstocked.push(line);
         continue;
       }
 
@@ -199,9 +229,19 @@ export async function generatePickList(
       }
     }
 
+    // ONE OUTCOME, TWO CAUSES, OPPOSITE REMEDIES. This used to be a single
+    // sentence listing three things that were all already in hand — and it fired
+    // for a FOURTH cause it never mentioned, which is the common one on an order
+    // typed as free text or converted from a quote. Somebody reading it went and
+    // checked for a walk that did not exist and a pick that had not happened,
+    // and the thing they actually had to do was not on the list.
+    // [[feedback_one_outcome_two_causes]]
+    if (unstocked.length > 0) {
+      throw new InventoryValidationError(unstockedRefusal(unstocked.length, staged.length));
+    }
     if (staged.length === 0) {
       throw new InventoryValidationError(
-        'Every line on these orders is already picked, already on another walk, or has nothing left to fulfil.'
+        'Every line on these orders is already picked, already on another walk, or has nothing left to fulfill.'
       );
     }
 
@@ -253,9 +293,10 @@ export async function generatePickList(
         pickListId: list.id,
         orderId: s.line.orderId,
         orderItemId: s.line.orderItemId,
-        // A staged line reaches here only with a variant: the `includeUnstocked`
-        // branch above pushes free-text lines and this map is not reached for
-        // them. The assertion is the compiler's, not a runtime claim.
+        // A staged line always has a variant: a line without one is collected
+        // into `unstocked` above and the whole generation is refused, so this
+        // map is never reached for one. The assertion is the compiler's, and now
+        // the code actually holds it up.
         variantId: s.line.variantId!,
         binId: s.binId,
         lotId: s.lotId,

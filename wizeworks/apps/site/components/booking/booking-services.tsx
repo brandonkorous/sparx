@@ -72,10 +72,18 @@ export async function BookingServices({
       ) : null}
 
       {services.length === 0 ? (
+        // ADDRESSED TO THE VISITOR, who is the only person who can reach this page.
+        //
+        // It read "No services are bookable yet · Once services are open for online
+        // booking, they'll appear here", which describes the OWNER's setup to the
+        // customer standing in front of it, and leaves them with nothing to do. A
+        // Book link is in the starter chrome of every site with Scheduling on, so
+        // this is the page a visitor lands on before the first service exists
+        // (issue 851). It now gives them their next step.
         <EmptyState
           icon="🗓"
-          title="No services are bookable yet"
-          description="Once services are open for online booking, they'll appear here."
+          title="Nothing can be booked online just now"
+          description="Please get in touch and we will find you a time."
         />
       ) : (
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-4 p-0">

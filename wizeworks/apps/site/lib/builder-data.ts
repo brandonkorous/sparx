@@ -19,6 +19,7 @@ import {
   type BuilderNode,
   type DataSources,
 } from '@wizeworks/builder-schemas';
+import { plainText } from '@wizeworks/commerce-schemas';
 
 import { getEntriesByIds, publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { isNotFound, listProducts, type PublicProductListItem } from './commerce';
@@ -109,7 +110,7 @@ function mapProduct(p: PublicProductListItem, tenantSlug: string): Record<string
     title: p.title,
     price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
     compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
-    description: p.description ?? '',
+    description: plainText(p.description),
     images: img ? [{ url: img, alt: p.primaryImageAlt ?? p.title }] : [],
     sku: '',
   };

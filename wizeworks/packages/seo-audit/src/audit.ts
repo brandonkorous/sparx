@@ -6,6 +6,12 @@
 // `info` checks (an intentional `noindex`, the always-true llms.txt fact) are
 // shown but excluded from the denominator, so the score reflects only what the
 // author can actually act on.
+//
+// THE WORDS ARE NOT HERE. Every label and every tip comes from `check-copy.ts`,
+// because a scored card is STORED and a card that holds its own sentences keeps
+// June's wording for ever - 15 of the 16 businesses on this database were reading
+// the pre-rewrite developer vocabulary (issue 863). The engine reading the same
+// module the read paths read is what proves the derivation on every fresh card.
 
 import type {
   AuditableEntity,
@@ -18,6 +24,14 @@ import type {
   Scorecard,
   SeoAuditAction,
 } from './types';
+import {
+  CHECK_LABELS,
+  EXPECTED_SCHEMA,
+  WORD_THRESHOLD,
+  checkTip,
+  computeFixFirst,
+  formatInt,
+} from './check-copy';
 
 // Named for what an owner is trying to do, not for the part of the spec each
 // check comes from. "Indexability" and "AIO" are the vocabulary of somebody who
@@ -29,23 +43,10 @@ const CATEGORY_LABELS: Record<CategoryKey, string> = {
   social: 'Sharing, and AI',
 };
 
-// Entity-aware minimum word count for the content-depth check. Prose pages are
-// expected to carry a real body; a product/collection blurb is naturally short.
-const WORD_THRESHOLD: Record<EntityType, number> = {
-  builder_page: 200,
-  cms_page: 250,
-  product: 50,
-  collection: 40,
-};
-
-// The schema.org @type a given entity should ideally emit. `null` = no single
-// canonical type, so any JSON-LD passes and none warns.
-const EXPECTED_SCHEMA: Record<EntityType, string | null> = {
-  product: 'Product',
-  collection: null,
-  cms_page: null,
-  builder_page: null,
-};
+// `WORD_THRESHOLD` and `EXPECTED_SCHEMA` live in check-copy.ts, beside the tips
+// that quote them: the content-depth sentence names the word count and the
+// structured-data sentence changes with the expected type, so a threshold in one
+// file and its sentence in another is two things that must agree and can drift.
 
 function earnedFor(status: CheckStatus, weight: number): number {
   if (status === 'pass') return weight;
@@ -56,11 +57,15 @@ function earnedFor(status: CheckStatus, weight: number): number {
 interface CheckDraft {
   id: string;
   category: CategoryKey;
-  label: string;
+  /** NO `label`. The words are `CHECK_LABELS[id]`, filled in by `finalize` — a
+   *  draft that carried its own would be a second copy of the one string, which
+   *  is the whole shape of issue 863 reappearing inside the engine. */
   weight: number;
   status: CheckStatus;
   value?: string;
-  tip?: string;
+  /** NO `tip` either. The advice is `checkTip(id, finding)`, derived from what the
+   *  check FOUND — so a stored card can be re-said in today's words from the
+   *  status and value it already keeps. */
   action?: SeoAuditAction;
 }
 
@@ -73,10 +78,25 @@ interface CheckDraft {
  * than at each call site, so the NEXT check that turns out not to apply cannot
  * bring its advice with it.
  */
-function finalize(d: CheckDraft): CheckResult {
-  const { tip: _tip, action: _action, ...bare } = d;
+function finalize(entityType: EntityType, d: CheckDraft): CheckResult {
+  const { action: _action, ...bare } = d;
   const kept = d.status === 'info' ? bare : d;
-  return { ...kept, earned: earnedFor(d.status, d.weight) };
+  const tip = checkTip(d.id, {
+    status: d.status,
+    ...(d.value === undefined ? {} : { value: d.value }),
+    entityType,
+  });
+  return {
+    ...kept,
+    ...(tip === null ? {} : { tip }),
+    // THE ONE PLACE THE WORDS COME FROM, for a card scored this second and for
+    // one refreshed out of the database. Falling back to the id is deliberate and
+    // loud: a check added without a label reads as `og-image` on screen, which
+    // somebody notices, and `check-copy.test.ts` fails the build before they have
+    // to. [[feedback_absent_behaves_like_fine]]
+    label: CHECK_LABELS[d.id] ?? d.id,
+    earned: earnedFor(d.status, d.weight),
+  };
 }
 
 // A slug is "clean" when each path segment is lowercase alphanumerics joined by
@@ -87,13 +107,6 @@ function isCleanSlug(slug: string): boolean {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/.test(slug);
 }
 
-// Deterministic thousands separator (avoids locale-dependent toLocaleString).
-function formatInt(n: number): string {
-  return Math.max(0, Math.trunc(n))
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
 function runChecks(e: AuditableEntity): CheckResult[] {
   const checks: CheckResult[] = [];
   const title = (e.title ?? '').trim();
@@ -101,16 +114,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
 
   // 1 — Title present (meta, 12)
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'title-present',
       category: 'meta',
-      label: 'The page has a title',
       weight: 12,
       status: title.length > 0 ? 'pass' : 'fail',
       value: title.length > 0 ? 'set' : 'not set yet',
       ...(title.length === 0
         ? {
-            tip: 'Every page needs a title. It is the headline people read in search results, and the words on the browser tab.',
             action: { label: 'Add a title', target: 'title' },
           }
         : {}),
@@ -124,20 +135,15 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   else if ((tl >= 10 && tl < 30) || (tl > 60 && tl <= 70)) titleLen = 'warn';
   else titleLen = 'fail';
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'title-length',
       category: 'meta',
-      label: 'How long the title is',
       weight: 8,
       status: titleLen,
       value: `${tl} characters`,
       // When the title is empty, check #1 already owns the message — stay quiet here.
       ...(titleLen !== 'pass' && tl > 0
         ? {
-            tip:
-              tl > 60
-                ? 'A long title gets cut off in search results. Trim it to about 60 characters.'
-                : 'A very short title wastes the best chance you have of being found. Aim for 30 to 60 characters.',
             action: { label: 'Edit title', target: 'title' },
           }
         : {}),
@@ -146,16 +152,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
 
   // 3 — Description present (meta, 6) — recommended, so absence warns (not fails)
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'desc-present',
       category: 'meta',
-      label: 'The page has a short summary',
       weight: 6,
       status: desc.length > 0 ? 'pass' : 'warn',
       value: desc.length > 0 ? 'written' : 'not written yet',
       ...(desc.length === 0
         ? {
-            tip: 'This is the couple of lines shown under your title in search results. It is your pitch, and writing one gets more people to click.',
             action: { label: 'Add a description', target: 'description' },
           }
         : {}),
@@ -180,19 +184,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   const dl = desc.length;
   const descLen: CheckStatus = dl === 0 ? 'info' : dl >= 70 && dl <= 160 ? 'pass' : 'warn';
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'desc-length',
       category: 'meta',
-      label: 'How long the summary is',
       weight: 4,
       status: descLen,
       value: dl > 0 ? `${dl} characters` : 'nothing to measure yet',
       ...(descLen === 'warn' && dl > 0
         ? {
-            tip:
-              dl > 160
-                ? 'Anything past about 160 characters gets cut off. Tighten it up.'
-                : 'Give yourself room to sell the page. Aim for 70 to 160 characters.',
             action: { label: 'Edit description', target: 'description' },
           }
         : {}),
@@ -201,16 +200,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
 
   // 5 — Indexable (index, 9) — `noindex` is informational, never a penalty
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'indexable',
       category: 'index',
-      label: 'Search engines are allowed to list it',
       weight: 9,
       status: e.noindex ? 'info' : 'pass',
       value: e.noindex ? 'hidden from search' : 'allowed',
       ...(e.noindex
         ? {
-            tip: 'This page is set to stay out of search results, so nobody will find it that way. If that was not deliberate, turn it back on.',
             action: { label: 'Check this setting', target: 'noindex' },
           }
         : {}),
@@ -222,18 +219,13 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   if (e.noindex) sitemap = 'info';
   else sitemap = e.inSitemap ? 'pass' : 'warn';
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'in-sitemap',
       category: 'index',
-      label: 'It is on the list we give search engines',
       weight: 8,
       status: sitemap,
       value: e.noindex ? 'left off on purpose' : e.inSitemap ? 'on the list' : 'not on the list',
-      ...(sitemap === 'warn'
-        ? {
-            tip: 'Publish the page and it joins the list of addresses we hand to search engines, which is how they find it.',
-          }
-        : {}),
+      ...(sitemap === 'warn' ? {} : {}),
     })
   );
 
@@ -241,16 +233,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   const slug = (e.slug ?? '').trim();
   const slugClean = isCleanSlug(slug);
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'canonical-slug',
       category: 'index',
-      label: 'The web address is tidy',
       weight: 8,
       status: slugClean ? 'pass' : 'warn',
       value: e.canonical ? 'points at another page' : slugClean ? 'tidy' : 'worth tidying',
       ...(!slugClean
         ? {
-            tip: 'Keep the last part of the address short and in small letters, with hyphens between the words rather than spaces, underscores or capitals.',
             action: { label: 'Edit the address', target: 'slug' },
           }
         : {}),
@@ -279,16 +269,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     else alt = 'fail';
   }
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'image-alt',
       category: 'content',
-      label: 'Every picture is described',
       weight: 10,
       status: alt,
       value: altValue,
       ...(alt === 'warn' || alt === 'fail'
         ? {
-            tip: 'A short description of each picture is how a search engine, and anyone using a screen reader, knows what it shows. Write one for each.',
             action: { label: 'Describe the pictures', target: 'images' },
           }
         : {}),
@@ -301,10 +289,9 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   else if (e.h1Count === 0) h1 = 'fail';
   else h1 = 'warn';
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'heading-h1',
       category: 'content',
-      label: 'One main heading',
       weight: 7,
       status: h1,
       value:
@@ -315,10 +302,6 @@ function runChecks(e: AuditableEntity): CheckResult[] {
             : `${e.h1Count} main headings`,
       ...(h1 !== 'pass'
         ? {
-            tip:
-              e.h1Count === 0
-                ? 'Give the page one big heading at the top. It is how a search engine works out what the page is about.'
-                : 'Keep one big heading and make the others a size smaller, so it is clear which one the page is about.',
             action: { label: 'Check the headings', target: 'headings' },
           }
         : {}),
@@ -331,20 +314,13 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   const noLinks = e.internalLinkCount === 0;
   const depth: CheckStatus = thin || noLinks ? 'warn' : 'pass';
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'content-depth',
       category: 'content',
-      label: 'Enough to read, and somewhere to go next',
       weight: 8,
       status: depth,
       value: `${formatInt(e.wordCount)} words · ${e.internalLinkCount} links`,
-      ...(depth === 'warn'
-        ? {
-            tip: thin
-              ? `A page with very little on it rarely gets found. Aim for at least ${formatInt(threshold)} words of real writing.`
-              : 'Add a few links to your other pages, so a reader who is interested has somewhere to go and search engines can follow you around the site.',
-          }
-        : {}),
+      ...(depth === 'warn' ? {} : {}),
     })
   );
 
@@ -354,20 +330,15 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   else if (e.ogImage === 'generated') og = 'warn';
   else og = 'fail';
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'og-image',
       category: 'social',
-      label: 'The picture shown when it is shared',
       weight: 10,
       status: og,
       value:
         e.ogImage === 'custom' ? 'your own' : e.ogImage === 'generated' ? 'made for you' : 'none',
       ...(og !== 'pass'
         ? {
-            tip:
-              og === 'warn'
-                ? 'We make one for you in your colors. Your own photograph will always do better.'
-                : 'Add a picture, so a link to this page shows something rather than a bare address.',
             action: { label: 'Add an image', target: 'og-image' },
           }
         : {}),
@@ -379,18 +350,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   const hasExpected = expected === null || e.structuredDataTypes.includes(expected);
   const sdOk = hasExpected && e.structuredDataTypes.length > 0;
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'structured-data',
       category: 'social',
-      label: 'Extra detail search engines can read',
       weight: 10,
       status: sdOk ? 'pass' : 'warn',
       value: e.structuredDataTypes.length > 0 ? e.structuredDataTypes.join(', ') : 'none',
       ...(!sdOk
         ? {
-            tip: expected
-              ? 'Tell search engines this page is a product, so a price and a rating can show up beside it in the results.'
-              : 'Spell out what this page is about in a form search engines read directly, so they describe it correctly.',
             action: { label: 'Turn it on', target: 'structured-data' },
           }
         : {}),
@@ -399,10 +366,9 @@ function runChecks(e: AuditableEntity): CheckResult[] {
 
   // Info — AI-discoverable (social, 0) — platform-wide fact, shown for reassurance
   checks.push(
-    finalize({
+    finalize(e.entityType, {
       id: 'ai-discoverable',
       category: 'social',
-      label: 'AI assistants can find it',
       weight: 0,
       status: 'info',
       value: e.inLlmsTxt ? 'listed for AI assistants' : 'findable by search only',
@@ -419,21 +385,8 @@ function gradeFor(score: number): Grade {
   return 'poor';
 }
 
-// The single highest-leverage remediation: the warn/fail with the biggest point
-// shortfall, breaking ties toward outright fails, then heavier checks.
-function computeFixFirst(scored: CheckResult[]): string | null {
-  const issues = scored.filter((c) => c.status === 'warn' || c.status === 'fail');
-  if (issues.length === 0) return null;
-  issues.sort((a, b) => {
-    const shortfall = b.weight - b.earned - (a.weight - a.earned);
-    if (shortfall !== 0) return shortfall;
-    if (a.status !== b.status) return a.status === 'fail' ? -1 : 1;
-    return b.weight - a.weight;
-  });
-  const top = issues[0];
-  if (!top) return null;
-  return top.tip ?? top.label;
-}
+// `computeFixFirst` lives in check-copy.ts: it is a COPY of one check's tip, so a
+// read path refreshing a stored card's words has to re-say this line too.
 
 function round1(n: number): number {
   return Math.round(n * 10) / 10;

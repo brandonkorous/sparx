@@ -6,6 +6,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { plainText } from '@wizeworks/commerce-schemas';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -30,7 +31,9 @@ import { applyRedirect } from '@/lib/redirects';
 import { isSampleRequested, SAMPLE_PRODUCT, SAMPLE_PRODUCT_EXTRAS } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { metadataTitle, socialTitle } from '@/lib/page-title';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -80,13 +83,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         }
       : undefined;
 
+  const title = product.seoTitle ?? product.title;
   return {
-    title: product.seoTitle ?? product.title,
-    description: product.seoDescription ?? product.description ?? undefined,
+    title: metadataTitle(title, site.name),
+    description: product.seoDescription ?? plainText(product.description) ?? undefined,
     ...(alternates ? { alternates } : {}),
     openGraph: {
-      title: product.seoTitle ?? product.title,
-      description: product.seoDescription ?? product.description ?? undefined,
+      title: socialTitle(title, site.name),
+      description: product.seoDescription ?? plainText(product.description) ?? undefined,
       images: [{ url: image }],
     },
   };
@@ -95,6 +99,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProductDetailPage({ params, searchParams }: PageProps) {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
   const { handle } = await params;
   const sp = (await searchParams) ?? {};
 
@@ -251,7 +258,9 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
-    description: product.description ?? undefined,
+    // JSON-LD is read by a machine that will print it in a result card, so the
+    // markup a sample row carries must not travel there either.
+    description: plainText(product.description) || undefined,
     ...(primaryImage ? { image: [primaryImage] } : {}),
     ...(product.vendor ? { brand: { '@type': 'Brand', name: product.vendor } } : {}),
     ...(product.reviewCount > 0 && product.averageRating != null

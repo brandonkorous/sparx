@@ -108,7 +108,14 @@ function vendorFor(id: string): string {
       return 'PayPal Holdings, Inc.';
     default:
       // `custom` and `manual` — the tenant's own processor, or nobody's.
-      return 'sparx';
+      //
+      // The TOKEN, not a name. This read `'sparx'`, so a Piggles shop looking at
+      // how it takes money saw "Manual payments · by sparx" and "Custom gateway ·
+      // by sparx" — a company she has never heard of, on the screen where she
+      // decides who handles her money, two cards along from "Piggles Pay · by
+      // Piggles" which had been doing it right all along. Same fix as issue 128,
+      // one literal further down. [[feedback_a_copy_edit_breaks_identity_lookups]]
+      return PLATFORM_TOKEN;
   }
 }
 

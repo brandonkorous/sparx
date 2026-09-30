@@ -19,6 +19,7 @@ import {
   type TenantCtx,
 } from '@wizeworks/automation';
 import { b2bEscalationService } from '@wizeworks/crm/services';
+import { NOT_OWED_STAGE_TYPES, PRICE_OFFER_WORKFLOW_SLUGS } from '@wizeworks/crm';
 import { publishEvent } from '@wizeworks/events';
 import { z } from 'zod';
 
@@ -102,16 +103,26 @@ export const installB2bActions = installOnce((): void => {
     // instead counted elapsed 24-hour periods, so an invoice due yesterday
     // afternoon was still "0 days past due" this morning and an account's credit
     // hold landed a day late. `date - date` in Postgres is already whole days.
+    // The two joins are the shared "is this money somebody owes" rule, spelled
+    // in SQL because this one read is raw. Everything else asks it through
+    // `OWED_DOCUMENT_WHERE`; the lists come from the same module either way, so
+    // there is no second copy of WHICH workflows and stages, only of the join
+    // (issue 857). What it feeds is a credit hold, so a quote counted here stops
+    // an account ordering.
     const agg = await ctx.tx.$queryRaw<OverdueAgg[]>`
-      SELECT company_id AS account_id,
-             MAX(GREATEST(0, (now() AT TIME ZONE 'UTC')::date - (due_at AT TIME ZONE 'UTC')::date))::int AS max_days_past_due,
+      SELECT d.company_id AS account_id,
+             MAX(GREATEST(0, (now() AT TIME ZONE 'UTC')::date - (d.due_at AT TIME ZONE 'UTC')::date))::int AS max_days_past_due,
              COUNT(*)::int AS actionable_count
-      FROM billing_documents
-      WHERE company_id IS NOT NULL AND deleted_at IS NULL
-        AND status IN ('unpaid', 'partial', 'overdue')
-        AND balance > 0 AND due_at IS NOT NULL
-        AND (due_at AT TIME ZONE 'UTC')::date < (now() AT TIME ZONE 'UTC')::date
-      GROUP BY company_id
+      FROM billing_documents d
+      JOIN document_workflows w ON w.id = d.workflow_id
+      JOIN document_stages   s ON s.id = d.stage_id
+      WHERE d.company_id IS NOT NULL AND d.deleted_at IS NULL
+        AND d.status IN ('unpaid', 'partial', 'overdue')
+        AND NOT (w.slug = ANY(${[...PRICE_OFFER_WORKFLOW_SLUGS]}))
+        AND NOT (s.stage_type = ANY(${[...NOT_OWED_STAGE_TYPES]}))
+        AND d.balance > 0 AND d.due_at IS NOT NULL
+        AND (d.due_at AT TIME ZONE 'UTC')::date < (now() AT TIME ZONE 'UTC')::date
+      GROUP BY d.company_id
     `;
     const byAccount = new Map(agg.map((r) => [r.account_id, r]));
     return accounts.map((a) => ({

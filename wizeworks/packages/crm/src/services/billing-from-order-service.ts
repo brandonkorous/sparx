@@ -38,6 +38,7 @@ import { recomputeTotals, type DocumentWithLines } from './billing-document-serv
 import { deriveDocumentStatus } from './billing-ar';
 import { businessTimeZone } from './business-clock';
 import { applyStageEntryEffects } from './billing-document-stage-service';
+import { invoicePaymentMethod, invoicePaymentNote } from './invoice-payment-method';
 
 /** An address as commerce freezes it on an order. */
 interface FrozenAddress {
@@ -249,6 +250,14 @@ export async function createInvoiceForOrder(
           where: { deletedAt: null },
           select: { id: true, number: true, status: true },
         },
+        // How the money already in actually arrived. Without this the copied
+        // payment row was hardcoded to `other` — a bucket meaning nobody could
+        // name it — beside an order row reading "Cash".
+        // See `invoice-payment-method.ts`.
+        payments: {
+          where: { status: 'captured' },
+          select: { processor: true },
+        },
       },
     });
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
@@ -265,7 +274,7 @@ export async function createInvoiceForOrder(
       throw new CrmValidationError(
         `Order ${order.orderNumber} has already been invoiced${
           existing?.number ? ` as ${existing.number}` : ''
-        }. Open that invoice to chase it, or void it before raising another.`
+        }. Open that invoice to chase it, or cancel it there before raising another.`
       );
     }
 
@@ -383,14 +392,15 @@ export async function createInvoiceForOrder(
     // the order — this money is already there, and going through it would count
     // the same dollars twice.
     if (money.amountPaid > 0) {
+      const processors = order.payments.map((p) => p.processor);
       await tx.billingDocumentPayment.create({
         data: {
           tenantId: ctx.tenantId,
           documentId: created.id,
           kind: 'deposit',
-          method: 'other',
+          method: invoicePaymentMethod(processors),
           amount: money.amountPaid,
-          note: `Already received against order ${order.orderNumber}.`,
+          note: invoicePaymentNote(order.orderNumber, processors),
           receivedAt: order.paidAt ?? new Date(),
           recordedById: ctx.userId ?? null,
         },

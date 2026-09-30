@@ -22,14 +22,39 @@
 // A row's result is reported against the row the tenant can see in their file, so an
 // error on the fourth variant of the ninth product points at the line number they
 // would find it on.
+//
+// Every column this file reads is a canonical field key (`ENTITY_FIELDS.products` in
+// @wizeworks/migration), and `contract.test.ts` measures the two as equal. Seven of
+// them used to be offered and never read: collections, quantity, needs-shipping,
+// taxable, image position, published date and old URL. Taxable is off the list now,
+// because a product here cannot be exempt from tax on its own (every rate without a
+// product class applies to every product); the other six are saved below. A blank
+// cell never clears what a product already has.
 
-import { productService, variantService } from '@wizeworks/commerce';
+import { collectionService, productService, variantService } from '@wizeworks/commerce';
 import { withTenant } from '@wizeworks/db';
-import { toCents, toDecimal, toList, toSlug } from '@wizeworks/migration';
+import { inventoryService } from '@wizeworks/inventory';
+import {
+  toBoolean,
+  toCents,
+  toDecimal,
+  toInteger,
+  toIsoDate,
+  toList,
+  toSlug,
+} from '@wizeworks/migration';
 
 import { ingestImage, linkedNotice } from './images';
+import { redirectOldAddress } from './redirects';
 import { Resolver } from './resolve';
-import { type EntityProcessor, type ImportRow, type PreviewResult, type RowResult } from './types';
+import { freeHandle } from './taxonomy';
+import {
+  type EntityProcessor,
+  type ImportRow,
+  type PreviewResult,
+  type ProcessorContext,
+  type RowResult,
+} from './types';
 
 interface Group {
   handle: string;
@@ -123,6 +148,185 @@ function fallbackSku(handle: string, index: number, row: ImportRow): string {
     : `${base}-${suffix.toUpperCase().replace(/[^A-Z0-9]+/g, '-')}`.slice(0, 100);
 }
 
+function present(value: string | undefined): value is string {
+  return value !== undefined && value.trim() !== '';
+}
+
+/** A barcode the variant can hold: 8 to 14 digits (UPC, EAN, GTIN). Anything else
+ *  would fail the whole variant, so it is left off with a note instead. */
+function barcodeOf(value: string | undefined): { barcode?: string; note?: string } {
+  if (!present(value)) return {};
+  const text = value.trim();
+  return /^\d{8,14}$/.test(text)
+    ? { barcode: text }
+    : {
+        note: `“${text}” is not a barcode that can be stored here (8 to 14 digits), so it was left off.`,
+      };
+}
+
+/**
+ * The product's gallery, in order.
+ *
+ * Vendor adapters gather it onto the first row as `images`. A file mapped by hand
+ * usually carries one `image_url` per row instead, with `image_position` saying
+ * where it goes, which is how most platforms export a gallery; those are collected
+ * from every row of the product and put in position order, a row without a
+ * position keeping its place in the file after the numbered ones.
+ */
+function galleryOf(group: Group): { url: string; alt?: string }[] {
+  const headAlt = present(group.head.image_alt) ? group.head.image_alt.trim() : undefined;
+  const listed = toList(group.head.images);
+  if (listed.length > 0) {
+    return listed.map((url) => ({ url, ...(headAlt === undefined ? {} : { alt: headAlt }) }));
+  }
+
+  const placed: { url: string; alt?: string; position: number; order: number }[] = [];
+  group.rows.forEach(({ row }, order) => {
+    const urls = toList(row.image_url);
+    if (urls.length === 0) return;
+    const position = toInteger(row.image_position);
+    const alt = present(row.image_alt) ? row.image_alt.trim() : headAlt;
+    for (const url of urls) {
+      placed.push({
+        url,
+        ...(alt === undefined ? {} : { alt }),
+        position: position ?? Number.POSITIVE_INFINITY,
+        order,
+      });
+    }
+  });
+  placed.sort((a, b) => a.position - b.position || a.order - b.order);
+
+  const seen = new Set<string>();
+  const gallery: { url: string; alt?: string }[] = [];
+  for (const image of placed) {
+    if (seen.has(image.url)) continue;
+    seen.add(image.url);
+    gallery.push({ url: image.url, ...(image.alt === undefined ? {} : { alt: image.alt }) });
+  }
+  return gallery;
+}
+
+/**
+ * The manual collections a product's `collections` cell names, created where missing.
+ *
+ * Matched by name or handle, case-insensitively, so a file listing `Summer Sale` finds
+ * the collection whose handle is `summer-sale`. A collection that does not exist yet is
+ * created, like a location a stock file names: the collections file in the same move
+ * lands after products and fills in its description and image. A collection that picks
+ * its products by a rule cannot have one added by hand, so it is reported instead.
+ */
+class CollectionLinker {
+  private readonly byName = new Map<string, { id: string } | { rule: string }>();
+
+  constructor(private readonly ctx: ProcessorContext) {}
+
+  async resolve(names: string[]): Promise<{ ids: string[]; notes: string[] }> {
+    const ids: string[] = [];
+    const created: string[] = [];
+    const ruled: string[] = [];
+    for (const name of names) {
+      const key = name.trim().toLowerCase();
+      if (key === '') continue;
+      let found = this.byName.get(key);
+      if (found === undefined) {
+        const existing = await withTenant(this.ctx, (tx) =>
+          tx.productCollection.findFirst({
+            where: {
+              tenantId: this.ctx.tenantId,
+              deletedAt: null,
+              OR: [
+                { name: { equals: name.trim(), mode: 'insensitive' } },
+                { handle: toSlug(name) },
+              ],
+            },
+            select: { id: true, type: true, name: true },
+          })
+        );
+        if (existing === null) {
+          const made = await collectionService.create(this.ctx, {
+            name: name.trim().slice(0, 127),
+            handle: await freeHandle(this.ctx, 'collection', name),
+            type: 'manual',
+          });
+          found = { id: made.id };
+          created.push(name.trim());
+        } else {
+          found = existing.type === 'manual' ? { id: existing.id } : { rule: existing.name };
+        }
+        this.byName.set(key, found);
+      }
+      if ('id' in found) {
+        if (!ids.includes(found.id)) ids.push(found.id);
+      } else {
+        ruled.push(found.rule);
+      }
+    }
+
+    const notes: string[] = [];
+    if (created.length > 0) {
+      notes.push(
+        `Created the collection${created.length === 1 ? '' : 's'} ${created.map((n) => `“${n}”`).join(', ')}.`
+      );
+    }
+    if (ruled.length > 0) {
+      notes.push(
+        `${ruled.map((n) => `“${n}”`).join(', ')} ${ruled.length === 1 ? 'picks its' : 'pick their'} products by a rule, so this product was not added by hand.`
+      );
+    }
+    return { ids, notes };
+  }
+}
+
+/** The collections a product is already in by hand, so an import adds to them rather
+ *  than replacing them. */
+async function manualCollectionsOf(ctx: ProcessorContext, productId: string): Promise<string[]> {
+  const links = await withTenant(ctx, (tx) =>
+    tx.collectionProduct.findMany({
+      where: { productId, addedBy: 'manual' },
+      select: { collectionId: true },
+      orderBy: { position: 'asc' },
+    })
+  );
+  return links.map((link) => link.collectionId);
+}
+
+/**
+ * The quantity on a product row, counted at the main location.
+ *
+ * Only for an item with no stock recorded anywhere yet. A product file is the old
+ * platform's total, not a count per shelf: applied to an item that already has
+ * stock here it would overwrite a real count with an old one. And not at all when
+ * the same move carries a stock levels file, which counts each location properly;
+ * applying both would put the same stock on the shelf twice.
+ */
+async function applyQuantity(
+  ctx: ProcessorContext,
+  resolver: Resolver,
+  variantId: string,
+  quantity: number,
+  vendor: string | undefined
+): Promise<string | null> {
+  const counted = await withTenant(ctx, (tx) =>
+    tx.inventoryLevel.findFirst({ where: { variantId }, select: { variantId: true } })
+  );
+  if (counted !== null) {
+    return 'Stock was already recorded for this item, so the file’s quantity was left alone.';
+  }
+  const warehouse = await resolver.warehouseByName('');
+  await inventoryService.updateLevelCount(ctx, variantId, {
+    warehouseId: warehouse.id,
+    onHand: Math.max(quantity, 0),
+    reason: 'recount',
+    note:
+      vendor === undefined
+        ? 'Imported with the product'
+        : `Imported with the product from ${vendor}`,
+    idempotencyKey: `import:${ctx.tenantId}:${variantId}:${warehouse.id}:${quantity}`,
+  });
+  return warehouse.created ? 'Created the location “Main” for its stock.' : null;
+}
+
 /** Option names and their values, in the order the file presented them. */
 function optionsOf(group: Group): { name: string; values: string[] }[] {
   const options: { name: string; values: string[] }[] = [];
@@ -145,6 +349,7 @@ export const productsProcessor: EntityProcessor = {
 
   async run(ctx, rows, options, logger) {
     const resolver = new Resolver(ctx);
+    const collections = new CollectionLinker(ctx);
     const groups = groupRows(rows);
     const results: RowResult[] = [];
 
@@ -209,23 +414,43 @@ export const productsProcessor: EntityProcessor = {
         const categoryId =
           head.category === undefined ? null : await resolver.categoryByName(head.category);
 
+        // Collections the file names, ADDED to the ones the product is already in by
+        // hand. The service replaces the whole set, so the existing links are read
+        // first; a product is never taken out of a collection because a file did not
+        // mention it.
+        const collectionNames = toList(head.collections);
+        const linked =
+          collectionNames.length === 0 ? null : await collections.resolve(collectionNames);
+        if (linked !== null) notes.push(...linked.notes);
+
+        const requiresShipping = toBoolean(head.requires_shipping);
+        const tags = toList(head.tags)
+          .slice(0, 50)
+          .map((tag) => tag.slice(0, 63));
+
         const productInput = {
           title: title.slice(0, 255),
           handle,
           ...(head.description !== undefined && head.description !== ''
             ? { description: head.description.slice(0, 50_000) }
             : {}),
-          status: normalizeStatus(head.status),
+          // Status, tags and fulfillment used to be written from a blank cell too, so
+          // re-importing a file with no status column put every live product back to
+          // draft and wiped its tags. Only a cell with a value changes them now.
+          ...(present(head.status) || productId === null
+            ? { status: normalizeStatus(head.status) }
+            : {}),
           ...(head.vendor !== undefined && head.vendor !== ''
             ? { vendor: head.vendor.slice(0, 127) }
             : {}),
           ...(head.product_type !== undefined && head.product_type !== ''
             ? { productType: head.product_type.slice(0, 127) }
             : {}),
-          tags: toList(head.tags)
-            .slice(0, 50)
-            .map((tag) => tag.slice(0, 63)),
-          fulfillmentType: normalizeFulfillment(head.fulfillment_type),
+          ...(tags.length > 0 ? { tags } : {}),
+          ...(present(head.fulfillment_type) || productId === null
+            ? { fulfillmentType: normalizeFulfillment(head.fulfillment_type) }
+            : {}),
+          ...(requiresShipping === undefined ? {} : { requiresShipping }),
           ...(grams(head) !== undefined ? { weight: grams(head) } : {}),
           ...(dimensionsOf(head) === undefined ? {} : { dimensions: dimensionsOf(head) }),
           ...(head.seo_title !== undefined && head.seo_title !== ''
@@ -242,13 +467,42 @@ export const productsProcessor: EntityProcessor = {
         if (productId === null) {
           const created = await productService.create(ctx, {
             ...productInput,
+            ...(linked === null ? {} : { collectionIds: linked.ids }),
             options: [],
             variants: [],
           });
           productId = created.id;
         } else {
-          await productService.update(ctx, productId, productInput);
+          const collectionIds =
+            linked === null
+              ? undefined
+              : [...new Set([...(await manualCollectionsOf(ctx, productId)), ...linked.ids])];
+          await productService.update(ctx, productId, {
+            ...productInput,
+            ...(collectionIds === undefined ? {} : { collectionIds }),
+          });
         }
+
+        // The date it first went on sale, for a product that is on sale. The service
+        // stamps "now" when a product goes live, which on migration day would make the
+        // whole catalogue brand new and reorder every "newest first" list; the file's
+        // date is the true one. Written directly because no service input carries it.
+        const publishedAt = toIsoDate(head.published_at);
+        if (publishedAt !== undefined && normalizeStatus(head.status) === 'active') {
+          const id = productId;
+          await withTenant(ctx, (tx) =>
+            tx.product.update({ where: { id }, data: { publishedAt: new Date(publishedAt) } })
+          );
+        }
+
+        // Its old address, redirected to the new one so links to it keep working.
+        const redirectNote = await redirectOldAddress(
+          ctx,
+          options,
+          head.source_url,
+          `/products/${handle}`
+        );
+        if (redirectNote !== null) notes.push(redirectNote);
 
         // ── Options ────────────────────────────────────────────────────────────
         // Set from the whole group at once. `setOptions` replaces the set, which is
@@ -274,27 +528,23 @@ export const productsProcessor: EntityProcessor = {
         }
 
         // ── Images ─────────────────────────────────────────────────────────────
-        const gallery =
-          toList(head.images).length > 0 ? toList(head.images) : toList(head.image_url);
         const assetByUrl = new Map<string, string>();
         let position = 0;
-        for (const url of gallery.slice(0, 30)) {
-          const ingested = await ingestImage(ctx, url, {
-            ...(head.image_alt !== undefined && head.image_alt !== ''
-              ? { alt: head.image_alt }
-              : {}),
+        let linkedNoted = false;
+        for (const image of galleryOf(group).slice(0, 30)) {
+          const ingested = await ingestImage(ctx, image.url, {
+            ...(image.alt === undefined ? {} : { alt: image.alt }),
           });
-          assetByUrl.set(url, ingested.assetId);
-          if (!ingested.copied && ingested.reason !== undefined && notes.length === 0) {
+          assetByUrl.set(image.url, ingested.assetId);
+          if (!ingested.copied && ingested.reason !== undefined && !linkedNoted) {
             notes.push(linkedNotice(ingested.reason));
+            linkedNoted = true;
           }
           await variantService.addImage(ctx, {
             productId,
             mediaAssetId: ingested.assetId,
             position,
-            ...(head.image_alt !== undefined && head.image_alt !== ''
-              ? { alt: head.image_alt }
-              : {}),
+            ...(image.alt === undefined ? {} : { alt: image.alt }),
           });
           position += 1;
         }
@@ -315,7 +565,11 @@ export const productsProcessor: EntityProcessor = {
               if (id !== undefined) optionValueIds.push(id);
             }
 
+            const rowNotes = index === 0 ? [...notes] : [];
             const priceCents = toCents(row.price);
+            const { barcode, note: barcodeNote } = barcodeOf(row.barcode);
+            if (barcodeNote !== undefined) rowNotes.push(barcodeNote);
+            const variantShipping = toBoolean(row.requires_shipping) ?? requiresShipping;
             const variantInput = {
               ...(priceCents !== undefined ? { priceCents } : {}),
               ...(toCents(row.compare_at_price) !== undefined
@@ -324,25 +578,38 @@ export const productsProcessor: EntityProcessor = {
               ...(toCents(row.cost_per_item) !== undefined
                 ? { costCents: toCents(row.cost_per_item) }
                 : {}),
-              ...(row.barcode !== undefined && row.barcode !== ''
-                ? { barcode: row.barcode.slice(0, 100) }
-                : {}),
+              ...(barcode === undefined ? {} : { barcode }),
               ...(grams(row) !== undefined ? { weight: grams(row) } : {}),
             };
+            const quantity =
+              options.stockLevelsInRun === true ? undefined : toInteger(row.quantity);
 
             if (existingVariant !== null && existingVariant.productId === productId) {
-              await variantService.update(ctx, existingVariant.id, variantInput);
+              await variantService.update(ctx, existingVariant.id, {
+                ...variantInput,
+                ...(variantShipping === undefined ? {} : { requiresShipping: variantShipping }),
+              });
               if (optionValueIds.length > 0) {
                 await variantService.assignOptionValues(ctx, {
                   variantId: existingVariant.id,
                   optionValueIds,
                 });
               }
+              if (quantity !== undefined) {
+                const stockNote = await applyQuantity(
+                  ctx,
+                  resolver,
+                  existingVariant.id,
+                  quantity,
+                  options.vendor
+                );
+                if (stockNote !== null) rowNotes.push(stockNote);
+              }
               results.push({
                 rowIndex,
                 status: 'updated',
                 naturalKey: sku,
-                ...(index === 0 && notes.length > 0 ? { errorMsg: notes[0] } : {}),
+                ...(rowNotes.length > 0 ? { errorMsg: rowNotes.join(' ') } : {}),
               });
               continue;
             }
@@ -356,7 +623,8 @@ export const productsProcessor: EntityProcessor = {
               // nothing gets `continue`, which is what the old platform was doing.
               inventoryPolicy:
                 (row.track_inventory ?? '').toLowerCase() === 'false' ? 'continue' : 'deny',
-              requiresShipping: normalizeFulfillment(head.fulfillment_type) === 'physical',
+              requiresShipping:
+                variantShipping ?? normalizeFulfillment(head.fulfillment_type) === 'physical',
               currency:
                 row.currency !== undefined && /^[A-Za-z]{3}$/.test(row.currency)
                   ? row.currency.toUpperCase()
@@ -364,6 +632,17 @@ export const productsProcessor: EntityProcessor = {
               optionValueIds,
             });
             resolver.rememberVariant(sku, { id: created.id, productId });
+
+            if (quantity !== undefined) {
+              const stockNote = await applyQuantity(
+                ctx,
+                resolver,
+                created.id,
+                quantity,
+                options.vendor
+              );
+              if (stockNote !== null) rowNotes.push(stockNote);
+            }
 
             // A variant-specific photo, bound so the storefront swaps it on selection.
             const variantImage = (row.variant_image_url ?? '').trim();
@@ -383,7 +662,7 @@ export const productsProcessor: EntityProcessor = {
               rowIndex,
               status: isNew ? 'imported' : 'updated',
               naturalKey: sku,
-              ...(index === 0 && notes.length > 0 ? { errorMsg: notes[0] } : {}),
+              ...(rowNotes.length > 0 ? { errorMsg: rowNotes.join(' ') } : {}),
             });
           } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
@@ -454,4 +733,12 @@ export const productsProcessor: EntityProcessor = {
   },
 };
 
-export const productInternals = { groupRows, optionsOf, fallbackSku, normalizeStatus, grams };
+export const productInternals = {
+  groupRows,
+  optionsOf,
+  fallbackSku,
+  normalizeStatus,
+  grams,
+  galleryOf,
+  barcodeOf,
+};

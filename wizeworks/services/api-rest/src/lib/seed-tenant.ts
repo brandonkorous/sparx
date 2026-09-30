@@ -129,13 +129,39 @@ async function loadExistingTenant(tenantId: string, slug: string): Promise<Provi
     ]);
     return { ownerUserId: owner?.id ?? null, propertyId: property?.id ?? null };
   });
-  if (!ids.ownerUserId || !ids.propertyId) {
+  // Destructured to CONSTS before the guard: the repair below runs inside a
+  // callback, and TypeScript drops a narrowing on a property the moment it is
+  // read across a closure. A local const keeps it, which is better than an
+  // assertion that would still be there long after the reason was forgotten.
+  const { ownerUserId, propertyId } = ids;
+  if (!ownerUserId || !propertyId) {
     throw new Error(`Tenant ${slug} exists but is missing its owner/primary property`);
   }
+  // Repair on re-run, because "additive + idempotent" has to mean the tenant
+  // ends up RIGHT, not merely untouched. Every demo tenant provisioned before
+  // the create above existed is missing its owner's membership, and a seeder
+  // that can only fix the ones it has not made yet fixes nothing already out
+  // there. `createMany ... skipDuplicates` leans on the `(organization_id,
+  // user_id)` unique index, so a second run is a no-op rather than a crash.
+  await withTenant({ tenantId }, (tx) =>
+    tx.member.createMany({
+      data: [
+        {
+          organizationId: tenantId,
+          userId: ownerUserId,
+          role: 'owner',
+          memberType: 'owner',
+          status: 'active',
+        },
+      ],
+      skipDuplicates: true,
+    })
+  );
+
   return {
     tenantId,
-    propertyId: ids.propertyId,
-    ownerUserId: ids.ownerUserId,
+    propertyId,
+    ownerUserId,
     created: false,
   };
 }
@@ -184,6 +210,29 @@ async function findOrProvisionTenant(spec: SeedTenantSpec): Promise<ProvisionedT
         providerId: 'credential',
         accountId: user.id,
         password: passwordHash,
+      },
+    });
+    // THE OWNER'S MEMBERSHIP, which this path did not write.
+    //
+    // A user row says who may sign in; a member row says who is ON a team, and
+    // they are different questions (`users.tenant_id` names the account a login
+    // was created under, which stops being the team the moment somebody joins
+    // one they did not create). Real signup writes both — `provision-tenant.ts`
+    // and `provision-invited-owner.ts` each follow the user with exactly this
+    // create — and this said it went "through the real signup path" while
+    // skipping it.
+    //
+    // MEASURED 2026-09-30: 76 of 113 tenants on the development database held
+    // no member row at all, so their owner opened Team and did not find
+    // themselves, and no per-member limit could be set on anybody. A demo
+    // tenant is what a prospect is shown (issue 882).
+    await tx.member.create({
+      data: {
+        organizationId: tenantId,
+        userId: user.id,
+        role: 'owner',
+        memberType: 'owner',
+        status: 'active',
       },
     });
     return { tenantId, propertyId, ownerUserId: user.id, created: true };

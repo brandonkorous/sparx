@@ -181,7 +181,7 @@ export const salonPack: SampleDataPack = {
       title: 'Bond Repair Shampoo (250 ml)',
       handle: 'bond-repair-shampoo',
       description:
-        '<p>A sulfate-free repair shampoo built for color-treated and chemically processed hair. It cleanses gently while a bond-building complex works to relink the broken disulfide bonds that leave hair brittle after lightening or heat styling. The lather is low and rinses clean: no squeaky stripped feeling, no fading your color faster than it should.</p><p>Use two to three times a week, alternating with your daily wash. Massage into wet hair, leave for sixty seconds so the actives can work, then rinse and follow with the matching conditioner.</p>',
+        'A sulfate-free repair shampoo built for color-treated and chemically processed hair. It cleanses gently while a bond-building complex works to relink the broken disulfide bonds that leave hair brittle after lightening or heat styling. The lather is low and rinses clean: no squeaky stripped feeling, no fading your color faster than it should.\n\nUse two to three times a week, alternating with your daily wash. Massage into wet hair, leave for sixty seconds so the actives can work, then rinse and follow with the matching conditioner.',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -257,7 +257,7 @@ export const salonPack: SampleDataPack = {
       title: 'Bond Repair Conditioner (250 ml)',
       handle: 'bond-repair-conditioner',
       description:
-        '<p>The companion to our Bond Repair Shampoo. A rich, slip-heavy conditioner that detangles instantly while the same bond-building complex continues the repair the shampoo starts. Light enough for fine hair, but layer it on the mid-lengths and ends if yours runs dry or coarse.</p><p>After shampooing, work through from the ears down, leave for two to three minutes, then rinse. For a deeper treatment, leave it in under a warm towel for ten minutes once a week.</p>',
+        'The companion to our Bond Repair Shampoo. A rich, slip-heavy conditioner that detangles instantly while the same bond-building complex continues the repair the shampoo starts. Light enough for fine hair, but layer it on the mid-lengths and ends if yours runs dry or coarse.\n\nAfter shampooing, work through from the ears down, leave for two to three minutes, then rinse. For a deeper treatment, leave it in under a warm towel for ten minutes once a week.',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -331,7 +331,7 @@ export const salonPack: SampleDataPack = {
       title: 'Smoothing Styling Cream (100 ml)',
       handle: 'smoothing-styling-cream',
       description:
-        '<p>A medium-hold, no-crunch styling cream that tames frizz and adds soft definition without the helmet feel. Heat-protectant up to 230°C, so it doubles as your blow-dry primer. Works on everything from a sleek blowout to air-dried waves.</p><p>Warm a dime-sized amount between your palms and rake through damp hair before styling. Add a touch more to dry hair to smooth flyaways and seal the look.</p>',
+        'A medium-hold, no-crunch styling cream that tames frizz and adds soft definition without the helmet feel. Heat-protectant up to 230°C, so it doubles as your blow-dry primer. Works on everything from a sleek blowout to air-dried waves.\n\nWarm a dime-sized amount between your palms and rake through damp hair before styling. Add a touch more to dry hair to smooth flyaways and seal the look.',
       productType: 'Styling',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -406,7 +406,7 @@ export const salonPack: SampleDataPack = {
       title: 'Nourishing Hair Oil (50 ml)',
       handle: 'nourishing-hair-oil',
       description:
-        '<p>A weightless, fast-absorbing finishing oil (argan, marula, and squalane) that adds shine and tames split ends without leaving a greasy film. A single drop on the ends finishes a style; a few drops on damp hair protects against heat and tangles before you dry.</p><p>Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends. Add more only as needed: this concentrate goes a very long way.</p>',
+        'A weightless, fast-absorbing finishing oil (argan, marula, and squalane) that adds shine and tames split ends without leaving a greasy film. A single drop on the ends finishes a style; a few drops on damp hair protects against heat and tangles before you dry.\n\nStart with one or two drops, warm between your palms, and smooth over the mid-lengths and ends. Add more only as needed: this concentrate goes a very long way.',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -472,7 +472,7 @@ export const salonPack: SampleDataPack = {
       title: 'Long-Wear Nail Polish (15 ml)',
       handle: 'long-wear-nail-polish',
       description:
-        '<p>A salon-grade, chip-resistant nail lacquer with a high-gloss gel-like finish: no lamp required. The 10-free formula skips the harshest ingredients and goes on smooth in two even coats. Pick your shade; each is mixed in small batches for true, saturated color.</p><p>Apply a base coat, two thin coats of color, and a top coat, letting each layer flash off for two minutes. Expect five to seven days of wear with a top coat refresh midweek.</p>',
+        'A salon-grade, chip-resistant nail lacquer with a high-gloss gel-like finish: no lamp required. The 10-free formula skips the harshest ingredients and goes on smooth in two even coats. Pick your shade; each is mixed in small batches for true, saturated color.\n\nApply a base coat, two thin coats of color, and a top coat, letting each layer flash off for two minutes. Expect five to seven days of wear with a top coat refresh midweek.',
       productType: 'Nails',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -596,7 +596,7 @@ export const salonPack: SampleDataPack = {
       title: 'Bond Repair Duo',
       handle: 'bond-repair-duo',
       description:
-        '<p>Our two best-sellers in one set: the Bond Repair Shampoo and matching Conditioner, built to work together on color-treated and chemically processed hair. Buy them as a duo and save over picking each up on its own.</p><p>The everyday kit your stylist would send you home with after a color or lightening session, gentle cleanse, instant slip, and a bond-building complex in both bottles.</p>',
+        'Our two best-sellers in one set: the Bond Repair Shampoo and matching Conditioner, built to work together on color-treated and chemically processed hair. Buy them as a duo and save over picking each up on its own.\n\nThe everyday kit your stylist would send you home with after a color or lightening session, gentle cleanse, instant slip, and a bond-building complex in both bottles.',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {

@@ -39,6 +39,13 @@ export { reconcileFunnelDaily, type ReconcileResult } from './reconcile.js';
 export { findAbandoned, type AbandonedSubject, type SweepResult } from './abandon.js';
 export { FUNNEL_LIBRARY, recipesForModules, type FunnelRecipe } from './library.js';
 export { installFunnelLibrary, type InstallResult } from './install.js';
+export {
+  advanceOnEvent,
+  captureFromScan,
+  type AdvanceOptions,
+  type CampaignEvent,
+  type StageAdvance,
+} from './advance.js';
 
 /** Thrown for a rule this layer owns, so a route can map it to a 400 rather
  *  than letting a Postgres constraint surface as a 500. The constraints are

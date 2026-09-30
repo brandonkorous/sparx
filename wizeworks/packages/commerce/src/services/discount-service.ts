@@ -20,6 +20,7 @@ import {
   RedeemDiscountInput,
   RedeemGiftCardInput,
   SpendAccountCreditInput,
+  TakeBackAccountCreditInput,
   UpdateDiscountInput,
 } from '@wizeworks/commerce-schemas';
 import { orderPaymentsService } from '@wizeworks/crm';
@@ -37,6 +38,7 @@ import type { ServiceContext } from '../errors';
 import { indexCommerceEntity, publishCommerceEvent } from '../events';
 import { recomputeCartTotals } from './cart-service';
 import { giftCardOnCart, giftCardReservation } from './gift-card-reservation';
+import { formatCents } from './money';
 import {
   discountWindowState,
   eligibleBaseCents,
@@ -1155,6 +1157,83 @@ export async function grantAccountCredit(
   });
 
   return { newBalanceCents: result.balanceCents };
+}
+
+/**
+ * Takes store credit back off an account, as an audited ledger line.
+ *
+ * REFUSES rather than clamping when the amount is more than the balance. The
+ * caller asked to remove a specific number; quietly removing a smaller one and
+ * reporting success would hand back a balance the caller never chose and leave
+ * them believing the number they typed is the number that happened. The refusal
+ * names the balance, so the next attempt can be right.
+ *
+ * The balance can therefore never go below zero here — which matters, because
+ * `spendAccountCredit` reads `balanceCents` as spendable money and a negative
+ * one would read as a debt the checkout has no idea how to collect.
+ */
+export async function takeBackAccountCredit(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<{ newBalanceCents: number; takenCents: number }> {
+  const input = TakeBackAccountCreditInput.parse(rawInput);
+
+  const result = await withTenant(ctx, async (tx) => {
+    const credit = await tx.accountCredit.findFirst({
+      where: { customerId: input.customerId, currency: input.currency },
+    });
+    if (!credit || credit.balanceCents <= 0) {
+      throw new CommercePricingError('This customer has no store credit to take back.');
+    }
+    if (input.amountCents > credit.balanceCents) {
+      throw new CommercePricingError(
+        `That is more than this customer holds. Their balance is ` +
+          `${formatCents(credit.balanceCents, input.currency)}.`
+      );
+    }
+
+    const after = await tx.accountCredit.update({
+      where: { id: credit.id },
+      data: { balanceCents: { decrement: input.amountCents } },
+    });
+    await tx.accountCreditTransaction.create({
+      data: {
+        tenantId: ctx.tenantId,
+        accountCreditId: credit.id,
+        deltaCents: -input.amountCents,
+        reason: 'adjust',
+        note: input.note ?? null,
+        actorUserId: ctx.userId ?? null,
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.accountcredit.takenback',
+      entityType: 'Customer',
+      entityId: input.customerId,
+      diff: {
+        before: { balanceCents: credit.balanceCents },
+        after: { balanceCents: after.balanceCents },
+      },
+    });
+    return after;
+  });
+
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'accountcredit.taken_back',
+    data: {
+      customerId: input.customerId,
+      amountCents: input.amountCents,
+      newBalanceCents: result.balanceCents,
+    },
+  });
+
+  return { newBalanceCents: result.balanceCents, takenCents: input.amountCents };
 }
 
 export async function spendAccountCredit(

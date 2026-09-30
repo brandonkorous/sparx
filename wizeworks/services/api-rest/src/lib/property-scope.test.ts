@@ -6,6 +6,7 @@ import {
   categorySiteVisibilityWhere,
   mediaSiteVisibilityWhere,
   defaultPropertyIdsToActiveSite,
+  defaultOwningSiteToActiveSite,
 } from './property.js';
 
 const PROP = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -83,5 +84,38 @@ describe('defaultPropertyIdsToActiveSite — new items default to the active sit
     const specific: Record<string, unknown> = { propertyIds: ['x'] };
     await defaultPropertyIdsToActiveSite(specific, count, resolve);
     expect(specific.propertyIds).toEqual(['x']);
+  });
+});
+// An ORDER is not a catalog item, and the difference is the whole point of this
+// second helper. No site on a product means "sold on all of them"; no site on a
+// SALE means it is in nobody's takings and hidden from every member whose access
+// is limited to named sites. Issue 878: the quote conversion and the manual
+// order route both left it off, so a GBP 504 sale belonged to no shop.
+describe('defaultOwningSiteToActiveSite - a sale always lands somewhere', () => {
+  const resolveActive = () => Promise.resolve(PROP);
+
+  it('defaults to the active site even for a SINGLE-site tenant', async () => {
+    // The catalog helper deliberately skips this case. Copying that rule here
+    // is the mistake this test exists to catch: one site is exactly the account
+    // where every sale should carry it, and nothing would ever set it instead.
+    const body: Record<string, unknown> = {};
+    await defaultOwningSiteToActiveSite(body, resolveActive);
+    expect(body.propertyId).toBe(PROP);
+  });
+
+  it('honors an explicit id without resolving the active site', async () => {
+    const resolve = vi.fn(resolveActive);
+    const body: Record<string, unknown> = { propertyId: 'chosen-site' };
+    await defaultOwningSiteToActiveSite(body, resolve);
+    expect(body.propertyId).toBe('chosen-site');
+    expect(resolve).not.toHaveBeenCalled();
+  });
+
+  it('honors an explicit null - saying "no site" is not the same as saying nothing', async () => {
+    const resolve = vi.fn(resolveActive);
+    const body: Record<string, unknown> = { propertyId: null };
+    await defaultOwningSiteToActiveSite(body, resolve);
+    expect(body.propertyId).toBeNull();
+    expect(resolve).not.toHaveBeenCalled();
   });
 });

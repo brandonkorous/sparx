@@ -806,7 +806,7 @@ export const MIGRATION_RECIPES: readonly MigrationRecipe[] = [
     name: 'A listing report from an online marketplace',
     description:
       'The inventory report a marketplace gives sellers. One row per listing, with the marketplace’s own quantity.',
-    recognisedBy: 'A seller or merchant SKU column and a fulfilment-centre or warehouse code.',
+    recognisedBy: 'A seller or merchant SKU column and a fulfillment-center or warehouse code.',
     extraAliases: {
       sku: ['seller sku', 'merchant sku', 'listing sku', 'asin'],
       name: ['item name', 'listing title'],

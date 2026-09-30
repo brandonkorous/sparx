@@ -52,6 +52,7 @@ import {
   type ArtifactKind,
   type ResolvedArtifact,
 } from './blueprint-baseline.js';
+import { isExampleKind, sameAsInstalled, type UntouchedReport } from './blueprint-untouched.js';
 import { mimeFromUrl, type InstallResult } from './blueprint-installer.js';
 
 export interface UpdateContext {
@@ -430,15 +431,24 @@ const pageHandler: KindHandler = {
   },
   async writeMerged(env, artifact, merged) {
     if (!artifact.refId) return;
-    // kind/recordType/slug are page identity — never merge-written; only content + SEO.
-    // The body goes to the silica column; the row keeps the name/SEO metadata.
+    // kind/recordType/slug are page identity — never merge-written; only content.
+    // The body goes to the silica column; the row keeps the name.
+    //
+    // NOT `seoTitle`/`seoDescription`. A design's are written about the demo company
+    // it was built around — "Search Kestrel for a product, a collection or a page" —
+    // and `siteService.installedPageColumns` stopped the INSTALL writing them. This is
+    // the other seam, and leaving it would have put the next version's demo title back
+    // on her pages, which is the shape this keeps taking
+    // ([[feedback_a_fix_leaves_its_neighbour_behind]], issue 852).
+    //
+    // `extractCurrent` still READS them, deliberately. Once the repair has cleared the
+    // rows and the baselines together, base and live agree on absent — and a title she
+    // writes herself still shows up as the edit it is.
     await pageService.update(
       env.propCtx,
       artifact.refId,
       definedOnly({
         name: merged.name,
-        seoTitle: merged.seoTitle,
-        seoDescription: merged.seoDescription,
         canonical: merged.canonical,
         ogImage: merged.ogImage,
         noindex: merged.noindex,
@@ -469,8 +479,9 @@ const pageHandler: KindHandler = {
       recordSubtype,
       // A per-type product page (docs/143) is never THE default — it wins via subtype.
       isDefault: kind === 'collection' && !recordSubtype,
-      seoTitle: typeof c.seoTitle === 'string' ? c.seoTitle : null,
-      seoDescription: typeof c.seoDescription === 'string' ? c.seoDescription : null,
+      // No `seoTitle`/`seoDescription` — `addPage` would drop them anyway (they are
+      // not in `installedPageColumns`), and passing a value that is silently
+      // discarded is how the next reader concludes the field is honored.
       canonical: typeof c.canonical === 'string' ? c.canonical : null,
       ogImage: typeof c.ogImage === 'string' ? c.ogImage : null,
       noindex: typeof c.noindex === 'boolean' ? c.noindex : false,
@@ -933,6 +944,69 @@ export async function planUpdate(
     updatable: incoming.version !== install.blueprintVersion,
     artifacts: diffs,
     summary: summarize(diffs),
+  };
+}
+
+/**
+ * What on this site is still exactly as the design delivered it.
+ *
+ * Reads only. It walks the install's own stamped baselines, asks each kind's
+ * handler to read the live row back in the same shape, and reports the ones
+ * that still match — see blueprint-untouched.ts for why the question matters
+ * and why it is asked this way rather than by looking for words.
+ *
+ * Independent of the catalog: it needs no newer version and no blueprint, so it
+ * answers for a design that has never been updated, which is the ordinary case
+ * and the one this is for.
+ */
+export async function reportUntouched(
+  uctx: UpdateContext,
+  install: { id: string; blueprintKey: string }
+): Promise<UntouchedReport> {
+  const env = await buildEnv(uctx, false);
+  const baselines = await loadBaselines(env.ctx, install.id);
+
+  const examples: UntouchedReport['examples'] = [];
+  const pages: UntouchedReport['pages'] = [];
+
+  for (const base of baselines.values()) {
+    // A detached artifact was ejected on purpose and is hers outright; an
+    // unmanaged one is an orphan the design no longer ships. Neither is a thing
+    // to tell her about.
+    if (base.detached || !base.managed) continue;
+    const handler = HANDLERS.find((h) => h.kind === base.kind);
+    if (!handler) continue;
+
+    // A read that throws is not evidence of anything, and a row the tenant has
+    // deleted is the opposite of untouched. Both fall through silently: this
+    // panel may under-report and must never over-report.
+    const current = await handler
+      .extractCurrent(env, {
+        kind: base.kind,
+        naturalKey: base.naturalKey,
+        refId: base.refId,
+        content: base.baseline,
+      })
+      .catch(() => null);
+    if (current == null) continue;
+    if (!sameAsInstalled(base.baseline, current)) continue;
+
+    const entry = { kind: base.kind, naturalKey: base.naturalKey, refId: base.refId };
+    if (isExampleKind(base.kind)) examples.push(entry);
+    else if (base.kind === 'page') pages.push(entry);
+  }
+
+  const by = (a: { naturalKey: string }, b: { naturalKey: string }) =>
+    a.naturalKey < b.naturalKey ? -1 : a.naturalKey > b.naturalKey ? 1 : 0;
+  examples.sort(by);
+  pages.sort(by);
+
+  return {
+    installId: install.id,
+    blueprintKey: install.blueprintKey,
+    examples,
+    pages,
+    total: examples.length + pages.length,
   };
 }
 

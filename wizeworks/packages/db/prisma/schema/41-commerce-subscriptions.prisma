@@ -23,6 +23,20 @@ model Subscription {
   channel    String @default("storefront") @db.VarChar(20)
   currency   String @db.VarChar(3)
 
+  // Which SITE the customer signed up on (docs/58 D1, issue 878).
+  //
+  // A renewal creates a real Order, and an order with no site is in no site's
+  // takings and hidden from every member whose access is limited to named
+  // sites. This is the only place a renewal can learn where it belongs: the
+  // order is minted by a worker, months after the signup, with nothing else in
+  // hand. Without it every renewal on this platform landed site-less.
+  //
+  // Nullable because rows written before this column existed cannot be told
+  // apart from rows that genuinely have no site, and guessing a site for an old
+  // subscription would file real money against a shop that never took it.
+  // SetNull on delete, exactly as Order does: a subscription outlives its site.
+  propertyId String? @map("property_id") @db.Uuid
+
   status String @default("active") @db.VarChar(20)
   // ^ trialing | active | past_due | paused | cancelled
 
@@ -80,6 +94,7 @@ model Subscription {
 
   tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer      Customer               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  property      Property?              @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   // Restrict, not SetNull: removing the card an active subscription renews on
   // must fail loudly at the point of removal, not silently break the next
   // renewal a month later where nobody is watching.
@@ -91,6 +106,7 @@ model Subscription {
 
   @@index([tenantId, customerId])
   @@index([tenantId, status])
+  @@index([tenantId, propertyId])
   @@index([nextOccurrenceAt])
   @@map("commerce_subscriptions")
 }

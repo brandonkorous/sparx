@@ -14,6 +14,7 @@
 // input, but the names printed beside it are still tenant records.
 
 import { withTenant } from '@wizeworks/db';
+import { billingDocumentNoun, isPriceOfferWorkflow } from '@wizeworks/crm-schemas/builtins';
 
 import type { ServiceContext } from '../errors';
 import type {
@@ -41,6 +42,13 @@ export interface BillingDraftInput {
   stageId?: string | null;
   /** Explicit customer-facing label; wins over `stageId` when both are present. */
   title?: string | null;
+  /**
+   * The slug of the workflow this document belongs to, which decides what it
+   * IS: a bill, a quote or an estimate. Without it a preview of a quote printed
+   * as an unpaid invoice with a balance due, because the fallbacks below are
+   * all written for a bill (issue 764).
+   */
+  workflowSlug?: string | null;
   number?: string | null;
   status?: string | null;
   currency?: string | null;
@@ -123,9 +131,16 @@ export async function buildRenderDataFromDraft(
       taxable: l.taxable ?? false,
     }));
 
+    const priceOffer = isPriceOfferWorkflow(draft.workflowSlug);
+    const noun = billingDocumentNoun(draft.workflowSlug);
+    const offerTitle = noun.charAt(0).toUpperCase() + noun.slice(1);
+
     return {
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an EMPTY title must fall through to the stage label, which `??` would not do (it only falls through on null/undefined). A blank title field would otherwise print a document with no name.
-      title: draft.title?.trim() || stage?.customerLabel || 'Invoice',
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an EMPTY title must fall through, which `??` would not do (it only falls through on null/undefined). A blank title field would otherwise print a document with no name.
+      title: priceOffer ? offerTitle : draft.title?.trim() || stage?.customerLabel || 'Invoice',
+      // On an offer the stage label is the STANDING, not the name — see the
+      // note in @wizeworks/crm-schemas/builtins.
+      ...(priceOffer ? { standing: stage?.customerLabel ?? 'Draft', priceOffer: true } : {}),
       number: draft.number ?? null,
       status: draft.status ?? 'unpaid',
       currency: draft.currency ?? 'USD',

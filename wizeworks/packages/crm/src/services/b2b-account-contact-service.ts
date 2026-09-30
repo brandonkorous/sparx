@@ -7,15 +7,23 @@
 //
 // `Customer.companyId` is the customer's "primary account" pointer (per
 // the schema's own doc comment) — set here the first time a customer is
-// added as a contact, and left untouched afterward even if they're later
-// added to (or removed from) other accounts, so their default pricing
-// account never silently changes underneath them.
+// added as a contact, and left untouched when they are later added to a
+// SECOND account, so their default pricing account never silently changes
+// underneath them.
+//
+// Switching a membership OFF does clear it, when it pointed here. It used not
+// to, and the customer's own screen went on naming a business that had stopped
+// pricing them — an answer no screen contradicted, because the pointer is the
+// only thing the customer screen reads and the active row is the only thing
+// pricing reads. Both directions of that pair now live in `trade-membership.ts`,
+// which the customer editor calls too. Issue 744.
 
 import { CreateB2bAccountContactInput, UpdateB2bAccountContactInput } from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { B2bAccountContact, Customer } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { membershipDeactivated, membershipRestored } from './trade-membership';
 import type { ServiceContext } from '../errors';
 import { CrmConflictError, CrmNotFoundError } from '../errors';
 
@@ -147,6 +155,17 @@ export async function update(
         },
       },
     });
+
+    // The pointer follows the membership, BOTH ways. Switched off, the
+    // customer's own screen must stop naming this business as the one that
+    // prices them; switched back on, it must name it again. The pointer is what
+    // that screen reads and it is not what pricing reads, so either direction
+    // left alone shows a person filed one way and charged the other. Issue 744.
+    if (input.isActive === false && before.isActive) {
+      await membershipDeactivated(tx, updated.customerId, accountId);
+    } else if (input.isActive === true && !before.isActive) {
+      await membershipRestored(tx, updated.customerId, accountId);
+    }
 
     await writeAuditLog({
       tx,

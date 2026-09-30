@@ -63,7 +63,11 @@ export const NOTIFY_STOCK_DEPLETED: SystemAutomationSpec = {
         audience: 'owners',
         severity: 'warning',
         module: 'inventory',
-        title: '{{product.title}} is out of stock',
+        // `item.name` and not `product.title`: the event is one VERSION hitting
+        // zero, and naming the product told an owner with 83 tees on the shelf
+        // that her tee was gone (issue 861). It is one field rather than two
+        // placeholders because a missing placeholder stops the notice entirely.
+        title: '{{item.name}} is out of stock',
         body: 'Customers cannot buy this until it is back in stock.',
         // The VARIANT, not the product: one size being gone is what happened,
         // and its stock screen is where she puts it right. The product page

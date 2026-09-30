@@ -361,7 +361,9 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
     // starter fallback, which is a real part of the site and was in no sitemap.
     // Runs last, so `seen` already holds every address that earned one.
     const starters = starterAddresses(
-      await siteChromeOptions(tenant.id),
+      // The SITE's answer, not just the account's: a journal with Selling
+      // switched off must not advertise /products or /cart to a crawler.
+      await siteChromeOptions(tenant.id, propertyId),
       {
         products: products.length,
         collections: collections.length,

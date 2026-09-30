@@ -11,8 +11,12 @@ import {
   subscriptionService,
 } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
-import { requireRole } from '@wizeworks/api-core/auth';
-import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
+import {
+  defaultOwningSite,
+  requireCommerceModule,
+  toCommerceContext,
+} from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const SlugParam = z.object({ slug: z.string().min(1).max(128) });
@@ -274,6 +278,25 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
       skip: q.skip,
     });
     return paged(items, { total, per_page: q.take ?? 50 });
+  });
+
+  // Starting one. `subscriptionService.create` shipped with the models, the
+  // billing worker and the dunning state machine, and had exactly ONE caller in
+  // the whole platform: an MCP tool. No transport, no storefront path, no
+  // console screen — so a repeat order could not come into existence unless
+  // somebody drove an AI client at it, while three screens told the shop owner
+  // her customers could start one at checkout. Issue 738.
+  app.post('/v1/commerce/subscriptions', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    // The site this was signed on. Every renewal becomes an Order, and an order
+    // with no site is in no site's takings, so the subscription has to carry it
+    // from the start: the renewal runs in a worker months later with nothing but
+    // this row to read (issue 878).
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    await defaultOwningSite(request, requireAuth(request), body);
+    const created = await subscriptionService.create(toCommerceContext(request), body);
+    return reply.code(201).send(ok(created));
   });
 
   app.get('/v1/commerce/subscriptions/:id', async (request) => {

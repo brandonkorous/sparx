@@ -35,6 +35,8 @@ const ListQuery = z.object({
   property: z.string().min(1).max(64).optional(),
   status: z.enum(['open', 'pending', 'resolved', 'spam']).optional(),
   mine: queryBool.optional(),
+  /** Only the ones a customer is waiting on. See `unreadOnly` on the filter. */
+  unread: queryBool.optional(),
   assigned_to: z.string().uuid().optional(),
   q: z.string().max(255).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
@@ -69,6 +71,7 @@ const conversationRoutes: FastifyPluginAsync = (app) => {
       propertyIds,
       status: q.status,
       mine: q.mine ?? false,
+      unreadOnly: q.unread ?? false,
       assignedToId: q.assigned_to,
       q: q.q,
       take: q.take,

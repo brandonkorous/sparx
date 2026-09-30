@@ -15,6 +15,7 @@ import { SiteHostRenderer } from '@/components/silica-host-cores';
 import type { SearchParams } from '@/components/search/search-experience';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,9 @@ export default async function SearchPage({
 }) {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
 
   const sp = (await searchParams) ?? {};
   const propertySlug = await resolveActivePropertySlug();

@@ -22,11 +22,29 @@ export interface Customer {
 export interface AccountOffers {
   bookings: boolean;
   b2b: boolean;
+  /** Whether THIS SITE sells. False on a site whose owner switched Selling off
+   *  under "What this site shows" — Orders, Returns, Wishlist and Payment
+   *  methods then have no place in its account nav, however many orders the
+   *  account has on the owner's other sites. */
+  selling: boolean;
+  /** Same, for Customers: the pages where a visitor asks for something rather
+   *  than buys it. */
+  requests: boolean;
 }
 
 /** Nothing on offer until the server says otherwise — an unanswered read must
  *  not invite somebody to book at a shop that takes no bookings. */
-export const NO_OFFERS: AccountOffers = { bookings: false, b2b: false };
+export const NO_OFFERS: AccountOffers = {
+  bookings: false,
+  b2b: false,
+  // These two fail OPEN, unlike the pair above. Bookings and B2B are things a
+  // shop may simply not do, so an unanswered read must not invite somebody to
+  // book at a shop that takes no bookings. Selling and Requests are things a
+  // site HAS unless its owner said otherwise, so an unanswered read must not
+  // take a signed-in shopper's own order history away from them.
+  selling: true,
+  requests: true,
+};
 
 export class AccountError extends Error {
   readonly status: number;
@@ -151,9 +169,14 @@ export async function resetPassword(
 /** Returns the current customer and what the shop offers them, or null if not
  *  signed in (401). */
 export async function getMe(
-  tenantSlug: string
+  tenantSlug: string,
+  // WHICH SITE they are signed in on. The account area is one screen on many
+  // sites, and `offers` now answers per site — a journal with Selling switched
+  // off shows no Orders. Omitted, the server answers for the primary site, which
+  // is what a single-site shop has always got.
+  propertySlug?: string
 ): Promise<{ customer: Customer; offers: AccountOffers } | null> {
-  const res = await fetch(url('/v1/public/commerce/account/me', tenantSlug), {
+  const res = await fetch(url('/v1/public/commerce/account/me', tenantSlug, propertySlug), {
     cache: 'no-store',
   });
   if (res.status === 401) return null;
@@ -1002,6 +1025,17 @@ export interface MySubscription {
   nextOccurrenceAt: string | null;
   itemCount: number;
   monthlyRecurringRevenueCents: number;
+  /**
+   * How often it goes out, and what is charged EACH TIME.
+   *
+   * A customer's own page said "$29.00 a month" beside "Next order 20/01/2027"
+   * about a repeat order that charges her $58.00 every two months: the monthly
+   * average was the only figure the payload carried, so the page printed it
+   * next to a real date (issue 795).
+   */
+  intervalUnit: string;
+  intervalCount: number;
+  cycleAmountCents: number;
   currency: string;
   billingMode: string;
 }

@@ -47,11 +47,15 @@ import {
 import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@wizeworks/commerce';
 import { inventoryService } from '@wizeworks/inventory';
 import { ok, paged } from '@wizeworks/api-core/envelope';
-import { requireRole } from '@wizeworks/api-core/auth';
+import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
 import { refundOrderThroughGateway } from '../../lib/order-refund.js';
 import { reachableSiteIds } from '../../lib/property.js';
-import { requireCommerceModule, toCommerceContext } from '../../lib/commerce-context.js';
+import {
+  defaultOwningSite,
+  requireCommerceModule,
+  toCommerceContext,
+} from '../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PaymentPath = z.object({
@@ -86,6 +90,13 @@ const ListQuery = z.object({
     .transform((v) => v === 'true')
     .optional(),
   payment_status: z.string().optional(),
+  // Orders with money still to collect — NOT the same as payment_status=unpaid,
+  // which a cancelled order carries forever and a part-paid one never does. The
+  // rule is `isOwingOrder` in @wizeworks/crm-schemas.
+  owing: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
   // High-level origin bucket — storefront | b2b_portal | admin | import | mcp |
   // marketplace (docs/106 §4.4). The dashboard Orders "Channel" filter.
   channel: z.string().optional(),
@@ -118,6 +129,9 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       status: q.status,
       countedOnly: q.counted_only,
       paymentStatus: q.payment_status,
+      // "Still owed" — one named question rather than a payment column value,
+      // because a cancelled order carries 'unpaid' and is owed by nobody.
+      owing: q.owing,
       channel: q.channel,
       propertyId: q.property,
       // Bound to the member's reachable sites (docs/131 §3.3) — a restricted
@@ -143,7 +157,14 @@ const orderRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/orders', async (request, reply) => {
     requireRole(request, 'editor');
     await requireOrderAccess(request);
-    const order = await orderService.create(toOrderContext(request), request.body);
+    // A sale rung up here belongs to the site the person is standing in, which
+    // is what the site switcher already says. Without this the body had to name
+    // it or the order belonged to no site at all, which is not "all sites" but
+    // "none of them" (issue 878). Same shape as the catalog creates in
+    // commerce/products.ts: default onto the body, then hand that same object on.
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    await defaultOwningSite(request, requireAuth(request), body);
+    const order = await orderService.create(toOrderContext(request), body);
     reply.code(201);
     return ok(order);
   });

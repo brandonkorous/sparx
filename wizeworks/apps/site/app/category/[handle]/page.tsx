@@ -19,6 +19,8 @@ import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
+import { metadataTitle, socialTitle } from '@/lib/page-title';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
@@ -53,11 +55,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       accent: site.theme?.colorPrimary,
       platformBrand: site.platformBrand,
     });
+  const title = category.seoTitle ?? category.name;
   return {
-    title: category.seoTitle ?? category.name,
+    title: metadataTitle(title, site.name),
     description: category.seoDescription ?? category.description ?? undefined,
     openGraph: {
-      title: category.seoTitle ?? category.name,
+      title: socialTitle(title, site.name),
       description: category.seoDescription ?? category.description ?? undefined,
       images: [{ url: image }],
     },
@@ -67,6 +70,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CategoryDetailPage({ params, searchParams }: PageProps) {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
   const { handle } = await params;
   const sp = (await searchParams) ?? {};
 

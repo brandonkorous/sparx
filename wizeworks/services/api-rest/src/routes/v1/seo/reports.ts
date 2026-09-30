@@ -21,6 +21,9 @@ import { z } from 'zod';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
+// The one list of what each check is CALLED, so the roll-up below stops taking it
+// from whichever stored card happens to be newest (issue 863).
+import { CHECK_LABELS } from '@wizeworks/seo-audit';
 import { storedPath } from '../../../lib/seo-audit.js';
 import { resolveListScope } from '../../../lib/property.js';
 import { auditsOnSiteSql } from './site-scope.js';
@@ -47,7 +50,6 @@ interface ActivityRow {
 
 interface RawCheckRow {
   id: string;
-  label: string;
   category: string;
   total: number;
   pass: number;
@@ -92,12 +94,21 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
         // happen to hold that wording.
         //
         // The `id` is the check's real identity and has never changed, so it is
-        // what groups; the words and the category are taken from the most
-        // recently scored card, which is the wording the product uses today.
+        // what groups.
+        //
+        // THE WORDS NO LONGER COME FROM THE NEWEST ROW. That was this comment's
+        // next line, and it claimed the newest card holds "the wording the product
+        // uses today". It does not: a card is only rewritten when its page is saved
+        // or somebody runs a scan, so on a site nobody has rescanned since the
+        // plain-English pass the newest row is the OLDEST wording. Measured
+        // 2026-09-28: 15 of the 16 businesses on this database, every one of their
+        // scorecards, every one of the thirteen checks (issue 863). The label now
+        // comes from `CHECK_LABELS`, which is a fact about the code and not about
+        // which page happened to be saved last.
+        // [[feedback_never_present_absence_as_measurement]]
         tx.$queryRaw<RawCheckRow[]>`
           SELECT
             chk->>'id' AS id,
-            (array_agg(chk->>'label'    ORDER BY a.computed_at DESC))[1] AS label,
             (array_agg(chk->>'category' ORDER BY a.computed_at DESC))[1] AS category,
             COUNT(*)::int                                        AS total,
             COUNT(*) FILTER (WHERE chk->>'status' = 'pass')::int AS pass,
@@ -135,7 +146,9 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
           const status = deriveStatus(scored, fail, warn);
           return {
             id: r.id,
-            label: r.label,
+            // From the code, never from a row. A check whose id has no entry falls
+            // back to the id itself, which is loud rather than wrong.
+            label: CHECK_LABELS[r.id] ?? r.id,
             category: r.category,
             status,
             pagesPass: pass,

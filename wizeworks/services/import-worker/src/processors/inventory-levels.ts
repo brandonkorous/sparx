@@ -20,10 +20,18 @@
 //   Every write goes through the ledger like any other stock change, so an imported
 //   count is auditable and reconcilable rather than a number that appeared from
 //   nowhere. `idempotencyKey` makes a retried job apply exactly once.
+//
+// Every column read here is a canonical field key (`ENTITY_FIELDS.inventory_levels`),
+// held equal by `contract.test.ts`. "Available" and "Incoming" are off that list:
+// available is on hand less what is already promised to orders, and incoming is what
+// open purchase orders are bringing, so both are worked out here rather than stored,
+// and a file's copy of either has nowhere to go. Unit cost, barcode and bin used to
+// be offered and dropped; they are saved below, each only when the cell has a value.
 
+import { variantService } from '@wizeworks/commerce';
 import { withTenant } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
-import { toInteger } from '@wizeworks/migration';
+import { toCents, toInteger } from '@wizeworks/migration';
 
 import { Resolver } from './resolve';
 import {
@@ -31,6 +39,7 @@ import {
   type EntityProcessor,
   type ImportRow,
   type PreviewResult,
+  type ProcessorContext,
   type RowResult,
 } from './types';
 
@@ -38,8 +47,96 @@ function readRow(row: ImportRow): { sku: string; location: string; quantity: num
   return {
     sku: (row.sku ?? '').trim(),
     location: (row.location ?? '').trim(),
-    quantity: toInteger(row.quantity ?? row.available ?? row.on_hand),
+    quantity: toInteger(row.quantity),
   };
+}
+
+function present(value: string | undefined): value is string {
+  return value !== undefined && value.trim() !== '';
+}
+
+/**
+ * The item's cost and barcode, which live on the item rather than the location.
+ *
+ * Optional, like the reorder policy: a failure here must not cost the count that
+ * already landed, so each problem comes back as a sentence for the run report.
+ */
+async function saveItemDetails(
+  ctx: ProcessorContext,
+  variantId: string,
+  row: ImportRow
+): Promise<string[]> {
+  const notes: string[] = [];
+  const costCents = toCents(row.cost_per_item);
+  const barcode = present(row.barcode) ? row.barcode.trim() : undefined;
+  const barcodeOk = barcode !== undefined && /^\d{8,14}$/.test(barcode);
+  if (barcode !== undefined && !barcodeOk) {
+    notes.push(
+      `“${barcode}” is not a barcode that can be stored here (8 to 14 digits), so it was left off.`
+    );
+  }
+  if (costCents !== undefined && costCents < 0) {
+    notes.push('A unit cost cannot be below zero, so the cost was not set from this row.');
+  }
+
+  const input = {
+    ...(costCents !== undefined && costCents >= 0 ? { costCents } : {}),
+    ...(barcodeOk ? { barcode } : {}),
+  };
+  if (Object.keys(input).length === 0) return notes;
+  try {
+    await variantService.update(ctx, variantId, input);
+  } catch (error) {
+    const what = [
+      ...('costCents' in input ? ['cost'] : []),
+      ...('barcode' in input ? ['barcode'] : []),
+    ].join(' and ');
+    const reason = error instanceof Error ? error.message : String(error);
+    notes.push(`The count was saved, but the item’s ${what} could not be: ${reason}`);
+  }
+  return notes;
+}
+
+/**
+ * The item's home shelf at this location, when the file names one that is set up.
+ *
+ * Shelves are not created from a stock file. A shelf is a place in a building that
+ * somebody lays out on purpose, with its own code, zone and pick order, and a
+ * location has to have shelves switched on before it has any; inventing them from a
+ * column would scatter placeholder shelves nobody can find. Matched by code, then by
+ * name.
+ */
+async function saveHomeBin(
+  ctx: ProcessorContext,
+  variantId: string,
+  warehouseId: string,
+  bin: string
+): Promise<string | null> {
+  const found = await withTenant(ctx, (tx) =>
+    tx.inventoryBin.findFirst({
+      where: {
+        tenantId: ctx.tenantId,
+        warehouseId,
+        isActive: true,
+        deletedAt: null,
+        OR: [
+          { code: { equals: bin, mode: 'insensitive' } },
+          { name: { equals: bin, mode: 'insensitive' } },
+        ],
+      },
+      select: { id: true },
+    })
+  );
+  if (found === null) {
+    return `No shelf called “${bin}” is set up at this location, so its home shelf was not set.`;
+  }
+  try {
+    await inventoryService.setVariantHomeBin(ctx, variantId, found.id);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    return `The count was saved, but its home shelf could not be set: ${reason}`;
+  }
+  return null;
 }
 
 export const inventoryLevelsProcessor: EntityProcessor = {
@@ -92,6 +189,12 @@ export const inventoryLevelsProcessor: EntityProcessor = {
           idempotencyKey: `import:${ctx.tenantId}:${variant.id}:${warehouse.id}:${quantity}`,
         });
 
+        const notes = await saveItemDetails(ctx, variant.id, row);
+        if (present(row.bin)) {
+          const binNote = await saveHomeBin(ctx, variant.id, warehouse.id, row.bin.trim());
+          if (binNote !== null) notes.push(binNote);
+        }
+
         // Reorder policy, where the export carried one. Optional everywhere, so a
         // failure here must not cost the count that already landed.
         const reorderPoint = toInteger(row.reorder_point);
@@ -109,15 +212,16 @@ export const inventoryLevelsProcessor: EntityProcessor = {
           }
         }
 
+        if (warehouse.created) {
+          notes.unshift(
+            `Created the location "${location === '' ? 'Main' : location}" for this count.`
+          );
+        }
         return {
           rowIndex,
           status: 'updated',
           naturalKey,
-          ...(warehouse.created
-            ? {
-                errorMsg: `Created the location "${location === '' ? 'Main' : location}" for this count.`,
-              }
-            : {}),
+          ...(notes.length > 0 ? { errorMsg: notes.join(' ') } : {}),
         };
       },
       (rowIndex, message) => ({ rowIndex, status: 'error', errorMsg: message })

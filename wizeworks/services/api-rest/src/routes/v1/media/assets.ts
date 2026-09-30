@@ -76,6 +76,18 @@ const ListQuery = z.object({
 
 const PathId = z.object({ id: z.string().uuid() });
 
+/** `countAssetUsage` answers every id it was asked about, so this only covers
+ *  the type: an asset missing from the map is one nothing counted as used. */
+const EMPTY_USAGE: AssetUsage = {
+  content: 0,
+  products: 0,
+  customers: 0,
+  authors: 0,
+  staffDocuments: 0,
+  expenses: 0,
+  total: 0,
+};
+
 const PatchBody = z
   .object({
     alt_text: z.string().max(500).nullable().optional(),
@@ -103,7 +115,6 @@ interface AssetRow {
   status: string;
   source: string | null;
   processingError: string | null;
-  usageCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -121,7 +132,7 @@ interface VariantRow {
   aspect: string | null;
 }
 
-function serializeAsset(row: AssetRow, variants: VariantRow[] = [], usage?: AssetUsage) {
+function serializeAsset(row: AssetRow, variants: VariantRow[], usage: AssetUsage) {
   const storage = getStorage();
   return {
     id: row.id,
@@ -140,22 +151,19 @@ function serializeAsset(row: AssetRow, variants: VariantRow[] = [], usage?: Asse
     status: row.status,
     source: row.source,
     processing_error: row.processingError,
-    // COUNTED, not read off `row.usageCount` — that column has never been written
-    // by anything, so it reported "not used anywhere" about 2,406 pictures that
-    // were on live product pages (issue 381). A caller that did not ask for the
-    // count gets the column, which is the old behaviour and only reaches paths
-    // where nothing renders it.
-    usage_count: usage ? usage.total : row.usageCount,
-    usage_breakdown: usage
-      ? {
-          products: usage.products,
-          content: usage.content,
-          customers: usage.customers,
-          authors: usage.authors,
-          staff_documents: usage.staffDocuments,
-          expenses: usage.expenses,
-        }
-      : null,
+    // COUNTED, never read off `media_assets.usage_count`: that column has never
+    // been written by anything, so it reported "not used anywhere" about 2,406
+    // pictures that were on live product pages (issue 381). Every path counts,
+    // the PATCH response included, so the column feeds nothing on the wire.
+    usage_count: usage.total,
+    usage_breakdown: {
+      products: usage.products,
+      content: usage.content,
+      customers: usage.customers,
+      authors: usage.authors,
+      staff_documents: usage.staffDocuments,
+      expenses: usage.expenses,
+    },
     // Originals are private — the dashboard fetches them via a separate
     // signed-GET flow once we add it (Phase 3.7). Variants are public.
     //
@@ -270,7 +278,11 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
 
     return paged(
       page.map((row) =>
-        serializeAsset(row, variantsByAsset.get(row.id) ?? [], usageByAsset.get(row.id))
+        serializeAsset(
+          row,
+          variantsByAsset.get(row.id) ?? [],
+          usageByAsset.get(row.id) ?? EMPTY_USAGE
+        )
       ),
       { total, per_page: take }
     );
@@ -344,7 +356,7 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
         where: { assetId: id },
         orderBy: [{ format: 'asc' }, { width: 'asc' }],
       });
-      return { asset: after, variants: vs, recrop };
+      return { asset: after, variants: vs, recrop, usage: await countOneAssetUsage(tx, id) };
     });
 
     // Regenerate the social crops off the request path (docs/133 §8) — the media
@@ -369,7 +381,7 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
       recordId: id,
     });
 
-    return ok(serializeAsset(updated.asset, updated.variants));
+    return ok(serializeAsset(updated.asset, updated.variants, updated.usage));
   });
 
   // ──────────────────────────────────────────────────────────────────────

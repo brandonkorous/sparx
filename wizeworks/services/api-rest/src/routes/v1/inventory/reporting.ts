@@ -51,7 +51,13 @@
 
 import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { inventoryService, toCsv, type CsvTable } from '@wizeworks/inventory';
+import {
+  calendarDateToUtc,
+  calendarDayEndUtc,
+  inventoryService,
+  toCsv,
+  type CsvTable,
+} from '@wizeworks/inventory';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
@@ -101,16 +107,37 @@ const PlanImportBody = z.object({
   create_missing_items: z.boolean().optional(),
 });
 
+/**
+ * A calendar day, `YYYY-MM-DD`.
+ *
+ * This asked for a full timestamp, which is the wrong shape for the thing: the
+ * balance is recorded against a DAY, the table is unique on `(tenant, as_of,
+ * account)`, and the pane's own copy promises "recorded per date". A client
+ * that answered with `new Date().toISOString()` filed the balance under
+ * yesterday for anyone east of UTC after midnight, and tomorrow for anyone west
+ * of it in the evening.
+ *
+ * A full timestamp is still accepted, because one written before this was, and
+ * its day is taken in UTC — the same day the database would have stored.
+ */
+const CalendarDay = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}($|T)/, 'must be a date like 2026-09-19')
+  .transform((value) => value.slice(0, 10));
+
 const GlQuery = z.object({
-  as_of: z.string().datetime().optional(),
+  as_of: CalendarDay.optional(),
 });
 
 const GlSnapshotBody = z.object({
-  as_of: z.string().datetime(),
+  as_of: CalendarDay,
   account_name: z.string().trim().min(1).max(200),
   account_code: z.string().trim().max(60).nullable().optional(),
   balance_cents: z.number().int(),
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   source: z.enum(['manual', 'quickbooks_online', 'xero']).optional(),
   connection_id: z.string().uuid().nullable().optional(),
   note: z.string().max(2000).nullable().optional(),
@@ -331,7 +358,8 @@ const inventoryReportingRoutes: FastifyPluginAsync = async (app) => {
     const q = GlQuery.parse(request.query);
     return ok(
       await inventoryService.glReconciliationReport(toInventoryContext(request), {
-        asOf: q.as_of ? new Date(q.as_of) : new Date(),
+        // The END of the chosen day: "as at the 19th" includes the 19th.
+        asOf: q.as_of ? calendarDayEndUtc(q.as_of) : new Date(),
       })
     );
   });
@@ -351,7 +379,7 @@ const inventoryReportingRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'admin');
     const input = GlSnapshotBody.parse(request.body);
     const row = await inventoryService.recordGlSnapshot(toInventoryContext(request), {
-      asOf: new Date(input.as_of),
+      asOf: calendarDateToUtc(input.as_of),
       accountName: input.account_name,
       accountCode: input.account_code ?? null,
       balanceCents: input.balance_cents,

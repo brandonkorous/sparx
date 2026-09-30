@@ -134,7 +134,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Heritage Crewneck Tee',
       handle: 'heritage-crewneck-tee',
       description:
-        '<p>A everyday crewneck cut from 6.5oz combed ring-spun cotton with a clean, structured shoulder and a ribbed collar that holds its shape wash after wash. Pre-shrunk and garment-washed so the fit you buy is the fit you keep.</p><p>Mid-weight enough to wear on its own and trim enough to layer under a jacket. We cut it slightly longer in the body so it stays tucked or wears untucked without riding up.</p>',
+        'A everyday crewneck cut from 6.5oz combed ring-spun cotton with a clean, structured shoulder and a ribbed collar that holds its shape wash after wash. Pre-shrunk and garment-washed so the fit you buy is the fit you keep.\n\nMid-weight enough to wear on its own and trim enough to layer under a jacket. We cut it slightly longer in the body so it stays tucked or wears untucked without riding up.',
       productType: 'T-Shirts',
       productTypeKey: 'apparel',
       attributes: {
@@ -289,7 +289,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Heavyweight Fleece Hoodie',
       handle: 'heavyweight-fleece-hoodie',
       description:
-        '<p>A 14oz brushed-back fleece hoodie with a dense, structured hood, a kangaroo pocket deep enough to actually use, and ribbed cuffs that stay put. The kind of weight that feels like a layer, not a t-shirt with a hood.</p><p>Pre-washed for minimal shrinkage and finished with a flat-locked seam at the shoulder so it lies clean under a jacket. Drawcord is a chunky flat lace, not the thin round string that frays.</p>',
+        'A 14oz brushed-back fleece hoodie with a dense, structured hood, a kangaroo pocket deep enough to actually use, and ribbed cuffs that stay put. The kind of weight that feels like a layer, not a t-shirt with a hood.\n\nPre-washed for minimal shrinkage and finished with a flat-locked seam at the shoulder so it lies clean under a jacket. Drawcord is a chunky flat lace, not the thin round string that frays.',
       productType: 'Hoodies',
       productTypeKey: 'apparel',
       attributes: {
@@ -430,7 +430,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Tapered Selvedge Jeans',
       handle: 'tapered-selvedge-jeans',
       description:
-        '<p>A 13.5oz raw selvedge denim cut with a mid-rise, a clean seat, and a gentle taper from the knee down. Woven on a vintage shuttle loom, so you get the tight, self-finished edge and the slow, personal fade that only raw denim gives you.</p><p>Sold rigid and unwashed. They will mold to you over the first few weeks. Cotton button fly, copper rivets, and a leather patch that breaks in with the rest of the jean.</p>',
+        'A 13.5oz raw selvedge denim cut with a mid-rise, a clean seat, and a gentle taper from the knee down. Woven on a vintage shuttle loom, so you get the tight, self-finished edge and the slow, personal fade that only raw denim gives you.\n\nSold rigid and unwashed. They will mold to you over the first few weeks. Cotton button fly, copper rivets, and a leather patch that breaks in with the rest of the jean.',
       productType: 'Jeans',
       productTypeKey: 'apparel',
       attributes: {
@@ -553,7 +553,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Trucker Denim Jacket',
       handle: 'trucker-denim-jacket',
       description:
-        '<p>A classic trucker cut in 12oz washed denim, broken in at the factory so it is soft on day one. Pointed flap chest pockets, a tapered waist with side adjusters, and a shorter body that layers cleanly over a hoodie or a tee.</p><p>Antiqued copper hardware and chain-stitched hems give it the worn-in look without the wait. Roomy enough through the shoulders to actually move in.</p>',
+        'A classic trucker cut in 12oz washed denim, broken in at the factory so it is soft on day one. Pointed flap chest pockets, a tapered waist with side adjusters, and a shorter body that layers cleanly over a hoodie or a tee.\n\nAntiqued copper hardware and chain-stitched hems give it the worn-in look without the wait. Roomy enough through the shoulders to actually move in.',
       productType: 'Jackets',
       productTypeKey: 'apparel',
       attributes: {
@@ -662,7 +662,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Washed Linen Camp Shirt',
       handle: 'washed-linen-camp-shirt',
       description:
-        '<p>A breezy camp-collar shirt in 100% European-flax linen, garment-washed for a soft, lived-in hand and a gentle crinkle that never looks sloppy. An open collar, a boxy cut, and a single chest pocket make it the easiest thing to throw on when it is hot.</p><p>Linen breathes and dries fast, so it is built for travel and humidity. Wears open over a tee or buttoned on its own.</p>',
+        'A breezy camp-collar shirt in 100% European-flax linen, garment-washed for a soft, lived-in hand and a gentle crinkle that never looks sloppy. An open collar, a boxy cut, and a single chest pocket make it the easiest thing to throw on when it is hot.\n\nLinen breathes and dries fast, so it is built for travel and humidity. Wears open over a tee or buttoned on its own.',
       productType: 'Shirts',
       productTypeKey: 'apparel',
       attributes: {
@@ -782,7 +782,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Ribbed Merino Beanie',
       handle: 'ribbed-merino-beanie',
       description:
-        '<p>A fine-gauge ribbed beanie knit from 100% extra-fine merino wool: warm without the itch, with a folded cuff you can wear short or slouched. Merino regulates temperature and resists odor, so it works from a frosty commute to a cool campfire.</p><p>Holds its shape without sagging and packs flat into a jacket pocket. One size, with enough stretch to fit most comfortably.</p>',
+        'A fine-gauge ribbed beanie knit from 100% extra-fine merino wool: warm without the itch, with a folded cuff you can wear short or slouched. Merino regulates temperature and resists odor, so it works from a frosty commute to a cool campfire.\n\nHolds its shape without sagging and packs flat into a jacket pocket. One size, with enough stretch to fit most comfortably.',
       productType: 'Hats',
       productTypeKey: 'apparel',
       attributes: {
@@ -887,7 +887,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Low-Top Canvas Sneakers',
       handle: 'low-top-canvas-sneakers',
       description:
-        '<p>A clean low-top sneaker in heavyweight cotton canvas on a vulcanized rubber sole. Minimal branding, a cushioned cotton-twill lining, and a removable molded insole for all-day comfort without the chunky look.</p><p>The vulcanized construction bonds the upper to the sole for flexibility and a low, classic profile that goes with jeans, chinos, or shorts.</p>',
+        'A clean low-top sneaker in heavyweight cotton canvas on a vulcanized rubber sole. Minimal branding, a cushioned cotton-twill lining, and a removable molded insole for all-day comfort without the chunky look.\n\nThe vulcanized construction bonds the upper to the sole for flexibility and a low, classic profile that goes with jeans, chinos, or shorts.',
       productType: 'Sneakers',
       productTypeKey: 'apparel',
       attributes: {
@@ -1007,7 +1007,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Cushioned Crew Socks (3-Pack)',
       handle: 'cushioned-crew-socks-3-pack',
       description:
-        '<p>A three-pair set of mid-calf crew socks in a combed-cotton blend with a terry-cushioned footbed, arch support band, and a hand-linked toe seam that never rubs. The everyday workhorse that makes any shoe more comfortable.</p><p>Reinforced heel and toe for durability, a ribbed cuff that stays up, and a breathable mesh top to keep feet cool. Sold as a matched three-pack.</p>',
+        'A three-pair set of mid-calf crew socks in a combed-cotton blend with a terry-cushioned footbed, arch support band, and a hand-linked toe seam that never rubs. The everyday workhorse that makes any shoe more comfortable.\n\nReinforced heel and toe for durability, a ribbed cuff that stays up, and a breathable mesh top to keep feet cool. Sold as a matched three-pack.',
       productType: 'Socks',
       productTypeKey: 'apparel',
       attributes: {
@@ -1110,7 +1110,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Tailored Wool Overcoat',
       handle: 'tailored-wool-overcoat',
       description:
-        '<p>A single-breasted topcoat in a midweight Italian wool-blend melton, cut just below the knee with a clean notch lapel and a half-canvas front for structure that holds without feeling stiff. The grown-up layer that finishes any outfit.</p><p>Fully lined with a center back vent for movement, interior pockets, and horn-look buttons. Tailored through the waist with enough room to layer a blazer underneath.</p>',
+        'A single-breasted topcoat in a midweight Italian wool-blend melton, cut just below the knee with a clean notch lapel and a half-canvas front for structure that holds without feeling stiff. The grown-up layer that finishes any outfit.\n\nFully lined with a center back vent for movement, interior pockets, and horn-look buttons. Tailored through the waist with enough room to layer a blazer underneath.',
       productType: 'Coats',
       productTypeKey: 'apparel',
       attributes: {
@@ -1225,7 +1225,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Tiered Poplin Midi Dress',
       handle: 'tiered-poplin-midi-dress',
       description:
-        '<p>A breezy midi in crisp cotton poplin with a smocked back for an adjustable fit, adjustable tie straps, and a three-tiered skirt that moves. Light, structured, and easy: the throw-on-and-go dress for warm days.</p><p>Side seam pockets, a fully lined bodice, and a hidden length that hits mid-calf on most. Machine washable and built to layer with a denim jacket when it cools off.</p>',
+        'A breezy midi in crisp cotton poplin with a smocked back for an adjustable fit, adjustable tie straps, and a three-tiered skirt that moves. Light, structured, and easy: the throw-on-and-go dress for warm days.\n\nSide seam pockets, a fully lined bodice, and a hidden length that hits mid-calf on most. Machine washable and built to layer with a denim jacket when it cools off.',
       productType: 'Dresses',
       productTypeKey: 'apparel',
       attributes: {
@@ -1344,7 +1344,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Everyday Outfit Set',
       handle: 'everyday-outfit-set',
       description:
-        '<p>Our most-worn pieces in one go: the Heritage Crewneck Tee, the Tapered Selvedge Jeans, and the Trucker Denim Jacket, a complete, build-anywhere outfit at a set price. Pick your sizes and colors at checkout.</p><p>Buy the set and save versus picking the pieces individually. The easiest way to start a wardrobe that just works together.</p>',
+        'Our most-worn pieces in one go: the Heritage Crewneck Tee, the Tapered Selvedge Jeans, and the Trucker Denim Jacket, a complete, build-anywhere outfit at a set price. Pick your sizes and colors at checkout.\n\nBuy the set and save versus picking the pieces individually. The easiest way to start a wardrobe that just works together.',
       productType: 'Sets',
       productTypeKey: 'apparel',
       attributes: {

@@ -48,6 +48,8 @@
 
 import { prisma, withSystem, withTenant } from '@wizeworks/db';
 
+import { countSeats } from './seats';
+
 // The two halves that read what this file writes: what a brand allows, and where
 // a given tenant stands against it.
 export {
@@ -114,9 +116,21 @@ export async function measureTenant(tenantId: string, day: Date): Promise<Tenant
         return agg._sum.byteSize ?? 0n;
       }),
       safe(() => withTenant(ctx, (tx) => tx.customer.count({ where: { deletedAt: null } }))),
-      safe(() => withTenant(ctx, (tx) => tx.user.count())),
+      // NOT `tx.user.count()`. That counts logins CREATED under this tenant,
+      // which stops being the team the moment somebody joins one they did not
+      // create — see ./seats.ts (issue 882). Measured at the END of the day
+      // this row is for, not at `new Date()`, so re-running the snapshot for an
+      // old day reproduces the same number rather than today's.
+      safe(() => withTenant(ctx, (tx) => countSeats(tx, nextDay))),
       safe(() => withTenant(ctx, (tx) => tx.property.count())),
-      safe(() => withTenant(ctx, (tx) => tx.warehouse.count())),
+      // Same filter as `report.ts`, and for the same reason: a location is a
+      // place the business has, not a row the platform keeps. `isSystem` is the
+      // "In transit" bucket, and `deletedAt` is how a location is removed. The
+      // nightly snapshot and the live report have to agree or the card shows
+      // one number and the bill is worked out from another.
+      safe(() =>
+        withTenant(ctx, (tx) => tx.warehouse.count({ where: { deletedAt: null, isSystem: false } }))
+      ),
       // The one FLOW: sends dispatched during this day, not a running total.
       //
       // `type: 'accepted'` is load-bearing. `email_events` records the whole

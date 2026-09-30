@@ -65,6 +65,16 @@ export interface ListConversationsFilter {
   assignedToId?: string;
   /** Restrict to conversations assigned to the calling user. */
   mine?: boolean;
+  /**
+   * Only the ones where the CUSTOMER has said something nobody has read.
+   *
+   * Distinct from `status: 'open'`, and the distinction is the whole point. An
+   * open conversation you answered an hour ago is open because the customer has
+   * not come back — it is not waiting on you, and counting it in a nav badge
+   * says somebody needs you when nobody does. The consoles' `home-counts.ts`
+   * opens with the rule this serves: "WHAT IS WAITING FOR A PERSON".
+   */
+  unreadOnly?: boolean;
   q?: string;
   take?: number;
   skip?: number;
@@ -157,6 +167,7 @@ export async function list(
     ...(filter.propertyIds ? { propertyId: { in: filter.propertyIds } } : {}),
     ...(filter.status ? { status: filter.status } : {}),
     ...(filter.mine && ctx.userId ? { assignedToId: ctx.userId } : {}),
+    ...(filter.unreadOnly ? { unreadStaff: { gt: 0 } } : {}),
     ...(filter.assignedToId ? { assignedToId: filter.assignedToId } : {}),
     ...(filter.q
       ? {

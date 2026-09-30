@@ -161,7 +161,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'layout-grid',
     description:
-      'A responsive grid that repeats an article card once per content entry: a blog index. Reads the blog_post type by default; re-point it to another type in the Data panel.',
+      'A grid of article cards, one per piece you have written, that fits itself to the screen. This is your blog page. It reads blog posts to start with; send it to another kind of writing in the Data panel.',
     surfaces: ['page', 'site'],
     tags: ['blog', 'index', 'articles', 'posts', 'grid', 'archive', 'cms', 'content'],
     tree: el('section', 'w-full px-4 py-12', {

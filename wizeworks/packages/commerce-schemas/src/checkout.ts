@@ -66,6 +66,11 @@ export const SubmitShippingInput = z.object({
   // older clients (and manual rates, whose refs are stable) keep working.
   shippingService: z.string().min(1).max(255).optional(),
   shippingCarrier: z.string().min(1).max(255).optional(),
+  // The buyer's own note about this order, asked for on the same step as the
+  // address because most of them are about how it arrives. Carried to
+  // `Order.customerNote` at complete(). Capped at the order field's own limit, so
+  // the refusal happens where the shopper can still see the box (issue 874).
+  customerNote: z.string().max(2000).optional(),
 });
 export type SubmitShippingInput = z.infer<typeof SubmitShippingInput>;
 

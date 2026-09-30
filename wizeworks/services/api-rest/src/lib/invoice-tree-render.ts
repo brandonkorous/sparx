@@ -82,7 +82,11 @@ function buildScope(data: BillingRenderData, brand: BillingRenderBrand): Scope {
     document: {
       number: data.number ?? '',
       title: data.title,
-      status: data.status,
+      // The same answer the built-in head block gives. On a price offer the AR
+      // status is not a fact about the document, so a hand-built chrome block
+      // binding `{{ document.status }}` must not print "unpaid" under a quote
+      // while the block beside it prints "Draft" (issue 764).
+      status: data.standing ?? data.status,
       currency: data.currency,
       issued: formatDate(data.issuedAt),
       due: formatDate(data.dueAt),

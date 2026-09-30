@@ -105,9 +105,13 @@ export interface CollectionResult {
  */
 export async function runDueOccurrence(
   ctx: ServiceContext,
-  subscriptionId: string
+  subscriptionId: string,
+  /** The moment the tick is judging against. Carried through so an operator's
+   *  `?asOf=` reaches the "is it due" test rather than stopping at the query
+   *  that selected this row. */
+  asOf?: string
 ): Promise<CollectionResult> {
-  const { orderId } = await subscriptionService.processOccurrence(ctx, subscriptionId);
+  const { orderId } = await subscriptionService.processOccurrence(ctx, subscriptionId, asOf);
   // Not due, paused, or already advanced by a concurrent tick.
   if (!orderId) return { subscriptionId, orderId: null, outcome: 'skipped' };
 

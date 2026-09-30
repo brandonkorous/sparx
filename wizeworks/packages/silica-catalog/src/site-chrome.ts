@@ -686,15 +686,24 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
             // wine merchant, and the only sentence on the site its owner never
             // wrote. It also promised a frequency nobody had agreed to.
             //
-            // Deliberately NOT split on `commerceEnabled` like the line below:
-            // "new arrivals" is a shop's word and "new writing" is a publisher's,
-            // and a café that neither sells nor publishes gets a wrong one either
-            // way. This says what a mailing list is actually for, and promises
-            // nothing about how often or about what kind of business this is.
+            // Deliberately NOT split on `commerceEnabled`: "new arrivals" is a
+            // shop's word and "new writing" is a publisher's, and a café that
+            // neither sells nor publishes gets a wrong one either way. This says
+            // what a mailing list is actually for, and promises nothing about how
+            // often or about what kind of business this is. (The `columns` line
+            // below used to carry that split and no longer needs it either.)
             'Join the list: we’ll email when there’s something worth knowing.'
-          : commerceEnabled
-            ? 'Everything you publish and sell, in one place.'
-            : 'Everything you publish, in one place.',
+          : // Was 'Everything you publish and sell, in one place.' — the PLATFORM's
+            // own pitch, printed under the business's name in the footer of every
+            // page of every starter site. A clothes maker does not publish and sell
+            // everything in one place; Piggles does. It is the same leak the
+            // newsletter line above was fixed for, and it was on more pages
+            // (issue 851).
+            //
+            // No `commerceEnabled` split any more, for the reason the newsletter
+            // line gives: this sentence says nothing about what the business does,
+            // so there is nothing for the flag to choose between.
+            'Glad you found us. Get in touch any time.',
       href: '/',
     },
     // Socials are a tenant setting, not something a starter can invent. The block's

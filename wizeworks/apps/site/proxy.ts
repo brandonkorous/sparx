@@ -33,7 +33,17 @@
 // preview token scoped to the host's own tenant, not a site selector, so it is
 // unaffected by the dev-override gating.)
 
+// Dark sites: the proxy is also the only place that can give a suspended site's
+// PAGES the same 503 its robots.txt already answers with. A layout cannot set a
+// status code, so every dark page answered 200 while the machine files said
+// "ask again later" — see lib/dark-at-the-edge for the cost and the three things
+// that keep it small (documents only, cached per host, fail open).
+
 import { NextResponse, type NextRequest } from 'next/server';
+
+import { isCrawlablePath, siteIsDark } from './lib/dark-at-the-edge';
+import { isLocalDevHost } from './lib/site-host';
+import { suspendedPage } from './lib/suspended';
 
 const COOKIE = 'sparx_dev_tenant';
 // Local-dev multi-site selector (docs/49): `?property=<slug>` picks which of the
@@ -89,20 +99,9 @@ function rememberLanguage(
   return res;
 }
 
-// The dev override is valid ONLY on local hosts — the one place there's no
-// per-tenant DNS. Every production host (a real `*.sparx.zone` subdomain or a
-// connected custom domain) carries the site in the Host header, so it must resolve
-// by Host alone and never trust the `?tenant=`/`?property=` cookies.
-function isLocalDevHost(host: string): boolean {
-  const h = host.split(':')[0]?.toLowerCase() ?? '';
-  return (
-    h === 'localhost' ||
-    h === '127.0.0.1' ||
-    h === '0.0.0.0' ||
-    h === '::1' ||
-    h.endsWith('.localhost')
-  );
-}
+// `isLocalDevHost` lives in lib/site-host now. It was written here AND in the
+// resolver, each with a comment saying it mirrored the other; two copies of one
+// security gate is the shape where a fix reaches one of them.
 
 // The real PUBLIC host. We deliberately read the forwarded/Host header rather than
 // `req.nextUrl.hostname`: behind the ingress (Caddy/GKE) `req.nextUrl.hostname` can
@@ -114,7 +113,7 @@ function publicHost(req: NextRequest): string {
   return req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? req.nextUrl.hostname;
 }
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
 
   // Site preview (every environment): mirror the draft token so the root layout
@@ -129,11 +128,20 @@ export function proxy(req: NextRequest) {
   // hash are deliberately excluded: chrome is chosen per page, not per filter.
   requestHeaders.set('x-sparx-path', req.nextUrl.pathname);
 
+  const host = publicHost(req);
+
   // ── Local dev: honor the `?tenant=`/`?property=` site override ──────────────
-  if (isLocalDevHost(publicHost(req))) {
+  if (isLocalDevHost(host)) {
     const fromQuery = req.nextUrl.searchParams.get('tenant');
     const fromCookie = req.cookies.get(COOKIE)?.value;
     const slug = fromQuery ?? fromCookie;
+
+    // A dark site's pages answer 503, like its robots.txt (issue 844). Asked
+    // here so the dev override is already in hand: on a local host the tenant
+    // is in the query string, not the hostname.
+    if (isCrawlablePath(req.nextUrl.pathname) && (await siteIsDark(host, slug ?? null))) {
+      return suspendedPage();
+    }
     const propertyQuery = req.nextUrl.searchParams.get('property');
     const propertyCookie = req.cookies.get(PROPERTY_COOKIE)?.value;
     const propertySlug = propertyQuery ?? propertyCookie;
@@ -162,6 +170,14 @@ export function proxy(req: NextRequest) {
   // from now on.
   requestHeaders.delete('x-tenant-slug');
   requestHeaders.delete('x-property-slug');
+
+  // A dark site's pages answer 503, like its robots.txt (issue 844). A zone host
+  // names its own tenant, so this costs one lookup per host per ten minutes; a
+  // custom domain decodes to nothing here and is left to the layout, which still
+  // serves the overlay.
+  if (isCrawlablePath(req.nextUrl.pathname) && (await siteIsDark(host, null))) {
+    return suspendedPage();
+  }
   const lang = mirrorLanguage(req, requestHeaders);
   const res = rememberLanguage(NextResponse.next({ request: { headers: requestHeaders } }), lang);
   if (req.cookies.has(COOKIE)) res.cookies.set(COOKIE, '', { path: '/', maxAge: 0 });

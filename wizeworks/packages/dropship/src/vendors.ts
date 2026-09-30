@@ -75,7 +75,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
     label: 'Printify',
     tagline: 'Print-on-demand: broadest catalog, 90+ print providers',
     description:
-      'Connect your Printify shop to import its products, route orders to Printify for fulfillment, and sync tracking. Best for a wide range of products (apparel, drinkware, accessories, home goods).',
+      'Products made to order and shipped for you: clothing, mugs, bags, home things. Connect your Printify shop and we bring its products in, send each order over as it comes, and bring the tracking number back.',
     connectionMethod: 'api',
     pod: true,
     capabilities: API_POD,
@@ -104,7 +104,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
     label: 'Printful',
     tagline: 'Print-on-demand: premium quality, global fulfillment',
     description:
-      'Connect your Printful store to import its sync products, submit orders for fulfillment, and sync shipment tracking. Apparel-led with strong print quality.',
+      'Products made to order and shipped for you, clothing above all, and known for the print quality. Connect your Printful store and we bring its products in, send each order over, and bring the tracking number back.',
     connectionMethod: 'api',
     pod: true,
     capabilities: API_POD,
@@ -133,7 +133,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
     label: 'DSers',
     tagline: 'AliExpress dropshipping automation',
     description:
-      'Connect DSers to import AliExpress-sourced products, route orders, and sync tracking and inventory.',
+      'Connect DSers and we bring in the products it sources from AliExpress, send each order over, and bring back both the tracking number and how many are left.',
     connectionMethod: 'api',
     pod: false,
     capabilities: API_FULL,
@@ -160,7 +160,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
     label: 'Spocket',
     tagline: 'US/EU premium dropship suppliers',
     description:
-      'Connect Spocket to import US/EU-based supplier products with faster shipping, route orders, and sync tracking.',
+      'Connect Spocket and we bring in products from suppliers in the United States and Europe, which usually reach a customer faster. We send each order over and bring the tracking number back.',
     connectionMethod: 'api',
     pod: false,
     capabilities: {
@@ -186,7 +186,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
     label: 'CSV feed',
     tagline: 'Any supplier: import a product feed, fulfill orders manually',
     description:
-      'For suppliers without an API: point us at a CSV product feed to import the catalog. Orders are fulfilled manually with your supplier (no automated submission or tracking).',
+      'For a supplier with no system of its own for us to plug into. Point us at a spreadsheet file they publish on the web and we read their products from it. Orders do not go over on their own: you place each one with them yourself, and no tracking comes back.',
     connectionMethod: 'manual',
     pod: false,
     capabilities: {

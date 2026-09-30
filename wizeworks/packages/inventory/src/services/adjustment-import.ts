@@ -56,6 +56,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { VARIANT_LABEL_COLUMNS, VARIANT_LABEL_JOINS } from './variant-label';
 import { csvField, csvSafeText, parseCsv, type CsvTable } from '../csv';
 import { InventoryNotFoundError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
@@ -73,14 +74,14 @@ import { noteSetupStep } from './setup-progress';
  *  A saved mapping overrides this per field. It does not replace it: a file that
  *  maps two columns by hand still gets the aliases for the other five. */
 const COLUMNS = {
-  sku: ['sku', 'code', 'item_code', 'product_code'],
+  sku: ['code', 'sku', 'item_code', 'product_code'],
   variantId: ['variant_id', 'variant'],
-  name: ['name', 'title', 'item', 'description'],
-  warehouseCode: ['warehouse', 'warehouse_code', 'location', 'location_code'],
+  name: ['item', 'name', 'title', 'description'],
+  warehouseCode: ['location', 'warehouse', 'warehouse_code', 'location_code'],
   warehouseId: ['warehouse_id', 'location_id'],
-  onHand: ['on_hand', 'counted', 'count', 'quantity', 'qty'],
+  onHand: ['on the shelf', 'on_hand', 'counted', 'count', 'quantity', 'qty'],
   delta: ['delta', 'change', 'adjustment'],
-  unitCost: ['unit_cost', 'cost', 'purchase_cost'],
+  unitCost: ['cost each', 'unit_cost', 'cost', 'purchase_cost'],
   note: ['note', 'notes', 'comment'],
 } as const;
 
@@ -1065,17 +1066,18 @@ export async function adjustmentTemplate(
     const rows = await tx.$queryRaw<
       {
         sku: string;
-        title: string;
+        productTitle: string | null;
+        variantName: string | null;
         warehouse_code: string;
         on_hand: number;
         custom_fields: Record<string, unknown> | null;
       }[]
     >`
-      SELECT v.sku, COALESCE(v.title, p.title) AS title, w.code AS warehouse_code, l.on_hand,
+      SELECT v.sku, ${VARIANT_LABEL_COLUMNS}, w.code AS warehouse_code, l.on_hand,
              l.custom_fields
       FROM inventory_levels l
       JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
-      JOIN commerce_products p ON p.id = v.product_id
+      ${VARIANT_LABEL_JOINS}
       JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
       WHERE l.tenant_id = ${ctx.tenantId}::uuid
         AND (${warehouse}::uuid IS NULL OR l.warehouse_id = ${warehouse}::uuid)
@@ -1088,16 +1090,27 @@ export async function adjustmentTemplate(
       // `item` is informational and ignored on the way back in — a person needs
       // to see what they are counting, and the parser needs to not care.
       headers: [
-        'sku',
-        'item',
-        'warehouse',
-        'on_hand',
-        'note',
+        'Code',
+        'Item',
+        // The version, as its own column. This is the sheet somebody PRINTS and
+        // carries down a rail, and it read "The Ash Overshirt" on every row of a
+        // product with a code beside it to tell five sizes apart. The comment
+        // below already said a person needs to see what they are counting; it
+        // was the one thing the sheet could not tell them. Its own column rather
+        // than glued to `item`, because you sort a counting sheet BY size.
+        // Unknown headings are ignored on the way back in (the parser looks up
+        // aliases rather than validating the set), so this does not touch the
+        // round-trip. Issue 681, sixth module.
+        'Version',
+        'Location',
+        'On the shelf',
+        'Note',
         ...definitions.map((definition) => customFieldColumn(definition.key)),
       ],
       rows: rows.map((row) => [
         row.sku,
-        csvSafeText(row.title),
+        csvSafeText(row.productTitle ?? ''),
+        csvSafeText(row.variantName ?? ''),
         row.warehouse_code,
         row.on_hand,
         null,

@@ -31,6 +31,7 @@ import {
   type SilicaResolver,
 } from '@wizeworks/builder-schemas';
 import { PLACEHOLDER_IMAGE } from '@wizeworks/silica-catalog';
+import { plainText } from '@wizeworks/commerce-schemas';
 
 import {
   isNotFound,
@@ -124,7 +125,7 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     title: p.title,
     price: price != null ? price / 100 : null,
     compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
-    description: p.description ?? '',
+    description: plainText(p.description),
     // Keep the { url, alt } shape even with no media (empty url) rather than null: the
     // host `format` maps an empty-url image to the placeholder tile, so an imageless
     // product renders "an image goes here" instead of the silica Image component's
@@ -182,12 +183,12 @@ export function productToSilicaRecord(
     title: p.title,
     price: price != null ? price / 100 : null,
     compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
-    description: p.description ?? '',
+    description: plainText(p.description),
     // The same words as paragraphs. A bind writes ONE text node and `white-space:
     // normal` collapses the newlines an owner typed, so six paragraphs reached the
     // page as one twenty-five-line block (issue 191). `description` stays for the
     // cards and for every already-published tree that binds it.
-    descriptionParagraphs: descriptionParagraphs(p.description),
+    descriptionParagraphs: descriptionParagraphs(plainText(p.description)),
     // Empty-url object, never null — the host `format` turns it into the placeholder
     // tile (see makeFormat / toSilicaProduct).
     image: { url: url ?? '', alt: primary?.alt ?? p.title },

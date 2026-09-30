@@ -78,7 +78,7 @@ const STATUS_LABEL: Record<string, string> = {
   partial: 'Partially received',
   received: 'Received',
   closed: 'Closed',
-  cancelled: 'Cancelled',
+  cancelled: 'Canceled',
 };
 
 // ─── Formatting / escaping ───────────────────────────────────────────────────

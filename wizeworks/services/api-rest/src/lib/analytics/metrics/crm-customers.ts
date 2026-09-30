@@ -31,20 +31,16 @@ function svc(ctx: MetricContext, tx: TxClient) {
   return { tenantId: ctx.tenantId, tx };
 }
 
-// A source's plain-language name for the leads donut.
-const SOURCE_LABEL: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Wholesale portal',
-  direct: 'Direct',
-  admin: 'Added by your team',
-  import: 'Imported',
-  subscription: 'Subscriptions',
-  mcp: 'AI assistant',
-};
-
-function sourceLabel(source: string): string {
-  return SOURCE_LABEL[source] ?? source;
-}
+// A THIRD COPY OF THE CHANNEL WORDS USED TO LIVE HERE, AND NOTHING COULD REACH IT.
+//
+// It read `label: r.label || sourceLabel(r.source)`, and `r.label` is never
+// empty — the service falls back to the raw key, which is always a non-empty
+// string. So the right-hand side never ran, and the plainer words somebody
+// wrote here ("Your website", "Added by your team") had never once rendered.
+// [[feedback_screen_over_a_function_nobody_calls]]
+//
+// The service now labels every key from the one channel table in crm-schemas,
+// so there is nothing left for a fallback to do.
 
 /** New customers per UTC day in the window, keyed `YYYY-MM-DD`. RLS scopes the
  *  raw read to the tenant via the enclosing reporting transaction. */
@@ -165,10 +161,8 @@ export const CRM_CUSTOMERS_METRICS: readonly MetricDefinition[] = [
       const rows = ctx.limit ? leads.bySource.slice(0, ctx.limit) : leads.bySource;
       return {
         rows: rows.map((r) => ({
-          // The service already resolves a friendly label; fall back to our own
-          // map, then the raw source key.
           key: r.source,
-          label: r.label || sourceLabel(r.source),
+          label: r.label,
           value: r.count,
           sharePct: r.sharePct,
         })),

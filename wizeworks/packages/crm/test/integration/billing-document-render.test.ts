@@ -127,7 +127,11 @@ describe('billing document render', () => {
     const data = await billingRenderService.buildRenderData(test.ctx, doc.id);
     expect(data.billTo!.name).toBe('Fleet Dept — PO #88');
     expect(data.billTo!.lines).toContain('100 Depot Rd');
-    expect(data.billTo!.lines).toContain('Visalia, CA, 93291');
+    // "City, ST ZIP" — one comma, not two. This asserted 'Visalia, CA, 93291'
+    // until issue 774 fixed the one function all three render paths share; the
+    // comma before the postcode was the bug, and this line was protecting it.
+    // It went unnoticed because `CI=true` skips the DB-backed suites.
+    expect(data.billTo!.lines).toContain('Visalia, CA 93291');
   });
 
   it('derives the party from the B2B account when billed to one', async () => {

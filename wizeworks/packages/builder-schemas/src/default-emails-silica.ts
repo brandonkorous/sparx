@@ -473,9 +473,9 @@ const orderDelivered = (): SectionNode[] => [
 
 const orderCancelled = (): SectionNode[] => [
   copyBlock([
-    heading('Your order was cancelled'),
+    heading('Your order was canceled'),
     para(
-      'Hi {{customer.greeting}}: order {{order.number}} has been cancelled. Here’s a summary of what was cancelled:'
+      'Hi {{customer.greeting}}: order {{order.number}} has been canceled. Here’s a summary of what was canceled:'
     ),
   ]),
   detailPanel(
@@ -484,7 +484,7 @@ const orderCancelled = (): SectionNode[] => [
       { label: 'Order total', value: '{{order.total}}', emphasize: true },
       { label: 'Reason', value: '{{order.cancelReason}}', ref: 'order.cancelReason' },
     ],
-    { status: { label: 'Cancelled', role: 'error' } }
+    { status: { label: 'Canceled', role: 'error' } }
   ),
   copyBlock([
     button('View order details', '{{order.statusUrl}}', 'center'),
@@ -649,9 +649,9 @@ const subscriptionResumed = (): SectionNode[] => [
 
 const subscriptionCancelled = (): SectionNode[] => [
   copyBlock([
-    heading('Your subscription was cancelled'),
+    heading('Your subscription was canceled'),
     para(
-      'Hi {{customer.greeting}}. Your subscription has been cancelled and no further orders will ship.'
+      'Hi {{customer.greeting}}. Your subscription has been canceled and no further orders will ship.'
     ),
   ]),
   detailPanel(
@@ -663,7 +663,7 @@ const subscriptionCancelled = (): SectionNode[] => [
       },
       { label: 'Delivery', value: '{{subscription.interval}}' },
     ],
-    { status: { label: 'Cancelled', role: 'error' } }
+    { status: { label: 'Canceled', role: 'error' } }
   ),
   copyBlock([
     button('Start a new subscription', '{{subscription.manageUrl}}', 'center'),
@@ -1005,8 +1005,8 @@ const bookingRescheduled = (): SectionNode[] =>
 
 const bookingCancelled = (): SectionNode[] => [
   copyBlock([
-    heading('Your booking was cancelled'),
-    para('Hi {{customer.greeting}}. Your booking has been cancelled. Here’s what was cancelled:'),
+    heading('Your booking was canceled'),
+    para('Hi {{customer.greeting}}. Your booking has been canceled. Here’s what was canceled:'),
   ]),
   detailPanel(
     [
@@ -1018,7 +1018,7 @@ const bookingCancelled = (): SectionNode[] => [
         ref: 'booking.cancellationReason',
       },
     ],
-    { status: { label: 'Cancelled', role: 'error' } }
+    { status: { label: 'Canceled', role: 'error' } }
   ),
   copyBlock([
     button('Book another time', '{{booking.bookUrl}}', 'center'),

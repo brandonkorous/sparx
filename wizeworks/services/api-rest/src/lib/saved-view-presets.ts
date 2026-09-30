@@ -65,13 +65,16 @@ export const SAVED_VIEW_PRESETS: Record<string, readonly SavedViewPreset[]> = {
   ],
   b2b: [
     { target: '/b2b/accounts', name: 'Credit hold', params: { status: 'credit_hold' } },
-    // No quotes view. "Awaiting review" filtered `stage: 'Under Review'`, and
-    // the stage filter does not exist anywhere in the chain: the quotes pane has
-    // no filters at all (only paging), `useQuotes` sends `account_id`, `take`
-    // and `skip`, and `GET /v1/b2b/quotes` takes no stage. So the preset named a
-    // filter three layers could not apply, on a target no pane registers.
-    // Filtering quotes by stage is a real capability and belongs in its own
-    // change, front to back; a seeded row cannot stand in for it.
+    // The quotes view is back, and it works now. It was pulled because
+    // "Awaiting review" filtered `stage: 'Under Review'` and the filter existed
+    // in none of the three layers: the pane had no filters at all, `useQuotes`
+    // sent only `account_id`/`take`/`skip`, and the route took no stage — a
+    // preset naming a filter nobody could apply, on a target no pane registered.
+    //
+    // All three are built. `state` asks the stage's TYPE, not its name, so the
+    // view survives a tenant renaming their own stages, which is what made the
+    // old stage-by-name preset a bad bargain in the first place.
+    { target: '/b2b/quotes', name: 'Not answered', params: { state: 'open' } },
     { target: '/b2b/invoices', name: 'Overdue', params: { status: 'overdue' } },
     { target: '/b2b/invoices', name: 'Unpaid', params: { status: 'unpaid' } },
   ],

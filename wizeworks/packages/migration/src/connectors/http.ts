@@ -208,7 +208,7 @@ export async function requestJson(
         retryable: true,
         hint:
           error instanceof Error && error.name === 'AbortError'
-            ? 'It took too long to answer. Try again: big catalogues sometimes need a second run.'
+            ? 'It took too long to answer. Try again: big catalogs sometimes need a second run.'
             : 'Check the web address, and that the site is up.',
       });
       if (attempt < MAX_ATTEMPTS - 1) {

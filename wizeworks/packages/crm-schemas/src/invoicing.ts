@@ -148,7 +148,10 @@ export const CreateBillingDocumentInput = z
     customerId: z.string().uuid().optional().nullable(),
     companyId: z.string().uuid().optional().nullable(),
     assignedUserId: z.string().uuid().optional().nullable(),
-    currency: z.string().length(3).default('USD'),
+    currency: z
+      .string()
+      .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+      .default('USD'),
     taxRate: z.number().min(0).max(1).default(0),
     billTo: Address.optional().nullable(),
     shipTo: Address.optional().nullable(),
@@ -182,7 +185,9 @@ export const UpdateBillingDocumentInput = z
     customerId: z.string().uuid().nullable(),
     companyId: z.string().uuid().nullable(),
     assignedUserId: z.string().uuid().nullable(),
-    currency: z.string().length(3),
+    currency: z
+      .string()
+      .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP'),
     taxRate: z.number().min(0).max(1),
     billTo: Address.nullable(),
     shipTo: Address.nullable(),
@@ -397,6 +402,12 @@ export const CreateBillingTemplateInput = z.object({
   // Defaults to a blank single-section tree when omitted.
   tree: InvoiceTemplateNode.optional(),
   isDefault: z.boolean().default(false),
+  // Which business this letterhead belongs to; null (or absent) means every
+  // site, which is the right answer for an account with one business and for a
+  // deliberately neutral template. A letterhead is brand artwork, so one shared
+  // across two unrelated businesses is the same defect as a shared sender
+  // identity -- see BillingDocumentTemplate in 72-invoicing.prisma.
+  propertyId: z.string().uuid().nullish(),
 });
 export type CreateBillingTemplateInput = z.infer<typeof CreateBillingTemplateInput>;
 
@@ -405,6 +416,10 @@ export const UpdateBillingTemplateInput = z
     name: z.string().min(1).max(120),
     // The high-frequency editor autosave path.
     tree: InvoiceTemplateNode,
+    // Moving a letterhead between businesses, or to the shared tier. Nullable
+    // rather than optional-only: `null` is a value here ("every site"), so it
+    // has to be distinguishable from "leave it where it is".
+    propertyId: z.string().uuid().nullable(),
   })
   .partial();
 export type UpdateBillingTemplateInput = z.infer<typeof UpdateBillingTemplateInput>;

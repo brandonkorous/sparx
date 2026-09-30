@@ -171,7 +171,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevron-down',
     description:
-      'A navigation dropdown: a labelled trigger that reveals a panel of links. Each item inside is a normal nav link you can retarget, add, or remove.',
+      'A navigation dropdown: a labeled trigger that reveals a panel of links. Each item inside is a normal nav link you can retarget, add, or remove.',
     surfaces: ['page', 'site'],
     tags: ['nav', 'dropdown', 'submenu', 'menu', 'navitem', 'navigation'],
     tree: atom('NavItem', '', { label: 'Menu', href: '#' }, [
@@ -192,7 +192,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'columns-3',
     description:
-      'A navigation mega-menu: a labelled trigger that opens a wide, multi-column panel of grouped links. Every column heading and link is individually editable.',
+      'A navigation mega-menu: a labeled trigger that opens a wide, multi-column panel of grouped links. Every column heading and link is individually editable.',
     surfaces: ['page', 'site'],
     tags: ['nav', 'megamenu', 'mega menu', 'dropdown', 'columns', 'menu', 'navigation'],
     tree: atom('NavMegamenu', '', { label: 'Products', columns: '3' }, [
@@ -225,7 +225,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'circle-user',
     description:
-      'The storefront sign-in / account affordance. Sign in / Sign up when signed out, an avatar dropdown (Account, Orders, Wishlist, Sign out) when signed in. Reads the live customer session.',
+      'Sign in and Sign up links for anybody who is not signed in, and a picture menu (Account, Orders, Wishlist, Sign out) for anybody who is. It knows which of the two to show and changes by itself.',
     surfaces: ['site'],
     tags: ['account', 'auth', 'sign in', 'sign up', 'login', 'user', 'customer', 'navigation'],
     tree: atom('AccountMenu', '', {

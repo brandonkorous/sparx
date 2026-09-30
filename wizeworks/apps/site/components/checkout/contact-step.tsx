@@ -33,6 +33,14 @@ export const EMPTY_CONTACT: ContactDraft = {
 const FIELD = 'flex flex-col gap-1.5';
 const LABEL = 'text-base-content text-sm font-medium';
 
+// The phone field is the only one here that explains itself, and a sentence
+// INSIDE the <label> becomes part of the field's name rather than a note beside
+// it: a screen reader announced the whole of "Phone (optional) So we can reach
+// you if there is a question about your order" as what to type in. Described by,
+// not labelled by.
+const PHONE_ID = 'checkout-contact-phone';
+const PHONE_HELP_ID = 'checkout-contact-phone-help';
+
 export function ContactStep({
   value,
   onChange,
@@ -79,20 +87,24 @@ export function ContactStep({
         />
       </label>
 
-      <label className={FIELD}>
-        <span className={LABEL}>Phone (optional)</span>
+      <div className={FIELD}>
+        <label className={LABEL} htmlFor={PHONE_ID}>
+          Phone (optional)
+        </label>
         <Input
+          id={PHONE_ID}
           type="tel"
           value={value.phone}
           onChange={(e) => set('phone', e.target.value)}
           autoComplete="tel"
+          aria-describedby={PHONE_HELP_ID}
         />
-        <span className="text-base-content text-sm">
+        <span id={PHONE_HELP_ID} className="text-base-content text-sm">
           {collectionOnly
             ? 'So we can call you the moment your order is ready to pick up.'
             : 'So we can reach you if there is a question about your order.'}
         </span>
-      </label>
+      </div>
 
       <label className="text-base-content flex cursor-pointer items-center gap-2.5 text-sm">
         <input

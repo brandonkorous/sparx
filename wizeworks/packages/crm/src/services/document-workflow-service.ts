@@ -14,13 +14,13 @@ import {
   UpdateDocumentStageInput,
   UpdateDocumentWorkflowInput,
 } from '@wizeworks/crm-schemas';
-import { DEFAULT_DOCUMENT_WORKFLOWS } from '@wizeworks/crm-schemas/builtins';
+import { DEFAULT_DOCUMENT_WORKFLOWS, isSystemWorkflowSlug } from '@wizeworks/crm-schemas/builtins';
 import { withTenant } from '@wizeworks/db';
 import type { DocumentStage, DocumentWorkflow, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmNotFoundError, CrmValidationError } from '../errors';
 
 type WorkflowWithStages = DocumentWorkflow & { stages: DocumentStage[] };
 
@@ -210,6 +210,22 @@ export async function update(
   return withTenant(ctx, async (tx) => {
     const before = await tx.documentWorkflow.findUnique({ where: { id: workflowId } });
     if (!before) throw new CrmNotFoundError('DocumentWorkflow', workflowId);
+    // A system workflow's reference name is the PLATFORM's, not the tenant's:
+    // three services find theirs by it with no document in hand, and the print
+    // renderer reads it to tell a price offer from a demand for money. Renaming
+    // it made the next lookup miss, which minted a duplicate workflow and left
+    // the tenant's own quotes rendering as invoices (issue 781). Everything else
+    // here stays theirs — the display name, the stages, the default flag.
+    if (
+      input.slug !== undefined &&
+      input.slug !== before.slug &&
+      isSystemWorkflowSlug(before.slug)
+    ) {
+      throw new CrmValidationError(
+        `“${before.name}” is one your account runs on, so its reference name has to stay “${before.slug}”. You can rename it, change its steps, and change what your customers see at each one.`,
+        [{ field: 'slug', message: 'This reference name cannot be changed.' }]
+      );
+    }
     if (input.isDefault) {
       await tx.documentWorkflow.updateMany({
         where: { isDefault: true, id: { not: workflowId } },
@@ -253,6 +269,43 @@ export async function archive(ctx: ServiceContext, workflowId: string): Promise<
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
       action: 'invoicing.workflow.archived',
+      entityType: 'DocumentWorkflow',
+      entityId: updated.id,
+      diff: null,
+    });
+    return updated;
+  });
+}
+
+/**
+ * Undo an archive (issue 783).
+ *
+ * Archiving is the only way a workflow leaves the list, and it was one-way: the
+ * console offered the action, the list offered an Archived filter to find what
+ * you had archived, and then there was nothing to press. The confirm described
+ * a reversible thing — "it stops being offered … documents already using it are
+ * untouched" — over a change with no way back.
+ *
+ * `isDefault` is deliberately NOT restored. Archiving stands it down, and a
+ * tenant has almost certainly chosen another default in between; turning this
+ * one back on silently would move every new document onto it.
+ */
+export async function restore(ctx: ServiceContext, workflowId: string): Promise<DocumentWorkflow> {
+  return withTenant(ctx, async (tx) => {
+    const before = await tx.documentWorkflow.findUnique({ where: { id: workflowId } });
+    if (!before) throw new CrmNotFoundError('DocumentWorkflow', workflowId);
+    if (before.archivedAt === null) return before;
+
+    const updated = await tx.documentWorkflow.update({
+      where: { id: workflowId },
+      data: { archivedAt: null },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'invoicing.workflow.restored',
       entityType: 'DocumentWorkflow',
       entityId: updated.id,
       diff: null,

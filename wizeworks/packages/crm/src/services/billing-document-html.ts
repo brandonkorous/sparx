@@ -106,6 +106,22 @@ export interface BillingRenderData {
   number: string | null;
   /** AR status (unpaid | partial | paid | overdue | void) — drives the banner. */
   status: string;
+  /**
+   * What to put in the pill INSTEAD of the AR status, when the AR status is not
+   * a fact about this document.
+   *
+   * A quote is a price, not a debt. Its `status` column still holds `unpaid`,
+   * because every billing document has one, and printing that on the page the
+   * customer receives tells a shop they owe money for something they have not
+   * agreed to buy (issue 764). Bills leave this unset and keep the AR status.
+   */
+  standing?: string | null;
+  /**
+   * True for a quote or an estimate: an offer of a price rather than a demand
+   * for money. Suppresses the balance-due line, which on an offer is a debt
+   * nobody has incurred.
+   */
+  priceOffer?: boolean;
   currency: string;
   issuedAt: string | null;
   dueAt: string | null;
@@ -209,9 +225,15 @@ export function docHeadBlockHtml(data: BillingRenderData): string {
   if (data.validUntil) {
     meta.push(`<div><span>Valid until</span>${esc(formatDate(data.validUntil))}</div>`);
   }
-  const statusLabel = STATUS_LABEL[data.status] ?? data.status;
-  const statusClass =
-    data.status === 'paid' ? 'ok' : data.status === 'overdue' ? 'alert' : 'neutral';
+  // An offer says where it stands; a bill says whether it has been paid.
+  const statusLabel = data.standing ?? STATUS_LABEL[data.status] ?? data.status;
+  const statusClass = data.standing
+    ? 'neutral'
+    : data.status === 'paid'
+      ? 'ok'
+      : data.status === 'overdue'
+        ? 'alert'
+        : 'neutral';
   return `<div class="doc-head">
     <div class="doc-title">${esc(data.title)}</div>
     <div class="status ${statusClass}">${esc(statusLabel)}</div>
@@ -288,7 +310,10 @@ export function totalsBlockHtml(data: BillingRenderData): string {
   out.push(row('Total', t.total, 'grand'));
   if (t.depositTotal > 0) out.push(row('Deposit', -t.depositTotal));
   if (t.amountPaid > 0) out.push(row('Amount paid', -t.amountPaid));
-  out.push(row('Balance due', t.balance, 'balance'));
+  // No balance on an offer. "Balance due $504.00" under a quote reads as a bill,
+  // and a wholesale customer on terms will file it as one. A deposit already
+  // taken still shows above, because that money really did change hands.
+  if (!data.priceOffer) out.push(row('Balance due', t.balance, 'balance'));
   return `<div class="summary"><table class="totals">${out.join('')}</table></div>`;
 }
 
@@ -400,6 +425,33 @@ export function invoiceStyles(brand: BillingRenderBrand): string {
   /* Builder-template prose (authored terms/footer) inherits the sheet body. */
   .invoice-prose :where(h1, h2, h3) { font-family: ${b.fontHeading}; }
   .invoice-prose p { margin: 0 0 8px; }
+  /* On a phone.
+     This document had no narrow-width rules at all, and it is not only read in
+     the preview pane: it is what the CUSTOMER opens, and they open it on their
+     phone. At 360px the sheet kept 96px of its own padding, the two address
+     columns kept a 48px gutter between them, and the totals table kept a hard
+     280px floor inside a 200px box — so it pushed out past the sheet's own edge
+     and the page had to be dragged in two directions to be read.
+     [[feedback_responsive_top2_rule]]
+     Nothing here is a different design: the blocks that sat side by side stack,
+     the padding eases, and the one min-width that could not be honoured gives
+     way. A page still prints the same, since @page is 7.5in wide. */
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    .sheet { padding: 20px; border-radius: 8px; }
+    .masthead { flex-direction: column; gap: 16px; }
+    .doc-head { text-align: left; }
+    .meta div { justify-content: flex-start; }
+    .doc-title { font-size: 24px; }
+    .parties { flex-direction: column; gap: 20px; margin: 24px 0; }
+    .ibx-row { flex-direction: column; }
+    table.lines thead th { padding: 8px 6px; }
+    table.lines tbody td { padding: 10px 6px; }
+    table.payments-table th, table.payments-table td { padding: 6px; }
+    .summary { margin-top: 20px; }
+    table.totals { min-width: 0; width: 100%; }
+    table.totals td { padding: 6px 6px; }
+  }
   @page { margin: 0.5in; }
   @media print {
     body { padding: 0; background: ${b.background}; }

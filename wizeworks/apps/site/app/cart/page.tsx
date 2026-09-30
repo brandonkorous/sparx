@@ -15,6 +15,7 @@ import { SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { requireSiteModule } from '@/lib/site-modules';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,9 @@ export const metadata: Metadata = {
 export default async function CartPage() {
   const site = await resolveSite();
   if (!site) notFound();
+  // This site may have switched this off under "What this site shows".
+  // A journal that is not a shop has no cart, and no product pages.
+  requireSiteModule(site, 'commerce');
 
   const propertySlug = await resolveActivePropertySlug();
   // The tenant's published cart shell, else the code shell (a titled section wrapping

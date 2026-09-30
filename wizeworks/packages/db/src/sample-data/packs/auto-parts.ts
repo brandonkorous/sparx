@@ -254,7 +254,7 @@ export const autoPartsPack: SampleDataPack = {
       postalCode: '58103',
       properties: {
         accountKind: 'fleet',
-        preferredBrands: 'Standardised on Fleetguard filtration across the yard.',
+        preferredBrands: 'Standardized on Fleetguard filtration across the yard.',
         willingToTakeReman: true,
       },
     },
@@ -281,7 +281,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Fuel Filter: 6.7L Power Stroke',
       handle: 'fuel-filter-67l-power-stroke',
       description:
-        '<p>OE-spec fuel/water separator filter for the 2011–2016 6.7L Power Stroke. Captures contaminants down to 4 microns and pulls water out of the fuel before it reaches your high-pressure pump and injectors: the single cheapest insurance against a five-figure fuel-system failure.</p><p>Replace at every oil change or every 15,000 miles, whichever comes first. Fits the frame-mounted housing; the water-in-fuel sensor transfers from your old filter.</p>',
+        'OE-spec fuel/water separator filter for the 2011–2016 6.7L Power Stroke. Captures contaminants down to 4 microns and pulls water out of the fuel before it reaches your high-pressure pump and injectors: the single cheapest insurance against a five-figure fuel-system failure.\n\nReplace at every oil change or every 15,000 miles, whichever comes first. Fits the frame-mounted housing; the water-in-fuel sensor transfers from your old filter.',
       productType: 'Filters',
       productTypeKey: 'auto_part',
       attributes: {
@@ -395,7 +395,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Glow Plug Set (8): 6.0L Power Stroke',
       handle: 'glow-plug-set-6-0l-power-stroke',
       description:
-        '<p>Complete 8-piece glow plug set for the 2003–2007 6.0L Power Stroke. Hard cold starts, white smoke on startup, and a rough first minute are the classic symptoms of failed glow plugs: replace them as a set so you are not back under the valve cover in a month.</p><p>Includes all eight plugs gapped to spec. We strongly recommend inspecting the glow plug harness and valve-cover gasket while you are in there.</p>',
+        'Complete 8-piece glow plug set for the 2003–2007 6.0L Power Stroke. Hard cold starts, white smoke on startup, and a rough first minute are the classic symptoms of failed glow plugs: replace them as a set so you are not back under the valve cover in a month.\n\nIncludes all eight plugs gapped to spec. We strongly recommend inspecting the glow plug harness and valve-cover gasket while you are in there.',
       productType: 'Ignition',
       productTypeKey: 'auto_part',
       attributes: {
@@ -469,7 +469,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Fuel Injector: 6.7L Cummins',
       handle: 'fuel-injector-6-7l-cummins',
       description:
-        '<p>Direct-replacement common-rail injector for the 2007.5–2018 6.7L Cummins. Rough idle, excessive smoke, hard starts, and a knock that comes and goes are all signs of a failing injector. Each unit is flow-matched and ships with a new copper sealing washer.</p><p>Available remanufactured (dyno-tested core) or new OEM. Replace in matched sets when possible and always re-torque to spec.</p>',
+        'Direct-replacement common-rail injector for the 2007.5–2018 6.7L Cummins. Rough idle, excessive smoke, hard starts, and a knock that comes and goes are all signs of a failing injector. Each unit is flow-matched and ships with a new copper sealing washer.\n\nAvailable remanufactured (dyno-tested core) or new OEM. Replace in matched sets when possible and always re-torque to spec.',
       productType: 'Fuel System',
       productTypeKey: 'auto_part',
       attributes: {
@@ -568,7 +568,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Turbocharger: Duramax LML',
       handle: 'turbocharger-duramax-lml',
       description:
-        '<p>Complete drop-in variable-geometry turbocharger for the 2011–2016 6.6L Duramax LML. Sticking vanes, a P0299 underboost code, or a whistle-then-no-boost are the usual death rattles of the factory unit. This is a complete CHRA-and-housing assembly, not a rebuild kit: bolt it on and go.</p><p>Includes new mounting hardware and gaskets. We recommend a fresh oil feed line and a clean air filter at install.</p>',
+        'Complete drop-in variable-geometry turbocharger for the 2011–2016 6.6L Duramax LML. Sticking vanes, a P0299 underboost code, or a whistle-then-no-boost are the usual death rattles of the factory unit. This is a complete CHRA-and-housing assembly, not a rebuild kit: bolt it on and go.\n\nIncludes new mounting hardware and gaskets. We recommend a fresh oil feed line and a clean air filter at install.',
       productType: 'Forced Induction',
       productTypeKey: 'auto_part',
       attributes: {
@@ -633,7 +633,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Diesel Engine Oil 15W-40 (1 gal)',
       handle: 'diesel-engine-oil-15w40-1gal',
       description:
-        '<p>Heavy-duty 15W-40 CK-4 diesel engine oil: the workhorse weight for nearly every modern diesel pickup and medium-duty truck. Strong soot-handling and shear stability for long drain intervals and hard duty cycles.</p><p>One US gallon. A typical 6.7L oil change takes three gallons plus a filter.</p>',
+        'Heavy-duty 15W-40 CK-4 diesel engine oil: the workhorse weight for nearly every modern diesel pickup and medium-duty truck. Strong soot-handling and shear stability for long drain intervals and hard duty cycles.\n\nOne US gallon. A typical 6.7L oil change takes three gallons plus a filter.',
       productType: 'Fluids',
       productTypeKey: 'auto_part',
       attributes: {
@@ -724,7 +724,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Heavy-Duty Coolant: Nitrite-Free (1 gal)',
       handle: 'heavy-duty-coolant-nitrite-free-1gal',
       description:
-        '<p>Extended-life, nitrite-free (NOAT) heavy-duty coolant rated for 600,000 miles / six years in on-highway service. Protects against liner pitting and cavitation without supplemental coolant additives.</p><p>One US gallon, full strength: mix 50/50 with distilled water, or top off as needed.</p>',
+        'Extended-life, nitrite-free (NOAT) heavy-duty coolant rated for 600,000 miles / six years in on-highway service. Protects against liner pitting and cavitation without supplemental coolant additives.\n\nOne US gallon, full strength: mix 50/50 with distilled water, or top off as needed.',
       productType: 'Fluids',
       productTypeKey: 'auto_part',
       attributes: {
@@ -791,7 +791,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Serpentine Belt: 7.3L Power Stroke',
       handle: 'serpentine-belt-7-3l-power-stroke',
       description:
-        '<p>OE-length serpentine belt for the 1994–2003 7.3L Power Stroke. EPDM construction resists cracking and glazing far longer than the original. A squeal on cold start or visible cracks between the ribs means it is past due.</p><p>Carry a spare: a broken belt strands you and kills your charging and cooling instantly.</p>',
+        'OE-length serpentine belt for the 1994–2003 7.3L Power Stroke. EPDM construction resists cracking and glazing far longer than the original. A squeal on cold start or visible cracks between the ribs means it is past due.\n\nCarry a spare: a broken belt strands you and kills your charging and cooling instantly.',
       productType: 'Belts',
       productTypeKey: 'auto_part',
       attributes: {
@@ -847,7 +847,7 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Water Pump: 6.6L Duramax',
       handle: 'water-pump-6-6l-duramax',
       description:
-        '<p>Cast-impeller water pump for the 6.6L Duramax. A weep-hole drip, a bearing whine, or coolant loss with no visible hose leak point to a tired pump. Includes a new gasket and O-rings.</p><p>Replace the thermostat and refresh the coolant while the system is open: cheap parts, one job.</p>',
+        'Cast-impeller water pump for the 6.6L Duramax. A weep-hole drip, a bearing whine, or coolant loss with no visible hose leak point to a tired pump. Includes a new gasket and O-rings.\n\nReplace the thermostat and refresh the coolant while the system is open: cheap parts, one job.',
       productType: 'Cooling',
       productTypeKey: 'auto_part',
       attributes: {
@@ -903,7 +903,7 @@ export const autoPartsPack: SampleDataPack = {
       title: '6.7L Power Stroke Maintenance Kit',
       handle: '6-7l-power-stroke-maintenance-kit',
       description:
-        '<p>Everything you need for a full 6.7L Power Stroke service in one box: fuel filter, three gallons of 15W-40, and a gallon of heavy-duty coolant. Buy the kit and save versus picking the parts individually.</p>',
+        'Everything you need for a full 6.7L Power Stroke service in one box: fuel filter, three gallons of 15W-40, and a gallon of heavy-duty coolant. Buy the kit and save versus picking the parts individually.',
       productType: 'Kits',
       productTypeKey: 'auto_part',
       attributes: {

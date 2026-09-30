@@ -11,7 +11,7 @@
 
 import { z } from 'zod';
 import { withTenant, type Prisma } from '@wizeworks/db';
-import { b2bArService, billingPaymentService } from '@wizeworks/crm';
+import { b2bArService, billingPaymentService, OWED_DOCUMENT_WHERE } from '@wizeworks/crm';
 import { notFound, badRequest } from '@wizeworks/api-core/errors';
 import type { B2bContext } from './context.js';
 import type { PendingEvent } from './events.js';
@@ -28,7 +28,12 @@ export const InvoiceListQuery = z.object({
 export const InvoiceCreateBody = z.object({
   accountId: z.string().uuid(),
   orderId: z.string().uuid().optional(),
-  invoiceNumber: z.string().min(1).max(63),
+  // OPTIONAL. Left out, the issuing site's own run numbers it, exactly as every
+  // other invoice on the platform is numbered. It was required, so the one
+  // screen that raises a wholesale bill by hand asked a shop owner to invent a
+  // number nothing else on the platform would ever have asked her for, with a
+  // made-up "INV-1042" in the box as the only hint of the shape (issue 757).
+  invoiceNumber: z.string().min(1).max(63).optional(),
   amountCents: z.number().int().min(1),
   dueAt: z.string().datetime(),
   notes: z.string().max(2000).optional(),
@@ -172,13 +177,39 @@ export async function createInvoice(
 ): Promise<CreateInvoiceResult> {
   const body = InvoiceCreateBody.parse(rawInput);
 
+  // A number is unique per site (`billing_documents_tenant_number_unique`), and
+  // reusing one used to arrive as a raw constraint violation: HTTP 500, and a
+  // red box on her screen reading "Could not raise this invoice" with nothing
+  // under it. She typed a number, so she can fix a number — but only if
+  // somebody says which one is the problem. [[feedback_one_outcome_two_causes]]
+  if (body.invoiceNumber !== undefined) {
+    const clash = await withTenant(ctx, (tx) =>
+      tx.billingDocument.findFirst({
+        where: {
+          tenantId: ctx.tenantId,
+          propertyId,
+          number: body.invoiceNumber,
+          deletedAt: null,
+        },
+        select: { id: true },
+      })
+    );
+    if (clash) {
+      throw badRequest(
+        `${body.invoiceNumber} is already the number on another invoice. ` +
+          'Give this one a different number, or leave the box empty and the next ' +
+          'number in your run is used.'
+      );
+    }
+  }
+
   const doc = await b2bArService.createOrderArDocument(ctx, {
     companyId: body.accountId,
     propertyId,
     orderId: body.orderId ?? null,
     amount: body.amountCents / 100,
     dueAt: new Date(body.dueAt),
-    numberOverride: body.invoiceNumber,
+    ...(body.invoiceNumber !== undefined ? { numberOverride: body.invoiceNumber } : {}),
     notes: body.notes ?? null,
     description: 'Invoice',
   });
@@ -249,11 +280,15 @@ export async function markInvoicePaid(
   const liftAccountId = before.companyId;
   if (liftAccountId) {
     await withTenant(ctx, async (tx) => {
+      // Through the shared rule, and this one matters in the OTHER direction:
+      // counting a quote here keeps an account ON credit hold, which stops it
+      // ordering. An account that had settled every invoice stayed held because
+      // it had accepted a quote nobody had billed yet (issue 857).
       const open = await tx.billingDocument.count({
         where: {
           companyId: liftAccountId,
           deletedAt: null,
-          status: { in: ['unpaid', 'partial', 'overdue'] },
+          ...OWED_DOCUMENT_WHERE,
         },
       });
       if (open === 0) {

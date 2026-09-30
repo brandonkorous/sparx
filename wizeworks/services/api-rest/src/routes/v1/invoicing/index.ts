@@ -12,6 +12,7 @@ import documentRoutes from './documents.js';
 import templateRoutes from './templates.js';
 import agingRoutes from './aging.js';
 import reportRoutes from './reports.js';
+import invoicingExportRoutes from './export.js';
 import { toInvoicingContext } from '../../../lib/invoicing-context.js';
 
 const invoicingRoutes: FastifyPluginAsync = async (app) => {
@@ -21,6 +22,7 @@ const invoicingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(templateRoutes);
   await app.register(agingRoutes);
   await app.register(reportRoutes);
+  await app.register(invoicingExportRoutes);
 
   // Idempotent seed for tenants that just enabled invoicing. The same bootstrap
   // functions run on the `module.activated` consumer; both paths are no-ops on

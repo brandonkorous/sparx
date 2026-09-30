@@ -20,6 +20,14 @@
     "./org-roles": {
       "types": "./src/org-roles.ts",
       "default": "./src/org-roles.ts"
+    },
+    "./module-access": {
+      "types": "./src/module-access.ts",
+      "default": "./src/module-access.ts"
+    },
+    "./property-access": {
+      "types": "./src/property-access.ts",
+      "default": "./src/property-access.ts"
     }
   },
   "files": [

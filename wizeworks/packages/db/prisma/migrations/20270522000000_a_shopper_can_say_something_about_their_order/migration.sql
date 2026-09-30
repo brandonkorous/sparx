@@ -1,0 +1,15 @@
+-- A shopper can say something about their order.
+--
+-- `orders.customer_note` has existed since the order spine was written, and the
+-- console prints it under "From the customer". Nothing could ever write it:
+-- checkout collected no note, the till collected no note, and no channel import
+-- mapped one. Measured 2026-09-29: 0 of 122 orders on the platform carried one,
+-- so that heading had never once appeared on a screen (issue 874).
+--
+-- This is the missing half: somewhere for the buyer to type it.
+--
+-- It lands on the SESSION rather than being held in the page, because a hosted
+-- redirect gateway navigates the shopper's tab away to the payment page and
+-- every bit of React state goes with it. A box asking "anything we should know?"
+-- that silently drops the answer for some shops is worse than no box at all.
+ALTER TABLE "commerce_checkout_sessions" ADD COLUMN "customer_note" TEXT;

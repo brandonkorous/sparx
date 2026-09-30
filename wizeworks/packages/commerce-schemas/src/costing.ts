@@ -158,7 +158,7 @@ export const FxRate = z
 export const CurrencyCode = z
   .string()
   .trim()
-  .length(3, 'A currency code is three letters')
+  .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
   .transform((v) => v.toUpperCase());
 
 // ─── Costing policy ──────────────────────────────────────────────────────────

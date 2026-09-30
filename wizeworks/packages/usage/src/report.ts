@@ -1,5 +1,7 @@
 import { withTenant } from '@wizeworks/db';
 
+import { countSeats } from './seats';
+
 import {
   METERS,
   readMeter,
@@ -111,9 +113,25 @@ export async function capacityReport(
         })
       )
     ),
-    safe(() => withTenant(ctx, (tx) => tx.user.count())),
+    // The same helper the nightly snapshot uses, for the reason the locations
+    // branch below spells out: two copies of a count are two counts.
+    safe(() => withTenant(ctx, (tx) => countSeats(tx, now))),
     safe(() => withTenant(ctx, (tx) => tx.property.count())),
-    safe(() => withTenant(ctx, (tx) => tx.warehouse.count())),
+    // A LOCATION IS A PLACE THE BUSINESS HAS, not a row the platform keeps.
+    //
+    // This counted everything in the table, and the table holds two things that
+    // are not places. `isSystem` is the "In transit" bucket the platform makes
+    // for itself, so a shop with a workshop and a storeroom read "Locations 3"
+    // on the card headed "What changes your bill is scale". And `deletedAt` is
+    // how a location is removed — every other reader of this model filters it
+    // (`universal-projection.ts`, `inventory-levels.ts`), so a deleted place
+    // would have gone on being metered forever while disappearing from the
+    // screen that lists them. MEASURED 2026-09-25: 2 system rows across 87
+    // warehouses, and 0 deleted, so the second half is a bug waiting rather
+    // than a bug landed. [[feedback_never_present_absence_as_measurement]]
+    safe(() =>
+      withTenant(ctx, (tx) => tx.warehouse.count({ where: { deletedAt: null, isSystem: false } }))
+    ),
     // The FLOW, summed across the calendar month's daily rows. Summing is the
     // correct read for this column and the wrong one for every other column in
     // that table — see the schema's own note.

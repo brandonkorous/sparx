@@ -38,7 +38,7 @@ import {
   installBlueprint,
   type InstallResult,
 } from '../../../lib/blueprint-installer.js';
-import { applyUpdate, planUpdate } from '../../../lib/blueprint-updater.js';
+import { applyUpdate, planUpdate, reportUntouched } from '../../../lib/blueprint-updater.js';
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
@@ -367,6 +367,34 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       bp
     );
     return ok(plan);
+  });
+
+  // What is still the EXAMPLE (issue 849). Read-only, and independent of the
+  // catalog: it asks what the install stamped versus what is live now, so it
+  // answers for a design that has never been updated — which is the case this
+  // is for. A business that goes live before editing publishes the design's
+  // example products and example articles under its own name, and until now
+  // nothing in the product said so.
+  app.get('/v1/blueprints/installs/:id/untouched', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    const { id } = IdParam.parse(request.params);
+    const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
+      tx.tenantBlueprintInstall.findFirst({
+        where: { id },
+        select: { id: true, blueprintKey: true, propertyId: true },
+      })
+    );
+    if (!row) throw notFound('Install', id);
+    const report = await reportUntouched(
+      {
+        tenantId: auth.tenantId,
+        userId: auth.actorId,
+        propertyId: row.propertyId,
+        logger: request.log,
+      },
+      row
+    );
+    return ok(report);
   });
 
   // Update apply (docs/55 §6) — three-way merge the new version onto the install,

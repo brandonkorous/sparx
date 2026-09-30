@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props) {
   if (site?.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const { serviceId } = await params;
   const service = await getBookableService(serviceId);
-  return { title: service ? `Book ${service.name}` : 'Book an appointment' };
+  return { title: service ? `Book ${service.name}` : 'Book with us' };
 }
 
 export default async function BookServicePage({ params }: Props) {

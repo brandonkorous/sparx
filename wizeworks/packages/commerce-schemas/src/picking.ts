@@ -84,12 +84,11 @@ export const GeneratePickListInput = z.object({
   strategy: AllocationStrategy.optional(),
   assignedTo: z.string().trim().max(127).nullish(),
   note: z.string().trim().max(2000).nullish(),
-  /**
-   * Include order lines that have no variant (free-text items) as unallocated
-   * instructions. Off by default: there is no stock record to walk to, and a
-   * line with no shelf on a directed pick list is a line people learn to skip.
-   */
-  includeUnstocked: z.boolean().optional(),
+  // There was an `includeUnstocked` flag here, for putting free-text order
+  // lines on a walk as unallocated instructions. It never worked: the row it
+  // produced carried a null variant into a NOT NULL column, so the only thing
+  // setting it ever did was trade a plain refusal for a database error. Nothing
+  // called it. Generating a walk now refuses such an order and says why.
 });
 export type GeneratePickListInput = z.infer<typeof GeneratePickListInput>;
 

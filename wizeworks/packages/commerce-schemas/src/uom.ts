@@ -23,7 +23,7 @@ import { Uuid } from '@wizeworks/crm-schemas';
  * Not enforced against the conversion factor — a variant's own conversions are
  * what decide arithmetic. It exists so a picker can group a long list, and so a
  * future same-dimension conversion has something to check before it multiplies
- * litres by kilograms.
+ * liters by kilograms.
  */
 export const UomDimension = z.enum(['count', 'weight', 'volume', 'length', 'area']);
 export type UomDimension = z.infer<typeof UomDimension>;
@@ -164,7 +164,7 @@ export interface QuantityDescriptor {
  */
 export function describeQuantity(input: QuantityDescriptor): string {
   const base = input.baseQuantity;
-  const baseLabel = pluralise(base, input.baseUomName ?? 'each', input.baseUomPluralName ?? 'each');
+  const baseLabel = pluralize(base, input.baseUomName ?? 'each', input.baseUomPluralName ?? 'each');
   const factor =
     input.unitsPerUom && Number.isFinite(input.unitsPerUom) && input.unitsPerUom >= 1
       ? Math.floor(input.unitsPerUom)
@@ -173,7 +173,7 @@ export function describeQuantity(input: QuantityDescriptor): string {
   if (!input.uomCode || factor === 1) return `${formatNumber(base)} ${baseLabel}`;
 
   const { whole, remainder } = splitIntoUom(base, factor);
-  const unitLabel = pluralise(
+  const unitLabel = pluralize(
     whole,
     input.uomName ?? input.uomCode,
     input.uomPluralName ?? `${input.uomName ?? input.uomCode}s`
@@ -202,7 +202,7 @@ export function describeQuantityShort(input: QuantityDescriptor): string {
   return `${formatNumber(whole)} ${input.uomCode} · ${formatNumber(input.baseQuantity)}`;
 }
 
-function pluralise(count: number, singular: string, plural: string): string {
+function pluralize(count: number, singular: string, plural: string): string {
   return Math.abs(count) === 1 ? singular : plural;
 }
 
@@ -234,8 +234,8 @@ export const STARTER_UNITS: {
   { code: 'ROL', name: 'roll', pluralName: 'rolls', dimension: 'count' },
   { code: 'G', name: 'gram', pluralName: 'grams', dimension: 'weight' },
   { code: 'KG', name: 'kilogram', pluralName: 'kilograms', dimension: 'weight' },
-  { code: 'ML', name: 'millilitre', pluralName: 'millilitres', dimension: 'volume' },
-  { code: 'L', name: 'litre', pluralName: 'litres', dimension: 'volume' },
-  { code: 'MM', name: 'millimetre', pluralName: 'millimetres', dimension: 'length' },
-  { code: 'M', name: 'metre', pluralName: 'metres', dimension: 'length' },
+  { code: 'ML', name: 'milliliter', pluralName: 'milliliters', dimension: 'volume' },
+  { code: 'L', name: 'liter', pluralName: 'liters', dimension: 'volume' },
+  { code: 'MM', name: 'millimeter', pluralName: 'millimeters', dimension: 'length' },
+  { code: 'M', name: 'meter', pluralName: 'meters', dimension: 'length' },
 ];

@@ -77,7 +77,7 @@ export function CustomerProvider({
 
   const refresh = useCallback(async () => {
     try {
-      const me = await accountApi.getMe(tenantSlug);
+      const me = await accountApi.getMe(tenantSlug, propertySlug);
       setCustomer(me?.customer ?? null);
       setOffers(me?.offers ?? NO_OFFERS);
       setStatus(me ? 'authenticated' : 'anonymous');
@@ -86,7 +86,7 @@ export function CustomerProvider({
       setOffers(NO_OFFERS);
       setStatus('anonymous');
     }
-  }, [tenantSlug]);
+  }, [tenantSlug, propertySlug]);
 
   useEffect(() => {
     void refresh();

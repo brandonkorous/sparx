@@ -50,9 +50,24 @@ export interface PublicInventoryRow {
    *  trigger relative to how long you wait for more. */
   leadTimeDays: number | null;
   /** Units withheld from what a shopper may buy (the oversell cushion). Reported
-   *  so a product-scoped view can explain an `available` that is lower than
-   *  on-hand minus allocated, instead of looking like an arithmetic bug. */
+   *  so a screen can explain why what it can SELL is lower than on-hand minus
+   *  allocated, instead of looking like an arithmetic bug. (`available` above is
+   *  the bare `on_hand − allocated` and does NOT deduct this; the sellable
+   *  arithmetic is `SELLABLE_SQL`, which the filters and the sort use.) */
   safetyBuffer: number;
+  /**
+   * Units in the building that nothing may be sold from — a quarantine, damaged
+   * or awaiting-repair shelf (docs/146 Phase 9.7).
+   *
+   * The FOURTH term of `SELLABLE_SQL`, and it was the only one of the four this
+   * row did not carry. The console had already declared it, documented it, and
+   * written the arithmetic that needs it — so every stock row on the platform ran
+   * that arithmetic with three terms and no error anywhere. On Juniper Row a
+   * quarantined unit read "To sell 1 · In stock" on the very row her own "None to
+   * sell" filter had just returned, because the filter asks the database (four
+   * terms) and the badge asks the row (three). [[feedback_absent_behaves_like_fine]]
+   */
+  unsellableOnHand: number;
   /** The standard/manually-set cost. Distinct from `avgCostCents`, which is the
    *  moving average recomputed on costed receipts. */
   unitCostCents: number | null;
@@ -128,8 +143,11 @@ export interface PublicInventoryRow {
  * `available` is the one that matters operationally — "show me what is closest
  * to running out" — and it is also the reason this query selects its keys in
  * SQL rather than through Prisma's `orderBy`. Sellable stock is the EXPRESSION
- * `on_hand - allocated - safety_buffer`, not a column, and Prisma can neither
- * sort nor filter on one.
+ * `SELLABLE_SQL` (four terms: on-hand less what is allocated, less the withheld
+ * buffer, less what sits on a shelf nothing may be sold from), not a column, and
+ * Prisma can neither sort nor filter on one. Written out here as three terms
+ * until 2026-09-19, which is the sort of quote that sends the next reader off to
+ * rebuild the expression by hand and one term short.
  */
 export type InventorySortKey = 'updatedAt' | 'available' | 'sku' | 'product';
 export type InventorySortDirection = 'asc' | 'desc';
@@ -163,7 +181,7 @@ export interface ListInventoryFilter {
   /**
    * Only levels at or below their reorder point.
    *
-   * Measured against SELLABLE stock (`on_hand - allocated - safety_buffer`), not
+   * Measured against SELLABLE stock (`SELLABLE_SQL`, all four terms), not
    * against on-hand — deliberately the same arithmetic the surfaces use to badge
    * a level "Running low". A filter that disagreed with the badge beside it
    * would hide rows the operator can see are low, which is worse than no filter.
@@ -297,6 +315,9 @@ export async function listInventory(
         reorderQuantity: true,
         leadTimeDays: true,
         safetyBuffer: true,
+        // The fourth term of the sellable arithmetic. Absent here, the console's
+        // `sellable()` silently computed three of four on every row (issue 862).
+        unsellableOnHand: true,
         unitCostCents: true,
         avgCostCents: true,
         updatedAt: true,
@@ -423,6 +444,7 @@ export async function listInventory(
           reorderQuantity: r.reorderQuantity,
           leadTimeDays: r.leadTimeDays,
           safetyBuffer: r.safetyBuffer,
+          unsellableOnHand: r.unsellableOnHand,
           unitCostCents: r.unitCostCents,
           avgCostCents: r.avgCostCents,
           updatedAt: r.updatedAt.toISOString(),

@@ -7,8 +7,17 @@
 //
 // Unlike deals, tickets do not need a pipeline named in the file — the service falls
 // back to the tenant's default ticket pipeline and its first stage, which is right
-// for the common case of a queue with one flow. A named pipeline in the export is
-// still honoured where the tenant already has one by that name.
+// for the common case of a queue with one flow.
+//
+// The columns read are the canonical field keys (`ENTITY_FIELDS.tickets`), held equal
+// by `contract.test.ts`. This comment used to say a named pipeline was honoured; it
+// was never read, nor were status, stage, opened or closed. They are off the list
+// until a ticket can be filed as already settled: the one way a ticket reaches a
+// closed stage here is `ticketService.moveStage`, which stamps today's date and fires
+// the "request resolved" trigger tenants hang customer emails on, so replaying a
+// file's closed history through it would write the wrong dates and email every old
+// customer. Every imported request therefore opens in the default queue, and the
+// file report lists those columns as not imported.
 
 import { ticketService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';

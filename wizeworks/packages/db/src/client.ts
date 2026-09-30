@@ -85,6 +85,27 @@ const datasourceUrl = connectionUrl();
  * `needs` makes Prisma fetch `companyName` even under a narrowing `select`, so
  * the value is never quietly null. Raw SQL bypasses extensions and builds its
  * own shapes, which is fine — it always did.
+ *
+ * ── WHAT THIS COSTS, AND THE GUARD THAT COLLECTS IT ───────────────────────
+ *
+ * `Customer.company` is ALSO the relation to the Company record, and this
+ * computed field SHADOWS it. A query that asks for the relation is accepted,
+ * runs, and hands back the computed string instead — silently. MEASURED
+ * 2026-09-20 against the running database:
+ *
+ *     company read directly   { companyName: 'Loom and Larder' }
+ *     relation via customer   { companyId: '9b6d…', company: null }
+ *     same join in raw SQL    [{ company_name: 'Loom and Larder' }]
+ *
+ * Two screens were built on that join and neither had ever rendered a business
+ * name: the order detail's "Wholesale customer" line and the wholesale
+ * approvals queue (issue 751). Both now fetch the business under a name of
+ * its own — see `accountsFor` in @wizeworks/crm's order-service.
+ *
+ * `pnpm check:shadowed` reads the pairs below and fails the build on any
+ * select of a shadowed name. Adding a computed field here therefore adds a
+ * name that platform queries may no longer join on, which is a real cost and
+ * is why this list is one entry long.
  */
 const withDerivedFields = {
   result: {

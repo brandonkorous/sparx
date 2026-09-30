@@ -206,7 +206,7 @@ export const fitnessPack: SampleDataPack = {
         origin: 'Vietnam',
       },
       description:
-        '<p>Our house performance tee in a lightweight, sweat-wicking blend that moves with you through every flow and sprint. Cut for an athletic-but-relaxed fit: long enough to stay put through forward folds, loose enough to breathe on the bike.</p><p>Flatlock seams to kill chafe, a tag-free neck, and a quick-dry finish that comes out of the wash ready for the next class. Screened with the studio mark on the left chest.</p>',
+        'Our house performance tee in a lightweight, sweat-wicking blend that moves with you through every flow and sprint. Cut for an athletic-but-relaxed fit: long enough to stay put through forward folds, loose enough to breathe on the bike.\n\nFlatlock seams to kill chafe, a tag-free neck, and a quick-dry finish that comes out of the wash ready for the next class. Screened with the studio mark on the left chest.',
       productType: 'Apparel',
       vendor: 'House Label',
       tags: ['tee', 'apparel', 'performance', 'unisex'],
@@ -361,7 +361,7 @@ export const fitnessPack: SampleDataPack = {
         origin: 'Vietnam',
       },
       description:
-        '<p>Buttery-soft high-rise leggings with a wide, no-dig waistband that holds through every squat, lunge, and inversion. Four-way stretch and a brushed interior keep them opaque and comfortable from warm-up to cooldown.</p><p>A hidden waistband pocket fits a key or a gel, and the squat-proof knit means you can move without a second thought. Sold in a single inseam that hits at the ankle on most.</p>',
+        'Buttery-soft high-rise leggings with a wide, no-dig waistband that holds through every squat, lunge, and inversion. Four-way stretch and a brushed interior keep them opaque and comfortable from warm-up to cooldown.\n\nA hidden waistband pocket fits a key or a gel, and the squat-proof knit means you can move without a second thought. Sold in a single inseam that hits at the ankle on most.',
       productType: 'Apparel',
       vendor: 'House Label',
       tags: ['leggings', 'apparel', 'high-rise', 'squat-proof'],
@@ -494,7 +494,7 @@ export const fitnessPack: SampleDataPack = {
         origin: 'China',
       },
       description:
-        '<p>A 24 oz double-wall stainless shaker that keeps water cold for hours and mixes a clump-free shake in seconds. The stainless agitator ball does the work; the leak-proof flip lid means it can ride in your bag next to your phone without a soggy surprise.</p><p>Fits a standard cup holder, the wide mouth takes ice cubes, and the powder-coated finish shrugs off gym-bag scuffs. Carries the studio mark.</p>',
+        'A 24 oz double-wall stainless shaker that keeps water cold for hours and mixes a clump-free shake in seconds. The stainless agitator ball does the work; the leak-proof flip lid means it can ride in your bag next to your phone without a soggy surprise.\n\nFits a standard cup holder, the wide mouth takes ice cubes, and the powder-coated finish shrugs off gym-bag scuffs. Carries the studio mark.',
       productType: 'Gear',
       vendor: 'House Label',
       tags: ['bottle', 'shaker', 'gear', 'hydration'],
@@ -591,7 +591,7 @@ export const fitnessPack: SampleDataPack = {
         origin: 'Malaysia',
       },
       description:
-        '<p>A three-band set (light, medium, and heavy) that covers everything from glute activation to assisted pull-ups. Made from natural latex with a fabric-free finish that grips without rolling or snapping on the skin.</p><p>Color-coded by resistance and small enough to live in your bag, these are the most-used tool in the studio for warm-ups and at-home days. Comes with a mesh carry pouch.</p>',
+        'A three-band set (light, medium, and heavy) that covers everything from glute activation to assisted pull-ups. Made from natural latex with a fabric-free finish that grips without rolling or snapping on the skin.\n\nColor-coded by resistance and small enough to live in your bag, these are the most-used tool in the studio for warm-ups and at-home days. Comes with a mesh carry pouch.',
       productType: 'Gear',
       vendor: 'House Label',
       tags: ['resistance bands', 'gear', 'mobility', 'strength'],
@@ -665,7 +665,7 @@ export const fitnessPack: SampleDataPack = {
         ],
       },
       description:
-        '<p>A clean 24g-per-scoop whey isolate blend that mixes smooth and actually tastes good. No artificial dyes, no gritty aftertaste. Just a recovery shake you will look forward to after class.</p><p>Roughly 28 servings per tub. Mix one scoop with 8–10 oz of water or milk; pairs perfectly with the studio shaker bottle. Choose your flavor below.</p>',
+        'A clean 24g-per-scoop whey isolate blend that mixes smooth and actually tastes good. No artificial dyes, no gritty aftertaste. Just a recovery shake you will look forward to after class.\n\nRoughly 28 servings per tub. Mix one scoop with 8–10 oz of water or milk; pairs perfectly with the studio shaker bottle. Choose your flavor below.',
       productType: 'Supplements',
       vendor: 'House Label',
       tags: ['protein', 'supplements', 'whey', 'recovery'],
@@ -789,7 +789,7 @@ export const fitnessPack: SampleDataPack = {
         origin: 'Taiwan',
       },
       description:
-        '<p>A 24-inch high-density foam roller that holds its shape under real bodyweight pressure: no mushy collapse after a month. The molded ridges target knots and trigger points along the IT band, calves, and upper back without being punishing.</p><p>Light enough to carry to class, firm enough to make a difference. The single best tool for the recovery day you keep skipping.</p>',
+        'A 24-inch high-density foam roller that holds its shape under real bodyweight pressure: no mushy collapse after a month. The molded ridges target knots and trigger points along the IT band, calves, and upper back without being punishing.\n\nLight enough to carry to class, firm enough to make a difference. The single best tool for the recovery day you keep skipping.',
       productType: 'Gear',
       vendor: 'House Label',
       tags: ['foam roller', 'gear', 'recovery', 'mobility'],
@@ -856,7 +856,7 @@ export const fitnessPack: SampleDataPack = {
         ],
       },
       description:
-        '<p>Everything a new member needs to walk in ready on day one: our Studio Performance Tee, a 3-pack of resistance bands for warm-ups, and an insulated shaker bottle to keep you hydrated. Buy the kit and save versus picking the pieces individually.</p><p>A standing welcome gift at the front desk, and the easiest "where do I start?" answer we have.</p>',
+        'Everything a new member needs to walk in ready on day one: our Studio Performance Tee, a 3-pack of resistance bands for warm-ups, and an insulated shaker bottle to keep you hydrated. Buy the kit and save versus picking the pieces individually.\n\nA standing welcome gift at the front desk, and the easiest "where do I start?" answer we have.',
       productType: 'Kits',
       vendor: 'House Label',
       tags: ['starter kit', 'bundle', 'new member', 'welcome'],

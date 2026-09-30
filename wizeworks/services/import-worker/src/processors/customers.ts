@@ -6,8 +6,14 @@
 //
 // Required columns: email (for upsert lookup; otherwise creates a no-email prospect).
 //
-// Column aliases (case-insensitive):
-//   email, first_name, last_name, company, phone, job_title, type, tags
+// Columns: the canonical customer field keys (`ENTITY_FIELDS.customers` in
+// @wizeworks/migration), held equal to what this file reads by `contract.test.ts`.
+// A full name fills first and last name when the file has no separate columns, and
+// a note lands on the person's timeline. SMS opt-in, lifetime spend, order count and
+// "customer since" are NOT on that list: there is no SMS consent to record here, the
+// spend and order figures are worked out from the person's orders (so a typed-in
+// copy would be replaced by the next order), and the date a record was created is
+// stamped when it is created. The file report lists those columns as not imported.
 //
 // Any OTHER column that names one of the tenant's declared properties (docs/144
 // §3) is imported into `custom_properties`: a business that tracks "Warranty
@@ -21,6 +27,7 @@ import {
   customerService,
   describeColumnProblems,
   describeCustomerError,
+  engagementService,
   objectDefService,
   propertiesFromRow,
 } from '@wizeworks/crm';
@@ -36,7 +43,62 @@ export interface CustomerRow {
   job_title?: string;
   type?: string;
   tags?: string;
+  name?: string;
+  note?: string;
   [key: string]: string | undefined;
+}
+
+/**
+ * First and last name, from their own columns or split from a full name.
+ *
+ * A file with separate columns is read as it is. One with only a full name (most
+ * mailing-list exports) is split at the last space, so "Mary Ann Lee" is Mary Ann,
+ * Lee: a surname is one word far more often than a first name is. A single word is a
+ * first name. The full name never overrides a separate column the file filled in.
+ */
+function namesOf(row: CustomerRow): { firstName?: string; lastName?: string } {
+  const first = row.first_name?.trim();
+  const last = row.last_name?.trim();
+  if ((first !== undefined && first !== '') || (last !== undefined && last !== '')) {
+    return {
+      ...(row.first_name !== undefined ? { firstName: row.first_name } : {}),
+      ...(row.last_name !== undefined ? { lastName: row.last_name } : {}),
+    };
+  }
+  const full = (row.name ?? '').trim().replace(/\s+/g, ' ');
+  if (full === '') {
+    return {
+      ...(row.first_name !== undefined ? { firstName: row.first_name } : {}),
+      ...(row.last_name !== undefined ? { lastName: row.last_name } : {}),
+    };
+  }
+  const split = full.lastIndexOf(' ');
+  return split === -1
+    ? { firstName: full }
+    : { firstName: full.slice(0, split), lastName: full.slice(split + 1) };
+}
+
+/**
+ * The file's note, on the person's timeline.
+ *
+ * Once: a note already there with the same words is not added again, so importing
+ * the same list twice does not leave every contact with two copies of it.
+ */
+async function saveNote(
+  ctx: { tenantId: string },
+  customerId: string,
+  row: CustomerRow
+): Promise<void> {
+  const body = (row.note ?? '').trim().slice(0, 20_000);
+  if (body === '') return;
+  const already = await withTenant(ctx, (tx) =>
+    tx.engagementMessage.findFirst({
+      where: { kind: 'note', bodyText: body, thread: { customerId } },
+      select: { id: true },
+    })
+  );
+  if (already !== null) return;
+  await engagementService.logNote(ctx, { customerId, body });
 }
 
 export interface RowResult {
@@ -222,7 +284,14 @@ function addressFrom(row: CustomerRow): { address: ImportedAddress } | { note: s
   };
 }
 
-/** The headers the mapping above already owns — see `propertiesFromRow`. */
+/**
+ * The headers the mapping above already owns — see `propertiesFromRow`.
+ *
+ * Also the four standard columns this import deliberately does not save (SMS opt-in,
+ * lifetime spend, order count, customer since; see the top of the file). They stay
+ * claimed so a tenant's own field that happens to share one of those keys is not
+ * filled from it behind the file report's back, which lists them as not imported.
+ */
 const RESERVED_COLUMNS = [
   'email',
   'first_name',
@@ -331,8 +400,7 @@ export async function processCustomerRows(
       if (existing && opts.upsert) {
         const optIn = optInForExisting(row.accepts_marketing, existing.doNotContact);
         await customerService.update(ctx, existing.id, {
-          ...(row.first_name !== undefined ? { firstName: row.first_name } : {}),
-          ...(row.last_name !== undefined ? { lastName: row.last_name } : {}),
+          ...namesOf(row),
           ...(row.company !== undefined ? { companyName: row.company } : {}),
           ...(row.phone !== undefined ? { phone: row.phone } : {}),
           ...(row.job_title !== undefined ? { jobTitle: row.job_title } : {}),
@@ -355,6 +423,7 @@ export async function processCustomerRows(
             : {}),
           ...customProperties,
         });
+        await saveNote(ctx, existing.id, row);
         const note = joinNotes([await saveAddress(ctx, existing.id, row, false), optIn.note]);
         results.push({
           rowIndex: i,
@@ -376,11 +445,12 @@ export async function processCustomerRows(
         });
         log.debug('skipped (upsert off)');
       } else {
+        const names = namesOf(row);
         const created = await customerService.create(ctx, {
           type: normalizeType(row.type),
           email: email ?? null,
-          firstName: row.first_name ?? null,
-          lastName: row.last_name ?? null,
+          firstName: names.firstName ?? null,
+          lastName: names.lastName ?? null,
           companyName: row.company ?? null,
           phone: row.phone ?? null,
           jobTitle: row.job_title ?? null,
@@ -394,6 +464,7 @@ export async function processCustomerRows(
           ...(consent === null ? {} : { gdprConsent: consent }),
           ...customProperties,
         });
+        await saveNote(ctx, created.id, row);
         const note = await saveAddress(ctx, created.id, row, true);
         results.push({
           rowIndex: i,
@@ -498,11 +569,12 @@ export async function previewCustomerRows(
  * would drift, and drift here means the practice run lying again.
  */
 function wouldRefuse(row: CustomerRow): string | null {
+  const names = namesOf(row);
   return checkCustomerInput({
     type: normalizeType(row.type),
     email: row.email?.trim() ? row.email.trim() : null,
-    firstName: row.first_name ?? null,
-    lastName: row.last_name ?? null,
+    firstName: names.firstName ?? null,
+    lastName: names.lastName ?? null,
     companyName: row.company ?? null,
     phone: row.phone ?? null,
     jobTitle: row.job_title ?? null,
@@ -531,4 +603,10 @@ export const customersProcessor: EntityProcessor = {
 };
 
 /** The pure halves, for the suite that pins down the quiet mistakes. */
-export const customerInternals = { doNotContactFrom, consentFrom, optInForExisting, joinNotes };
+export const customerInternals = {
+  doNotContactFrom,
+  consentFrom,
+  optInForExisting,
+  joinNotes,
+  namesOf,
+};

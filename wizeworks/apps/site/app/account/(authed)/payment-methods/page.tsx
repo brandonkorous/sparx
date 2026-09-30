@@ -41,6 +41,31 @@ function money(cents: number, currency: string): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
 }
 
+/**
+ * How often a repeat order goes out, in the words a customer would use.
+ *
+ * Her own page told her "$29.00 a month" beside "Next order 20/01/2027" — the
+ * average was the only figure it had, and she is charged $58.00 every two
+ * months (issue 795).
+ */
+function cadence(unit: string, count: number): string {
+  const single: Record<string, string> = {
+    day: 'a day',
+    week: 'a week',
+    month: 'a month',
+    year: 'a year',
+  };
+  const plural: Record<string, string> = {
+    day: 'days',
+    week: 'weeks',
+    month: 'months',
+    year: 'years',
+  };
+  if (count <= 1) return single[unit] ?? 'on a schedule';
+  const many = plural[unit];
+  return many === undefined ? 'on a schedule' : `every ${String(count)} ${many}`;
+}
+
 export default function PaymentMethodsPage() {
   const { tenantSlug } = useCustomer();
   const router = useRouter();
@@ -212,7 +237,8 @@ export default function PaymentMethodsPage() {
             >
               <div className="flex flex-col gap-1">
                 <span className="font-medium">
-                  {money(sub.monthlyRecurringRevenueCents, sub.currency)} a month ·{' '}
+                  {money(sub.cycleAmountCents, sub.currency)}{' '}
+                  {cadence(sub.intervalUnit, sub.intervalCount)} ·{' '}
                   {sub.itemCount === 1 ? '1 item' : `${String(sub.itemCount)} items`}
                 </span>
                 <span className="text-sm">

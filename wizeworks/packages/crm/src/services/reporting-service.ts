@@ -7,6 +7,7 @@
 // one-place change.
 
 import { withTenant } from '@wizeworks/db';
+import { channelKeyLabel } from '@wizeworks/crm-schemas';
 
 import type { ServiceContext } from '../errors';
 
@@ -201,25 +202,46 @@ export async function tenantSnapshot(ctx: ServiceContext): Promise<{
 
 // ─── Leads by source (live aggregate, docs/97) ───────────────────────
 //
-// The CRM has no structured `source` column, but a customer's *first order
-// channel* is a real "how did they first reach us" signal — storefront vs
-// b2b_portal vs admin/import/mcp. Customers with no order fall back to
-// b2b_portal (a B2B account exists) or "direct". Counts new customers created
-// in the window grouped by that derived source. Live aggregate; the per-
-// customer first-order lookup rides the orders `(tenant, customer, placed_at)`
-// index.
+// The CRM has no structured `source` column, so this reads a customer's FIRST
+// ORDER's channel — storefront, b2b_portal, admin, import, mcp, or the
+// marketplace they arrived through. That is an observation.
+//
+// ── A CUSTOMER WITH NO ORDER IS NOT A SOURCE ────────────────────────────────
+//
+// This used to fall back to 'b2b_portal' when the customer was attached to a
+// company, and to 'direct' otherwise. Neither is evidence: a company link says
+// what KIND of customer somebody is, not how they arrived, and 'direct' is a
+// real-sounding channel name for "we never found out".
+//
+// Measured on the dev database 2026-09-25, across every tenant:
+//
+//     has a first order  ..................  59   (a real answer)
+//     no order, attached to a company .....   8   (was reported "B2B portal")
+//     no order, no company  ............... 678   (was reported "Direct")
+//
+// 686 of 745 — 92% — were answered with a guess, under a panel headed "Where
+// new customers come from". The guess is gone. A customer with no order keys
+// as `none`, which is not an order channel and never will be.
+// [[feedback_never_present_absence_as_measurement]]
+//
+// ── THE LABELS COME FROM THE ORDER-CHANNEL TABLE, NOT A COPY OF IT ──────────
+//
+// A second copy of `ORDER_CHANNEL_LABELS` lived here and went stale the moment
+// `marketplace` was added to the channel set: three marketplace customers read
+// the raw key `marketplace`, lowercase, on screen. One table, one place.
+//
+// Live aggregate; the per-customer first-order lookup rides the orders
+// `(tenant, customer, placed_at)` index.
 
 const LEADS_DEFAULT_DAYS = 90;
 
-// Human labels for the derived source keys (order channel + the fallbacks).
-const SOURCE_LABELS: Record<string, string> = {
-  storefront: 'Storefront',
-  b2b_portal: 'B2B portal',
-  admin: 'Admin',
-  import: 'Import',
-  mcp: 'MCP / AI',
-  direct: 'Direct',
-};
+/** The key for a customer who has never ordered. Deliberately NOT an order
+ *  channel, so no report can print it as though it were one. */
+export const LEAD_SOURCE_NONE = 'none';
+
+export function leadSourceLabel(key: string): string {
+  return key === LEAD_SOURCE_NONE ? 'No order yet' : channelKeyLabel(key);
+}
 
 export interface LeadSourceRow {
   source: string;
@@ -254,10 +276,13 @@ export async function leadsBySource(
     const rows = await tx.$queryRaw<RawSourceRow[]>`
       SELECT
         COALESCE(
-          (SELECT o.channel FROM orders o
+          (SELECT CASE WHEN o.channel = 'marketplace'
+                       THEN COALESCE(o.source, 'marketplace')
+                       ELSE o.channel END
+             FROM orders o
              WHERE o.customer_id = c.id
              ORDER BY o.placed_at ASC LIMIT 1),
-          CASE WHEN c.company_id IS NOT NULL THEN 'b2b_portal' ELSE 'direct' END
+          ${LEAD_SOURCE_NONE}
         ) AS source,
         COUNT(*)::int AS leads
       FROM customers c
@@ -271,10 +296,10 @@ export async function leadsBySource(
     const totalLeads = rows.reduce((s, r) => s + Number(r.leads ?? 0), 0);
     const bySource: LeadSourceRow[] = rows.map((r) => {
       const count = Number(r.leads ?? 0);
-      const source = r.source ?? 'direct';
+      const source = r.source ?? LEAD_SOURCE_NONE;
       return {
         source,
-        label: SOURCE_LABELS[source] ?? source,
+        label: leadSourceLabel(source),
         count,
         sharePct: totalLeads > 0 ? +((count / totalLeads) * 100).toFixed(1) : 0,
       };

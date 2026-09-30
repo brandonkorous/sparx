@@ -242,7 +242,7 @@ const publicFormsUploadRoutes: FastifyPluginAsync = async (app) => {
         }
         if (bodyBuf.length > claims.max) {
           throw badRequest(
-            `File is ${bodyBuf.length} bytes; this upload was authorised for ${claims.max}.`
+            `File is ${bodyBuf.length} bytes; this upload was authorized for ${claims.max}.`
           );
         }
         if (!bytesMatchMime(bodyBuf, claims.mime)) {

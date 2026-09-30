@@ -63,6 +63,7 @@ import type {
   TaxBreakdown,
 } from '@wizeworks/commerce-schemas';
 import { describeRate, isCollection } from './collection-option';
+import { noteWrite } from './checkout-note';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -485,6 +486,10 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
       where: { id: session.id },
       data: {
         step: furthestStep(session.step, 'shipping'),
+        // Three states, not two. See checkout-note.ts: a caller that never
+        // mentioned notes must not wipe one, and a box somebody emptied must
+        // clear one.
+        ...noteWrite(input.customerNote),
         // Null, not a placeholder. Nothing is being posted, so there is no
         // address, and every screen that reads this one must be able to tell
         // "collected" from "we lost the address" (issue 064).
@@ -939,32 +944,11 @@ export async function complete(
       if (!account) {
         throw new CommerceValidationError('B2B account not found');
       }
-      if (account.status === 'credit_hold') {
-        throw new CommerceValidationError(
-          'Account is on credit hold: payment required before placing new orders'
-        );
-      }
-      if (account.status === 'suspended') {
-        throw new CommerceValidationError('Account is suspended: contact your account manager');
-      }
-      const available = Number(account.creditLimit) - Number(account.creditUsed);
-      const orderDollars = session.totalCents / 100;
-      if (orderDollars > available) {
-        // The person reading this is a buyer who has just been stopped at
-        // checkout, so the two numbers have to be countable and the sentence has
-        // to say what to do about it. It used to read "Insufficient credit:
-        // $50000.00 available, $52340.00 required" — every credit limit on the
-        // platform is five figures, so the digits a reader has to count were
-        // exactly the ones with no separator between them.
-        const order = formatAmount(orderDollars, session.currency);
-        const left =
-          available > 0
-            ? `your account has ${formatAmount(available, session.currency)} of credit left`
-            : 'your account has no credit left';
-        throw new CommerceValidationError(
-          `This order comes to ${order} and ${left}. ` +
-            'Pay down what is outstanding, or ask your account manager to raise the limit.'
-        );
+      // Every reason this order cannot go on terms, worked out in one place so
+      // it can be tested without a database — see `termsRefusal`.
+      const refusal = termsRefusal(account, session.totalCents, session.currency);
+      if (refusal) {
+        throw new CommerceValidationError(refusal);
       }
     }
 
@@ -1167,6 +1151,10 @@ export async function complete(
         billingAddress: (session.billingAddress ??
           session.shippingAddress ??
           undefined) as Parameters<typeof orderService.create>[1] extends infer A ? A : never,
+        // What the buyer asked for in their own words. `?? undefined` for the
+        // same reason the addresses above are: the order's field is optional and
+        // an explicit null fails its schema.
+        customerNote: session.customerNote ?? undefined,
         items,
         metadata: {
           commerceCheckoutSessionId: session.id,
@@ -1190,7 +1178,14 @@ export async function complete(
           ...(reservedCard ? { giftCardCode: reservedCard.code } : {}),
           accountCreditAppliedCents: session.accountCreditAppliedCents,
         },
-      }
+      },
+      // This caller announces the placement itself, at the bottom of `place`,
+      // because it is the only one that must sometimes NOT: a wholesale order
+      // over a sign-off limit publishes `b2b.order.pending_approval` instead,
+      // and `order.placed` waits until somebody approves it. Every other caller
+      // of `orderService.create` gets the announcement for free, which is what
+      // the till and the repeat-order tick were missing.
+      { announce: false }
     );
 
     // The gift card comes off the CARD here, and nowhere earlier. Applying one to
@@ -1801,6 +1796,68 @@ export function furthestStep(from: string, to: string): string {
   const fromIdx = STEP_ORDER[from] ?? -1;
   const toIdx = STEP_ORDER[to] ?? -1;
   return toIdx >= fromIdx ? to : from;
+}
+
+/**
+ * Why this account may not put this order on payment terms, or null if it may.
+ *
+ * ── WHY IT IS OUT HERE ──────────────────────────────────────────────────────
+ *
+ * It was four `if`s in the middle of `complete()`, reachable only through a
+ * database transaction, so nothing tested it and one of the four was missing.
+ * An account marked **Inactive** — "kept on file but not trading", as the
+ * console words it — sailed straight past: `inactive` was never checked
+ * anywhere in the order path, so the one state whose whole meaning is "we are
+ * not trading with these people" was the only state that stopped nothing.
+ *
+ * ── WHAT A ZERO LIMIT MEANS ─────────────────────────────────────────────────
+ *
+ * `companies.credit_limit` is `NUMERIC NOT NULL DEFAULT 0`, and the sum below
+ * is the only thing that reads it, so a company nobody has given a limit is
+ * refused every order on terms. MEASURED 2026-09-25 on the dev database: all
+ * ten Active companies sit at zero, under a console that told their owner
+ * "This account can place orders on its agreed terms."
+ *
+ * The arithmetic is unchanged. What is new is the `inactive` branch and the
+ * fact that all five answers can now be checked without a database.
+ */
+export function termsRefusal(
+  account: { status: string; creditLimit: unknown; creditUsed: unknown },
+  orderCents: number,
+  currency: string
+): string | null {
+  if (account.status === 'credit_hold') {
+    return 'Account is on credit hold: payment required before placing new orders';
+  }
+  if (account.status === 'suspended') {
+    return 'Account is suspended: contact your account manager';
+  }
+  if (account.status === 'inactive') {
+    return 'Account is not currently trading: contact your account manager';
+  }
+  const available = Number(account.creditLimit) - Number(account.creditUsed);
+  const orderDollars = orderCents / 100;
+  // `NaN > available` and `orderDollars > NaN` are both false, so an unreadable
+  // figure would WAVE THE ORDER THROUGH on the old comparison. Ask the question
+  // the other way round, so anything that is not a number refuses.
+  if (!(orderDollars <= available)) {
+    // The person reading this is a buyer who has just been stopped at
+    // checkout, so the two numbers have to be countable and the sentence has
+    // to say what to do about it. It used to read "Insufficient credit:
+    // $50000.00 available, $52340.00 required" — every credit limit on the
+    // platform is five figures, so the digits a reader has to count were
+    // exactly the ones with no separator between them.
+    const order = formatAmount(orderDollars, currency);
+    const left =
+      available > 0
+        ? `your account has ${formatAmount(available, currency)} of credit left`
+        : 'your account has no credit left';
+    return (
+      `This order comes to ${order} and ${left}. ` +
+      'Pay down what is outstanding, or ask your account manager to raise the limit.'
+    );
+  }
+  return null;
 }
 
 /**

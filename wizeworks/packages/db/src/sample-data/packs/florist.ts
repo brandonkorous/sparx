@@ -109,7 +109,7 @@ export const floristPack: SampleDataPack = {
           key: 'deliveryNotes',
           label: 'Getting it to the door',
           type: 'long_text',
-          helpText: 'Gate codes, which neighbour takes parcels, the dog.',
+          helpText: 'Gate codes, which neighbor takes parcels, the dog.',
         },
       ],
     },
@@ -300,10 +300,10 @@ export const floristPack: SampleDataPack = {
       key: 'market-bouquet',
       title: 'The Market Bouquet',
       handle: 'market-bouquet',
-      description: `<p>Whatever came off the van that morning, wrapped in kraft and tied with cotton string. We make it up fresh each day, which is the only honest way to sell a bouquet: you get what is genuinely at its best this week rather than what a photograph promised three months ago.</p>
-<p>Expect something loose and garden-style, a few focal blooms, something airy through the middle, and foliage with a bit of movement in it. In April that is ranunculus and blossom; in September it is dahlias and grasses.</p>
-<h3>How long it lasts</h3>
-<p>Seven to ten days with a fresh cut and clean water. There is a sachet of flower food in the wrap and a card explaining what to do with it, because most bouquets die of neglect in the first forty-eight hours rather than old age.</p>`,
+      description: `Whatever came off the van that morning, wrapped in kraft and tied with cotton string. We make it up fresh each day, which is the only honest way to sell a bouquet: you get what is genuinely at its best this week rather than what a photograph promised three months ago.\n\n
+Expect something loose and garden-style, a few focal blooms, something airy through the middle, and foliage with a bit of movement in it. In April that is ranunculus and blossom; in September it is dahlias and grasses.\n\n
+How long it lasts\n\n
+Seven to ten days with a fresh cut and clean water. There is a sachet of flower food in the wrap and a card explaining what to do with it, because most bouquets die of neglect in the first forty-eight hours rather than old age.\n\n`,
       productType: 'Bouquet',
       productTypeKey: 'general',
       vendor: 'Wildroot',
@@ -419,8 +419,8 @@ export const floristPack: SampleDataPack = {
       key: 'garden-roses',
       title: 'Garden Roses, by the Bunch',
       handle: 'garden-roses',
-      description: `<p>Ten stems of scented garden roses, cut at the Valley Field fields in Hendersonville two days before they reach you. Short-stemmed and open-faced rather than the tight, scentless heads that survive a flight from the other side of the world.</p>
-<p>Sold as a bunch to arrange yourself. If you would rather we did it, take the Market Bouquet instead and ask for roses through it.</p>`,
+      description: `Ten stems of scented garden roses, cut at the Valley Field fields in Hendersonville two days before they reach you. Short-stemmed and open-faced rather than the tight, scentless heads that survive a flight from the other side of the world.\n\n
+Sold as a bunch to arrange yourself. If you would rather we did it, take the Market Bouquet instead and ask for roses through it.\n\n`,
       productType: 'Cut stems',
       productTypeKey: 'general',
       vendor: 'Valley Field Growers',
@@ -466,8 +466,8 @@ export const floristPack: SampleDataPack = {
       key: 'ranunculus',
       title: 'Ranunculus, by the Bunch',
       handle: 'ranunculus',
-      description: `<p>Ten stems, layered like tissue paper, in whatever the field is giving that week, usually a mix of coral, cream and a dusty pink that photographs far better than it sounds.</p>
-<p>They are a short season and a short vase life: five or six days, and worth every one of them. When they are gone in June they are gone until February.</p>`,
+      description: `Ten stems, layered like tissue paper, in whatever the field is giving that week, usually a mix of coral, cream and a dusty pink that photographs far better than it sounds.\n\n
+They are a short season and a short vase life: five or six days, and worth every one of them. When they are gone in June they are gone until February.\n\n`,
       productType: 'Cut stems',
       productTypeKey: 'general',
       vendor: 'Valley Field Growers',
@@ -503,8 +503,8 @@ export const floristPack: SampleDataPack = {
       key: 'eucalyptus',
       title: 'Eucalyptus, by the Bunch',
       handle: 'eucalyptus',
-      description: `<p>Silver dollar eucalyptus, ten stems. The workhorse of every arrangement in the shop and the one thing we never run out of on purpose.</p>
-<p>Fresh it lasts a fortnight in water. Left to dry hanging upside down it lasts more or less forever, which is why half of what we sell goes straight into a bathroom rather than a vase.</p>`,
+      description: `Silver dollar eucalyptus, ten stems. The workhorse of every arrangement in the shop and the one thing we never run out of on purpose.\n\n
+Fresh it lasts a fortnight in water. Left to dry hanging upside down it lasts more or less forever, which is why half of what we sell goes straight into a bathroom rather than a vase.\n\n`,
       productType: 'Foliage',
       productTypeKey: 'general',
       vendor: 'Valley Field Growers',
@@ -537,8 +537,8 @@ export const floristPack: SampleDataPack = {
       key: 'dried-wreath',
       title: 'Dried Everlasting Wreath',
       handle: 'dried-wreath',
-      description: `<p>A twelve-inch wreath on a copper ring: dried eucalyptus, bunny tails, strawflower and a bit of preserved oak. Made in the shop, one at a time, so no two come out quite the same.</p>
-<p>It will not drop, will not need water, and will still be on the door next year if you keep it out of direct sun. This is also the thing everybody makes at the Saturday workshop, if you would rather build your own.</p>`,
+      description: `A twelve-inch wreath on a copper ring: dried eucalyptus, bunny tails, strawflower and a bit of preserved oak. Made in the shop, one at a time, so no two come out quite the same.\n\n
+It will not drop, will not need water, and will still be on the door next year if you keep it out of direct sun. This is also the thing everybody makes at the Saturday workshop, if you would rather build your own.\n\n`,
       productType: 'Wreath',
       productTypeKey: 'home_goods',
       attributes: {
@@ -588,9 +588,9 @@ export const floristPack: SampleDataPack = {
       key: 'peace-lily',
       title: 'Peace Lily',
       handle: 'peace-lily',
-      description: `<p>A properly grown peace lily in a plain terracotta pot, not the supermarket sort that arrives root-bound and sulks for a month. Happy in a north-facing room, forgiving if you forget it, and it tells you when it is thirsty by drooping theatrically and then recovering within the hour.</p>
-<h3>Worth knowing</h3>
-<p>The leaves are mildly toxic to cats and dogs if chewed. If you have either, take the parlour palm instead and we will swap it at the counter.</p>`,
+      description: `A properly grown peace lily in a plain terracotta pot, not the supermarket sort that arrives root-bound and sulks for a month. Happy in a north-facing room, forgiving if you forget it, and it tells you when it is thirsty by drooping theatrically and then recovering within the hour.\n\n
+Worth knowing\n\n
+The leaves are mildly toxic to cats and dogs if chewed. If you have either, take the parlor palm instead and we will swap it at the counter.\n\n`,
       productType: 'Houseplant',
       productTypeKey: 'home_goods',
       attributes: {
@@ -629,7 +629,7 @@ export const floristPack: SampleDataPack = {
           body: 'Is this safe around a cat?',
           displayName: 'Sam',
           answer:
-            'Not really: the leaves upset cats and dogs if they chew them. Ask us for the parlour palm or the calathea instead; both are fine and about the same money.',
+            'Not really: the leaves upset cats and dogs if they chew them. Ask us for the parlor palm or the calathea instead; both are fine and about the same money.',
           daysAgo: 15,
         },
       ],
@@ -638,8 +638,8 @@ export const floristPack: SampleDataPack = {
       key: 'vase-tall',
       title: 'Tall Glass Vase',
       handle: 'tall-glass-vase',
-      description: `<p>A plain, heavy-bottomed glass cylinder, twenty-five centimetres tall. Made at Ridgeway Glassworks in Greensboro. It holds a Generous bouquet without help and does not tip over when the dog goes past.</p>
-<p>Nothing clever about it, which is the point: a vase should disappear behind what is in it.</p>`,
+      description: `A plain, heavy-bottomed glass cylinder, twenty-five centimetres tall. Made at Ridgeway Glassworks in Greensboro. It holds a Generous bouquet without help and does not tip over when the dog goes past.\n\n
+Nothing clever about it, which is the point: a vase should disappear behind what is in it.\n\n`,
       productType: 'Vase',
       productTypeKey: 'home_goods',
       attributes: {
@@ -678,8 +678,8 @@ export const floristPack: SampleDataPack = {
       key: 'vase-bud',
       title: 'Bud Vase, Set of Three',
       handle: 'bud-vase-set',
-      description: `<p>Three small glass bud vases in graduated heights. For the two or three stems left over when a bouquet starts to go, which is when most people throw the whole thing out.</p>
-<p>Strip everything below the water line, cut short, and a bouquet on its last legs will give you another four days on a windowsill.</p>`,
+      description: `Three small glass bud vases in graduated heights. For the two or three stems left over when a bouquet starts to go, which is when most people throw the whole thing out.\n\n
+Strip everything below the water line, cut short, and a bouquet on its last legs will give you another four days on a windowsill.\n\n`,
       productType: 'Vase',
       productTypeKey: 'home_goods',
       attributes: {
@@ -717,8 +717,8 @@ export const floristPack: SampleDataPack = {
       key: 'care-kit',
       title: 'Flower Care Kit',
       handle: 'flower-care-kit',
-      description: `<p>A pair of proper floristry snips, ten sachets of flower food, and a card with the four things that actually matter written on it. We give the card away free at the counter; the snips are the part worth paying for.</p>
-<p>Kitchen scissors crush the stem rather than cutting it, which closes the very channel the flower drinks through. It is the single most common reason a bouquet dies early.</p>`,
+      description: `A pair of proper floristry snips, ten sachets of flower food, and a card with the four things that actually matter written on it. We give the card away free at the counter; the snips are the part worth paying for.\n\n
+Kitchen scissors crush the stem rather than cutting it, which closes the very channel the flower drinks through. It is the single most common reason a bouquet dies early.\n\n`,
       productType: 'Accessory',
       productTypeKey: 'general',
       vendor: 'Wildroot',
@@ -754,8 +754,8 @@ export const floristPack: SampleDataPack = {
       key: 'first-vase-set',
       title: 'The First Vase Set',
       handle: 'first-vase-set',
-      description: `<p>A Generous bouquet, the tall glass vase it fits, and the care kit that keeps it going: the three things somebody moving into a new place does not yet own.</p>
-<p>Cheaper than the parts, and it arrives ready to put straight on a table rather than in a sink while somebody hunts for something to stand it in.</p>`,
+      description: `A Generous bouquet, the tall glass vase it fits, and the care kit that keeps it going: the three things somebody moving into a new place does not yet own.\n\n
+Cheaper than the parts, and it arrives ready to put straight on a table rather than in a sink while somebody hunts for something to stand it in.\n\n`,
       productType: 'Gift set',
       productTypeKey: 'general',
       vendor: 'Wildroot',
@@ -930,7 +930,7 @@ export const floristPack: SampleDataPack = {
         ),
         h2('Cut them again, properly'),
         p(
-          'Take two centimetres off every stem at a slant, with something sharp. A slant means the cut end cannot sit flat on the bottom of the vase and seal itself shut, and sharp means cutting rather than crushing: kitchen scissors squash the very tubes the flower drinks through, which is why a bouquet trimmed with them fades days early.'
+          'Take two centimeters off every stem at a slant, with something sharp. A slant means the cut end cannot sit flat on the bottom of the vase and seal itself shut, and sharp means cutting rather than crushing: kitchen scissors squash the very tubes the flower drinks through, which is why a bouquet trimmed with them fades days early.'
         ),
         h2('Nothing below the water line'),
         p(

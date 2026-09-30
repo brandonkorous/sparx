@@ -71,6 +71,24 @@ export const DEFAULT_DOCUMENT_WORKFLOWS: DocumentWorkflowTemplate[] = [
         sortOrder: 1,
         color: '#10B981',
       },
+      // THE WAY OUT. Without a void stage an invoice is permanent from the
+      // moment it is raised: `canDelete` in the console is `stageType ===
+      // 'draft'` and this workflow has no draft, so the More menu offers
+      // nothing, and the order it came from refuses every later attempt with
+      // "void it before raising another" — an instruction with nowhere to
+      // carry it out. MEASURED 2026-09-20: 205 live workflows, 52 with a void
+      // stage; the quote workflows in this same file have had Declined and
+      // Expired since they were written. [[feedback_a_fix_leaves_its_neighbour_behind]]
+      {
+        name: 'Canceled',
+        customerLabel: 'Canceled',
+        stageType: 'void',
+        snapshotOnEnter: false,
+        numberOnEnter: false,
+        locksEditing: true,
+        sortOrder: 2,
+        color: '#EF4444',
+      },
     ],
   },
   {
@@ -131,6 +149,16 @@ export const DEFAULT_DOCUMENT_WORKFLOWS: DocumentWorkflowTemplate[] = [
         sortOrder: 4,
         color: '#10B981',
       },
+      {
+        name: 'Canceled',
+        customerLabel: 'Canceled',
+        stageType: 'void',
+        snapshotOnEnter: false,
+        numberOnEnter: false,
+        locksEditing: true,
+        sortOrder: 5,
+        color: '#EF4444',
+      },
     ],
   },
 ];
@@ -180,6 +208,20 @@ export const NET_TERMS_AR_WORKFLOW: DocumentWorkflowTemplate = {
       locksEditing: true,
       sortOrder: 1,
       color: '#10B981',
+    },
+    // An AR invoice raised in error needs the same way out as any other. This
+    // is CANCELLING it, not writing it off: a write-off says the money is owed
+    // and will not be collected, and keeps the receivable's history. The two
+    // are different answers and the screen must be able to give either.
+    {
+      name: 'Canceled',
+      customerLabel: 'Canceled',
+      stageType: 'void',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: true,
+      sortOrder: 2,
+      color: '#EF4444',
     },
   ],
 };
@@ -488,3 +530,136 @@ export const DEFAULT_INVOICE_TEMPLATE: DocumentTemplateSeed = {
   name: 'Default',
   tree: DEFAULT_TEMPLATE_TREE,
 };
+
+// ── Price offers vs bills ────────────────────────────────────────────────────
+//
+// Every document the billing engine holds is a `BillingDocument`, and two of the
+// system workflows above hold something that is NOT a bill: a quote and an
+// estimate are OFFERS of a price. The difference is not cosmetic, and getting it
+// wrong is what issue 764 was:
+//
+//   · a bill falls DUE (`dueAt`) and then counts days late; an offer simply RUNS
+//     OUT (`validUntil`). Two columns, and the wrong one is silently ignored;
+//   · a bill carries an AR status (unpaid / partial / paid / overdue), which on
+//     an offer is meaningless — nobody owes anything on a price they have not
+//     accepted. The printed page said "Unpaid" and "Balance due $504.00" under a
+//     quote, which a wholesale customer on terms will file as a bill;
+//   · a bill is called an invoice, and an offer is not.
+//
+// Keyed by SLUG because a tenant renames a workflow whenever they like, and the
+// system workflows are seeded with a slug that does not move. A workflow a
+// tenant invented is absent here and is treated as a bill, which is the honest
+// default: we do not know what they made.
+const PRICE_OFFER_NOUNS: Readonly<Record<string, string>> = {
+  [B2B_QUOTE_WORKFLOW_SLUG]: 'quote',
+  [CUSTOMER_ESTIMATE_WORKFLOW_SLUG]: 'estimate',
+};
+
+/** Does this workflow hold an offer of a price rather than a demand for money? */
+export function isPriceOfferWorkflow(slug: string | null | undefined): boolean {
+  return slug != null && slug in PRICE_OFFER_NOUNS;
+}
+
+/** What a document on this workflow is called in a sentence: "quote",
+ *  "estimate", or "invoice" for everything else. */
+export function billingDocumentNoun(slug: string | null | undefined): string {
+  if (!slug) return 'invoice';
+  return PRICE_OFFER_NOUNS[slug] ?? 'invoice';
+}
+
+// ── Is this money somebody owes? ─────────────────────────────────────────────
+//
+// Issue 764 above named four places that had to tell a bill from an offer: the
+// print renderer, the unsaved-preview renderer, and each of the two consoles.
+// There was a fifth, and nobody asked it — the query that ADDS UP what she is
+// owed (issue 857).
+//
+// It selected on `status in (unpaid | partial | overdue)` alone, which is the
+// payment state and says nothing about whether the document is a bill. So every
+// quote and estimate was counted as a receivable, and the note four paragraphs
+// up was already describing the consequence: "nobody owes anything on a price
+// they have not accepted."
+//
+// MEASURED 2026-09-28 across the platform: $67,279.83 shown as outstanding, of
+// which $9,345.64 over 16 documents was quotes. On Juniper Row it was $1,512.00
+// of $3,911.70 — 39% of what her console said she was owed. One of the two was
+// Q-000017, at $504.00: the same document, for the same amount, that 764 was
+// filed about.
+//
+// THREE CLAUSES, EACH ONE A SENTENCE THE PLATFORM ALREADY PRINTS.
+//
+//   not a price offer   "nobody owes anything on a price they have not accepted"
+//   not a draft stage   "Nothing is promised to the customer yet."
+//   not a void stage    "it is not owed and not collectable."
+//
+// The last two come from `stage-presentation.ts` in the console, which is where
+// a tenant is told what each stage type means when they choose one.
+//
+// A stage type this does NOT exclude is a receivable: `open` ("sent, still
+// yours to change"), `final` ("This is what they owe") and `committed` on a BILL
+// workflow all count. Failing open that way is deliberate — a workflow a tenant
+// invented is treated as a bill, the same honest default `isPriceOfferWorkflow`
+// takes, because we do not know what they made.
+
+/** Stages where a document is not yet, or no longer, a demand for money. */
+export const NOT_OWED_STAGE_TYPES: readonly DocumentStageTypeLiteral[] = ['draft', 'void'];
+
+/** The system workflows that hold an offer rather than a bill, as a list — for a
+ *  query that has to exclude them all rather than test one. */
+export const PRICE_OFFER_WORKFLOW_SLUGS: readonly string[] = Object.keys(PRICE_OFFER_NOUNS);
+
+/**
+ * Is this document money somebody owes?
+ *
+ * The AR question, asked once. `status` alone cannot answer it: an unsent quote
+ * carries `unpaid` and a balance exactly like an invoice does, because the
+ * status machine is payment-derived and knows nothing about workflows.
+ */
+export function isOwedDocument(doc: {
+  workflowSlug: string | null | undefined;
+  /** The stage the document sits in, as the database spells it — a plain
+   *  string, because a tenant can add stages and every caller reads this off a
+   *  row rather than out of the template above. */
+  stageType: string | null | undefined;
+  status: string;
+}): boolean {
+  if (!['unpaid', 'partial', 'overdue'].includes(doc.status)) return false;
+  if (isPriceOfferWorkflow(doc.workflowSlug)) return false;
+  return !NOT_OWED_STAGE_TYPES.includes(doc.stageType as DocumentStageTypeLiteral);
+}
+
+/**
+ * The workflows the PLATFORM resolves by slug, so the slug is not the tenant's
+ * to change (issue 781).
+ *
+ * Three services look their workflow up by name rather than by id, because they
+ * run with no document in hand and have to find the right one from nothing:
+ * `b2b-ar-service` when a net-terms order settles later, `b2b-quote-service`
+ * when a wholesale customer asks a price, `customer-estimate-service` when a
+ * retail one does. `isPriceOfferWorkflow` above reads the same slugs to decide
+ * whether a document is a demand for money or an offer of a price — which is
+ * what stops a quote printing "Balance due".
+ *
+ * Every one of those reads was written on the premise, stated in this file, that
+ * "the system workflows are seeded with a slug that does not move". The workflow
+ * editor let anyone move it, in a field whose help text invites the change. A
+ * rename made the lookup miss: the next quote minted a SECOND "B2B Quotes"
+ * workflow, the renamed one kept every existing document, and the tenant's own
+ * quotes started rendering as invoices. `documentWorkflowService.update` now
+ * refuses it, so the premise is enforced where it is relied upon.
+ *
+ * Everything ELSE about these workflows stays the tenant's: the display name,
+ * the stages, what the customer is shown at each one, and whether it is the
+ * default.
+ */
+export const SYSTEM_WORKFLOW_SLUGS: readonly string[] = [
+  NET_TERMS_AR_WORKFLOW_SLUG,
+  B2B_QUOTE_WORKFLOW_SLUG,
+  CUSTOMER_ESTIMATE_WORKFLOW_SLUG,
+];
+
+/** Is this a workflow the platform finds by name, rather than one the tenant
+ *  invented? */
+export function isSystemWorkflowSlug(slug: string | null | undefined): boolean {
+  return slug != null && SYSTEM_WORKFLOW_SLUGS.includes(slug);
+}

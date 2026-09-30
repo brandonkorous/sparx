@@ -325,6 +325,13 @@ function bookingView(b: BookingWithRelations) {
       resource: r.resource,
     })),
     attendees: b.attendees,
+    // WHO IT IS FOR, named. The read path has fetched this since issue 138
+    // (`customersFor` in booking-queries.ts) and this view dropped it on the
+    // floor, so both consoles still printed the words "A customer" beside a
+    // booking whose customer the database had just named, and could not show
+    // the phone number to ring when they are late (issue 111). Null is a walk-in
+    // with no account, which is a real answer and never the same as "not loaded".
+    customer: b.customer,
   };
 }
 

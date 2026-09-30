@@ -120,7 +120,7 @@ const publicMediaUploadRoutes: FastifyPluginAsync = (app) => {
     if (!Buffer.isBuffer(body) || body.length === 0) throw badRequest('Empty upload body.');
     if (body.length > claims.max) {
       throw badRequest(
-        `Body is ${body.length} bytes; this upload was authorised for ${claims.max}.`
+        `Body is ${body.length} bytes; this upload was authorized for ${claims.max}.`
       );
     }
     if (!bytesMatchImageMime(body, claims.mime)) {

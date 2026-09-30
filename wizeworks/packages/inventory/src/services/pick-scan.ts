@@ -139,7 +139,7 @@ export async function scanToPick(
         variantId: null,
         quantity: 0,
       });
-      return { id, message, line: null, contributed: 0 } as const;
+      return { id, message, line: null, contributed: 0, outcome: 'not_found' } as const;
     }
 
     // The earliest open instruction for this item. `skipped` counts as open — a
@@ -172,7 +172,7 @@ export async function scanToPick(
         variantId: match.variantId,
         quantity: 0,
       });
-      return { id, message, line: null, contributed: 0 } as const;
+      return { id, message, line: null, contributed: 0, outcome: 'rejected' } as const;
     }
 
     // A shelf was scanned and it is not the one on the instruction. Refuse, and
@@ -186,7 +186,7 @@ export async function scanToPick(
         variantId: match.variantId,
         quantity: 0,
       });
-      return { id, message, line: null, contributed: 0 } as const;
+      return { id, message, line: null, contributed: 0, outcome: 'rejected' } as const;
     }
 
     // The case-of-twelve rule, same as receiving: one pull on a case code is
@@ -199,7 +199,7 @@ export async function scanToPick(
       variantId: match.variantId,
       quantity: contributed,
     });
-    return { id, message: null, line, contributed } as const;
+    return { id, message: null, line, contributed, outcome: 'applied' } as const;
   });
 
   if (!recorded.id) {
@@ -214,7 +214,14 @@ export async function scanToPick(
 
   if (!recorded.line || !match) {
     return {
-      outcome: recorded.message?.includes('catalogue') ? 'not_found' : 'rejected',
+      // The outcome the transaction decided, carried out rather than guessed
+      // back from the sentence. It used to read
+      // `recorded.message?.includes('catalogue')`, and the message it looked
+      // for had been respelled "catalog" - so the test was never true, and a
+      // barcode nobody has ever registered came back `rejected` in red beside a
+      // database row that correctly said `not_found`.
+      // [[feedback_copy_edit_breaks_identity_lookups]]
+      outcome: recorded.outcome,
       message: recorded.message ?? 'That scan could not be applied.',
       match,
       scanEventId: recorded.id,
@@ -304,7 +311,14 @@ export async function scanToPack(
         variantId: null,
         quantity: 0,
       });
-      return { id, message, orderItemId: null, quantity: 0, contributed: 0 } as const;
+      return {
+        id,
+        message,
+        orderItemId: null,
+        quantity: 0,
+        contributed: 0,
+        outcome: 'not_found',
+      } as const;
     }
 
     // What the order still needs in a box, for this item: ordered, less what is
@@ -345,7 +359,14 @@ export async function scanToPack(
         variantId: match.variantId,
         quantity: 0,
       });
-      return { id, message, orderItemId: null, quantity: 0, contributed: 0 } as const;
+      return {
+        id,
+        message,
+        orderItemId: null,
+        quantity: 0,
+        contributed: 0,
+        outcome: 'rejected',
+      } as const;
     }
 
     const target = rows.find((r) => r.ordered - r.packedElsewhere - r.inThisBox > 0);
@@ -359,7 +380,14 @@ export async function scanToPack(
         variantId: match.variantId,
         quantity: 0,
       });
-      return { id, message, orderItemId: null, quantity: 0, contributed: 0 } as const;
+      return {
+        id,
+        message,
+        orderItemId: null,
+        quantity: 0,
+        contributed: 0,
+        outcome: 'rejected',
+      } as const;
     }
 
     const room = target.ordered - target.packedElsewhere - target.inThisBox;
@@ -377,6 +405,7 @@ export async function scanToPack(
       orderItemId: target.orderItemId,
       quantity: target.inThisBox + contributed,
       contributed,
+      outcome: 'applied',
     } as const;
   });
 
@@ -392,7 +421,7 @@ export async function scanToPack(
 
   if (!recorded.orderItemId || !match) {
     return {
-      outcome: recorded.message?.includes('catalogue') ? 'not_found' : 'rejected',
+      outcome: recorded.outcome,
       message: recorded.message ?? 'That scan could not be applied.',
       match,
       scanEventId: recorded.id,

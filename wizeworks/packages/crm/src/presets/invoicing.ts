@@ -140,6 +140,19 @@ const workflowPresets: ModulePreset[] = [
         locksEditing: true,
         color: '#10B981',
       },
+      // The way out. A workflow with no `void` stage is a document that can
+      // never be canceled, and the console's delete is gated on a `draft`
+      // stage, so once past that there is no exit at all. `check:workflow-exit`
+      // fails the build on a preset that ships without one.
+      {
+        name: 'Canceled',
+        customerLabel: 'Canceled',
+        stageType: 'void',
+        numberOnEnter: false,
+        snapshotOnEnter: false,
+        locksEditing: true,
+        color: '#EF4444',
+      },
     ],
   }),
   workflowPreset({
@@ -199,6 +212,19 @@ const workflowPresets: ModulePreset[] = [
         locksEditing: true,
         color: '#10B981',
       },
+      // The way out. A workflow with no `void` stage is a document that can
+      // never be canceled, and the console's delete is gated on a `draft`
+      // stage, so once past that there is no exit at all. `check:workflow-exit`
+      // fails the build on a preset that ships without one.
+      {
+        name: 'Canceled',
+        customerLabel: 'Canceled',
+        stageType: 'void',
+        numberOnEnter: false,
+        snapshotOnEnter: false,
+        locksEditing: true,
+        color: '#EF4444',
+      },
     ],
   }),
   workflowPreset({
@@ -247,6 +273,19 @@ const workflowPresets: ModulePreset[] = [
         snapshotOnEnter: false,
         locksEditing: true,
         color: '#10B981',
+      },
+      // The way out. A workflow with no `void` stage is a document that can
+      // never be canceled, and the console's delete is gated on a `draft`
+      // stage, so once past that there is no exit at all. `check:workflow-exit`
+      // fails the build on a preset that ships without one.
+      {
+        name: 'Canceled',
+        customerLabel: 'Canceled',
+        stageType: 'void',
+        numberOnEnter: false,
+        snapshotOnEnter: false,
+        locksEditing: true,
+        color: '#EF4444',
       },
     ],
   }),

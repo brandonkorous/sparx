@@ -23,6 +23,21 @@ export interface ProcessorOptions {
   upsert: boolean;
   /** Which platform the rows came from, for provenance in notes and audit lines. */
   vendor?: string;
+  /**
+   * The modules the tenant had on when the job was created, as the API saw them.
+   *
+   * An entity's own module is gated before a job exists; this is for the writes an
+   * entity makes into ANOTHER module's tables, such as the redirect a product's old
+   * address becomes, which belongs to the site builder. Absent means the job did not
+   * say, and a processor must not guess a module is on.
+   */
+  modules?: readonly string[];
+  /**
+   * True when the same move also carries a stock levels file. A product file's
+   * quantity is then left alone: the per-location file is the real count, and
+   * applying both would put the same stock on the shelf twice.
+   */
+  stockLevelsInRun?: boolean;
 }
 
 export interface RowResult {

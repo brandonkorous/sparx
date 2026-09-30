@@ -46,7 +46,9 @@ export interface PaymentStepProps {
   session: CheckoutSession;
   createIntent: () => Promise<PaymentIntentResult>;
   onBack: () => void;
-  onPaid: (orderNumber: string) => void;
+  /** The order that now exists: its number for the shopper, its id for the
+   *  link to it. `placeOrder` has always returned both. */
+  onPaid: (order: { orderId: string; orderNumber: string }) => void;
   /** Whether THIS order is being handed over rather than posted. The manual
    *  payment screen is the only one that reads it, and it is the difference
    *  between a true sentence and a false one (issue 215). */
@@ -179,7 +181,7 @@ function InPersonPaymentStep({
         crypto.randomUUID(),
         session.totals.totalCents
       );
-      onPaid(result.orderNumber);
+      onPaid({ orderId: result.orderId, orderNumber: result.orderNumber });
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
@@ -232,7 +234,7 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
         crypto.randomUUID(),
         session.totals.totalCents
       );
-      onPaid(result.orderNumber);
+      onPaid({ orderId: result.orderId, orderNumber: result.orderNumber });
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
@@ -432,7 +434,9 @@ function PaymentInner({
   providerSlug: string;
   paymentRef: string;
   onBack: () => void;
-  onPaid: (orderNumber: string) => void;
+  /** The order that now exists: its number for the shopper, its id for the
+   *  link to it. `placeOrder` has always returned both. */
+  onPaid: (order: { orderId: string; orderNumber: string }) => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -465,7 +469,7 @@ function PaymentInner({
         paymentRef,
         session.totals.totalCents
       );
-      onPaid(result.orderNumber);
+      onPaid({ orderId: result.orderId, orderNumber: result.orderNumber });
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);

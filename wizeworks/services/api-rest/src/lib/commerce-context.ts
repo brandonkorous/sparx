@@ -12,7 +12,12 @@ import { requireAuth } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { moduleDisabled } from '@wizeworks/api-core/errors';
 
-import { defaultPropertyIdsToActiveSite, resolvePropertyId, type SiteActor } from './property.js';
+import {
+  defaultOwningSiteToActiveSite,
+  defaultPropertyIdsToActiveSite,
+  resolvePropertyId,
+  type SiteActor,
+} from './property.js';
 
 export function toCommerceContext(request: FastifyRequest): ServiceContext {
   const auth = requireAuth(request);
@@ -44,4 +49,21 @@ export async function defaultActiveSiteScope(
     () => withRequestTenant(request, (tx) => tx.property.count()),
     () => resolvePropertyId(actor, headerPropertyId)
   );
+}
+
+/** The same plumbing for a single `body.propertyId` — a record that belongs to
+ *  ONE site: an order, or a subscription whose renewals will each become one
+ *  (issue 878).
+ *  A sale with no site is in no site's takings and hidden from every member
+ *  limited to named sites, so unlike the catalog above this defaults at any site
+ *  count. The rule itself, and why the two differ, is on
+ *  `defaultOwningSiteToActiveSite`. */
+export async function defaultOwningSite(
+  request: FastifyRequest,
+  actor: SiteActor,
+  body: Record<string, unknown>
+): Promise<void> {
+  const header = request.headers['x-sparx-property-id'];
+  const headerPropertyId = typeof header === 'string' ? header : null;
+  await defaultOwningSiteToActiveSite(body, () => resolvePropertyId(actor, headerPropertyId));
 }

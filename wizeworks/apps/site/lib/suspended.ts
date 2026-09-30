@@ -39,8 +39,37 @@
 // Nothing here names the tenant, the platform, or the reason. A visitor and a
 // crawler get the same neutral sentence the overlay gives: temporarily
 // unavailable. Why it is dark is between the business and its bill.
+//
+// ── AND THE PAGES, WHICH WERE NOT ON THE FIRST LIST ────────────────────────
+//
+// The three functions below were written from the crawler's FILE NAMES, and the
+// pages were left answering 200 (issue 844). One outage then gave a crawler two
+// answers: robots.txt said "pause, I am down", and the home page said "200 OK,
+// here is the shop, and it says Back soon".
+//
+// A 200 with no `robots` directive is the one combination that lets the DARK
+// page be indexed in place of the shop — which is the outcome the paragraph
+// above says this whole file exists to prevent, reached by the other road.
+//
+// A Next layout cannot set a status code, so the page's 503 is served from the
+// edge proxy. That is the only place in the request that can both know the
+// phase and choose the status. The document it returns is below, and it shares
+// its sentences with `components/site-suspended` so the two cannot drift.
 
 import type { Metadata } from 'next';
+
+/**
+ * The only two sentences on a dark site, and the tab it sits in.
+ *
+ * Shared, because a dark page is rendered in two places — the edge proxy, which
+ * can set a 503, and the root layout, which cannot but still catches anything
+ * the proxy's lookup could not answer. Two renderers of one screen is how one
+ * gets a copy edit and the other keeps the old words.
+ */
+export const SUSPENDED_TITLE = 'Temporarily unavailable';
+export const SUSPENDED_HEADING = 'Back soon';
+export const SUSPENDED_BODY =
+  'This site is taking a short break. Thanks for your patience, and please check again a little later.';
 
 /**
  * How long a crawler is asked to wait. Ten minutes: long enough that a crawler
@@ -78,7 +107,7 @@ function darkHeaders(contentType: string): Record<string, string> {
  * what asks for it.
  */
 export const SUSPENDED_METADATA: Metadata = {
-  title: 'Temporarily unavailable',
+  title: SUSPENDED_TITLE,
 };
 
 /**
@@ -118,5 +147,64 @@ export function suspendedLlmsTxt(): Response {
   return new Response('# Temporarily unavailable\n', {
     status: 503,
     headers: darkHeaders('text/plain; charset=utf-8'),
+  });
+}
+
+/**
+ * The overlay a dark site's PAGES answer with, as a whole document.
+ *
+ * Self-contained, which is the same constraint `components/site-suspended`
+ * already states for itself and now actually meets: no Tailwind bundle, no font
+ * package, no tenant theme. It has to be, because this is returned from the edge
+ * proxy, where none of the app's CSS exists.
+ *
+ * The look is the component's, written out: the neutral background, the real ink
+ * (there is nothing on this page that is not meant to be read), and the heading
+ * that steps up on a wider screen.
+ */
+function suspendedDocument(): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${SUSPENDED_TITLE}</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0 1.5rem;
+background:#fafafa;color:#171717;
+font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+main{width:100%;max-width:28rem;text-align:center}
+h1{margin:0;font-size:1.5rem;font-weight:600;letter-spacing:-0.025em}
+p{margin:0.75rem 0 0;font-size:1rem;line-height:1.625}
+@media (min-width:640px){h1{font-size:1.875rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>${SUSPENDED_HEADING}</h1>
+<p>${SUSPENDED_BODY}</p>
+</main>
+</body>
+</html>
+`;
+}
+
+/**
+ * Every PAGE of a suspended site, to anyone.
+ *
+ * 503, the same status and the same `Retry-After` the three machine files above
+ * already answer with, so one outage gives one answer. A visitor sees exactly
+ * what they saw before — a browser renders a 503 body normally — and a crawler
+ * now hears "ask again later" from the page as well as from robots.txt.
+ *
+ * Still NO `noindex`, for the reason `SUSPENDED_METADATA` gives: 503 asks the
+ * listing to be HELD, and `noindex` asks for it to be deleted.
+ */
+export function suspendedPage(): Response {
+  return new Response(suspendedDocument(), {
+    status: 503,
+    headers: darkHeaders('text/html; charset=utf-8'),
   });
 }

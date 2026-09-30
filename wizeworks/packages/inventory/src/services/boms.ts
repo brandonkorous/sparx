@@ -37,13 +37,20 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 
+import { VARIANT_LABEL_SELECT, variantLabel } from './variant-label';
+
 // ─── Row shapes ────────────────────────────────────────────────────────────────
 
 export interface BomComponentRow {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS. */
   productTitle: string | null;
+  /** WHICH ONE of it — "M / Natural". A recipe for a shirt lists two lengths of
+   *  the same linen, and with the product name alone both rows read "Linen".
+   *  variant-label.ts, issue 681. */
+  variantName: string | null;
   /** Base units the whole batch needs. */
   quantityPer: number;
   scrapPercent: number;
@@ -58,12 +65,32 @@ export interface BomRow {
   outputVariantId: string;
   outputSku: string | null;
   outputTitle: string | null;
+  /** WHICH VERSION this recipe makes. A recipe is keyed on one variant, so
+   *  "The Ash Overshirt" alone does not say which of the twelve. */
+  outputVariantName: string | null;
   name: string;
   version: number;
   status: BomStatus;
   outputQuantity: number;
   laborCostCents: number;
   componentCount: number;
+  /** What one finished unit costs to make at today's component costs — the
+   *  ESTIMATE. What it actually costs is settled when a run completes, from what
+   *  genuinely left the shelf. Both are useful and they are not the same number.
+   *
+   *  On the ROW as well as the detail, so the list's "Costs about" column and the
+   *  detail's "Costs about" card are the same number. */
+  estimatedUnitCostCents: number;
+  estimatedComponentCostCents: number;
+  /** How many ingredients have NO cost recorded, so the estimate above is short
+   *  by whatever they cost.
+   *
+   *  `costCents` is nullable and mostly null: MEASURED 2026-09-18 on Juniper
+   *  Row, 229 of 232 variants carry no cost. The estimate read them as ZERO and
+   *  printed "Costs about $0.00 each" under a recipe for a linen overshirt. A
+   *  shop owner prices against that number.
+   *  [[feedback_never_present_absence_as_measurement]] */
+  uncostedComponentCount: number;
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -71,11 +98,6 @@ export interface BomRow {
 
 export interface BomDetail extends BomRow {
   components: BomComponentRow[];
-  /** What one finished unit costs to make at today's component costs — the
-   *  ESTIMATE. What it actually costs is settled when a run completes, from what
-   *  genuinely left the shelf. Both are useful and they are not the same number. */
-  estimatedUnitCostCents: number;
-  estimatedComponentCostCents: number;
 }
 
 const COMPONENT_INCLUDE = {
@@ -83,11 +105,11 @@ const COMPONENT_INCLUDE = {
   // without naming a location, which is what makes the estimate below a
   // property of the RECIPE rather than of whichever warehouse you were looking
   // at when you opened it.
-  variant: { select: { sku: true, costCents: true, product: { select: { title: true } } } },
+  variant: { select: { costCents: true, ...VARIANT_LABEL_SELECT } },
 } satisfies Prisma.BomComponentInclude;
 
 const DETAIL_INCLUDE = {
-  outputVariant: { select: { sku: true, product: { select: { title: true } } } },
+  outputVariant: { select: VARIANT_LABEL_SELECT },
   components: { orderBy: { position: 'asc' }, include: COMPONENT_INCLUDE },
 } satisfies Prisma.BillOfMaterialsInclude;
 
@@ -346,7 +368,12 @@ export async function deleteBom(ctx: ServiceContext, id: string): Promise<{ id: 
 export interface BuildableComponentRow {
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS. */
   productTitle: string | null;
+  /** WHICH ONE of it. The limiting component is the whole answer this report
+   *  gives, so naming it "Linen" when three lengths of linen are on the recipe
+   *  sends somebody to buy the wrong one. variant-label.ts, issue 681. */
+  variantName: string | null;
   /** Base units one batch needs, scrap included. */
   requiredPerBatch: number;
   /** What is sellable at the location right now. */
@@ -424,6 +451,7 @@ export async function buildableQuantity(
         variantId: c.variantId,
         variantSku: c.variant?.sku ?? null,
         productTitle: c.variant?.product?.title ?? null,
+        variantName: variantLabel(c.variant).variantName,
         requiredPerBatch,
         available,
         // How many FINISHED units this component alone would allow: whole
@@ -532,12 +560,42 @@ async function loadBomDetail(tx: TxClient, id: string): Promise<BomDetail> {
   return serializeDetail(bom);
 }
 
+/** The ingredient rows, shared by the list and the detail.
+ *
+ *  The LIST needs them too, because its "Costs about" column used to print
+ *  `laborCostCents` — the TIME cost, per run — under the same heading the
+ *  detail screen uses for parts plus labor, per finished unit. Two numbers, two
+ *  meanings, one set of words, on two screens in the same app. The list already
+ *  loads the components (it counts them), so the honest figure costs nothing
+ *  extra. [[feedback_a_fix_leaves_its_neighbour_behind]] */
+function componentRows(bom: BomWithAll): BomComponentRow[] {
+  return bom.components.map((c) => ({
+    id: c.id,
+    variantId: c.variantId,
+    variantSku: c.variant?.sku ?? null,
+    productTitle: c.variant?.product?.title ?? null,
+    variantName: variantLabel(c.variant).variantName,
+    quantityPer: c.quantityPer,
+    scrapPercent: Number(c.scrapPercent),
+    quantityWithScrap: requiredForRun({
+      quantityPerBatch: c.quantityPer,
+      outputPerBatch: bom.outputQuantity,
+      runQuantity: bom.outputQuantity,
+      scrapPercent: Number(c.scrapPercent),
+    }),
+    position: c.position,
+    notes: c.notes,
+  }));
+}
+
 function serializeRow(bom: BomWithAll): BomRow {
   return {
+    ...estimateCost(bom, componentRows(bom)),
     id: bom.id,
     outputVariantId: bom.outputVariantId,
     outputSku: bom.outputVariant?.sku ?? null,
     outputTitle: bom.outputVariant?.product?.title ?? null,
+    outputVariantName: variantLabel(bom.outputVariant).variantName,
     name: bom.name,
     version: bom.version,
     status: bom.status as BomStatus,
@@ -551,24 +609,7 @@ function serializeRow(bom: BomWithAll): BomRow {
 }
 
 function serializeDetail(bom: BomWithAll): BomDetail {
-  const components = bom.components.map((c) => ({
-    id: c.id,
-    variantId: c.variantId,
-    variantSku: c.variant?.sku ?? null,
-    productTitle: c.variant?.product?.title ?? null,
-    quantityPer: c.quantityPer,
-    scrapPercent: Number(c.scrapPercent),
-    quantityWithScrap: requiredForRun({
-      quantityPerBatch: c.quantityPer,
-      outputPerBatch: bom.outputQuantity,
-      runQuantity: bom.outputQuantity,
-      scrapPercent: Number(c.scrapPercent),
-    }),
-    position: c.position,
-    notes: c.notes,
-  }));
-
-  return { ...serializeRow(bom), components, ...estimateCost(bom, components) };
+  return { ...serializeRow(bom), components: componentRows(bom) };
 }
 
 /**
@@ -583,20 +624,34 @@ function serializeDetail(bom: BomWithAll): BomDetail {
 function estimateCost(
   bom: BomWithAll,
   components: { variantId: string; quantityWithScrap: number }[]
-): { estimatedUnitCostCents: number; estimatedComponentCostCents: number } {
-  const costByVariant = new Map(
-    bom.components.map((c) => [c.variantId, c.variant?.costCents ?? 0])
+): {
+  estimatedUnitCostCents: number;
+  estimatedComponentCostCents: number;
+  uncostedComponentCount: number;
+} {
+  // `null` is kept as null rather than coalesced to 0, because the two mean
+  // opposite things: "this part is free" and "nobody has told us what this part
+  // costs". Summing the second as zero is how the total came out right-looking
+  // and wrong.
+  const costByVariant = new Map<string, number | null>(
+    bom.components.map((c) => [c.variantId, c.variant?.costCents ?? null])
   );
   // Scrap is IN the estimate, because scrap is a real cost. A recipe that wastes
   // 5% of an expensive part costs 5% more of it, and an estimate that quietly
   // excluded that would be the optimistic one every time.
-  const componentCost = components.reduce(
-    (sum, c) => sum + c.quantityWithScrap * (costByVariant.get(c.variantId) ?? 0),
-    0
-  );
+  let uncostedComponentCount = 0;
+  const componentCost = components.reduce((sum, c) => {
+    const unit = costByVariant.get(c.variantId) ?? null;
+    if (unit === null) {
+      uncostedComponentCount += 1;
+      return sum;
+    }
+    return sum + c.quantityWithScrap * unit;
+  }, 0);
   const total = componentCost + bom.laborCostCents;
   return {
     estimatedComponentCostCents: componentCost,
     estimatedUnitCostCents: Math.round(total / Math.max(1, bom.outputQuantity)),
+    uncostedComponentCount,
   };
 }

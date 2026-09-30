@@ -171,7 +171,14 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // same + a CMS-gated content rail ("While it's fresh") for content-and-commerce.
     '48e7eac39513db9790afa45cd27f4b16af5d8c3e021b00d646a93b1243f7ebdf',
   ]),
-  'order-cancelled': new Set(['1e15199075b2e949414fb79039ab1b41aaf432acc81a0b56499d79a3d625d990']),
+  'order-cancelled': new Set([
+    '1e15199075b2e949414fb79039ab1b41aaf432acc81a0b56499d79a3d625d990',
+    // Outgoing (2026-09-19): the same body saying "cancelled". The console has
+    // shown "Canceled" on the very same event since the status labels were swept,
+    // so the email a customer got and the badge the owner saw disagreed. Append so
+    // pristine tenants refresh onto the American spelling.
+    'cd57be51c961359d651dc9bc6f968f51bc9f91b815e913f19cd45e98e9e7dbd6',
+  ]),
   'order-refunded': new Set(['ecb62f9de7b8a7f3a735c8db9b8e958d3375a069844b5c8dd17cfbd0c05a60b6']),
   'payment-failed': new Set(['58d0a758e8855642c53cf4816d0334d347d13364b73793297b8e1911803d83f9']),
   'subscription-confirmed': new Set([
@@ -191,6 +198,11 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   ]),
   'subscription-cancelled': new Set([
     'c333f2db91a160f9e2efb37985961d4da5e7f3494d765135ee32f731977053db',
+    // Outgoing (2026-09-19): the same body saying "cancelled". The console has
+    // shown "Canceled" on the very same event since the status labels were swept,
+    // so the email a customer got and the badge the owner saw disagreed. Append so
+    // pristine tenants refresh onto the American spelling.
+    'f50fcbcc8494e352c0be930ae72a193a2c5ddc6d9e1a6bd242e097488a86ea03',
   ]),
   'return-approved': new Set(['530dd0e43444ee9645b702fd33ef423b972ae5aa214ce0345f6935971c3e99a2']),
   'return-received': new Set(['ffbc6d93cca341490c35be643f1f261ce304c543a6e5d74a73bd8e86370b4f7e']),
@@ -221,6 +233,11 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'booking-cancelled': new Set([
     '6d098a4219d4f1730c2772edb6e459010553b1118b6c6d7b67bb236ebfea9438',
     '499671514f40a576eae94ee230818484478f6a822a3da3368656dda533c6eb99',
+    // Outgoing (2026-09-19): the same body saying "cancelled". The console has
+    // shown "Canceled" on the very same event since the status labels were swept,
+    // so the email a customer got and the badge the owner saw disagreed. Append so
+    // pristine tenants refresh onto the American spelling.
+    '94a8710e7b9af518a54c6b636809cbe74b51ff129a65059a6553e9ab0de11a08',
   ]),
   'waitlist-offer': new Set([
     'c37718b0aa2622d42c21d3b9e2a2f9b766897b772d791ad9e016a0e17ed8fee7',

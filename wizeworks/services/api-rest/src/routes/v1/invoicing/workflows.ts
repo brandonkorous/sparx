@@ -6,6 +6,7 @@
 //   GET    /v1/invoicing/workflows/:id                   → fetch one (with stages)
 //   PATCH  /v1/invoicing/workflows/:id                   → update
 //   DELETE /v1/invoicing/workflows/:id                   → archive (no hard delete)
+//   POST   /v1/invoicing/workflows/:id/restore           → undo that archive
 //   POST   /v1/invoicing/workflows/:id/stages            → create a stage
 //   POST   /v1/invoicing/workflows/:id/stages/reorder    → batch-reorder stages
 //   PATCH  /v1/invoicing/workflows/:id/stages/:stageId   → update a stage
@@ -83,6 +84,15 @@ const workflowRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await documentWorkflowService.archive(toInvoicingContext(request), id));
+  });
+
+  // The other half of DELETE. Archiving had no undo at all, so a workflow put
+  // away by mistake stayed away (issue 783). Admin, like the archive it reverses.
+  app.post('/v1/invoicing/workflows/:id/restore', async (request) => {
+    requireRole(request, 'admin');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await documentWorkflowService.restore(toInvoicingContext(request), id));
   });
 
   app.post('/v1/invoicing/workflows/:id/stages', async (request, reply) => {

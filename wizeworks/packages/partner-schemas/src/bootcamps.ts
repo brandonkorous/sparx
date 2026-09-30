@@ -24,7 +24,10 @@ export const CreateBootcampInput = z
     endsAt: IsoDateTime,
     seatsTotal: z.number().int().min(1).max(100_000).nullable().optional(),
     priceCents: z.number().int().min(0).default(0),
-    currency: z.string().length(3).default('USD'),
+    currency: z
+      .string()
+      .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+      .default('USD'),
     registrationMode: RegistrationMode.default('internal'),
     registrationUrl: z.string().trim().url().max(500).nullable().optional(),
   })
@@ -52,7 +55,10 @@ export const UpdateBootcampInput = z.object({
   endsAt: IsoDateTime.optional(),
   seatsTotal: z.number().int().min(1).max(100_000).nullable().optional(),
   priceCents: z.number().int().min(0).optional(),
-  currency: z.string().length(3).optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
+    .optional(),
   registrationMode: RegistrationMode.optional(),
   registrationUrl: z.string().trim().url().max(500).nullable().optional(),
 });

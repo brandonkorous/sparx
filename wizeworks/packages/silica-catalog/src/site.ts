@@ -44,19 +44,38 @@ import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
 /** A centered text hero — no image (so no broken-placeholder), neutral copy that
  *  fits a publisher, a shop, or both. The owner edits the words in place. A
  *  Commerce-less tenant gets no "Browse the shop" CTA (there's no `/shop` page
- *  to send visitors to — see `starterPages`). */
+ *  to send visitors to — see `starterPages`).
+ *
+ *  ── IT IS ADDRESSED TO THE VISITOR, BECAUSE THE VISITOR IS WHO READS IT ──────
+ *
+ *  This used to read "Your work, beautifully online." over "This is your homepage;
+ *  edit every word to make it yours." Both sentences speak to the OWNER, and this
+ *  tree is the fallback `wizeworks/apps/site` serves on any site that has published
+ *  nothing — so those were the platform's instructions to her, printed on a public
+ *  web page for her customers, under her business's name in the navbar.
+ *
+ *  Found on Juniper Row's Trade site, which she had never opened: a stranger got a
+ *  headline telling them to edit their homepage, above her real clothes at her real
+ *  prices with a working Add to cart. 35 sites on that database were in the same
+ *  state (issue 851).
+ *
+ *  So the words are the business talking to whoever arrived, which is what a
+ *  homepage is. They stay neutral — no trade assumed, nothing claimed about a
+ *  business the platform knows nothing about — and the name above them is already
+ *  hers, because the navbar's brand is the live `site.brand` host core. Telling her
+ *  the page is editable is the CONSOLE's job, and the publish pane now does it. */
 function hero(commerceEnabled: boolean): Node {
   return el('section', 'bg-base-100 @container px-6 py-20 text-center', {
     children: [
       el('div', 'mx-auto flex max-w-2xl flex-col items-center gap-5', {
         children: [
           el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
-            text: 'Your work, beautifully online.',
+            text: 'Welcome.',
           }),
           el('p', 'text-lg text-base-content', {
             text: commerceEnabled
-              ? 'Publish your pages, tell your story, and sell when you are ready. All from one place. This is your homepage; edit every word to make it yours.'
-              : 'Publish your pages and tell your story. All from one place. This is your homepage; edit every word to make it yours.',
+              ? 'Thanks for stopping by. Have a look around the shop, and get in touch if there is anything you would like to ask.'
+              : 'Thanks for stopping by. Have a look around, and get in touch if there is anything you would like to ask.',
           }),
           el('div', 'mt-2 flex flex-wrap items-center justify-center gap-3', {
             children: [
@@ -84,16 +103,18 @@ function hero(commerceEnabled: boolean): Node {
   });
 }
 
-/** A closing call-to-action band. Neutral: works whether the next step is adding a
- *  product, writing a post, or inviting a teammate. */
+/** A closing call-to-action band, in the business's voice — see `hero` for why every
+ *  word on this page is addressed to the VISITOR. It said "Ready when you are." over
+ *  "Add a product, publish a page, or invite your team", which is the console's
+ *  first-run checklist printed on a public home page (issue 851). */
 function ctaBand(): Node {
   return el('section', 'bg-primary @container px-6 py-16 text-center', {
     children: [
       el('div', 'mx-auto flex max-w-2xl flex-col items-center gap-4', {
         children: [
-          el('h2', 'text-3xl font-bold text-primary-content', { text: 'Ready when you are.' }),
+          el('h2', 'text-3xl font-bold text-primary-content', { text: 'Come and say hello.' }),
           el('p', 'text-lg text-primary-content/80', {
-            text: 'Add a product, publish a page, or invite your team. Start with whatever comes first.',
+            text: 'If you have a question, or you just want to know more, we would love to hear from you.',
           }),
           el('a', 'btn btn-lg mt-2 bg-base-100 text-base-content', {
             attrs: { href: '/contact' },
@@ -106,7 +127,12 @@ function ctaBand(): Node {
 }
 
 /** A three-up value row for the About page — authored cards (silica's shipped
- *  featureGrid rendered empty), neutral labels a tenant edits. */
+ *  featureGrid rendered empty), neutral labels a tenant edits.
+ *
+ *  These read "What you can do here · Publish · Sell · Grow", which is PIGGLES'
+ *  feature list, on a clothes maker's About page, under her name. A customer read it
+ *  as Juniper Row offering to build them a website (issue 851). They are three plain
+ *  things any business can say about itself now, and she replaces them with hers. */
 function featureTrio(): Node {
   const card = (title: string, body: string): Node =>
     el('div', 'flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6', {
@@ -120,22 +146,19 @@ function featureTrio(): Node {
       el('div', 'mx-auto max-w-5xl', {
         children: [
           el('h2', 'mb-8 text-2xl font-semibold text-base-content', {
-            text: 'What you can do here',
+            text: 'How we work',
           }),
           el('div', 'grid gap-6 @2xl:grid-cols-3', {
             children: [
               card(
-                'Publish',
-                'Create pages and posts that look right on every screen: no code needed.'
+                'Carefully',
+                'We would rather take the time and get it right than rush it and hope.'
               ),
               card(
-                'Sell',
-                'Add products and take orders whenever selling becomes part of the plan.'
+                'In plain words',
+                'Clear prices and straight answers. You will always know where things stand.'
               ),
-              card(
-                'Grow',
-                'Reach your audience with email, and understand what is working over time.'
-              ),
+              card('With real people', 'Ask us anything. Every message is read and answered.'),
             ],
           }),
         ],
@@ -145,7 +168,13 @@ function featureTrio(): Node {
 }
 
 /** The About page editorial body — a real, editable starting narrative (no eyebrow
- *  kicker), sized for comfortable reading. */
+ *  kicker), sized for comfortable reading.
+ *
+ *  It said "Replace this text with a few honest sentences about your work" and "You
+ *  can add sections, images, and links from the builder". Two instructions to the
+ *  owner, on her live About page, naming a tool her customers have no access to
+ *  (issue 851). It is now two plain paragraphs in the business's own voice: generic,
+ *  but nothing she would be embarrassed to have up for a week. */
 function aboutContent(): Node {
   return el('section', 'bg-base-100 @container px-6 py-16', {
     children: [
@@ -155,10 +184,10 @@ function aboutContent(): Node {
             text: 'About us',
           }),
           el('p', 'text-lg text-base-content', {
-            text: 'This is your story, who you are, what you make, and why it matters. Replace this text with a few honest sentences about your work; the people who find you here want to know the human behind it.',
+            text: 'We are a small business, doing one thing and trying to do it properly. It started as something we cared about, and it grew from there.',
           }),
           el('p', 'text-lg text-base-content', {
-            text: 'You can add sections, images, and links from the builder. When you are ready, connect a shop, a blog, or a contact form. This page grows with you.',
+            text: 'If you would like to know more about us, or about anything here, please get in touch. A real person answers every message.',
           }),
         ],
       }),
@@ -174,8 +203,13 @@ function contactContent(): Node {
       el('div', 'mx-auto flex max-w-xl flex-col items-center gap-4', {
         children: [
           el('h1', 'text-4xl font-bold tracking-tight text-base-content', { text: 'Get in touch' }),
+          // Addressed to the visitor. It read "Tell visitors the best way to reach
+          // you: an email, a phone number, or a form you add from the builder",
+          // which is a note to the owner shown to the person trying to reach her
+          // (issue 851). No channel is promised in the words, because the button
+          // below hides itself until she has given one.
           el('p', 'text-lg text-base-content', {
-            text: 'Have a question or want to work together? Tell visitors the best way to reach you: an email, a phone number, or a form you add from the builder.',
+            text: 'We would be glad to hear from you. A question, an order, or something you cannot find: whatever it is, a real person will answer.',
           }),
           // Bound, never a literal address: this button shipped pointing at
           // `mailto:hello@example.com`, on a starter page that LOOKS finished

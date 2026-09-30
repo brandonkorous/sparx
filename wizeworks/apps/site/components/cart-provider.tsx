@@ -89,6 +89,17 @@ export interface CartState {
   count: number;
   currency: string;
   loading: boolean;
+  /**
+   * Whether the cart has been LOOKED FOR yet.
+   *
+   * `cartId === null` is two different facts wearing one face: "this shopper
+   * has no cart" and "we have not read storage yet". Checkout read it as the
+   * second and waited forever — a shopper who opened /checkout with nothing in
+   * the basket got the whole form, a $0.00 total, and a submit button stuck on
+   * "Saving…" with no message, because the session it waits for cannot be
+   * opened without a cart. This is the fact that tells them apart.
+   */
+  known: boolean;
   drawerOpen: boolean;
 }
 
@@ -174,6 +185,7 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
     count: 0,
     currency,
     loading: false,
+    known: false,
     drawerOpen: false,
   });
   const cartIdRef = useRef<string | null>(null);
@@ -199,7 +211,7 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
 
   const applyApi = useCallback(
     (data: CartApiShape) =>
-      setState((s) => ({ ...s, ...fromApi(data, tenantSlug), loading: false })),
+      setState((s) => ({ ...s, ...fromApi(data, tenantSlug), loading: false, known: true })),
     [tenantSlug]
   );
 
@@ -214,21 +226,23 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
       );
       if (!res.ok) {
         if (res.status === 404 || res.status === 403) persist(null, null);
-        setState((s) => ({ ...s, loading: false }));
+        setState((s) => ({ ...s, loading: false, known: true }));
         return;
       }
       const json = (await res.json()) as { data: CartApiShape };
       applyApi(json.data);
     } catch {
-      setState((s) => ({ ...s, loading: false }));
+      setState((s) => ({ ...s, loading: false, known: true }));
     }
   }, [applyApi, authHeaders, persist, tenantSlug]);
 
   useEffect(() => {
+    let stored = false;
     try {
       const id = localStorage.getItem(ID_KEY);
       const token = localStorage.getItem(TOKEN_KEY);
       if (id && token) {
+        stored = true;
         cartIdRef.current = id;
         tokenRef.current = token;
         void refresh();
@@ -236,6 +250,9 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
     } catch {
       /* ignore */
     }
+    // Nothing stored is an ANSWER, not a gap: this shopper has no cart. Said
+    // out loud so checkout can stop waiting for one.
+    if (!stored) setState((s) => ({ ...s, known: true }));
   }, [refresh]);
 
   // A login/register may have consolidated this shopper's cart onto a new
@@ -412,6 +429,7 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
       appliedDiscountCodes: [],
       appliedGiftCardCodes: [],
       count: 0,
+      known: true,
       drawerOpen: false,
     }));
   }, [persist]);
@@ -481,7 +499,7 @@ interface CartApiShape {
 function fromApi(
   data: CartApiShape,
   tenantSlug: string
-): Omit<CartState, 'loading' | 'drawerOpen'> {
+): Omit<CartState, 'loading' | 'drawerOpen' | 'known'> {
   const lines: CartLine[] = data.items.map((i) => ({
     id: i.id,
     variantId: i.variantId,

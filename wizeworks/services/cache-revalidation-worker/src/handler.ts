@@ -61,6 +61,35 @@ export function planRevalidation(type: string): RevalidateScope | null {
   if (type.startsWith('builder.')) {
     return 'builder';
   }
+  // A tenant's PLATFORM subscription moved — trial to paying, a payment failed,
+  // a card was added after the site had gone dark. Published by the Stripe
+  // billing webhook after reconciliation, so it carries the post-Stripe truth.
+  //
+  // ── WHY THIS ONE IS HERE AT ALL ────────────────────────────────────
+  //
+  // The storefront's tenant payload carries `billingPhase`, and the whole site
+  // goes dark on it — `app/layout.tsx` serves the "Back soon" overlay as the
+  // entire document when it reads 'suspended'. That payload is fetched with
+  // `next: { revalidate: 300 }`, so it is up to FIVE MINUTES stale.
+  //
+  // `lib/suspended.ts` spells out why that is not acceptable, for the headers:
+  // "suspension lifts the moment a payment goes through and a cached 'stay out'
+  // would keep the shop dark to a crawler after the business has already paid
+  // to be visible." It made every dark ANSWER `no-store` and left the thing
+  // that DECIDES the answer on a five-minute cache.
+  //
+  // So an owner whose site has gone dark adds a card, the console tells her she
+  // is back, she opens her own website and it still says "Back soon". Nothing
+  // on the screen says to wait. She adds the card again.
+  //
+  // The scope is 'site' because the tag that actually matters is
+  // `tenant:<slug>`, which the storefront's revalidate route purges on EVERY
+  // call whatever scope it is given — see app/api/revalidate/route.ts. There is
+  // no scope of its own to add: this is the tenant payload, not a section of it.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  if (type === 'tenant.subscription.changed') {
+    return 'site';
+  }
   return null;
 }
 

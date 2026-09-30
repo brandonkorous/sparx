@@ -32,6 +32,7 @@ import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { indexCommerceEntity, publishCommerceEvent } from '../events';
+import { VARIANT_OPTION_SELECT, variantOptions, variantVersionLabel } from '../variant-options';
 
 // ─── Bundles ──────────────────────────────────────────────────────────
 
@@ -52,6 +53,15 @@ export interface BundleComponentRow {
   variantId: string;
   variantSku: string;
   productTitle: string;
+  /** The version, said the way a person says it: "M · Moss". EMPTY for a
+   *  product that comes one way. Sent because the console rendered the raw SKU
+   *  in its place — the exact thing issue 182 fixed on the variant catalog and
+   *  never reached here. */
+  variantVersion: string;
+  /** What this part costs on its own. The whole point of a bundle is what it
+   *  saves against these numbers, and without them no screen could say. */
+  priceCents: number;
+  currency: string;
   defaultQuantity: number;
   isRequired: boolean;
   isSwappable: boolean;
@@ -158,7 +168,15 @@ export async function getBundle(ctx: ServiceContext, id: string): Promise<Bundle
         components: {
           orderBy: { position: 'asc' },
           include: {
-            variant: { select: { sku: true, product: { select: { title: true } } } },
+            variant: {
+              select: {
+                sku: true,
+                priceCents: true,
+                currency: true,
+                product: { select: { title: true } },
+                optionAssignments: VARIANT_OPTION_SELECT,
+              },
+            },
           },
         },
       },
@@ -180,6 +198,9 @@ export async function getBundle(ctx: ServiceContext, id: string): Promise<Bundle
       variantId: c.variantId,
       variantSku: c.variant.sku,
       productTitle: c.variant.product.title,
+      variantVersion: variantVersionLabel(variantOptions(c.variant.optionAssignments)),
+      priceCents: c.variant.priceCents,
+      currency: c.variant.currency,
       defaultQuantity: c.defaultQuantity,
       isRequired: c.isRequired,
       isSwappable: c.isSwappable,

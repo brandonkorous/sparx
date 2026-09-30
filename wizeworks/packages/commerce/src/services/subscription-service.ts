@@ -18,7 +18,10 @@ import {
   ChangeSubscriptionAddressInput,
   ChangeSubscriptionPaymentMethodInput,
   CreateSubscriptionInput,
+  nextOccurrenceAfter,
   PauseSubscriptionInput,
+  repeatOrderMonthlyCents,
+  repeatOrderYearlyUnits,
   ResumeSubscriptionInput,
   SkipNextOccurrenceInput,
   type SubscriptionStatus,
@@ -42,6 +45,18 @@ export interface SubscriptionSummary {
   nextOccurrenceAt: string | null;
   itemCount: number;
   monthlyRecurringRevenueCents: number;
+  /**
+   * The cadence, so a caller can say what ACTUALLY happens rather than only a
+   * monthly average of it. A screen showing "$29.00 a month" directly above
+   * "Next delivery in 4 months" is describing one repeat order in two ways that
+   * cannot both be true, and neither is what the customer is charged: $58.00,
+   * every two months (issue 795). [[feedback_fetched_but_never_rendered]]
+   */
+  intervalUnit: string;
+  intervalCount: number;
+  deliveriesPerCycle: number;
+  /** What goes out and is charged EACH TIME, before any average is taken. */
+  cycleAmountCents: number;
   currency: string;
   providerSlug: string;
   /** card | invoice — how this one collects (docs/142 §8). On a list this is
@@ -275,8 +290,12 @@ export interface ProductSubscriptionSummary {
    *  the number on the one screen a person would quote it from. */
   monthlyRecurringRevenueCents: number;
   currency: string | null;
-  /** Units of this product shipped per month across active subscriptions. */
-  unitsPerMonth: number;
+  /**
+   * Units of this product that go out in a YEAR across the running repeat
+   * orders. A year rather than a month because a thing cannot be half sent —
+   * see `repeatOrderYearlyUnits`. Never zero while anything is running.
+   */
+  unitsPerYear: number;
   subscriptions: (SubscriptionSummary & {
     /** This product's own lines within that subscription — a subscription can
      *  carry several variants of the same product. */
@@ -332,36 +351,47 @@ export async function listForProduct(
       // happens to contain one $5 item must not be reported as $200 of this
       // product's recurring revenue.
       const summary = toSummary(row);
-      const productCycleCents = row.items
-        .filter((it) => it.variant.productId === productId)
-        .reduce((sum, it) => sum + it.unitPriceCents * it.quantity, 0);
-      const productMrr = Math.round(
-        productCycleCents *
-          row.deliveriesPerCycle *
-          monthlyFactorFor(row.intervalUnit, row.intervalCount)
-      );
+      const productMrr = repeatOrderMonthlyCents({
+        lines: row.items.filter((it) => it.variant.productId === productId),
+        intervalUnit: row.intervalUnit,
+        intervalCount: row.intervalCount,
+        deliveriesPerCycle: row.deliveriesPerCycle,
+      });
 
       if (row.status === 'active' || row.status === 'trialing') {
         counts.active += 1;
         mrr += productMrr;
-        units += Math.round(
-          lines.reduce((sum, line) => sum + line.quantity, 0) *
-            row.deliveriesPerCycle *
-            monthlyFactorFor(row.intervalUnit, row.intervalCount)
-        );
+        // Summed UNROUNDED and rounded once at the end. Rounding per repeat
+        // order is what reported three quarterly subscribers as nothing.
+        units += repeatOrderYearlyUnits({
+          lines,
+          intervalUnit: row.intervalUnit,
+          intervalCount: row.intervalCount,
+          deliveriesPerCycle: row.deliveriesPerCycle,
+        });
         currency ??= row.currency;
       } else if (row.status === 'paused') counts.paused += 1;
       else if (row.status === 'past_due') counts.pastDue += 1;
       else counts.cancelled += 1;
 
-      return { ...summary, monthlyRecurringRevenueCents: productMrr, lines };
+      // THIS product's share of both figures. A $200 box holding one $5 item
+      // must not report $200 on the $5 item's own panel.
+      return {
+        ...summary,
+        monthlyRecurringRevenueCents: productMrr,
+        cycleAmountCents: cycleCents(row.items.filter((it) => it.variant.productId === productId)),
+        lines,
+      };
     });
 
     return {
       counts,
       monthlyRecurringRevenueCents: mrr,
       currency,
-      unitsPerMonth: units,
+      // A live commitment never reports as none: anything actually going out
+      // rounds to at least one a year, because "0" beside "1 customer has it on
+      // repeat right now" is the one answer that cannot be true.
+      unitsPerYear: units === 0 ? 0 : Math.max(1, Math.round(units)),
       subscriptions,
     };
   });
@@ -428,6 +458,9 @@ export async function create(
       data: {
         tenantId: ctx.tenantId,
         customerId: input.customerId,
+        // The site this was signed on, so a renewal months from now still knows
+        // which shop's takings it belongs in (issue 878).
+        propertyId: input.propertyId ?? null,
         channel: input.channel,
         currency: input.currency,
         status: initialStatus,
@@ -694,7 +727,17 @@ export async function findDueOccurrences(
  */
 export async function processOccurrence(
   ctx: ServiceContext,
-  subscriptionId: string
+  subscriptionId: string,
+  /**
+   * The moment to judge "is this due" against, ISO.
+   *
+   * It exists because `findDueOccurrences` already took one and this did not:
+   * the tick selected against the operator's `?asOf=` and then this refused
+   * every row against the real clock, so a dry-run reported rows due and
+   * produced nothing, silently. The two halves of one question have to read the
+   * same clock. [[feedback_a_fix_leaves_its_neighbour_behind]]
+   */
+  asOf?: string
 ): Promise<{ orderId: string | null; nextOccurrenceAt: string | null }> {
   let orderId: string | null = null;
   let nextOccurrenceIso: string | null = null;
@@ -709,12 +752,20 @@ export async function processOccurrence(
     if (sub.status !== 'active' && sub.status !== 'trialing') {
       return; // nothing to do
     }
-    if (!sub.nextOccurrenceAt || sub.nextOccurrenceAt.getTime() > Date.now()) {
+    const now = asOf ? new Date(asOf).getTime() : Date.now();
+    if (!sub.nextOccurrenceAt || sub.nextOccurrenceAt.getTime() > now) {
       return; // not yet due
     }
 
     const order = await orderService.create(ctx, {
       customerId: sub.customerId,
+      // Carried from the subscription, which is the only record that still
+      // knows: this runs in a worker months after the signup, with nothing on
+      // hand but the row. Passed straight through INCLUDING null. A
+      // subscription signed before this column existed has no site, and a
+      // renewal that quietly reached for the tenant's primary instead would
+      // file real money against a shop that never took it (issue 878).
+      propertyId: sub.propertyId,
       channel: 'storefront',
       source: 'subscription_renewal',
       currency: sub.currency,
@@ -876,33 +927,29 @@ async function recordSubscriptionEvent(
 }
 
 function computeNextOccurrence(from: Date, unit: string, count: number): Date {
-  const next = new Date(from);
-  switch (unit) {
-    case 'day':
-      next.setUTCDate(next.getUTCDate() + count);
-      break;
-    case 'week':
-      next.setUTCDate(next.getUTCDate() + 7 * count);
-      break;
-    case 'month':
-      next.setUTCMonth(next.getUTCMonth() + count);
-      break;
-    case 'year':
-      next.setUTCFullYear(next.getUTCFullYear() + count);
-      break;
-    default:
-      throw new CommerceValidationError(`Unknown interval unit: ${unit}`);
-  }
+  // The arithmetic is in @wizeworks/commerce-schemas so the console form can
+  // quote the shop owner the same first-delivery date this will store.
+  const next = nextOccurrenceAfter(from, unit, count);
+  if (!next) throw new CommerceValidationError(`Unknown interval unit: ${unit}`);
   return next;
+}
+
+/** What one cycle of a repeat order is worth, before any average is taken. The
+ *  figure a customer is actually charged each time it goes out. */
+function cycleCents(items: readonly { unitPriceCents: number; quantity: number }[]): number {
+  return items.reduce(
+    (sum, item) => sum + Math.max(0, item.unitPriceCents) * Math.max(0, item.quantity),
+    0
+  );
 }
 
 function toSummary(
   row: Subscription & { items: SubscriptionItem[]; customer?: CustomerNameParts | null }
 ): SubscriptionSummary {
-  // MRR estimate — sum of (unitPriceCents * quantity * deliveriesPerCycle)
-  // normalized to a monthly cadence. Keeps the dashboard's MRR strip honest.
-  const perCycleCents = row.items.reduce((sum, it) => sum + it.unitPriceCents * it.quantity, 0);
-  const monthlyFactor = monthlyFactorFor(row.intervalUnit, row.intervalCount);
+  // What it is worth a month. `repeatOrderMonthlyCents` lives in
+  // @wizeworks/commerce-schemas because the console's own create form quotes the
+  // same figure back to the shop owner while she is agreeing it with a customer,
+  // and two copies of this arithmetic would be two answers to one question.
   return {
     id: row.id,
     customerId: row.customerId,
@@ -910,27 +957,18 @@ function toSummary(
     status: row.status as SubscriptionStatus,
     nextOccurrenceAt: row.nextOccurrenceAt?.toISOString() ?? null,
     itemCount: row.items.length,
-    monthlyRecurringRevenueCents: Math.round(
-      perCycleCents * row.deliveriesPerCycle * monthlyFactor
-    ),
+    monthlyRecurringRevenueCents: repeatOrderMonthlyCents({
+      lines: row.items,
+      intervalUnit: row.intervalUnit,
+      intervalCount: row.intervalCount,
+      deliveriesPerCycle: row.deliveriesPerCycle,
+    }),
+    intervalUnit: row.intervalUnit,
+    intervalCount: row.intervalCount,
+    deliveriesPerCycle: row.deliveriesPerCycle,
+    cycleAmountCents: cycleCents(row.items),
     currency: row.currency,
     providerSlug: row.providerSlug,
     billingMode: row.billingMode,
   };
-}
-
-function monthlyFactorFor(unit: string, count: number): number {
-  if (count <= 0) return 0;
-  switch (unit) {
-    case 'day':
-      return 30 / count;
-    case 'week':
-      return 30 / (7 * count);
-    case 'month':
-      return 1 / count;
-    case 'year':
-      return 1 / (12 * count);
-    default:
-      return 0;
-  }
 }

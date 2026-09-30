@@ -13,6 +13,11 @@
 // Phase 0 — primitives shared across every file.
 export * from './common';
 
+// What `description` actually is: plain text, normalized on parse. The console
+// edits it in a bare textarea and the site renders it as text, so this is the
+// one place that rule lives (issue 848).
+export * from './plain-text';
+
 // Phase 1 — catalog (products, variants, options, categories, collections,
 // fitment).
 export * from './products';

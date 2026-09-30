@@ -26,6 +26,24 @@ The timestamp prefixes in this repo are **hand-authored and run about six months
 
 Format is `<14 digits>_<lower_snake_case>`. [scripts/check-migration-order.mjs](../../scripts/check-migration-order.mjs) enforces all of this in CI, and also refuses the **deletion** of a migration directory — every database that applied it still records the name, so removing it fails `migrate deploy` on the mismatch. Reverse a migration with a new migration.
 
+## `prisma format` rewrites the WHOLE schema folder, not your file
+
+`prisma format` takes no path argument. It loads `prisma/schema` as one unit and rewrites every
+file in it, so running it to tidy one field re-aligns models nobody touched. On 2026-09-29 a single
+run to format a new column produced **711 changed lines in `02-tenant.prisma` alone**, plus
+alignment churn in `03-auth`, `20-crm-customers` and `30-commerce-products`, and reflowed every
+`/** … */` doc comment in `91-announcements.prisma` into its multi-line form. None of it was wrong
+and none of it was asked for: it buries the real change in a diff no reviewer can read, and it
+lands in files another agent may have open.
+
+Nothing enforces the formatted state either. `format` / `format:check` are **prettier**, whose glob
+is `**/*.{ts,tsx,js,jsx,json,md,css}` — prettier has no `.prisma` parser at all, so the schema
+folder has never been format-gated and the committed files are hand-aligned.
+
+**So: hand-align a schema edit to match the block around it and do not run the formatter.** If a
+run has already happened, `prisma validate` still passes (it is only whitespace), but say so rather
+than committing the churn — the decision to accept a 700-line reformat belongs to whoever reviews it.
+
 ## Renaming a table does NOT rename the functions over it
 
 `ALTER TABLE … RENAME` is a catalog update. It does **not** rewrite the body of a plpgsql function,

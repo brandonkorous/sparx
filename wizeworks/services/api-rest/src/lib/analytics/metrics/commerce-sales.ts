@@ -18,10 +18,27 @@ import type { MetricContext, MetricData, MetricDefinition } from '../types.js';
 const ALL_GRAINS = ['day', 'week', 'month'] as const;
 
 // A sales channel's plain-language name — an owner does not know "b2b_portal".
+//
+// THIS IS THE FIFTH COPY OF THIS TABLE, and it had drifted in both the ways a
+// second copy always drifts. Each console keeps its own in `lib/console/
+// channels.ts`, written after one order read four different ways on four screens
+// (issue 260); this one is the API's, and the dashboards draw it straight.
+//
+//   • `pos` was MISSING, so a till sale drew the raw key "pos" on the chart.
+//     Exactly the failure mode the console's own table was consolidated to stop,
+//     and exactly how the lead-source table lost `marketplace` in act 281.
+//   • `admin` said "Added by your team", which tells a sole trader about a team
+//     she does not have. The console's table says "Added by hand" and carries a
+//     paragraph on why.
+//
+// A console with its own vocabulary should map these off the row's KEY rather
+// than read the label — piggles does, in `surfaces/analytics/data.ts`. These
+// words are the fallback for a caller that has no table of its own.
 const CHANNEL_LABEL: Record<string, string> = {
   storefront: 'Your website',
   b2b_portal: 'Wholesale portal',
-  admin: 'Added by your team',
+  admin: 'Added by hand',
+  pos: 'At the till',
   subscription: 'Subscriptions',
   mcp: 'AI assistant',
   import: 'Imported',
@@ -175,7 +192,12 @@ export const COMMERCE_SALES_METRICS: readonly MetricDefinition[] = [
         referral: 'Other websites',
         direct: 'Direct / typed-in',
         email: 'Email',
-        unattributed: 'Unattributed',
+        // NOT "Unattributed". The comment three lines up states the rule this
+        // broke: an owner does not think in analytics words, and this is the
+        // one bucket she is most likely to be looking at. It is the honest
+        // answer to where a sale came from when there is no same-day visit to
+        // match it to, and the honest answer is that nobody knows.
+        unattributed: 'Could not tell',
       };
       const breakdown = await ctx.run((tx) =>
         reportingService.attributionBreakdown(svc(ctx, tx), serviceRange(ctx))

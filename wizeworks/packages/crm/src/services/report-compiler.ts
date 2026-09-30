@@ -104,10 +104,16 @@ const SOURCES: Record<string, ObjectSource> = {
       // The field KEY stays 'company' — it is stored in saved report definitions
       // — while the column moved to company_name (docs/144 §11). This map is
       // exactly the layer that exists so one can change without the other.
-      company: { column: 'company_name', kind: 'text', label: 'Company' },
+      // TWO FIELDS, ONE NAME. Both of these read "Company" in the builder's
+      // break-down picker, one above the other, and nothing on the screen said
+      // which was which: `company_name` is whatever somebody typed on the
+      // record, `company_id` is the company record it is actually linked to.
+      // Group by the wrong one and two spellings of one firm come out as two
+      // rows. [[feedback_one_outcome_two_causes]]
+      company: { column: 'company_name', kind: 'text', label: 'Company name' },
       jobTitle: { column: 'job_title', kind: 'text', label: 'Job title' },
       assignedRepId: { column: 'assigned_rep_id', kind: 'uuid', label: 'Owner' },
-      companyId: { column: 'company_id', kind: 'uuid', label: 'Company' },
+      companyId: { column: 'company_id', kind: 'uuid', label: 'Linked company' },
       doNotContact: { column: 'do_not_contact', kind: 'boolean', label: 'Do not contact' },
       totalSpent: { column: 'total_spent', kind: 'currency', label: 'Lifetime spend' },
       orderCount: { column: 'order_count', kind: 'number', label: 'Orders' },

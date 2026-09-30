@@ -56,7 +56,7 @@ export type ModulePresetKind =
   | 'ai-prompts';
 
 /** A single picker chip summarizing the pack's shape/scale, e.g.
- *  `{ label: 'Make → Model → Engine · Year' }` or `{ label: '4 makes',
+ *  `{ label: '3 steps' }` or `{ label: '4 makes',
  *  tone: 'module' }`. `module` tone tints the chip with the owning module's hue. */
 export interface ModulePresetSummaryChip {
   label: string;

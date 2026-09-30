@@ -36,7 +36,7 @@ import {
   type IntegrationCategory,
   type IntegrationDescriptor,
 } from '@wizeworks/integrations';
-import { fillPlatformName } from '@wizeworks/brand-core';
+import { PLATFORM_TOKEN, fillPlatformName } from '@wizeworks/brand-core';
 
 import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
 
@@ -89,6 +89,19 @@ interface ConnectionState {
 
 interface IntegrationView extends IntegrationDescriptor {
   connection: ConnectionState | null;
+  /**
+   * Did WE publish this, or did somebody else?
+   *
+   * A BOOLEAN, decided here, because `publisher` is filled with the tenant's
+   * brand name two functions up and the consoles were deciding it by comparing
+   * that filled string to the literal `'sparx'`. In sparx it matched and the
+   * badge stayed off; in Piggles it never matched, so EVERY first-party service
+   * on the shelf — including the brand's own payment product — wore a
+   * "Community" badge telling a shop owner she was trusting somebody else with
+   * her data. A display string is not an identity.
+   * [[feedback_a_copy_edit_breaks_identity_lookups]]
+   */
+  firstParty: boolean;
 }
 
 interface CategoryView {
@@ -174,6 +187,9 @@ const integrationRoutes: FastifyPluginAsync = async (app) => {
         (descriptor) => ({
           ...brandDescriptor(descriptor, brand),
           connection: byCategory.get(descriptor.slug) ?? null,
+          // Read off the UNFILLED descriptor, before the brand name replaces the
+          // token. See `firstParty` on IntegrationView.
+          firstParty: descriptor.publisher === PLATFORM_TOKEN || descriptor.publisher === 'sparx',
         })
       );
 

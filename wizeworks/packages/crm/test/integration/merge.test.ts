@@ -22,7 +22,7 @@ describe('customer merge', () => {
     test = await makeTestContext('owner');
     const pipeline = await pipelineService.bootstrapDefaultPipeline(test.ctx);
     pipelineId = pipeline.id;
-    leadStageId = pipeline.stages.find((s) => s.name === 'Lead')!.id;
+    leadStageId = pipeline.stages.find((s) => s.sortOrder === 0)!.id;
   });
 
   afterAll(async () => {

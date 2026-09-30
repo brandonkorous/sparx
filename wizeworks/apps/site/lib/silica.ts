@@ -380,3 +380,20 @@ export function treeHasHostNode(node: unknown): boolean {
   if (n.kind === 'host') return true;
   return Array.isArray(n.children) && n.children.some(treeHasHostNode);
 }
+
+/**
+ * Every host core key in a tree — `commerce.plp`, `cms.article-body`, and so on.
+ *
+ * A page's cores are how it says what it is FOR. A tenant names a page "Shop"
+ * or "Our things" or nothing at all, so the name answers nothing; the product
+ * grid inside it answers everything. That is what lets a site with Selling
+ * switched off refuse the right pages without a list of slugs to keep in step.
+ * See `siteShowsPage` in `site-modules.ts`.
+ */
+export function hostKeysIn(node: unknown, found: string[] = []): string[] {
+  if (!node || typeof node !== 'object') return found;
+  const n = node as { kind?: string; component?: unknown; children?: unknown[] };
+  if (n.kind === 'host' && typeof n.component === 'string') found.push(n.component);
+  if (Array.isArray(n.children)) for (const child of n.children) hostKeysIn(child, found);
+  return found;
+}

@@ -1,6 +1,7 @@
 // Bound product section — the long-form description block (today's "Details").
 
 import type { ProductDescriptionConfig } from '@wizeworks/sitebuilder-schemas';
+import { plainText } from '@wizeworks/commerce-schemas';
 
 import type { SectionContext } from '../section-renderer';
 
@@ -19,7 +20,11 @@ export function ProductDescriptionSection({
       <h2 className="text-base-content mb-4 text-3xl font-semibold tracking-tight">
         {config.heading}
       </h2>
-      <div className="sparx-content leading-relaxed whitespace-pre-wrap">{product.description}</div>
+      {/* A plain-text field, drawn as plain text. A sample row that holds HTML
+          used to show the shopper its tags (issue 848). */}
+      <div className="sparx-content leading-relaxed whitespace-pre-wrap">
+        {plainText(product.description)}
+      </div>
     </section>
   );
 }

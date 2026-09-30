@@ -27,6 +27,7 @@ import { nameSearchClauses, withTenant } from '@wizeworks/db';
 import type { Customer, CustomerAddress, CustomerDocument, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { pointerMoved } from './trade-membership';
 import { publishCrmEvent } from '../events';
 import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
 import { schemaFor } from './object-def-service';
@@ -66,10 +67,26 @@ export interface ListCustomersFilter {
   sortBy?: 'score' | 'lastOrderAt' | 'totalSpent' | 'totalOrdered' | 'updatedAt' | 'createdAt';
 }
 
+/** The business a customer is LINKED to, as the order screens already publish
+ *  it (`customer.b2bAccount`). Attached under a name of its own because
+ *  `Customer.company` is a computed field that shadows the relation: ask Prisma
+ *  for the relation and it hands back the typed string instead, silently. That
+ *  shadowing is documented in @wizeworks/db's client, and it had already cost
+ *  two screens their business name (issue 751). This was the third. */
+export interface LinkedBusiness {
+  id: string;
+  companyName: string;
+}
+
+export interface CustomerWithBusiness extends Customer {
+  /** null when this person buys for themselves, or when the link is gone. */
+  b2bAccount: LinkedBusiness | null;
+}
+
 export async function list(
   ctx: ServiceContext,
   filter: ListCustomersFilter = {}
-): Promise<{ items: Customer[]; total: number }> {
+): Promise<{ items: CustomerWithBusiness[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.CustomerWhereInput = {
       ...(filter.includeDeleted ? {} : { deletedAt: null }),
@@ -97,6 +114,13 @@ export async function list(
           { firstName: { contains: term, mode: 'insensitive' as const } },
           { lastName: { contains: term, mode: 'insensitive' as const } },
           { companyName: { contains: term, mode: 'insensitive' as const } },
+          // The business they are LINKED to, which is a different fact from the
+          // one they typed and is the only one a wholesale customer has. The box
+          // says "Search name, company or email", and without this it could not
+          // find the two people on this platform who most obviously have one:
+          // searching their employer's name found them by luck, through the
+          // domain in their email address (issue 883).
+          { company: { companyName: { contains: term, mode: 'insensitive' as const } } },
         ]),
       ],
     };
@@ -118,7 +142,7 @@ export async function list(
         ? { lastOrderAt: { sort: 'desc', nulls: 'last' } as const }
         : { [sortField]: 'desc' as const };
 
-    const [items, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       tx.customer.findMany({
         where,
         orderBy,
@@ -127,6 +151,27 @@ export async function list(
       }),
       tx.customer.count({ where }),
     ]);
+
+    // One extra query for the page, keyed by id — the same shape
+    // `accountsFor` uses in order-service, and for the same reason: the
+    // relation cannot be included under its own name.
+    const ids = [...new Set(rows.map((r) => r.companyId).filter((id): id is string => !!id))];
+    const businesses =
+      ids.length === 0
+        ? new Map<string, LinkedBusiness>()
+        : new Map(
+            (
+              await tx.company.findMany({
+                where: { id: { in: ids } },
+                select: { id: true, companyName: true },
+              })
+            ).map((c) => [c.id, c])
+          );
+
+    const items: CustomerWithBusiness[] = rows.map((row) => ({
+      ...row,
+      b2bAccount: row.companyId ? (businesses.get(row.companyId) ?? null) : null,
+    }));
 
     return { items, total };
   });
@@ -238,6 +283,11 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
       entityId: created.id,
       diff: { before: null, after: serializeCustomer(created) },
     });
+
+    // Filed under a wholesale business at birth: join them to it, so the field
+    // that says they get its agreed prices is telling the truth from the first
+    // save rather than after a second visit to a second screen. Issue 744.
+    await pointerMoved(tx, ctx.tenantId, created.id, null, created.companyId);
 
     return created;
   });
@@ -489,6 +539,10 @@ export async function update(
       entityId: updated.id,
       diff: { before: serializeCustomer(before), after: serializeCustomer(updated) },
     });
+
+    // Moved to a different wholesale business, or taken off one. The membership
+    // follows in the same transaction, both ways. Issue 744.
+    await pointerMoved(tx, ctx.tenantId, updated.id, before.companyId, updated.companyId);
 
     return {
       updated,

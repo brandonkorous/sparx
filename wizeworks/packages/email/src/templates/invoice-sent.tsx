@@ -25,8 +25,16 @@ export interface InvoiceSentEmailProps {
   balance: number;
   currency: string;
   /** ISO-8601. Absent when the business agreed no terms: the email then says
-   *  nothing about when it is due rather than inventing a date. */
+   *  nothing about when it is due rather than inventing a date. Always absent
+   *  on a price offer, which falls due on no date at all. */
   dueAt?: string | null;
+  /** True when this document OFFERS a price rather than DEMANDS money — a quote
+   *  or an estimate. Nothing is owed on one, so the email never asks for it. */
+  priceOffer?: boolean;
+  /** ISO-8601. When the price stops standing. A price offer's own date, and the
+   *  only one it has; absent means the price holds until the business says
+   *  otherwise, which the email states rather than leaving blank. */
+  validUntil?: string | null;
   /** The lines, as they appear on the document. */
   lines: LineItem[];
   summary: SummaryRow[];
@@ -77,15 +85,23 @@ export function InvoiceSentEmail({
   balance,
   currency,
   dueAt,
+  priceOffer = false,
+  validUntil,
   lines,
   summary,
   note,
 }: InvoiceSentEmailProps) {
   const label = documentLabel || 'Invoice';
   const due = dueAt ? formatDate(dueAt) : null;
+  const goodUntil = validUntil ? formatDate(validUntil) : null;
   // Once part of it is paid, the number that matters is what is LEFT — showing
   // the full total as the headline would ask for money already handed over.
-  const outstanding = balance > 0 && balance < total;
+  // Never on a price offer: a deposit taken to hold a job does not turn the
+  // rest of the price into a debt, so the headline there is always the TOTAL.
+  const outstanding = !priceOffer && balance > 0 && balance < total;
+  // The one number the recipient is being shown. A bill asks for what is left;
+  // an offer states what the job would come to.
+  const headline = priceOffer ? total : balance;
   return (
     // EmailLayout, not PlatformEmailLayout: this is a TENANT send. The platform
     // chassis puts OUR wordmark in the masthead, and the person reading this has
@@ -93,7 +109,7 @@ export function InvoiceSentEmail({
     // product's name reads like a billing service nobody hired, or a scam. The
     // tenant frame signs it with the business's own name instead.
     <EmailLayout
-      preview={`${label} ${documentNumber} from ${fromName}: ${formatMoney(balance, currency)}`}
+      preview={`${label} ${documentNumber} from ${fromName}: ${formatMoney(headline, currency)}`}
       footerNote={`${fromName} sent you ${label.toLowerCase()} ${documentNumber}.`}
       // No masthead, and no operator in the fine print. `EmailWordmark` paints
       // the PLATFORM's wordmark, and the person reading this bought bread from a
@@ -112,17 +128,36 @@ export function InvoiceSentEmail({
       </EmailDisplayHeading>
       <EmailParagraph>
         Hi {billToName ?? 'there'}, here is {label.toLowerCase()} <strong>{documentNumber}</strong>{' '}
-        from {fromName}.{due ? ` It is due by ${due}.` : ''}
+        from {fromName}.
+        {/* A bill says when the money is wanted. An offer says how long the
+            price stands, and says so plainly when it stands until further
+            notice rather than leaving the question hanging. */}
+        {priceOffer
+          ? goodUntil
+            ? ` This price holds until ${goodUntil}.`
+            : ' Nothing is owed on it. It is a price, not a bill.'
+          : due
+            ? ` It is due by ${due}.`
+            : ''}
       </EmailParagraph>
 
       <EmailAmountHero
-        amount={formatMoney(balance, currency)}
+        amount={formatMoney(headline, currency)}
         caption={
           outstanding
             ? `Still owed of ${formatMoney(total, currency)}`
             : `${label} ${documentNumber}`
         }
-        status={{ label: due ? `Due ${due}` : 'Due on receipt', tone: 'info' }}
+        status={{
+          label: priceOffer
+            ? goodUntil
+              ? `Good until ${goodUntil}`
+              : 'No closing date'
+            : due
+              ? `Due ${due}`
+              : 'Due on receipt',
+          tone: 'info',
+        }}
       />
 
       <EmailLineItems
@@ -130,7 +165,7 @@ export function InvoiceSentEmail({
         summary={summary}
         total={{
           label: outstanding ? 'Still owed' : 'Total',
-          value: formatMoney(balance, currency),
+          value: formatMoney(headline, currency),
         }}
       />
 
