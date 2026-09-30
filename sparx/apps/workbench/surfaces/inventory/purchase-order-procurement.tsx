@@ -58,6 +58,9 @@ import { sentBackNote, whoSignsLine } from './po-approvals-words';
 import { billStatusLabel, billStatusTone, useSupplierBills } from './supplier-bills-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
 import { DayInput } from '../../components/day-input';
+import { dayCountLabel } from './purchase-orders-data';
+import { useBusinessZone } from '../../lib/business-timezone';
+import { daysUntilDue } from '../../lib/console/days';
 
 interface Props {
   purchaseOrderId: string;
@@ -337,6 +340,10 @@ function Reschedule({ purchaseOrderId, expectedArrivalAt, lateAlertedAt }: Props
 
 function Notices({ purchaseOrderId, purchaseOrderNumber, status, ctx }: Props) {
   const notices = useOrderAsns(purchaseOrderId);
+  // Calendar days in the SHOP's own zone, never elapsed hours on whichever
+  // clock the reader happens to be near. `lib/console/days.ts` is the rule.
+  const zone = useBusinessZone();
+  const now = new Date();
   const rows = notices.data?.items ?? [];
   const [recording, setRecording] = useState(false);
   // The service refuses a notice against anything but an open order, so the
@@ -400,11 +407,9 @@ function Notices({ purchaseOrderId, purchaseOrderNumber, status, ctx }: Props) {
                 </td>
                 <td className="text-right tabular-nums">{row.unitsShipped}</td>
                 <td className="whitespace-nowrap">
-                  {row.expectedArrivalAt ? (
-                    <Timestamp value={row.expectedArrivalAt} format="relative" />
-                  ) : (
-                    '—'
-                  )}
+                  {row.expectedArrivalAt
+                    ? dayCountLabel(daysUntilDue(row.expectedArrivalAt, now, zone))
+                    : '—'}
                 </td>
                 <td className="whitespace-nowrap">
                   <Badge color={asnStatusTone(row)} variant="soft" size="sm">

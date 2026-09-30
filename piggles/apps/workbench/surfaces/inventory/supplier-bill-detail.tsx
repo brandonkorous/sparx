@@ -62,7 +62,7 @@ import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
-import { formatDay, formatMoment } from './purchase-orders-data';
+import { dayCountLabel, formatDay, formatMoment } from './purchase-orders-data';
 import { NewSupplierBill } from './supplier-bill-new';
 import {
   billStatusLabel,
@@ -79,6 +79,8 @@ import {
   verdictTone,
 } from './supplier-bills-data';
 import { moneyCents, moneyText, MoneyTextInput } from '../../components/money-input';
+import { useBusinessZone } from '../../lib/business-timezone';
+import { daysUntilDue } from '../../lib/console/days';
 
 export function SupplierBillDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = ctx.params.id ?? 'new';
@@ -88,6 +90,10 @@ export function SupplierBillDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
 function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const bill = useSupplierBill(id);
+  // Calendar days in the SHOP's own zone, never elapsed hours on whichever
+  // clock the reader happens to be near. `lib/console/days.ts` is the rule.
+  const zone = useBusinessZone();
+  const now = new Date();
   const approve = useApproveSupplierBill(id);
   const accept = useAcceptBillVariance(id);
   const dispute = useDisputeSupplierBill(id);
@@ -137,7 +143,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  const summary = matchSummary(data.match);
+  const summary = matchSummary(data.match, data.lines);
   const fail = (title: string) => (error: unknown) => {
     afterCommit(() => {
       toast.add({
@@ -317,13 +323,14 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <Stat>
           <StatTitle>Due</StatTitle>
           <StatValue>
-            {data.paidAt ? (
-              'Paid'
-            ) : data.dueAt ? (
-              <Timestamp value={data.dueAt} format="relative" />
-            ) : (
-              'No date'
-            )}
+            {data.paidAt
+              ? 'Paid'
+              : /* The same sentence the list badge carries, from the same day
+                 count. Not `<Timestamp format="relative">`: that reads a day
+                 stored at UTC midnight as an instant on the reader's clock, and
+                 printed "15 hours ago" over a bill that was due that day and was
+                 not yet late. See supplier-bills-words.ts. */
+                dayCountLabel(daysUntilDue(data.dueAt, now, zone), 'No due date')}
           </StatValue>
           <StatDesc>
             {/* The DAYS, not only "in 3 weeks". This is the screen somebody is

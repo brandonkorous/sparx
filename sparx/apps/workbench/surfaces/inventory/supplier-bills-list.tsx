@@ -31,8 +31,8 @@ import { FileText, Receipt } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, plural } from './data';
-import { formatDay } from './purchase-orders-data';
+import { formatCents } from './data';
+import { dayCountLabel, dayCountTone, formatDay } from './purchase-orders-data';
 import {
   billStatusLabel,
   billStatusTone,
@@ -40,6 +40,8 @@ import {
   type BillListQuery,
 } from './supplier-bills-data';
 import { owedLine } from './supplier-bills-words';
+import { useBusinessZone } from '../../lib/business-timezone';
+import { daysUntilDue } from '../../lib/console/days';
 
 type View = 'open' | 'overdue' | 'disputed' | 'paid' | 'all';
 
@@ -57,23 +59,12 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-/** A due date as a color. Overdue is the only one that is an alarm. */
-function dueTone(days: number | null): 'danger' | 'warning' | 'info' | 'neutral' {
-  if (days === null) return 'neutral';
-  if (days < 0) return 'danger';
-  if (days <= 3) return 'warning';
-  return 'info';
-}
-
-function dueLabel(days: number | null): string {
-  if (days === null) return 'No due date';
-  if (days < 0) return `${plural(Math.abs(days), 'day', 'days')} overdue`;
-  if (days === 0) return 'Due today';
-  return `in ${plural(days, 'day', 'days')}`;
-}
-
 export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [view, setView] = useState<View>('all');
+  // Calendar days in the SHOP's own zone, never elapsed hours on whichever
+  // clock the reader happens to be near. `lib/console/days.ts` is the rule.
+  const zone = useBusinessZone();
+  const now = new Date();
 
   const report = useSupplierBills(VIEWS[view]);
   const rows = report.data?.items ?? [];
@@ -181,8 +172,12 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </Text>
                 ) : (
                   <span className="flex flex-col items-start gap-1">
-                    <Badge color={dueTone(row.daysUntilDue)} variant="soft" size="sm">
-                      {dueLabel(row.daysUntilDue)}
+                    <Badge
+                      color={dayCountTone(daysUntilDue(row.dueAt, now, zone))}
+                      variant="soft"
+                      size="sm"
+                    >
+                      {dayCountLabel(daysUntilDue(row.dueAt, now, zone), 'No due date')}
                     </Badge>
                     {/* The DAY, under the countdown. "in 20 days" is the right
                         thing to sort a payment run by and the wrong thing to

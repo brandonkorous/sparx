@@ -21,6 +21,7 @@ export {
   buildPath,
   linkTo,
   linkToEntity,
+  looksLikeRecordId,
   matchPath,
   normalizePath,
   pathForEntity,

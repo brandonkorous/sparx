@@ -23,7 +23,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
-import { type Tone } from './data';
+import { plural, type Tone } from './data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -409,12 +409,43 @@ export function purchaseOrderState(po: {
   }
 }
 
-/** How many units are still to come — ordered minus already received. Zero once
- *  the order is complete; the number a buyer chases a supplier about. */
+/**
+ * The states in which units can still be coming.
+ *
+ * The SAME set the platform counts as "on order" — `reorder.ts` and
+ * `planning-reports.ts` both select
+ * `po.status IN ('draft','submitted','partial')` when working out how much
+ * stock is on its way. A console that drew a different set would be telling the
+ * buyer one number while the reorder suggestion behind it used another.
+ *
+ * Broader than `isReceivable` on purpose: a draft cannot have goods booked
+ * against it yet, but it IS stock the business has decided to bring in, and the
+ * planner counts it.
+ */
+function stillArriving(status: string): boolean {
+  return status === 'draft' || status === 'submitted' || status === 'partial';
+}
+
+/**
+ * How many units are still to come — ordered minus already received, and zero
+ * on an order nothing can arrive against.
+ *
+ * THE STATE IS PART OF THE SUM. This read ordered-minus-received alone, so a
+ * CALLED-OFF order reported its whole quantity as outstanding forever: PO-000003
+ * sat in the list as "Canceled · Still due 12", and the supplier pane and the
+ * order's own header said the same. Nothing is due on an order that was called
+ * off, and a buyer reading a chase list needs that row to be silent rather than
+ * loud (issue 884).
+ *
+ * The server never had this wrong. It is the console that was doing its own
+ * arithmetic. [[feedback_a_fix_leaves_its_neighbour_behind]]
+ */
 export function outstandingUnits(po: {
+  status: string;
   quantityOrdered: number;
   quantityReceived: number;
 }): number {
+  if (!stillArriving(po.status)) return 0;
   return Math.max(0, po.quantityOrdered - po.quantityReceived);
 }
 
@@ -464,4 +495,47 @@ export function formatMoment(iso: string | null): string {
     month: 'long',
     year: 'numeric',
   });
+}
+
+/**
+ * How long is left, said the way Buying says it.
+ *
+ * The COUNT is not here: `daysUntilDue` in `lib/console/days.ts` is the
+ * console's one rule for that, calendar days in the business's own zone, and
+ * these take its answer. This file owns the words and the color only.
+ *
+ * They exist because the screens asking "how long is left" had no shared way to
+ * say it and reached for silica's `<Timestamp format="relative">`, an
+ * elapsed-time reading on the reader's clock. A supplier invoice due on the
+ * 30th read (issue 885):
+ *
+ *     list    Due today    · September 30, 2026
+ *     detail  15 hours ago · September 30, 2026
+ *
+ * at twenty past nine in the morning on the day it was due.
+ *
+ * Money › Bills to pay says the same thing in slightly different words through
+ * `billState` in `surfaces/finance/format.ts` ("3 days late", "Due in 5 days").
+ * Two vocabularies for one fact is worth settling; it is a copy decision about
+ * a shipped screen, not part of this fix.
+ *
+ * `noDate` is the screen's own way of saying a date was never set. The sentence
+ * differs per screen; the counting never does.
+ */
+export function dayCountLabel(days: number | null, noDate = 'No date'): string {
+  if (days === null) return noDate;
+  // Not `days < 0` alone: `Math.ceil` returns -0 for any moment inside the due
+  // day, and -0 is not less than 0, so today falls through to the line below.
+  if (days < 0) return `${plural(Math.abs(days), 'day', 'days')} overdue`;
+  if (days === 0) return 'Due today';
+  return `in ${plural(days, 'day', 'days')}`;
+}
+
+/** The same count as a color. Late is the only one that is an alarm: a date due
+ *  today has the whole of today left. */
+export function dayCountTone(days: number | null): Tone {
+  if (days === null) return 'neutral';
+  if (days < 0) return 'danger';
+  if (days <= 3) return 'warning';
+  return 'info';
 }

@@ -83,3 +83,33 @@ export function daysPastDue(
   if (!dueAt) return null;
   return todayIn(timeZone, now) - dayNumber(new Date(dueAt), true);
 }
+
+/**
+ * Whole days UNTIL a due date: the same count as `daysPastDue`, from the side
+ * most screens ask from. Negative when it has already gone by, `null` when
+ * nobody set one.
+ *
+ * It exists because the screens that ask "how long is left" had no shared way
+ * to, so they reached for silica's `<Timestamp format="relative">` — which is
+ * an ELAPSED-TIME reading on the reader's clock, and is the one thing this file
+ * says never to do. A supplier invoice due on the 30th read (issue 885):
+ *
+ *     list    Due today    · September 30, 2026
+ *     detail  15 hours ago · September 30, 2026
+ *
+ * at twenty past nine in the morning on the day it was due. `format="absolute"`
+ * is no safer on a due date: it renders on the reader's clock too, so a day
+ * stored at UTC midnight shows as the day BEFORE for everyone west of
+ * Greenwich.
+ */
+export function daysUntilDue(
+  dueAt: string | null | undefined,
+  now = new Date(),
+  timeZone?: string | null
+): number | null {
+  const past = daysPastDue(dueAt, now, timeZone);
+  // `0 - past` rather than `-past`: negating zero gives NEGATIVE zero, which
+  // equals zero but is not the same value, and a caller comparing with
+  // `Object.is` or printing it would see a minus sign on a day that is today.
+  return past === null ? null : 0 - past;
+}

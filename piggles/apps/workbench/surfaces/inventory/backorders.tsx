@@ -53,6 +53,7 @@ import {
   type BackorderQuery,
 } from './demand-data';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { formatDay } from './purchase-orders-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -187,7 +188,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                 {row.promisedAt ? (
                   <Tooltip content={promiseSourceLabel(row.promiseSource)}>
                     <Badge color={promiseTone(row.promiseSource)} variant="soft" size="sm">
-                      <Timestamp value={row.promisedAt} format="absolute" />
+                      {formatDay(row.promisedAt)}
                     </Badge>
                   </Tooltip>
                 ) : (

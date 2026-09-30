@@ -26,7 +26,6 @@ import {
   EmptyState,
   NativeSelect,
   Text,
-  Timestamp,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faBoxMagnifyingGlass, faTruck } from '@fortawesome/pro-solid-svg-icons';
@@ -35,6 +34,9 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
+import { dayCountLabel } from './purchase-orders-data';
+import { useBusinessZone } from '../../lib/business-timezone';
+import { daysUntilDue } from '../../lib/console/days';
 import {
   asnSourceLabel,
   asnStatusLabel,
@@ -60,6 +62,10 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [view, setView] = useState<View>('open');
+  // Calendar days in the SHOP's own zone, never elapsed hours on whichever
+  // clock the reader happens to be near. `lib/console/days.ts` is the rule.
+  const zone = useBusinessZone();
+  const now = new Date();
 
   const notices = useAdvanceShipNotices(VIEWS[view]);
   const rows = notices.data?.items ?? [];
@@ -145,7 +151,7 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
               </td>
               <td className="hidden whitespace-nowrap @lg:table-cell">
                 {row.expectedArrivalAt ? (
-                  <Timestamp value={row.expectedArrivalAt} format="relative" />
+                  dayCountLabel(daysUntilDue(row.expectedArrivalAt, now, zone))
                 ) : (
                   <Text className="text-sm">No date given</Text>
                 )}

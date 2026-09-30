@@ -44,6 +44,9 @@ import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage } from './data';
+import { dayCountLabel } from './purchase-orders-data';
+import { useBusinessZone } from '../../lib/business-timezone';
+import { daysUntilDue } from '../../lib/console/days';
 import {
   asnSourceLabel,
   asnStatusLabel,
@@ -56,6 +59,10 @@ import {
 
 export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = ctx.params.id ?? '';
+  // Calendar days in the SHOP's own zone, never elapsed hours on whichever
+  // clock the reader happens to be near. `lib/console/days.ts` is the rule.
+  const zone = useBusinessZone();
+  const now = new Date();
 
   const notice = useAdvanceShipNotice(id);
   const cancel = useCancelAsn();
@@ -166,11 +173,10 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <Stat>
           <StatTitle>Expected</StatTitle>
           <StatValue className={data.isOverdue ? 'text-danger' : undefined}>
-            {data.expectedArrivalAt ? (
-              <Timestamp value={data.expectedArrivalAt} format="relative" />
-            ) : (
-              'No date'
-            )}
+            {/* A DAY, counted in days. Not `<Timestamp format="relative">`,
+                which reads a day stored at UTC midnight as an instant on the
+                reader's clock (issue 885). */}
+            {dayCountLabel(daysUntilDue(data.expectedArrivalAt, now, zone), 'No date')}
           </StatValue>
           <StatDesc>
             {data.shippedAt ? (

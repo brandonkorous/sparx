@@ -1,6 +1,6 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.20
+**Version:** 6.23
 **Author:** Brandon Korous
 **Last Updated:** 2026-09-30
 
@@ -16182,3 +16182,283 @@ Nadia has the Sample Sale and nothing else, which is what I meant a week ago.
 Four things wrong to get there: the door she came in by, the door I came in by,
 the switch that was not on the screen, and the count on my bill. Every one of
 them worked well enough to look finished.
+
+## Act 314 — three people from one shop and only one of them had a shop
+
+Nadia has the Sample Sale. That freed me up to do the thing I keep not doing,
+which is go through who I actually sell to and who I actually buy from.
+
+Forty-one customers. Two suppliers. Five orders I have placed with them.
+
+### Loom and Larder
+
+I typed "Loom" into Customers to pull up the shop, and got three people:
+
+```
+Tamsin Vale      Wholesale    Company  —
+Priya Nandakumar              Company  Loom & Larder
+Orla Beaumont    Wholesale    Company  —
+```
+
+Tamsin and Orla place the wholesale orders. Priya bought a dress from me once.
+
+The column headed **Company** was filled in for the one who does not buy for the
+company, and blank for the two who do.
+
+I opened Tamsin to check I was not going mad, and her own page said:
+
+> **Wholesale customer**
+> Loom and Larder
+
+So the console knew. It just was not saying so on the list where I was looking.
+
+The reason is a good one and it is still wrong. There are two ways a customer
+can carry a business: the one they TYPED into a checkout box, and a proper link
+to a business record. Priya typed hers. Tamsin and Orla have the link, which is
+what a wholesale buyer always has, because nobody ever asks them to type
+anything. The list read the typed one and stopped.
+
+What made it worse: searching found them anyway, but only by luck. Their email
+addresses happen to contain "loomandlarder". Search a business whose name is not
+in the email and they do not come up at all, on a box that says "Search name,
+company or email".
+
+[883](issues/883-the-two-wholesale-buyers-had-no-business.md). Fixed both halves.
+Tamsin now says Loom and Larder.
+
+### The score I was ready to be annoyed about
+
+Every one of my forty-one sits at zero for Score, and I went looking for it
+expecting to find a number nobody had worked out being shown to me as though
+somebody had.
+
+It is not that. It says:
+
+> **You haven't said what makes a customer worth chasing**
+> Scoring puts a number on every record from rules you write (how much they have
+> spent, how recently they replied, whatever matters to you) so the list can be
+> sorted by who to call first. Until you set it up, everybody sits at zero.
+
+That is the right way round. It names the zero and tells me it is mine to fix.
+Nothing to file.
+
+### Twelve rolls of something I called off
+
+Then Partners, which in here means the people I buy from.
+
+Five orders to suppliers. One of them, PO-000003, I called off in September
+because Ashcombe could not get the weight I wanted. It reads:
+
+```
+PO-000003   Ashcombe Mills   $288.00   Still due 12   Canceled
+```
+
+Canceled. Twelve still due. Two columns apart, on the same row.
+
+Twelve rolls that are not coming, sitting in the column I read to work out who
+to ring. And the thing underneath it that tells me when to reorder already
+knew — it had been leaving that order out of "on its way" all along. The screen
+was the only part that had not been told.
+
+[884](issues/884-a-called-off-order-still-said-twelve-were-coming.md). It reads
+a dash now. The one I really am waiting on, PO-000004, still says 24.
+
+### Two things I was wrong about
+
+Worth writing down because I nearly filed both.
+
+My suppliers list says **net 30**, which is exactly the sort of thing this
+product usually turns into English. I went to file it, and the field is a
+free-text box that says _"e.g. net 30, cash on delivery"_. It is showing me what
+I typed. If it translated "net 30" it would have to do something with "cash on
+delivery", and there is nothing to do with that.
+
+Then I thought the bill dates must be computed by grabbing whatever number it
+finds, which would make "cash on delivery" mean nought days and land a bill due
+the same afternoon. It does not. It reads the format properly, it copes with the
+space I put in, and for anything that is not a number of days it gives **no due
+date at all** rather than making one up.
+
+Both of those looked like faults from the list. Neither was.
+
+### Where that leaves me
+
+Two things fixed, two things checked and left alone. The pattern in both fixes
+was the same and I have seen it three times now: something elsewhere in the
+product already knew the answer, and the screen in front of me had never been
+told.
+
+## Act 315 — the bill that told me I was late when I was not
+
+Four invoices from my two suppliers, $1,626.72 between them, and one of them due
+today. I sat down to work out who to pay.
+
+The list was good. It says the total at the top, and then it says which part of
+it I have queried, so I am not adding two numbers that overlap. Four rows, sorted
+by when they are due, each one carrying whether the invoice agrees with what
+turned up.
+
+### It said I had missed it
+
+Fairfield Trims. Due today, September 30. I clicked it to look at the detail,
+and the big number under **Due** said:
+
+```
+15 hours ago
+September 30, 2026
+```
+
+Fifteen hours ago. It was twenty past nine in the morning.
+
+I sat and looked at that for a while, because the line under it says September
+30 and today IS September 30, and the list one click away had said **Due today**.
+So which is it. Am I late or am I not.
+
+I am not. The invoice is due on the 30th and it is the morning of the 30th. But I
+had to work that out, and I had to work it out on the screen where I decide
+whether to pay somebody, which is a bad place to have to work anything out.
+
+What had happened, once somebody explained it, is that the date I type in is a
+DAY. I pick it off a calendar, there is no time of day anywhere. The headline
+was reading it as a MOMENT, on my computer's clock. So it counted the
+hours since midnight somewhere else and called them late.
+
+The list was never doing that. It asks for whole days and says "Due today". The
+rule was already written down. The invoice screen had never been told.
+
+They found five more places doing the same thing while they were in there. Two of
+them are worse than mine in a quiet way: the date I promise a customer their
+backorder was being drawn on the reader's own clock, which shows the day BEFORE
+if you are anywhere west of England. A date I would read down the phone, out by
+one. There is a note in that very file saying getting that wrong is how you lose
+a customer twice.
+
+Mine now says **Due today**, the same words the list uses. The one due the ninth
+says **in 9 days** where it used to say "next week", which was not wrong exactly,
+but "next week" is not something I can write on a check.
+
+### A bill for two that said it covered forty
+
+Then Ashcombe Mills. Three invoices against one order.
+
+I placed one order for 40 metres of natural linen. They have sent me three bills
+for it: one for 38, one for 2, and one that is another copy of the 38 which I
+have already queried with them.
+
+The $36 one, for the 2:
+
+```
+Agrees with the delivery
+The one line on this bill matches what was ordered and what arrived.
+
+Line                      Ordered   Arrived              Billed   Each
+Linen, natural, 200gsm         40   40                        2   $18.00
+                                    38 on other invoices
+```
+
+Billed 2. Ordered 40. Arrived 40. And a sentence telling me it matches both.
+
+The check itself is right. Two metres at the price we agreed, and nobody else has
+billed me for those two. What was wrong was the one sentence that tells me what
+the verdict MEANS, which is the bit I read first and the bit I remember.
+
+If I had believed it I would have filed that order as settled and left $684
+sitting there.
+
+The row underneath had been taught about the other invoices. It says "38 on
+other invoices" right there. The sentence above it had not. Same screen. One
+paragraph apart.
+
+There was a second thing wrong with it that I would never have spotted. It said
+the bill matches what was ORDERED. The check does not look at what I ordered. It
+compares what I was billed against what actually turned up. So if a supplier
+sends me two metres short and then bills me for the short amount, that passes,
+and I would have been told it matched my order.
+
+It now says: _"Everything charged here is at the agreed price, for goods that
+arrived. The rest of this order is on other invoices."_ Which is true, and is the
+sentence I needed.
+
+### The good part
+
+I want to write down what this screen gets right, because I nearly did not
+notice it under two things that were wrong.
+
+Fairfield billed me $3.84 a piece for brass buckles I agreed at $3.60. The screen
+caught it, put **$13.92 more than the goods justify** at the top, and will not let
+the invoice be approved until I either say why I am accepting it or query it with
+them. And it makes me type the reason. There is a line under the box that says
+_"An override that leaves no trace looks exactly like nobody noticing."_
+
+That is $13.92. On the buckles alone, ordering the same again every month, that
+is $167 a year I would never have found by eye.
+
+### Where that leaves me
+
+Two more fixed. Both of them the same shape as the last four: somewhere else in
+the product already knew the answer, and the screen I was standing on had never
+been told. I have now seen that five times in three days.
+
+The other thing I keep noticing is that the faults are never in the sums. The
+sums are always right. It is the sentence over the top of the sums that says
+something the sums do not.
+
+### And a link that opened the wrong screen
+
+While I was in Partners I wanted the supplier scorecards, so I typed what the
+screen is called into the address bar:
+
+```
+/inventory/suppliers/scorecards
+```
+
+The tab came up saying **Supplier**, and the panel said:
+
+```
+This panel ran into a problem
+Nothing else in your workspace was affected. Try loading it again.
+[ Try again ]
+```
+
+I pressed Try again twice. It did the same thing both times.
+
+This one I would never have found by clicking, and I would have blamed myself
+for typing something wrong. What it was doing: the word "scorecards" was being
+read as the NAME OF A SUPPLIER, so it opened a supplier page for a supplier
+called scorecards, then fell over when there was nothing there.
+
+What annoys me about it is that the console already knows how to say this
+nicely. If I type a supplier that genuinely does not exist I get the little pig
+and "This supplier no longer exists. It may have been removed. Its past orders
+are unaffected." That is a kind, clear sentence. I just could not reach it.
+
+They counted twenty-two addresses doing this, and the list is not gibberish. It
+is the names of real screens: my top customers, today's tasks, things that are
+about to go out of date, possible duplicates. Anybody sending me a link, or an
+email that chopped a link in half, could land me on one.
+
+All twenty-two now say:
+
+> **That link doesn't open anything**
+> There is nothing at "/crm/customers/top". The link may have been cut short on
+> its way to you (they sometimes break traveling through a chat or an email) so
+> it is worth asking for it again.
+
+Which is the truth, and it tells me what to do next.
+
+### The thing I want to say about this morning
+
+I sat down to do a payment run. I have four invoices, two suppliers, and about
+ninety seconds of patience for any of it.
+
+In that time the console found me a supplier charging me twenty-four cents a
+piece over what we agreed, and would not let the bill be approved until I said
+why. Nobody was ever going to catch that by eye. It is thirteen dollars and
+ninety-two cents on this one invoice, and I buy those buckles every month.
+
+And in the same ninety seconds it told me I was late on a bill I was not late
+on, told me a bill for two metres covered forty, and fell over when I typed the
+name of one of its own screens.
+
+The good thing here is much better than I expected. The wrong things were all
+sentences.

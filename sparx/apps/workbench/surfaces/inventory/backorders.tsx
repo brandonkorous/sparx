@@ -43,6 +43,7 @@ import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { ItemName } from './item-name';
 import { plural } from './data';
+import { formatDay } from './purchase-orders-data';
 import {
   backorderStatusTone,
   promiseSourceLabel,
@@ -189,7 +190,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                 {row.promisedAt ? (
                   <Tooltip content={promiseSourceLabel(row.promiseSource)}>
                     <Badge color={promiseTone(row.promiseSource)} variant="soft" size="sm">
-                      <Timestamp value={row.promisedAt} format="absolute" />
+                      {formatDay(row.promisedAt)}
                     </Badge>
                   </Tooltip>
                 ) : (

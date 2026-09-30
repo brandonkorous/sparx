@@ -66,6 +66,7 @@ import {
 } from './demand-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
 import { DayInput } from '../../components/day-input';
+import { formatDay } from './purchase-orders-data';
 
 /** `<input type="date">` wants `YYYY-MM-DD`; the API speaks ISO instants. */
 function toDateInput(iso: string | null): string {
@@ -301,7 +302,11 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : (
               <div className="flex flex-wrap items-center gap-2">
                 <Badge color={promiseTone(data.promiseSource)} variant="soft">
-                  <Timestamp value={data.promisedAt} format="absolute" />
+                  {/* The DAY, on the reckoning it was stored in.
+                      `format="absolute"` renders on the reader's own clock,
+                      which is the day before for everyone west of Greenwich
+                      (issue 885). */}
+                  {formatDay(data.promisedAt)}
                 </Badge>
                 <Text className="text-sm">{promiseSourceLabel(data.promiseSource)}</Text>
                 {data.expectedPurchaseOrderNumber ? (

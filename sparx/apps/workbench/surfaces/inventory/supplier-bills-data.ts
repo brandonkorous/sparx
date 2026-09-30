@@ -110,7 +110,16 @@ export interface SupplierBill {
   varianceAcceptedByName: string | null;
   varianceAcceptedAt: string | null;
   notes: string | null;
-  /** Negative = overdue. Null when nobody set a due date, or once it is paid. */
+  /**
+   * Negative = overdue. Null when nobody set a due date, or once it is paid.
+   *
+   * NOT what the screens count with. The server divides elapsed milliseconds by
+   * a day, in UTC, which makes the hour a document happened to be raised at part
+   * of the answer and knows nothing about where the business is. Both panes call
+   * `daysUntilDue` from `lib/console/days.ts` instead, which counts calendar
+   * days in the shop's own zone (issue 885). Kept because it is a real field on
+   * a public API, and other clients read it.
+   */
   daysUntilDue: number | null;
   createdAt: string;
   updatedAt: string;
@@ -367,7 +376,14 @@ export function verdictTone(verdict: MatchVerdict): Tone {
 
 /** The one-line verdict for the whole bill. Three states, and the third is why
  *  `ok` is nullable. */
-export function matchSummary(match: BillMatch): { label: string; tone: Tone; detail: string } {
+export function matchSummary(
+  match: BillMatch,
+  /** The bill's own lines, for the one fact the aggregate does not carry: how
+   *  much of this order is already on somebody else's invoice. Defaulted so an
+   *  older caller still compiles, and so the sentence degrades to the careful
+   *  one rather than the confident one. */
+  lines: readonly { alreadyBilledQuantity: number | null }[] = []
+): { label: string; tone: Tone; detail: string } {
   if (match.ok === null) {
     return {
       label: 'Not checked',
@@ -380,21 +396,46 @@ export function matchSummary(match: BillMatch): { label: string; tone: Tone; det
     // A partial invoice passes, and it must not be described as matching what
     // arrived, because it does not: it charges for part of it. What it matches
     // is the agreed price, on goods that are here.
-    if (match.uninvoicedCents !== null && match.uninvoicedCents > 0) {
+    //
+    // ── WHAT THE REST OF THE ORDER IS DOING (issue 886) ────────────────────
+    //
+    // There are two ways an invoice can cover part of a delivery, and the
+    // sentence has to say which. AM-2214 from Ashcombe Mills charged for 2
+    // units of a 40-unit order whose other 38 were on AM-2198, and the bill
+    // passed the check — correctly, because 2 at the agreed price against 2
+    // units nobody else had invoiced is exactly right. It then said:
+    //
+    //     The one line on this bill matches what was ordered and what arrived.
+    //
+    // over a table reading ordered 40, arrived 40, billed 2. The row underneath
+    // already carried "38 on other invoices"; the sentence above it had never
+    // been told. [[feedback_a_fix_leaves_its_neighbour_behind]]
+    const elsewhere = lines.some((l) => (l.alreadyBilledQuantity ?? 0) > 0);
+    const stillToCome = match.uninvoicedCents !== null && match.uninvoicedCents > 0;
+    if (stillToCome || elsewhere) {
       return {
         label: 'Agrees with the delivery',
         tone: 'success',
-        detail:
-          'Everything charged here is at the agreed price, for goods that arrived. The rest of this order has not been invoiced yet.',
+        detail: `Everything charged here is at the agreed price, for goods that arrived. ${
+          stillToCome && elsewhere
+            ? 'The rest of this order is partly on other invoices and partly not invoiced yet.'
+            : elsewhere
+              ? 'The rest of this order is on other invoices.'
+              : 'The rest of this order has not been invoiced yet.'
+        }`,
       };
     }
+    // ARRIVED and the AGREED PRICE, which is what the check compares. Saying
+    // "what was ordered" claims something it never looked at: a delivery two
+    // short, invoiced for the two-short amount, passes this check and does not
+    // match the order.
     return {
       label: 'Agrees with the delivery',
       tone: 'success',
       detail:
         match.linesMatched === 1
-          ? 'The one line on this bill matches what was ordered and what arrived.'
-          : `All ${String(match.linesMatched)} lines match what was ordered and what arrived.`,
+          ? 'The one line on this bill charges for what arrived, at the price you agreed.'
+          : `All ${String(match.linesMatched)} lines charge for what arrived, at the price you agreed.`,
     };
   }
   return {

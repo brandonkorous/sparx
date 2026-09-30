@@ -97,6 +97,49 @@ const byEntity = new Map<string, AppRoute>(
   ROUTES.filter((route) => route.entity !== undefined).map((route) => [route.entity!, route])
 );
 
+/**
+ * Whether a segment can be a RECORD ID, for the parameters that name one.
+ *
+ * ── WHY A PARAMETER HAS A SHAPE AT ALL ──────────────────────────────────────
+ *
+ * `:id` used to accept any non-empty segment, and the REST API has sub-resources
+ * sitting in the same place a record id does. So `/inventory/suppliers/scorecards`
+ * matched `/inventory/suppliers/:id`, opened the SUPPLIER pane with the id
+ * "scorecards", fetched `/v1/inventory/suppliers/scorecards` — which is a real
+ * endpoint returning the supplier LEAGUE TABLE — and got back 200 with a body
+ * that is not a supplier. The pane read `supplier.name.trim()` on it and threw:
+ *
+ *     Cannot read properties of undefined (reading 'trim')
+ *
+ * and the person saw "This panel ran into a problem" with a Try again that could
+ * never work. MEASURED 2026-09-30: 22 addresses did this, `/crm/customers/top`
+ * and `/crm/tasks/today` among them. A supplier that genuinely does not exist
+ * has always been handled kindly ("This supplier no longer exists"); it was only
+ * a 200 of the wrong SHAPE that fell through the floor.
+ *
+ * ── WHY THIS IS SAFE ────────────────────────────────────────────────────────
+ *
+ * The table is already disciplined about this: anything that is not a record id
+ * is given a parameter of its own — `:slug`, `:key`, `:objectKey`, `:name`,
+ * `:number` — and those are untouched here. Every pane behind an `:id` treats it
+ * as a row the server minted, or the literal `new`.
+ *
+ * The length rule is deliberately generous: a uuid today, and any 16-character
+ * machine-minted token if ids ever change format. The longest of the 22 words
+ * that must NOT match is "variant-lookup", at fourteen.
+ */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MINTED = /^[A-Za-z0-9_-]{16,}$/;
+
+export function looksLikeRecordId(value: string): boolean {
+  return value === 'new' || UUID.test(value) || MINTED.test(value);
+}
+
+/** Parameters that name a record: `:id`, and `:somethingId`. */
+function namesARecord(parameter: string): boolean {
+  return parameter === 'id' || /^[a-z][A-Za-z0-9]*Id$/.test(parameter);
+}
+
 /** `/a/b/` and `a/b` both become `/a/b`; the root stays `/`. */
 export function normalizePath(pathname: string): string {
   const trimmed = pathname.trim();
@@ -162,7 +205,14 @@ export function matchPath(
           matched = false;
           break;
         }
-        params[segment.slice(1)] = safeDecode(value);
+        const parameter = segment.slice(1);
+        // A word is not a record id. Without this, an API sub-resource sitting
+        // where an id goes opens a detail pane on a body that is not its record.
+        if (namesARecord(parameter) && !looksLikeRecordId(value)) {
+          matched = false;
+          break;
+        }
+        params[parameter] = safeDecode(value);
       }
     }
     if (!matched) continue;
