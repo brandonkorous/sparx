@@ -116,7 +116,9 @@ describe('customColorRuleCss', () => {
     const body = css.slice('@layer base{'.length, -1);
     for (const rule of body.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
       const selector = (rule[1] ?? '').trim();
-      const isUtility = /^\.(text|bg|border)-brand(-content)?$/.test(selector);
+      // silicaui 0.56 bumps `.text-x` to `.text-x[class]` so it outranks a
+      // component's own ink (color-utilities.js). It is still the utility.
+      const isUtility = /^\.(text|bg|border)-brand(-content)?(\[class\])?$/.test(selector);
       for (const decl of (rule[2] ?? '').split(';').filter(Boolean)) {
         const prop = decl.slice(0, decl.indexOf(':')).trim();
         if (prop.startsWith('--')) continue;

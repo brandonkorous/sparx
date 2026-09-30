@@ -52,7 +52,12 @@ describe('a stock list with both "On hand" and "Available"', () => {
   // These are different numbers: available is on hand minus what is already
   // promised to somebody. `available` is also one of the aliases for `quantity`,
   // so in a single matching round whichever column came first in the file won.
-  const RIGHT = { 'On hand': 'quantity', Available: 'available' };
+  //
+  // The import no longer offers an Available field at all: the platform works
+  // it out from what is on hand and what is promised, so nothing wrote it. That
+  // leaves "Available" mapped to nothing, which is right, and the danger this
+  // guards is unchanged: it must never take `quantity` away from "On hand".
+  const RIGHT = { 'On hand': 'quantity' };
 
   it('reads both columns correctly with On hand first', () => {
     expect(guessMapping('inventory_levels', ['On hand', 'Available'])).toEqual(RIGHT);

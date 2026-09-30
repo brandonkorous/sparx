@@ -26,5 +26,10 @@ export default {
     include: ['**/*.test.ts'],
     exclude: ['node_modules/**', '.next/**'],
     environment: 'node',
+    // Several rules here READ THE SOURCE TREE (every money field, every sentence,
+    // every spelling). Alone each takes about a second; under the pre-push hook's
+    // four-way `pnpm -r test` they overran the 5s default and failed on time, not
+    // on a finding.
+    testTimeout: 30_000,
   },
 };
