@@ -16090,9 +16090,9 @@ under my own name. That is right. She is on my team from the minute I ask her,
 whether or not she has opened the email yet.
 
 The popup to invite her is two boxes and a sentence. Her email, what she will do,
-and underneath: *"They will get an email with a link to join. You can change what
+and underneath: _"They will get an email with a link to join. You can change what
 they are allowed to do at any time, and you can take their access away
-entirely."* I did not have to think about it.
+entirely."_ I did not have to think about it.
 
 ### The part that did not work
 
@@ -16142,8 +16142,8 @@ switch it on, because there was no switch. Not one business out of a hundred and
 thirteen. [879](issues/879-she-could-not-keep-an-assistant-to-one-of-her-shops.md)
 
 It is there now. **Which of your sites they can open**, with my seven listed and
-Juniper Row first. I ticked the Sample Sale and saved, and it told me *"Nadia
-Osei's access updated. It applies the next time they load a page."* The list now
+Juniper Row first. I ticked the Sample Sale and saved, and it told me _"Nadia
+Osei's access updated. It applies the next time they load a page."_ The list now
 says what she can reach instead of a sentence about her role.
 
 If I tick nothing it warns me, before I save, that she will be able to sign in
@@ -16168,8 +16168,8 @@ It says two now.
 
 The three figures on that page reading **Not measured yet** are not a fault, and
 I want to record that, because I nearly counted them as one. Underneath them it
-says *"Your first overnight count has not run yet, so some of these are still
-blank."* That is a product telling me it has not looked, instead of showing me a
+says _"Your first overnight count has not run yet, so some of these are still
+blank."_ That is a product telling me it has not looked, instead of showing me a
 zero and letting me believe it.
 
 Everything else on that card was right. Seven websites, two locations. It was the

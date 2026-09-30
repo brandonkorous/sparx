@@ -56,7 +56,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 const STATUS_ITEMS: Record<string, string> = {
   all: 'All orders',
   ...Object.fromEntries(
-    FILTERS.filter((f) => f.status).map((f): [string, string] => [f.status ?? '', f.label]),
+    FILTERS.filter((f) => f.status).map((f): [string, string] => [f.status ?? '', f.label])
   ),
 };
 
