@@ -101,6 +101,54 @@ export interface WebhookSubscription {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+  /** What actually came back from the address. Present on the LIST read only
+   *  (create and patch answer with the bare row); absent is read as "nothing
+   *  sent yet", never as working. */
+  health?: WebhookHealth;
+}
+
+/**
+ * What actually came back from the address, as opposed to what was asked for.
+ *
+ * `active` is a SETTING. Until this rode on the list, the pane printed it as a
+ * RESULT: a green "Active" and "Notifications are being sent to this address as
+ * events happen", whether or not one message had ever arrived. Measured on this
+ * database: the only two delivery attempts ever recorded both FAILED, under a
+ * subscription the screen called Active. The worker gives up after eight tries
+ * over about seven and a half hours and tells nobody, so a mistyped address
+ * read exactly like a working one (issue 403).
+ *
+ * `lastOutcome: null` alongside `lastAttemptAt: null` means NOTHING HAS BEEN
+ * SENT YET, which is a different fact from "everything worked" and must never
+ * render as one.
+ */
+export interface WebhookHealth {
+  /** Attempts inside the window that were accepted at the far end. */
+  delivered: number;
+  /** Attempts inside the window that ran out of retries. */
+  failed: number;
+  /** Attempts inside the window still queued or mid-retry. */
+  pending: number;
+  /** When we last tried, ever (not windowed). Null means never. */
+  lastAttemptAt: string | null;
+  lastOutcome: 'delivered' | 'failed' | 'pending' | null;
+  /** How many days the three counts look back over. */
+  windowDays: number;
+}
+
+/** One attempt to reach the address, newest first on the deliveries read. */
+export interface WebhookDelivery {
+  id: string;
+  event_type: string;
+  status: string;
+  attempt_count: number;
+  /** The HTTP status the address answered with; null when it never answered. */
+  response_status: number | null;
+  /** The start of what it answered with, capped at 500 characters server-side. */
+  response_body: string | null;
+  next_attempt_at: string | null;
+  delivered_at: string | null;
+  created_at: string;
 }
 
 /* ── The one human catalogue of events ──────────────────────────────────────
@@ -147,7 +195,7 @@ export const WEBHOOK_EVENTS: readonly WebhookEventDef[] = [
     key: 'form.submitted',
     label: 'Form filled in',
     description:
-      'Somebody fills in a form on your site: a contact page, an enquiry, a trade application.',
+      'Somebody fills in a form on your site: a contact page, an inquiry, a trade application.',
     group: 'Selling',
   },
 
@@ -419,6 +467,7 @@ export function eventLabel(key: string): string {
 export const webhookKeys = {
   all: ['cms', 'webhooks'] as const,
   list: () => [...webhookKeys.all, 'list'] as const,
+  deliveries: (id: string) => [...webhookKeys.all, 'deliveries', id] as const,
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
@@ -447,12 +496,34 @@ export function useWebhook(id: string) {
   return { ...query, webhook };
 }
 
+/**
+ * The recent attempts for one webhook, newest first, with its health summary.
+ *
+ * Kept OUT of the list payload: it is per-record detail, and the list only needs
+ * the summary that rides on `health`. The server checks the subscription exists
+ * before answering, so a deleted id is a 404 rather than an empty history that
+ * would read as "nothing sent yet".
+ */
+export function useWebhookDeliveries(id: string) {
+  return useQuery({
+    queryKey: webhookKeys.deliveries(id),
+    queryFn: () =>
+      api.get<{ items: WebhookDelivery[]; health: WebhookHealth }>(
+        `/v1/webhooks/subscriptions/${id}/deliveries`
+      ),
+    enabled: id !== 'new',
+  });
+}
+
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
-function useInvalidateWebhooks() {
+/** Refetch the list AND every delivery history together. Refreshing only the
+ *  list let the badge say "Working" over a history panel still saying "Nothing
+ *  yet", two answers to one question on one screen. */
+export function useInvalidateWebhooks() {
   const queryClient = useQueryClient();
   return () => {
-    void queryClient.invalidateQueries({ queryKey: webhookKeys.list() });
+    void queryClient.invalidateQueries({ queryKey: webhookKeys.all });
   };
 }
 
@@ -513,21 +584,113 @@ export function useDeleteWebhook(id: string) {
 
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
-/** Active vs paused, in an owner's words, with the tone that carries the color
- *  on a `<Badge>`. Paused is `warning`, not neutral: it is a deliberately-off
- *  state worth noticing, not a bland fact. */
-export function webhookState(active: boolean): { label: string; tone: Tone; detail: string } {
-  return active
-    ? {
-        label: 'Active',
-        tone: 'success',
-        detail: 'Notifications are being sent to this address as events happen.',
-      }
-    : {
-        label: 'Paused',
-        tone: 'warning',
-        detail: 'No notifications are being sent. Turn it back on whenever you like.',
-      };
+export interface WebhookStateLabel {
+  label: string;
+  tone: Tone;
+  detail: string;
+}
+
+/** Paused is `warning`, not neutral: a deliberately-off state worth noticing. */
+const PAUSED: WebhookStateLabel = {
+  label: 'Paused',
+  tone: 'warning',
+  detail: 'No notifications are being sent. Turn it back on whenever you like.',
+};
+
+/** Switched on, but nothing has been TRIED yet. Never "working". */
+const NOTHING_SENT: WebhookStateLabel = {
+  label: 'Nothing sent yet',
+  tone: 'info',
+  detail:
+    'This is switched on, but none of the events you picked has happened yet, so we have had nothing to send. Once one does, you will see it here.',
+};
+
+/**
+ * What a webhook's state MEANS, in an owner's words, read off what actually
+ * happened rather than off the `active` switch.
+ *
+ * This used to take `active` alone and answer "Active: notifications are being
+ * sent to this address as events happen", a description of a SETTING printed
+ * where a RESULT belongs (issue 403). Every branch below is a DIFFERENT fact,
+ * ordered worst news first. The one easiest to get wrong is `pending`: a queued
+ * message is not a delivered one, so it can never read as working.
+ */
+export function webhookState(active: boolean, health?: WebhookHealth): WebhookStateLabel {
+  if (!active) return PAUSED;
+  if (health === undefined) return NOTHING_SENT;
+  if (health.lastOutcome === null) return NOTHING_SENT;
+
+  const days = String(health.windowDays);
+
+  if (health.failed > 0 && health.delivered === 0) {
+    return {
+      label: 'Not getting through',
+      tone: 'error',
+      detail: `We tried ${messages(health.failed)} and none of them arrived. Check the address is right, and that whoever runs it is expecting us.`,
+    };
+  }
+  if (health.failed > 0) {
+    return {
+      label: 'Some are failing',
+      tone: 'warning',
+      detail: `${messages(health.delivered)} arrived, ${String(health.failed)} did not. Worth asking whoever runs that address to look.`,
+    };
+  }
+  if (health.delivered > 0) {
+    return {
+      label: 'Working',
+      tone: 'success',
+      detail: `${messages(health.delivered)} arrived in the last ${days} days. Nothing has failed.`,
+    };
+  }
+  if (health.pending > 0) {
+    return {
+      label: 'On its way',
+      tone: 'info',
+      detail: `${messages(health.pending)} on the way. We will show whether it arrived as soon as we know.`,
+    };
+  }
+  // Something happened once, but not inside the window we count.
+  return {
+    label: 'Quiet lately',
+    tone: 'info',
+    detail: `Nothing has been sent in the last ${days} days. The last message we sent ${lastEnding(health.lastOutcome)}.`,
+  };
+}
+
+function lastEnding(outcome: Exclude<WebhookHealth['lastOutcome'], null>): string {
+  if (outcome === 'delivered') return 'arrived safely';
+  if (outcome === 'failed') return 'never arrived';
+  return 'was still on its way';
+}
+
+function messages(n: number): string {
+  return n === 1 ? '1 message' : `${String(n)} messages`;
+}
+
+/** What one attempt says on its own row. */
+export function deliveryState(delivery: Pick<WebhookDelivery, 'status'>): {
+  label: string;
+  tone: Tone;
+} {
+  if (delivery.status === 'delivered') return { label: 'Arrived', tone: 'success' };
+  if (delivery.status === 'failed') return { label: 'Never arrived', tone: 'error' };
+  return { label: 'Still trying', tone: 'warning' };
+}
+
+/** Why an attempt did not arrive, in words rather than a status code: a person
+ *  handing this to whoever runs the address needs to know which end failed. */
+export function whyItFailed(delivery: Pick<WebhookDelivery, 'response_status'>): string {
+  const code = delivery.response_status;
+  if (code === null) {
+    return 'We could not reach that address at all. It may be down, or the address may be wrong.';
+  }
+  if (code === 404) return 'That address answered, but said there is nothing there (404).';
+  if (code === 401 || code === 403) {
+    return `That address turned us away (${String(code)}). Whoever runs it may need the signing secret.`;
+  }
+  if (code >= 500) return `That address answered with an error of its own (${String(code)}).`;
+  return `That address refused the message (${String(code)}).`;
 }
 
 /**

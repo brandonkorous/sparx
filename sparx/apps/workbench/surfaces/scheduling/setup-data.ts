@@ -40,10 +40,11 @@
 //     DELETE /v1/scheduling/policies/:id        delete (admin)
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
@@ -73,9 +74,7 @@ export function isNotFound(error: unknown): boolean {
 export function formatMoney(cents: number, currency: string): string {
   const code = (currency || 'usd').toUpperCase();
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(
-      cents / 100
-    );
+    return formatCentsAmount(cents, code);
   } catch {
     // An unknown currency code shouldn't blank the whole cell.
     return `${(cents / 100).toFixed(2)} ${code}`;
@@ -137,12 +136,19 @@ export interface SchedulingService {
   settings: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
+  /** Set only on a service that has been removed. Every read but the list hides
+   *  those, so this is null everywhere else (issue 145). */
+  removedAt: string | null;
 }
 
 export interface ServicesQuery {
   q?: string;
   bookingType?: BookingType;
   activeOnly: boolean;
+  /** Show services that have been removed, so one can be put back. Without it a
+   *  removal had no way back, and the confirm said it "cannot be undone" about a
+   *  row that is only ever stamped, never deleted. */
+  includeRemoved?: boolean;
   take: number;
   skip: number;
 }
@@ -161,6 +167,7 @@ export function useServices(query: ServicesQuery) {
         ...(query.q ? { q: query.q } : {}),
         ...(query.bookingType ? { bookingType: query.bookingType } : {}),
         ...(query.activeOnly ? { activeOnly: true } : {}),
+        ...(query.includeRemoved ? { includeRemoved: true } : {}),
         take: query.take,
         skip: query.skip,
       }),
@@ -233,11 +240,29 @@ export function useUpdateService(id: string) {
 }
 
 export function useDeleteService(id: string) {
-  const invalidate = useInvalidateServices();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => api.delete(`/v1/scheduling/services/${id}`),
     onSuccess: () => {
-      invalidate();
+      // Drop the record rather than refresh it. Every read but the list hides a
+      // removed service, so refetching the pane that is closing asked for a row
+      // the server now answers 404 for: a red error in the console on every
+      // removal, for a read nobody would see.
+      queryClient.removeQueries({ queryKey: serviceKeys.one(id) });
+      void queryClient.invalidateQueries({ queryKey: [...serviceKeys.all, 'list'] });
+    },
+  });
+}
+
+/** Undo a removal. The row was only ever stamped, never deleted, so this puts
+ *  back the SAME service the existing bookings point at (issue 145). */
+export function useRestoreService() {
+  const invalidate = useInvalidateServices();
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.post<SchedulingService>(`/v1/scheduling/services/${id}/restore`, {}),
+    onSuccess: (row) => {
+      invalidate(row.id);
     },
   });
 }
@@ -302,8 +327,11 @@ export const ASSIGNMENT_STRATEGIES: {
 
 /** What a service looks like at a glance: whether it takes bookings, and where. */
 export function serviceState(
-  service: Pick<SchedulingService, 'isActive' | 'bookableOnline'>
+  service: Pick<SchedulingService, 'isActive' | 'bookableOnline'> & { removedAt?: string | null }
 ): StateLabel {
+  // Removed outranks everything else it could say: a switched-off service is
+  // still yours to switch on, and a removed one is off your website entirely.
+  if (service.removedAt) return { label: 'Removed', tone: 'error' };
   if (!service.isActive) return { label: 'Off', tone: 'neutral' };
   if (!service.bookableOnline) return { label: 'Staff only', tone: 'warning' };
   return { label: 'Bookable', tone: 'success' };
@@ -620,11 +648,21 @@ export interface AvailabilityWindow {
   validTo: string | null;
 }
 
-/** What a PUT sends for one day-window (no id — the whole week is replaced). */
+/**
+ * What a PUT sends for one day-window (no id — the whole week is replaced).
+ *
+ * THE DATES HAVE TO BE HERE BECAUSE THE SAVE REPLACES THE WEEK. They were not,
+ * and the server deletes every window for the resource before writing the ones it
+ * is given, so any seasonal bound on any day was destroyed by opening Availability
+ * and pressing Save — on a screen that never showed the dates at all (issue 866).
+ * `YYYY-MM-DD`, or null / omitted for no limit at that end.
+ */
 export interface AvailabilityWindowInput {
   dayOfWeek: number;
   startMinute: number;
   endMinute: number;
+  validFrom?: string | null;
+  validTo?: string | null;
 }
 
 export interface AvailabilityException {
@@ -644,13 +682,39 @@ export const availabilityKeys = {
     ['scheduling', 'availability', 'exceptions', resourceId ?? 'all'] as const,
 };
 
-export function useResourceWindows(resourceId: string | null) {
-  return useQuery({
-    queryKey: availabilityKeys.windows(resourceId ?? 'none'),
+/** One resource's working hours, as options, so a single read and a fan-out
+ *  over several resources share a cache entry rather than each minting a key. */
+function windowsQuery(resourceId: string) {
+  return {
+    queryKey: availabilityKeys.windows(resourceId),
     queryFn: () =>
-      api.get<AvailabilityWindow[]>(`/v1/scheduling/resources/${resourceId ?? ''}/availability`),
-    enabled: Boolean(resourceId),
-  });
+      api.get<AvailabilityWindow[]>(`/v1/scheduling/resources/${resourceId}/availability`),
+  };
+}
+
+export function useResourceWindows(resourceId: string | null) {
+  return useQuery({ ...windowsQuery(resourceId ?? 'none'), enabled: Boolean(resourceId) });
+}
+
+/**
+ * Every named resource's working hours at once.
+ *
+ * For the diary's DEFAULT view, which shows everybody: the per-resource endpoint
+ * is the only one there is, so this fans out over it. A business has a handful
+ * of people and rooms, the reads are cached per resource, and they are the same
+ * entries the single-resource view already fills, so switching between everyone
+ * and one person costs nothing the second time.
+ *
+ * `rows` is undefined until EVERY resource has answered. A partial set would say
+ * "nobody works today" about a day somebody works, which is worse than waiting.
+ */
+export function useResourcesWindows(resourceIds: string[]): {
+  rows: AvailabilityWindow[] | undefined;
+} {
+  const results = useQueries({ queries: resourceIds.map((id) => windowsQuery(id)) });
+  const ready = results.every((result) => result.data !== undefined);
+  const rows = ready ? results.flatMap((result) => result.data ?? []) : undefined;
+  return { rows };
 }
 
 export function useSetResourceWindows(resourceId: string) {

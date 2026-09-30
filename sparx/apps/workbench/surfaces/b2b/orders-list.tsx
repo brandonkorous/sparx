@@ -25,7 +25,7 @@ import { ShoppingCart, X } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   customerName,
   formatDate,
@@ -36,22 +36,9 @@ import {
   type Order,
 } from './orders-data';
 import { RowOpenHint } from '../../components/row-open-hint';
-
-const FILTERS = [
-  { value: 'all', label: 'All', status: undefined, paymentStatus: undefined },
-  { value: 'unpaid', label: 'Not paid', status: undefined, paymentStatus: 'unpaid' },
-  { value: 'to_send', label: 'To send', status: 'placed', paymentStatus: undefined },
-  { value: 'sent', label: 'On the way', status: 'fulfilled', paymentStatus: undefined },
-  { value: 'delivered', label: 'Delivered', status: 'delivered', paymentStatus: undefined },
-] as const;
-
-type FilterValue = (typeof FILTERS)[number]['value'];
-
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
-}
+// The SAME chips the Orders list uses, from the one file that owns them.
+// This list kept its own copy and had already lost "Canceled" from it.
+import { FILTERS, emptyAdvice, targetFor, type FilterValue } from '../commerce/orders-list-filters';
 
 export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const accountId = typeof ctx.params.accountId === 'string' ? ctx.params.accountId : undefined;
@@ -71,7 +58,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useWholesaleOrders({
     q: search.trim(),
     status: active.status,
-    paymentStatus: active.paymentStatus,
+    owing: active.owing,
     accountId,
     sortBy: 'placedAt',
     order: 'desc',
@@ -94,7 +81,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Wholesale order controls"
+        label="Wholesale orders controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -177,7 +164,12 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             title={narrowed ? 'No orders match that' : 'No wholesale orders yet'}
             description={
               narrowed
-                ? 'Try a different word, or switch back to All to see every wholesale order.'
+                ? // The shop's Orders list has used this helper since the chips
+                  // were written; this copy of the screen kept a hand-typed
+                  // sentence that named BOTH a search and a filter whichever one
+                  // was on. Filtering by Canceled with an empty search box told
+                  // her to "try a different word" she had never typed.
+                  emptyAdvice(search.trim(), filter === 'all' ? null : active.label)
                 : accountName
                   ? `${accountName} hasn't placed any orders yet. When they do, it'll show up here.`
                   : 'When a business you supply places an order, it shows up here with what they bought and what they owe.'

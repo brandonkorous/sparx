@@ -235,6 +235,14 @@ export function useRefundReturn(id: string) {
 export interface SettleExchangeBody {
   replacementVariantId: string;
   quantity: number;
+  /** Why this swap, in the team's own words. The server APPENDS it to the
+   *  return's note (after any approval note, before the "Sent instead" line it
+   *  writes itself), so it reads back on the return pane's "Your team's note".
+   *  The route always took it; with no field to type it into, the reason a
+   *  swap was agreed (the size ran small, the customer called about it) was
+   *  lost the moment the dialog closed. Only the team sees it: the swap email
+   *  carries the replacement, never this note. */
+  staffNote?: string;
   shipment?: ReplacementShipmentBody;
 }
 

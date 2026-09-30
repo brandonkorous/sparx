@@ -248,7 +248,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Transfer list controls"
+        label="Transfers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -295,7 +295,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Show transfers touching"
               value={locationId}
               onChange={(event) => {

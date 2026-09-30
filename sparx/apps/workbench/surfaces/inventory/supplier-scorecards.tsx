@@ -62,6 +62,23 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
+/**
+ * How late a supplier runs, in words.
+ *
+ * The server measures an average, so it arrives as 14.74. Printed as `14.74d`
+ * that is two problems in six characters: a letter somebody has to be taught,
+ * and a precision nobody has - no shop owner is deciding anything differently
+ * at 14.74 days than at 15. It is also the only place in this console that
+ * shortens "days"; twelve others spell it. Issue 728.
+ *
+ * Under a day gets its own sentence rather than rounding to "0 days late",
+ * which would read as not late at all.
+ */
+function latenessLabel(days: number): string {
+  if (days < 1) return 'under a day late';
+  return `${plural(Math.round(days), 'day', 'days')} late`;
+}
+
 export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [scoredOnly, setScoredOnly] = useState(false);
 
@@ -211,7 +228,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                 ) : (
                   <span className="block text-sm">
                     {row.onTimeSample} checked
-                    {row.avgDaysLate !== null ? ` · ${row.avgDaysLate}d late` : ''}
+                    {row.avgDaysLate !== null ? ` · ${latenessLabel(row.avgDaysLate)}` : ''}
                   </span>
                 )}
               </td>

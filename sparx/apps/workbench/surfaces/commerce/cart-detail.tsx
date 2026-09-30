@@ -8,6 +8,7 @@
 // belongs to the shopper. The one staff move is recovering an abandoned cart,
 // and it is offered only when the cart was actually abandoned.
 
+import { useEffect, type ReactNode } from 'react';
 import {
   Alert,
   AlertContent,
@@ -35,11 +36,101 @@ import {
   cartStateFrom,
   useCart,
   useRecoverCart,
+  type CartContact,
   type CartDetail,
 } from './carts-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/** Whose basket this is, in one line. The snapshot's `customerName` is a
+ *  SIGNED-IN shopper's and wins when there is one; otherwise it is whatever they
+ *  typed into checkout, which names them far better than "a guest". */
+function shopperOf(cart: CartDetail): string {
+  return cart.customerName ?? cartShopperName(null, cart.contact);
+}
+
+/** How far somebody got before they stopped, in the owner's terms. Absent for a
+ *  step that says nothing useful about a basket left behind. */
+const REACHED: Record<string, string> = {
+  contact: 'They had typed their details and stopped there.',
+  shipping: 'They had chosen how they wanted it sent.',
+  payment: 'They reached the last step, where they would have paid.',
+  review: 'They reached the last step, where they would have paid.',
+};
+
+function ContactLine({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-2">
+      <Text className="text-sm">{label}</Text>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * WHO TO CHASE about a basket nobody paid for.
+ *
+ * This section used to answer "is there an account?", a true sentence about the
+ * database and a useless one to the owner, who wants to know who to email. A
+ * guest who typed their name, email and phone into checkout two minutes before
+ * leaving read as "A guest ... there is no account attached", with the address
+ * to write to sitting one join away in the same response.
+ */
+function CartShopper({
+  customerName,
+  contact,
+}: {
+  customerName: string | null;
+  contact: CartContact | null;
+}) {
+  const name = customerName ?? contact?.name ?? '';
+  const email = contact?.email ?? null;
+  const phone = contact?.phone ?? null;
+  const reached = contact?.reached ? REACHED[contact.reached] : undefined;
+
+  if (!name && !email && !phone) {
+    return (
+      <FormSection title="Whose cart it is">
+        <Text className="text-base">
+          Nobody left a name or an address. This cart was filled by a visitor who never started
+          checkout, so there is no way to get in touch about it.
+        </Text>
+      </FormSection>
+    );
+  }
+
+  return (
+    <ModuleScope module="crm">
+      <FormSection title="Whose cart it is">
+        <div className="flex flex-col gap-1">
+          {name ? <Text className="text-base font-medium">{name}</Text> : null}
+          {email ? (
+            <ContactLine label="Email">
+              <a href={`mailto:${email}`} className="link text-base break-all">
+                {email}
+              </a>
+            </ContactLine>
+          ) : null}
+          {phone ? (
+            <ContactLine label="Phone">
+              <a href={`tel:${phone}`} className="link text-base">
+                {phone}
+              </a>
+            </ContactLine>
+          ) : null}
+          {!customerName ? (
+            <Text className="text-sm">
+              They were not signed in, so there is no account behind this, but they gave you this
+              much at checkout.
+            </Text>
+          ) : null}
+          {reached ? <Text className="text-sm">{reached}</Text> : null}
+        </div>
+      </FormSection>
+    </ModuleScope>
+  );
+}
 
 function money(cents: number, currency: string): string {
   return formatMoney(cents / 100, currency);
@@ -76,6 +167,15 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const { data, isPending, isError, error, refetch } = useCart(id);
   const recover = useRecoverCart(id);
+
+  // The tab says what the heading says. Every basket pane wore the word "Basket"
+  // until now, so four open baskets could not be told apart (issue 842). This
+  // sits ABOVE the early returns because a hook has to: the pane returns for an
+  // error, a wait and a swept cart before it ever reaches the body.
+  const tabName = data ? `${shopperOf(data)}’s basket` : null;
+  useEffect(() => {
+    if (tabName) ctx.setTitle(tabName);
+  }, [ctx, tabName]);
 
   if (isError) {
     return (
@@ -118,8 +218,12 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const cart: CartDetail = data;
   const state = cartStateFrom(cart);
-  const shopper = cartShopperName(null, cart.customerName);
-  const canRecover = Boolean(cart.abandonedAt) && !cart.recoveredAt;
+  const shopper = shopperOf(cart);
+  // `abandonedAt` alone decides it: a basket won back once and then left again
+  // carries BOTH stamps, and it is walked away right now, so it can be won back
+  // again. Requiring `!recoveredAt` hid the one move on the pane from exactly
+  // the basket that needed it, while the server would have taken it.
+  const canRecover = Boolean(cart.abandonedAt);
 
   const facts = [cartChannelLabel(cart.channel), `${String(cart.items.length)} lines`];
 
@@ -245,20 +349,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : null}
           </FormSection>
 
-          {cart.customerName ? (
-            <ModuleScope module="crm">
-              <FormSection title="Whose cart it is">
-                <Text className="text-base font-medium">{cart.customerName}</Text>
-              </FormSection>
-            </ModuleScope>
-          ) : (
-            <FormSection title="Whose cart it is">
-              <Text className="text-base">
-                A guest. This cart was filled by someone who was not signed in, so there is no
-                account attached to it.
-              </Text>
-            </FormSection>
-          )}
+          <CartShopper customerName={cart.customerName} contact={cart.contact} />
 
           {canRecover ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-4">

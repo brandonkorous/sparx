@@ -117,6 +117,15 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 
   const existing = useCountSchedule(id);
+
+  // The tab's name, once the record is here. Sixty-one of this console's
+  // seventy-five detail panes do this; the ones that did not put identical
+  // words on every tab they opened, which is the one thing the strip is for.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const scheduleName = existing.data?.name;
+  useEffect(() => {
+    if (scheduleName) ctx.setTitle(scheduleName);
+  }, [scheduleName, ctx]);
   const save = useSaveCountSchedule(id);
   const remove = useDeleteCountSchedule();
   const confirm = useConfirm();

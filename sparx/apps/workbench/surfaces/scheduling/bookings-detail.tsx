@@ -54,17 +54,17 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingTimeline } from './booking-timeline';
+import { BookingWho } from './booking-who';
 import { CustomerPicker } from './bookings-customer-picker';
 import { SaveFailure } from '@/components/save-failure';
 import {
   bookingResourceLabel,
   bookingStateMeta,
   bookingTypeLabel,
-  customerName,
+  bookingWhoLabel,
   formatMoney,
   formatWhen,
   fromLocalInputValue,
-  isNotFound,
   isTerminalBooking,
   localTimezone,
   schedulingErrorMessage,
@@ -75,7 +75,6 @@ import {
   useCompleteBooking,
   useConfirmBooking,
   useCreateBooking,
-  useCustomer,
   useNoShowBooking,
   useRescheduleBooking,
   useSchedulingResources,
@@ -321,7 +320,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
                 automatically.
               </Text>
             ) : (
-              <div className="border-base-300 flex max-h-56 flex-col gap-1 overflow-y-auto rounded-md border p-1">
+              <div className="border-base-300 flex max-h-56 flex-col gap-1 overflow-y-auto rounded-md border p-1 [&>*]:shrink-0">
                 {resourceList.map((resource) => {
                   const on = resourceIds.includes(resource.id);
                   return (
@@ -390,8 +389,6 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
   const cancel = useCancelBooking(id);
   const reschedule = useRescheduleBooking(id);
 
-  const bookedCustomer = useCustomer(booking.customerId);
-
   const [notes, setNotes] = useState(booking.notes ?? '');
   const [staffNotes, setStaffNotes] = useState(booking.staffNotes ?? '');
   const [rescheduleLocal, setRescheduleLocal] = useState(toLocalInputValue(booking.startAt));
@@ -416,11 +413,11 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
     return schedulingErrorMessage(failed.error, 'That did not go through. Nothing was changed.');
   }, [confirm, checkIn, complete, noShow, cancel, reschedule]);
 
-  const who = booking.attendees.find((a) => a.guestName?.trim())?.guestName
-    ? booking.attendees.find((a) => a.guestName?.trim())?.guestName
-    : booking.customerId
-      ? customerName(bookedCustomer.data)
-      : null;
+  // The same ladder the list uses, so the record and its row can never name the
+  // person two different ways. It used to fetch the customer separately and fall
+  // back to "A customer" when that read had not landed (or the CRM app was off),
+  // while the booking itself already carried the name (issue 138).
+  const who = bookingWhoLabel(booking);
 
   const saveNotes = () => {
     if (!notesChanged) return;
@@ -583,7 +580,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
             </Text>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
               <span>With {bookingResourceLabel(booking)}</span>
-              {who ? (
+              {who !== 'No one assigned' ? (
                 <>
                   <span aria-hidden>·</span>
                   <span>For {who}</span>
@@ -593,6 +590,8 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
           </div>
 
           <SaveFailure title="That did not go through" message={actionError} />
+
+          <BookingWho ctx={ctx} booking={booking} />
 
           {/* Moving the booking in time. Hidden once it is over — a completed or
               cancelled booking does not move. */}
@@ -758,17 +757,14 @@ export function BookingDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed load REPLACES the record — never a live form beside a dead action.
   if (booking.isError) {
-    const gone = isNotFound(booking.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This booking no longer exists' : 'Could not load this booking'}
-          description={
-            gone
-              ? 'It may have been removed. Nothing else is affected.'
-              : 'This is a problem reaching the server. Nothing about the booking has changed.'
-          }
+          error={booking.error}
+          title="Could not load this booking"
+          description="This is a problem reaching the server. Nothing about the booking has changed."
+          missingTitle="This booking no longer exists"
+          missingDescription="It may have been removed. Nothing else is affected."
           onRetry={() => {
             void booking.refetch();
           }}

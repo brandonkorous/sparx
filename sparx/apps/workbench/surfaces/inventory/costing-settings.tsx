@@ -33,11 +33,8 @@ import {
   Badge,
   Button,
   Field,
-  FieldControl,
-  FieldDescription,
   FieldLabel,
   Heading,
-  Input,
   RadioGroup,
   RadioOption,
   Text,
@@ -47,7 +44,9 @@ import { Save, Scale } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
+import { isUsableCurrency } from '../../lib/money-format';
 import { buyingErrorMessage } from './suppliers-data';
 import {
   ALLOCATION_BASES,
@@ -89,6 +88,13 @@ export function CostingSettingsSurface() {
   }, [policy.data, form]);
 
   const dirty = form !== null && JSON.stringify(form) !== baseline;
+  // Three LETTERS, not three characters. `Intl.NumberFormat` throws a
+  // RangeError on anything else, and this figure is handed to every money
+  // formatter in the console - so "123" typed here used to reach the delivery
+  // pane and take the screen out. The field says so before Save rather than
+  // after, because a server refusal arrives as a toast on a screen she has
+  // already left. [[feedback_one_outcome_two_causes]]
+  const currencyUsable = form === null || isUsableCurrency(form.baseCurrency);
   useDirtySource(dirty, 'You have not saved how your stock is valued. Close anyway?');
 
   const methodChanged =
@@ -239,28 +245,19 @@ export function CostingSettingsSurface() {
           title="The currency your books are kept in"
           description="Buying in another currency is converted into this one at the rate on the day the goods land, so your stock is worth one number however many currencies you buy in."
         >
-          <Field>
-            <FieldLabel>Currency</FieldLabel>
-            <FieldControl
-              render={
-                <Input
-                  color="module"
-                  maxLength={3}
-                  spellCheck={false}
-                  className="w-28 uppercase"
-                  aria-label="The currency your books are kept in"
-                  value={form.baseCurrency}
-                  onChange={(event) => {
-                    setForm({ ...form, baseCurrency: event.target.value.toUpperCase() });
-                  }}
-                />
-              }
-            />
-            <FieldDescription>
-              A three-letter code: USD, GBP, EUR. Deliveries already booked keep the rate they were
-              converted at.
-            </FieldDescription>
-          </Field>
+          <CurrencyField
+            label="The currency your books are kept in"
+            required
+            value={form.baseCurrency}
+            onChange={(next) => {
+              setForm({ ...form, baseCurrency: next });
+            }}
+            description={
+              currencyUsable
+                ? 'Deliveries already booked keep the rate they were converted at.'
+                : 'Your books are set to something we cannot draw a price in. Pick a currency from the list to save anything else on this screen.'
+            }
+          />
         </FormSection>
 
         <FormSection title="What this does not change">
@@ -298,7 +295,7 @@ export function CostingSettingsSurface() {
             size="sm"
             color="module"
             className="ml-auto shrink-0"
-            disabled={!dirty}
+            disabled={!dirty || !currencyUsable}
             loading={savePolicy.isPending}
             onClick={save}
           >

@@ -85,7 +85,11 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
   chat: 'Messages',
   ai: 'AI',
   partner: 'Partners',
-  storefront: 'Storefront',
+  // 'Site', not 'Storefront'. The word was retired platform-wide (copy, database,
+  // API, CSS and docs), keeping ONE use: the sales-channel value, which is a wire
+  // string rather than a word. This table is the fallback every surface now reads
+  // through `moduleLabel`, so the retired word was one call away from every screen.
+  storefront: 'Site',
 };
 
 /**
@@ -98,8 +102,23 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
  * its own shell alone. A brand states only what it renames; everything else
  * falls through to the platform's label below.
  */
-export function moduleLabel(module: WorkbenchModule): string {
-  return productModuleLabel(module) ?? MODULE_LABELS[module] ?? module;
+/**
+ * THE one name for a part of the platform, resolved through the brand first.
+ *
+ * Takes a plain `string` rather than a `WorkbenchModule` because most callers
+ * hold a slug that came down from the API — a starter's module list, the packs a
+ * sample-data bundle fills, the parts a blueprint needs. Narrowing the parameter
+ * pushed every one of those to keep its own table instead, and six of them did:
+ * measured 2026-09-25, `commerce` had SIX names across the two consoles (Sell,
+ * Selling, Online store, Online stores, Store, and the raw slug), four of which
+ * a Piggles shop owner could meet on four screens while her rail said Sell.
+ *
+ * An unrecognised slug degrades to itself, which is the same thing every one of
+ * those tables did, in one place.
+ */
+export function moduleLabel(module: string): string {
+  const key = module as WorkbenchModule;
+  return productModuleLabel(key) ?? MODULE_LABELS[key] ?? module;
 }
 
 /**

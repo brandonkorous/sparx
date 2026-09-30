@@ -326,7 +326,7 @@ const STAFF_FAQ: FaqItem[] = [
     id: 'staff-what-if-no-rate',
     question: 'What happens to hours for someone whose pay rate I haven’t entered?',
     answer:
-      'They are counted and reported as unpriced, never costed at zero. The timesheet says how many hours cannot be priced, the period total is labelled as partial rather than final, and the wage cost filed against your spending is short by exactly that much and says so. This matters more than it sounds: a zero in a labor column becomes a zero in a profit figure, and an owner reads that as a fortnight where the work was free. Add the rate afterwards, dated from their first day, and the period prices itself. Nobody else’s figures move, because everyone else’s rates were already the rates in force.',
+      'They are counted and reported as unpriced, never costed at zero. The timesheet says how many hours cannot be priced, the period total is labeled as partial rather than final, and the wage cost filed against your spending is short by exactly that much and says so. This matters more than it sounds: a zero in a labor column becomes a zero in a profit figure, and an owner reads that as a fortnight where the work was free. Add the rate afterwards, dated from their first day, and the period prices itself. Nobody else’s figures move, because everyone else’s rates were already the rates in force.',
   },
   {
     id: 'staff-raise',

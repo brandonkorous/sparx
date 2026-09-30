@@ -212,7 +212,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier bill controls"
+        label="Bills to pay controls"
         status={
           <Text className="text-sm">
             {owedLine(

@@ -16,6 +16,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Card, EmptyState, Input, Table, Text } from '@wizeworks/silicaui-react';
+import { PaneEmpty } from '../../components/pane-empty';
 import { Plus, Table2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -29,6 +30,22 @@ import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Shift opens alongside, Alt pops out — the same modifier contract every other
  *  list in the workbench uses. */
+/**
+ * A BUILT-IN OBJECT HAS ITS OWN SCREEN, AND THIS IS NOT IT.
+ *
+ * `crm_records` holds tenant-invented objects only. Addressed with a built-in
+ * key — `/crm/records/contact` — these panes drew a working, permanently empty
+ * list and a working "New customer" form whose button would have written a
+ * customer no other screen could ever find. The fact that stops it was already
+ * on the record the pane had fetched: `kind: 'builtin'`.
+ */
+const BUILTIN_SCREEN: Record<string, string> = {
+  contact: 'crm.customers.list',
+  company: 'crm.accounts.list',
+  deal: 'crm.deals.list',
+  ticket: 'crm.tickets.list',
+};
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -79,6 +96,35 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const openRecord = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.record.detail', { id, objectKey }, { target: targetFor(event) });
   };
+
+  if (type.data?.kind === 'builtin') {
+    const target = BUILTIN_SCREEN[objectKey];
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneEmpty
+            icon={<Table2 className="size-6" aria-hidden />}
+            title={`${labelPlural} have a screen of their own`}
+            description={`This screen lists the record types you defined yourself. ${labelPlural} ship with sparx, so they live on their own screen with everything only they can do.`}
+            {...(target
+              ? {
+                  actions: (
+                    <Button
+                      color="module"
+                      onClick={(event) => {
+                        ctx.open(target, {}, { target: targetFor(event) });
+                      }}
+                    >
+                      Open {labelPlural}
+                    </Button>
+                  ),
+                }
+              : {})}
+          />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>

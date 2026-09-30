@@ -33,6 +33,7 @@ import { useConfirm } from '../../lib/confirm';
 import { Briefcase, Plus, Save, Trash2, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -42,7 +43,6 @@ import {
   BOOKING_TYPES,
   RESOURCE_KINDS,
   bookingTypeLabel,
-  isNotFound,
   schedulingErrorMessage,
   serviceState,
   useCreateService,
@@ -57,13 +57,11 @@ import {
   type SchedulingService,
 } from './setup-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { removalConsequence, useServiceLosses } from './service-removal';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 const DETAIL_KEY = 'scheduling.services.detail';
-
-/** The currencies offered, lowercase to match the 3-char ISO the service stores. */
-const CURRENCIES = ['usd', 'cad', 'eur', 'gbp', 'aud', 'nzd', 'jpy'] as const;
 
 interface Draft {
   name: string;
@@ -178,6 +176,8 @@ function ServiceEditor({
   const update = useUpdateService(id);
   const remove = useDeleteService(id);
   const policies = usePolicies({ take: 250, skip: 0 });
+  // What removing this would actually cost, counted before it is offered.
+  const losses = useServiceLosses(isNew ? null : id);
 
   const [draft, setDraft] = useState<Draft>(initial);
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
@@ -269,8 +269,7 @@ function ServiceEditor({
     if (!existing) return;
     const ok = await confirm({
       title: `Remove ${existing.name}?`,
-      description:
-        'This takes the service off your booking page and out of this list. Bookings already made against it are kept. This cannot be undone. You would have to set it up again.',
+      description: removalConsequence(losses),
       confirmLabel: 'Remove this service',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -280,7 +279,11 @@ function ServiceEditor({
       onSuccess: () => {
         ctx.close();
         afterPaneChange(() => {
-          toast.add({ title: `${existing.name} removed`, type: 'success' });
+          toast.add({
+            title: `${existing.name} removed`,
+            description: 'You can put it back from your services list.',
+            type: 'success',
+          });
         });
       },
       onError: (error) => {
@@ -561,27 +564,16 @@ function ServiceEditor({
                 <FieldDescription>Leave blank for a free booking.</FieldDescription>
               </Field>
 
-              <Field>
-                <FieldLabel>Currency</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      className="max-w-32"
-                      value={draft.currency}
-                      aria-label="Currency"
-                      onChange={(event) => {
-                        set('currency', event.target.value);
-                      }}
-                    >
-                      {CURRENCIES.map((code) => (
-                        <option key={code} value={code}>
-                          {code.toUpperCase()}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-              </Field>
+              {/* A service stores its currency LOWERCASE, which is this module's
+                  own shape and nothing to do with what a person picks. The picker
+                  deals in codes as they are written; the case is put back here. */}
+              <CurrencyField
+                required
+                value={draft.currency.toUpperCase()}
+                onChange={(next) => {
+                  set('currency', next.toLowerCase());
+                }}
+              />
             </div>
 
             <Field>
@@ -859,8 +851,8 @@ function ServiceEditor({
             {existing ? (
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Removing this service takes it off your booking page for good. Bookings already
-                  made against it are kept.
+                  Removing this service takes it off your booking page. Bookings already made on it
+                  keep their time and price, and you can put it back from your services list.
                 </Text>
                 <Button
                   size="sm"
@@ -895,17 +887,14 @@ export function ServiceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (service.isError) {
-    const gone = isNotFound(service.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This service no longer exists' : 'Could not load this service'}
-          description={
-            gone
-              ? 'It has been removed. Any bookings already made against it are unaffected.'
-              : 'This is a problem reaching the server. Nothing about the service has changed.'
-          }
+          error={service.error}
+          title="Could not load this service"
+          description="This is a problem reaching the server. Nothing about the service has changed."
+          missingTitle="This service no longer exists"
+          missingDescription="It has been removed. Any bookings already made on it are unaffected, and you can put it back from your services list (turn on Removed)."
           onRetry={() => {
             void service.refetch();
           }}

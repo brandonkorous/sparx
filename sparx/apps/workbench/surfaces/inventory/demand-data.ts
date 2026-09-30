@@ -196,6 +196,7 @@ export interface BackorderSweepResult {
 export function useRefreshPromises() {
   const invalidate = useInvalidateBackorders();
   return useMutation({
+    meta: { running: 'work out the new dates' },
     mutationFn: () =>
       api.post<BackorderSweepResult>('/v1/inventory/backorders/refresh-promises', {}),
     onSuccess: invalidate,
@@ -636,20 +637,52 @@ export function useCancelSettlement(id: string) {
   return useMutation({ mutationFn: settlementAction(id, 'cancel'), onSuccess: invalidate });
 }
 
-export function settlementTone(status: string): Tone {
+/**
+ * What a settlement period IS, in a word and a color.
+ *
+ * ── WHY THE LABEL LIVES HERE NOW ────────────────────────────────────────────
+ *
+ * There was a `settlementTone` and no label, so all four call sites across the
+ * two consoles drew `{status}` — the stored value, verbatim:
+ *
+ *     draft   closed   invoiced   paid   cancelled
+ *
+ * Lower case, in the trade's own words, and the last one spelled the BRITISH
+ * way, because that is the value in the database. The same pane's own copy said
+ * "canceled" twice, in its failed-load sentence and its toast, so one screen
+ * spelled the word both ways — the exact failure `american-spelling.test.ts`
+ * exists for, and one it cannot catch, because `'cancelled'` there is a wire
+ * value and correctly exempt. A wire value is only safe while nothing DRAWS it.
+ * [[feedback_a_copy_edit_breaks_identity_lookups]]
+ *
+ * ── AND WHY TWO OF THEM HAVE NO COLOR ───────────────────────────────────────
+ *
+ * `draft` and `cancelled` were `neutral`, which is not a color anybody may
+ * choose here (RULE #4). Worked out what they MEAN: a draft owes nobody
+ * anything yet and a canceled period owes nobody anything ever, so neither has
+ * urgency to carry. `tone` is undefined for those, which renders a COLORLESS
+ * badge — a different thing from naming grey, and sanctioned without asking.
+ */
+export interface SettlementState {
+  label: string;
+  /** Undefined on purpose: a colorless badge, not `neutral`. */
+  tone?: Tone;
+}
+
+export function settlementState(status: string): SettlementState {
   switch (status) {
     case 'paid':
-      return 'success';
+      return { label: 'Paid', tone: 'success' };
     case 'invoiced':
-      return 'info';
+      return { label: 'Invoiced', tone: 'info' };
     case 'closed':
-      return 'warning';
+      return { label: 'Closed', tone: 'warning' };
     case 'draft':
-      return 'neutral';
+      return { label: 'Draft' };
     case 'cancelled':
-      return 'neutral';
+      return { label: 'Canceled' };
     default:
-      return 'neutral';
+      return { label: status };
   }
 }
 

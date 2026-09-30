@@ -220,7 +220,7 @@ export class WorkbenchController {
 
     // BESIDE WHAT? The pane you were looking at. A surface answers this itself
     // (context.tsx passes its own id), but CHROME — the launcher, the app panel,
-    // a favourite — has no pane to name, and `positionFor` treats a missing one
+    // a favorite — has no pane to name, and `positionFor` treats a missing one
     // as "no opinion". So every ⇧-click from outside a surface silently became a
     // tab, in a palette whose own footer advertises "⇧↵ alongside".
     //

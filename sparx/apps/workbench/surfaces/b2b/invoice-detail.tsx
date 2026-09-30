@@ -36,11 +36,12 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Ban, Building2, HandCoins } from 'lucide-react';
+import { Ban, Building2, FileText, HandCoins, Printer } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { openServerHtml } from '../../lib/api/html-artifact';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -62,8 +63,9 @@ import {
   type PaidMethod,
 } from './invoices-data';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { NOT_A_DATE, dayStartUtc } from '../../lib/today';
+import { HALF_A_DAY, NOT_A_DATE, dayStartUtc } from '../../lib/today';
 import { ChoiceListNote, choiceListState } from '../../components/choice-list-note';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -139,6 +141,12 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
   const [dueDate, setDueDate] = useState(defaultDueDate());
   const [notes, setNotes] = useState('');
   const [touched, setTouched] = useState(false);
+  // The due date box's own half-typed state, which its `value` cannot
+  // express. Held here rather than left to `DayInput`'s own warning because
+  // this field ALREADY refuses on an empty box — two red lines saying
+  // different things about one keystroke is the defect, not the fix.
+  // [[feedback_one_outcome_two_causes]]
+  const [dueHalfTyped, setDueHalfTyped] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
 
   useEffect(() => {
@@ -150,11 +158,17 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const accountError = accountId === '' ? 'Choose which business this invoice is for.' : null;
-  const numberError = number.trim() === '' ? 'Give this invoice a number.' : null;
+
   const amountError = amount <= 0 ? 'Enter how much this invoice is for.' : null;
   const dueIso = dueDate === '' ? null : dayStartUtc(dueDate);
-  const dateError = dueDate === '' ? 'Set a due date.' : dueIso === null ? NOT_A_DATE : null;
-  const blocking = accountError ?? numberError ?? amountError ?? dateError;
+  const dateError = dueHalfTyped
+    ? HALF_A_DAY
+    : dueDate === ''
+      ? 'Set a due date.'
+      : dueIso === null
+        ? NOT_A_DATE
+        : null;
+  const blocking = accountError ?? amountError ?? dateError;
 
   const dirty =
     accountId !== presetAccount || number.trim() !== '' || amount !== 0 || notes.trim() !== '';
@@ -177,7 +191,7 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
     create.mutate(
       {
         accountId,
-        invoiceNumber: number.trim(),
+        ...(number.trim() === '' ? {} : { invoiceNumber: number.trim() }),
         amountCents: Math.round(amount * 100),
         dueAt: dueIso,
         notes: notes.trim() === '' ? null : notes.trim(),
@@ -263,14 +277,20 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
             </Field>
 
             <div className="grid grid-cols-1 gap-4 @md:grid-cols-2">
+              {/* Optional, and that is the point (issue 757). It was required,
+                  with a made-up "INV-1042" in the box as the only hint of the
+                  shape, so the one screen that bills by hand asked a shop owner
+                  to invent a number nothing else on the platform has ever asked
+                  her for — and a number already in use came back as HTTP 500
+                  under a red box that said nothing at all. */}
               <Field>
                 <FieldLabel>Invoice number</FieldLabel>
                 <FieldControl
                   render={
                     <Input
-                      color={numberError && touched ? 'error' : 'module'}
+                      color="module"
                       value={number}
-                      placeholder="INV-1042"
+                      placeholder="The next one in your run"
                       onChange={(event) => {
                         setNumber(event.target.value);
                         mark();
@@ -278,11 +298,10 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                     />
                   }
                 />
-                {numberError && touched ? (
-                  <FieldStatus status="error">{numberError}</FieldStatus>
-                ) : (
-                  <FieldDescription>What they&apos;ll see on their bill.</FieldDescription>
-                )}
+                <FieldDescription>
+                  What they&apos;ll see on their bill. Leave it empty and the next number in your
+                  run is used.
+                </FieldDescription>
               </Field>
               <Field>
                 <FieldLabel>Amount</FieldLabel>
@@ -314,13 +333,14 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
               <FieldControl
                 render={
                   <div className="max-w-48">
-                    <Input
+                    <DayInput
                       color={dateError && touched ? 'error' : 'module'}
-                      type="date"
                       value={dueDate}
                       aria-label="Due date"
-                      onChange={(event) => {
-                        setDueDate(event.target.value);
+                      sayWhenUnfinished={false}
+                      onValueChange={(value, halfTyped) => {
+                        setDueDate(value);
+                        setDueHalfTyped(halfTyped);
                         mark();
                       }}
                     />
@@ -444,6 +464,39 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Invoice actions"
+        // A bill she cannot hand over is not a bill (issue 759). This pane could
+        // raise one, chase it, mark it paid and write it off, and had no way at
+        // all to print it, email it or show it to the customer. Both of these are
+        // the SAME billing document the Invoices screen owns, reached by the same
+        // id — so rather than a second copy of the send machinery drifting beside
+        // the first, the print is here (it needs only the id) and the full
+        // document is one click away.
+        actions={[
+          {
+            label: 'Print or save as PDF',
+            icon: Printer,
+            title: 'Opens the bill as the customer sees it, to print or attach',
+            onClick: () => {
+              openServerHtml(`/v1/invoicing/documents/${invoice.id}/pdf`).catch(
+                (error: unknown) => {
+                  toast.add({
+                    title: 'Could not open the print view',
+                    description: error instanceof Error ? error.message : 'Try again in a moment.',
+                    type: 'error',
+                  });
+                }
+              );
+            },
+          },
+          {
+            label: 'Open the full bill',
+            icon: FileText,
+            title: 'The same bill on the Invoices screen, where you can email it and take payment',
+            onClick: (event) => {
+              ctx.open('invoicing.invoice.edit', { id: invoice.id }, { target: targetFor(event) });
+            },
+          },
+        ]}
         controls={
           <>
             <Badge color={state.tone} variant="soft" size="sm">
@@ -518,14 +571,13 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
               <FieldControl
                 render={
                   <div className="max-w-48">
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={dueDate}
                       disabled={!editable}
                       aria-label="Due date"
-                      onChange={(event) => {
-                        setDueDate(event.target.value);
+                      onValueChange={(value) => {
+                        setDueDate(value);
                       }}
                     />
                   </div>

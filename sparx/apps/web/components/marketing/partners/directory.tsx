@@ -28,7 +28,7 @@ export function PartnersDirectory({ partners }: { partners: PartnerCard[] }) {
           </Heading>
           <Text variant="lead" className="max-w-xl">
             If you run a business and want someone to set sparx up properly, the directory lists
-            partners by where they are and what they specialise in. Contact them directly. They work
+            partners by where they are and what they specialize in. Contact them directly. They work
             for you, not for us.
           </Text>
           <a

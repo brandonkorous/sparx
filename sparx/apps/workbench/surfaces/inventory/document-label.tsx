@@ -10,17 +10,22 @@
 // sparx has only ever carried its number as text. So: one label, Code 128, big
 // enough to read from the top of a pallet.
 //
-// ── One surface for four documents, not four surfaces ─────────────────────
+// ── One surface for five documents, not five surfaces ─────────────────────
 //
-// A purchase order, a receipt, a transfer and a count all need exactly the same
-// thing: their reference as bars, their reference as text, and one line saying
-// what it is. There is no per-document variation worth four files, and four
-// files would guarantee the four drift apart.
+// A purchase order, a receipt, a transfer, a count and a pick list all need
+// exactly the same thing: their reference as bars, their reference as text, and
+// one line saying what it is. There is no per-document variation worth five
+// files, and five files would guarantee the five drift apart.
+//
+// The header used to say FOUR while the pane was opened by five, and the fifth
+// was the one the scan resolver had never been taught (issue 718). A count that
+// stops matching is the cheapest tell there is that something was added and the
+// rest of it was not.
 //
 // ── Deliberately not part of the PDF document builder ─────────────────────
 //
 // The PO document (`purchase-order-document.ts`) is what gets emailed to a
-// supplier — an external artefact with a brand on it. This is a sticker for our
+// supplier — an external artifact with a brand on it. This is a sticker for our
 // own dock. Putting a scannable code on the supplier's copy would be putting our
 // internal reference on someone else's desk, where it means nothing.
 
@@ -85,7 +90,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Document label controls"
+        label="Print a label controls"
         className="print:hidden"
         controls={
           <>

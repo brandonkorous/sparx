@@ -29,6 +29,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { accountState, formatCents, useAccounts, type AccountRow } from './accounts-data';
+import { creditStanding } from '../../lib/credit-standing';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 const FILTERS = [
@@ -89,7 +90,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Trade account controls"
+        label="Accounts controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -217,6 +218,31 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
+/**
+ * What this account owes, and whether it may still order on terms.
+ *
+ * This guarded on `creditLimitCents > 0` and had two branches, so an account at
+ * a zero limit printed "No credit set" and the outstanding balance went on the
+ * floor. One company in the dev database is exactly there, owing $1,193.
+ *
+ * "No credit set" was also the wrong reading of the zero. The checkout works out
+ * `creditLimit - creditUsed` and refuses anything larger, so a zero is not an
+ * absent ceiling, it is a closed door: no order on terms gets through. The
+ * Customers app drew the same record from the other side and printed
+ * "$1,193.00 of $0.00 used"; lib/credit-standing.ts is the one place that now
+ * decides which of the three things is true.
+ */
+function creditLine(row: AccountRow): string {
+  switch (creditStanding(row.creditLimitCents, row.creditUsedCents)) {
+    case 'limit':
+      return `${formatCents(row.creditUsedCents)} of ${formatCents(row.creditLimitCents)}`;
+    case 'owing':
+      return `${formatCents(row.creditUsedCents)} owed, no more on terms`;
+    default:
+      return 'Cannot order on terms';
+  }
+}
+
 function AccountTableRow({
   row,
   onOpen,
@@ -246,11 +272,7 @@ function AccountTableRow({
         </Text>
       </td>
       <td className="hidden @lg:table-cell">{row.pricingTierName ?? '—'}</td>
-      <td className="hidden text-right text-sm tabular-nums @xl:table-cell">
-        {row.creditLimitCents > 0
-          ? `${formatCents(row.creditUsedCents)} of ${formatCents(row.creditLimitCents)}`
-          : 'No credit set'}
-      </td>
+      <td className="hidden text-right text-sm tabular-nums @xl:table-cell">{creditLine(row)}</td>
       <td className="text-right">
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}

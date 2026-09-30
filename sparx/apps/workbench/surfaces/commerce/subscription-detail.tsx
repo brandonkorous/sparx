@@ -29,7 +29,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { CreditCard, Pause, Play, Repeat2, Square } from 'lucide-react';
+import { CreditCard, ExternalLink, Pause, Play, Repeat2, Square } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -50,6 +50,7 @@ import {
   useSubscription,
   type SubscriptionDetail,
 } from './subscriptions-data';
+import { historyOrder } from './repeat-order-words';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -66,7 +67,7 @@ function Figure({ value, label }: { value: string; label: string }) {
   );
 }
 
-function DetailBody({ sub }: { sub: SubscriptionDetail }) {
+function DetailBody({ ctx, sub }: { ctx: SurfaceContext; sub: SubscriptionDetail }) {
   const toast = useToast();
   const confirm = useConfirm();
   const pause = usePauseSubscription(sub.id);
@@ -423,16 +424,36 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
       {sub.events.length > 0 ? (
         <FormSection title="History">
           <div className="flex flex-col gap-3">
-            {sub.events.map((event) => (
-              <div key={event.id} className="flex flex-wrap items-center justify-between gap-2">
-                <Text as="span" className="font-medium">
-                  {subscriptionEventLabel(event.event)}
-                </Text>
-                <Text as="span" className="text-sm">
-                  <Timestamp value={event.occurredAt} format="relative" />
-                </Text>
-              </div>
-            ))}
+            {sub.events.map((event) => {
+              // "Renewed: an order was placed" named an order and gave no way to
+              // reach it, while the id sat unread in the event's own payload.
+              const order = historyOrder(event.payload);
+              return (
+                <div key={event.id} className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <Text as="span" className="font-medium">
+                      {subscriptionEventLabel(event.event)}
+                    </Text>
+                    {order ? (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="module"
+                        onClick={() => {
+                          ctx.open('commerce.order.detail', { id: order.id }, { target: 'tab' });
+                        }}
+                      >
+                        <ExternalLink className="size-4" aria-hidden />
+                        {order.number}
+                      </Button>
+                    ) : null}
+                  </div>
+                  <Text as="span" className="text-sm">
+                    <Timestamp value={event.occurredAt} format="relative" />
+                  </Text>
+                </div>
+              );
+            })}
           </div>
         </FormSection>
       ) : null}
@@ -538,7 +559,7 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </p>
         ) : (
           <div className="py-1">
-            <DetailBody sub={sub} />
+            <DetailBody ctx={ctx} sub={sub} />
           </div>
         )}
       </div>

@@ -17,13 +17,14 @@ import type {
   PayoutStatus,
   ReferralStatus,
 } from './data';
+import { formatCentsAmount } from '../../lib/money-format';
 
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
 /** Cents → a currency string. Money always arrives as integer cents; this is the
  *  only place it becomes a decimal, so no call site divides by 100 by hand. */
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function formatDate(iso: string | null | undefined): string {

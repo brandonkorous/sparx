@@ -89,6 +89,7 @@ export type CredentialTestResult =
 export function useTestAiCredential() {
   const invalidate = useInvalidateCredential();
   return useMutation({
+    meta: { running: 'test that connection' },
     mutationFn: () => api.post<CredentialTestResult>('/v1/ai/credentials/test'),
     onSuccess: () => {
       void invalidate();

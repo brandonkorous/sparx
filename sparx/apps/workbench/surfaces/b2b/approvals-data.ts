@@ -18,6 +18,7 @@
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -53,7 +54,7 @@ export const approvalKeys = {
 };
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function formatDateTime(value: string | null | undefined): string {

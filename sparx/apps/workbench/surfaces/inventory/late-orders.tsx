@@ -193,7 +193,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Overdue order controls"
+        label="Overdue deliveries controls"
         status={
           <Text className="text-sm">
             {rows.length === 0
@@ -201,6 +201,8 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
               : `${formatCents(totalAtStake)} of stock is late across ${plural(rows.length, 'order', 'orders')}`}
           </Text>
         }
+        statusReady={!report.isLoading}
+        statusFailed={report.isError}
         refresh={
           <RefreshButton
             className="ml-auto"

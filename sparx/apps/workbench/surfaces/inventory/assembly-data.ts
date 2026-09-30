@@ -78,6 +78,10 @@ export interface BomComponent {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  /** WHICH ONE of it — "M / Natural". Both, never one: a recipe lists two
+   *  lengths of the same linen and the product name alone reads the same on
+   *  both rows. Issue 681. */
+  variantName: string | null;
   /** Single units the whole BATCH needs. */
   quantityPer: number;
   scrapPercent: number;
@@ -92,12 +96,25 @@ export interface Bom {
   outputVariantId: string;
   outputSku: string | null;
   outputTitle: string | null;
+  /** WHICH VERSION this makes. */
+  outputVariantName: string | null;
   name: string;
   version: number;
   status: BomStatus;
   outputQuantity: number;
   laborCostCents: number;
   componentCount: number;
+  /** At TODAY's component prices — what you price against before you have made
+   *  any. What a batch actually cost is settled when a run finishes.
+   *
+   *  On the ROW as well as the detail, so the list's "Costs about" column and
+   *  the detail's "Costs about" card show the same number. They did not: the
+   *  list printed `laborCostCents` under that heading. */
+  estimatedUnitCostCents: number;
+  estimatedComponentCostCents: number;
+  /** Ingredients with NO cost recorded. 229 of Juniper Row's 232 items have
+   *  none, and they were being summed as zero. */
+  uncostedComponentCount: number;
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -105,16 +122,16 @@ export interface Bom {
 
 export interface BomDetail extends Bom {
   components: BomComponent[];
-  /** At TODAY's component prices — what you price against before you have made
-   *  any. What a batch actually cost is settled when a run finishes. */
-  estimatedUnitCostCents: number;
-  estimatedComponentCostCents: number;
 }
 
 export interface BuildableComponent {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  /** WHICH ONE of it — "M / Natural". Both, never one: a recipe lists two
+   *  lengths of the same linen and the product name alone reads the same on
+   *  both rows. Issue 681. */
+  variantName: string | null;
   requiredPerBatch: number;
   available: number;
   supports: number;
@@ -138,6 +155,10 @@ export interface AssemblyLine {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  /** WHICH ONE of it — "M / Natural". Both, never one: a recipe lists two
+   *  lengths of the same linen and the product name alone reads the same on
+   *  both rows. Issue 681. */
+  variantName: string | null;
   quantityPerBatch: number;
   scrapPercent: number;
   quantityRequired: number;
@@ -157,6 +178,8 @@ export interface AssemblyOrder {
   outputVariantId: string;
   outputSku: string | null;
   outputTitle: string | null;
+  /** WHICH VERSION this makes. */
+  outputVariantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
   quantityPlanned: number;
@@ -278,6 +301,7 @@ export interface SetVariantUomsInput {
 export function useSetVariantUoms(variantId: string) {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { writing: 'this item’s pack sizes' },
     mutationFn: (input: SetVariantUomsInput) =>
       api.put<VariantUomSetup>(`/v1/inventory/variants/${variantId}/units`, input),
     onSuccess: () => {

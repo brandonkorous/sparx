@@ -262,7 +262,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Scheduled report controls"
+        label="Sent to your inbox controls"
         primary={
           <Button
             color="module"

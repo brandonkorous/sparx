@@ -49,6 +49,7 @@ import { Check, ChevronDown, LayoutDashboard, Pencil, Plus, Star, Trash2 } from 
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import {
@@ -259,9 +260,39 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   /* ── Render ─────────────────────────────────────────────────────────────── */
 
+  /**
+   * THE BAR STAYS, WHATEVER STATE THE PANE IS IN.
+   *
+   * Both of this pane's boardless states returned without one, so the screen a
+   * person meets FIRST had no name on it, no refresh and none of the chrome
+   * every other pane in this console keeps in every state. The board picker and
+   * "Add a report" both need a board, so until there is one the bar carries
+   * what there IS: a way to make the first board, and a refresh.
+   */
+  const boardlessToolbar = (
+    <PaneToolbar
+      label="Dashboard controls"
+      primary={
+        <Button color="module" onClick={startNewBoard}>
+          <Plus className="size-4" aria-hidden /> New dashboard
+        </Button>
+      }
+      controls={
+        <RefreshButton
+          isFetching={isFetching}
+          onRefresh={() => {
+            void landing.refetch();
+            void refetch();
+          }}
+        />
+      }
+    />
+  );
+
   if (landing.isPending) {
     return (
       <div className={PANE_SHELL}>
+        {boardlessToolbar}
         <div className="skeleton m-6 h-64" />
       </div>
     );
@@ -386,9 +417,33 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
     </PaneScope>
   );
 
+  // A failed read left `landing.data` undefined, which the branch below read as
+  // "you have no boards" — telling someone their dashboards do not exist because
+  // the server could not be reached. Two facts, two answers. The other console
+  // fixed this and this one was left behind.
+  if (landing.isError && !landing.data && !activeId) {
+    return (
+      <div className={PANE_SHELL}>
+        {boardlessToolbar}
+        <div className="flex flex-1 items-center justify-center p-6">
+          <PaneLoadError
+            icon={<LayoutDashboard className="size-6" aria-hidden />}
+            title="Could not load your dashboards"
+            description="This is a problem reaching the server. Every board you have built is unaffected."
+            onRetry={() => {
+              void landing.refetch();
+              void refetch();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (!landing.data && !activeId) {
     return (
       <div className={PANE_SHELL}>
+        {boardlessToolbar}
         <div className="flex flex-1 items-center justify-center p-6">
           <EmptyState
             icon={<LayoutDashboard className="size-6" aria-hidden />}

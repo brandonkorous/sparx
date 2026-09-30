@@ -51,6 +51,7 @@ import {
   useUpdateBackorder,
 } from './demand-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 /** `<input type="date">` wants `YYYY-MM-DD`; the API speaks ISO instants. */
 function toDateInput(iso: string | null): string {
@@ -149,7 +150,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Commitment controls"
+        label="Owed controls"
         primary={
           <Button
             color="primary"
@@ -288,11 +289,10 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
             <Field>
               <FieldLabel>Date to give them</FieldLabel>
-              <Input
-                type="date"
+              <DayInput
                 value={promised}
-                onChange={(event) => {
-                  setPromised(event.target.value);
+                onValueChange={(value) => {
+                  setPromised(value);
                 }}
               />
             </Field>

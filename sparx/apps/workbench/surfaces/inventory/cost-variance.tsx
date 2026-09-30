@@ -129,6 +129,11 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
         ? Math.round((data.totalVarianceCents / data.totalStandardCents) * 1000) / 10
         : null;
 
+    // Every figure in the card above is a sum over the units that HAVE a planned
+    // cost. With none of them there is no answer, which is a different thing
+    // from an answer of zero.
+    const nothingCompared = data.comparedUnits === 0;
+
     return (
       <div className={COLUMN}>
         <div className="flex flex-col gap-1">
@@ -144,10 +149,20 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
 
         <Card className="shrink-0">
           <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
+            {/* NOTHING COMPARED MEANS NOTHING TO REPORT, and $0.00 is not that.
+                All three of these are sums over the units that HAVE a planned
+                cost, so with none of them they are arithmetically zero and read
+                as "you spent nothing, you planned nothing, you were exactly on
+                budget" to a business that bought $1,083.12 of cloth. The line
+                under the third one already said so - "Nothing here had a plan to
+                compare against", written next to a note about one zero meaning
+                two opposite things - and the NUMBER above it went on saying
+                $0.00 anyway. `bom-detail` answered the identical question with
+                "Not known" (issue 690). Issue 727. */}
             <Stat>
               <StatTitle>What you planned to pay</StatTitle>
               <StatValue className="text-2xl tabular-nums">
-                {formatCents(data.totalStandardCents, currency)}
+                {nothingCompared ? 'Not known' : formatCents(data.totalStandardCents, currency)}
               </StatValue>
               <StatDesc>
                 {data.comparedUnits === data.totalUnits
@@ -158,12 +173,18 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
             <Stat>
               <StatTitle>What it actually cost</StatTitle>
               <StatValue className="text-2xl tabular-nums">
-                {formatCents(data.totalActualCents, currency)}
+                {nothingCompared ? 'Not known' : formatCents(data.totalActualCents, currency)}
               </StatValue>
               <StatDesc>
-                {data.comparedUnits === data.totalUnits
-                  ? 'Goods plus everything it took to get them here'
-                  : 'Goods plus freight, for those same units'}
+                {/* "For those same units" over NO units is a scope nobody can
+                    read, and it sits above a banner that does know the real
+                    total. Say there is nothing here and let the banner carry
+                    it. */}
+                {nothingCompared
+                  ? 'Nothing here to add up'
+                  : data.comparedUnits === data.totalUnits
+                    ? 'Goods plus everything it took to get them here'
+                    : 'Goods plus freight, for those same units'}
               </StatDesc>
             </Stat>
             <Stat>
@@ -177,7 +198,9 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                       : 'text-2xl tabular-nums'
                 }
               >
-                {formatCents(Math.abs(data.totalVarianceCents), currency)}
+                {nothingCompared
+                  ? 'Not known'
+                  : formatCents(Math.abs(data.totalVarianceCents), currency)}
               </StatValue>
               <StatDesc>
                 {/* "Exactly what you planned for" over a business that planned
@@ -301,7 +324,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Cost comparison controls"
+        label="Cost vs plan controls"
         controls={
           <>
             <NativeSelect
@@ -321,7 +344,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Location"
               value={locationId}
               onChange={(event) => {

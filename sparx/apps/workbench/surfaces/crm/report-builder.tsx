@@ -436,7 +436,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL} ref={accentRef}>
-      <PaneToolbar label="Report builder controls">
+      <PaneToolbar label="Report controls">
         <div className="ml-auto flex items-center gap-2">
           {readOnly ? (
             <Button color="module" onClick={() => void handleDuplicate()}>

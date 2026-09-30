@@ -28,9 +28,11 @@ import {
   FieldLabel,
   Input,
   Select,
+  Text,
 } from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { STAGE_KIND_LABEL, type FunnelStage, type StageKind } from './data';
+import { recordedBy } from './recorded-by';
 
 /** Every kind a person can choose. `convert` is absent on purpose: exactly one
  *  step converts, it is always the last, and offering it as a dropdown value
@@ -166,6 +168,7 @@ function StageRow({
           </FieldDescription>
         </Field>
       ) : null}
+      <Text className="text-sm">{recordedBy(stage)}</Text>
     </li>
   );
 }

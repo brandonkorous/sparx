@@ -8,8 +8,11 @@
 // by id. Each row wears its owning module's hue as a small signal — wayfinding,
 // not decoration, so the tint rides the icon rather than washing the whole card.
 
-import { Button, Card, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { LayoutDashboard, ServerCrash } from 'lucide-react';
+import { Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { LayoutDashboard } from 'lucide-react';
+import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -92,25 +95,19 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
           {dashboards.isError ? (
-            <EmptyState
-              icon={<ServerCrash className="size-6" aria-hidden />}
+            <PaneLoadError
+              icon={<LayoutDashboard className="size-6" aria-hidden />}
               title="Could not load your dashboards"
               description={analyticsErrorMessage(
                 dashboards.error,
-                'This is a problem reaching the server. Try again in a moment.'
+                'This is a problem reaching the server. Nothing you are looking at is affected. It just could not be read.'
               )}
-              actions={
-                <Button size="sm" color="neutral" onClick={() => void dashboards.refetch()}>
-                  Try again
-                </Button>
-              }
+              onRetry={() => void dashboards.refetch()}
             />
           ) : dashboards.isPending ? (
-            <Text className="text-sm" role="status">
-              Loading…
-            </Text>
+            <PaneWaiting label="Getting your dashboards" />
           ) : (dashboards.data ?? []).length === 0 ? (
-            <EmptyState
+            <PaneEmpty
               icon={<LayoutDashboard className="size-6" aria-hidden />}
               title="No dashboards yet"
               description="Dashboards arrive with the parts of sparx you switch on. Turn on the site builder for your traffic dashboard, for example."

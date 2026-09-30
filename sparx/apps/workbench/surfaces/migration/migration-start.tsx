@@ -123,7 +123,7 @@ export function MigrationStartSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Migration controls"
+        label="Move in controls"
         controls={
           <>
             <Button
@@ -147,7 +147,7 @@ export function MigrationStartSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-y-auto [&>*]:shrink-0">
         <div className="flex flex-col gap-2">
           <Heading level={2}>Bring your business over</Heading>
           <Text>

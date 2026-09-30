@@ -26,10 +26,18 @@
 // seam to feed live server results through. Brandon approved the composition.
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
-import { Dialog, DialogContent, DialogTitle, Kbd, SearchInput } from '@wizeworks/silicaui-react';
+import { Dialog, DialogContent, DialogTitle, SearchInput } from '@wizeworks/silicaui-react';
 import { useNavEntries, useRecordEntries } from './launcher-entries';
 import { rankEntries, rankRecords, type Entry } from './launcher-match';
-import { groupEntries, LauncherEmpty, LauncherGroup, RecordSearchNote } from './launcher-rows';
+import {
+  groupEntries,
+  LAUNCHER_LIST_ID,
+  launcherRowId,
+  LauncherEmpty,
+  LauncherGroup,
+  RecordSearchNote,
+} from './launcher-rows';
+import { EnterKey } from './shortcut-keys';
 import { useSearchStatus } from '../lib/api/search';
 
 export function Launcher({
@@ -75,16 +83,26 @@ export function Launcher({
 
   // Surfaces filter locally on the live query; records arrive already filtered.
   // Empty query is the launcher's resting state: navigation only, no records.
-  const entries = useMemo<Entry[]>(() => {
+  //
+  // The two halves are held apart rather than concatenated in one step, because
+  // the note along the foot describes them separately and was guessing at how
+  // many of each were below it. `surfaces.length` is that count.
+  const surfaces = useMemo<Entry[]>(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return navEntries;
-    // BOTH halves ranked. Surfaces were; records arrived in the search server's
-    // order and were appended untouched, so its typo tolerance decided what the
-    // highlight — and therefore Enter — landed on. Typing "Priya" put Privacy
-    // Policy first with three customers called Priya below it; typing
-    // "Marguerite" put the text of a review above the woman who wrote it.
-    return [...rankEntries(navEntries, q), ...rankRecords(recordEntries, q)];
-  }, [query, navEntries, recordEntries]);
+    return q ? rankEntries(navEntries, q) : navEntries;
+  }, [query, navEntries]);
+
+  // BOTH halves ranked. Surfaces were; records arrived in the search server's
+  // order and were appended untouched, so its typo tolerance decided what the
+  // highlight — and therefore Enter — landed on. Typing "Priya" put Privacy
+  // Policy first with three customers called Priya below it; typing
+  // "Marguerite" put the text of a review above the woman who wrote it.
+  const records = useMemo<Entry[]>(() => {
+    const q = query.trim().toLowerCase();
+    return q ? rankRecords(recordEntries, q) : [];
+  }, [query, recordEntries]);
+
+  const entries = useMemo<Entry[]>(() => [...surfaces, ...records], [surfaces, records]);
 
   // Keep the highlight in range as the list shrinks/grows under it.
   useEffect(() => {
@@ -146,17 +164,33 @@ export function Launcher({
             focusable), so no autofocus prop is needed. */}
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="border-base-300 border-b p-3">
+            {/* A combobox, not a plain field. Arrows move a highlight in the
+                list below while focus stays here, so the field has to SAY
+                which row is current — `aria-activedescendant` is the whole of
+                how a screen reader follows the walk. Without it the list was
+                silent and only the sighted half of the contract worked. */}
             <SearchInput
               size="md"
               value={query}
               onValueChange={setQuery}
               onKeyDown={onKeyDown}
+              role="combobox"
               aria-label="Search everything"
+              aria-autocomplete="list"
+              aria-controls={LAUNCHER_LIST_ID}
+              aria-expanded={entries.length > 0}
+              aria-activedescendant={entries.length > 0 ? launcherRowId(activeIndex) : undefined}
               placeholder="Search for anything: orders, customers, products…"
             />
           </div>
 
-          <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto p-2" role="listbox">
+          <div
+            ref={listRef}
+            id={LAUNCHER_LIST_ID}
+            className="min-h-0 flex-1 overflow-y-auto p-2"
+            role="listbox"
+            aria-label="Results"
+          >
             {entries.length === 0 ? (
               <LauncherEmpty searching={searching} typed={query.trim().length > 0} />
             ) : (
@@ -177,7 +211,8 @@ export function Launcher({
               than a row in it, and it must not scroll out of sight. */}
           <RecordSearchNote
             searching={searching}
-            found={recordEntries.length}
+            found={records.length}
+            screens={surfaces.length}
             query={query}
             gaps={status.data}
           />
@@ -186,13 +221,13 @@ export function Launcher({
               a surface and a record. */}
           <div className="border-base-300 flex items-center gap-4 border-t px-3 py-2 text-xs">
             <span className="flex items-center gap-1">
-              <Kbd size="sm">↵</Kbd> open
+              <EnterKey size="sm" /> open
             </span>
             <span className="flex items-center gap-1">
-              <Kbd size="sm">⇧↵</Kbd> alongside
+              <EnterKey hold="shift" size="sm" /> alongside
             </span>
             <span className="flex items-center gap-1">
-              <Kbd size="sm">⌥↵</Kbd> new window
+              <EnterKey hold="alt" size="sm" /> new window
             </span>
           </div>
         </div>

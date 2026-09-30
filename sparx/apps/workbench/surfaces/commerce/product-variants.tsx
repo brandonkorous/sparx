@@ -6,7 +6,9 @@
 // product with no choices there is exactly one of them and that is the whole
 // story. On a product WITH choices the set is DERIVED from the lattice on the
 // Options tab — every combination of choices is a slot, and a slot either has a
-// version in it or does not.
+// version on sale in it, has a stopped one waiting to come back, or is genuinely
+// empty. Those are three different offers, and reading the middle one as the
+// third is what put stockless "-2" codes on sale beside the real ones (issue 305).
 //
 // ── Why there is no "add a version" button ───────────────────────────────
 //
@@ -62,13 +64,21 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { useTabSave } from './product-tab-save';
 import { FormSection } from '../../components/form-section';
 import { MoneyInput } from '@/components/money-input';
-import { skuStem, slotLabel, slotsOf, suggestSlotSku, type Slot } from './product-variant-slots';
+import {
+  gridOf,
+  skuStem,
+  slotLabel,
+  slotsOf,
+  suggestSlotSku,
+  type Slot,
+} from './product-variant-slots';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
   formatCents,
   productErrorMessage,
   useArchiveVariant,
+  useAssignVariantOptions,
   useCreateVariant,
   useProductOptions,
   useProductVariants,
@@ -202,12 +212,13 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
   const archive = useArchiveVariant(product.id);
   const restore = useRestoreVariant(product.id);
   const setDefault = useSetDefaultVariant(product.id);
+  const assign = useAssignVariantOptions(product.id);
 
   const all = useMemo(() => variants.data ?? [], [variants.data]);
   const live = useMemo(() => all.filter((variant) => variant.deletedAt === null), [all]);
   const retired = useMemo(() => all.filter((variant) => variant.deletedAt !== null), [all]);
   const axes = useMemo(() => options.data ?? [], [options.data]);
-  const slots = useMemo(() => slotsOf(axes, live), [axes, live]);
+  const slots = useMemo(() => slotsOf(axes, live, retired), [axes, live, retired]);
 
   /** The code this product already carries, and every code it already holds.
    *  Both are needed wherever a new version is offered a code, and both are
@@ -333,6 +344,11 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
     });
   };
 
+  /** Only ever handed combinations that have never held a version AND whose code
+   *  no placeless version of this product already carries. A square with a
+   *  stopped version in it is brought back in place, and a square whose version
+   *  lost its place is offered that version; creating a new one on top of either
+   *  is what minted the "-2" codes (issue 305). */
   const fillTheRest = async (empty: Slot[]) => {
     const price = live.find((variant) => variant.isDefault)?.priceCents ?? product.priceMinCents;
     if (price === null) {
@@ -379,6 +395,53 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
     toast.add({ title: `${String(made)} combinations now have a price`, type: 'success' });
   };
 
+  const onRestore = (variant: Variant) => {
+    restore.mutate(variant.id, {
+      onSuccess: () => {
+        toast.add({ title: `${variant.sku} is on sale again`, type: 'success' });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not bring that back',
+          description: productErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  /** Gives a version that belongs to no combination one to belong to. Works on a
+   *  stopped version as well as one on sale: where it sits and whether it is
+   *  being sold are two different facts, and the server keeps them apart
+   *  (`assignOptionValues` in variant-service.ts, issue 306). */
+  const onPlace = (variant: Variant, slot: Slot) => {
+    assign.mutate(
+      {
+        variantId: variant.id,
+        optionValueIds: slot.coordinate.map((point) => point.valueId),
+      },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: `${variant.sku} is now ${slotLabel(slot)}`,
+            description:
+              variant.deletedAt === null
+                ? 'Shoppers can reach it again.'
+                : 'It is back in the grid, ready to sell again whenever you want it.',
+            type: 'success',
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not put that version in the grid',
+            description: productErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
   const failed = options.isError || variants.isError;
   if (failed) {
     // A failed load REPLACES the grid. An empty table beside a dead Save invites
@@ -415,11 +478,18 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
     );
   }
 
-  const placed = new Set(
-    slots.map((slot) => slot.variant?.id).filter((id): id is string => id !== undefined)
+  const { stranded, homeless, resting, empty, claimants, fillable, free } = gridOf(
+    slots,
+    axes.length > 0,
+    live,
+    retired,
+    stem
   );
-  const stranded = axes.length > 0 ? live.filter((variant) => !placed.has(variant.id)) : [];
-  const empty = slots.filter((slot) => slot.variant === null);
+  // On a product with no choices there is one square, with no coordinate, and a
+  // stopped version on it is that product's only way back onto the website.
+  const soleSlot = axes.length === 0 ? (slots[0] ?? null) : null;
+  const soleRetired = soleSlot && live.length === 0 ? soleSlot.retired : [];
+  const placingId = assign.isPending ? (assign.variables?.variantId ?? null) : null;
 
   const rowProps = {
     drafts,
@@ -478,7 +548,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
       ) : null}
 
       {axes.length === 0 ? (
-        live.length === 0 ? null : (
+        live.length > 0 ? (
           <FormSection
             title="How this product is sold"
             description="There is one version of this product. Shoppers do not choose anything. They just buy it."
@@ -487,7 +557,19 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
               <VariantRow key={variant.id} variant={variant} label={variant.sku} {...rowProps} />
             ))}
           </FormSection>
-        )
+        ) : soleSlot && soleRetired.length > 0 ? (
+          <FormSection
+            title="Nobody can buy this right now"
+            description="You stopped selling this product's only version. Its price, code and stock are all kept. Sell it again and it is back exactly as it was, at the price it had."
+          >
+            <RetiredSlotRows
+              slot={soleSlot}
+              label={(variant) => variant.sku}
+              busy={restore.isPending}
+              onRestore={onRestore}
+            />
+          </FormSection>
+        ) : null
       ) : (
         <GroupedGrid
           slots={slots}
@@ -496,41 +578,53 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
           stem={stem}
           taken={taken}
           create={create}
+          restoring={restore.isPending}
+          onRestore={onRestore}
+          claimants={claimants}
+          placingId={placingId}
+          onPlace={onPlace}
         />
       )}
 
-      {stranded.length > 0 ? (
-        <FormSection
-          title="Versions with no place in the grid"
-          description="These do not match any combination of the current choices, so shoppers cannot reach them. This normally means a choice was changed while a version was still sitting on it."
-        >
-          {stranded.map((variant) => (
-            <VariantRow key={variant.id} variant={variant} label={variant.sku} {...rowProps} />
-          ))}
-        </FormSection>
-      ) : null}
+      <FindAPlace
+        stranded={stranded}
+        homeless={homeless}
+        free={free}
+        claimants={claimants}
+        placingId={placingId}
+        onPlace={onPlace}
+      />
 
       {axes.length > 0 && empty.length > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Text>
+          <Text className="min-w-0 flex-1">
             {empty.length === 1
               ? '1 combination has no price, so nobody can buy it.'
               : `${String(empty.length)} combinations have no price, so nobody can buy them.`}
+            {claimants.size > 0
+              ? ` ${claimants.size === 1 ? 'One of them already has a version' : `${String(claimants.size)} of them already have a version`} carrying its code, so put that back instead of making a new one.`
+              : ''}
           </Text>
-          <Button
-            size="sm"
-            variant="outline"
-            color="module"
-            loading={create.isPending}
-            onClick={() => {
-              void fillTheRest(empty);
-            }}
-          >
-            <Plus className="size-4" aria-hidden />
-            Give them all the same price
-          </Button>
+          {fillable.length > 0 ? (
+            <Button
+              size="sm"
+              variant="outline"
+              color="module"
+              loading={create.isPending}
+              onClick={() => {
+                void fillTheRest(fillable);
+              }}
+            >
+              <Plus className="size-4" aria-hidden />
+              {fillable.length === empty.length
+                ? 'Give them all the same price'
+                : `Give the other ${String(fillable.length)} the same price`}
+            </Button>
+          ) : null}
         </div>
       ) : null}
+
+      <RestingSection resting={resting} hasChoices={axes.length > 0} />
 
       {axes.length > 0 ? (
         // The one place the constraint is spelled out, for whoever goes looking
@@ -545,27 +639,6 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
           tab and each combination gets its own price here.
         </Text>
       )}
-
-      {retired.length > 0 ? (
-        <RetiredSection
-          retired={retired}
-          busy={restore.isPending}
-          onRestore={(variant) => {
-            restore.mutate(variant.id, {
-              onSuccess: () => {
-                toast.add({ title: `${variant.sku} is on sale again`, type: 'success' });
-              },
-              onError: (error) => {
-                toast.add({
-                  title: 'Could not bring that back',
-                  description: productErrorMessage(error, 'Nothing was changed.'),
-                  type: 'error',
-                });
-              },
-            });
-          }}
-        />
-      ) : null}
     </div>
   );
 }
@@ -696,6 +769,11 @@ function GroupedGrid({
   stem,
   taken,
   create,
+  restoring,
+  onRestore,
+  claimants,
+  placingId,
+  onPlace,
 }: {
   slots: Slot[];
   axes: ProductOption[];
@@ -705,6 +783,13 @@ function GroupedGrid({
   stem: string;
   taken: Set<string>;
   create: ReturnType<typeof useCreateVariant>;
+  restoring: boolean;
+  onRestore: (variant: Variant) => void;
+  /** Empty squares whose own code a placeless version already carries, by slot
+   *  key. See `claimantOf`. */
+  claimants: Map<string, Variant>;
+  placingId: string | null;
+  onPlace: (variant: Variant, slot: Slot) => void;
 }) {
   const grouped = useMemo(() => {
     const groups = new Map<string, { title: string; slots: Slot[] }>();
@@ -724,21 +809,158 @@ function GroupedGrid({
     <>
       {grouped.map((group) => (
         <FormSection key={group.title} title={group.title}>
-          {group.slots.map((slot) =>
-            slot.variant ? (
-              <VariantRow
-                key={slot.key}
-                variant={slot.variant}
-                label={slotLabel(slot)}
-                {...rowProps}
-              />
-            ) : (
+          {group.slots.map((slot) => {
+            if (slot.variant) {
+              return (
+                <VariantRow
+                  key={slot.key}
+                  variant={slot.variant}
+                  label={slotLabel(slot)}
+                  {...rowProps}
+                />
+              );
+            }
+            if (slot.retired.length > 0) {
+              return (
+                <RetiredSlotRows
+                  key={slot.key}
+                  slot={slot}
+                  label={(variant) =>
+                    slot.retired.length > 1
+                      ? `${slotLabel(slot)} · ${variant.sku}`
+                      : slotLabel(slot)
+                  }
+                  busy={restoring}
+                  onRestore={onRestore}
+                />
+              );
+            }
+            const claimant = claimants.get(slot.key);
+            if (claimant) {
+              return (
+                <ClaimedSlotRow
+                  key={slot.key}
+                  slot={slot}
+                  claimant={claimant}
+                  busy={placingId === claimant.id}
+                  onPlace={onPlace}
+                />
+              );
+            }
+            return (
               <EmptySlotRow key={slot.key} slot={slot} stem={stem} taken={taken} create={create} />
-            )
-          )}
+            );
+          })}
         </FormSection>
       ))}
     </>
+  );
+}
+
+/* ── A combination whose versions were stopped ───────────────────────────── */
+
+const SLOT_ROW = 'border-base-300 flex flex-wrap items-center gap-2 border-b pb-2 last:border-b-0';
+
+/**
+ * This combination is not empty. Its versions were stopped and still hold their
+ * codes, prices and stock, so the offer is to bring one back, never to make a
+ * new one on top of them.
+ *
+ * One row EACH when a square holds more than one, with the code in the label so
+ * they can be told apart. Two stopped versions on one square is what repairing a
+ * damaged shop produces, and offering only the first let array order pick which
+ * price, code and stock she was handed (issue 306).
+ */
+function RetiredSlotRows({
+  slot,
+  label,
+  busy,
+  onRestore,
+}: {
+  slot: Slot;
+  /** What each row is called. The caller decides, because a grid row is named
+   *  by its combination and a product with no choices has none to name. */
+  label: (variant: Variant) => string;
+  busy: boolean;
+  onRestore: (variant: Variant) => void;
+}) {
+  return (
+    <>
+      {slot.retired.map((variant) => (
+        <div className={SLOT_ROW} key={variant.id}>
+          {/* Never truncated: two versions on one square can differ only in a
+              "-2" at the end of the code, and that is the difference between the
+              one holding the stock and the one holding none. */}
+          <Text className="min-w-0 flex-1 wrap-anywhere">{label(variant)}</Text>
+          <Text as="span" className="tabular-nums">
+            {formatCents(variant.priceCents, variant.currency)}
+          </Text>
+          <Badge variant="outline" size="sm">
+            Not sold
+          </Badge>
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            loading={busy}
+            onClick={() => {
+              onRestore(variant);
+            }}
+          >
+            <Undo2 className="size-4" aria-hidden />
+            Sell it again
+          </Button>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/* ── A combination whose own version lost its place ─────────────────────── */
+
+/**
+ * Nothing sits in this square, but a version of this product that sits nowhere
+ * carries the exact code this square would be given. That version is this
+ * square's, holding its price and stock, so the one offer here is to put it
+ * back. "Set a price" would pre-fill a "-2" code, and a new stockless version on
+ * sale beside the real one is the defect this row exists to prevent (issue 305).
+ */
+function ClaimedSlotRow({
+  slot,
+  claimant,
+  busy,
+  onPlace,
+}: {
+  slot: Slot;
+  claimant: Variant;
+  busy: boolean;
+  onPlace: (variant: Variant, slot: Slot) => void;
+}) {
+  return (
+    <div className="border-base-300 flex flex-col gap-2 border-b pb-2 last:border-b-0">
+      <div className="flex flex-wrap items-center gap-2">
+        <Text className="min-w-0 flex-1">{slotLabel(slot)}</Text>
+        <Badge color="warning" variant="soft" size="sm">
+          Nothing on sale
+        </Badge>
+        <Button
+          size="sm"
+          color="module"
+          loading={busy}
+          onClick={() => {
+            onPlace(claimant, slot);
+          }}
+        >
+          Put it back here
+        </Button>
+      </div>
+      <Text className="wrap-anywhere">
+        {claimant.sku} carries this combination&apos;s code and its price of{' '}
+        {formatCents(claimant.priceCents, claimant.currency)}, but has lost its place in the grid.
+        Putting it back keeps its price, code and stock
+        {claimant.deletedAt === null ? '.' : ', and you can then choose to sell it again.'}
+      </Text>
+    </div>
   );
 }
 
@@ -765,7 +987,7 @@ function EmptySlotRow({
 
   if (!adding) {
     return (
-      <div className="border-base-300 flex flex-wrap items-center gap-2 border-b pb-2 last:border-b-0">
+      <div className={SLOT_ROW}>
         <Text className="min-w-0 flex-1">{slotLabel(slot)}</Text>
         <Badge color="warning" variant="soft" size="sm">
           No price
@@ -829,7 +1051,6 @@ function EmptySlotRow({
         <Button
           size="sm"
           variant="ghost"
-          color="neutral"
           onClick={() => {
             setAdding(false);
           }}
@@ -1144,7 +1365,7 @@ function VariantRow({
                 <Button
                   size="sm"
                   variant="outline"
-                  color="neutral"
+                  color="info"
                   onClick={() => {
                     onMakeDefault(variant);
                   }}
@@ -1200,7 +1421,6 @@ function OptionalMoney({
           <Button
             size="sm"
             variant="outline"
-            color="neutral"
             onClick={() => {
               onChange(0);
             }}
@@ -1221,7 +1441,6 @@ function OptionalMoney({
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             aria-label={`Remove ${label.toLowerCase()}`}
             onClick={() => {
@@ -1278,46 +1497,196 @@ function WholeNumber({
   );
 }
 
-/* ── Retired versions ───────────────────────────────────────────────────── */
+/* ── Versions with no place in the grid ─────────────────────────────────── */
 
-function RetiredSection({
-  retired,
-  busy,
-  onRestore,
+const PLACE_ROW =
+  'border-base-300 flex flex-col gap-2 border-b pb-3 last:border-b-0 @md:flex-row @md:items-center';
+
+/**
+ * Every version that belongs to no combination, on sale or stopped, with the
+ * control that puts it back.
+ *
+ * This used to be two sections with two offers and no cure between them: one
+ * listed the on-sale ones with an ordinary price editor and a sentence saying
+ * shoppers could not reach them, the other listed EVERY stopped version with
+ * "Sell it again", which put an unreachable version on sale and moved it from
+ * the bottom section to the middle one, no closer to being bought (issue 306).
+ * The cure is the same for both, say which combination it belongs to, so they
+ * share one section and the badge says which of the two it is.
+ */
+function FindAPlace({
+  stranded,
+  homeless,
+  free,
+  claimants,
+  placingId,
+  onPlace,
 }: {
-  retired: Variant[];
-  busy: boolean;
-  onRestore: (variant: Variant) => void;
+  /** On sale, but sitting on no combination. */
+  stranded: Variant[];
+  /** Stopped, and with no combination to come back to. */
+  homeless: Variant[];
+  /** Combinations with nothing on sale in them. */
+  free: Slot[];
+  /** Empty squares whose own code one of these carries, by slot key. The picker
+   *  starts on that square, because it is almost certainly where it belongs. */
+  claimants: Map<string, Variant>;
+  placingId: string | null;
+  onPlace: (variant: Variant, slot: Slot) => void;
 }) {
+  const versions = [...stranded, ...homeless];
+  if (versions.length === 0) return null;
+
   return (
     <FormSection
-      title="No longer sold"
-      description="These are kept so past orders still make sense, and because their codes stay reserved. Bring one back and it goes on sale again at the price it had."
+      title="Versions with no place in the grid"
+      description={
+        free.length > 0
+          ? 'These do not belong to any combination of choices, so nobody can reach them on your website. Say where each one belongs and it goes back in the grid keeping its price, code and stock.'
+          : 'These do not belong to any combination of choices, so nobody can reach them on your website. Every combination already has something on sale in it. Add the choice these belong to on the Options tab, or stop selling whatever is in the combination you want, and they can go back.'
+      }
     >
-      {retired.map((variant) => (
-        <div
-          key={variant.id}
-          className="border-base-300 flex flex-wrap items-center gap-2 border-b pb-2 last:border-b-0"
-        >
-          <Text className="min-w-0 flex-1 truncate">{variant.title ?? variant.sku}</Text>
-          <Text as="span" className="tabular-nums">
-            {formatCents(variant.priceCents, variant.currency)}
-          </Text>
-          <Badge color="neutral" variant="soft" size="sm">
-            Retired
+      {versions.map((variant) => {
+        const home = [...claimants.entries()].find(([, claimant]) => claimant.id === variant.id);
+        return (
+          <PlaceRow
+            key={variant.id}
+            variant={variant}
+            free={free}
+            home={home?.[0] ?? null}
+            busy={placingId === variant.id}
+            onPlace={onPlace}
+          />
+        );
+      })}
+    </FormSection>
+  );
+}
+
+function PlaceRow({
+  variant,
+  free,
+  home,
+  busy,
+  onPlace,
+}: {
+  variant: Variant;
+  free: Slot[];
+  /** The square whose code this version carries, if any. */
+  home: string | null;
+  busy: boolean;
+  onPlace: (variant: Variant, slot: Slot) => void;
+}) {
+  const [picked, setPicked] = useState<string | null>(null);
+  // The list moves under her as each version is placed, so a stale choice falls
+  // back rather than writing somewhere else: first to the square this version's
+  // code names, then to an EMPTY one. A square already holding a stopped version
+  // is a fine place and is labeled so, but defaulting to it stacks two on a
+  // square nobody asked to share (issue 306).
+  const chosen =
+    free.find((slot) => slot.key === picked) ??
+    free.find((slot) => slot.key === home) ??
+    free.find((slot) => slot.retired.length === 0) ??
+    free[0] ??
+    null;
+
+  return (
+    <div className={PLACE_ROW}>
+      {/* Never truncated. Two versions can differ only in a "-2" at the end, and
+          a "…" there hides which one holds the stock. */}
+      <Text className="min-w-0 flex-1 wrap-anywhere">{variant.title ?? variant.sku}</Text>
+      <div className="flex flex-wrap items-center gap-2">
+        <Text as="span" className="tabular-nums">
+          {formatCents(variant.priceCents, variant.currency)}
+        </Text>
+        {variant.deletedAt === null ? (
+          <Badge color="warning" variant="soft" size="sm">
+            On sale, but hidden
           </Badge>
+        ) : (
+          <Badge variant="outline" size="sm">
+            Not sold
+          </Badge>
+        )}
+      </div>
+
+      {chosen ? (
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="min-w-44">
+            <Select
+              color="module"
+              size="sm"
+              aria-label={`Where ${variant.sku} belongs`}
+              value={chosen.key}
+              items={free.map((slot) => ({ value: slot.key, label: choiceLabel(slot) }))}
+              onValueChange={(next) => {
+                setPicked((next as string | null) ?? null);
+              }}
+            />
+          </div>
           <Button
             size="sm"
-            variant="outline"
-            color="neutral"
+            color="module"
             loading={busy}
             onClick={() => {
-              onRestore(variant);
+              onPlace(variant, chosen);
             }}
           >
-            <Undo2 className="size-4" aria-hidden />
-            Sell it again
+            Put it here
           </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** A combination already holding a stopped version is still a fine place to put
+ *  one, and saying so beats letting her find out afterwards. Kept short: a select
+ *  truncates its own trigger, and a longer caveat lost everything but the words
+ *  that introduce it at 360px. */
+function choiceLabel(slot: Slot): string {
+  const held = slot.retired.length;
+  if (held === 0) return slotLabel(slot);
+  return `${slotLabel(slot)} (${String(held)} not sold)`;
+}
+
+/* ── Stopped versions whose combination sells something else ────────────── */
+
+/**
+ * Nothing is wrong with these. Stopping a version and selling a new one on the
+ * same combination is how anybody replaces a line, and the old one settles here.
+ *
+ * Listed rather than hidden because their codes stay RESERVED, and a code held
+ * by a row nobody can see makes "that code already exists" impossible to answer.
+ * No "Sell it again" either: two versions on sale in one combination is the state
+ * this tab exists to prevent, so the sentence names the real way back.
+ */
+function RestingSection({ resting, hasChoices }: { resting: Variant[]; hasChoices: boolean }) {
+  if (resting.length === 0) return null;
+
+  return (
+    <FormSection
+      title="Kept, but not sold"
+      description={
+        hasChoices
+          ? 'Each of these sits on a combination you are already selling something else in, so nothing needs doing. They are kept because past orders refer to them and their codes stay reserved. To go back to one, stop selling the version in its combination and it appears there ready to sell again.'
+          : 'You are selling a newer version of this product, so nothing needs doing. These are kept because past orders refer to them and their codes stay reserved. To go back to one, stop selling the current version and it appears here ready to sell again.'
+      }
+    >
+      {resting.map((variant) => (
+        <div
+          key={variant.id}
+          className="border-base-300 flex flex-col gap-1 border-b pb-2 last:border-b-0 @md:flex-row @md:items-center @md:gap-2"
+        >
+          <Text className="min-w-0 flex-1 wrap-anywhere">{variant.sku}</Text>
+          <div className="flex items-center gap-2">
+            <Text as="span" className="tabular-nums">
+              {formatCents(variant.priceCents, variant.currency)}
+            </Text>
+            <Badge variant="outline" size="sm">
+              Not sold
+            </Badge>
+          </div>
         </div>
       ))}
     </FormSection>

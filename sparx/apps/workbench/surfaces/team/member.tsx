@@ -40,7 +40,7 @@ import { Activity, Save, TriangleAlert, UserX } from 'lucide-react';
 import { EditorLayout, EDITOR_RAIL_STICKY } from '../../components/editor-layout';
 import { FormSection } from '../../components/form-section';
 import { describeAgo, useActivity } from '../../lib/api/activity';
-import { useModuleStates, useViewer } from '../../lib/api/shell-data';
+import { useModuleStates, useSites, useViewer } from '../../lib/api/shell-data';
 import { useTeamMember, useUpdateTeamMember, type MemberPatch } from '../../lib/api/team';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { moduleLabel } from '../../lib/surfaces/nav';
@@ -51,6 +51,7 @@ import {
 } from '../../components/module-scope';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { signedInLine } from './signed-in-line';
 import {
   ASSIGNABLE_ROLES,
   canModifyMember,
@@ -58,6 +59,7 @@ import {
   personName,
   roleDescription,
   roleHasModuleLimits,
+  roleHasSiteLimits,
   roleLabel,
 } from './roles';
 
@@ -88,6 +90,10 @@ interface AccessForm {
   role: string;
   moduleAccessMode: 'all' | 'selected';
   modules: string[];
+  /** The SITE axis. Not "which parts of the product" but "whose business" —
+   *  see `roleHasSiteLimits` and `@wizeworks/auth/property-access`. */
+  propertyAccessMode: 'all' | 'selected';
+  properties: string[];
 }
 
 export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -97,12 +103,15 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
   const { member, ready, isError, missing, refetch } = useTeamMember(memberId);
   const { data: viewer } = useViewer();
   const { data: moduleStates } = useModuleStates();
+  const { data: sites } = useSites();
   const update = useUpdateTeamMember();
 
   const [form, setForm] = useState<AccessForm>({
     role: 'viewer',
     moduleAccessMode: 'all',
     modules: [],
+    propertyAccessMode: 'all',
+    properties: [],
   });
   const [loaded, setLoaded] = useState(false);
 
@@ -114,6 +123,8 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
         role: member.role,
         moduleAccessMode: member.moduleAccessMode,
         modules: member.modules,
+        propertyAccessMode: member.propertyAccessMode,
+        properties: member.properties,
       });
       setLoaded(true);
     }
@@ -133,6 +144,16 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
     [moduleStates]
   );
 
+  /** Every site this account runs, the primary one first so the list opens
+   *  with the business most people mean when they say "the shop". */
+  const siteChoices = useMemo(
+    () =>
+      [...(sites ?? [])].sort((a, b) =>
+        a.isPrimary === b.isPrimary ? a.name.localeCompare(b.name) : a.isPrimary ? -1 : 1
+      ),
+    [sites]
+  );
+
   const editable = member
     ? canModifyMember(viewer?.role, viewer?.userId, {
         role: member.role,
@@ -140,12 +161,26 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
       })
     : false;
 
+  // Both keyed on the role being EDITED, not the saved one — switching someone
+  // from Editor to Admin should collapse a limit the moment it stops meaning
+  // anything, not after a save.
+  const limitable = roleHasModuleLimits(form.role);
+  const siteLimitable = roleHasSiteLimits(form.role);
+
+  // A collapsed limit is not a change anyone can SEE, so it must not light the
+  // Save button either. Switching someone to Admin hides both lists at once,
+  // and ticks left behind them would leave Save lit over a pane holding
+  // nothing to undo.
   const dirty =
     loaded &&
     member !== null &&
     (form.role !== member.role ||
-      form.moduleAccessMode !== member.moduleAccessMode ||
-      form.modules.join(',') !== member.modules.join(','));
+      (limitable &&
+        (form.moduleAccessMode !== member.moduleAccessMode ||
+          form.modules.join(',') !== member.modules.join(','))) ||
+      (siteLimitable &&
+        (form.propertyAccessMode !== member.propertyAccessMode ||
+          form.properties.join(',') !== member.properties.join(','))));
 
   useDirtySource(dirty, "This teammate's access has unsaved changes. Close anyway?");
 
@@ -214,20 +249,31 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
   const name = personName(member);
   const isOwner = member.role === 'owner';
   const isSelf = member.userId === viewer?.userId;
-  // Keyed on the role being EDITED, not the saved one — switching someone from
-  // Editor to Admin should collapse the areas question the moment it stops
-  // meaning anything, not after a save.
-  const limitable = roleHasModuleLimits(form.role);
 
   const save = () => {
     // Only what changed. A patch that always sends every field would let a role
     // change silently re-assert a module list the operator never looked at.
+    //
+    // And a limit is sent only for a role that can HOLD one. The server refuses
+    // to put a module or a site limit on an owner or an admin, so a pane that
+    // posted the ticks left over from the previous role would answer "change
+    // their role first" to somebody who had just changed their role.
     const patch: MemberPatch = {};
     if (form.role !== member.role) patch.role = form.role;
-    if (form.moduleAccessMode !== member.moduleAccessMode) {
-      patch.moduleAccessMode = form.moduleAccessMode;
+    if (limitable) {
+      if (form.moduleAccessMode !== member.moduleAccessMode) {
+        patch.moduleAccessMode = form.moduleAccessMode;
+      }
+      if (form.modules.join(',') !== member.modules.join(',')) patch.modules = form.modules;
     }
-    if (form.modules.join(',') !== member.modules.join(',')) patch.modules = form.modules;
+    if (siteLimitable) {
+      if (form.propertyAccessMode !== member.propertyAccessMode) {
+        patch.propertyAccessMode = form.propertyAccessMode;
+      }
+      if (form.properties.join(',') !== member.properties.join(',')) {
+        patch.properties = form.properties;
+      }
+    }
 
     update.mutate(
       { memberId: member.id, patch },
@@ -416,6 +462,93 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
                 </FormSection>
               )}
 
+              {/* SITES — the third axis, and the one an account with more than
+                  one business actually needs. The role says how much a person
+                  may change and the list above says which apps they may open;
+                  neither can say "the Saturday assistant works the market stall
+                  only", because both businesses use the same apps.
+
+                  Off screen entirely for an account with one site, where every
+                  answer means the same thing — unless a limit is already set,
+                  which must stay visible so it can be taken off again. */}
+              {siteChoices.length < 2 &&
+              form.propertyAccessMode === 'all' ? null : !siteLimitable ? (
+                <FormSection title="Which of your sites they can open">
+                  <Text>
+                    {isOwner ? 'Owners' : 'Admins'} always reach every site you run, so there is
+                    nothing to choose here.
+                  </Text>
+                </FormSection>
+              ) : (
+                <FormSection
+                  title="Which of your sites they can open"
+                  description="You run more than one business here. On top of their role, you can keep someone to just the ones they work on."
+                >
+                  <RadioGroup
+                    color="module"
+                    value={form.propertyAccessMode}
+                    aria-label={`Which sites ${name} can open`}
+                    disabled={!editable}
+                    onValueChange={(next) => {
+                      setForm((prev) => ({
+                        ...prev,
+                        propertyAccessMode: next === 'selected' ? 'selected' : 'all',
+                      }));
+                    }}
+                  >
+                    <RadioOption value="all" className="items-start py-1">
+                      <span className="flex flex-col gap-0.5">
+                        <span className="font-medium">Every site you run</span>
+                        <span className="text-sm">
+                          Including any you add later. This is the normal choice.
+                        </span>
+                      </span>
+                    </RadioOption>
+                    <RadioOption value="selected" className="items-start py-1">
+                      <span className="flex flex-col gap-0.5">
+                        <span className="font-medium">Only the sites I choose</span>
+                        <span className="text-sm">
+                          {/* Each of these is a promise the server keeps, and the
+                              last one is the one that bites months later. */}
+                          The other sites disappear for them entirely, along with their orders,
+                          customers and takings. A site you add later will not be included.
+                        </span>
+                      </span>
+                    </RadioOption>
+                  </RadioGroup>
+
+                  {form.propertyAccessMode === 'selected' ? (
+                    <>
+                      <CheckboxGroup
+                        color="module"
+                        value={form.properties}
+                        aria-label={`Sites ${name} can open`}
+                        disabled={!editable}
+                        onValueChange={(next) => {
+                          setForm((prev) => ({ ...prev, properties: next }));
+                        }}
+                        className="grid gap-1 @lg:grid-cols-2"
+                      >
+                        {siteChoices.map((site) => (
+                          <CheckboxOption key={site.id} value={site.id}>
+                            {site.name}
+                          </CheckboxOption>
+                        ))}
+                      </CheckboxGroup>
+                      {/* An empty tick list is a real, saveable state that leaves
+                          someone able to sign in and reach none of the business
+                          — worth saying out loud before they save it. */}
+                      {form.properties.length === 0 ? (
+                        <Text className="text-warning">
+                          Nothing is ticked, so {name} will be able to sign in and see nothing at
+                          all.
+                        </Text>
+                      ) : null}
+                    </>
+                  ) : null}
+                </FormSection>
+              )}
+
               <MemberActivity userId={member.userId} name={name} />
             </>
           }
@@ -447,7 +580,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
                   </MetadataItem>
                   <MetadataItem label="Joined">{formatDate(member.createdAt)}</MetadataItem>
                   <MetadataItem label="Last signed in">
-                    {formatSeen(member.lastLoginAt, 'Has not signed in yet')}
+                    {signedInLine(member, (iso) => formatSeen(iso, ''))}
                   </MetadataItem>
                   <MetadataItem label="Last did something">
                     {formatSeen(member.lastActiveAt, 'Nothing yet')}

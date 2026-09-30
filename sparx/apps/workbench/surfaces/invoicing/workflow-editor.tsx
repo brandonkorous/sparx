@@ -34,26 +34,25 @@ import {
   AlertTitle,
   Badge,
   Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, MoreHorizontal, Save } from 'lucide-react';
+import { Archive, ArchiveRestore, Save } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { isSystemWorkflowSlug } from '@wizeworks/crm-schemas/builtins';
 import { StageCanvas, SETTINGS_NODE } from './stage-canvas';
 import { StageInspector } from './stage-inspector';
 import type { DocumentWorkflowDetail } from './types';
 import {
   blankStage,
+  comparableWorkflow,
   emptyWorkflowDraft,
   slugify,
   toWorkflowDraft,
   useArchiveWorkflow,
+  useRestoreWorkflow,
   useInvalidateWorkflows,
   useWorkflow,
   workflowErrorMessage,
@@ -66,18 +65,25 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
 
-  const { data: workflow, isPending, isError } = useWorkflow(id);
+  const { data: workflow, isPending, isError, refetch } = useWorkflow(id);
   const invalidate = useInvalidateWorkflows();
   const archive = useArchiveWorkflow();
+  const restore = useRestoreWorkflow();
   const toast = useToast();
   const confirm = useConfirm();
 
   const [draft, setDraft] = useState<WorkflowDraft>(emptyWorkflowDraft);
-  // What was last adopted from the server, serialized. Dirty is the comparison
-  // against it: a sticky boolean meant "somebody touched something" rather than
-  // "this differs from what is stored", so undoing an edit still left the pane
-  // claiming unsaved work and still confirmed on close (issue 507).
-  const baselineRef = useRef<string>(JSON.stringify(emptyWorkflowDraft()));
+  // What was last adopted from the server, reduced to what the server stores.
+  // Dirty is the comparison against it: a sticky boolean meant "somebody
+  // touched something" rather than "this differs from what is stored", so
+  // undoing an edit still left the pane claiming unsaved work and still
+  // confirmed on close (issue 507).
+  //
+  // BOTH sides go through `comparableWorkflow`, and that is the whole point.
+  // Serializing the draft raw made the baseline permanently unequal to it,
+  // because each stage carries a random session key — so the pane was dirty on
+  // arrival and the adopt effect below, guarded on dirty, never ran (issue 780).
+  const baselineRef = useRef<string>(comparableWorkflow(emptyWorkflowDraft()));
   // Once the operator has typed a reference name of their own, the name field
   // stops overwriting it — otherwise fixing a typo in the title silently rewrites
   // a slug that may already be linked to from elsewhere.
@@ -100,14 +106,14 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const [selectedId, setSelectedId] = useState<string>(SETTINGS_NODE);
   const [mobilePane, setMobilePane] = useState<'flow' | 'edit'>('flow');
 
-  const dirty = JSON.stringify(draft) !== baselineRef.current;
+  const dirty = comparableWorkflow(draft) !== baselineRef.current;
   useDirtySource(dirty, 'This workflow has unsaved changes. Close it anyway?');
 
   /** Adopt a server state as both the draft and the baseline. */
   const adopt = (next: DocumentWorkflowDetail) => {
     const adopted = toWorkflowDraft(next);
     setDraft(adopted);
-    baselineRef.current = JSON.stringify(adopted);
+    baselineRef.current = comparableWorkflow(adopted);
     setOriginal(next);
     setSlugTouched(true);
     ctx.setTitle(next.name);
@@ -192,8 +198,11 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!original) return;
     const ok = await confirm({
       title: `Archive “${original.name}”?`,
+      // The last sentence is new, and it is not reassurance: it is the truth,
+      // and it only became true when Bring it back was built. Before that this
+      // confirm described a reversible change over a one-way one (issue 783).
       description:
-        'It stops being offered when someone creates a document. Documents already using it are untouched and keep working exactly as they do now.',
+        'It stops being offered when someone creates a document. Documents already using it are untouched and keep working exactly as they do now. You can find it again under Archived and bring it back.',
       color: 'danger',
       confirmLabel: 'Archive workflow',
       cancelLabel: 'Keep it',
@@ -207,6 +216,24 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
       onError: (error) => {
         toast.add({
           title: 'Could not archive this workflow',
+          description: workflowErrorMessage(error, 'Try again in a moment.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  /** No confirm: this one only ever puts something back. */
+  const onRestore = () => {
+    if (!original) return;
+    restore.mutate(original.id, {
+      onSuccess: () => {
+        toast.add({ title: 'Workflow brought back', type: 'success' });
+        void refetch();
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not bring this workflow back',
           description: workflowErrorMessage(error, 'Try again in a moment.'),
           type: 'error',
         });
@@ -283,32 +310,30 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                 Default
               </Badge>
             ) : null}
-            {original ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    className="ml-auto shrink-0"
-                    aria-label="More actions"
-                  >
-                    <MoreHorizontal className="size-4" aria-hidden />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      void onArchive();
-                    }}
-                  >
-                    <Archive className="size-4" aria-hidden />
-                    Archive workflow
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : null}
           </>
+        }
+        /* Archiving and un-archiving are the same slot: only one of them can
+           apply, so showing both would mean one is always inert. */
+        actions={
+          original
+            ? [
+                original.archivedAt
+                  ? {
+                      label: 'Bring it back',
+                      title: 'Put this workflow back in the list',
+                      icon: ArchiveRestore,
+                      onClick: onRestore,
+                    }
+                  : {
+                      label: 'Archive',
+                      title: 'Archive this workflow',
+                      icon: Archive,
+                      onClick: () => {
+                        void onArchive();
+                      },
+                    },
+              ]
+            : undefined
         }
       />
 
@@ -361,6 +386,9 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             onDefault={(value) => {
               update({ isDefault: value });
             }}
+            /* Read off the STORED slug, never the draft: the question is what
+               this workflow already is, not what somebody has typed. */
+            slugLocked={isSystemWorkflowSlug(original?.slug)}
             onStagePatch={patchStage}
             onStageRemove={removeStage}
           />

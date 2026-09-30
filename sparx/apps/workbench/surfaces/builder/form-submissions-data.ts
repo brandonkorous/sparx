@@ -82,6 +82,10 @@ export interface FormSubmission {
 export interface SubmissionFormRef {
   formNodeId: string;
   formName: string | null;
+  /** Which page the form sits on (its latest submission's). The one handle an
+   *  UNNAMED form has: without it every unnamed form in the picker read
+   *  "Untitled form", so three forms on three pages could not be told apart. */
+  pageSlug: string | null;
   count: number;
 }
 
@@ -236,15 +240,52 @@ export function submitterLabel(
   return 'Anonymous';
 }
 
-/** What the form is called, in the words the owner set — or a plain fallback. */
-export function formLabel(submission: Pick<FormSubmission, 'formName' | 'formNodeId'>): string {
-  if (submission.formName && submission.formName.trim() !== '') return submission.formName.trim();
-  return 'Untitled form';
+/** What the form is called, in the words the owner set, or null when nobody
+ *  named it. An empty name is not a name: it is the default nobody filled in. */
+export function formName(submission: Pick<FormSubmission, 'formName'>): string | null {
+  const name = submission.formName?.trim() ?? '';
+  return name.length > 0 ? name : null;
 }
 
 /** Where on the site it was submitted from, in plain words. */
 export function pageLabel(pageSlug: string | null): string {
   return pageSlug && pageSlug.trim() !== '' ? `/${pageSlug}` : 'Home page';
+}
+
+/**
+ * How to IDENTIFY the form in a line that has one line to do it: its name if it
+ * has one, otherwise the page it sits on.
+ *
+ * This used to return a bare "Untitled form", which is what every unnamed form
+ * said, in the column and in the "which form" picker alike: the column that
+ * exists to tell three forms apart told an owner nothing. The page was already
+ * on every row and on every entry of the picker's list, and drawn nowhere there.
+ *
+ * Two unnamed forms on the SAME page still collide. That wants a per-form name,
+ * which the form settings pane is where to give one; a node id nobody can read
+ * is not a better label.
+ */
+export function formLabel(submission: Pick<FormSubmission, 'formName' | 'pageSlug'>): string {
+  return formName(submission) ?? pageLabel(submission.pageSlug);
+}
+
+/**
+ * Name every row by its FORM, not by the copy frozen onto that row.
+ *
+ * `formName` on a submission is a snapshot taken the moment somebody pressed
+ * send, which is right for a stored row and wrong for a column. An owner who
+ * names her form after two people have used it would see the same form listed
+ * under two labels. The response's `forms` list carries each form's CURRENT name
+ * (the server reads it off the form definition), so reading the label from there
+ * makes the column and the picker agree by construction.
+ */
+export function formNamer(
+  forms: SubmissionFormRef[]
+): (submission: Pick<FormSubmission, 'formNodeId' | 'formName' | 'pageSlug'>) => string {
+  const byNode = new Map(forms.map((form) => [form.formNodeId, formLabel(form)]));
+  // The row's own snapshot is the fallback, for a form that has since been
+  // removed from its page and so is not in `forms` at all.
+  return (submission) => byNode.get(submission.formNodeId) ?? formLabel(submission);
 }
 
 /**
@@ -309,8 +350,11 @@ function csvEscape(value: string): string {
  * straight into the tool they already use.
  */
 export function submissionToCsv(submission: FormSubmission, siteName: string | null): string {
+  const named = formName(submission);
   const rows: [string, string][] = [
-    ['Form', formLabel(submission)],
+    // Named only. Unnamed, the label falls back to the page, and a Form column
+    // repeating the Page column beside it is a column of nothing.
+    ...(named ? ([['Form', named]] as [string, string][]) : []),
     ['Page', pageLabel(submission.pageSlug)],
     ...(siteName ? ([['Site', siteName]] as [string, string][]) : []),
     ['Submitted', formatDateTime(submission.createdAt)],

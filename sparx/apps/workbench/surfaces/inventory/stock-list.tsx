@@ -13,7 +13,7 @@
 //
 // ── Every narrowing is a SERVER filter ───────────────────────────────────
 //
-// Search, location, "running low", the sort and the paging all go to the API.
+// Search, location, which state, the sort and the paging all go to the API.
 // Sorting the loaded window in the browser sorts ONE page and presents it as the
 // answer, so "what is closest to running out" would return the scarcest of the
 // fifty rows that happen to be in hand. "Running low" in particular is an
@@ -22,8 +22,9 @@
 //
 // ── Four empty states, because they are four different problems ──────────
 //
-// Nothing matches the search · nothing matches the low-stock filter (which is
-// GOOD news and should say so) · nothing is counted anywhere yet · and the one
+// Nothing matches the search · nothing matches the running-low or the
+// none-to-sell filter (each GOOD news, and each should say so in its own words)
+// · nothing is counted anywhere yet · and the one
 // that used to hide inside the first: the search matched a real PRODUCT that has
 // simply never been counted. This list can only see what has a level row, and a
 // level row appears only when somebody counts something — so a bakery typing
@@ -32,7 +33,7 @@
 // cause sends her to redo the thing she just did correctly. When the search is
 // the ONLY thing narrowing the list, we ask the catalog and offer what we find.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -42,11 +43,11 @@ import {
   Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Boxes, ShieldCheck, TrendingDown } from 'lucide-react';
+import { ArrowDown, ArrowUp, Boxes, PackageCheck, ShieldCheck, TrendingDown } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import {
   levelState,
   locationLabel,
@@ -73,6 +74,50 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 /**
+ * Which state of stock the list is narrowed to.
+ *
+ * Three values rather than two booleans, because they are the answers to ONE
+ * question and the server makes them mutually exclusive: "running low" is sent
+ * with `sellable_only`, so a level at zero is `out` and never also `low`. Two
+ * independent toggles would offer a both-on combination that means neither.
+ *
+ * `out` is the one this list could not ask for at all. "Running low" needs a
+ * reorder point, so a business that never set one could not get a list of what
+ * had run out from the stock screen, and the running-low empty state was sending
+ * people to an out-of-stock filter that did not exist.
+ */
+export type StockLevelFilter = '' | 'low' | 'out';
+
+/** The words the State column badges on every row a choice returns, so the
+ *  control and the rows under it say the same thing. */
+const LEVELS: readonly { value: StockLevelFilter; label: string }[] = [
+  { value: '', label: 'All stock' },
+  { value: 'low', label: 'Running low' },
+  { value: 'out', label: 'None to sell' },
+];
+
+/** A `level` arriving from outside: a deep link (the "Sold out" figure on the
+ *  stock report) or a saved view. Anything unrecognized means "no narrowing",
+ *  never a guess. */
+export function parseLevel(raw: unknown): StockLevelFilter {
+  return raw === 'low' || raw === 'out' ? raw : '';
+}
+
+/**
+ * What the TAB says, in the same words as the control.
+ *
+ * Params make a distinct pane, so a deep link opens a SECOND tab beside any
+ * already open, and two tabs reading "Stock", one showing 62 rows and one
+ * showing 1, is worse than the deep link is better. Base from the registry, so a
+ * rename there renames these too.
+ */
+function titleForLevel(level: StockLevelFilter): string {
+  const base = surfaceTitle('inventory.stock.list') ?? 'Stock';
+  const chosen = LEVELS.find((option) => option.value === level);
+  return level === '' || !chosen ? base : `${base} · ${chosen.label.toLowerCase()}`;
+}
+
+/**
  * What to try when nothing matched — naming ONLY what is actually narrowing the
  * list. Telling someone to clear a filter they never set sends them hunting for
  * a control that is already off.
@@ -91,7 +136,14 @@ function emptyAdvice(search: string, locationName: string | null): string {
 export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [locationId, setLocationId] = useState('');
-  const [lowOnly, setLowOnly] = useState(false);
+  // Seeded from the address so "3 sold out" on the stock report can open this
+  // showing exactly those. Read ONCE: after the first render the control owns
+  // it, and re-reading would fight a person who has since changed it.
+  const [level, setLevel] = useState<StockLevelFilter>(() => parseLevel(ctx.params.level));
+
+  useEffect(() => {
+    ctx.setTitle(titleForLevel(level));
+  }, [ctx, level]);
   // Most recently changed first: opened cold, the useful question is "what
   // moved". Switching to "To sell" answers "what is nearly gone" instead.
   const [sort, setSort] = useState<{ key: StockSortKey; dir: SortDirection }>({
@@ -99,17 +151,13 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     dir: 'desc',
   });
 
-  // What this list is showing, as plain strings — the shape a saved view stores
-  // and re-applies. Derived rather than held separately so a view can never
-  // drift out of step with the controls above it.
+  // The half of this list's state the toolbar does not already hold. Location
+  // and level ride the `filters` slot, which composes them into the snapshot
+  // under their own keys and puts them back on apply; repeating them here wrote
+  // each one twice under two names.
   const viewParams = useMemo(
-    () => ({
-      q: search.trim(),
-      warehouse: locationId,
-      low: lowOnly ? '1' : '',
-      sort: `${sort.key}:${sort.dir}`,
-    }),
-    [search, locationId, lowOnly, sort]
+    () => ({ q: search.trim(), sort: `${sort.key}:${sort.dir}` }),
+    [search, sort]
   );
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
@@ -126,7 +174,8 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useStockLevels({
     q: search.trim(),
     ...(locationId ? { warehouseId: locationId } : {}),
-    lowStockOnly: lowOnly,
+    lowStockOnly: level === 'low',
+    outOfStockOnly: level === 'out',
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -143,13 +192,13 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const narrowed = search.trim() !== '' || locationId !== '' || lowOnly;
+  const narrowed = search.trim() !== '' || locationId !== '' || level !== '';
 
   // Is this search a dead end because the thing was never COUNTED, rather than
   // because it does not exist? Only askable when the search is the only thing
   // narrowing the list: with a location filter on, an empty result means "not
   // here", and a product could be sitting counted at the place next door.
-  const searchOnly = search.trim() !== '' && locationId === '' && !lowOnly;
+  const searchOnly = search.trim() !== '' && locationId === '' && level === '';
   const catalog = useCatalogMatches(
     search.trim(),
     searchOnly && !isLoading && !isError && rows.length === 0
@@ -236,7 +285,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (rows.length === 0) {
       // "Nothing is running low" is good news, and an empty state that reads
       // like a failure over good news is its own kind of wrong.
-      if (lowOnly && search.trim() === '') {
+      if (level === 'low' && search.trim() === '') {
         return (
           <EmptyState
             icon={<TrendingDown className="size-6" aria-hidden />}
@@ -252,7 +301,19 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                2026-09-16 in the other console: a shop with exactly one reorder
                rule, the item at ZERO against a rule of 2, told everything was
                above the line. */
-            description="This shows items that have a reorder rule, are below it, and still have some left to sell. Anything that has run out completely is under the out-of-stock filter."
+            description="This shows items that have a reorder rule, are below it, and still have some left to sell. Anything that has run out completely is under None to sell."
+          />
+        );
+      }
+      // The same good news for the other state, in its own words. Says what the
+      // filter covers rather than only asserting a fact: an item nobody has ever
+      // counted is not a row here at all, and the band above names those.
+      if (level === 'out' && search.trim() === '') {
+        return (
+          <EmptyState
+            icon={<PackageCheck className="size-6" aria-hidden />}
+            title={locationName ? `Nothing has run out at ${locationName}` : 'Nothing has run out'}
+            description="Everything you have counted still has at least one a customer can buy. This covers counted items only: anything never counted is not tracked, and your website sells it without limit."
           />
         );
       }
@@ -436,7 +497,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           Nothing wraps: the location picker sheds to a narrow control and the
           search box absorbs whatever is left. */}
       <PaneToolbar
-        label="Stock list controls"
+        label="Stock controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -469,17 +530,14 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           },
           {
             label: 'Stock level',
-            key: 'lowOnly',
-            value: lowOnly ? 'low' : 'all',
+            key: 'level',
+            value: level,
             onValueChange: (next) => {
-              setLowOnly(next === 'low');
+              setLevel(parseLevel(next));
               resetWindow();
             },
-            options: [
-              { value: 'all', label: 'All stock' },
-              { value: 'low', label: 'Running low' },
-            ],
-            neutralValue: 'all',
+            options: LEVELS,
+            neutralValue: '',
           },
         ]}
         views={{
@@ -487,6 +545,11 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           params: viewParams,
           onApply: (next) => {
             setSearch(next.q ?? '');
+            // A view saved while this was a two-way choice stored `lowOnly` (and a
+            // copy as `low: '1'`), keys the filters slot no longer owns, so they
+            // arrive here. The slot has already reset `level` by the time this
+            // runs, so this only ever narrows it back.
+            if (next.lowOnly === 'low' || next.low === '1') setLevel('low');
             const [key, dir] = (next.sort ?? '').split(':');
             if (key && (dir === 'asc' || dir === 'desc')) {
               setSort({ key: key as StockSortKey, dir });

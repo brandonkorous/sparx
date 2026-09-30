@@ -206,7 +206,20 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     edge — the one column that must never be the one to go. */}
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{location.name}</span>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="truncate font-medium">{location.name}</span>
+                      {/* Where it came FROM, beside the name, because the whole
+                          problem is that a place nobody set up looks exactly
+                          like one they did. Removing sample data leaves
+                          locations behind on purpose (issue 174), so this is
+                          the only thing that still says so. `info` rather than
+                          `warning`: it is an origin, not a fault. */}
+                      {location.isSample ? (
+                        <Badge color="info" variant="soft" size="sm" className="shrink-0">
+                          Sample
+                        </Badge>
+                      ) : null}
+                    </span>
                     {/* The code is how the shelves are labelled — mono because it
                         is a code, not prose. */}
                     <span className="truncate font-mono text-sm">{location.code}</span>
@@ -251,7 +264,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           the "show closed" toggle sheds its label below @2xl — and the search box
           absorbs whatever is left. The primary action carries `ml-auto`. */}
       <PaneToolbar
-        label="Locations list controls"
+        label="Locations controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

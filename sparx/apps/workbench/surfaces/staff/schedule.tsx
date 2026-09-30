@@ -63,6 +63,7 @@ import {
   weekRange,
 } from './format';
 import { NOT_A_DATE, dayTimeLocal } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -493,7 +494,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
           <DialogTitle>{editing?.id ? 'Change this shift' : 'Add a shift'}</DialogTitle>
 
           {editing ? (
-            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
               <Field>
                 <FieldLabel>Who</FieldLabel>
                 <FieldControl
@@ -518,11 +519,10 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Day</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={editing.day}
-                      onChange={(event) => {
-                        setEditing({ ...editing, day: event.target.value });
+                      onValueChange={(value) => {
+                        setEditing({ ...editing, day: value });
                       }}
                     />
                   }

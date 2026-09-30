@@ -139,6 +139,16 @@ export interface SurfaceDefinition {
   /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
   readonly createLabel?: string;
   /**
+   * Extra params the `+` opens the create surface with, on top of `id: 'new'`.
+   *
+   * For the case where ONE create surface serves two doors and they are not the
+   * same errand: the till is a counter sale from Orders and an order a shop rang
+   * through from Wholesale orders, and the tab has to say what was pressed
+   * rather than renaming the action on arrival (issue 743). Most rows leave it
+   * unset and open the surface plain.
+   */
+  readonly createParams?: SurfaceParams;
+  /**
    * A live count of things WAITING on a person here — posts to approve, comments to
    * answer — rendered as a badge on this surface's nav row.
    *

@@ -29,7 +29,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { countryName, regionName } from './geo';
+import { countryName, regionName } from '../../lib/geo';
 import {
   nexusLabel,
   taxErrorMessage,

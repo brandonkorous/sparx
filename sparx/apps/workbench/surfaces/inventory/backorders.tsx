@@ -216,7 +216,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Backorder controls"
+        label="Waiting list controls"
         status={
           <Text className="text-sm">
             {unitsOutstanding > 0
@@ -252,7 +252,12 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                           : 'Nothing changed',
                       description:
                         result.stillUndated > 0
-                          ? `${plural(result.stillUndated, 'commitment', 'commitments')} still have no date anybody can give. Those need a purchase order raised.`
+                          ? // The verb and the pronoun agree with the count, not just the
+                            // noun. `plural` was doing the noun and the rest of the
+                            // sentence stayed written for a crowd: "1 commitment still
+                            // have no date anybody can give. Those need a purchase order
+                            // raised." [[feedback_a_fix_leaves_its_neighbour_behind]]
+                            `${plural(result.stillUndated, 'commitment', 'commitments')} still ${result.stillUndated === 1 ? 'has' : 'have'} no date anybody can give. ${result.stillUndated === 1 ? 'That one needs' : 'Those need'} a purchase order raised.`
                           : 'Every commitment already carries the best date available.',
                       type: result.stillUndated > 0 ? 'info' : 'success',
                     });

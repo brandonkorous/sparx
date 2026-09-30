@@ -15,7 +15,7 @@ import { Avatar, AvatarGroup } from '@wizeworks/silicaui-react';
 import { MessageSquareText, Video } from 'lucide-react';
 import { PlatformMark } from '../../components/platform-mark';
 import { useMediaAssets, type MediaAsset } from '../cms/media';
-import { focalClassFor } from './post-preview';
+import { focalClassFor } from '../cms/focal-point';
 import {
   platformName,
   targetStatusMeta,

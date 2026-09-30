@@ -18,6 +18,7 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
+  Button,
   Card,
   EmptyState,
   NativeSelect,
@@ -25,7 +26,7 @@ import {
   Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Gauge, PackageX } from 'lucide-react';
+import { Gauge, PackageX, SquarePen } from 'lucide-react';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import {
@@ -35,10 +36,12 @@ import {
   xyzLabel,
   xyzTone,
   type AbcClass,
+  type ClassificationRow,
   type XyzClass,
 } from './planning-data';
 import { PlanningShell, targetFor, useHasBeenMeasured } from './planning-shell';
 import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
+import { ClassifyDialog } from './classify-dialog';
 
 export function PlanningClassesSurface({ ctx }: { ctx: SurfaceContext }) {
   // Filter state lives up here so the controls can sit in the pane's ONE
@@ -51,7 +54,7 @@ export function PlanningClassesSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <PlanningShell
-      label="What matters controls"
+      label="Controls for what matters"
       isFetching={classifications.isFetching}
       updatedAt={classifications.data ? classifications.dataUpdatedAt : undefined}
       onRefresh={() => {
@@ -123,6 +126,10 @@ function ClassesPanel({
   xyz: '' | XyzClass | 'unknown';
 }) {
   const measured = useHasBeenMeasured();
+  // The row being answered by hand. Held as the ROW rather than an id so the
+  // dialog can show what the numbers worked out beside the answer, without a
+  // second request for something the list already has.
+  const [answering, setAnswering] = useState<ClassificationRow | null>(null);
 
   const classifications = useClassifications({
     ...(locationId ? { warehouseId: locationId } : {}),
@@ -140,16 +147,23 @@ function ClassesPanel({
   // state of every row, say WHY once at the top instead of leaving the reader to
   // infer that half the screen is broken.
   const noneJudged = rows.length > 0 && rows.every((row) => row.xyzClass === null);
+  // An override is a person answering the question, so it stands whether or not
+  // a cost was ever recorded.
+  const rankable = (row: (typeof rows)[number]) => row.costKnown || row.abcOverride !== null;
   // Worth is a year of usage multiplied by what a unit cost. An unrecorded cost
   // has to enter that multiplication as a zero for the arithmetic to run, so a
   // line nobody has priced scores nothing, ties with every other unpriced line
   // and lands in the long tail - indistinguishable from a line genuinely worth
   // nothing. The count is what lets the screen say which it is looking at.
-  const withoutCost = rows.filter((row) => !row.costKnown).length;
-  const noneRankable = rows.length > 0 && withoutCost === rows.length;
-  // An override is a person answering the question, so it stands whether or not
-  // a cost was ever recorded.
-  const rankable = (row: (typeof rows)[number]) => row.costKnown || row.abcOverride !== null;
+  //
+  // Counted with `rankable`, NOT with `costKnown`. Both alerts below are claims
+  // about the RANKING, and a line answered by hand has a real one. Written as
+  // `!row.costKnown` the screen contradicted itself the moment answering became
+  // possible (issue 877): a line badged Top value, above a warning saying
+  // neither column can rank anything yet.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const unranked = rows.filter((row) => !rankable(row)).length;
+  const noneRankable = rows.length > 0 && unranked === rows.length;
   // Advice follows from the WORTH x DEMAND pair, so a row whose worth is not a
   // finding has no advice to give. Nulled rather than skipped, so the run-length
   // dedupe below does not hide the next row's real sentence.
@@ -198,8 +212,9 @@ function ClassesPanel({
               has a cost price recorded against it. So every line multiplies out to nothing, every
               line ties, and every line lands in the long tail. That is the absence of a ranking
               rather than a ranking. Fill in what you paid on “What your stock cost you” and this
-              becomes a real one. Steadiness needs something else again: about six separate selling
-              days per item, over at least four weeks.
+              becomes a real one. For anything you make yourself, where there will never be a
+              purchase cost, say where the line sits by hand instead. Steadiness needs something
+              else again: about six separate selling days per item, over at least four weeks.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -232,14 +247,14 @@ function ClassesPanel({
 
       {/* Some priced and some not. The ranking still means something, but the
           unpriced lines are sitting at the bottom of it for the wrong reason. */}
-      {withoutCost > 0 && !noneRankable ? (
+      {unranked > 0 && !noneRankable ? (
         <Alert color="warning">
           <AlertContent>
-            <AlertTitle>{plural(withoutCost, 'item has', 'items have')} no cost price</AlertTitle>
+            <AlertTitle>{plural(unranked, 'item has', 'items have')} no cost price</AlertTitle>
             <AlertDescription>
               Worth is worked out from what a unit cost you, so a line with no cost ranks at the
               bottom whatever it is really worth. Set what you paid and it takes its real place in
-              this list.
+              this list. The ones you have already answered by hand are not counted here.
             </AlertDescription>
           </AlertContent>
           <SetCostsAction
@@ -296,6 +311,7 @@ function ClassesPanel({
                 <th className="hidden text-right whitespace-nowrap @lg:table-cell">Used a year</th>
                 <th className="hidden text-right whitespace-nowrap @xl:table-cell">Value a year</th>
                 <th className="hidden text-right whitespace-nowrap @2xl:table-cell">Share</th>
+                <th className="w-0" />
               </tr>
             </thead>
             <tbody>
@@ -383,12 +399,38 @@ function ClassesPanel({
                         ? '<0.01%'
                         : `${row.valueSharePct.toFixed(2)}%`}
                   </td>
+                  <td>
+                    {/* The row itself opens “Why this number”, so this has to
+                        stop the click reaching it. Two different questions
+                        about the same line, and the long one owns the row. */}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      shape="square"
+                      aria-label={`Say where ${row.sku ?? row.title ?? 'this item'} sits`}
+                      title="Say where this sits"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setAnswering(row);
+                      }}
+                    >
+                      <SquarePen className="size-4" aria-hidden />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </Table>
         </Card>
       )}
+
+      <ClassifyDialog
+        open={answering !== null}
+        row={answering}
+        onClose={() => {
+          setAnswering(null);
+        }}
+      />
     </div>
   );
 }

@@ -23,8 +23,24 @@ export interface Site {
   status: string;
   settings: Record<string, unknown>;
   brandOverride: Record<string, unknown> | null;
-  /** Module slugs switched OFF for this site — see `useSiteModules`. */
+  /** Module slugs switched OFF for this site, under "What this site shows".
+   *  Written here and read by the tenant SITE, which gates its routes, its own
+   *  pages, its chrome links and its sitemap on it (`site-modules.ts` in
+   *  apps/site). This comment used to point at a `useSiteModules` that has
+   *  never existed in either console. */
   moduleScope: string[];
+  /** How many pages this site has. On the LIST only, so a caller can tell an
+   *  empty site from a built one before offering to do something whole-site to
+   *  it: a design install replaces every page on the site it lands in, and the
+   *  pane offering it promised "your existing pages are left exactly as they
+   *  are" whichever it was. Undefined on the single-site read: absent means
+   *  "not counted", never "empty". Read by `installImpact` (builder). */
+  pageCount?: number;
+  /** How many of this site's pages a visitor has ever been shown. On the LIST
+   *  only: undefined means "not counted", never "none". Zero is the state the
+   *  sites list has to name out loud — the website still answers, with the
+   *  platform's starter rather than the tenant's pages (issue 851). */
+  publishedPageCount?: number;
   createdAt: string;
   updatedAt: string;
 }

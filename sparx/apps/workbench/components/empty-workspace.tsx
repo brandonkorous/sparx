@@ -11,7 +11,7 @@
 // So this is pinned to the FRAME instead, beside the canvas tools, and shown
 // only when the workspace is genuinely empty.
 
-import { Kbd } from '@wizeworks/silicaui-react';
+import { LauncherKey } from './shortcut-keys';
 import { LayoutGrid } from 'lucide-react';
 
 export function EmptyWorkspace() {
@@ -31,8 +31,8 @@ export function EmptyWorkspace() {
           {/* The heading carries itself; there is nothing above it. */}
           <h2 className="text-xl font-semibold">Nothing open yet</h2>
           <p className="text-base">
-            Pick an app on the left to get started, or press <Kbd>⌘K</Kbd> and say what you want to
-            do.
+            Pick an app on the left to get started, or press <LauncherKey /> and say what you want
+            to do.
           </p>
         </div>
       </div>

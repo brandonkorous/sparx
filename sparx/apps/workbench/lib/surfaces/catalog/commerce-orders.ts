@@ -24,6 +24,7 @@ import { CheckoutSessionsListSurface } from '../../../surfaces/commerce/checkout
 import { CheckoutSessionDetailSurface } from '../../../surfaces/commerce/checkout-detail';
 import { SubscriptionsListSurface } from '../../../surfaces/commerce/subscriptions-list';
 import { SubscriptionDetailSurface } from '../../../surfaces/commerce/subscription-detail';
+import { RepeatOrderNewSurface } from '../../../surfaces/commerce/repeat-order-new';
 import { ReviewsListSurface } from '../../../surfaces/commerce/reviews-list';
 import { ReviewsQueueSurface } from '../../../surfaces/commerce/reviews-queue';
 import { QaListSurface } from '../../../surfaces/commerce/qa-list';
@@ -99,7 +100,17 @@ export const ORDER_SURFACES: SurfaceDefinition[] = [
     section: 'In progress',
     order: 32,
     keywords: ['recurring', 'memberships', 'plans'],
+    createLabel: 'Start a subscription',
+    createSurface: 'commerce.subscription.new',
     component: SubscriptionsListSurface,
+  },
+  {
+    key: 'commerce.subscription.new',
+    title: 'New subscription',
+    module: 'commerce',
+    icon: Repeat2,
+    component: RepeatOrderNewSurface,
+    listed: false,
   },
   {
     key: 'commerce.subscription.detail',

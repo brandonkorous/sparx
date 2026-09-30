@@ -29,10 +29,10 @@ import {
 import { useToast } from '@wizeworks/silicaui-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { SaveFailure } from '@/components/save-failure';
 import {
-  CURRENCY_OPTIONS,
   describeDunningPolicy,
   FINAL_OUTCOME_OPTIONS,
   LOCALE_OPTIONS,
@@ -210,27 +210,14 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
             title="Currency and language"
             description="What your prices are shown in, and the language used for dates and numbers."
           >
-            <Field>
-              <FieldLabel>Currency</FieldLabel>
-              <FieldControl
-                render={
-                  <div className="max-w-sm">
-                    <Select
-                      color="module"
-                      aria-label="Currency"
-                      value={draft.defaultCurrency}
-                      items={CURRENCY_OPTIONS}
-                      onValueChange={(next) => {
-                        set('defaultCurrency', (next as string) ?? 'USD');
-                      }}
-                    />
-                  </div>
-                }
-              />
-              <FieldDescription>
-                All prices on this site are shown and charged in this currency.
-              </FieldDescription>
-            </Field>
+            <CurrencyField
+              required
+              value={draft.defaultCurrency}
+              onChange={(next) => {
+                set('defaultCurrency', next === '' ? 'USD' : next);
+              }}
+              description="All prices on this site are shown and charged in this currency."
+            />
 
             <Field>
               <FieldLabel>Language and formatting</FieldLabel>

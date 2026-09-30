@@ -42,29 +42,17 @@ export type ModuleSlug =
   | 'funnels'
   | 'platform';
 
-// Exhaustive by construction — `Record<ModuleSlug, string>` means adding to the
-// union above without a label here is a compile error rather than a slug
-// leaking onto the screen through `moduleLabel`'s fallback.
-const MODULE_LABEL: Record<ModuleSlug, string> = {
-  crm: 'Customers',
-  funnels: 'Campaigns',
-  email: 'Email',
-  commerce: 'Selling',
-  b2b: 'Wholesale',
-  cms: 'Content',
-  invoicing: 'Invoicing',
-  social: 'Social posts',
-  // The sidebar's words, not the slug's: a person looks for "Your team", never
-  // for "staff".
-  staff: 'Your team',
-  finance: 'Finance',
-  dropship: 'Dropshipping',
-  platform: 'Platform',
-};
-
-export function moduleLabel(slug: ModuleSlug): string {
-  return MODULE_LABEL[slug] ?? slug;
-}
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`. This file kept its own, and so did five
+ * others; measured 2026-09-25, `commerce` alone had SIX names across the two
+ * consoles — Sell (the Piggles rail), Selling, Online store, Online stores,
+ * Store, and the raw slug — and a shop owner could meet four of them on four
+ * screens. Same defect as one order reading four ways on four screens (issue
+ * 260), one level up: the apps themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
 /** Render an unknown config/condition value as display text without tripping
  *  `no-base-to-string`: primitives stringify, objects/arrays serialize as JSON. */
@@ -205,7 +193,7 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   },
   {
     eventType: 'crm.billing_document.finalized',
-    label: 'An invoice is finalised',
+    label: 'An invoice is finalized',
     module: 'invoicing',
   },
   {
@@ -1096,9 +1084,12 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     type: 'inventory.draft_reorder_po',
     label: 'Draft a restock order',
     module: 'commerce',
-    description: 'Not available yet.',
-    mode: 'json',
-    available: false,
+    // Built and running: the shipped "Auto-reorder low stock" recipe uses it. It
+    // was listed as unavailable, so nobody could pick it for their own rule.
+    description:
+      'Adds the item that ran low to a draft order for its usual supplier. Use it with "A product runs low on stock". Nothing is sent until you review the order.',
+    mode: 'none',
+    available: true,
   },
 ];
 

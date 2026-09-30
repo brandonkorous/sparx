@@ -185,7 +185,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Automations report controls"
+        label="Activity & reports controls"
         controls={
           <>
             <BarChart3 className="size-4 shrink-0" aria-hidden />

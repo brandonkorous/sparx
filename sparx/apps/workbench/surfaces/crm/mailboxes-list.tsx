@@ -102,7 +102,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Mailbox controls"
+        label="Mailboxes controls"
         controls={
           <>
             <Button

@@ -36,6 +36,7 @@ import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formLabel,
+  formNamer,
   formatDate,
   submissionState,
   submitterLabel,
@@ -116,6 +117,13 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.submissions ?? [];
   const forms = data?.forms ?? [];
+  // Which site a message came from only tells her something when she has more
+  // than one; on a single site it is her own business name written down the
+  // page. The same goes for the form. Piggles had already demoted Site and this
+  // console had not, which is its own small version of the same habit.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const manySites = (sites?.length ?? 0) > 1;
+  const manyForms = forms.length > 1;
   // A full window means there is (probably) another one behind it — the same
   // "the window came back full" signal the activity feed walks on.
   const hasMore = rows.length === pageSize;
@@ -132,13 +140,19 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const activeFormName = formNodeId
-    ? (forms.find((form) => form.formNodeId === formNodeId)?.formName ?? 'this form')
+    ? (() => {
+        const picked = forms.find((form) => form.formNodeId === formNodeId);
+        return picked ? formLabel(picked) : 'this form';
+      })()
     : null;
+  // One namer for the column, built from the same list the picker is, so a row
+  // and the picker entry it belongs to can never be called two things.
+  const labelFor = useMemo(() => formNamer(data?.forms ?? []), [data?.forms]);
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Submissions inbox controls"
+        label="Form submissions controls"
         controls={
           <>
             <Filter
@@ -175,7 +189,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   <option value="">All forms</option>
                   {forms.map((form) => (
                     <option key={form.formNodeId} value={form.formNodeId}>
-                      {(form.formName ?? 'Untitled form') + ` (${String(form.count)})`}
+                      {formLabel(form) + ` (${String(form.count)})`}
                     </option>
                   ))}
                 </NativeSelect>
@@ -248,7 +262,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               narrowed
                 ? emptyAdvice(statusFilter === 'all' ? null : activeStatus.label, activeFormName)
-                : 'When someone fills in a form on your site (a contact request, an enquiry, a sign-up), it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
+                : 'When someone fills in a form on your site (a contact request, an inquiry, a sign-up), it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
             }
           />
         ) : (
@@ -256,10 +270,10 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <th>From</th>
-                <th className="hidden @lg:table-cell">Form</th>
-                <th className="hidden @3xl:table-cell">Site</th>
-                <th className="hidden @2xl:table-cell">What they sent</th>
+                <th className="hidden @lg:table-cell">What they sent</th>
                 <th className="hidden @xl:table-cell">Received</th>
+                {manyForms ? <th className="hidden @2xl:table-cell">Form</th> : null}
+                {manySites ? <th className="hidden @3xl:table-cell">Site</th> : null}
                 <th>Status</th>
               </tr>
             </thead>
@@ -297,17 +311,28 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {submission.name && submission.email ? (
                         <span className="block max-w-56 truncate text-sm">{submission.email}</span>
                       ) : null}
+                      {/* Below the width where the column fits, the message
+                          rides here rather than disappearing. */}
+                      {preview ? (
+                        <span className="block max-w-56 truncate text-sm @lg:hidden">
+                          {preview}
+                        </span>
+                      ) : null}
                     </td>
-                    <td className="hidden max-w-40 truncate @lg:table-cell">
-                      {formLabel(submission)}
-                    </td>
-                    <td className="hidden max-w-32 truncate @3xl:table-cell">{site}</td>
-                    <td className="hidden max-w-72 @2xl:table-cell">
+                    <td className="hidden max-w-72 @lg:table-cell">
                       <span className="block truncate">{preview || '—'}</span>
                     </td>
                     <td className="hidden text-sm whitespace-nowrap @xl:table-cell">
                       {formatDate(submission.createdAt)}
                     </td>
+                    {manyForms ? (
+                      <td className="hidden max-w-40 truncate @2xl:table-cell">
+                        {labelFor(submission)}
+                      </td>
+                    ) : null}
+                    {manySites ? (
+                      <td className="hidden max-w-32 truncate @3xl:table-cell">{site}</td>
+                    ) : null}
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">
                         {state.label}

@@ -213,7 +213,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier list controls"
+        label="Suppliers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

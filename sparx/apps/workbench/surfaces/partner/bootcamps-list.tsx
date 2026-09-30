@@ -92,12 +92,14 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Bootcamps list controls"
+        label="Bootcamps controls"
         status={
           <Text className="text-sm whitespace-nowrap">
             {bootcamps.length === 1 ? '1 bootcamp' : `${String(bootcamps.length)} bootcamps`}
           </Text>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         controls={
           <>
             {canHost ? (

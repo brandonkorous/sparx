@@ -158,7 +158,7 @@ function AddRedirectDialog({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
           <DialogTitle>Add a redirect</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <SaveFailure title="Could not add that redirect" message={failure} />
 
             <Field>
@@ -324,7 +324,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Redirects list controls"
+        label="Redirects controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

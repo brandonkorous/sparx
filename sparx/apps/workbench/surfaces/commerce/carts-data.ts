@@ -29,6 +29,21 @@ export interface CartCustomer {
   company: string | null;
 }
 
+/** What the shopper typed into checkout before they stopped, whether or not
+ *  they were signed in. A cart's `customer` is a SIGNED-IN shopper, and most
+ *  shoppers are not, so without this every walked-away basket from a guest read
+ *  "Guest shopper" while checkout held the name, the email and the phone number
+ *  of the person to chase. That is the one thing an abandoned basket is for, and
+ *  api-rest has sent it on both reads (`cart-contact.ts`) without this console
+ *  asking. */
+export interface CartContact {
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  /** The furthest checkout step this basket reached. */
+  reached: string | null;
+}
+
 /** A row in the carts list. */
 export interface CartRow {
   id: string;
@@ -44,6 +59,9 @@ export interface CartRow {
   expiresAt: string | null;
   updatedAt: string;
   customer: CartCustomer | null;
+  /** Who to chase, read on the LIST as well as the detail: a follow-up list you
+   *  have to open row by row to find out who is in it is not a follow-up list. */
+  contact: CartContact | null;
 }
 
 export interface CartItemDetail {
@@ -89,6 +107,9 @@ export interface CartDetail {
    *  omits this; the admin detail endpoint merges it in so a recovered cart
    *  reads correctly here instead of looking live again. */
   recoveredAt: string | null;
+  /** Merged in by the same read, for the same reason: `customerName` above is
+   *  a SIGNED-IN shopper's, and most are not. */
+  contact: CartContact | null;
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -157,27 +178,35 @@ export interface CartState {
 
 /**
  * What has become of a cart. A cart carries three timestamps that resolve to one
- * state: recovered wins over abandoned (it came back), abandoned means left
- * without paying, and an expired-but-not-abandoned cart is simply past its
- * hold. Everything else is a live cart still being filled.
+ * state: abandoned means left without paying right now, recovered means it was
+ * abandoned once and came back, and an expired-but-not-abandoned cart is simply
+ * past its hold. Everything else is a live cart still being filled.
  */
 export function cartStateFrom(input: {
   abandonedAt: string | null;
   recoveredAt?: string | null;
   expiresAt: string | null;
 }): CartState {
+  // `abandonedAt` is asked FIRST, because it is the only one of the two that
+  // says what is true right now: `markRecovered` clears it, `markAbandoned` sets
+  // it again when the shopper goes quiet a second time. `recoveredAt` is history
+  // and stays set. Asked the other way round, a basket won back and then lost
+  // again sat in the "Walked away" tab wearing a green "Came back" badge, filed
+  // as a success forever while it was exactly where the work was.
+  if (input.abandonedAt) {
+    return {
+      label: 'Walked away',
+      tone: 'warning',
+      detail: input.recoveredAt
+        ? 'The shopper came back to this cart once and has left it again without paying.'
+        : 'The shopper filled this cart but left without paying.',
+    };
+  }
   if (input.recoveredAt) {
     return {
       label: 'Came back',
       tone: 'success',
       detail: 'This cart was abandoned and the shopper returned to it.',
-    };
-  }
-  if (input.abandonedAt) {
-    return {
-      label: 'Walked away',
-      tone: 'warning',
-      detail: 'The shopper filled this cart but left without paying.',
     };
   }
   if (input.expiresAt && new Date(input.expiresAt).getTime() < Date.now()) {
@@ -200,11 +229,12 @@ export function cartChannelLabel(channel: string): string {
   return channelLabel(channel);
 }
 
-/** A cart's buyer in one line, or a clear "guest" when there is no account. A
- *  cart, unlike an order, genuinely may have no customer. */
+/** A basket's shopper in one line. A cart genuinely may have no account behind
+ *  it, but "guest" is the last answer, not the first: whatever they typed into
+ *  checkout names them better than the word for what they are not. */
 export function cartShopperName(
   customer: CartCustomer | null,
-  fallbackName?: string | null
+  contact?: CartContact | null
 ): string {
   if (customer) {
     if (customer.company) return customer.company;
@@ -212,6 +242,5 @@ export function cartShopperName(
     if (person) return person;
     if (customer.email) return customer.email;
   }
-  if (fallbackName) return fallbackName;
-  return 'Guest shopper';
+  return contact?.name ?? contact?.email ?? 'Nobody left a name';
 }

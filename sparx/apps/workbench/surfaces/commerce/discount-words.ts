@@ -14,10 +14,12 @@
 // A leaf module, importing nothing, because a rule shaped like a sentence rots
 // the moment it lives inside a component. Same move as `broadcast-stats-words`.
 
+import { formatCentsAmount } from '../../lib/money-format';
+
 /** Money in cents, as a shop owner reads it. Local copy rather than an import:
  *  this file stays a leaf so the rules below can be tested on their own. */
 function money(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /**

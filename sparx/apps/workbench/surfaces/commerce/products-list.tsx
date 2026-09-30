@@ -213,7 +213,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         selection={selection}
         toolbar={
           <PaneToolbar
-            label="Product list controls"
+            label="Products controls"
             search={
               <div className="max-w-xs min-w-0 flex-1">
                 <SearchInput

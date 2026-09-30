@@ -6,6 +6,7 @@
 // list (and the nav's `+`), never opened cold from the launcher.
 
 import { Building2, CheckCircle, DollarSign, FileText, Receipt, ShoppingCart } from 'lucide-react';
+import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import type { SurfaceDefinition } from '../registry';
 import { AccountsListSurface } from '../../../surfaces/b2b/accounts-list';
 import { AccountDetailSurface } from '../../../surfaces/b2b/account-detail';
@@ -61,6 +62,15 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     order: 11,
     keywords: ['rfq', 'estimate', 'request for quote', 'pricing request'],
     component: QuotesListSurface,
+    // The invoicing editor, told which kind of document to make. A quote IS a
+    // billing document on the system `b2b-quotes` workflow, so the screen that
+    // prices one already exists — it just had no door from here. A business
+    // that rings and asks what a bulk order would cost is the ordinary way a
+    // quote starts, and this pane answered it with an empty card and nothing
+    // to press (issue 761).
+    createSurface: 'invoicing.invoice.edit',
+    createParams: { workflow: B2B_QUOTE_WORKFLOW_SLUG },
+    createLabel: 'Price up a quote',
   },
   {
     key: 'b2b.quote.detail',

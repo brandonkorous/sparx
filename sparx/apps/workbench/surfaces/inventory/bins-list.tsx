@@ -292,7 +292,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Shelf list controls"
+        label="Shelves controls"
         search={
           <SearchInput
             value={search}
@@ -333,7 +333,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </Tooltip>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Location"
               value={locationId}
               onChange={(event) => {

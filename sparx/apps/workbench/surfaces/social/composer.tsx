@@ -1602,25 +1602,30 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                 Save changes
               </Button>
             ) : null}
-            {/* Delete is a lifecycle action on the whole post, so it rides the frame
-            header with the rest of them — icon-only, because a destructive verb
-            spelled out next to Save is the one pair worth keeping visually
-            unalike. The confirm names what is lost before anything happens. */}
-            {isAdmin && post.status !== 'publishing' ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                aria-label="Delete this post"
-                title="Delete this post"
-                loading={remove.isPending}
-                onClick={doDelete}
-              >
-                <Trash2 className="size-4" aria-hidden />
-              </Button>
-            ) : null}
           </>
+        }
+        /* Delete is a lifecycle action on the whole post, so it rides the frame
+           header with the rest of them. It was bespoke icon-only JSX, defended
+           as "a destructive verb spelled out next to Save is the one pair worth
+           keeping visually unalike" - which is true in the BAR and false in the
+           overflow popover, where it arrived as a bare red bin with no words at
+           all. As an action it is still a red ghost glyph beside Save until the
+           bar is wide, and it wears its name in the popover.
+           scripts/check-toolbar-glyph.mjs holds the line. The confirm names
+           what is lost before anything happens. */
+        actions={
+          isAdmin && post.status !== 'publishing'
+            ? [
+                {
+                  label: 'Delete',
+                  title: 'Delete this post',
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  loading: remove.isPending,
+                  onClick: doDelete,
+                },
+              ]
+            : undefined
         }
       />
 
@@ -1969,17 +1974,14 @@ function ComposerInner({ ctx }: { ctx: SurfaceContext }) {
   if (id === 'new') return <ComposeNew ctx={ctx} />;
 
   if (post.isError) {
-    const gone = post.error instanceof Error && 'status' in post.error && post.error.status === 404;
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This post no longer exists' : 'Could not load this post'}
-          description={
-            gone
-              ? 'It may have been deleted. Nothing else is affected.'
-              : 'This is a problem reaching the server. Nothing about the post has changed.'
-          }
+          error={post.error}
+          title="Could not load this post"
+          description="This is a problem reaching the server. Nothing about the post has changed."
+          missingTitle="This post no longer exists"
+          missingDescription="It may have been deleted. Nothing else is affected."
           onRetry={() => {
             void post.refetch();
           }}

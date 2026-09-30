@@ -41,6 +41,9 @@ import { useSites, useModuleStates, useViewer } from '../../lib/api/shell-data';
 import { refundNote } from './refund-note';
 import { SoldBySection } from './sold-by-section';
 import { RecordPayment } from './record-payment';
+import { OrderNotes } from './order-notes';
+import { canTakeOff, takeOffWords } from './payment-undo';
+import { OrderAddressForm } from './order-address-form';
 import { RecordHandover } from './record-handover';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -71,12 +74,15 @@ import {
   useOrderInvoices,
   useUpdateTracking,
   PAYMENT_PROCESSOR_LABELS,
+  paymentNote,
   PAYMENT_STATUS_LABELS,
+  useTakePaymentOff,
   paidByHand,
   REFUND_STATUS_LABELS,
   type Order,
   type OrderAddress,
   type OrderInvoice,
+  type OrderPayment,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -477,6 +483,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const refunds = useOrderRefunds(id);
   const cancel = useCancelOrder(id);
   const refund = useRefundOrder(id);
+  const takeOff = useTakePaymentOff(id);
   const generateWalk = useGeneratePickList();
 
   // "Who sold it" needs BOTH: the staff module on (otherwise there is no roster
@@ -496,6 +503,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   useEffect(() => {
     if (orderNumber) ctx.setTitle(`Order ${orderNumber}`);
   }, [ctx, orderNumber]);
+
+  // Whether the address boxes are open. In the pane rather than a modal, so the
+  // unsaved-work guard can see it — and ABOVE the loading and error returns
+  // below, because a hook declared past one of those is not run on every render.
+  const [editingAddress, setEditingAddress] = useState(false);
 
   // A failed load REPLACES the pane. Rendering an empty order beside a live
   // Cancel button offers a move against something that isn't there.
@@ -558,6 +570,49 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     0,
     Math.round((Number(order.amountPaid) - Number(order.refundTotal ?? 0)) * 100) / 100
   );
+
+  /**
+   * A payment written down by mistake, coming back off.
+   *
+   * A third irreversible act rather than an undo: the server refuses to
+   * un-take-off a row, and the figure it corrects is the one the shop's takings
+   * are counted from. The dialog's words live in `payment-undo.ts`, beside the
+   * rule for when this is offered at all.
+   */
+  const onTakeOff = async (payment: OrderPayment) => {
+    const amount = formatMoney(payment.amount, payment.currency);
+    const says = takeOffWords({ amount, orderNumber: order.orderNumber });
+    const ok = await confirm({
+      title: says.title,
+      description: says.confirm,
+      confirmLabel: `Take ${amount} off`,
+      cancelLabel: 'Leave it as it is',
+      color: 'danger',
+    });
+    if (!ok) return;
+    // Same yield as the two below: let the confirm's flushSync close commit
+    // finish before this pane re-renders underneath it.
+    await deferTick();
+    takeOff.mutate(payment.id, {
+      onSuccess: () => {
+        toast.add({
+          title: `${amount} taken off order ${order.orderNumber}`,
+          description: says.done,
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not take this payment off',
+          description: orderErrorMessage(
+            error,
+            'No money was moved and nothing was changed on the order.'
+          ),
+          type: 'error',
+        });
+      },
+    });
+  };
 
   const onRefund = async () => {
     const ok = await confirm({
@@ -838,11 +893,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     {order.customer.email}
                   </a>
                 ) : null}
-                {order.customer?.company ? (
+                {order.customer?.b2bAccount ? (
                   <Text className="text-base">
-                    Trade account: {order.customer.company.companyName}
-                    {order.customer.company.paymentTerms
-                      ? ` · pays on ${order.customer.company.paymentTerms} terms`
+                    Trade account: {order.customer.b2bAccount.companyName}
+                    {order.customer.b2bAccount.paymentTerms
+                      ? ` · pays on ${order.customer.b2bAccount.paymentTerms} terms`
                       : ''}
                   </Text>
                 ) : null}
@@ -859,13 +914,42 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* An order nobody is delivering does not have a "where it goes", and
               putting a Delivery address heading over the address a collecting
               customer typed for their receipt is how a shop ends up posting
-              something to somebody who was going to walk in for it. */}
+              something to somebody who was going to walk in for it.
+
+              AND AN ORDER WITH NO ADDRESS NEEDS ONE PUT ON IT. This block read
+              "Not given" and stopped, which is honest and useless: the goods are
+              still here, the customer is still waiting, and the only screen that
+              could fix it had no box to type into. An order converted from an
+              accepted quote always lands here, because a quote is a price and
+              nobody asks a price where the goods go.
+              [[feedback_screen_over_a_function_nobody_calls]]
+
+              ONCE SOMETHING HAS GONE OUT the address stops being a plan and
+              becomes a record of where a parcel actually went, so editing closes. */}
           <FormSection
             title={plan.collected ? 'How it leaves' : 'Where it goes'}
             description={
               plan.collected
                 ? 'Nothing is being posted. The address is what they gave when they ordered.'
-                : 'Copied down when the order was placed, so changing the customer’s address later never rewrites where this one went.'
+                : 'Kept on the order itself, so changing the customer’s address later never rewrites where this one went.'
+            }
+            action={
+              !plan.collected &&
+              order.fulfilledAt === null &&
+              order.status !== 'cancelled' &&
+              order.status !== 'refunded' &&
+              !editingAddress ? (
+                <Button
+                  color="module"
+                  variant={order.shippingAddress === null ? 'solid' : 'ghost'}
+                  size="sm"
+                  onClick={() => {
+                    setEditingAddress(true);
+                  }}
+                >
+                  {order.shippingAddress === null ? 'Say where it goes' : 'Change the address'}
+                </Button>
+              ) : null
             }
           >
             {/* The words the shopper chose. Absent on orders placed before
@@ -876,13 +960,42 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : null}
             {plan.collected ? (
               <AddressBlock title="Their address" address={order.billingAddress} />
+            ) : editingAddress ? (
+              <OrderAddressForm
+                order={order}
+                onDone={() => {
+                  setEditingAddress(false);
+                }}
+              />
             ) : (
-              <div className="grid gap-4 @md:grid-cols-2">
-                <AddressBlock title="Delivery address" address={order.shippingAddress} />
-                <AddressBlock title="Billing address" address={order.billingAddress} />
-              </div>
+              <>
+                {order.shippingAddress === null ? (
+                  <Alert color="warning" variant="soft">
+                    <AlertContent>
+                      <AlertTitle>Nobody has said where this one goes</AlertTitle>
+                      <AlertDescription>
+                        {order.fulfilledAt !== null ||
+                        order.status === 'cancelled' ||
+                        order.status === 'refunded'
+                          ? 'No address was ever written down for this order.'
+                          : 'It cannot be posted until there is an address on it. Put one on and it stays with this order only.'}
+                      </AlertDescription>
+                    </AlertContent>
+                  </Alert>
+                ) : null}
+                <div className="grid gap-4 @md:grid-cols-2">
+                  <AddressBlock title="Delivery address" address={order.shippingAddress} />
+                  <AddressBlock title="Billing address" address={order.billingAddress} />
+                </div>
+              </>
             )}
           </FormSection>
+
+          {/* Reads with what was bought and where it goes, because that is what
+              it is about, and because a box she TYPES in cannot sit directly
+              above Refund and Cancel. It used to be the last block before both
+              (issue 874), which was harmless only while it could never render. */}
+          <OrderNotes order={order} />
 
           {/* The ask comes before the money, because that is the order the two
               happen in on a shop that takes no payment at checkout: you send the
@@ -922,10 +1035,34 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     {payment.failureReason ? (
                       <span className="text-sm">{payment.failureReason}</span>
                     ) : null}
+                    {paymentNote(payment) ? (
+                      <span className="text-sm break-words">{paymentNote(payment)}</span>
+                    ) : null}
                   </div>
-                  <Badge color={paymentRecordTone(payment.status)} variant="soft" size="sm">
-                    {PAYMENT_STATUS_LABELS[payment.status] ?? payment.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge color={paymentRecordTone(payment.status)} variant="soft" size="sm">
+                      {PAYMENT_STATUS_LABELS[payment.status] ?? payment.status}
+                    </Badge>
+                    {/* Offered only on money the shop took itself, and only while
+                        the order is still counting on it. See payment-undo.ts for
+                        why a gateway row gets no action at all (issue 875). */}
+                    {canTakeOff({
+                      status: payment.status,
+                      byHand: paidByHand(payment.processor),
+                    }) ? (
+                      <Button
+                        size="sm"
+                        color="danger"
+                        variant="outline"
+                        loading={takeOff.isPending}
+                        onClick={() => {
+                          void onTakeOff(payment);
+                        }}
+                      >
+                        Take it off
+                      </Button>
+                    ) : null}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -1041,27 +1178,6 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   </li>
                 ))}
               </ul>
-            </FormSection>
-          ) : null}
-
-          {order.customerNote || order.internalNote ? (
-            <FormSection title="Notes">
-              {order.customerNote ? (
-                <div className="flex flex-col gap-1">
-                  <Heading level={3} className="text-base font-semibold">
-                    From the customer
-                  </Heading>
-                  <Text className="text-base whitespace-pre-wrap">{order.customerNote}</Text>
-                </div>
-              ) : null}
-              {order.internalNote ? (
-                <div className="flex flex-col gap-1">
-                  <Heading level={3} className="text-base font-semibold">
-                    Your team’s note
-                  </Heading>
-                  <Text className="text-base whitespace-pre-wrap">{order.internalNote}</Text>
-                </div>
-              ) : null}
             </FormSection>
           ) : null}
 

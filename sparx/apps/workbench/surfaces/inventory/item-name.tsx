@@ -23,6 +23,7 @@ export function ItemName({
   variantName,
   code,
   fallback = 'Unnamed item',
+  wrapCode = false,
 }: {
   /** The product. Null on a row whose product has been deleted. */
   productTitle: string | null;
@@ -32,6 +33,13 @@ export function ItemName({
   /** The SKU, or whatever code this list identifies a row by. */
   code: string | null;
   fallback?: string;
+  /** Let the code wrap onto a second line rather than truncate.
+   *
+   *  For a list where the code is the thing being typed against, not a
+   *  reference: a code is distinguished by its TAIL, so a clipped
+   *  ASH-OVERSHIRT-L-INK is not a shortened name, it is ASH-OVERSHIRT-XL-MOSS's
+   *  name. The bulk-edit grid turns this on for that reason. */
+  wrapCode?: boolean;
 }) {
   const title = productTitle ?? variantName ?? code ?? fallback;
   // Only when the line above is the PRODUCT. When the product name is missing
@@ -44,10 +52,12 @@ export function ItemName({
     <>
       <span className="font-medium break-words">{title}</span>
       {version || showCode ? (
-        <span className="truncate text-sm">
+        <span className={wrapCode ? 'text-sm' : 'truncate text-sm'}>
           {version}
           {version && showCode ? ' · ' : ''}
-          {showCode ? <span className="font-mono">{code}</span> : null}
+          {showCode ? (
+            <span className={wrapCode ? 'font-mono break-all' : 'font-mono'}>{code}</span>
+          ) : null}
         </span>
       ) : null}
     </>

@@ -74,7 +74,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Certification controls"
+        label="Tickets and licenses controls"
         controls={
           <>
             <Filter

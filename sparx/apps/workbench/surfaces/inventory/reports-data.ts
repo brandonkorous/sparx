@@ -38,6 +38,10 @@ export interface ValuationSummary {
   totalAvailable: number;
   totalCostCents: number;
   totalRetailCents: number;
+  /** On-hand units nothing has ever put a cost against. Counted on the server,
+   *  which is the only place that can: from here a total of zero cannot be told
+   *  apart from no stock, and a partly costed shop looks complete. */
+  uncostedUnits: number;
   currency: string;
 }
 
@@ -237,6 +241,39 @@ export function deadStockValueCents(report: AgingReport): number {
   return report.buckets
     .filter((b) => b.bucket === '90+' || b.bucket === 'never')
     .reduce((sum, b) => sum + b.costCents, 0);
+}
+
+/**
+ * How much of a valuation nobody has costed.
+ *
+ * Cost is optional and the product form never asks for it, so a shop can hold
+ * 372 garments whose total value works out to $0.00, which reads exactly like a
+ * shop holding nothing. The server turns every missing cost into a zero before
+ * it sums, so the total alone cannot say which it is.
+ *
+ * `uncostedUnits` is what can. It comes from the server because from here a
+ * total of zero could mean "no costs" or "no stock", and a PARTLY costed shop
+ * (nine items in ten priced) is invisible from the total alone: its figure looks
+ * like a complete answer, and it is short by exactly the stock nobody costed.
+ */
+export interface CostCoverage {
+  /** Stock is held and none of it is costed: the figure is not a valuation. */
+  none: boolean;
+  /** Some is costed and some is not: the figure is real but short. */
+  partial: boolean;
+  uncostedUnits: number;
+}
+
+export function costCoverage(
+  valuation: Pick<ValuationSummary, 'totalUnits' | 'uncostedUnits'>
+): CostCoverage {
+  const { totalUnits, uncostedUnits } = valuation;
+  // Read from the uncosted COUNT, never from a zero total. Stock deliberately
+  // costed at nothing (free samples, a gift from a supplier) totals $0.00 too,
+  // and calling that "no cost recorded" would tell an owner who did the work
+  // that she had not.
+  const none = uncostedUnits > 0 && uncostedUnits >= totalUnits;
+  return { none, partial: uncostedUnits > 0 && !none, uncostedUnits };
 }
 
 /** How many product/place levels are in that dead-stock money. */

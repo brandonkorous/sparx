@@ -152,6 +152,20 @@ export const MEASURE_LABEL: Record<MeasureFn, string> = {
   max: 'The highest',
 };
 
+/**
+ * The bucket as a bare noun, for a SENTENCE rather than a picker option.
+ *
+ * `BUCKET_LABEL` below reads "By month", which is right on a control and wrong
+ * inside "broken down by …". Two shapes of the same fact, both needed.
+ */
+export const BUCKET_NOUN: Record<DateBucket, string> = {
+  day: 'day',
+  week: 'week',
+  month: 'month',
+  quarter: 'quarter',
+  year: 'year',
+};
+
 export const BUCKET_LABEL: Record<DateBucket, string> = {
   day: 'By day',
   week: 'By week',

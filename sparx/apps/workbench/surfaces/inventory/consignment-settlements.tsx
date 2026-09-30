@@ -40,7 +40,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
-import { settlementTone, useConsignmentSettlements, useUnsettledConsignment } from './demand-data';
+import { settlementState, useConsignmentSettlements, useUnsettledConsignment } from './demand-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -67,7 +67,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Consignment controls"
+        label="Consignment settlement controls"
         status={
           <Text className="text-sm">
             {owedCents > 0
@@ -122,7 +122,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
         </Alert>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto [&>*]:shrink-0">
         {/* ── What has not been settled ────────────────────────────────── */}
         <FormSection className="bg-module bg-soft" title="Not yet settled">
           <div className="p-0">
@@ -244,8 +244,8 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                         {formatCents(row.totalCents, row.currency)}
                       </td>
                       <td className="whitespace-nowrap">
-                        <Badge color={settlementTone(row.status)} variant="soft" size="sm">
-                          {row.status}
+                        <Badge color={settlementState(row.status).tone} variant="soft" size="sm">
+                          {settlementState(row.status).label}
                         </Badge>
                       </td>
                     </tr>

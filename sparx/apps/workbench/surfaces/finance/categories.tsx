@@ -288,19 +288,24 @@ export function CategoriesSurface() {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Category actions"
+        // A commit action is always `primary`: `controls` relocates into the
+        // overflow popover under 672px. Enforced by check-toolbar-primary.mjs,
+        // which could not see this console until 2026-09-19.
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            onClick={() => {
+              setAdding(true);
+              setEditing(null);
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            Add a category
+          </Button>
+        }
         controls={
           <>
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                setAdding(true);
-                setEditing(null);
-              }}
-            >
-              <Plus className="size-4" aria-hidden />
-              Add a category
-            </Button>
             <div className="flex items-center gap-2">
               <Switch
                 id="categories-show-archived"

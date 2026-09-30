@@ -25,9 +25,20 @@ function toRow(customer: CustomerLite): PickerRow {
 export function CustomerPicker({
   value,
   onChange,
+  onAddNew,
 }: {
   value: CustomerLite | null;
   onChange: (customer: CustomerLite | null) => void;
+  /**
+   * Make somebody who is not in the book yet, with what was typed.
+   *
+   * Only passed where a customer is REQUIRED. The booking form and a repeating
+   * slot both work without one — a walk-in is written down by name right below
+   * this field — so offering it there would compete with a path that already
+   * exists. The waiting list is the one that cannot proceed without a record,
+   * because the whole point of the entry is reaching them later (issue 745).
+   */
+  onAddNew?: (typed: string) => void;
 }) {
   const [query, setQuery] = useState('');
   const search = useCustomerSearch(useDebouncedValue(query, 250));
@@ -43,7 +54,19 @@ export function CustomerPicker({
       label="Search for a customer"
       placeholder="Search by name, email or company…"
       tooShort="Type at least two letters to find someone."
-      nothingFound="No one matches that. Try a different word."
+      nothingFound={
+        onAddNew
+          ? 'Nobody you already know is called that.'
+          : 'No one matches that. Try a different word.'
+      }
+      {...(onAddNew
+        ? {
+            nothingFoundAction: {
+              label: (typed: string) => `Add ${typed} as a customer`,
+              onAct: onAddNew,
+            },
+          }
+        : {})}
       clearLabel="Choose a different customer"
       onSelect={(id) => {
         const picked = results.find((customer) => customer.id === id);

@@ -50,6 +50,7 @@ import {
   type ProductType,
   type RepeaterFieldDef,
 } from './product-types-data';
+import { DayInput } from '../../components/day-input';
 
 /* ── Value readers ──────────────────────────────────────────────────────── */
 
@@ -470,17 +471,15 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
       return (
         <FieldControl
           render={
-            <div className="max-w-[16rem]">
-              <Input
-                color="module"
-                type="date"
-                value={asString(value)}
-                disabled={disabled}
-                onChange={(event) => {
-                  onChange(event.target.value || undefined);
-                }}
-              />
-            </div>
+            <DayInput
+              className="max-w-[16rem]"
+              color="module"
+              value={asString(value)}
+              disabled={disabled}
+              onValueChange={(value) => {
+                onChange(value || undefined);
+              }}
+            />
           }
         />
       );
@@ -489,17 +488,16 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
       return (
         <FieldControl
           render={
-            <div className="max-w-[18rem]">
-              <Input
-                color="module"
-                type="datetime-local"
-                value={value ? isoToLocal(asString(value)) : ''}
-                disabled={disabled}
-                onChange={(event) => {
-                  onChange(localToIso(event.target.value));
-                }}
-              />
-            </div>
+            <Input
+              className="max-w-[18rem]"
+              color="module"
+              type="datetime-local"
+              value={value ? isoToLocal(asString(value)) : ''}
+              disabled={disabled}
+              onChange={(event) => {
+                onChange(localToIso(event.target.value));
+              }}
+            />
           }
         />
       );
@@ -657,7 +655,11 @@ function RichTextField({
       placeholder="Write here. Use the toolbar for headings, lists, links, and pictures."
       pickImage={async () => {
         const asset = await pick();
-        return asset?.url ? { src: asset.url, assetId: asset.id, alt: asset.filename } : null;
+        // The library's description or nothing, never the filename: this writes
+        // into a published product description (see `PickedAsset.altText`).
+        return asset?.url
+          ? { src: asset.url, assetId: asset.id, alt: asset.altText ?? undefined }
+          : null;
       }}
     />
   );

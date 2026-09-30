@@ -517,21 +517,6 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
                 >
                   Save
                 </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="danger"
-                  shape="square"
-                  className="shrink-0"
-                  aria-label="Delete this sequence"
-                  title="Delete this sequence"
-                  loading={remove.isPending}
-                  onClick={() => {
-                    void onDelete();
-                  }}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                </Button>
               </>
             ) : (
               <Button
@@ -546,6 +531,25 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
               </Button>
             )}
           </>
+        }
+        /* A VALUE, not bespoke JSX: as a button this was a bare red bin beside
+           Save, and on a narrow bar it folds into the overflow popover with no
+           words at all. scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          isNew
+            ? undefined
+            : [
+                {
+                  label: 'Delete',
+                  title: 'Delete this sequence',
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  loading: remove.isPending,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
         }
       />
 

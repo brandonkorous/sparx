@@ -99,7 +99,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Segment list controls"
+        label="Segments controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

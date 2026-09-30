@@ -18,6 +18,7 @@
 // edits. Deleting is draft-only and hard to reverse, so it sits in a quiet row
 // under a divider after the work, never a loud card.
 
+import { CountryField } from '../../components/country-field';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -44,6 +45,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   useBootcamp,
@@ -52,7 +54,6 @@ import {
   usePartnerProfile,
   useSetBootcampStatus,
   useUpdateBootcamp,
-  isNotFound,
   partnerErrorMessage,
   type Bootcamp,
   type BootcampFormat,
@@ -352,17 +353,14 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed load REPLACES the form — never an empty one beside a dead Save.
   if (!isNew && bootcamp.isError) {
-    const gone = isNotFound(bootcamp.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This bootcamp no longer exists' : 'Could not load this bootcamp'}
-          description={
-            gone
-              ? 'It may have been deleted.'
-              : 'This is a problem reaching the server. The bootcamp itself is unaffected.'
-          }
+          error={bootcamp.error}
+          title="Could not load this bootcamp"
+          description="This is a problem reaching the server. The bootcamp itself is unaffected."
+          missingTitle="This bootcamp no longer exists"
+          missingDescription="It may have been deleted."
           onRetry={() => {
             void bootcamp.refetch();
           }}
@@ -578,25 +576,15 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     }
                   />
                 </Field>
-                <Field>
-                  <FieldLabel>Country</FieldLabel>
-                  <FieldControl
-                    render={
-                      <Input
-                        color="module"
-                        value={form.locationCountry}
-                        placeholder="US"
-                        maxLength={2}
-                        spellCheck={false}
-                        className="uppercase"
-                        onChange={(event) => {
-                          set('locationCountry', event.target.value);
-                        }}
-                      />
-                    }
-                  />
-                  <FieldDescription>Two-letter country code.</FieldDescription>
-                </Field>
+                {/* Picked by name. It was a two-character box, which asks somebody to
+                    know that Germany is DE before they can say where a business
+                    is. Issue 721. */}
+                <CountryField
+                  value={form.locationCountry}
+                  onChange={(next) => {
+                    set('locationCountry', next);
+                  }}
+                />
               </div>
             </FormSection>
           ) : null}
@@ -681,24 +669,12 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 />
                 <FieldDescription>Leave blank for free.</FieldDescription>
               </Field>
-              <Field>
-                <FieldLabel>Currency</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.currency}
-                      placeholder="USD"
-                      maxLength={3}
-                      spellCheck={false}
-                      className="uppercase"
-                      onChange={(event) => {
-                        set('currency', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
+              <CurrencyField
+                value={form.currency}
+                onChange={(next) => {
+                  set('currency', next);
+                }}
+              />
             </div>
           </FormSection>
 

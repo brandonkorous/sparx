@@ -1178,7 +1178,7 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="AI connection controls"
+        label="AI connections controls"
         refresh={
           <RefreshButton
             className="ml-auto"

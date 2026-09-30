@@ -37,6 +37,45 @@ function canonicalHost(domains: Domain[]): string | null {
   return (active.find((domain) => domain.isCanonical) ?? active[0])?.host ?? null;
 }
 
+/**
+ * WHAT A VISITOR GETS AT THIS ADDRESS, WHICH IS NOT THE SAME AS WHAT WAS BUILT.
+ *
+ * `wizeworks/apps/site` serves the code starter at every address whose site has
+ * published no tree of its own — deliberately, so a tenant is live from the first
+ * minute rather than a blank page. `site-service` names the rule exactly: a page can
+ * be "saved, unpublished, and read by the whole world".
+ *
+ * This list is the only screen showing every site at once, and it printed a clickable
+ * web address for each and stopped. Found on a tenant with seven sites, four of them
+ * publishing nothing and all four answering the public with a starter home page and
+ * the tenant's real products at their real prices (issue 851).
+ *
+ * Said under the ADDRESS rather than as a badge beside the role, because the address
+ * is what makes the promise.
+ */
+function addressTruth(site: Site): string | null {
+  // Absent, not zero. `publishedPageCount` is undefined on the single-site read
+  // and on an older api-rest, and "not counted" must never render as "none".
+  if (site.publishedPageCount === undefined) return null;
+  if (site.publishedPageCount > 0) return null;
+  return 'Shows a starter page, not this site yet';
+}
+
+/**
+ * A site that is not live, in words rather than in the value it is stored under.
+ *
+ * `properties.status` is `active | paused | archived` and the badge drew it
+ * verbatim, lower case. Both wore `warning`, which is right for one of them and
+ * not the other: a paused site is something somebody did and may want to undo;
+ * an archived one is simply retired, and a colorless badge says that without
+ * claiming anything is wrong (RULE #4).
+ */
+function notLiveWords(status: string): { label: string; tone?: 'warning' } {
+  if (status === 'paused') return { label: 'Paused', tone: 'warning' };
+  if (status === 'archived') return { label: 'Archived' };
+  return { label: status, tone: 'warning' };
+}
+
 export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { controller } = useWorkbench();
   const confirm = useConfirm();
@@ -158,7 +197,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
     // card lifted onto it, matching invoicing and orders. The house pattern.
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Site list controls"
+        label="Sites controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -179,6 +218,8 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(all.length)} sites`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -289,22 +330,32 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </td>
                     <td>
                       {host ? (
-                        // Stops the row's own open-handler: this opens the live
-                        // site, which is not what clicking the row means.
-                        <a
-                          href={`https://${host}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="link inline-flex items-center gap-1 text-sm"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                          }}
-                        >
-                          {host}
-                          <ExternalLink className="size-3" aria-hidden />
-                        </a>
+                        <div className="flex flex-col gap-0.5">
+                          {/* Stops the row's own open-handler: this opens the live
+                              site, which is not what clicking the row means. */}
+                          <a
+                            href={`https://${host}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="link inline-flex items-center gap-1 text-sm"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                            }}
+                          >
+                            {host}
+                            <ExternalLink className="size-3" aria-hidden />
+                          </a>
+                          {/* A real ink token, never a faded one: this is the line
+                              most worth reading on the row. */}
+                          {addressTruth(site) ? (
+                            <span className="text-warning text-sm">{addressTruth(site)}</span>
+                          ) : null}
+                        </div>
                       ) : (
-                        <span className="text-sm">Not published yet</span>
+                        // "Not published yet" is what this said, and it is a
+                        // different fact from the one it stood in for: the site may
+                        // be finished and published and simply have no address.
+                        <span className="text-sm">No web address yet</span>
                       )}
                     </td>
                     <td>
@@ -320,8 +371,8 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                           </Badge>
                         ) : null}
                         {site.status !== 'active' ? (
-                          <Badge color="warning" variant="soft" size="sm">
-                            {site.status}
+                          <Badge color={notLiveWords(site.status).tone} variant="soft" size="sm">
+                            {notLiveWords(site.status).label}
                           </Badge>
                         ) : null}
                       </div>

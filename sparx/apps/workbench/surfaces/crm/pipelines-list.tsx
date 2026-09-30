@@ -64,7 +64,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Pipeline list controls"
+        label="Pipelines controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

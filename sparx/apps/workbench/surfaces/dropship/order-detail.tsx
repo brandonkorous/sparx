@@ -20,6 +20,7 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Card,
   Heading,
   Text,
   Timestamp,
@@ -41,6 +42,7 @@ import {
   type DropshipOrder,
 } from './dropship-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -78,25 +80,35 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (order) ctx.setTitle(supplierName ? `${supplierName} order` : 'Supplier order');
   }, [ctx, order, supplierName]);
 
+  // Both states inside the shell and inside a card, like every other state in
+  // this console. The failure used to render with no pane background round it
+  // and the wait used to be a bare "Loading…" paragraph, so the three states of
+  // this one pane were three different shapes.
   if (isError) {
     return (
-      <PaneLoadError
-        error={error}
-        noun="supplier order"
-        title="Could not load this supplier order"
-        description="This is a problem reaching the server, or the order no longer exists. Nothing has been changed."
-        onRetry={() => {
-          void refetch();
-        }}
-      />
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneLoadError
+            error={error}
+            noun="supplier order"
+            title="Could not load this supplier order"
+            description="This is a problem reaching the server, or the order no longer exists. Nothing has been changed."
+            onRetry={() => {
+              void refetch();
+            }}
+          />
+        </Card>
+      </div>
     );
   }
 
   if (isPending || !order) {
     return (
-      <p className="p-4 text-sm" role="status">
-        Loading…
-      </p>
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneWaiting />
+        </Card>
+      </div>
     );
   }
 
@@ -226,7 +238,15 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection title="Progress">
             <div className="flex flex-col gap-3">
-              <FactRow label="Reached the supplier">
+              {/* `createdAt` is when this ROW was made here, with `status`
+                  defaulting to `pending` — so it records that we decided to send
+                  the order, not that anybody received it. Labelled "Reached the
+                  supplier", it asserted the supplier had it at the exact moment
+                  nothing had been sent, and sat directly above "Sent to the
+                  supplier: Not yet". The two rows contradicted each other on
+                  every pending order.
+                  [[feedback_never_present_absence_as_measurement]] */}
+              <FactRow label="Lined up to send">
                 <Timestamp value={order.createdAt} format="absolute" />
               </FactRow>
               <FactRow label="Sent to the supplier">

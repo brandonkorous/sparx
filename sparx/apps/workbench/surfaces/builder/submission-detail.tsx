@@ -35,7 +35,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { useSites } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  formLabel,
+  formName,
   formatBytes,
   formatDateTime,
   humanizeKey,
@@ -335,7 +335,10 @@ function SubmissionBody({
 /* ── Identity ───────────────────────────────────────────────────────────── */
 
 function IdentityCard({ submission, site }: { submission: FormSubmission; site: string | null }) {
-  const where = [formLabel(submission), pageLabel(submission.pageSlug), site]
+  // `formName`, not `formLabel`: the label FALLS BACK to the page, and the page
+  // is the very next part of this line, so an unnamed form read "/contact ·
+  // /contact".
+  const where = [formName(submission), pageLabel(submission.pageSlug), site]
     .filter((part): part is string => Boolean(part))
     .join(' · ');
 
@@ -530,8 +533,11 @@ function contextValue(key: string, value: unknown): string {
 // browser read the way the Devices card already reads them (issue 628).
 
 function SourceCard({ submission, site }: { submission: FormSubmission; site: string | null }) {
+  const named = formName(submission);
   const rows: [string, string][] = [
-    ['Form', formLabel(submission)],
+    // Only when it HAS a name. Unnamed, this row would just repeat the Page row
+    // directly beneath it.
+    ...(named ? ([['Form', named]] as [string, string][]) : []),
     ['Page', pageLabel(submission.pageSlug)],
     ...(site ? ([['Site', site]] as [string, string][]) : []),
     ['Received', formatDateTime(submission.createdAt)],

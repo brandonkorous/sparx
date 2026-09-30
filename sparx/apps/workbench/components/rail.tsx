@@ -597,7 +597,7 @@ function SaveWorkspaceDialog({
           <FieldLabel>Name</FieldLabel>
           <FieldControl
             value={name}
-            placeholder="Month end, Fulfilment, Catalog cleanup…"
+            placeholder="Month end, Fulfillment, Catalog cleanup…"
             // No autoFocus needed: the dialog's focus trap lands on the first
             // tabbable element, which is this input.
             onChange={(event) => {

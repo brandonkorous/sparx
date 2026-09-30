@@ -316,7 +316,7 @@ export function StaffWeek() {
       body: 'Requests arrive in a queue that shows what is waiting on you rather than everything that ever happened. Approve one and those days come off the rota, and if that person is bookable by your customers, the booking system stops offering them, then starts again if the leave is withdrawn.',
     },
     {
-      title: 'Licences that warn you first',
+      title: 'Licenses that warn you first',
       body: 'A ticket, a license, an inspection certificate. Each with as much notice as you actually need, because the one you renew by post is not the one you renew online. Expired shows red on the roster before you assign the job. And a qualification that never expires is recorded as exactly that, so it never nags you.',
     },
     {
@@ -449,7 +449,7 @@ export function StaffCapabilities() {
         'Shifts by week, per business, drafted then published in one act',
         'Time-off requests with an approve/decline queue',
         'Approved leave blocks the booking calendar, and canceling releases it',
-        'Certifications and licences with per-item warning windows',
+        'Certifications and licenses with per-item warning windows',
         'Commission recorded against an order or a deal, once per sale',
       ],
     },

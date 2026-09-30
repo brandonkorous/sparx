@@ -29,6 +29,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { MapPin, Save, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
+import { CountryField } from '../../components/country-field';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
@@ -39,7 +40,6 @@ import { useBusinessTimezone } from '../../lib/business-timezone';
 import { SaveFailure } from '@/components/save-failure';
 import {
   TIMEZONE_OPTIONS,
-  isNotFound,
   schedulingErrorMessage,
   useCreateLocation,
   useDeleteLocation,
@@ -150,16 +150,13 @@ function LocationLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { data, isPending, isError, error, refetch } = useLocation(id);
 
   if (isError) {
-    const missing = isNotFound(error);
     return (
       <PaneLoadError
-        reason={missing ? 'missing' : 'unreachable'}
-        title={missing ? 'This place is gone' : 'Could not load this place'}
-        description={
-          missing
-            ? 'It was removed, or the link is out of date.'
-            : 'This is a problem reaching the server. The place itself is unaffected. Nothing has been lost.'
-        }
+        error={error}
+        title="Could not load this place"
+        description="This is a problem reaching the server. The place itself is unaffected. Nothing has been lost."
+        missingTitle="This place is gone"
+        missingDescription="It was removed, or the link is out of date."
         onRetry={() => {
           void refetch();
         }}
@@ -369,7 +366,7 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.name}
-                    placeholder="High Street shop"
+                    placeholder="Main Street shop"
                     onChange={(event) => {
                       set('name', event.target.value);
                     }}
@@ -423,7 +420,7 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.line1}
-                    placeholder="14 High Street"
+                    placeholder="123 Main St"
                     onChange={(event) => {
                       set('line1', event.target.value);
                     }}
@@ -489,20 +486,16 @@ function LocationEditor({
                   }
                 />
               </Field>
-              <Field>
-                <FieldLabel>Country</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.country}
-                      onChange={(event) => {
-                        set('country', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
+              {/* Picked by name, not typed. This line had no guidance at all,
+                  which is how one place came to be stored as "United States"
+                  while every other address in every other table holds "US".
+                  Issue 721. */}
+              <CountryField
+                value={draft.country}
+                onChange={(next) => {
+                  set('country', next);
+                }}
+              />
             </div>
 
             <div className="grid gap-3 @md:grid-cols-2">
@@ -514,7 +507,7 @@ function LocationEditor({
                       color="module"
                       inputMode="decimal"
                       value={draft.lat}
-                      placeholder="51.5072"
+                      placeholder="40.7128"
                       onChange={(event) => {
                         set('lat', event.target.value);
                       }}
@@ -530,7 +523,7 @@ function LocationEditor({
                       color="module"
                       inputMode="decimal"
                       value={draft.lng}
-                      placeholder="-0.1276"
+                      placeholder="-74.0060"
                       onChange={(event) => {
                         set('lng', event.target.value);
                       }}

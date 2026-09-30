@@ -372,7 +372,7 @@ const FINANCE_FAQ: FaqItem[] = [
     id: 'finance-accountant',
     question: 'Will it work with my accountant, or with QuickBooks and Sage?',
     answer:
-      'Today you download a spreadsheet of any date range with every column labelled, already posted to the account codes you mapped once, filtered to one of your businesses or all of them. Any accounting package imports that, and an accountant who just wants the numbers can open it as it is. Direct sync to QuickBooks Online, Xero and FreshBooks and one-click layouts for QuickBooks Desktop and Sage 50 are on the way. Each is listed inside sparx today with its honest status, rather than being implied and then absent. Nothing is ever sent dated before the day you tell us your books are closed through.',
+      'Today you download a spreadsheet of any date range with every column labeled, already posted to the account codes you mapped once, filtered to one of your businesses or all of them. Any accounting package imports that, and an accountant who just wants the numbers can open it as it is. Direct sync to QuickBooks Online, Xero and FreshBooks and one-click layouts for QuickBooks Desktop and Sage 50 are on the way. Each is listed inside sparx today with its honest status, rather than being implied and then absent. Nothing is ever sent dated before the day you tell us your books are closed through.',
   },
   {
     id: 'finance-inventory',

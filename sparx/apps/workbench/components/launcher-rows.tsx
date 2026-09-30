@@ -9,6 +9,26 @@ import type { Entry } from './launcher-match';
 import { recordSearchLine, type SearchGaps } from './launcher-search-words';
 import { useReindexSearch } from '../lib/api/search';
 
+/**
+ * The names the search field uses to point at its own results.
+ *
+ * A screen reader follows focus, and focus never leaves the text field: arrows
+ * move a highlight in a list the field does not own. Without a name to point
+ * at, walking that list was completely silent — the `aria-selected` on the row
+ * was true and nothing was ever told to read it. So the field is a combobox
+ * that CONTROLS this list and names the one row that is current, which is the
+ * only way the highlight reaches anybody who cannot see it.
+ *
+ * A single mounted launcher, so a fixed id is safe. [[feedback_absent_behaves_like_fine]]
+ */
+export const LAUNCHER_LIST_ID = 'launcher-results';
+
+/** One row's id, keyed on its place in the FLAT list — the same number the
+ *  keyboard walks, so the field and the render always name the same row. */
+export function launcherRowId(index: number): string {
+  return `launcher-row-${String(index)}`;
+}
+
 /** One run of rows under the module they belong to, carrying each row's index in
  *  the FLAT list so the keyboard and the render agree on what is highlighted. */
 export interface EntryGroup {
@@ -57,11 +77,15 @@ export function groupEntries(entries: Entry[]): EntryGroup[] {
 export function RecordSearchNote({
   searching,
   found,
+  screens,
   query,
   gaps,
 }: {
   searching: boolean;
   found: number;
+  /** How many SCREENS matched, so the sentence may only describe rows that are
+   *  actually under it. See recordSearchLine. */
+  screens: number;
   query: string;
   /** What `/v1/search/status` says this box cannot reach. Undefined until it
    *  arrives, which is silence rather than "all clear". */
@@ -77,7 +101,7 @@ export function RecordSearchNote({
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-2 border-t px-3 py-2">
       <p className="min-w-0 flex-1 text-sm" role="status">
-        {recordSearchLine({ searching, found, query, gaps })}
+        {recordSearchLine({ searching, found, screens, query, gaps })}
       </p>
       {/* The only remedy, on the screen that is wrong. It existed on the
           products list, which is not where anybody is standing when the box
@@ -110,7 +134,10 @@ export function RecordSearchNote({
             });
           }}
         >
-          Put them back
+          {/* One missing record gets "it". The products list has agreed with its
+              own count since issue 318; this button, doing the same job on the
+              screen the owner is actually standing on, never did. */}
+          {missing === 1 ? 'Put it back' : 'Put them back'}
         </Button>
       ) : null}
     </div>
@@ -150,6 +177,7 @@ export function LauncherGroup({
       {group.rows.map(({ entry, index }) => (
         <LauncherRow
           key={entry.id}
+          id={launcherRowId(index)}
           entry={entry}
           active={index === activeIndex}
           onHover={() => onHover(index)}
@@ -161,11 +189,14 @@ export function LauncherGroup({
 }
 
 function LauncherRow({
+  id,
   entry,
   active,
   onHover,
   onSelect,
 }: {
+  /** What the search field names when this row is the current one. */
+  id: string;
   entry: Entry;
   active: boolean;
   onHover: () => void;
@@ -175,6 +206,7 @@ function LauncherRow({
   return (
     <button
       type="button"
+      id={id}
       role="option"
       aria-selected={active}
       data-active={active}

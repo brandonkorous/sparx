@@ -51,8 +51,10 @@ import {
 import {
   Archive,
   ArchiveRestore,
+  CalendarDays,
   Clock,
   Coins,
+  ExternalLink,
   FileText,
   Pencil,
   Plus,
@@ -63,6 +65,7 @@ import {
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { ModuleScope } from '../../components/module-scope';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
@@ -70,7 +73,6 @@ import { useSites, useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   isForbidden,
-  isNotFound,
   staffErrorMessage,
   useArchiveMember,
   useCertifications,
@@ -84,6 +86,7 @@ import {
   usePayRates,
   useSaveCertification,
   useSaveMember,
+  useSetBookable,
   useSetRate,
   useStaffDocuments,
   useStaffMember,
@@ -109,6 +112,7 @@ import {
   toDateInput,
 } from './format';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -181,6 +185,107 @@ function toDraft(form: FormState): MemberDraft {
     siteIds: form.siteIds,
     primarySiteId: form.primarySiteId === '' ? null : form.primarySiteId,
   };
+}
+
+/* ── Appointments ──────────────────────────────────────────────────────────── */
+
+// Whether customers can book this person, and where the rest of that setup lives.
+//
+// ONE ROSTER (issue 120). A salon set two stylists up under Bookings, saw them
+// on every booking form, and was then told by the till that nobody was on her
+// team. They were bookable resources; the team was a different table; nothing
+// wrote both. They are one record now, and this is the switch between "on the
+// team" and "on the team AND on the booking page".
+//
+// The switch is all that lives here. Their hours and which services they do
+// belong to the Bookings side and already have a pane of their own; building a
+// second place to set them would be the same two-records mistake again.
+//
+// `bookable === null` means Bookings is off for this business. That is not "no",
+// so NOTHING renders: an off switch would invite them to turn on a module they
+// have not taken, and the server would refuse it with a module error.
+function BookableSection({ ctx, person }: { ctx: SurfaceContext; person: StaffMember }) {
+  const toast = useToast();
+  const setBookable = useSetBookable();
+
+  if (person.bookable === null) return null;
+  const on = person.bookable;
+
+  const flip = () => {
+    setBookable.mutate(
+      { id: person.id, bookable: !on },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: on
+              ? `${person.name} is no longer taking appointments`
+              : `${person.name} can be booked`,
+            description: on
+              ? 'Their past appointments are untouched, and you can switch this back on at any time.'
+              : 'They show on your booking page once they have hours and at least one service.',
+            type: 'success',
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not change that',
+            description: staffErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  // Bookings' functionality on a team screen, so it wears the Bookings hue:
+  // color follows functionality, not the pane it turns up on.
+  return (
+    <ModuleScope module="scheduling">
+      <FormSection
+        title="Appointments"
+        description="Whether customers can book time with this person."
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-2">
+            <CalendarDays className="text-module mt-1 size-4 shrink-0" aria-hidden />
+            <Text>
+              {on
+                ? 'Customers can book time with them, one appointment at a time.'
+                : 'They are on your team but do not appear on your booking page.'}
+            </Text>
+          </div>
+          <Button
+            size="sm"
+            color="module"
+            variant={on ? 'outline' : 'solid'}
+            loading={setBookable.isPending}
+            onClick={flip}
+          >
+            {on ? 'Stop taking appointments' : 'Let customers book them'}
+          </Button>
+        </div>
+
+        {on && person.resourceId ? (
+          <Button
+            size="sm"
+            color="module"
+            variant="ghost"
+            className="self-start"
+            onClick={(event) => {
+              ctx.open(
+                'scheduling.resources.detail',
+                { id: person.resourceId ?? '' },
+                { target: event.shiftKey ? 'beside' : 'tab' }
+              );
+            }}
+          >
+            Their hours and services
+            <ExternalLink className="size-3.5" aria-hidden />
+          </Button>
+        ) : null}
+      </FormSection>
+    </ModuleScope>
+  );
 }
 
 /* ── Pay ───────────────────────────────────────────────────────────────────── */
@@ -415,11 +520,10 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
               <FieldLabel>Starting from</FieldLabel>
               <FieldControl
                 render={
-                  <Input
-                    type="date"
+                  <DayInput
                     value={from}
-                    onChange={(event) => {
-                      setFrom(event.target.value);
+                    onValueChange={(value) => {
+                      setFrom(value);
                     }}
                   />
                 }
@@ -652,11 +756,10 @@ function CertificationsSection({ staffMemberId }: { staffMemberId: string }) {
               <FieldLabel>Expires</FieldLabel>
               <FieldControl
                 render={
-                  <Input
-                    type="date"
+                  <DayInput
                     value={expiresOn}
-                    onChange={(event) => {
-                      setExpiresOn(event.target.value);
+                    onValueChange={(value) => {
+                      setExpiresOn(value);
                     }}
                   />
                 }
@@ -940,11 +1043,10 @@ function HoursSection({
               <FieldLabel>Day</FieldLabel>
               <FieldControl
                 render={
-                  <Input
-                    type="date"
+                  <DayInput
                     value={day}
-                    onChange={(event) => {
-                      setDay(event.target.value);
+                    onValueChange={(value) => {
+                      setDay(value);
                     }}
                   />
                 }
@@ -1294,17 +1396,14 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   if (!isNew && person.isError) {
-    const gone = isNotFound(person.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This person is no longer on file' : 'Could not load this person'}
-          description={
-            gone
-              ? 'The record may have been deleted. Everything else on your roster is unaffected.'
-              : 'This is a problem reaching the server. The record itself is unaffected.'
-          }
+          error={person.error}
+          title="Could not load this person"
+          description="This is a problem reaching the server. The record itself is unaffected."
+          missingTitle="This person is no longer on file"
+          missingDescription="The record may have been deleted. Everything else on your roster is unaffected."
           onRetry={() => {
             void person.refetch();
           }}
@@ -1425,46 +1524,45 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : null}
           </>
         }
+        /* VALUES, and out of `refresh`, which is for the refresh button alone.
+           Written as buttons these two were a box and a bin with no words on
+           either, side by side, and a phone cannot hover over them. Bringing
+           somebody back is a good outcome and says so; marking them as left
+           carries no tone of its own, so it takes none.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          isNew
+            ? undefined
+            : [
+                {
+                  label: archived ? 'Bring them back' : 'Mark as left',
+                  icon: archived ? ArchiveRestore : Archive,
+                  ...(archived ? { tone: 'success' as const } : {}),
+                  loading: archive.isPending,
+                  onClick: () => {
+                    void onArchive(!archived);
+                  },
+                },
+                {
+                  label: 'Delete',
+                  title: 'Delete this record',
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
+        }
         refresh={
           isNew ? null : (
-            <>
-              <Button
-                size="sm"
-                variant="ghost"
-                color={archived ? 'success' : 'neutral'}
-                loading={archive.isPending}
-                aria-label={archived ? 'Bring them back' : 'Mark as left'}
-                title={archived ? 'Bring them back' : 'Mark as left'}
-                onClick={() => {
-                  void onArchive(!archived);
-                }}
-              >
-                {archived ? (
-                  <ArchiveRestore className="size-4" aria-hidden />
-                ) : (
-                  <Archive className="size-4" aria-hidden />
-                )}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                aria-label="Delete this record"
-                title="Delete this record"
-                onClick={() => {
-                  void onDelete();
-                }}
-              >
-                <Trash2 className="size-4" aria-hidden />
-              </Button>
-              <RefreshButton
-                isFetching={person.isFetching}
-                updatedAt={person.data ? person.dataUpdatedAt : undefined}
-                onRefresh={() => {
-                  void person.refetch();
-                }}
-              />
-            </>
+            <RefreshButton
+              isFetching={person.isFetching}
+              updatedAt={person.data ? person.dataUpdatedAt : undefined}
+              onRefresh={() => {
+                void person.refetch();
+              }}
+            />
           )
         }
       />
@@ -1579,11 +1677,10 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Started</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={form.startedOn}
-                      onChange={(event) => {
-                        set('startedOn', event.target.value);
+                      onValueChange={(value) => {
+                        set('startedOn', value);
                       }}
                     />
                   }
@@ -1673,6 +1770,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
             </Alert>
           ) : (
             <>
+              {person.data ? <BookableSection ctx={ctx} person={person.data} /> : null}
               <PaySection staffMemberId={id} canSeePay={canSeePay} />
               <CertificationsSection staffMemberId={id} />
               {/* Only the businesses THIS person works at — offering the whole

@@ -39,7 +39,17 @@ export interface Taxonomy {
   name: string;
   plural_name: string;
   hierarchical: boolean;
+  /** Labels on the site being worked in. A vocabulary is shared across a
+   *  business's sites but its labels are not, so this is the number the list
+   *  shows (issue 385). */
   term_count: number;
+  /** Labels across EVERY site. What a delete takes with it, since deleting the
+   *  vocabulary cascades to all of them at once, which is why the confirmation
+   *  reads this and the list reads the one above. Measured on this database: a
+   *  tenant's blog tags hold 20 labels over three sites, and the confirmation
+   *  read the per-site count, so from a site holding none of them it promised
+   *  to remove "this way of filing" and said nothing about the 20. */
+  all_sites_term_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -312,4 +322,26 @@ export function isValidKey(key: string): boolean {
  */
 export function taxonomyErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
+}
+
+/**
+ * What the delete confirmation says it destroys.
+ *
+ * The count that matters here is EVERY site's, not this one's. A way of filing
+ * is shared across a business's websites while its labels are not, so deleting
+ * it from one site destroys the labels on all of them, and the site being worked
+ * in is routinely the one holding none of them (issue 385). Reading the per-site
+ * `term_count` here promised to remove "this way of filing content" and said
+ * nothing about twenty labels on two other sites.
+ */
+export function taxonomyDeleteWarning(
+  taxonomy: Pick<Taxonomy, 'term_count' | 'all_sites_term_count'>
+): string {
+  const count = taxonomy.all_sites_term_count;
+  const elsewhere = count - taxonomy.term_count;
+  if (count === 0) return 'This removes this way of filing content. This cannot be undone.';
+  if (elsewhere > 0) {
+    return `This removes this way of filing from every one of your websites, along with all ${String(count)} of its labels: ${String(elsewhere)} of ${elsewhere === 1 ? 'them is' : 'them are'} on your other sites. It also takes those labels off any content using them. This cannot be undone.`;
+  }
+  return `This removes this way of filing and all ${String(count)} of its labels, and takes those labels off any content using them. This cannot be undone.`;
 }

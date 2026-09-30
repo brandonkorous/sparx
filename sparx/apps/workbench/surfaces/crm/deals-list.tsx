@@ -301,7 +301,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Deal list controls"
+        label="Deals controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -435,7 +435,13 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               </Button>
             }
           />
-        ) : rows.length === 0 && !isBoard ? (
+        ) : // ZERO DEALS IS ZERO DEALS IN EITHER VIEW. This read
+        // `rows.length === 0 && !isBoard`, so the first-run invitation and the
+        // no-results message only ever appeared in the LIST. Board is the
+        // default, so somebody opening Deals for the first time got six empty
+        // columns each reading "Nothing at this step yet." and no word anywhere
+        // about what a deal is or how to add one.
+        rows.length === 0 ? (
           <ListEmptyState
             filtered={filtered}
             noResults={{
@@ -447,7 +453,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No deals yet',
               description:
-                'A deal tracks a sale you are working on, from first contact to close. Add your first one to start a pipeline.',
+                'A deal tracks a sale you are working on, from first contact to close. Add your first one and it lands at the first step of your board.',
               action: createFirst,
             }}
           />

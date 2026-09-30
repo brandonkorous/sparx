@@ -18,6 +18,7 @@ import { useQuery } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { channelLabel } from '../../lib/console/channels';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes (mirror reporting-service.ts) ───────────────────────────────── */
 
@@ -187,7 +188,7 @@ export function reportsErrorMessage(error: unknown, fallback: string): string {
 }
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /** A whole-number money label for a headline figure — no cents on a KPI. */

@@ -15,7 +15,13 @@
 // greyed out, omitted. See PaneHost.capabilities.
 
 import { Search, Columns2, ExternalLink, Save } from 'lucide-react';
-import { Button, Heading, Kbd, Text } from '@wizeworks/silicaui-react';
+import { Button, Heading, Text } from '@wizeworks/silicaui-react';
+import {
+  alongsideKeyText,
+  launcherKeyText,
+  LauncherKey,
+  useIsMac,
+} from '@/components/shortcut-keys';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
 import { WelcomeBanner } from './onboarding/welcome/welcome-banner';
@@ -30,40 +36,46 @@ interface Gesture {
   requires?: 'split' | 'popout';
 }
 
-const GESTURES: Gesture[] = [
-  {
-    icon: Search,
-    title: 'Open anything by name',
-    body: 'Press ⌘K and start typing. No menus to learn: if you know what you want, say it.',
-    compactBody:
-      'Tap the magnifying glass and start typing. No menus to learn: if you know what you want, say it.',
-  },
-  {
-    icon: Columns2,
-    title: 'Put things side by side',
-    body: 'Drag a tab to the edge of a panel to split it. Hold ⇧ when opening to place something alongside what you are already looking at.',
-    requires: 'split',
-  },
-  {
-    icon: ExternalLink,
-    title: 'Pull a panel onto another screen',
-    body: 'Drag a tab out of the window and let go. It becomes its own window you can move to a second monitor.',
-    requires: 'popout',
-  },
-  {
-    icon: Save,
-    title: 'Keep an arrangement',
-    body: 'Everything comes back exactly as you left it. Save a workspace for each kind of work you do, and open it whenever that work comes round.',
-    // No workspaces here — there is no arrangement to name. What survives
-    // is what you had open, which is the part that matters on a phone.
-    compactBody: 'Whatever you had open comes back next time, exactly as you left it.',
-  },
-];
+// The list is built rather than declared, because two of these sentences name
+// a key and the right key depends on the keyboard in front of the reader. See
+// shortcut-keys.tsx.
+function gesturesFor(mac: boolean): Gesture[] {
+  return [
+    {
+      icon: Search,
+      title: 'Open anything by name',
+      body: `Press ${launcherKeyText(mac)} and start typing. No menus to learn: if you know what you want, say it.`,
+      compactBody:
+        'Tap the magnifying glass and start typing. No menus to learn: if you know what you want, say it.',
+    },
+    {
+      icon: Columns2,
+      title: 'Put things side by side',
+      body: `Drag a tab to the edge of a panel to split it. Hold ${alongsideKeyText(mac)} when opening to place something alongside what you are already looking at.`,
+      requires: 'split',
+    },
+    {
+      icon: ExternalLink,
+      title: 'Pull a panel onto another screen',
+      body: 'Drag a tab out of the window and let go. It becomes its own window you can move to a second monitor.',
+      requires: 'popout',
+    },
+    {
+      icon: Save,
+      title: 'Keep an arrangement',
+      body: 'Everything comes back exactly as you left it. Save a workspace for each kind of work you do, and open it whenever that work comes round.',
+      // No workspaces here — there is no arrangement to name. What survives
+      // is what you had open, which is the part that matters on a phone.
+      compactBody: 'Whatever you had open comes back next time, exactly as you left it.',
+    },
+  ];
+}
 
 export function HomeSurface({ ctx }: { ctx: SurfaceContext }) {
   const { controller } = useWorkbench();
   const capabilities = controller.capabilities();
-  const gestures = GESTURES.filter(
+  const mac = useIsMac();
+  const gestures = gesturesFor(mac).filter(
     (gesture) => !gesture.requires || capabilities[gesture.requires]
   );
 
@@ -132,7 +144,7 @@ export function HomeSurface({ ctx }: { ctx: SurfaceContext }) {
           {/* The keyboard hint only makes sense where there is a keyboard. */}
           {capabilities.split ? (
             <Text className="text-sm">
-              or press <Kbd size="sm">⌘</Kbd> <Kbd size="sm">K</Kbd> to search
+              or press <LauncherKey size="sm" /> to search
             </Text>
           ) : null}
         </div>

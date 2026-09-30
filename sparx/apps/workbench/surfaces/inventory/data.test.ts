@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { countingMatters, listCodes } from './data';
+import { countingMatters, listCodes, stockLevelParams, type StockQuery } from './data';
 
 describe('listCodes', () => {
   it('says nothing when there is nothing to name', () => {
@@ -58,5 +58,34 @@ describe('countingMatters', () => {
   it('is false for a version that is never posted', () => {
     // A download or a service has no shelf, so it cannot be counted at all.
     expect(countingMatters({ inventoryPolicy: 'deny', requiresShipping: false })).toBe(false);
+  });
+});
+
+// The stock list's two state filters are the answers to ONE question. "Running
+// low" has to travel with `sellable_only`, or a level at zero comes back under
+// it badged "None to sell"; and "None to sell" is its own filter, because being
+// out needs no reorder rule and a business that set none could otherwise never
+// ask for it.
+describe('stockLevelParams', () => {
+  const base: StockQuery = { sortBy: 'updatedAt', order: 'desc', take: 50, skip: 0 };
+
+  it('asks for running low as still sellable, so it never overlaps none to sell', () => {
+    const params = stockLevelParams({ ...base, lowStockOnly: true });
+    expect(params).toMatchObject({ low_stock_only: true, sellable_only: true });
+    expect(params).not.toHaveProperty('out_of_stock_only');
+  });
+
+  it('asks for none to sell on its own, with no reorder rule involved', () => {
+    const params = stockLevelParams({ ...base, outOfStockOnly: true });
+    expect(params).toMatchObject({ out_of_stock_only: true });
+    expect(params).not.toHaveProperty('low_stock_only');
+    expect(params).not.toHaveProperty('sellable_only');
+  });
+
+  it('narrows nothing when neither is chosen', () => {
+    const params = stockLevelParams(base);
+    expect(params).not.toHaveProperty('low_stock_only');
+    expect(params).not.toHaveProperty('out_of_stock_only');
+    expect(params).not.toHaveProperty('sellable_only');
   });
 });

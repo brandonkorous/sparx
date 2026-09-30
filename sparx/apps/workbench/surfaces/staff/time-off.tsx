@@ -30,7 +30,6 @@ import {
   Filter,
   FilterItem,
   Heading,
-  Input,
   NativeSelect,
   Table,
   Text,
@@ -63,6 +62,7 @@ import {
 } from './format';
 import { NOT_A_DATE, dayEndLocal, dayStartLocal } from '../../lib/today';
 import { ActionLabel } from '../../components/action-label';
+import { DayInput } from '../../components/day-input';
 
 const FILTERS = [
   { value: 'requested', label: 'Waiting on you' },
@@ -413,7 +413,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-md flex-col overflow-hidden">
           <DialogTitle>Log time off</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Field>
               <FieldLabel>Who</FieldLabel>
               <FieldControl
@@ -458,12 +458,11 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>First day</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={startsAt}
-                      onChange={(event) => {
-                        setStartsAt(event.target.value);
-                        if (event.target.value > endsAt) setEndsAt(event.target.value);
+                      onValueChange={(value) => {
+                        setStartsAt(value);
+                        if (value > endsAt) setEndsAt(value);
                       }}
                     />
                   }
@@ -473,12 +472,11 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Last day</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
-                      type="date"
+                    <DayInput
                       value={endsAt}
                       min={startsAt}
-                      onChange={(event) => {
-                        setEndsAt(event.target.value);
+                      onValueChange={(value) => {
+                        setEndsAt(value);
                       }}
                     />
                   }

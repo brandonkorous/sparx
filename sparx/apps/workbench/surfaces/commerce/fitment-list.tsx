@@ -74,7 +74,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Compatibility list controls"
+        label="Fitment controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -90,7 +90,6 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Button
             size="sm"
             variant="outline"
-            color="neutral"
             className="ml-auto shrink-0 whitespace-nowrap"
             title="Start from a ready-made list"
             onClick={() => {
@@ -98,7 +97,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Sparkles className="size-4" aria-hidden />
-            <span className="hidden @xl:inline">Starter library</span>
+            <span>Ready-made lists</span>
           </Button>
         }
         controls={
@@ -177,7 +176,6 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Button
                   size="sm"
                   variant="outline"
-                  color="neutral"
                   onClick={() => {
                     create({ shiftKey: false, altKey: false });
                   }}

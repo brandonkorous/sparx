@@ -302,7 +302,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Bills list controls"
+        label="Bills to pay controls"
         controls={
           <>
             <Filter

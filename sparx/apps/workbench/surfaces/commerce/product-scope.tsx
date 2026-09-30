@@ -107,6 +107,7 @@ import { useWorkbench } from '../../lib/workbench/context';
 import { usePaneId } from '../../lib/workbench/dirty';
 import { useShareAs } from '../../lib/workbench/share-as';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { surfaceTitle } from '../../lib/surfaces/registry';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProduct, type Product } from './products-data';
 
@@ -312,11 +313,19 @@ export type ProductScope =
 
 export interface ProductScopeOptions {
   /**
-   * What this pane is, in the operator's words — "Stock", "Fitment". Used for
-   * the tab title (`Stock · Enamel Camp Mug`) and in the empty states, so they
-   * read as being about something rather than as a generic error.
+   * This pane's subject as a lowercase NOUN PHRASE, for the middle of a
+   * sentence: "This panel shows stock for one product at a time", "Could not
+   * load fitment".
+   *
+   * It is NOT the tab title. Nine product panels used one string for both, and
+   * every one of them was the platform's word — so the tab read "Fitment ·
+   * Marlow Knit" under a rail, launcher and command palette that all called the
+   * same screen "What it fits". A brand renames a screen in ONE place, the
+   * catalog, and a hand-written const here put every product panel out of its
+   * reach. The title now comes from `surfaceTitle`, which is that one place.
+   * Issue 738. [[feedback_a_fix_leaves_its_neighbour_behind]]
    */
-  label: string;
+  noun: string;
   /**
    * Freeze a following pane on its current product. Wire it to the same boolean
    * you pass `useDirtySource`. Ignored when pinned — a pinned pane never moves.
@@ -329,8 +338,8 @@ export interface ProductScopeOptions {
  *
  * ```tsx
  * export function StockSurface({ ctx }: { ctx: SurfaceContext }) {
- *   const scope = useProductScope(ctx, { label: 'Stock' });
- *   if (scope.state !== 'ready') return <ProductScopeFallback ctx={ctx} scope={scope} label="Stock" />;
+ *   const scope = useProductScope(ctx, { noun: 'stock' });
+ *   if (scope.state !== 'ready') return <ProductScopeFallback ctx={ctx} scope={scope} noun="stock" />;
  *   return <StockBody product={scope.product} />;
  * }
  * ```
@@ -361,9 +370,14 @@ export function useProductScope(ctx: SurfaceContext, options: ProductScopeOption
   // following after the copy. See lib/workbench/share-as.ts.
   useShareAs(isFollowing && effective ? { ...ctx.params, productId: effective } : null);
 
+  // The screen's own name, as THIS brand calls it. `surfaceTitle` is the single
+  // lookup every rail, launcher and palette row already goes through, so a
+  // rename in the catalog reaches this tab with no edit here.
+  const screen = surfaceTitle(ctx.descriptor.surface) ?? options.noun;
+
   useEffect(() => {
-    ctx.setTitle(product ? `${options.label} · ${product.title}` : options.label);
-  }, [ctx, product, options.label]);
+    ctx.setTitle(product ? `${screen} · ${product.title}` : screen);
+  }, [ctx, product, screen]);
 
   const pin = useCallback(() => {
     if (!effective) return;
@@ -434,21 +448,25 @@ function isNotFound(error: unknown): boolean {
 export function ProductScopeFallback({
   ctx,
   scope,
-  label,
+  noun,
 }: {
   ctx: SurfaceContext;
   scope: ProductScope;
-  label: string;
+  /** The lowercase noun phrase, same as `ProductScopeOptions.noun`. The heading
+   *  and the bar's name come from the catalog instead, which is the one place a
+   *  brand renames a screen. */
+  noun: string;
 }) {
+  const screen = surfaceTitle(ctx.descriptor.surface) ?? noun;
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label={`${label} actions`}>
+      <PaneToolbar label={`${screen} actions`}>
         <Heading level={2} className="text-base font-semibold">
-          {label}
+          {screen}
         </Heading>
       </PaneToolbar>
       <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto">
-        <ScopeMessage ctx={ctx} scope={scope} label={label} />
+        <ScopeMessage ctx={ctx} scope={scope} noun={noun} />
       </div>
     </div>
   );
@@ -457,18 +475,18 @@ export function ProductScopeFallback({
 function ScopeMessage({
   ctx,
   scope,
-  label,
+  noun,
 }: {
   ctx: SurfaceContext;
   scope: ProductScope;
-  label: string;
+  noun: string;
 }) {
   if (scope.state === 'none') {
     return (
       <EmptyState
         icon={<Search className="size-6" aria-hidden />}
         title="Choose a product first"
-        description={`This panel shows ${label.toLowerCase()} for one product at a time. Open a product and it will follow along, or open this from a product to keep it fixed on that one.`}
+        description={`This panel shows ${noun} for one product at a time. Open a product and it will follow along, or open this from a product to keep it fixed on that one.`}
         actions={
           <Button
             size="sm"
@@ -533,7 +551,7 @@ function ScopeMessage({
   return (
     <EmptyState
       icon={<ServerCrash className="size-6" aria-hidden />}
-      title={`Could not load ${label.toLowerCase()}`}
+      title={`Could not load ${noun}`}
       description="This is a problem reaching the server. Nothing about the product has changed. It just could not be read just now."
       actions={
         <Button size="sm" color="module" onClick={scope.retry}>

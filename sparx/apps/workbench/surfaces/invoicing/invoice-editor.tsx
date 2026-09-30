@@ -44,30 +44,11 @@ import { PaymentsSection } from './payments';
 import { SignaturesSection } from './signatures';
 import { InvoiceValidationError, listDocumentWorkflows, saveInvoice } from './save';
 import { newLineKey, type DraftLine } from './totals';
+import { EMPTY_DRAFT, previewDraft, type DraftShape } from './preview-draft';
 import type { LineTypeOption } from './line-editor-modal';
 import type { MarkupRuleSummary } from './line-markup';
+import { documentNoun, isPriceOffer, newDocumentTitle } from './document-words';
 import { normalizeDocument, type BillingDocument } from './types';
-
-interface DraftShape {
-  customerId: string | null;
-  billTo: { name: string; email: string; address: string };
-  taxRate: number;
-  notes: string;
-  /** `YYYY-MM-DD`, or '' for no due date. */
-  dueAt: string;
-  lines: DraftLine[];
-}
-
-const EMPTY_DRAFT: DraftShape = {
-  customerId: null,
-  billTo: { name: '', email: '', address: '' },
-  taxRate: 0,
-  notes: '',
-  dueAt: '',
-  // No starter row: lines are added through the modal, so a fresh invoice shows
-  // the empty state + Add button rather than a stray blank line.
-  lines: [],
-};
 
 interface LineTypeApi extends LineTypeOption {
   isActive: boolean;
@@ -101,6 +82,14 @@ function toDraftLines(doc: BillingDocument | undefined): DraftLine[] {
 export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = ctx.params.id ?? 'new';
   const isNew = id === 'new';
+  // The kind of document the caller came to make, as a workflow SLUG.
+  //
+  // This screen is the one editor for every document the billing engine knows
+  // about, so "make a quote" and "make an invoice" are the same screen with a
+  // different workflow chosen. Without this param the only way to reach a quote
+  // was to press New invoice and then change a dropdown, which asks a person to
+  // already know that a quote IS an invoice underneath (issue 761).
+  const wantedWorkflowSlug = typeof ctx.params.workflow === 'string' ? ctx.params.workflow : null;
   const key = draftKey('invoice', id);
   const queryClient = useQueryClient();
 
@@ -156,6 +145,24 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   // single-workflow tenant never sees a decision it doesn't have.
   const [workflowId, setWorkflowId] = useState<string | null>(null);
 
+  // A caller that named a kind of document gets it chosen for them, once the
+  // workflows arrive. Only while the field is still untouched: this must seed
+  // the choice, never overrule one the operator has since made.
+  useEffect(() => {
+    if (!isNew || !wantedWorkflowSlug || workflowId !== null) return;
+    const wanted = workflows?.find((w) => w.slug === wantedWorkflowSlug);
+    // No match is not an error worth a message. The workflow can be archived or
+    // never seeded, and the editor still works — it opens on the default and
+    // the "Document type" field is right there.
+    if (!wanted) return;
+    setWorkflowId(wanted.id);
+    // The baseline moves with it, or the form is dirty before anybody has typed
+    // anything: closing an untouched pane would ask to confirm losing work that
+    // does not exist. That is issue 507's bug, and seeding a field is exactly
+    // how it comes back.
+    baselineRef.current = JSON.stringify({ draft: EMPTY_DRAFT, workflowId: wanted.id });
+  }, [isNew, wantedWorkflowSlug, workflowId, workflows]);
+
   // Seed the form once the document arrives, and remember the lines it came
   // with — that snapshot is the only way to tell later that one was deleted.
   useEffect(() => {
@@ -178,7 +185,10 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
       // Seeded from the document for the same reason `notes` is: a field the
       // editor does not read is a field the next save WIPES, and the save
       // reports success while doing it.
-      dueAt: doc.dueAt ? doc.dueAt.slice(0, 10) : '',
+      // Whichever column this kind of document keeps its date in. Reading only
+      // `dueAt` showed an empty box on every quote that HAD an expiry, and the
+      // next save then wrote that emptiness back over it.
+      dueAt: (doc.validUntil ?? doc.dueAt)?.slice(0, 10) ?? '',
       lines,
     };
     setDraft(seeded);
@@ -192,6 +202,17 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: docWorkflow } = useDocumentWorkflow(doc?.workflowId);
   const currentStage = docWorkflow?.stages.find((stage) => stage.id === doc?.stageId);
 
+  // Which KIND of document this is, once for the whole screen. An existing one
+  // is whatever its workflow says; a new one is the kind the caller asked for,
+  // or the kind chosen in "Document type", or the default. Everything that has
+  // to name the thing reads this — the tab, the field help, the save messages,
+  // and which date column the date goes in.
+  const activeWorkflowSlug = doc
+    ? (docWorkflow?.slug ?? null)
+    : (workflows?.find((w) => w.id === (workflowId ?? workflows[0]?.id))?.slug ?? null);
+  const noun = documentNoun(activeWorkflowSlug);
+  const priceOffer = isPriceOffer(activeWorkflowSlug);
+
   const currency = doc?.currency ?? 'USD';
   // Locked is a STAGE fact, not a status fact: a finalized invoice is locked
   // long before it is void. Status stays as the fallback for the moment between
@@ -199,10 +220,15 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const readOnly = currentStage ? currentStage.locksEditing : doc?.status === 'void';
 
   // Publish on every change so any open preview — in this window or another —
-  // follows along. Cleared when the pane closes so a stale draft can't outlive it.
+  // follows along. Cleared when the pane closes so a stale draft can't outlive
+  // it. WHAT goes in the payload, and why leaving a field out is not the same
+  // as leaving it unchanged, is `./preview-draft`.
   useEffect(() => {
-    publishDraft(key, { ...draft, currency });
-  }, [draft, key, currency]);
+    publishDraft(
+      key,
+      previewDraft({ draft, doc, currency, workflowSlug: activeWorkflowSlug, priceOffer })
+    );
+  }, [draft, doc, key, currency, activeWorkflowSlug, priceOffer]);
 
   useEffect(() => () => clearDraft(key), [key]);
 
@@ -217,17 +243,22 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const dirty =
     JSON.stringify({ draft, workflowId: workflowId ?? doc?.workflowId ?? null }) !==
     baselineRef.current;
-  useDirtySource(dirty, 'This invoice has unsaved changes. Close it anyway?');
+  useDirtySource(dirty, `This ${noun} has unsaved changes. Close it anyway?`);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New invoice' : (doc?.number ?? 'Invoice'));
-  }, [ctx, isNew, doc?.number]);
+    ctx.setTitle(
+      isNew
+        ? newDocumentTitle(activeWorkflowSlug)
+        : (doc?.number ?? noun.charAt(0).toUpperCase() + noun.slice(1))
+    );
+  }, [ctx, isNew, doc?.number, activeWorkflowSlug, noun]);
 
   const save = useMutation({
     mutationFn: () =>
       saveInvoice({
         id,
         workflowId: workflowId ?? workflows?.[0]?.id ?? null,
+        workflowSlug: activeWorkflowSlug,
         header: { ...draft, currency },
         lines: draft.lines,
         original,
@@ -255,7 +286,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const failure = save.error
     ? save.error instanceof InvoiceValidationError
       ? save.error.message
-      : 'This invoice could not be saved. It may be a temporary problem. Try again in a moment.'
+      : `This ${noun} could not be saved. It may be a temporary problem. Try again in a moment.`
     : null;
 
   return (
@@ -298,9 +329,19 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             one, so it sits beside the stage control rather than behind the
             overflow menu. Saved documents only — an unsaved draft would send a
             different invoice from the one on screen. */}
-            {doc ? <SendButton doc={doc} dirty={dirty} /> : null}
+            {doc ? (
+              <SendButton doc={doc} dirty={dirty} noun={noun} priceOffer={priceOffer} />
+            ) : null}
             {doc && docWorkflow ? <StageControl doc={doc} stages={docWorkflow.stages} /> : null}
-            {doc ? <DocumentActions doc={doc} stage={currentStage} ctx={ctx} /> : null}
+            {doc ? (
+              <DocumentActions
+                doc={doc}
+                stage={currentStage}
+                ctx={ctx}
+                noun={noun}
+                priceOffer={priceOffer}
+              />
+            ) : null}
           </>
         }
       />
@@ -358,8 +399,17 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                     customerId={draft.customerId}
                     value={draft.billTo}
                     dueAt={draft.dueAt}
+                    noun={noun}
+                    priceOffer={priceOffer}
                     readOnly={readOnly}
                     onChange={update}
+                    onAddCustomer={(typed) => {
+                      ctx.open(
+                        'crm.customer.detail',
+                        { id: 'new', name: typed },
+                        { target: 'beside' }
+                      );
+                    }}
                   />
                 </FormSection>
 
@@ -397,7 +447,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                         />
                       }
                     />
-                    <FieldDescription>Shown on the invoice the customer receives</FieldDescription>
+                    <FieldDescription>{`Shown on the ${noun} the customer receives`}</FieldDescription>
                   </Field>
                 </FormSection>
               </>
@@ -437,7 +487,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                   <SignaturesSection doc={doc} isDraft={currentStage?.stageType === 'draft'} />
                 ) : null}
 
-                {doc ? <PaymentsSection doc={doc} /> : null}
+                {doc ? <PaymentsSection doc={doc} noun={noun} priceOffer={priceOffer} /> : null}
 
                 {/* Frozen records — an appendix about the past. Renders
                     nothing until the first stage move freezes one. */}

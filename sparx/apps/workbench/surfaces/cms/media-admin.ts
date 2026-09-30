@@ -21,6 +21,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { focalFromWire } from './focal-point';
 
 /* ── What a file is, in the terms this surface groups by ─────────────────── */
 
@@ -99,6 +100,15 @@ interface MediaAssetWire {
   status: string;
   processing_error: string | null;
   usage_count: number;
+  /** Null on the paths that do not count (the PATCH response). */
+  usage_breakdown: {
+    products: number;
+    content: number;
+    customers: number;
+    authors: number;
+    staff_documents: number;
+    expenses: number;
+  } | null;
   original_url: string | null;
   variants: MediaVariantWire[];
   created_at: string;
@@ -129,6 +139,13 @@ export interface MediaAsset {
   width: number | null;
   height: number | null;
   durationSec: number | null;
+  /** Which part of the picture matters, 0..1 on each axis. Dead centre means
+   *  NOBODY has chosen: the media worker treats that as "find the subject
+   *  yourself" and only obeys the stored pair when it has been moved. Four
+   *  layers read this and, until issue 869, no screen could write it — the
+   *  wire has always carried `focal_point` and this mapper dropped it. */
+  focalX: number;
+  focalY: number;
   /** A small rendition for a grid tile, or null while nothing renders yet. */
   thumbnailUrl: string | null;
   /** The best full-size URL for a detail preview (the original, or the largest
@@ -138,9 +155,31 @@ export interface MediaAsset {
   caption: string | null;
   status: string;
   processingError: string | null;
+  /** How many things are using it, COUNTED by api-rest across the tables that
+   *  hold the references. It used to be `media_assets.usage_count`, a column
+   *  nothing has ever written: measured on this database, 2,553 of the 2,554
+   *  live assets something points at carried a zero there. The "Used in" line
+   *  and the Delete button both read this, so the screen said "Not used
+   *  anywhere yet" over a photo on a live product page with Delete enabled
+   *  beneath it (issue 381). */
   usageCount: number;
+  /** What is using it, by kind. Null on the paths that do not count (nothing
+   *  renders those). The total above is a FLOOR: a picture placed directly into
+   *  a page in the site editor is not counted, because a builder tree keeps its
+   *  asset ids in plain JSON with no index beside them. */
+  usage: AssetUsageBreakdown | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/** Where an asset is used, by kind: the same six api-rest counts. */
+export interface AssetUsageBreakdown {
+  products: number;
+  content: number;
+  customers: number;
+  authors: number;
+  staffDocuments: number;
+  expenses: number;
 }
 
 /** The smallest rendition at least `minWidth` across (sharp on a tile without
@@ -155,6 +194,7 @@ function pickThumbnail(wire: MediaAssetWire, minWidth: number): string | null {
 function toAsset(wire: MediaAssetWire): MediaAsset {
   const largestVariant = [...wire.variants].sort((a, b) => b.width - a.width)[0]?.url ?? null;
   const byteSize = Number(wire.byte_size);
+  const focal = focalFromWire(wire.focal_point);
   return {
     id: wire.id,
     filename: wire.original_filename,
@@ -165,6 +205,8 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     width: wire.width,
     height: wire.height,
     durationSec: wire.duration_sec,
+    focalX: focal.x,
+    focalY: focal.y,
     thumbnailUrl: pickThumbnail(wire, 320),
     // Prefer the true original; fall back to the largest variant when the
     // original is private (production images) so a preview still renders.
@@ -174,6 +216,16 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     status: wire.status,
     processingError: wire.processing_error,
     usageCount: wire.usage_count,
+    usage: wire.usage_breakdown
+      ? {
+          products: wire.usage_breakdown.products,
+          content: wire.usage_breakdown.content,
+          customers: wire.usage_breakdown.customers,
+          authors: wire.usage_breakdown.authors,
+          staffDocuments: wire.usage_breakdown.staff_documents,
+          expenses: wire.usage_breakdown.expenses,
+        }
+      : null,
     createdAt: wire.created_at,
     updatedAt: wire.updated_at,
   };
@@ -348,10 +400,37 @@ export function formatDateTime(value: string | null | undefined): string {
 /**
  * The server's own sentence for a 4xx, shown verbatim: the media routes explain
  * the real problem far better than a status code — most importantly the delete
- * conflict ("Asset is still referenced by 3 entries."), which names the exact
+ * conflict ("This file is still used by 3 product photos. Detach it first."), which names the exact
  * reason a file cannot be removed. A 5xx carries no such sentence, so it falls
  * back to the caller's wording.
  */
 export function mediaErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
+}
+
+/** "3 product photos and 1 page or article", or null when nothing is using it.
+ *  Names the KINDS rather than a bare count, because "used in 4 places" does
+ *  not tell an owner which screen to open before she can delete the file. The
+ *  same words api-rest's refusal uses (`describeUsage` in @wizeworks/media), so
+ *  the disabled button and the server's answer never name one problem two ways. */
+export function usedInLabel(asset: Pick<MediaAsset, 'usageCount' | 'usage'>): string | null {
+  if (asset.usageCount <= 0) return null;
+  const u = asset.usage;
+  if (!u) {
+    const n = asset.usageCount;
+    return `${String(n)} ${n === 1 ? 'place' : 'places'} on your site`;
+  }
+  const parts: string[] = [];
+  const add = (n: number, one: string, many: string) => {
+    if (n > 0) parts.push(`${String(n)} ${n === 1 ? one : many}`);
+  };
+  add(u.products, 'product photo', 'product photos');
+  add(u.content, 'page or article', 'pages and articles');
+  add(u.customers, 'customer record', 'customer records');
+  add(u.authors, 'author profile', 'author profiles');
+  add(u.staffDocuments, 'staff document', 'staff documents');
+  add(u.expenses, 'expense', 'expenses');
+  if (parts.length === 0) return `${String(asset.usageCount)} places on your site`;
+  if (parts.length === 1) return parts[0]!;
+  return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)!}`;
 }

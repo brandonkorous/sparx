@@ -21,6 +21,9 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 // way the content editor's asset fields do.
 import { useMediaAssets, type MediaAsset } from './media';
 import { authorName, useAuthorsList, type Author } from './authors-data';
+// Read-only import: whether this business runs more than one site, which is the
+// only case where "shared across all your sites" says anything.
+import { useSites } from '../sites/data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -60,10 +63,13 @@ function AuthorPhoto({ asset }: { asset: MediaAsset | undefined }) {
 function AuthorRow({
   author,
   asset,
+  showShared,
   onOpen,
 }: {
   author: Author;
   asset: MediaAsset | undefined;
+  /** More than one site, so a byline on every site is worth saying out loud. */
+  showShared: boolean;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   return (
@@ -81,9 +87,17 @@ function AuthorRow({
       <td>
         <span className="flex min-w-0 items-center gap-3">
           <AuthorPhoto asset={asset} />
-          {/* The name is the content of the row — everything else is a note about
-              it, so nothing else gets to be the same size. */}
-          <span className="max-w-72 truncate text-base font-medium">{authorName(author)}</span>
+          <span className="flex min-w-0 flex-col">
+            {/* The name is the content of the row — everything else is a note about
+                it, so nothing else gets to be the same size. */}
+            <span className="max-w-72 truncate text-base font-medium">{authorName(author)}</span>
+            {/* This list is this site's bylines PLUS the ones shared with every
+                site (issue 387). A shared name is not this site's alone to
+                change, so it says so, in the same words a shared redirect uses. */}
+            {showShared && author.property_id === null ? (
+              <span className="text-sm">Shared across all your sites</span>
+            ) : null}
+          </span>
         </span>
       </td>
       <td className="hidden max-w-72 truncate font-mono text-sm @xl:table-cell">/{author.slug}</td>
@@ -102,6 +116,8 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
   });
 
   const authors = useMemo(() => data?.items ?? [], [data]);
+  const { data: sites } = useSites();
+  const multiSite = (sites ?? []).length > 1;
 
   // Every avatar in ONE request, so the list shows real faces rather than ids.
   const avatarIds = useMemo(
@@ -160,7 +176,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
           gives way first, since search is used constantly and the count is a
           glance. The bar does not wrap. */}
       <PaneToolbar
-        label="Author list controls"
+        label="Authors controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -181,6 +197,8 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(authors.length)} authors`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -218,9 +236,14 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
               description: 'Try part of the name, or clear the search to see everyone.',
             }}
             firstRun={{
-              title: 'No authors yet',
-              description:
-                'Authors are the names that appear on what you publish: a photo and a short biography each. Add your first one and you can pick it on any post.',
+              // With more than one site, "none yet" is about THIS site: bylines
+              // written for the others are kept in their own lists (issue 387),
+              // and an owner who wrote five for another site must not be told
+              // she has none.
+              title: multiSite ? 'No authors on this site yet' : 'No authors yet',
+              description: multiSite
+                ? 'Authors are the names that appear on what you publish: a photo and a short biography each. Names you added for your other sites stay in those sites’ lists. Add one here and you can pick it on any post on this site.'
+                : 'Authors are the names that appear on what you publish: a photo and a short biography each. Add your first one and you can pick it on any post.',
               actions: (
                 <Button
                   size="sm"
@@ -249,6 +272,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   key={author.id}
                   author={author}
                   asset={author.avatar_asset_id ? assetById.get(author.avatar_asset_id) : undefined}
+                  showShared={multiSite}
                   onOpen={(event) => {
                     open(author, event);
                   }}

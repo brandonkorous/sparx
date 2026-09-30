@@ -115,7 +115,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Checkout sessions list controls"
+        label="Checkout sessions controls"
         controls={
           <>
             <Filter

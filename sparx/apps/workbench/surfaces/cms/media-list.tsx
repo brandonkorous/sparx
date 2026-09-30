@@ -181,7 +181,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
           hidden (kind + search answer most questions) and the upload label sheds
           to its icon. At a normal width this is one line. */}
       <PaneToolbar
-        label="Media library controls"
+        label="Media controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

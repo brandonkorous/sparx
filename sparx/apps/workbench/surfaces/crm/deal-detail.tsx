@@ -40,6 +40,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import { ScorePanel } from './score-panel';
@@ -59,6 +60,7 @@ import {
   type DealInput,
 } from './deals-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -447,30 +449,18 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
                 <FieldLabel>Value</FieldLabel>
                 <FieldControl
                   render={
-                    <div className="flex max-w-[14rem] items-center gap-2">
-                      <Input
-                        color={valueError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step="1"
-                        inputMode="decimal"
-                        value={draft.valueDollars}
-                        placeholder="0"
-                        onChange={(event) => {
-                          set('valueDollars', event.target.value);
-                        }}
-                      />
-                      <Input
-                        color="module"
-                        aria-label="Currency"
-                        value={draft.currency}
-                        spellCheck={false}
-                        className="max-w-[5rem] font-mono uppercase"
-                        onChange={(event) => {
-                          set('currency', event.target.value.toUpperCase().slice(0, 3));
-                        }}
-                      />
-                    </div>
+                    <Input
+                      color={valueError && touched ? 'error' : 'module'}
+                      type="number"
+                      min={0}
+                      step="1"
+                      inputMode="decimal"
+                      value={draft.valueDollars}
+                      placeholder="0"
+                      onChange={(event) => {
+                        set('valueDollars', event.target.value);
+                      }}
+                    />
                   }
                 />
                 {valueError && touched ? (
@@ -479,12 +469,21 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
                   <FieldDescription>What the deal is worth if it closes.</FieldDescription>
                 )}
               </Field>
+              <CurrencyField
+                required
+                value={draft.currency}
+                onChange={(next) => {
+                  set('currency', next);
+                }}
+                description="What that value is in."
+              />
               <Field>
                 <FieldLabel>Likelihood</FieldLabel>
                 <FieldControl
                   render={
                     <div className="flex max-w-[10rem] items-center gap-2">
                       <Input
+                        aria-label="Likelihood"
                         color="module"
                         type="number"
                         min={0}
@@ -540,13 +539,12 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
               <FieldLabel>Expected close date</FieldLabel>
               <FieldControl
                 render={
-                  <Input
+                  <DayInput
                     color="module"
-                    type="date"
                     className="max-w-[14rem]"
                     value={draft.expectedCloseDate}
-                    onChange={(event) => {
-                      set('expectedCloseDate', event.target.value);
+                    onValueChange={(value) => {
+                      set('expectedCloseDate', value);
                     }}
                   />
                 }

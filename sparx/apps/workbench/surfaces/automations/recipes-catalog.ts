@@ -92,7 +92,7 @@ export const GOAL_GROUPS: readonly GoalGroup[] = [
   {
     key: 'welcome',
     title: 'Welcome & grow',
-    blurb: 'Greet new customers and accounts, and turn website enquiries into contacts.',
+    blurb: 'Greet new customers and accounts, and turn website inquiries into contacts.',
     icon: Sparkles,
   },
   {

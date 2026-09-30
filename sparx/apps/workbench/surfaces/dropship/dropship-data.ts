@@ -34,6 +34,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Semantic tone (shared with the Badge/Button color axis) ────────────── */
 
@@ -45,7 +46,7 @@ export type SortDir = 'asc' | 'desc';
 /* ── Money ──────────────────────────────────────────────────────────────── */
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /** Whole-dollar money for headline figures where the cents are just noise. */
@@ -124,8 +125,9 @@ export function pricingRuleLabel(rule: PricingRule | null): string {
 
 export type SupplierStatus = 'connecting' | 'active' | 'error' | 'disconnected';
 
-/** One supplier connection, as `toSupplierView` serializes it. Secrets are NEVER
- *  in here — only `credentialsSet` says whether a usable token is on file. */
+/** One supplier connection, as `toSupplierView` serializes it. SECRETS are never
+ *  in here — `credentialsSet` says whether a usable one is on file — but the
+ *  fields that are not secrets come back in `credentialValues`. */
 export interface Supplier {
   id: string;
   name: string;
@@ -140,6 +142,11 @@ export interface Supplier {
   /** Whether a usable token is stored, so the form shows "saved / replace"
    *  rather than forcing a re-entry to change anything else. */
   credentialsSet: boolean;
+  /** The stored values that are NOT secrets, keyed by field. Only
+   *  `type: 'password'` is withheld — everything else is a store id, a feed
+   *  address or a spreadsheet column name, and hiding those means a business
+   *  cannot check the mapping it typed without typing it again. */
+  credentialValues: Record<string, string>;
   vendorLabel: string;
   /** Property (site) ids this connection is enabled on. Empty = every site. */
   siteScope: string[];
@@ -150,8 +157,21 @@ export interface Supplier {
   updatedAt: string;
 }
 
-/** What a supplier connection is doing, in words a person can act on. */
-export function supplierState(status: SupplierStatus): {
+/**
+ * What a supplier connection is doing, in words a person can act on.
+ *
+ * TAKES THE TYPE, because the failed case has two causes with different fixes
+ * and the advice for one is useless for the other. Four of the five suppliers
+ * connect with a key and fail when that key stops working; the fifth is a
+ * SPREADSHEET ADDRESS on the web, has no key at all, and fails when nobody can
+ * read the file. Telling somebody with a CSV feed that their token has expired
+ * sends them to look for a thing they never had.
+ * [[feedback_one_outcome_two_causes]]
+ */
+export function supplierState(
+  status: SupplierStatus,
+  type?: SupplierType
+): {
   label: string;
   tone: Tone;
   detail: string;
@@ -174,7 +194,9 @@ export function supplierState(status: SupplierStatus): {
         label: 'Needs attention',
         tone: 'danger',
         detail:
-          'The connection is not working, usually a token that has expired or been revoked. Re-enter its details to fix it.',
+          type === 'csv'
+            ? 'We could not read this supplier’s file. Check the address is right and that the file opens for anybody, not just for people signed in to their system.'
+            : 'We could not get in. This is usually a key that has been changed or turned off at the supplier’s end, so get a new one from them and put it in below.',
       };
     case 'disconnected':
       return {

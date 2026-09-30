@@ -62,7 +62,12 @@ import {
   type Product,
 } from './products-data';
 
-const LABEL = 'Where it sells';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'where it sells';
 
 /** Slug → the name a shopper browsing the marketplace would see. */
 const CATEGORY_ITEMS = Object.fromEntries(
@@ -288,7 +293,7 @@ function MarketplaceCard({ product, productId }: { product: Product; productId: 
 }
 
 export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const listings = useChannelListings(productId);
   const { data: sites } = useSites();
@@ -304,7 +309,7 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [listings.data]);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} />;
   }
 
   const product = scope.product;
@@ -319,7 +324,7 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         controls={
           <>
             <Globe2 className="size-4 shrink-0" aria-hidden />
@@ -380,9 +385,27 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Text>
               </div>
 
+              {/* A sentence that names another screen and does not go there is a
+                  set of directions. Every other cross-screen reference in this
+                  console opens the pane; this one read like one and was not. */}
               <FormSection
                 title="Your own websites"
                 description="Changed on the product itself, under which of your sites show it."
+                action={
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      ctx.open(
+                        'commerce.product.detail',
+                        { id: scope.productId },
+                        { target: 'tab' }
+                      );
+                    }}
+                  >
+                    Change which sites show it
+                  </Button>
+                }
               >
                 {ownSites.length === 0 ? (
                   <Text className="text-sm">
@@ -391,23 +414,60 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </Text>
                 ) : (
                   <div className="flex flex-col gap-3">
-                    {ownSites.map((site) => (
-                      <div
-                        key={site.id}
-                        className="border-base-300 flex flex-wrap items-center justify-between gap-2 border-b pb-3 last:border-b-0 last:pb-0"
-                      >
-                        <Text as="span" className="font-medium">
-                          {site.name}
-                        </Text>
-                        <Badge
-                          color={product.status === 'active' ? 'success' : 'info'}
-                          variant="soft"
-                          size="sm"
+                    {ownSites.map((site) => {
+                      // A SITE can switch Selling off, under "What this site
+                      // shows" on its own settings screen. This column said
+                      // "On sale" anyway: it read the PRODUCT's status and
+                      // nothing else, so every row on a product listed on five
+                      // sites carried the identical badge and none of them was
+                      // answering the question the column asks.
+                      //
+                      // It matters most where it was most wrong. Juniper Row's
+                      // jewellery is listed on her JOURNAL, and a journal is
+                      // exactly the site an owner switches Selling off on.
+                      const selling = !site.moduleScope.includes('commerce');
+                      const state = !selling
+                        ? { label: 'Selling is off here', tone: 'warning' as const }
+                        : product.status === 'active'
+                          ? { label: 'On sale', tone: 'success' as const }
+                          : { label: 'Not on sale yet', tone: 'info' as const };
+                      return (
+                        <div
+                          key={site.id}
+                          className="border-base-300 flex flex-wrap items-center justify-between gap-2 border-b pb-3 last:border-b-0 last:pb-0"
                         >
-                          {product.status === 'active' ? 'On sale' : 'Not on sale yet'}
-                        </Badge>
-                      </div>
-                    ))}
+                          <div className="min-w-0">
+                            <Text as="span" className="block font-medium">
+                              {site.name}
+                            </Text>
+                            {selling ? null : (
+                              <>
+                                <Text className="text-sm">
+                                  This site has Selling switched off, so nothing is bought here.
+                                </Text>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="-ml-3"
+                                  onClick={() => {
+                                    ctx.open(
+                                      'platform.settings.site',
+                                      { id: site.id },
+                                      { target: 'tab' }
+                                    );
+                                  }}
+                                >
+                                  Open this site&rsquo;s settings
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                          <Badge color={state.tone} variant="soft" size="sm">
+                            {state.label}
+                          </Badge>
+                        </div>
+                      );
+                    })}
                     {product.propertyIds.length === 0 && allSites.length > 1 ? (
                       <Text className="text-sm">
                         It is set to appear on every website you run, including any you add later.

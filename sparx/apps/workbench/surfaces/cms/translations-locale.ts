@@ -16,44 +16,13 @@
 
 import type { ProductTranslation } from './translations-data';
 
-/**
- * Canonicalize a language tag the way the server does — language lowercase,
- * script Titlecase, region UPPERCASE.
- *
- * Done here as well so the editor can key a DRAFT row on the same string the
- * server will store. Without it, typing `en-us` creates a draft under `en-us`
- * that comes back from the save as `en-US`, and the language appears twice with
- * the operator's edit apparently lost.
- */
-export function canonicalLocale(raw: string): string {
-  const parts = raw.trim().replace(/_/g, '-').split('-').filter(Boolean);
-  return parts
-    .map((part, index) => {
-      if (index === 0) return part.toLowerCase();
-      // Four letters is a SCRIPT (Hans, Cyrl) — Titlecase; two or three in a
-      // later position is a REGION — uppercase.
-      if (part.length === 4) return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-      if (part.length === 2 || part.length === 3) return part.toUpperCase();
-      return part.toLowerCase();
-    })
-    .join('-');
-}
+// The three tag helpers live in `lib/languages.ts` with the named shortlist the
+// pickers offer, because three of the four panes that ask for a language could
+// not see them here and kept a raw code box (issue 793). Re-exported so the
+// screens that read this module keep reading this module.
+import { canonicalLocale, isValidLocale, localeName } from '../../lib/languages';
 
-/** A language tag in the reader's own language ("Spanish (Mexico)"), falling
- *  back to the tag itself when the browser has no name for it. */
-export function localeName(locale: string): string {
-  try {
-    return new Intl.DisplayNames(undefined, { type: 'language' }).of(locale) ?? locale;
-  } catch {
-    return locale;
-  }
-}
-
-/** Would the server accept this tag? Mirrors the BCP-47 shape the Locale schema
- *  enforces, so the editor can refuse it before spending a round trip. */
-export function isValidLocale(raw: string): boolean {
-  return /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?$/.test(canonicalLocale(raw));
-}
+export { canonicalLocale, isValidLocale, localeName };
 
 /** A product's coverage as one readable phrase: "Not translated", "Spanish", or
  *  "Spanish, French +2". Names the first two languages and counts the rest so a

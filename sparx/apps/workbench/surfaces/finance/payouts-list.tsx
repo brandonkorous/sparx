@@ -170,7 +170,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Payouts list controls"
+        label="Payouts controls"
         controls={
           <>
             <Filter

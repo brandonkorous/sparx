@@ -271,6 +271,15 @@ export function useRemoveCountLine(countId: string) {
 export interface CountEntry {
   lineId: string;
   countedQuantity: number;
+  /**
+   * Why this line came out the way it did.
+   *
+   * ABSENT means "not talking about the note", which is how a quantity is
+   * saved without touching words somebody wrote earlier. An EMPTY STRING
+   * clears it. The server decides between the two in one place
+   * (`countNoteWrite`), so this end only has to be careful to send `''`
+   * rather than nothing when a box has been emptied.
+   */
   note?: string;
 }
 

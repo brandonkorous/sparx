@@ -24,7 +24,6 @@ import {
   FieldStatus,
   Heading,
   Input,
-  Select,
   Text,
   Textarea,
   useToast,
@@ -36,6 +35,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './products-data';
@@ -50,16 +50,9 @@ import {
   type GiftCardDetail,
 } from './giftcards-data';
 import { NOT_A_DATE, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-const CURRENCIES = {
-  USD: 'US dollars',
-  EUR: 'Euros',
-  GBP: 'British pounds',
-  CAD: 'Canadian dollars',
-  AUD: 'Australian dollars',
-};
 
 /** Nothing typed is `undefined` — a different answer from zero. Everything else
  *  goes through `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way
@@ -231,6 +224,7 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
                         $
                       </Text>
                       <Input
+                        aria-label="Load this much"
                         color={amountError && touched ? 'error' : 'module'}
                         type="number"
                         min={0}
@@ -249,21 +243,12 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
                   <FieldStatus status="error">{amountError}</FieldStatus>
                 ) : null}
               </Field>
-              <Field>
-                <FieldLabel>Currency</FieldLabel>
-                <Select
-                  color="module"
-                  aria-label="Currency"
-                  value={currency}
-                  items={CURRENCIES}
-                  onValueChange={(next) => {
-                    setCurrency(next as string);
-                  }}
-                />
-                <FieldDescription>
-                  A card can only be spent on orders in the same currency.
-                </FieldDescription>
-              </Field>
+              <CurrencyField
+                required
+                value={currency}
+                onChange={setCurrency}
+                description="A card can only be spent on orders in the same currency."
+              />
             </div>
           </FormSection>
 
@@ -328,16 +313,14 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
               <FieldLabel>Expires on</FieldLabel>
               <FieldControl
                 render={
-                  <div className="max-w-[16rem]">
-                    <Input
-                      color="module"
-                      type="date"
-                      value={expiry}
-                      onChange={(event) => {
-                        setExpiry(event.target.value);
-                      }}
-                    />
-                  </div>
+                  <DayInput
+                    className="max-w-[16rem]"
+                    color="module"
+                    value={expiry}
+                    onValueChange={(value) => {
+                      setExpiry(value);
+                    }}
+                  />
                 }
               />
               {expiryError ? <FieldStatus status="error">{expiryError}</FieldStatus> : null}
@@ -525,6 +508,7 @@ function GiftCardBody({ card }: { card: GiftCardDetail }) {
                     $
                   </Text>
                   <Input
+                    aria-label="Amount"
                     color="module"
                     type="number"
                     min={0}

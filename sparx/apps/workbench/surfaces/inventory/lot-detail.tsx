@@ -67,7 +67,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { isNotFound, plural, stockErrorMessage } from './data';
+import { plural, stockErrorMessage } from './data';
 import {
   describeExpiry,
   endsSentence,
@@ -434,7 +434,7 @@ function RecallDialog({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
           <DialogTitle>Recall batch {lot.lotNumber}?</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Text className="text-base">
               {lot.productTitle ?? 'Untitled product'}
               {lot.variantSku ? ` · ${lot.variantSku}` : ''} at {lotLocationLabel(lot)}.
@@ -532,17 +532,14 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed load REPLACES the pane — never empty facts beside a live action.
   if (lot.isError) {
-    const gone = isNotFound(lot.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This batch no longer exists' : 'Could not load this batch'}
-          description={
-            gone
-              ? 'It has been removed. Any orders and stock history that referenced it are unaffected.'
-              : 'This is a problem reaching the server. The batch record is unaffected. It just could not be read just now.'
-          }
+          error={lot.error}
+          title="Could not load this batch"
+          description="This is a problem reaching the server. The batch record is unaffected. It just could not be read just now."
+          missingTitle="This batch no longer exists"
+          missingDescription="It has been removed. Any orders and stock history that referenced it are unaffected."
           onRetry={() => {
             void lot.refetch();
           }}

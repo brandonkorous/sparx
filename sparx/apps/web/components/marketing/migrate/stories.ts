@@ -66,7 +66,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'store',
     seoTitle: 'Move from Shopify to sparx',
     seoDescription:
-      'Bring your Shopify products, variants, customers, orders, stock levels and discount codes across with the export files Shopify already makes. Most catalogues land in an afternoon.',
+      'Bring your Shopify products, variants, customers, orders, stock levels and discount codes across with the export files Shopify already makes. Most catalogs land in an afternoon.',
     keywords: [
       'shopify alternative',
       'migrate from shopify',
@@ -366,15 +366,15 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'There is no CRM, so there is a spreadsheet',
-        body: 'Enquiries go to an inbox. Deals live in a spreadsheet. The person who filled in the form and the person who bought are, as far as the system is concerned, strangers.',
+        body: 'Inquiries go to an inbox. Deals live in a spreadsheet. The person who filled in the form and the person who bought are, as far as the system is concerned, strangers.',
       },
     ],
     turnTitle: 'Keep designing. Stop stitching.',
     turnBody:
-      'sparx has a real visual builder, and behind it the commerce, CRM, stock and email that Webflow expects you to buy elsewhere and wire together. The form that captures an enquiry writes to the same place the order does.',
+      'sparx has a real visual builder, and behind it the commerce, CRM, stock and email that Webflow expects you to buy elsewhere and wire together. The form that captures an inquiry writes to the same place the order does.',
     consequences: [
       'Custom collection fields come across as custom properties rather than being dropped: a Case Studies collection is not a blog post with three fields missing.',
-      'The enquiry, the quote and the order are the same customer, automatically.',
+      'The inquiry, the quote and the order are the same customer, automatically.',
       'No item caps.',
     ],
     limits: [
@@ -723,7 +723,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'Anything transactional lives elsewhere',
-        body: 'Payments, enquiries, email, invoices: four other tools, four other logins, four other bills.',
+        body: 'Payments, inquiries, email, invoices: four other tools, four other logins, four other bills.',
       },
       {
         title: 'Nothing joins up',
@@ -732,7 +732,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'Design the front. Keep the back.',
     turnBody:
-      'sparx has a visual builder for the front and a real commerce, CRM and email system behind it. The enquiry becomes a customer becomes an order, in one place, with nothing wired between them.',
+      'sparx has a visual builder for the front and a real commerce, CRM and email system behind it. The inquiry becomes a customer becomes an order, in one place, with nothing wired between them.',
     consequences: [
       'Custom fields land as custom properties rather than being dropped.',
       'Forms write to the CRM instead of an inbox.',
@@ -815,7 +815,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
         body: 'A field, a rule, a report. Either you learn a platform for a living or you pay somebody who has.',
       },
       {
-        title: 'The licences are the small part',
+        title: 'The licenses are the small part',
         body: 'The consultant, the admin, the integrations, the annual review. The seat price was never the number that mattered.',
       },
       {
@@ -846,10 +846,10 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'CRM',
     seoTitle: 'Move from Pipedrive to sparx',
     seoDescription:
-      'Bring your Pipedrive people, organisations and deals across, with won and lost read correctly from the status column.',
+      'Bring your Pipedrive people, organizations and deals across, with won and lost read correctly from the status column.',
     keywords: ['pipedrive alternative', 'migrate from pipedrive', 'pipedrive export'],
     headline: 'Good at deals. Blind to everything else.',
-    lede: 'People, organisations and deals, with pipelines and stages rebuilt as you had them and won/lost read exactly.',
+    lede: 'People, organizations and deals, with pipelines and stages rebuilt as you had them and won/lost read exactly.',
     painTitle: 'The pipeline is fine. The rest of the business is invisible.',
     pains: [
       {

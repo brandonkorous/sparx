@@ -378,7 +378,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="AI overview controls"
+        label="Overview controls"
         primary={
           <Button
             size="sm"

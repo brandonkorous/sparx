@@ -24,12 +24,14 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
+  Card,
   Heading,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Table2, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneEmpty } from '../../components/pane-empty';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
@@ -45,6 +47,15 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 function sameBag(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
+
+/** The four built-in objects and the screen each really lives on. Mirrors the
+ *  map in `records-list.tsx`, because both panes are addressable by key. */
+const BUILTIN_SCREEN: Record<string, string> = {
+  contact: 'crm.customers.list',
+  company: 'crm.accounts.list',
+  deal: 'crm.deals.list',
+  ticket: 'crm.tickets.list',
+};
 
 export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const objectKey = String(ctx.params.objectKey ?? '');
@@ -73,6 +84,7 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [isNew, record.data, saved, loaded]);
 
   const label = type.data?.label ?? 'Record';
+  const labelPlural = type.data?.labelPlural ?? 'Records';
   const title = record.data ? recordTitle(record.data, type.data?.primaryFieldKey ?? null) : '';
 
   useEffect(() => {
@@ -146,6 +158,39 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  // `crm_records` holds tenant-invented objects only, so addressed with a
+  // built-in key this pane drew a working "New customer" form whose button
+  // would have written a customer no other screen could ever find. The fact
+  // that stops it was already on the record the pane had fetched.
+  if (type.data?.kind === 'builtin') {
+    const target = BUILTIN_SCREEN[objectKey];
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneEmpty
+            icon={<Table2 className="size-6" aria-hidden />}
+            title={`${labelPlural} have a screen of their own`}
+            description={`This screen is for the record types you defined yourself. ${labelPlural} ship with sparx, so adding one here would create something none of your other screens could find.`}
+            {...(target
+              ? {
+                  actions: (
+                    <Button
+                      color="module"
+                      onClick={() => {
+                        ctx.open(target, {}, { target: 'replace' });
+                      }}
+                    >
+                      Open {labelPlural}
+                    </Button>
+                  ),
+                }
+              : {})}
+          />
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -167,22 +212,24 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             {isNew ? `Add ${label.toLowerCase()}` : 'Save'}
           </Button>
         }
-        controls={
-          <>
-            <Table2 className="size-4 shrink-0" aria-hidden />
-            {!isNew ? (
-              <Button
-                color="danger"
-                variant="ghost"
-                size="sm"
-                aria-label={`Remove this ${label.toLowerCase()}`}
-                title="Remove it"
-                onClick={() => void onDelete()}
-              >
-                <Trash2 className="size-4" aria-hidden />
-              </Button>
-            ) : null}
-          </>
+        controls={<Table2 className="size-4 shrink-0" aria-hidden />}
+        /* A VALUE, not bespoke JSX: `controls` relocates into the narrow bar's
+           overflow popover verbatim, so this was a bare red bin among rows that
+           had words. scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          isNew
+            ? undefined
+            : [
+                {
+                  label: 'Remove',
+                  title: `Remove this ${label.toLowerCase()}`,
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
         }
       />
 

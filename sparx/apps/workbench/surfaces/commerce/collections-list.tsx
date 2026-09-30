@@ -176,7 +176,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Collection list controls"
+        label="Collections controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

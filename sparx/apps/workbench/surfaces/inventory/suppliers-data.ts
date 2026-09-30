@@ -94,7 +94,10 @@ export interface SupplierDetail extends Supplier {
 export interface VariantLookup {
   variantId: string;
   sku: string;
+  /** What the thing IS. */
   productTitle: string | null;
+  /** WHICH ONE of them — "L / Ink". Null for a single unnamed version. */
+  variantName: string | null;
 }
 
 export interface SupplierListQuery {

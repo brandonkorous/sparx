@@ -270,6 +270,9 @@ function MatchCard({ match, ctx }: { match: ScanMatch; ctx: SurfaceContext }) {
       case 'count':
         ctx.open('inventory.counts.detail', { id: match.id });
         break;
+      case 'pick_list':
+        ctx.open('inventory.picking.detail', { id: match.id });
+        break;
       case 'lot':
         ctx.open('inventory.lots.detail', { id: match.id });
         break;
@@ -564,6 +567,12 @@ function OpenSomethingJob({
  * to be given one, and the useful question is "what needs picking", not "what is
  * this piece of paper". Scanning a printed walk sheet still works: it resolves
  * through the Look-it-up job like any other document.
+ *
+ * That last sentence was FALSE for as long as it had been written. `pick_list`
+ * was not one of the kinds the resolver knew, so the sticker the walk-sheet pane
+ * prints came back "Nothing matches PICK-000003", under advice about adding the
+ * code to an item. It is one of them now.
+ * [[feedback_a_promise_in_copy_is_a_contract]]
  *
  * Unassigned walks come first. A walk with somebody's name on it is somebody
  * else's job, and burying the free ones under it is how two people end up on one

@@ -23,7 +23,7 @@ import {
   Warehouse,
 } from 'lucide-react';
 import { api } from '../../lib/api/client';
-import type { WorkbenchModule } from '../../components/module-scope';
+import { WORKBENCH_MODULES, type WorkbenchModule } from '../../components/module-scope';
 
 /** The dashboard-facing projection of an industry starter — mirrors
  *  `IndustryStarterView` from @wizeworks/modules (the wire shape). */
@@ -92,25 +92,22 @@ export function iconForStarter(iconKey: string): LucideIcon {
   return ICONS[iconKey] ?? Store;
 }
 
-/** Plain-language name for a module slug, plus the hue it carries. A business
- *  owner reads "Online store", never "commerce". */
-export const MODULE_META: Record<string, { label: string; module: WorkbenchModule }> = {
-  commerce: { label: 'Online store', module: 'commerce' },
-  crm: { label: 'Customers', module: 'crm' },
-  cms: { label: 'Content', module: 'cms' },
-  email: { label: 'Email', module: 'email' },
-  ai: { label: 'AI', module: 'ai' },
-  scheduling: { label: 'Bookings', module: 'scheduling' },
-  invoicing: { label: 'Invoicing', module: 'invoicing' },
-  b2b: { label: 'Wholesale', module: 'b2b' },
-  inventory: { label: 'Stock', module: 'inventory' },
-  finance: { label: 'Finance', module: 'finance' },
-};
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`. This file kept its own, and so did five
+ * others; measured 2026-09-25, `commerce` alone had SIX names across the two
+ * consoles — Sell (the Piggles rail), Selling, Online store, Online stores,
+ * Store, and the raw slug — and a shop owner could meet four of them on four
+ * screens. Same defect as one order reading four ways on four screens (issue
+ * 260), one level up: the apps themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
-export function moduleLabel(slug: string): string {
-  return MODULE_META[slug]?.label ?? slug;
-}
-
+/** The hue for a module slug. The slug IS the hue for every registered module;
+ *  anything the registry does not know falls back to the platform's. */
 export function moduleHue(slug: string): WorkbenchModule {
-  return MODULE_META[slug]?.module ?? 'platform';
+  return (WORKBENCH_MODULES as readonly string[]).includes(slug)
+    ? (slug as WorkbenchModule)
+    : 'platform';
 }

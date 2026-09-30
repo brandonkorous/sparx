@@ -76,33 +76,74 @@ const ALIASES: Record<string, string[]> = {
   vendor: ['brand', 'manufacturer', 'make', 'supplier'],
   city: ['town', 'suburb'],
   zip: ['postcode', 'postal code', 'zip code'],
+  // Both spellings, the way every alias list here does it: the heading is
+  // whatever somebody else's export wrote, and this field's own label moved
+  // from "Ship to postcode" to "Ship to postal code", so a file saved before
+  // that has to keep matching. The label itself is a lookup key.
+  ship_zip: [
+    'ship to postcode',
+    'ship to postal code',
+    'ship to zip',
+    'shipping postcode',
+    'shipping postal code',
+    'shipping zip',
+    'delivery postcode',
+    'delivery postal code',
+  ],
   province: ['state', 'region', 'county'],
   address1: ['address', 'street', 'address line 1', 'street address'],
   total: ['order total', 'grand total'],
   order_number: ['order', 'order id', 'order no', 'invoice number', 'reference'],
 };
 
-/** Best-guess mapping of the file's headers onto one entity's fields. */
+/**
+ * Best-guess mapping of the file's headers onto one entity's fields.
+ *
+ * TWO ROUNDS, and the order of them is the point. Every field first claims a
+ * header that is its OWN key or its OWN label. Only once that is settled does
+ * anything claim a header by alias.
+ *
+ * In a single round the answer depended on which column came first in the file.
+ * A stock list has both "On hand" and "Available" — different numbers, because
+ * available is on hand minus what is already promised — and `available` is one
+ * of the aliases listed for `quantity`. With "Available" on the left it was read
+ * as the on-hand count and the real on-hand column was mapped to nothing at all.
+ * With "On hand" on the left, both landed correctly. The same file, imported
+ * twice, two different stock counts, and nothing on the screen saying so.
+ *
+ * A field's own label is the word printed beside that column on this screen, so
+ * it has the strongest possible claim to a header saying exactly that word. An
+ * alias is a guess about how somebody else spells it, and a guess must never
+ * beat a name.
+ */
 export function guessMapping(entity: CanonicalEntity, headers: string[]): Record<string, string> {
   const mapping: Record<string, string> = {};
   const taken = new Set<string>();
+  const fields = ENTITY_FIELDS[entity];
 
-  for (const header of headers) {
-    const wanted = normalize(header);
-    if (wanted === '') continue;
+  const claimBy = (round: 'own name' | 'alias'): void => {
+    for (const header of headers) {
+      if (mapping[header] !== undefined) continue;
+      const wanted = normalize(header);
+      if (wanted === '') continue;
 
-    const match = ENTITY_FIELDS[entity].find((field) => {
-      if (taken.has(field.key)) return false;
-      if (normalize(field.key) === wanted) return true;
-      if (normalize(field.label) === wanted) return true;
-      return (ALIASES[field.key] ?? []).some((alias) => normalize(alias) === wanted);
-    });
+      const match = fields.find((field) => {
+        if (taken.has(field.key)) return false;
+        if (round === 'own name') {
+          return normalize(field.key) === wanted || normalize(field.label) === wanted;
+        }
+        return (ALIASES[field.key] ?? []).some((alias) => normalize(alias) === wanted);
+      });
 
-    if (match !== undefined) {
-      mapping[header] = match.key;
-      taken.add(match.key);
+      if (match !== undefined) {
+        mapping[header] = match.key;
+        taken.add(match.key);
+      }
     }
-  }
+  };
+
+  claimBy('own name');
+  claimBy('alias');
 
   return mapping;
 }

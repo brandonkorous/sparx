@@ -17,6 +17,7 @@ import {
   Badge,
   Button,
   Heading,
+  Table,
   Text,
 } from '@wizeworks/silicaui-react';
 import { Building2, ExternalLink } from 'lucide-react';
@@ -143,7 +144,12 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
             <Heading level={1} className="text-2xl font-semibold">
               {quote.number ? `Quote ${quote.number}` : 'Draft quote'}
             </Heading>
-            <Text>For {quoteParty(quote)}</Text>
+            <Text>
+              {/* Null when there is neither a business nor a person on it.
+                  It used to read "For Unknown business", which claims a
+                  business exists and that we have mislaid which one. */}
+              {quoteParty(quote) ? `For ${quoteParty(quote)}` : 'Nobody is on this quote yet'}
+            </Text>
           </div>
 
           {expired ? (
@@ -157,6 +163,43 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
               </AlertContent>
             </Alert>
           ) : null}
+
+          {/* A quote IS its list of lines. The pane used to show a total with
+              nothing under it, so the one screen for checking what a business
+              asked for could not answer that question, and the operator had to
+              open the pricing editor to read their own quote back. */}
+          <FormSection title="What is on it">
+            {quote.lines.length === 0 ? (
+              <Text className="text-sm">
+                Nothing has been put on this quote yet. Price and respond to add the first line.
+              </Text>
+            ) : (
+              <Table size="sm">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th className="text-right">Qty</th>
+                    <th className="hidden text-right @lg:table-cell">Each</th>
+                    <th className="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quote.lines.map((line) => (
+                    <tr key={line.id}>
+                      <td>{line.description}</td>
+                      <td className="text-right tabular-nums">{line.quantity}</td>
+                      <td className="hidden text-right tabular-nums @lg:table-cell">
+                        {formatMoney(line.unitPrice, quote.currency)}
+                      </td>
+                      <td className="text-right font-medium tabular-nums">
+                        {formatMoney(line.lineTotal, quote.currency)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </FormSection>
 
           <FormSection title="What it comes to">
             <div className="flex flex-col gap-2">

@@ -187,7 +187,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
             <NativeSelect
               size="sm"
               aria-label="Filter by service"
-              className="w-auto max-w-44"
+              className="w-auto"
               value={serviceId}
               onChange={(event) => {
                 setServiceId(event.target.value);
@@ -306,6 +306,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
       ) : null}
 
       <AddToWaitlistModal
+        ctx={ctx}
         open={adding}
         services={serviceList}
         defaultServiceId={serviceId}
@@ -556,11 +557,13 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
    ══════════════════════════════════════════════════════════════════════════ */
 
 function AddToWaitlistModal({
+  ctx,
   open,
   services,
   defaultServiceId,
   onClose,
 }: {
+  ctx: SurfaceContext;
   open: boolean;
   services: { id: string; name: string }[];
   defaultServiceId: string;
@@ -663,7 +666,16 @@ function AddToWaitlistModal({
 
             <Field>
               <FieldLabel>Who is waiting</FieldLabel>
-              <CustomerPicker value={customer} onChange={setCustomer} />
+              <CustomerPicker
+                value={customer}
+                onChange={setCustomer}
+                // Opens BESIDE, so this half-filled form is still here when she
+                // comes back — and the new customer is findable straight away,
+                // because both picker keys live under ['crm','customers'].
+                onAddNew={(typed) => {
+                  ctx.open('crm.customer.detail', { id: 'new', name: typed }, { target: 'beside' });
+                }}
+              />
             </Field>
 
             <div className="grid gap-4 @md:grid-cols-2">

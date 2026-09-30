@@ -644,7 +644,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Report controls"
+        label="Reports controls"
         controls={
           <>
             <NativeSelect

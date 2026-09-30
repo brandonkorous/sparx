@@ -263,7 +263,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Counting schedule controls"
+        label="Counting schedules controls"
         primary={
           <Button
             className="ml-auto"
@@ -281,7 +281,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <>
             <NativeSelect
               size="sm"
-              className="max-w-48 shrink"
+              className="shrink"
               aria-label="Show schedules for"
               value={locationId}
               onChange={(event) => {

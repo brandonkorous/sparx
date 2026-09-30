@@ -148,7 +148,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Bill controls"
+        label="Your sparx bill controls"
         status={<p className="text-sm">Your sparx bill</p>}
         refresh={
           <RefreshButton

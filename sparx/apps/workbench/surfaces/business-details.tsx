@@ -11,6 +11,7 @@
 // renders with whatever is known rather than blocking on a field nobody set —
 // so there is no validation gate, only a Save.
 
+import { CountryField } from '../components/country-field';
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
@@ -366,13 +367,10 @@ export function BusinessDetailsSurface() {
                     onChange={set('postalCode')}
                   />
                 </div>
-                <TextField
-                  label="Country"
-                  value={form.country}
-                  onChange={set('country')}
-                  placeholder="US"
-                  description="Two-letter country code, e.g. US, GB, AU."
-                />
+                {/* Picked by name. It was a box asking for "US, GB, AU" - our
+                    filing system, on the form where a business writes down its
+                    own address. Issue 721. */}
+                <CountryField value={form.country} onChange={set('country')} />
               </FormSection>
 
               <FormSection

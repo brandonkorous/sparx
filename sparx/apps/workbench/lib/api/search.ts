@@ -232,6 +232,7 @@ export function indexedProductCount(
 export function useReindexSearch() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { running: 'start rebuilding your search' },
     mutationFn: () => api.post<{ runId: string }>('/v1/search/reindex'),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });

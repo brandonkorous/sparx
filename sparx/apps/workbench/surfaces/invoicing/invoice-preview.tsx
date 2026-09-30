@@ -14,9 +14,10 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useQuery } from '@wizeworks/query';
 import { Loading } from '@wizeworks/silicaui-react';
-import { apiRequest } from '../../lib/api/client';
+import { api, apiRequest } from '../../lib/api/client';
 import { draftKey, readDraft, subscribeDraft, type DraftValue } from '../../lib/drafts';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { normalizeDocument, type BillingDocument } from './types';
 
 /** Debounce keystroke-rate draft changes into preview renders. */
 const RENDER_DEBOUNCE_MS = 350;
@@ -46,6 +47,20 @@ export function InvoicePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = ctx.params.id ?? 'new';
   const draft = useDraft(draftKey('invoice', id));
   const debouncedDraft = useDebounced(draft, RENDER_DEBOUNCE_MS);
+
+  // WHICH invoice this is previewing. Two previews open read `Preview  Preview`
+  // (issue 842), and a preview is only ever reached from an editor, so this is
+  // the editor's OWN query key: open from an editor and it is served from cache
+  // at no cost. A preview that outlives its editor fetches once.
+  const { data: doc } = useQuery({
+    queryKey: ['invoicing', 'document', id],
+    queryFn: () =>
+      api.get<BillingDocument>(`/v1/invoicing/documents/${String(id)}`).then(normalizeDocument),
+    enabled: id !== 'new',
+  });
+  useEffect(() => {
+    ctx.setTitle(doc?.number ? `Preview · ${doc.number}` : 'Preview');
+  }, [ctx, doc?.number]);
 
   const { data: html, isFetching } = useQuery({
     // The draft is part of the key so an edit produces a new render, and

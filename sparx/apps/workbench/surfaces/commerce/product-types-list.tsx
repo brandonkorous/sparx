@@ -93,7 +93,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Product type list controls"
+        label="Product types controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -269,7 +269,7 @@ function TypeGroup({ title, description, types, emptyHint, onOpen }: TypeGroupPr
                   name for the type, and a technical id is the last thing a
                   narrow pane should spend its width on. */}
               <th className="hidden @sm:table-cell">Attributes</th>
-              <th className="hidden @lg:table-cell">Key</th>
+              <th className="hidden @lg:table-cell">Id</th>
             </tr>
           </thead>
           <tbody>

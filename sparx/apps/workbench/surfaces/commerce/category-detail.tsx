@@ -466,7 +466,7 @@ function CategoryEditor({
               />
               <FieldDescription>
                 Categories at the same level are shown lowest number first. Leave it at 0 unless you
-                want this one to jump ahead of its neighbours.
+                want this one to jump ahead of its neighbors.
               </FieldDescription>
             </Field>
 

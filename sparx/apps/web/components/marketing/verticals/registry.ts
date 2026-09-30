@@ -285,7 +285,7 @@ export const VERTICALS: Vertical[] = [
         id: 'auto-booking',
         question: 'Can customers book a service themselves?',
         answer:
-          'Yes, and you keep control of it. You decide which jobs are bookable online, how long each takes, how much notice you need, and how many can run at once. Anything you would rather talk about first can be an enquiry instead of a booking.',
+          'Yes, and you keep control of it. You decide which jobs are bookable online, how long each takes, how much notice you need, and how many can run at once. Anything you would rather talk about first can be an inquiry instead of a booking.',
       },
       {
         id: 'auto-phone',
@@ -314,7 +314,7 @@ export const VERTICALS: Vertical[] = [
     subject: 'a studio',
     plural: 'tattoo studios',
     headline: 'Everything a tattoo studio needs to run',
-    lede: 'A portfolio that does the selling, an enquiry form that filters out the time-wasters, a deposit before the day is held, and every reference and consent form kept against the client. One system, one bill, and the work stays yours.',
+    lede: 'A portfolio that does the selling, an inquiry form that filters out the time-wasters, a deposit before the day is held, and every reference and consent form kept against the client. One system, one bill, and the work stays yours.',
     lead: 'cms',
     icon: PenTool,
     alsoCalled: [
@@ -364,7 +364,7 @@ export const VERTICALS: Vertical[] = [
         id: 'tattoo-artists',
         question: 'Can each artist have their own portfolio and calendar?',
         answer:
-          'Yes. Each artist gets their own gallery and their own availability, and clients can browse by artist or by style before they enquire. Guest artists work the same way. Add them, give them dates, and take them off the calendar when the spot ends.',
+          'Yes. Each artist gets their own gallery and their own availability, and clients can browse by artist or by style before they inquire. Guest artists work the same way. Add them, give them dates, and take them off the calendar when the spot ends.',
       },
       {
         id: 'tattoo-deposit',
@@ -380,14 +380,14 @@ export const VERTICALS: Vertical[] = [
       },
       {
         id: 'tattoo-enquiry',
-        question: 'Can I take enquiries instead of straight bookings?',
+        question: 'Can I take inquiries instead of straight bookings?',
         answer:
-          'Yes. That is the usual setup. Most studios take a described enquiry with reference images first, then convert it into a booked session once the artist has seen it. You can mix the two: consultations bookable online, sessions by approval.',
+          'Yes. That is the usual setup. Most studios take a described inquiry with reference images first, then convert it into a booked session once the artist has seen it. You can mix the two: consultations bookable online, sessions by approval.',
       },
     ],
     seoTitle: 'Tattoo studio website, portfolio and booking system',
     seoDescription:
-      'Per-artist portfolios, enquiries and consultations, deposits before you hold a date, and consent forms on the client record, for tattoo and piercing studios. See what a studio actually pays.',
+      'Per-artist portfolios, inquiries and consultations, deposits before you hold a date, and consent forms on the client record, for tattoo and piercing studios. See what a studio actually pays.',
     keywords: [
       'tattoo studio website',
       'tattoo booking software',
@@ -535,7 +535,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'crm',
         title: 'Nothing falls through',
-        body: 'A new enquiry creates the job. A finished job triggers the invoice. An unpaid invoice chases itself. The parts you set up once keep running whether or not you remembered them that week.',
+        body: 'A new inquiry creates the job. A finished job triggers the invoice. An unpaid invoice chases itself. The parts you set up once keep running whether or not you remembered them that week.',
       },
       {
         module: 'builder',
@@ -553,7 +553,7 @@ export const VERTICALS: Vertical[] = [
         id: 'trades-booking',
         question: 'Can customers book a visit online?',
         answer:
-          'Yes, and you decide how much freedom they get. Some trades open up straightforward jobs for online booking and take everything else as an enquiry first. You set the slot lengths, the notice you need, the travel gap between jobs and how many can overlap.',
+          'Yes, and you decide how much freedom they get. Some trades open up straightforward jobs for online booking and take everything else as an inquiry first. You set the slot lengths, the notice you need, the travel gap between jobs and how many can overlap.',
       },
       {
         id: 'trades-payment',

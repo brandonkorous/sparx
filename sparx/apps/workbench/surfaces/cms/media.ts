@@ -31,6 +31,12 @@ export interface MediaAsset {
    *  cropped to a shape other than its own (per-platform social previews). */
   focalX: number;
   focalY: number;
+  /** What a screen reader reads out, as typed in the library. Null when nobody has
+   *  written one, and the caller must NOT substitute the filename for it: a
+   *  filename is not a description, and "IMG_4471.jpg" read aloud on a live page
+   *  is worse than silence. The rich-text editor used to write exactly that into
+   *  every picture it inserted, because this shape had no other text to offer. */
+  altText: string | null;
 }
 
 /** The media API is snake_case and returns every transcoded size; the picker
@@ -45,8 +51,14 @@ interface MediaAssetWire {
   // so every surface that CROPS the image to a different shape — the social composer's
   // per-platform previews most of all — keeps the subject in frame instead of
   // centre-cropping a head off. Absent → treated as dead centre.
-  focal_point_x?: number | null;
-  focal_point_y?: number | null;
+  //
+  // NESTED on the wire (`focal_point: { x, y }`, see serializeAsset in the media
+  // route). This used to read `focal_point_x` / `focal_point_y`, which is the
+  // PATCH body's spelling and which no read has ever returned, so every asset
+  // came back dead centre and the social previews cropped round the middle of
+  // the picture whatever point the owner had chosen.
+  focal_point?: { x: number; y: number } | null;
+  alt_text?: string | null;
   variants: { id: string; format: string; width: number; height: number; url: string }[];
 }
 
@@ -70,7 +82,7 @@ function thumbnailUrl(wire: MediaAssetWire): string | null {
   return big?.url ?? sorted.at(-1)?.url ?? wire.original_url;
 }
 
-function toAsset(wire: MediaAssetWire): MediaAsset {
+export function toAsset(wire: MediaAssetWire): MediaAsset {
   const url = thumbnailUrl(wire);
   return {
     id: wire.id,
@@ -79,8 +91,11 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     url,
     canOptimize: isOwnMediaUrl(url),
     status: wire.status,
-    focalX: clampUnit(wire.focal_point_x),
-    focalY: clampUnit(wire.focal_point_y),
+    focalX: clampUnit(wire.focal_point?.x),
+    focalY: clampUnit(wire.focal_point?.y),
+    // Blank counts as none: a cleared field is saved as null, but an older
+    // write may hold an empty string, and "" must not read as a description.
+    altText: wire.alt_text?.trim() ? wire.alt_text : null,
   };
 }
 

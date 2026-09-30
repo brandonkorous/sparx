@@ -24,6 +24,7 @@ import {
   FieldLabel,
   Heading,
   Input,
+  Select,
   Text,
   Textarea,
   useToast,
@@ -40,6 +41,10 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 // wraps its form and renders its asset fields.
 import { MediaPickerProvider, AssetField } from './media-picker';
 import { SaveFailure } from '@/components/save-failure';
+// Read-only imports: the business's sites, and which one this window works in,
+// so the byline's site can be named and changed.
+import { useSites, type Site } from '../sites/data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import {
   authorErrorMessage,
   authorName,
@@ -66,16 +71,27 @@ interface Draft {
   bio: string;
   /** The chosen photo's media asset id, or '' for none. */
   avatarAssetId: string;
+  /** Which site the byline writes for: a site id, `ALL_SITES`, or '' for "the
+   *  site this window is working in" (a new byline before the site list has
+   *  loaded; the server resolves it from the site switcher). */
+  site: string;
 }
+
+/** The Select's value for "every site". Not a uuid, so it cannot collide with a
+ *  real site id. */
+const ALL_SITES = 'all';
 
 interface AuthorFieldsProps {
   draft: Draft;
   onChange: (patch: Partial<Draft>) => void;
+  /** The byline as saved, or null while adding one. Lets the site field say
+   *  what saving a move will do to THIS pane. */
+  saved: Author | null;
 }
 
 /** Everything both the add and the manage views render, wrapped in the one media
  *  picker the photo field opens. */
-function AuthorFields({ draft, onChange }: AuthorFieldsProps) {
+function AuthorFields({ draft, onChange, saved }: AuthorFieldsProps) {
   return (
     <MediaPickerProvider source="content">
       <FormSection title="Name and web address">
@@ -133,6 +149,8 @@ function AuthorFields({ draft, onChange }: AuthorFieldsProps) {
         />
       </FormSection>
 
+      <AuthorSiteScope draft={draft} onChange={onChange} saved={saved} />
+
       <FormSection
         title="Biography"
         description="A short paragraph about them, shown on their author page. Optional."
@@ -158,8 +176,85 @@ function AuthorFields({ draft, onChange }: AuthorFieldsProps) {
   );
 }
 
+/**
+ * "Where this name appears": which one of the business's sites the byline
+ * writes for, or all of them (issue 387).
+ *
+ * One site or every site, never a set, because that is what the record holds
+ * (`Author.property_id`, a single nullable site). So this is a Select naming each
+ * site, not the shared SiteScopeField's tick-list, which stores a LIST and would
+ * promise a "these three sites" the byline cannot keep.
+ *
+ * Renders nothing for a business with one site: there is no choice to make, and
+ * a control naming "sites" would invent one. Same rule SiteScopeField follows.
+ */
+function AuthorSiteScope({ draft, onChange, saved }: AuthorFieldsProps) {
+  const { data: sites } = useSites();
+  const activeSiteId = useActivePropertyId();
+  if (!sites || sites.length <= 1) return null;
+
+  // '' is "wherever this window is working", which the Select shows as that site.
+  const value = draft.site === '' ? (activeSiteId ?? ALL_SITES) : draft.site;
+  const items: Record<string, string> = { [ALL_SITES]: 'All my sites' };
+  for (const site of sites) {
+    items[site.id] = site.id === activeSiteId ? `${site.name} (the site you are in)` : site.name;
+  }
+
+  // Filing it under a DIFFERENT site takes it out of this site's author list,
+  // which is the point, but a person should read that before pressing Save
+  // rather than discover it as a pane that closed on her.
+  const leaving = value !== ALL_SITES && value !== activeSiteId;
+  const leavingTo = leaving ? siteName(sites, value) : null;
+  const moved = saved !== null && value !== siteChoice(saved.property_id);
+
+  return (
+    <FormSection
+      title="Where this name appears"
+      description="You run more than one website. A name written for one of them stays out of the others' author lists, and out of the author choices on their posts."
+    >
+      <Field>
+        <FieldLabel>Site this author writes for</FieldLabel>
+        <Select
+          color="module"
+          aria-label="Which site this author writes for"
+          value={value}
+          items={items}
+          onValueChange={(next) => {
+            onChange({ site: String(next) });
+          }}
+        />
+        <FieldDescription>
+          {leavingTo
+            ? saved === null
+              ? `Once added, they will be in ${leavingTo}'s author list and not this site's. Switch to ${leavingTo} to find them.`
+              : moved
+                ? `Once you save, they move to ${leavingTo} and leave this site's author list. Switch to ${leavingTo} to edit them after that.`
+                : `They write for ${leavingTo}.`
+            : 'Choose “All my sites” when the same person writes for more than one of them. There is only ever one of each name, so this moves it rather than making a copy.'}
+        </FieldDescription>
+      </Field>
+    </FormSection>
+  );
+}
+
+/** A byline's `property_id` as the Select's value. */
+function siteChoice(propertyId: string | null): string {
+  return propertyId ?? ALL_SITES;
+}
+
+/** The Select's value as the wire's `property_id`: null is every site. */
+function siteToWire(site: string): string | null {
+  return site === ALL_SITES ? null : site;
+}
+
+function siteName(sites: readonly Site[] | undefined, id: string): string {
+  return sites?.find((site) => site.id === id)?.name ?? 'another of your sites';
+}
+
 function emptyDraft(): Draft {
-  return { name: '', slug: '', bio: '', avatarAssetId: '' };
+  // A new byline belongs to the site it was written on. The other default is
+  // what put a magazine's masthead in a clothing shop's picker.
+  return { name: '', slug: '', bio: '', avatarAssetId: '', site: '' };
 }
 
 function draftFrom(author: Author): Draft {
@@ -168,6 +263,7 @@ function draftFrom(author: Author): Draft {
     slug: author.slug,
     bio: author.bio ?? '',
     avatarAssetId: author.avatar_asset_id ?? '',
+    site: siteChoice(author.property_id),
   };
 }
 
@@ -177,6 +273,7 @@ function serializeDraft(draft: Draft): string {
     slug: draft.slug.trim(),
     bio: draft.bio.trim(),
     avatarAssetId: draft.avatarAssetId,
+    site: draft.site,
   });
 }
 
@@ -186,6 +283,8 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const create = useCreateAuthor();
   const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const { data: sites } = useSites();
+  const activeSiteId = useActivePropertyId();
 
   useEffect(() => {
     ctx.setTitle('New author');
@@ -211,9 +310,27 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
         ...(draft.slug.trim() ? { slug: draft.slug.trim() } : {}),
         ...(draft.bio.trim() ? { bio: draft.bio.trim() } : {}),
         ...(draft.avatarAssetId ? { avatar_asset_id: draft.avatarAssetId } : {}),
+        // Omitted ('') lands it on the site being worked in: the server reads
+        // that from the site switcher. Anything chosen is sent as chosen.
+        ...(draft.site !== '' ? { property_id: siteToWire(draft.site) } : {}),
       },
       {
         onSuccess: (author) => {
+          if (author.property_id !== null && author.property_id !== activeSiteId) {
+            // Filed under another site, so this site cannot open it: the manage
+            // view would load a byline this window is not allowed to see and
+            // report it missing. Close instead, and say where it went.
+            const where = siteName(sites, author.property_id);
+            ctx.close();
+            afterPaneChange(() => {
+              toast.add({
+                title: `${authorName(author)} added to ${where}`,
+                description: `Switch to ${where} to see them in its author list.`,
+                type: 'success',
+              });
+            });
+            return;
+          }
           // Becomes the manage view for the author that now exists — the same
           // pane, one state along. Toast follows the swap; see afterPaneChange.
           ctx.open('cms.authors.detail', { id: author.id }, { target: 'replace' });
@@ -257,7 +374,7 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
 
           <SaveFailure title="Could not add this author" message={failure} />
 
-          <AuthorFields draft={draft} onChange={patch} />
+          <AuthorFields draft={draft} onChange={patch} saved={null} />
         </div>
       </div>
     </div>
@@ -382,6 +499,13 @@ function ManageBody({
 
   const nameFilled = draft.name.trim() !== '';
 
+  const { data: sites } = useSites();
+  const activeSiteId = useActivePropertyId();
+  // Sent ONLY when it actually changed. Omitted means "leave it where it is",
+  // which is the right answer for every save that was about the name, the photo
+  // or the biography.
+  const siteChanged = draft.site !== '' && draft.site !== siteChoice(author.property_id);
+
   const save = () => {
     if (!nameFilled) return;
     update.mutate(
@@ -393,10 +517,26 @@ function ManageBody({
         ...(draft.slug.trim() ? { slug: draft.slug.trim() } : {}),
         bio: draft.bio.trim() ? draft.bio.trim() : null,
         avatar_asset_id: draft.avatarAssetId ? draft.avatarAssetId : null,
+        ...(siteChanged ? { property_id: siteToWire(draft.site) } : {}),
       },
       {
         onSuccess: (saved) => {
           onSaved(saved);
+          if (saved.property_id !== null && saved.property_id !== activeSiteId) {
+            // Moved to another site, which this window cannot see into: every
+            // read here is this site's bylines plus the shared ones, so the next
+            // refetch would call it missing. Close, and say where it went.
+            const where = siteName(sites, saved.property_id);
+            ctx.close();
+            afterPaneChange(() => {
+              toast.add({
+                title: `${authorName(saved)} moved to ${where}`,
+                description: `Switch to ${where} to edit them from now on.`,
+                type: 'success',
+              });
+            });
+            return;
+          }
           toast.add({ title: 'Saved', type: 'success' });
         },
         onError: (error) => {
@@ -413,8 +553,12 @@ function ManageBody({
   const onDelete = async () => {
     const ok = await confirm({
       title: `Delete ${authorName(author)}?`,
+      // A shared byline is on every site, so its delete is too, and the owner
+      // standing in one site should hear that before she confirms it.
       description:
-        'This removes this author for good and cannot be undone. Anything they have written stays on your site, but their name comes off it.',
+        author.property_id === null && (sites ?? []).length > 1
+          ? 'This removes this author for good, from every one of your sites, and cannot be undone. Anything they have written stays where it is, but their name comes off it on all of your sites.'
+          : 'This removes this author for good and cannot be undone. Anything they have written stays on your site, but their name comes off it.',
       confirmLabel: 'Delete author',
       cancelLabel: 'Keep author',
       color: 'danger',
@@ -460,7 +604,7 @@ function ManageBody({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <AuthorFields draft={draft} onChange={patch} />
+          <AuthorFields draft={draft} onChange={patch} saved={author} />
 
           {/* Destructive action as a plain row under a divider, not a card with
               equal weight to the work above it. */}

@@ -75,6 +75,7 @@ import {
 } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import { formatCents, formatDateTime, formatDay, kindColor } from './format';
+import { DayInput } from '../../components/day-input';
 
 /* ── Export ─────────────────────────────────────────────────────────────────*/
 
@@ -1194,13 +1195,12 @@ function ConnectionCard({
         <div className="flex flex-wrap items-center gap-2">
           <FieldControl
             render={
-              <Input
+              <DayInput
                 color="module"
-                type="date"
                 value={closedOn}
                 className="max-w-48"
-                onChange={(event) => {
-                  setClosedOn(event.target.value);
+                onValueChange={(value) => {
+                  setClosedOn(value);
                 }}
               />
             }

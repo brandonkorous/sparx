@@ -150,7 +150,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Do-not-email list controls"
+        label="Do not email controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

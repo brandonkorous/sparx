@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 // ONE SHIPMENT — what they said, and what actually turned up.
 //
 // ── Three states of "did it match", not two ───────────────────────────────
@@ -61,6 +63,14 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   const data = notice.data;
+
+  // The tab's name, once the record is here. Sixty-one of this console's
+  // seventy-five detail panes do this; the ones that did not put identical
+  // words on every tab they opened, which is the one thing the strip is for.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  useEffect(() => {
+    if (data) ctx.setTitle(data.number);
+  }, [data, ctx]);
 
   const onCancel = async () => {
     if (!data) return;

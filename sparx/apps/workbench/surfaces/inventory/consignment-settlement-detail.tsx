@@ -37,7 +37,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ItemName } from './item-name';
 import { formatCents, plural, stockErrorMessage } from './data';
 import {
-  settlementTone,
+  settlementState,
   useCancelSettlement,
   useCloseSettlement,
   useConsignmentSettlement,
@@ -104,8 +104,8 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
         }
         controls={
           <>
-            <Badge color={settlementTone(data.status)} variant="soft">
-              {data.status}
+            <Badge color={settlementState(data.status).tone} variant="soft">
+              {settlementState(data.status).label}
             </Badge>
             {isDraft ? (
               <>

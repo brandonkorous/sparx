@@ -81,6 +81,7 @@ import {
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { useSiteIsDark } from '../../lib/billing/site-live';
+import { SiteScopeField } from '../../components/site-scope-field';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -440,6 +441,9 @@ interface Draft {
   authorId: string;
   body: Record<string, unknown>;
   seo: Record<string, unknown>;
+  /** Which of her sites this appears on. `[]` means every one of them, which is
+   *  the shape `SiteScopeField` and the endpoint both speak. */
+  propertyIds: string[];
 }
 
 function serializeDraft(draft: Draft): string {
@@ -448,6 +452,9 @@ function serializeDraft(draft: Draft): string {
     authorId: draft.authorId,
     body: pruneEmpty(draft.body),
     seo: pruneEmpty(draft.seo),
+    // In the dirty check, so changing which sites show a page counts as an edit
+    // and the leave-guard asks before losing it.
+    propertyIds: [...draft.propertyIds].sort(),
   });
 }
 
@@ -498,6 +505,8 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       authorId: entry.author_id ?? '',
       body: entry.body,
       seo: entry.seo,
+      // Only GET-one carries this, which is the read this pane makes.
+      propertyIds: entry.propertyIds ?? [],
     };
     const server = serializeDraft(next);
     const firstOpen = initializedFor.current !== entry.id;
@@ -561,6 +570,11 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           authorId: saved.author_id ?? '',
           body: saved.body,
           seo: saved.seo,
+          // The save response carries the scope back (it did not, until this
+          // control existed). Falling back to what the pane already read rather
+          // than to `[]`, because the empty list MEANS "every site" and would
+          // widen a pinned page on the next save.
+          propertyIds: saved.propertyIds ?? entry.propertyIds ?? [],
         };
         setDraft(next);
         initialRef.current = serializeDraft(next);
@@ -571,6 +585,9 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           authorId: restored.author_id ?? '',
           body: restored.body,
           seo: restored.seo,
+          // Bringing an older version back restores the writing, not which sites
+          // show it, so the scope the pane already read is the right answer.
+          propertyIds: restored.propertyIds ?? entry.propertyIds ?? [],
         };
         setDraft(next);
         initialRef.current = serializeDraft(next);
@@ -640,6 +657,7 @@ function ManageBody({
         body: sent,
         seo: pruneEmpty(draft.seo),
         author_id: draft.authorId ? draft.authorId : null,
+        property_ids: draft.propertyIds,
       },
       {
         onSuccess: (saved) => {
@@ -832,6 +850,23 @@ function ManageBody({
                 current ? { ...current, seo: { ...current.seo, [key]: next } } : current
               );
             }}
+          />
+
+          {/* WHICH OF HER BUSINESSES THIS APPEARS ON.
+              The endpoint has sent `propertyIds` for this the whole time, and its
+              own comment names the control ("the editor needs the current site
+              scope to pre-fill its 'Visible on sites' control"). Nine other
+              editors already use this exact field; content was the one that
+              did not, so a page written for the Press site could not be shown on
+              the Journal, and nothing said which it belonged to (issue 867).
+              Renders nothing at all for a business with one site. */}
+          <SiteScopeField
+            value={draft.propertyIds}
+            onChange={(next) => {
+              setDraft((current) => (current ? { ...current, propertyIds: next } : current));
+            }}
+            title="Which of your sites show this"
+            description="You run more than one website. A page kept to one of them stays off the others."
           />
 
           <RevisionHistory id={id} onRestored={onRestored} />

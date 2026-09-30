@@ -58,10 +58,12 @@ const STATE_FILTERS: { value: StateFilter; label: string }[] = [
   { value: 'all', label: 'All' },
 ];
 
-/** The sequence as one string, for the row's tooltip. The Stages column is
- *  hidden below @xl, so on a narrow pane this is the only way to read the chain
- *  without opening the workflow. */
+/** The sequence as one string — the row's tooltip, and the line under the name
+ *  on a pane too narrow for the Stages column. A workflow with no stages says so
+ *  rather than rendering as a blank, because an empty line there reads as "we
+ *  did not load it" instead of "nothing can be created on this". */
 function chainText(workflow: DocumentWorkflowDetail): string {
+  if (workflow.stages.length === 0) return 'No stages. Nothing can be created on it';
   return workflow.stages.map((stage) => stage.customerLabel).join(' › ');
 }
 
@@ -145,7 +147,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Workflow list controls"
+        label="Workflows controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -180,7 +182,14 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
               color="module"
               value={state}
               onValueChange={(next) => {
-                setState((next as StateFilter | null) ?? 'active');
+                const chosen = (next as StateFilter | null) ?? 'active';
+                setState(chosen);
+                // Returning to Active takes the State column away, so a sort on
+                // it would have no header left to undo it with. The order it
+                // produced is meaningless there anyway: every row is active.
+                if (chosen === 'active') {
+                  setSort((current) => (current?.key === 'state' ? null : current));
+                }
                 resetWindow();
               }}
               showReset={false}
@@ -253,7 +262,12 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     a value — so this column carries no header button. */}
                 <th className="hidden @xl:table-cell">Stages</th>
                 {header('stages', 'Steps', 'hidden @2xl:table-cell text-right')}
-                {header('state', 'State')}
+                {/* Only where it can differ. The server filters by state, so
+                    under the default Active view every row carries the same
+                    word and the column teaches nothing — a badge that never
+                    varies is noise wearing a component. Under Archived or All
+                    it is the thing you came to see. */}
+                {state === 'active' ? null : header('state', 'State')}
               </tr>
             </thead>
             <tbody>
@@ -290,6 +304,15 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         ) : null}
                       </span>
                       <span className="font-mono text-sm">{workflow.slug}</span>
+                      {/* The chain, where the Stages column cannot fit. This
+                          screen is called "what happens when", and on a narrow
+                          pane the column that answers that is the first one to
+                          go — leaving six names and nothing else. The tooltip
+                          carrying it is no help on a phone, which has no hover.
+                          Plain text rather than the badges: at 360px a wrapped
+                          row of pills is three times the height and says the
+                          same thing. */}
+                      <span className="text-sm @xl:hidden">{chainText(workflow)}</span>
                     </span>
                   </td>
                   <td className="hidden max-w-96 @xl:table-cell">
@@ -317,15 +340,17 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   <td className="hidden text-right tabular-nums @2xl:table-cell">
                     {workflow.stages.length}
                   </td>
-                  <td>
-                    <Badge
-                      color={workflow.archivedAt ? 'neutral' : 'success'}
-                      variant="soft"
-                      size="sm"
-                    >
-                      {workflow.archivedAt ? 'Archived' : 'Active'}
-                    </Badge>
-                  </td>
+                  {state === 'active' ? null : (
+                    <td>
+                      <Badge
+                        color={workflow.archivedAt ? 'neutral' : 'success'}
+                        variant="soft"
+                        size="sm"
+                      >
+                        {workflow.archivedAt ? 'Archived' : 'Active'}
+                      </Badge>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

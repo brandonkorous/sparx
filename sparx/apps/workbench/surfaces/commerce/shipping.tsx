@@ -13,6 +13,7 @@
 // means something once you know the region it applies to.
 
 import { groupDeliveryWarning } from './shipping-group-words';
+import { carrierWarning, weightGap } from './weight-readiness';
 import {
   Alert,
   AlertContent,
@@ -29,7 +30,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { coverageSummary } from './geo';
+import { coverageSummary } from '../../lib/geo';
 import {
   shippingErrorMessage,
   useShippingProfiles,
@@ -139,6 +140,16 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
       ? readiness.data.shipFromIssue
       : null;
 
+  // A carrier prices the REAL parcel, and a weight nobody recorded is sent to it
+  // as a nominal one. So the shopper can be quoted less than the carrier bills,
+  // and the shop pays the difference on every order without ever being told
+  // (issue 873). Gated on a carrier being connected, because without one nothing
+  // on THIS screen is priced by weight; a band that is gets warned where it is
+  // chosen, in shipping-rate-editor.tsx.
+  const weightGapNow = readiness.data ? weightGap(readiness.data) : null;
+  const carrierWeightWarning =
+    weightGapNow && readiness.data?.liveCarrierConnected ? carrierWarning(weightGapNow) : null;
+
   const open: RowOpen = (surface, id, event) => {
     ctx.open(surface, { id }, { target: targetFor(event) });
   };
@@ -217,6 +228,15 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                       {shipFromWarning} Until then, shoppers only see the delivery options you set
                       up below. Your connected carrier’s live prices won’t appear at checkout.
                     </AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : null}
+
+              {carrierWeightWarning ? (
+                <Alert color="warning">
+                  <AlertContent>
+                    <AlertTitle>Your carrier is guessing what your orders weigh</AlertTitle>
+                    <AlertDescription>{carrierWeightWarning}</AlertDescription>
                   </AlertContent>
                 </Alert>
               ) : null}

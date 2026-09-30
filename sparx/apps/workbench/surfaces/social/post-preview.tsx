@@ -26,6 +26,7 @@ import Image from 'next/image';
 import { Badge, Text } from '@wizeworks/silicaui-react';
 import { ImageOff, Link2, Play, Video } from 'lucide-react';
 import type { MediaAsset } from '../cms/media';
+import { focalClassFor } from '../cms/focal-point';
 import type { PlatformConstraints, SocialPlatform } from './data';
 
 /* ── Shape + framing ──────────────────────────────────────────────────────── */
@@ -53,18 +54,11 @@ export function aspectLabelFor(constraints: PlatformConstraints | undefined): st
   return constraints?.aspectRatios?.[0] ?? null;
 }
 
-/** Quantize a 0..1 focal point to the nearest of the nine standard object-positions.
- *  Static classes only — Tailwind cannot compile an interpolated arbitrary value, and
- *  an inline style is banned. Nine buckets is plenty to keep a subject in frame. */
-export function focalClassFor(x: number, y: number): string {
-  const col = x < 1 / 3 ? 'left' : x > 2 / 3 ? 'right' : 'center';
-  const row = y < 1 / 3 ? 'top' : y > 2 / 3 ? 'bottom' : 'center';
-  if (col === 'center' && row === 'center') return 'object-center';
-  if (col === 'center') return row === 'top' ? 'object-top' : 'object-bottom';
-  if (row === 'center') return col === 'left' ? 'object-left' : 'object-right';
-  if (col === 'left') return row === 'top' ? 'object-left-top' : 'object-left-bottom';
-  return row === 'top' ? 'object-right-top' : 'object-right-bottom';
-}
+/** The focal point vocabulary now lives beside the asset it describes, in
+ *  `cms/focal-point.ts`, because the media pane needs the same nine framings to
+ *  let a tenant CHOOSE one. Imported for this file's own preview below, and
+ *  re-exported so nothing that already read it from here has to move. */
+export { focalClassFor };
 
 function isVideo(asset: MediaAsset): boolean {
   return asset.mimeType.startsWith('video/');

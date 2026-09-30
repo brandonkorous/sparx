@@ -57,7 +57,11 @@ function shortDate(iso: string | null): string {
 
 const SORTS: { value: CustomerSort; label: string }[] = [
   { value: 'lastOrderAt', label: 'Recent order' },
-  { value: 'totalSpent', label: 'Total spent' },
+  // Two money sorts because they are two questions. "Paid you" alone ranked
+  // everyone who pays on collection or on an invoice at the bottom, however
+  // much they had ordered.
+  { value: 'totalOrdered', label: 'Orders come to' },
+  { value: 'totalSpent', label: 'Paid you' },
   { value: 'updatedAt', label: 'Recently changed' },
   { value: 'createdAt', label: 'Newest added' },
 ];
@@ -164,7 +168,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Customer list controls"
+        label="Customers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -235,7 +239,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
               current={currentFilters}
               baseline={viewFilters([])}
               sort={{ field: sortBy, direction: 'desc' }}
-              nameHint="New enquiries"
+              nameHint="New inquiries"
               selectedId={viewId}
               onApply={applyView}
             />
@@ -298,7 +302,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th className="hidden @md:table-cell">Company</th>
                 <th>Stage</th>
                 {scored ? <th className="text-right">Score</th> : null}
-                <th className="text-right">Total spent</th>
+                <th className="text-right">Orders come to</th>
                 <th className="hidden text-right @lg:table-cell">Last order</th>
               </tr>
             </thead>
@@ -336,7 +340,16 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="block text-sm">{row.email}</span>
                       ) : null}
                     </td>
-                    <td className="hidden @md:table-cell">{row.company ?? '—'}</td>
+                    {/* The typed employer first, because that is what this person
+                        said; the LINKED business when they typed none. They are
+                        two different facts (docs/144 §11) and a column headed
+                        "Company" owes the reader whichever one it has. This read
+                        only the typed one, so the two wholesale buyers of Loom
+                        and Larder showed a dash while the retail shopper who had
+                        typed the name showed it (issue 883). */}
+                    <td className="hidden @md:table-cell">
+                      {row.company ?? row.b2bAccount?.companyName ?? '—'}
+                    </td>
                     <td>
                       <Badge color={stageMeta.color} variant="soft" size="sm">
                         {stageMeta.label}
@@ -367,7 +380,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </td>
                     ) : null}
                     <td className="text-right font-mono text-sm tabular-nums">
-                      {formatMoney(row.totalSpent)}
+                      {formatMoney(row.totalOrdered)}
                     </td>
                     <td className="hidden text-right text-sm @lg:table-cell">
                       {shortDate(row.lastOrderAt)}

@@ -44,6 +44,7 @@ import {
   Input,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { plainText } from '@wizeworks/commerce-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { Package, Trash2 } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
@@ -92,7 +93,10 @@ function toDraft(product: Product): Draft {
   return {
     title: product.title,
     handle: product.handle,
-    description: product.description ?? '',
+    // Read back as the plain text the field holds. A row written before the
+    // schema normalized it can still carry tags, and the box she types in has
+    // to show her what a shopper reads (issue 848).
+    description: plainText(product.description),
     vendor: product.vendor ?? '',
     productType: product.productType ?? '',
     tags: product.tags,

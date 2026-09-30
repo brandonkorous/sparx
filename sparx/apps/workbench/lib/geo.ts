@@ -1,6 +1,7 @@
 'use client';
 
-// Countries and regions, in plain names — shared by shipping and tax.
+// Countries and regions, in plain names — for every screen that asks where
+// something is.
 //
 // The wire format everywhere is ISO codes ("US", "US-CA") because that is what
 // the schemas validate and what carriers and tax engines speak. A shop owner
@@ -9,6 +10,13 @@
 // from the platform's own Intl.DisplayNames rather than a hand-kept table, so
 // they stay correct and localise for free; the fallback is the raw code, which
 // is still better than a blank.
+//
+// It lived in `surfaces/commerce/` and was reached by shipping and tax only,
+// which is why the sentence above was true of two screens and false of seven.
+// Every other address in the console asked her to TYPE the code, one of them
+// under a line teaching her that Germany is DE. The drift shows in the data:
+// one scheduling place has `country = "United States"` while every other row in
+// every other table has `US`. Issue 721. [[feedback_a_fix_leaves_its_neighbour_behind]]
 
 const COUNTRY_DISPLAY =
   typeof Intl !== 'undefined' && 'DisplayNames' in Intl

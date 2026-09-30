@@ -14,10 +14,16 @@
 // One centred, capped column instead, with the preview and "what it adds" as the
 // hero.
 //
-// Adding is additive, not destructive: it stamps a whole design as DRAFTS you
-// review, and leaves your existing pages and products alone. Publishing and
-// removing are the meaningful moves — removing tears the whole design back out,
-// so it sits behind a confirm that names the site.
+// Adding a design to a site that already has pages REPLACES them. A design is a
+// whole site (`siteService.installSite` syncs with `allowReplace: true`), so its
+// pages arrive as drafts and every page the site had before is deleted. This
+// pane used to promise the opposite, on the section, in the confirm and on the
+// button, whichever site was chosen. What it says now is sized to the chosen
+// site through `installImpact`, which reads the sites list's page count: an
+// ordinary add on an empty site, a danger confirm naming how many pages go on
+// one that has some. Products, articles, customers and orders are only ever
+// added to. Removing tears the whole design back out, so it too sits behind a
+// confirm that names the site.
 
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -37,7 +43,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ArrowUpCircle, LayoutTemplate, Rocket, Trash2 } from 'lucide-react';
+import { ArrowUpCircle, LayoutTemplate, Plus, Rocket, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useActiveSiteId, useModuleStates } from '../../lib/api/shell-data';
 import { useSites } from '../sites/data';
@@ -51,6 +57,7 @@ import {
   contentsGroups,
   examplesSentence,
   formatDate,
+  installImpact,
   installState,
   moduleLabel,
   useBlueprint,
@@ -109,6 +116,7 @@ export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <BlueprintBody
+      ctx={ctx}
       blueprint={blueprint}
       isFetching={isFetching}
       dataUpdatedAt={dataUpdatedAt}
@@ -120,11 +128,13 @@ export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function BlueprintBody({
+  ctx,
   blueprint,
   isFetching,
   dataUpdatedAt,
   refetch,
 }: {
+  ctx: SurfaceContext;
   blueprint: Blueprint;
   isFetching: boolean;
   dataUpdatedAt: number;
@@ -165,6 +175,12 @@ function BlueprintBody({
     return items;
   }, [sites]);
   const targetName = siteItems[targetSite] ?? 'this site';
+
+  // The count comes off the same list the picker is built from, so the name and
+  // the number can never describe two different sites. Undefined until the list
+  // lands, which `installImpact` treats as "not counted" and never as "empty".
+  const targetPageCount = sites?.find((site) => site.id === targetSite)?.pageCount;
+  const impact = installImpact(targetName, targetPageCount);
 
   // The install row (if any) for THIS blueprint in the chosen site. The catalog
   // list only knows the active site's state; this is what lets the pane speak
@@ -211,12 +227,23 @@ function BlueprintBody({
 
   const onInstall = async () => {
     if (targetSite === '') return;
+    // The confirm is sized to the site. On an empty one this is an ordinary add;
+    // on a site that has pages it DESTROYS them, so it asks a different question,
+    // in danger, with a button that says what it does.
     const ok = await confirm({
-      title: `Add “${blueprint.name}” to ${targetName}?`,
-      description: `This adds the design's pages and a matching look to ${targetName}: all as drafts only you can see. ${examplesSentence(sampleData)} Your existing pages and products are left exactly as they are, and nothing goes live until you publish it.`,
-      confirmLabel: 'Add it',
+      title: impact.replaces
+        ? impact.pages === null
+          ? `Replace what is on ${targetName}?`
+          : `Replace the ${impact.pages === 1 ? 'page' : `${String(impact.pages)} pages`} on ${targetName}?`
+        : `Add “${blueprint.name}” to ${targetName}?`,
+      description: `${impact.sentence} ${examplesSentence(sampleData)}`,
+      confirmLabel: impact.replaces
+        ? impact.pages === 1
+          ? 'Replace the page'
+          : 'Replace the pages'
+        : 'Add it',
       cancelLabel: 'Cancel',
-      color: 'module',
+      color: impact.replaces ? 'danger' : 'module',
     });
     if (!ok) return;
     install.mutate(
@@ -465,7 +492,11 @@ function BlueprintBody({
 
           <FormSection
             title="What this adds to your site"
-            description="Everything comes in as drafts you can change. Nothing here replaces what you already have."
+            // NOT "nothing here replaces what you already have": it does. What is
+            // true of every install, whichever site it goes to, is the drafts.
+            // What it does to THAT site is said beside the site picker, where the
+            // site is known.
+            description="Everything comes in as drafts you can change, and nothing is live until you publish it."
           >
             {!hasContents ? (
               <Text className="text-sm">
@@ -528,11 +559,38 @@ function BlueprintBody({
                   Loading your sites…
                 </Text>
               )}
-              <FieldDescription>
-                The design is added only to the site you choose here. Your other sites are not
-                touched.
-              </FieldDescription>
+              {/* What this does to the site CHOSEN, which changes as the picker
+                  does. The old text said only that other sites are untouched,
+                  which is true and is not the thing worth knowing. */}
+              <FieldDescription>{impact.sentence}</FieldDescription>
             </Field>
+
+            {!current && impact.replaces ? (
+              <Alert color="danger" variant="soft">
+                <AlertContent>
+                  <AlertTitle>
+                    {impact.pages === null
+                      ? `Adding this replaces what is on ${targetName}`
+                      : `Adding this replaces the ${impact.pages === 1 ? 'page' : `${String(impact.pages)} pages`} on ${targetName}`}
+                  </AlertTitle>
+                  <AlertDescription>
+                    To try it without losing this one, make a new site first and add the design
+                    there instead. Your other sites are not touched either way.
+                  </AlertDescription>
+                </AlertContent>
+                <Button
+                  size="sm"
+                  color="module"
+                  variant="soft"
+                  onClick={() => {
+                    ctx.open('platform.settings.site', { id: 'new' }, { target: 'beside' });
+                  }}
+                >
+                  <Plus className="size-4" aria-hidden />
+                  Make a new site
+                </Button>
+              </Alert>
+            ) : null}
 
             {/* The choice the whole of issue 098 is about. Only before an install,
                 and only when this design actually brings examples — a design with
@@ -603,15 +661,25 @@ function BlueprintBody({
                 </div>
               </>
             ) : (
+              // Danger when it destroys pages, and labelled with what it actually
+              // does. "Add X to Y" is right for an empty site and is the wrong
+              // verb entirely for a site being swapped out.
               <Button
-                color="module"
+                color={impact.replaces ? 'danger' : 'module'}
+                // Both labels name a design AND a site, and on a narrow pane that
+                // is wider than the button. Silica keeps a label on one line, so
+                // the end was cut off on the control that decides whether a site
+                // survives.
+                className="h-auto py-2 whitespace-normal"
                 disabled={targetSite === '' || busy}
                 loading={install.isPending}
                 onClick={() => {
                   void onInstall();
                 }}
               >
-                Add “{blueprint.name}” to {targetName}
+                {impact.replaces
+                  ? `Replace ${targetName} with “${blueprint.name}”`
+                  : `Add “${blueprint.name}” to ${targetName}`}
               </Button>
             )}
           </FormSection>

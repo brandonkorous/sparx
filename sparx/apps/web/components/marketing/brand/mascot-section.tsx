@@ -58,7 +58,7 @@ export function MascotSection() {
                 </Text>
                 <Text size={13.5}>
                   Pick an expression to pin it, or let him cycle. He blinks and bobs on his own:
-                  motion honours reduced-motion.
+                  motion honors reduced-motion.
                 </Text>
               </div>
 

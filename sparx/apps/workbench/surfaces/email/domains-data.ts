@@ -92,6 +92,8 @@ export interface EmailSettingsView {
   replyTo: string | null;
   physicalAddress: string | null;
   defaultSendingDomainId: string | null;
+  /** The literal `From` header a send carries, resolved server-side. */
+  resolvedFrom: string;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
@@ -271,6 +273,27 @@ export function recordPurpose(record: DnsRecord): string {
     return 'Directs email for this address to the right place.';
   }
   return 'Part of proving this address belongs to you.';
+}
+
+/**
+ * Whether the `From` header a send will really carry is an address AT this
+ * sending domain.
+ *
+ * Choosing a default sending address does NOT change the From line: the send
+ * builds it from the From address in Email settings (`buildTenantFrom`), and
+ * `defaultSendingDomainId` is read by nothing on the send path. So "This site
+ * sends its email from this address" could sit over a verified domain while
+ * every email still went out from the shared platform address, or from a
+ * different domain altogether. The pane compares the server's own resolved
+ * header instead of trusting the pointer, and says so when they differ.
+ */
+export function sendsFromDomain(resolvedFrom: string, domain: string): boolean {
+  // `bracketed[1]` is `| undefined` under this tsconfig even inside the
+  // truthiness check, so the group is named once and the fallback is the whole
+  // string. A `!` here would be the assertion that hides a real empty match.
+  const inside = /<([^>]+)>/.exec(resolvedFrom)?.[1];
+  const address = (inside ?? resolvedFrom).trim().toLowerCase();
+  return address.endsWith(`@${domain.trim().toLowerCase()}`);
 }
 
 export function regionLabel(region: SendingRegion): string {

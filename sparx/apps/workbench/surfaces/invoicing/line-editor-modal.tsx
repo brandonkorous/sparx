@@ -128,7 +128,7 @@ export function LineEditorModal({
 
           {/* px-1 keeps the focus ring clear of the scroll edge (overflow-y
               clips overflow-x); min-h-0 lets a flex child actually shrink. */}
-          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             {/* WHAT is being charged. Two columns once there's room (@lg, the
                 named container step), stacked full-width in a narrow pane. */}
             <div className="grid gap-4 @lg:grid-cols-2">

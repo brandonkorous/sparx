@@ -53,6 +53,7 @@ import { BarChart3, TrendingUp } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { DownloadButton } from '../../components/download-button';
+import { ItemName } from './item-name';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
 import { RANGE_PRESETS, rangeForDays } from './reports-data';
@@ -232,8 +233,11 @@ function SellThroughCard({
               >
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate">{row.title}</span>
-                    <span className="truncate font-mono text-sm">{row.sku}</span>
+                    <ItemName
+                      productTitle={row.productTitle}
+                      variantName={row.variantName}
+                      code={row.sku}
+                    />
                   </span>
                 </td>
                 <td className="hidden max-w-32 truncate @lg:table-cell">{row.warehouseCode}</td>
@@ -350,8 +354,11 @@ function GmroiCard({
               >
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate">{row.title}</span>
-                    <span className="truncate font-mono text-sm">{row.sku}</span>
+                    <ItemName
+                      productTitle={row.productTitle}
+                      variantName={row.variantName}
+                      code={row.sku}
+                    />
                   </span>
                 </td>
                 <td className="hidden text-right tabular-nums @md:table-cell">
@@ -607,8 +614,11 @@ function StockoutCard({
                     onOpen(row.variantId, event);
                   }}
                 >
-                  {row.title}
-                  <span className="ml-2 font-mono text-sm">{row.sku}</span>
+                  <ItemName
+                    productTitle={row.productTitle}
+                    variantName={row.variantName}
+                    code={row.sku}
+                  />
                 </button>
                 <Text className="text-sm whitespace-nowrap tabular-nums">
                   {formatDaysOut(row.daysOut)} out over{' '}
@@ -892,7 +902,7 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Performance report controls"
+        label="Controls for how it is performing"
         controls={
           <>
             <NativeSelect
@@ -912,7 +922,7 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Location these figures cover"
               value={locationId}
               onChange={(event) => {

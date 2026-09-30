@@ -295,7 +295,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Connected app access controls"
+        label="Permissions controls"
         status={
           <Text as="span" className="text-sm font-medium">
             Permissions

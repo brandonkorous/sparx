@@ -601,7 +601,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       {
         number: '05',
         title: 'Which jobs were worth doing.',
-        body: 'Every order and booking ranked by what you kept on it, worst first, each opening into the parts, the hours and the share of running costs that got it there. A booking valued from a service’s list price rather than a collected amount is labelled as such instead of being averaged into the same column.',
+        body: 'Every order and booking ranked by what you kept on it, worst first, each opening into the parts, the hours and the share of running costs that got it there. A booking valued from a service’s list price rather than a collected amount is labeled as such instead of being averaged into the same column.',
       },
       {
         number: '06',
@@ -656,7 +656,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       {
         number: '06',
         title: 'A lapsed license finds you first.',
-        body: 'Record the tickets, licences and certificates your work depends on, each with as much notice as you need: more for the one you renew by post. Expired shows red on the roster before you assign the job, not after the inspection. A qualification that never expires is recorded as exactly that, and never nags you.',
+        body: 'Record the tickets, licenses and certificates your work depends on, each with as much notice as you need: more for the one you renew by post. Expired shows red on the roster before you assign the job, not after the inspection. A qualification that never expires is recorded as exactly that, and never nags you.',
       },
     ],
     pricing: {

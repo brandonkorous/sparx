@@ -12,12 +12,31 @@
 // seven unreadable slivers. Color is status: a soft-tinted block plus a solid
 // rail of the same tone, so a busy day is scannable at a glance — what is
 // confirmed, what still needs a nod, what is already under way.
+//
+// Behind the blocks, the hours nobody is open for are shaded (issue 084), so a
+// week with hours set no longer looks like a week with none.
+//
+// HOW TALL A BLOCK IS DECIDES WHAT IT SAYS. A block is as tall as the booking is
+// long, so the space is not the designer's to choose: a half-hour appointment
+// gets thirty-two pixels whatever we would like. Three stacked lines need about
+// fifty, and drawing them anyway does not shorten the text, it CUTS it, slicing
+// the service and the customer's name through the middle of the letters, which
+// reads as broken software rather than as a short appointment (issue 148).
 
 import type { ReactNode } from 'react';
 import type { OpenTarget } from '../../lib/surfaces/registry';
 import { bookingStateMeta, type BookingStatus } from './bookings-data';
-import { clockLabel, hourLabel, TONE_BLOCK, TONE_RAIL, type CalendarEvent } from './calendar-data';
-import { columnHeightClass, hourMarks, placeEvents, type TimeWindow } from './calendar-grid';
+import { hourLabel, TONE_BLOCK, TONE_RAIL, type CalendarEvent } from './calendar-data';
+import {
+  columnHeightClass,
+  hourMarks,
+  placeEvents,
+  type Placement,
+  type TimeWindow,
+} from './calendar-grid';
+import type { ClosedBand } from './calendar-hours';
+import { blockWho, linesFor } from './calendar-block-text';
+import { zonedClock } from './calendar-zone';
 
 /** Same modifier contract as every list in the app: plain opens a tab, shift
  *  docks beside, alt tears off to a window. */
@@ -34,6 +53,10 @@ export interface GridColumn {
   header: ReactNode;
   /** True to mark the column that is today. */
   today?: boolean;
+  /** The hours nobody is open for, drawn behind the bookings so a week with
+   *  hours set does not look like a week with none (issue 084). Absent when
+   *  there is no single set of hours to draw, which is not the same as "open". */
+  closed?: ClosedBand[];
   events: CalendarEvent[];
 }
 
@@ -124,6 +147,17 @@ function Column({
 
   return (
     <div className={`border-base-200 relative flex-1 border-l ${columnMinClass} ${heightClass}`}>
+      {/* Shut hours, behind everything: a flat wash rather than stripes, so it
+          reads as "nothing happens here" and never competes with a booking. */}
+      {(column.closed ?? []).map((closed) => (
+        <div
+          key={closed.key}
+          title={closed.title}
+          className={`bg-base-200 absolute inset-x-0 ${closed.topClass} ${closed.heightClass}`}
+          aria-hidden
+        />
+      ))}
+
       {/* Faint hour lines behind the blocks. */}
       {marks.map((mark) => (
         <div
@@ -140,41 +174,94 @@ function Column({
   );
 }
 
+/** What the block says, sized to what it can hold.
+ *
+ *  One row: the words run out of WIDTH and end in an ellipsis rather than being
+ *  cut through their middles, and the person still shares the line with the
+ *  service. Two rows: the time moves up beside the service to make room for the
+ *  person, rather than the person being what gets dropped. Three: all of it. */
+function BlockText({
+  event,
+  who,
+  lines,
+}: {
+  event: CalendarEvent;
+  who: string | null;
+  lines: 1 | 2 | 3;
+}) {
+  if (lines === 1) {
+    return (
+      <span className="flex min-w-0 items-baseline gap-1.5">
+        <span className="shrink-0 text-xs font-medium tabular-nums">
+          {zonedClock(event.startAt, event.timezone)}
+        </span>
+        <span className="truncate text-xs font-semibold">
+          {who ? `${event.serviceName} · ${who}` : event.serviceName}
+        </span>
+      </span>
+    );
+  }
+  if (lines === 2) {
+    return (
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="flex min-w-0 items-baseline gap-1.5">
+          <span className="shrink-0 text-xs font-medium tabular-nums">
+            {zonedClock(event.startAt, event.timezone)}
+          </span>
+          <span className="truncate text-sm font-semibold">{event.serviceName}</span>
+        </span>
+        {who ? <span className="truncate text-xs">{who}</span> : null}
+      </span>
+    );
+  }
+  return (
+    <span className="flex min-w-0 flex-col leading-tight">
+      <span className="truncate text-xs font-medium tabular-nums">
+        {zonedClock(event.startAt, event.timezone)}
+      </span>
+      <span className="truncate text-sm font-semibold">{event.serviceName}</span>
+      {who ? <span className="truncate text-xs">{who}</span> : null}
+    </span>
+  );
+}
+
 function EventBlock({
   event,
   placement,
   onOpen,
 }: {
   event: CalendarEvent;
-  placement: { topClass: string; heightClass: string; widthClass: string; leftClass: string };
+  placement: Placement;
   onOpen: (event: CalendarEvent, modifiers: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const meta = bookingStateMeta(event.status as BookingStatus);
-  const who =
-    event.resourceNames.length > 0
-      ? event.resourceNames.join(', ')
-      : event.partySize && event.partySize > 1
-        ? `Party of ${String(event.partySize)}`
-        : null;
+  const who = blockWho(event);
+  const lines = linesFor(placement.slots);
 
   return (
     <button
       type="button"
-      title={`${clockLabel(event.startAt)} · ${event.serviceName} · ${meta.label}`}
+      // The whole of it, always, however little the block itself can hold.
+      title={[
+        zonedClock(event.startAt, event.timezone),
+        event.serviceName,
+        event.customerName,
+        meta.label,
+      ]
+        .filter(Boolean)
+        .join(' · ')}
       onClick={(domEvent) => {
         onOpen(event, domEvent);
       }}
-      className={`absolute flex gap-1.5 overflow-hidden rounded-md p-1 text-left ${placement.topClass} ${placement.heightClass} ${placement.widthClass} ${placement.leftClass} ${TONE_BLOCK[meta.tone]}`}
+      className={`absolute flex gap-1.5 overflow-hidden rounded-md px-1 text-left ${lines === 1 ? 'items-center py-0' : 'py-1'} ${placement.topClass} ${placement.heightClass} ${placement.widthClass} ${placement.leftClass} ${TONE_BLOCK[meta.tone]}`}
     >
-      {/* The solid rail — a 15% tint alone is too quiet to scan a busy day by. */}
-      <span className={`mt-0.5 w-1 shrink-0 rounded-full ${TONE_RAIL[meta.tone]}`} aria-hidden />
-      <span className="flex min-w-0 flex-col leading-tight">
-        <span className="truncate text-xs font-medium tabular-nums">
-          {clockLabel(event.startAt)}
-        </span>
-        <span className="truncate text-sm font-semibold">{event.serviceName}</span>
-        {who ? <span className="truncate text-xs">{who}</span> : null}
-      </span>
+      {/* The solid rail: a 15% tint alone is too quiet to scan a busy day by.
+          Full height, so a one-line block still carries the status stripe. */}
+      <span
+        className={`my-0.5 w-1 shrink-0 self-stretch rounded-full ${TONE_RAIL[meta.tone]}`}
+        aria-hidden
+      />
+      <BlockText event={event} who={who} lines={lines} />
     </button>
   );
 }

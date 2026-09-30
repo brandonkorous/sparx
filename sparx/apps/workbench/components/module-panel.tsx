@@ -337,7 +337,9 @@ export function ModulePanel({
                             onClick={(event) => {
                               controller.open(
                                 surface.createSurface!,
-                                { id: 'new' },
+                                // `id: 'new'` first, so a row that declares
+                                // params can say which door this is.
+                                { id: 'new', ...surface.createParams },
                                 { target: targetFor(event) }
                               );
                               if (!pinned) onDismiss();

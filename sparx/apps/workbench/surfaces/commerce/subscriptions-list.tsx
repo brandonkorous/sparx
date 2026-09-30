@@ -10,10 +10,25 @@
 // The filter chips are the questions this list gets opened to answer — "which
 // ones are running", "which had a payment fail" — each mapping to exactly one
 // stored status, so what's on screen is always one honest server answer.
+//
+// The toolbar's create button is what makes any of the above reachable. Until
+// issue 738 this list had no create action and its empty state said a customer
+// would start one at checkout — which nothing on any storefront could do, and no
+// endpoint existed for either. So the whole area sat over an empty table that
+// could never fill. [[feedback_screen_over_a_function_nobody_calls]]
 
 import { useState } from 'react';
-import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
-import { Repeat2 } from 'lucide-react';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Filter,
+  FilterItem,
+  Table,
+} from '@wizeworks/silicaui-react';
+import { Plus, Repeat2 } from 'lucide-react';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -56,6 +71,10 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = data?.items ?? [];
   const total = data?.total;
   const filtered = filter !== 'all';
+  // Nothing anywhere, not merely nothing under this chip. The two empty states
+  // give opposite advice and telling them apart needs the unfiltered count,
+  // which only the All chip reports.
+  const nothingAtAll = rows.length === 0 && (total ?? 0) === 0;
 
   const resetWindow = () => {
     setPage(1);
@@ -66,10 +85,19 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('commerce.subscription.detail', { id: sub.id }, { target: targetFor(event) });
   };
 
+  // ONE object, two places: the toolbar button and the empty state's invitation,
+  // so the label cannot drift between the two ways in.
+  const startOne = {
+    label: 'Start a subscription',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.subscription.new', {}, { target: targetFor(event) });
+    },
+  };
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Subscriptions list controls"
+        label="Subscriptions controls"
         controls={
           <>
             <Repeat2 className="size-4 shrink-0" aria-hidden />
@@ -91,9 +119,20 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </Filter>
           </>
         }
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            title="Start a subscription: hold Shift to open alongside, Alt for a new window"
+            onClick={startOne.onClick}
+          >
+            <Plus className="size-4" aria-hidden />
+            <span className="hidden @lg:inline">{startOne.label}</span>
+          </Button>
+        }
         refresh={
           <RefreshButton
-            className="ml-auto"
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
             onRefresh={() => {
@@ -115,14 +154,24 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             Loading repeat orders…
           </p>
         ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Repeat2 className="size-6" aria-hidden />}
-            title={filtered ? 'None match that' : 'No repeat orders yet'}
-            description={
-              filtered
-                ? `No repeat orders are marked “${active.label}”. Switch back to All to see the rest, including any still on a free trial.`
-                : 'When a customer sets up a product to be delivered on a schedule, their repeat order shows up here with what it’s worth each month.'
-            }
+          <ListEmptyState
+            // A chip narrowed nothing when the whole list is empty, so it must
+            // not be blamed. "Switch back to All to see the rest" sent the reader
+            // to another empty screen and left them hunting for a list that was
+            // never there.
+            filtered={filtered && !nothingAtAll}
+            noResults={{
+              icon: <Repeat2 className="size-6" aria-hidden />,
+              title: 'None match that',
+              description: `No repeat orders are marked “${active.label}”. Switch back to All to see the rest, including any still on a free trial.`,
+            }}
+            firstRun={{
+              icon: <Repeat2 className="size-6" aria-hidden />,
+              title: 'No repeat orders yet',
+              description:
+                'A repeat order sends a customer the same things again and again — a candle every month, a box every quarter — and bills them each time. Set one up when somebody asks for it, and it runs itself from then on.',
+              action: startOne,
+            }}
           />
         ) : (
           <Table size="sm" hover>

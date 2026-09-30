@@ -38,6 +38,7 @@ import { Clock } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneEmpty } from '../../components/pane-empty';
 import { FormSection } from '../../components/form-section';
 import { api } from '../../lib/api/client';
 import { useMutation, useQueryClient } from '@wizeworks/query';
@@ -159,21 +160,19 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (!policy) {
+    // The house first-run state: a centered PaneEmpty in a Card, with this
+    // app's own artwork. This branch used to render a bare heading and a
+    // paragraph flush to the top-left corner, which is the only empty state in
+    // the console that looked like that.
     return (
       <div className={PANE_SHELL}>
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className={COLUMN}>
-            <Heading level={1} className="text-2xl font-semibold">
-              No response times set up yet
-            </Heading>
-            <Text>
-              A response time is your promise about how quickly you will get back to someone, and it
-              is counted only during the hours you are open, so a message that arrives on a Sunday
-              night is not late on Monday morning. One is created for you the first time a support
-              request comes in.
-            </Text>
-          </div>
-        </div>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneEmpty
+            icon={<Clock className="size-6" aria-hidden />}
+            title="No response times set up yet"
+            description="A response time is your promise about how quickly you will get back to someone, and it is counted only during the hours you are open, so a message that arrives on a Sunday night is not late on Monday morning. One is created for you the first time a help request comes in."
+          />
+        </Card>
       </div>
     );
   }

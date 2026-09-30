@@ -278,7 +278,7 @@ function WorkBand({ partner: p }: { partner: PartnerProfile }) {
             </div>
           ) : (
             <Text variant="lead" className="max-w-xl">
-              This partner has not listed the kinds of work they specialise in yet. Their own site
+              This partner has not listed the kinds of work they specialize in yet. Their own site
               is the best place to see what they take on.
             </Text>
           )}

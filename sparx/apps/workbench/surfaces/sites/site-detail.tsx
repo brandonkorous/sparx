@@ -48,21 +48,14 @@ import {
   useUpdateSite,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { moduleLabel } from '../../lib/surfaces/nav';
 
 /** Modules a site can be told not to show. `builder` is absent on purpose — it
  *  is what BUILDS the site, so hiding it from one site is meaningless. */
 const SCOPEABLE = ['commerce', 'cms', 'crm', 'email', 'b2b', 'dropship', 'inventory', 'ai'];
 
-const MODULE_LABELS: Record<string, string> = {
-  commerce: 'Selling',
-  cms: 'Content',
-  crm: 'Customers',
-  email: 'Email',
-  b2b: 'Wholesale',
-  dropship: 'Dropshipping',
-  inventory: 'Inventory',
-  ai: 'AI',
-};
+// The names come from `lib/surfaces/nav.ts`. This file kept its own, one of six
+// across the two consoles; see the note there.
 
 /** A handle is the part of the web address that identifies this site, so it is
  *  lowercase, digits and hyphens — matching what api-rest derives from a name. */
@@ -480,9 +473,13 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             </Field>
           </FormSection>
 
+          {/* "Saved as you switch them" because this card does NOT wait for the
+              Save button on the same screen, and the Site name field above it
+              does. Two save models on one page with nothing saying which is
+              which leaves a person guessing whether their change took. */}
           <FormSection
             title="What this site shows"
-            description="Switch off anything this site has no use for. It stays available on your other sites."
+            description="Switch off anything this site has no use for. It stays available on your other sites. Saved as you switch them."
           >
             {available.length === 0 ? (
               <Text className="text-sm">
@@ -496,12 +493,12 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     color="module"
                     checked={!site.moduleScope.includes(slug)}
                     disabled={update.isPending}
-                    aria-label={MODULE_LABELS[slug] ?? slug}
+                    aria-label={moduleLabel(slug)}
                     onChange={(event) => {
                       setModule(slug, event.target.checked);
                     }}
                   />
-                  <Text as="span">{MODULE_LABELS[slug] ?? slug}</Text>
+                  <Text as="span">{moduleLabel(slug)}</Text>
                 </label>
               ))
             )}

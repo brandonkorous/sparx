@@ -606,6 +606,7 @@ function DiscountEditor({
                   render={
                     <div className="flex max-w-[10rem] items-center gap-2">
                       <Input
+                        aria-label="Percentage off"
                         color={percentError && touched ? 'error' : 'module'}
                         type="number"
                         min={0}
@@ -637,6 +638,7 @@ function DiscountEditor({
                         $
                       </Text>
                       <Input
+                        aria-label="Amount off"
                         color={amountError && touched ? 'error' : 'module'}
                         type="number"
                         min={0}
@@ -676,6 +678,7 @@ function DiscountEditor({
                       $
                     </Text>
                     <Input
+                      aria-label="Minimum spend"
                       color="module"
                       type="number"
                       min={0}
@@ -697,19 +700,18 @@ function DiscountEditor({
               <FieldLabel>Minimum number of items</FieldLabel>
               <FieldControl
                 render={
-                  <div className="max-w-[8rem]">
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      inputMode="numeric"
-                      value={draft.minItems}
-                      placeholder="0"
-                      onChange={(event) => {
-                        set('minItems', event.target.value);
-                      }}
-                    />
-                  </div>
+                  <Input
+                    className="max-w-[8rem]"
+                    color="module"
+                    type="number"
+                    min={0}
+                    inputMode="numeric"
+                    value={draft.minItems}
+                    placeholder="0"
+                    onChange={(event) => {
+                      set('minItems', event.target.value);
+                    }}
+                  />
                 }
               />
             </Field>

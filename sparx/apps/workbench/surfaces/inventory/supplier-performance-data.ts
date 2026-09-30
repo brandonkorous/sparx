@@ -203,6 +203,7 @@ export interface ScorecardSweepResult {
 export function useRecomputeScorecards() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { running: 'score your suppliers again' },
     mutationFn: () =>
       api.post<ScorecardSweepResult>('/v1/inventory/suppliers/scorecards/recompute', {}),
     onSuccess: () => {

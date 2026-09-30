@@ -95,6 +95,13 @@ export interface LiveRateReadiness {
   carrierSlugs: string[];
   shipFromComplete: boolean;
   shipFromIssue: string | null;
+  /** How many sellable things have to be posted, and how many of those nobody
+   *  has said the weight of. A weight nobody recorded is priced at
+   *  `assumedWeightGrams`, which is what makes a "Priced by weight" band and a
+   *  live carrier quote come out wrong (issue 873). See weight-readiness.ts. */
+  shippableItems: number;
+  itemsMissingWeight: number;
+  assumedWeightGrams: number;
 }
 
 export const shippingKeys = {

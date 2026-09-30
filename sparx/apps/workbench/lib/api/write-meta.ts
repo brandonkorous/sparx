@@ -30,6 +30,22 @@ export interface WriteMeta {
    * arrives while they are three panes away still says what it is about.
    */
   readonly writing?: string;
+  /**
+   * This mutation RUNS something rather than saving something of theirs.
+   *
+   * Re-running the stock check, recomputing a forecast, rebuilding an index,
+   * previewing an import. She asked for it, so its failure is hers to hear and
+   * `housekeeping` is the wrong flag - but nothing of HERS was written, so two
+   * things have to change:
+   *
+   *   • the status bar's "Saved just now" clock must not move. That clock is
+   *     the answer to "did my work make it?", and a check she ran after a save
+   *     that silently failed would answer it yes.
+   *   • the failure is not "couldn't save". Set this to the verb phrase in her
+   *     words - "check your stock" - and the toast reads "Couldn't check your
+   *     stock", which is a sentence rather than a category.
+   */
+  readonly running?: string;
 }
 
 export function readWriteMeta(meta: unknown): WriteMeta {
@@ -38,5 +54,20 @@ export function readWriteMeta(meta: unknown): WriteMeta {
   return {
     ...(typeof record.housekeeping === 'boolean' ? { housekeeping: record.housekeeping } : {}),
     ...(typeof record.writing === 'string' ? { writing: record.writing } : {}),
+    ...(typeof record.running === 'string' ? { running: record.running } : {}),
   };
+}
+
+/**
+ * What a failed write is called, in her words.
+ *
+ * Three sentences, not one with a hole in it. `running` names an ACTION, so its
+ * failure is "Couldn't check your stock"; `writing` names a THING, so its
+ * failure is "Couldn't save your invoice". Neither was ever set, which is why
+ * every failure in this console said the third one.
+ */
+export function writeFailureTitle(meta: WriteMeta): string {
+  if (meta.running !== undefined) return `Couldn't ${meta.running}`;
+  if (meta.writing !== undefined) return `Couldn't save ${meta.writing}`;
+  return "That didn't save";
 }

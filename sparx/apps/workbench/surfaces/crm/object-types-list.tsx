@@ -41,7 +41,7 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Record type controls"
+        label="Record types controls"
         primary={
           <Button
             color="module"

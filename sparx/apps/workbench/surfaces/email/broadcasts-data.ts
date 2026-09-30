@@ -101,6 +101,24 @@ export interface DesignedEmail {
   name: string;
   subject: string;
   published: boolean;
+  /** Set on a built-in email that a single event sends: an order confirmation,
+   *  an invoice reminder. Null on one the owner wrote. A broadcast may only send
+   *  the second kind: see `broadcastableEmails`. */
+  key: string | null;
+}
+
+/** The designed emails it makes sense to send to a whole audience.
+ *
+ *  A keyed email is triggered by ONE event and written about it: it says "your
+ *  order has shipped" and reads that order's details, which no audience has.
+ *  The picker offered every one of them (forty-five on a fully set-up account),
+ *  so "Payment failed" sat a few rows from the newsletter, and choosing it would
+ *  have told every subscriber their payment had failed. Only emails the owner
+ *  wrote herself belong here. The server refuses a keyed email too
+ *  (`broadcast-service.ts`, `assertBroadcastableEmail`), because the MCP tools
+ *  reach the same API without this picker. */
+export function broadcastableEmails(emails: DesignedEmail[] | undefined): DesignedEmail[] {
+  return (emails ?? []).filter((email) => email.key === null);
 }
 
 /** This site's sender identity, shown read-only in the composer. */
@@ -324,8 +342,11 @@ export function broadcastState(status: BroadcastStatus): { label: string; tone: 
   }
 }
 
-/** How the sending address will appear to a recipient — the same shape the send
- *  builds. Falls back to the shared sparx address when nothing is configured. */
+/** How the sending address will appear to a recipient.
+ *
+ *  The server resolves this: it is the literal `From` header the send builds,
+ *  fallback included, so the screen and the inbox cannot disagree about who the
+ *  email is from. */
 export function senderDisplay(settings: EmailSettings | undefined): string {
   return settings?.resolvedFrom ?? '';
 }

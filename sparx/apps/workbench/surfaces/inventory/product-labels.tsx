@@ -274,7 +274,7 @@ function NotYetScannable({
           <AlertTitle>Everything can be scanned now</AlertTitle>
           <AlertDescription>
             {made.generated > 0
-              ? `${plural(made.generated, 'code', 'codes')} created. The labels are below, ready to print.`
+              ? `${plural(made.generated, 'code', 'codes')} created. ${made.generated === 1 ? 'The label is' : 'The labels are'} below, ready to print.`
               : 'Nothing was left to give a code to.'}
           </AlertDescription>
         </AlertContent>
@@ -327,7 +327,7 @@ function NotYetScannable({
             {total > items.length ? (
               <Text className="p-2 text-sm">
                 Showing the first {String(items.length)}. Create codes for these and the rest
-                follow, or search above to work through the catalogue a part at a time.
+                follow, or search above to work through the catalog a part at a time.
               </Text>
             ) : null}
           </div>
@@ -430,7 +430,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       {/* `print:hidden` — the controls are not part of the sheet. */}
       <PaneToolbar
-        label="Product label controls"
+        label="Product labels controls"
         className="print:hidden"
         search={
           !presetVariant ? (

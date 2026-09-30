@@ -13,6 +13,7 @@
 // Explicit save, last-write-wins, with a leave-guard while there are unsaved
 // edits — like every editor in the app.
 
+import { CountryField } from '../../components/country-field';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -370,25 +371,15 @@ export function ProfileSurface() {
                   }
                 />
               </Field>
-              <Field>
-                <FieldLabel>Country</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.locationCountry}
-                      placeholder="US"
-                      maxLength={2}
-                      spellCheck={false}
-                      className="uppercase"
-                      onChange={(event) => {
-                        set('locationCountry', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Two-letter country code.</FieldDescription>
-              </Field>
+              {/* Picked by name. It was a two-character box, which asks somebody to
+                  know that Germany is DE before they can say where a business
+                  is. Issue 721. */}
+              <CountryField
+                value={form.locationCountry}
+                onChange={(next) => {
+                  set('locationCountry', next);
+                }}
+              />
             </div>
             <div className="flex items-start justify-between gap-3">
               <span className="flex min-w-0 flex-col gap-0.5">

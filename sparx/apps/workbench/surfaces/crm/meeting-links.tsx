@@ -229,6 +229,8 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(rows.length)} booking links`}
           </Text>
         }
+        statusReady={!links.isPending}
+        statusFailed={links.isError}
         primary={
           <Button
             color="module"

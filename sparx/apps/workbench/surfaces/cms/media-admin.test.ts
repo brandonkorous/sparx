@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { formatBytes, sizeLabel } from './media-admin';
+import { formatBytes, sizeLabel, usedInLabel } from './media-admin';
 
 const asset = (byteSize: number | null, linked = false) => ({ byteSize, linked });
 
@@ -60,5 +60,39 @@ describe('formatBytes', () => {
 
   it('caps at gigabytes rather than inventing a unit', () => {
     expect(formatBytes(5 * 1024 ** 4)).toContain('GB');
+  });
+});
+
+// What the "Used in" line and the disabled Delete say (issue 381). The count is
+// COUNTED server-side now; these pin that the screen names the KINDS, so an owner
+// told she cannot delete a file also learns which screen to open to fix that.
+describe('usedInLabel', () => {
+  const none = {
+    products: 0,
+    content: 0,
+    customers: 0,
+    authors: 0,
+    staffDocuments: 0,
+    expenses: 0,
+  };
+
+  it('is null when nothing is counted, so the caller can say what it cannot see', () => {
+    expect(usedInLabel({ usageCount: 0, usage: none })).toBeNull();
+  });
+
+  it('names one kind on its own', () => {
+    expect(usedInLabel({ usageCount: 2, usage: { ...none, products: 2 } })).toBe(
+      '2 product photos'
+    );
+  });
+
+  it('names every kind in use, singular where there is one', () => {
+    expect(
+      usedInLabel({ usageCount: 4, usage: { ...none, products: 2, content: 1, authors: 1 } })
+    ).toBe('2 product photos, 1 page or article and 1 author profile');
+  });
+
+  it('falls back to a plain count when the kinds were not sent', () => {
+    expect(usedInLabel({ usageCount: 1, usage: null })).toBe('1 place on your site');
   });
 });

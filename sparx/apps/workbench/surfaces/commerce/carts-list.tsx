@@ -77,7 +77,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Carts list controls"
+        label="Carts controls"
         controls={
           <>
             <Filter
@@ -156,7 +156,9 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(row, event);
                     }}
                   >
-                    <td className="max-w-48 truncate">{cartShopperName(row.customer)}</td>
+                    <td className="max-w-48 truncate">
+                      {cartShopperName(row.customer, row.contact)}
+                    </td>
                     <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
                     <td className="hidden text-sm @2xl:table-cell">
                       {formatDateTime(row.updatedAt)}

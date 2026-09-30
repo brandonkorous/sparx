@@ -126,7 +126,22 @@ function LabelCell({
           {bin.zone ? ` · ${bin.zone}` : ''}
         </span>
         {!bin.isSellable ? (
-          <span className="truncate text-[10px] leading-tight font-bold text-black">
+          // The ONLY line on this label that does not truncate, and the reason is
+          // what it says. The code, the shelf name and the location are read by
+          // somebody already standing at the shelf, so a clipped one is a
+          // nuisance. This line is the label's whole job: it stops a picker
+          // taking an order off a shelf the stock cannot be sold from.
+          //
+          // SEEN ON SCREEN 2026-09-18, Juniper Row, BULK-1 at medium size:
+          // "OVERSTOCK: NOT FOR SA…". `truncate` is `white-space: nowrap` and
+          // applies to print as well, so the label really did come out of the
+          // printer that way. The pane says "What you see here is exactly what
+          // prints" and it was telling the truth.
+          //
+          // `product-labels.tsx` already had this right: its "CASE OF 12" line
+          // carries meaning and was never truncated, while the title and code
+          // beside it are. Same rule, one surface behind.
+          <span className="text-[10px] leading-tight font-bold break-words text-black">
             {binTypeLabel(bin.type).toUpperCase()}: NOT FOR SALE
           </span>
         ) : null}
@@ -178,7 +193,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       {/* `print:hidden` — the controls are not part of the sheet. */}
       <PaneToolbar
-        label="Label controls"
+        label="Shelf labels controls"
         className="print:hidden"
         controls={
           <>
@@ -197,7 +212,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
               <>
                 <NativeSelect
                   size="sm"
-                  className="max-w-40 shrink"
+                  className="shrink"
                   aria-label="Location"
                   value={locationId}
                   onChange={(event) => {
@@ -216,7 +231,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
                 {zones.length > 0 ? (
                   <NativeSelect
                     size="sm"
-                    className="max-w-36 shrink"
+                    className="shrink"
                     aria-label="Zone"
                     value={zone}
                     onChange={(event) => {

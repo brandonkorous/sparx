@@ -77,7 +77,12 @@ import {
   type ProductReview,
 } from './products-data';
 
-const LABEL = 'Reviews & questions';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'reviews and questions';
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected' | 'flagged';
 
@@ -465,7 +470,7 @@ function QuestionCard({ question, productId }: { question: ProductQuestion; prod
 }
 
 export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const reviews = useProductReviews(productId);
   const questions = useProductQuestions(productId);
@@ -494,7 +499,7 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
   const unanswered = allQuestions.filter((q) => q.answers.length === 0).length;
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} />;
   }
 
   const busy = reviews.isFetching || questions.isFetching;
@@ -503,7 +508,7 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         controls={
           <>
             <MessageSquare className="size-4 shrink-0" aria-hidden />

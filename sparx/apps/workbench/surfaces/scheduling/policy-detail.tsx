@@ -36,7 +36,6 @@ import { SaveFailure } from '@/components/save-failure';
 import {
   DEPOSIT_TYPES,
   REMINDER_OFFSETS,
-  isNotFound,
   schedulingErrorMessage,
   useCreatePolicy,
   useDeletePolicy,
@@ -624,17 +623,14 @@ export function PolicyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (policy.isError) {
-    const gone = isNotFound(policy.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This rule set no longer exists' : 'Could not load this rule set'}
-          description={
-            gone
-              ? 'It has been deleted. Any service that used it now has no deposit or cancellation terms.'
-              : 'This is a problem reaching the server. Nothing about the rule set has changed.'
-          }
+          error={policy.error}
+          title="Could not load this rule set"
+          description="This is a problem reaching the server. Nothing about the rule set has changed."
+          missingTitle="This rule set no longer exists"
+          missingDescription="It has been deleted. Any service that used it now has no deposit or cancellation terms."
           onRetry={() => {
             void policy.refetch();
           }}

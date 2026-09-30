@@ -9,9 +9,10 @@
 import { daysPastDue } from '../../lib/console/days';
 import { channelLabel } from '../../lib/console/channels';
 import { paymentMethodLabel } from '../../lib/payment-methods';
+import { formatAmount } from '../../lib/money-format';
 
 export function formatMoney(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  return formatAmount(amount, currency);
 }
 
 /** The spend half of Finance speaks CENTS on the wire (docs/148) — money crosses

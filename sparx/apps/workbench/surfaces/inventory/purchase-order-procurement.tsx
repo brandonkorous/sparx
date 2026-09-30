@@ -36,7 +36,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Input,
   Table,
   Text,
   Timestamp,
@@ -58,6 +57,7 @@ import {
 import { sentBackNote, whoSignsLine } from './po-approvals-words';
 import { billStatusLabel, billStatusTone, useSupplierBills } from './supplier-bills-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
+import { DayInput } from '../../components/day-input';
 
 interface Props {
   purchaseOrderId: string;
@@ -309,12 +309,11 @@ function Reschedule({ purchaseOrderId, expectedArrivalAt, lateAlertedAt }: Props
           <FieldLabel>New expected date</FieldLabel>
           <FieldControl
             render={
-              <Input
+              <DayInput
                 color="module"
-                type="date"
                 value={date}
-                onChange={(event) => {
-                  setDate(event.target.value);
+                onValueChange={(value) => {
+                  setDate(value);
                   setDirty(true);
                 }}
               />

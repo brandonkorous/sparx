@@ -78,7 +78,7 @@ import {
   useSupplierReturn,
   useUpdateSupplierReturn,
 } from './supplier-returns-data';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { moneyCents, moneyText, MoneyTextInput } from '../../components/money-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -98,6 +98,14 @@ export function SupplierReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const existing = useSupplierReturn(id);
   const data = existing.data;
+
+  // The tab's name, once the record is here. Sixty-one of this console's
+  // seventy-five detail panes do this; the ones that did not put identical
+  // words on every tab they opened, which is the one thing the strip is for.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  useEffect(() => {
+    if (data) ctx.setTitle(data.number);
+  }, [data, ctx]);
 
   if (isNew) return <NewReturn ctx={ctx} />;
 
@@ -533,7 +541,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   useEffect(() => {
     if (!data) return;
-    setCreditAmount((data.creditExpectedCents / 100).toString());
+    setCreditAmount(moneyText(data.creditExpectedCents));
     setTracking(data.trackingNumber ?? '');
     setTrackingDirty(false);
   }, [data]);

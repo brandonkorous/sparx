@@ -136,7 +136,12 @@ export interface SellThroughRow {
   variantId: string;
   warehouseId: string;
   sku: string;
-  title: string;
+  /** What the thing IS, and WHICH ONE of it. The server squashed these into one
+   *  `title` with COALESCE(v.title, p.title); `v.title` is null for 746 of 2,416
+   *  variants here, so every row of one product read as the product name with
+   *  only a code beside it to tell them apart. Issue 681. */
+  productTitle: string | null;
+  variantName: string | null;
   warehouseCode: string;
   unitsSold: number;
   unitsOnHandAtEnd: number;
@@ -160,7 +165,12 @@ export interface SellThroughReport {
 export interface GmroiRow {
   variantId: string;
   sku: string;
-  title: string;
+  /** What the thing IS, and WHICH ONE of it. The server squashed these into one
+   *  `title` with COALESCE(v.title, p.title); `v.title` is null for 746 of 2,416
+   *  variants here, so every row of one product read as the product name with
+   *  only a code beside it to tell them apart. Issue 681. */
+  productTitle: string | null;
+  variantName: string | null;
   unitsSold: number;
   revenueCents: number;
   cogsCents: number;
@@ -219,7 +229,12 @@ export interface StockoutRow {
   variantId: string;
   warehouseId: string;
   sku: string;
-  title: string;
+  /** What the thing IS, and WHICH ONE of it. The server squashed these into one
+   *  `title` with COALESCE(v.title, p.title); `v.title` is null for 746 of 2,416
+   *  variants here, so every row of one product read as the product name with
+   *  only a code beside it to tell them apart. Issue 681. */
+  productTitle: string | null;
+  variantName: string | null;
   warehouseCode: string;
   episodeCount: number;
   daysOut: number;
@@ -813,30 +828,121 @@ export function deliveryStatusLabel(status: ReportDelivery['status']): string {
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-/** When a schedule sends, in a sentence. "Every Monday at 7am" beats a table of
- *  four columns nobody reads across. */
-export function cadenceSentence(schedule: {
-  cadence: string;
-  dayOfWeek: number | null;
-  dayOfMonth: number | null;
-  hour: number;
-  timezone: string;
-}): string {
+/**
+ * 1st, 2nd, 3rd, 4th - and 11th, 12th, 13th, 21st, 31st.
+ *
+ * The old rule tested the whole number against 1, 2 and 3, so every schedule set
+ * for the 21st, 22nd, 23rd or 31st of the month read "the 21th".
+ */
+function ordinal(day: number): string {
+  const tens = day % 100;
+  if (tens >= 11 && tens <= 13) return `${String(day)}th`;
+  const unit = day % 10;
+  return `${String(day)}${unit === 1 ? 'st' : unit === 2 ? 'nd' : unit === 3 ? 'rd' : 'th'}`;
+}
+
+/** The zone this browser is in, or UTC where it cannot be read. */
+export function localZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
+/** "Europe/London" is a database key. She lives in London. */
+export function zoneLabel(zone: string): string {
+  if (zone === 'UTC' || zone === '') return 'UTC';
+  const city = zone.slice(zone.lastIndexOf('/') + 1).replace(/_/g, ' ');
+  return `${city} time`;
+}
+
+/**
+ * When a schedule sends, in a sentence. "Every Monday at 7am" beats a table of
+ * four columns nobody reads across.
+ *
+ * ── Why the zone is named ────────────────────────────────────────────────
+ *
+ * "7am", unqualified, means "7am my time" to whoever reads it. This used to
+ * print the zone for every zone EXCEPT `UTC`:
+ *
+ *     const zone = schedule.timezone === 'UTC' ? '' : ` (${schedule.timezone})`;
+ *
+ * and `UTC` is what the form defaults to. So the one case where the hour is not
+ * her hour is the one case the sentence kept quiet about. A 7am UTC report
+ * lands at 8am in London for five months of the year.
+ *
+ * The rule now is the honest one: say the zone whenever it is not the zone the
+ * reader is sitting in, whatever it is.
+ */
+export function cadenceSentence(
+  schedule: {
+    cadence: string;
+    dayOfWeek: number | null;
+    dayOfMonth: number | null;
+    hour: number;
+    timezone: string;
+  },
+  viewerZone: string = localZone()
+): string {
   const time = `${schedule.hour === 0 ? 12 : schedule.hour > 12 ? schedule.hour - 12 : schedule.hour}${
     schedule.hour < 12 ? 'am' : 'pm'
   }`;
-  const zone = schedule.timezone === 'UTC' ? '' : ` (${schedule.timezone})`;
+  const zone = schedule.timezone === viewerZone ? '' : ` ${zoneLabel(schedule.timezone)}`;
   switch (schedule.cadence) {
     case 'daily':
       return `Every day at ${time}${zone}`;
     case 'weekly':
       return `Every ${WEEKDAYS[schedule.dayOfWeek ?? 1] ?? 'Monday'} at ${time}${zone}`;
-    case 'monthly': {
-      const day = schedule.dayOfMonth ?? 1;
-      const suffix = day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th';
-      return `On the ${day}${suffix} of each month at ${time}${zone}`;
-    }
+    case 'monthly':
+      return `On the ${ordinal(schedule.dayOfMonth ?? 1)} of each month at ${time}${zone}`;
     default:
       return schedule.cadence;
   }
+}
+
+/**
+ * Every zone this browser knows, with the one already saved kept even if it does
+ * not, and the reader's own zone at the top where she will look first.
+ *
+ * `Intl.supportedValuesOf` is a few years newer than the rest of `Intl`, so a
+ * short fallback covers a browser without it rather than leaving an empty list.
+ */
+export function zoneOptions(current: string): string[] {
+  let all: string[] = [];
+  try {
+    all = Intl.supportedValuesOf('timeZone');
+  } catch {
+    all = [];
+  }
+  if (all.length === 0) {
+    all = [
+      'Europe/London',
+      'Europe/Paris',
+      'Europe/Berlin',
+      'America/New_York',
+      'America/Chicago',
+      'America/Denver',
+      'America/Los_Angeles',
+      'Australia/Sydney',
+      'Asia/Tokyo',
+      'Asia/Singapore',
+    ];
+  }
+  const here = localZone();
+  const head = [here, 'UTC', current].filter(
+    (zone, index, list) => zone !== '' && list.indexOf(zone) === index
+  );
+  return [...head, ...all.filter((zone) => !head.includes(zone))];
+}
+
+/**
+ * The same sentence, lowered into the middle of another one.
+ *
+ * Only the FIRST letter. This was `.toLowerCase()` on the whole string, which
+ * read "sent every monday at 7am" - a weekday is a proper noun - and would have
+ * done the same to a zone name she picked herself.
+ */
+export function afterSent(sentence: string): string {
+  return sentence.charAt(0).toLowerCase() + sentence.slice(1);
 }

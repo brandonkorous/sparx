@@ -51,6 +51,7 @@ import {
   type DocumentSignature,
 } from '../crm/workspace-data';
 import type { BillingDocument } from './types';
+import { canTakeBack, effectiveStatus, expiryLine, seenLine } from './signature-state';
 
 const STATUS_LABEL: Record<DocumentSignature['status'], string> = {
   pending: 'Waiting for them',
@@ -60,13 +61,16 @@ const STATUS_LABEL: Record<DocumentSignature['status'], string> = {
   revoked: 'Replaced',
 };
 
-function whenText(signature: DocumentSignature): string {
-  const stamp = signature.signedAt ?? signature.declinedAt ?? signature.requestedAt;
-  return new Date(stamp).toLocaleDateString(undefined, {
+function dayText(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   });
+}
+
+function whenText(signature: DocumentSignature): string {
+  return dayText(signature.signedAt ?? signature.declinedAt ?? signature.requestedAt);
 }
 
 export function SignaturesSection({
@@ -91,7 +95,11 @@ export function SignaturesSection({
   const [issuedUrl, setIssuedUrl] = useState<string | null>(null);
 
   const rows = data?.items ?? [];
-  const live = rows.find((row) => row.status === 'pending');
+  // EFFECTIVE, not stored. A request whose link ran out is not somebody holding a
+  // working link, so it must not trigger the "already has a link" warning or the
+  // revoke-on-ask it describes.
+  const now = Date.now();
+  const live = rows.find((row) => canTakeBack(row, now));
   const signed = rows.find((row) => row.status === 'signed');
 
   const closeAsk = (): void => {
@@ -234,8 +242,11 @@ export function SignaturesSection({
               className="border-base-300 flex flex-col gap-1 border-b pb-3 last:border-0 last:pb-0"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <Badge color={signatureTone(row.status)} variant="soft" size="sm">
-                  {STATUS_LABEL[row.status]}
+                {/* The status a date has already decided, not the one last
+                    written down. Nothing sweeps expired requests, so the stored
+                    word can be weeks out of date. */}
+                <Badge color={signatureTone(effectiveStatus(row, now))} variant="soft" size="sm">
+                  {STATUS_LABEL[effectiveStatus(row, now)]}
                 </Badge>
                 <Text as="span" className="text-sm">
                   {whenText(row)}
@@ -247,12 +258,25 @@ export function SignaturesSection({
               <Text as="span" className="text-sm break-all">
                 {row.signerEmail}
               </Text>
+              {/* Whether they have looked at it, which is the question three days
+                  after sending a quote — and the signing page has been writing
+                  the answer down the whole time. */}
+              {seenLine(row, now, dayText) !== null ? (
+                <Text as="span" className="text-sm">
+                  {seenLine(row, now, dayText)}
+                </Text>
+              ) : null}
+              {expiryLine(row, now, dayText) !== null ? (
+                <Text as="span" className="text-sm">
+                  {expiryLine(row, now, dayText)}
+                </Text>
+              ) : null}
               {row.declineReason !== null && row.declineReason !== '' ? (
                 <Text as="span" className="text-sm">
                   They said: “{row.declineReason}”
                 </Text>
               ) : null}
-              {row.status === 'pending' ? (
+              {canTakeBack(row, now) ? (
                 <div>
                   <Button
                     color="danger"

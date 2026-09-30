@@ -224,7 +224,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           swallowed the entire row (measured: 1208px) and pushed everything else
           onto a second line. */}
       <PaneToolbar
-        label="Invoice list controls"
+        label="Invoices controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

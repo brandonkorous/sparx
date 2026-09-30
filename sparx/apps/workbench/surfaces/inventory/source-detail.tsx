@@ -77,13 +77,12 @@ import { useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   agentOnline,
-  isNotFound,
   relativeTime,
   sourceErrorMessage,
   sourceState,
   sourceTypeDescription,
   sourceTypeLabel,
-  syncIntervalLabel,
+  syncIntervalPhrase,
   SYNC_INTERVALS,
   useCreateSource,
   useDeleteSource,
@@ -97,7 +96,6 @@ import {
   type SourceType,
 } from './sources-data';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { ActionLabel } from '../../components/action-label';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -233,7 +231,7 @@ function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: 
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col gap-4 overflow-hidden">
           <DialogTitle>{result.rotated ? 'Your new pairing key' : 'Your pairing key'}</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 [&>*]:shrink-0">
             <Alert color="warning">
               <AlertContent>
                 <AlertTitle>You will only see this once</AlertTitle>
@@ -646,79 +644,68 @@ function SourceEditor({
       ) : (
         <PaneToolbar
           label="Stock source actions"
+          status={
+            state ? (
+              <Badge color={state.tone} variant="soft" size="sm">
+                {state.label}
+              </Badge>
+            ) : null
+          }
+          /* Save is `primary`, never `controls`: `controls` folds into the
+             overflow popover under 672px, and a commit action has to be
+             reachable at every width. Pause was sitting in `primary` and Save
+             was in `controls`, which is that rule exactly backwards - this file
+             was one of the 21 pinned in SPARX_DEBT. */
           primary={
             <Button
               size="sm"
-              variant="outline"
-              color="neutral"
+              color="module"
               className="ml-auto shrink-0"
               loading={update.isPending}
-              onClick={togglePaused}
+              disabled={!canSave}
+              onClick={save}
             >
-              {source?.status === 'paused' ? (
-                <>
-                  <Play className="size-4" aria-hidden />
-                  <ActionLabel>Turn on</ActionLabel>
-                </>
-              ) : (
-                <>
-                  <Pause className="size-4" aria-hidden />
-                  <ActionLabel>Pause</ActionLabel>
-                </>
-              )}
+              <Save className="size-4" aria-hidden />
+              Save
             </Button>
           }
-          controls={
-            <>
-              {state ? (
-                <Badge color={state.tone} variant="soft" size="sm">
-                  {state.label}
-                </Badge>
-              ) : null}
-              {type === 'agent' ? null : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="neutral"
-                  className="shrink-0"
-                  loading={sync.isPending}
-                  disabled={source?.status === 'paused'}
-                  onClick={runSync}
-                >
-                  <RefreshCw className="size-4" aria-hidden />
-                  <ActionLabel>Sync now</ActionLabel>
-                </Button>
-              )}
-              <Button
-                size="sm"
-                color="module"
-                className="shrink-0"
-                loading={update.isPending}
-                disabled={!canSave}
-                onClick={save}
-              >
-                <Save className="size-4" aria-hidden />
-                Save
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                className="shrink-0"
-                aria-label="Remove this source"
-                title="Remove this source"
-                loading={remove.isPending}
-                onClick={() => {
-                  void removeSource();
-                }}
-              >
-                <Trash2 className="size-4" aria-hidden />
-              </Button>
-              {/* Re-reads liveness/last-sync from the server without remounting, so
-              an in-progress draft survives the refresh. */}
-            </>
-          }
+          /* Declared as VALUES, not hand-written buttons. `controls` folds into
+             the popover VERBATIM, so buttons whose names are width-dependent
+             arrived there as bare glyphs, while the copy under "How often should
+             it update?" says "You can always pull the latest at any time with
+             Sync now" - naming a control whose name was nowhere on screen.
+             `actions` are re-authored as labelled rows.
+             [[feedback_a_promise_in_copy_is_a_contract]] */
+          actions={[
+            {
+              label: source?.status === 'paused' ? 'Turn on' : 'Pause',
+              icon: source?.status === 'paused' ? Play : Pause,
+              loading: update.isPending,
+              onClick: togglePaused,
+            },
+            ...(type === 'agent'
+              ? []
+              : [
+                  {
+                    label: 'Sync now',
+                    icon: RefreshCw,
+                    title: 'Fetch the latest numbers right now',
+                    loading: sync.isPending,
+                    disabled: source?.status === 'paused',
+                    onClick: runSync,
+                  },
+                ]),
+            {
+              label: 'Remove',
+              icon: Trash2,
+              title: 'Remove this source',
+              tone: 'danger' as const,
+              loading: remove.isPending,
+              onClick: () => {
+                void removeSource();
+              },
+            },
+          ]}
           refresh={
             <RefreshButton
               isFetching={isFetching ?? sync.isPending}
@@ -1213,7 +1200,7 @@ function SourceEditor({
                   </Text>
                 ) : (
                   <Text className="text-sm">
-                    Updates {syncIntervalLabel(source.syncIntervalSec).toLowerCase()}.
+                    Updates {syncIntervalPhrase(source.syncIntervalSec)}.
                   </Text>
                 )}
               </div>
@@ -1266,17 +1253,14 @@ function ExistingSource({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { data, isPending, isFetching, isError, error, refetch } = useInventorySource(id);
 
   if (isError) {
-    const gone = isNotFound(error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This source no longer exists' : 'Could not load this source'}
-          description={
-            gone
-              ? 'It has been removed from your list. Any stock numbers it brought in are unaffected.'
-              : 'This is a problem reaching the server. The connection itself is unaffected.'
-          }
+          error={error}
+          title="Could not load this source"
+          description="This is a problem reaching the server. The connection itself is unaffected."
+          missingTitle="This source no longer exists"
+          missingDescription="It has been removed from your list. Any stock numbers it brought in are unaffected."
           onRetry={() => {
             void refetch();
           }}

@@ -376,7 +376,7 @@ function EnrollModal({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-md flex-col overflow-hidden">
           <DialogTitle>Add someone to {sequenceName}</DialogTitle>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <div className="flex gap-1">
               {(['email', 'customer'] as const).map((m) => (
                 <Button
@@ -414,7 +414,7 @@ function EnrollModal({
                 ) : (
                   <Text className="text-sm">
                     We will send the sequence to this address. If it matches a customer, their
-                    details are used to personalise the emails.
+                    details are used to personalize the emails.
                   </Text>
                 )}
               </Field>
@@ -430,7 +430,7 @@ function EnrollModal({
                     setCustomerId(null);
                   }}
                 />
-                <div className="border-base-300 mt-1 flex max-h-56 flex-col overflow-y-auto rounded-lg border">
+                <div className="border-base-300 mt-1 flex max-h-56 flex-col overflow-y-auto rounded-lg border [&>*]:shrink-0">
                   {query.trim().length < 2 ? (
                     <Text className="p-3 text-sm">Type at least two letters to search.</Text>
                   ) : search.isPending ? (

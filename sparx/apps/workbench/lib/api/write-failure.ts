@@ -79,7 +79,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   if (isOffline()) {
     return {
       message:
-        "You're not connected to the internet, so that didn't save. Check your connection and try again: what you typed is still here.",
+        "You're not connected to the internet. Check your connection and try again: what you typed is still here.",
       showReference: false,
       code: 'offline',
     };
@@ -88,7 +88,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   if (isUnreachable(error)) {
     return {
       message:
-        "We couldn't reach the server just then, so that didn't save. Your connection looks fine, so this is probably us: wait a moment and save again. What you typed is still here.",
+        "We couldn't reach the server just then. Your connection looks fine, so this is probably us: wait a moment and save again. What you typed is still here.",
       showReference: false,
       code: 'unreachable',
     };
@@ -96,7 +96,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
 
   if (!(error instanceof ApiError)) {
     return {
-      message: "Something went wrong and that didn't save. Please try again.",
+      message: 'Something went wrong. Please try again.',
       showReference: false,
       code: 'unknown',
     };
@@ -110,8 +110,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   // person, so each says only what it knows.
   if (error.status === 401) {
     return {
-      message:
-        "You've been signed out, so that didn't save. Sign in again and your work is still here.",
+      message: "You've been signed out. Sign in again and your work is still here.",
       showReference: false,
       code: 'signed-out',
     };
@@ -172,8 +171,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
     // was describing a failure that CANNOT arrive as a 409 — a genuine stale
     // write raises 412 (`assertIfMatch`), handled below (issue 386).
     return {
-      message:
-        error.message || "That didn't save. Something about it clashes with what is already there.",
+      message: error.message || 'Something about it clashes with what is already there.',
       showReference: false,
       code: error.code || 'conflict',
     };
@@ -214,7 +212,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   // ones — seen on order O-000003 as "Could not write that down · Nothing changed
   // on this order" and "That didn't save · Request validation failed." together.
   if (error.status >= 400 && error.status < 500) {
-    const generic = "That didn't save. Check what you entered and try again.";
+    const generic = 'Check what you entered and try again.';
     return {
       message: error.code === 'VALIDATION_ERROR' ? generic : error.message || generic,
       showReference: false,
@@ -225,8 +223,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   // 5xx — ours. Say so plainly: an owner who thinks they broke it goes hunting
   // through their own data for a mistake that was never there.
   return {
-    message:
-      "Something went wrong on our end, so that didn't save. Nothing you typed was lost. Try again in a moment.",
+    message: 'Something went wrong on our end. Nothing you typed was lost. Try again in a moment.',
     reference,
     showReference: Boolean(reference),
     code: error.code || 'server-error',

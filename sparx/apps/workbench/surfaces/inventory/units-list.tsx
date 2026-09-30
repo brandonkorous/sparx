@@ -346,6 +346,18 @@ export function UnitsListSurface() {
                           {unit.isSystem ? (
                             <span className="text-sm">We started you off with this one</span>
                           ) : null}
+                          {/* "Used on" is hidden below @md and this pane is BUILT
+                              to be docked narrow, so without this the delete
+                              button is dead at 360px with the reason nowhere on
+                              screen - the exact thing the note at the top of this
+                              file says not to do. Only when there IS a reason:
+                              eleven rows reading "Nothing yet" is noise. */}
+                          {unit.usageCount > 0 ? (
+                            <span className="text-sm @md:hidden">
+                              Set up on {plural(unit.usageCount, 'item', 'items')}, so it cannot be
+                              deleted
+                            </span>
+                          ) : null}
                         </span>
                       </td>
                       <td className="hidden text-right @md:table-cell">
@@ -379,7 +391,11 @@ export function UnitsListSurface() {
                             variant="ghost"
                             color="danger"
                             shape="square"
-                            aria-label={`Delete ${unit.code}`}
+                            aria-label={
+                              unit.usageCount > 0
+                                ? `${unit.code} is set up on ${plural(unit.usageCount, 'item', 'items')} and cannot be deleted`
+                                : `Delete ${unit.code}`
+                            }
                             disabled={unit.usageCount > 0}
                             onClick={() => {
                               void remove(unit);

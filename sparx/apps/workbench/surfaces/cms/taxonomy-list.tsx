@@ -72,7 +72,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Tags and topics list controls"
+        label="Tags & topics controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -93,6 +93,8 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(all.length)} ways to file`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"

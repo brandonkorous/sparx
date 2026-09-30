@@ -10,6 +10,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
   Badge,
   Button,
   Field,
@@ -34,8 +37,8 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { type ProductRow } from './products-data';
-import { VariantPicker } from './variant-picker';
+import { formatCents, type ProductRow } from './products-data';
+import { VariantPicker, versionOf } from './variant-picker';
 import { SaveFailure } from '@/components/save-failure';
 import {
   bundleErrorMessage,
@@ -48,6 +51,9 @@ import {
   type BundleInventoryMode,
   type BundlePricingMode,
 } from './bundles-data';
+import { bundlePartsTotalCents, bundleSetPriceCents } from '@wizeworks/commerce-schemas';
+import { partLineNote, partsNote, setPriceNote } from './bundle-price-words';
+import type { VariantChoice } from './bundles-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { ActionLabel } from '../../components/action-label';
 
@@ -82,7 +88,15 @@ function centsToDollars(cents: number | null): string {
 interface ComponentDraft {
   variantId: string;
   label: string;
+  /** "M · Moss". EMPTY for a product that comes one way, which is a real
+   *  answer — a silk scarf has no version to name. */
+  version: string;
   sku: string;
+  /** Carried on the draft because the form PRICES the set. It arrives with the
+   *  variant from the picker and again from the server on reload, and used to
+   *  be thrown away at both doors. */
+  priceCents: number;
+  currency: string;
   defaultQuantity: number;
   isRequired: boolean;
   isSwappable: boolean;
@@ -121,7 +135,10 @@ function toDraft(bundle: BundleDetail): Draft {
     components: bundle.components.map((c) => ({
       variantId: c.variantId,
       label: c.productTitle,
+      version: c.variantVersion,
       sku: c.variantSku,
+      priceCents: c.priceCents,
+      currency: c.currency,
       defaultQuantity: c.defaultQuantity,
       isRequired: c.isRequired,
       isSwappable: c.isSwappable,
@@ -317,28 +334,52 @@ function BundleEditor({
     });
   };
 
-  const addComponent = (variant: {
-    id: string;
-    productTitle: string;
-    title: string | null;
-    sku: string;
-    isDefault: boolean;
-  }) => {
+  // Everything the picker knew, kept. It used to take five of a variant's
+  // fields and drop the rest on the doorstep: the PRICE, which this form then
+  // asked her to price a set without, and the option values, which it replaced
+  // with the raw SKU. `versionOf` is the picker's own function, so the row she
+  // picks and the row she gets now say the same words.
+  const addComponent = (variant: VariantChoice) => {
     set('components', [
       ...draft.components,
       {
         variantId: variant.id,
-        label:
-          variant.isDefault || !variant.title
-            ? variant.productTitle
-            : `${variant.productTitle} (${variant.title})`,
+        label: variant.productTitle,
+        version: versionOf(variant),
         sku: variant.sku,
+        priceCents: variant.priceCents,
+        currency: variant.currency,
         defaultQuantity: 1,
         isRequired: true,
         isSwappable: false,
       },
     ]);
   };
+
+  /* ── The money, which is the whole question this form asks ────────────── */
+
+  const partsCents = bundlePartsTotalCents(
+    draft.components.map((c) => ({ priceCents: c.priceCents, quantity: c.defaultQuantity }))
+  );
+  const setCents = bundleSetPriceCents({
+    pricingMode: draft.pricingMode,
+    partsTotalCents: partsCents,
+    fixedPriceCents: dollarsToCents(draft.fixedPriceDollars) ?? null,
+    percentOffSum: draft.percentOffSum.trim() === '' ? null : Number(draft.percentOffSum),
+  });
+  // The currency of the parts. A bundle cannot mix them — the pricing pipeline
+  // rejects a line whose variant currency differs from the request's — so the
+  // first part's is the set's.
+  const currency = draft.components[0]?.currency ?? 'USD';
+  const money = (cents: number) => formatCents(cents, currency);
+  const parts = partsNote(draft.components.length, partsCents, money);
+  const price = setPriceNote({
+    pricingMode: draft.pricingMode,
+    partCount: draft.components.length,
+    partsCents,
+    setCents,
+    money,
+  });
 
   return (
     <div className={PANE_SHELL}>
@@ -447,8 +488,22 @@ function BundleEditor({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex min-w-0 flex-col">
                         <Text className="font-medium">{component.label}</Text>
-                        <Text className="text-sm">{component.sku}</Text>
+                        {/* The version, then the code. It was the code alone,
+                            so a row she picked as "M · Moss" came back as
+                            ASH-OVERSHIRT-M-MOSS and she had to read a SKU to
+                            know which size was in her gift set. */}
+                        <Text className="text-sm">
+                          {component.version ? `${component.version} · ` : ''}
+                          {component.sku}
+                        </Text>
                       </div>
+                      {/* What this part contributes. It is the number the whole
+                          form is about and it was dropped the instant the part
+                          was added, one line below a picker that had just
+                          printed it. */}
+                      <Text className="ms-auto shrink-0 text-sm tabular-nums">
+                        {partLineNote(component.priceCents, component.defaultQuantity, money)}
+                      </Text>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -539,6 +594,15 @@ function BundleEditor({
               </ul>
             )}
 
+            {/* What the parts come to. The sentence under "Add up the parts"
+                three cards down says the set costs exactly this and has never
+                once said the figure. */}
+            {!parts.isPrompt ? (
+              <Text className="border-base-300 border-t pt-3 font-medium tabular-nums">
+                {parts.text}
+              </Text>
+            ) : null}
+
             <div className="border-base-300 border-t pt-3">
               <VariantPicker
                 onPick={addComponent}
@@ -593,6 +657,7 @@ function BundleEditor({
                   render={
                     <div className="flex max-w-[10rem] items-center gap-2">
                       <Input
+                        aria-label="Discount off the parts"
                         color={percentError && touched ? 'error' : 'module'}
                         type="number"
                         min={0}
@@ -614,10 +679,22 @@ function BundleEditor({
                   The set costs this much less than buying the parts on their own.
                 </FieldDescription>
               </Field>
+            ) : null}
+
+            {/* The answer. All three modes had a sentence about the parts'
+                total and not one of them printed it — the flat-price one went
+                furthest and named the number in the act of withholding it
+                ("whatever the parts add up to"). The arithmetic here is the
+                SAME function the pricing pipeline charges the shopper with, so
+                this figure and the till's cannot drift. */}
+            {price.tone === 'warning' ? (
+              <Alert color="warning">
+                <AlertContent>
+                  <AlertDescription>{price.text}</AlertDescription>
+                </AlertContent>
+              </Alert>
             ) : (
-              <Text className="text-sm">
-                The set costs whatever its parts add up to at their normal prices.
-              </Text>
+              <Text className="font-medium tabular-nums">{price.text}</Text>
             )}
           </FormSection>
 

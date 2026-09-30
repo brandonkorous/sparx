@@ -26,6 +26,7 @@ import {
 } from '../../lib/invoice-status';
 import { paymentMethodLabels } from '../../lib/payment-methods';
 import type { PaymentTerms } from './accounts-data';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -78,7 +79,7 @@ export const PAID_METHOD_LABELS: Record<PaidMethod, string> = paymentMethodLabel
 ] as const satisfies readonly PaidMethod[]);
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function formatDate(value: string | null | undefined): string {
@@ -145,7 +146,9 @@ export function useInvalidateInvoices() {
 
 export interface CreateInvoiceInput {
   accountId: string;
-  invoiceNumber: string;
+  /** Left out, the issuing site's own run numbers it — the way every other
+   *  invoice on the platform is numbered. */
+  invoiceNumber?: string;
   amountCents: number;
   dueAt: string; // ISO datetime
   notes?: string | null;
@@ -157,7 +160,7 @@ export function useCreateInvoice() {
     mutationFn: (input: CreateInvoiceInput) =>
       api.post<InvoiceRow>('/v1/b2b/invoices', {
         accountId: input.accountId,
-        invoiceNumber: input.invoiceNumber,
+        ...(input.invoiceNumber ? { invoiceNumber: input.invoiceNumber } : {}),
         amountCents: input.amountCents,
         dueAt: input.dueAt,
         ...(input.notes ? { notes: input.notes } : {}),

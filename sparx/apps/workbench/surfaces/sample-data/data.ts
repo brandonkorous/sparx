@@ -11,12 +11,19 @@
 // single real record.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import type { WorkbenchModule } from '../../components/module-scope';
+import { WORKBENCH_MODULES, type WorkbenchModule } from '../../components/module-scope';
 
 import { api } from '../../lib/api/client';
 
 /** Per-entity counts — mirrors `SampleDataCounts` from @wizeworks/db. */
 export interface SampleDataCounts {
+  /** Sample LOCATIONS still in the account. Durable, unlike every other field
+   *  here: Remove leaves them standing, because an owner may have renamed one and
+   *  counted real stock into it. So they are shown apart from the removable
+   *  figures and NEVER counted in anything that says "removes" (issue 174). The
+   *  server's own `loaded` flag excludes them for the same reason, which is why
+   *  this can be above zero while `loaded` is false. */
+  warehouses: number;
   products: number;
   collections: number;
   categories: number;
@@ -90,67 +97,32 @@ export function useClearSampleData() {
   });
 }
 
-/** Plain-language label + hue for each module a pack fills. */
-const MODULE_META: Record<string, { label: string; module: WorkbenchModule }> = {
-  commerce: { label: 'Online store', module: 'commerce' },
-  crm: { label: 'Customers', module: 'crm' },
-  cms: { label: 'Content', module: 'cms' },
-  inventory: { label: 'Stock', module: 'inventory' },
-  scheduling: { label: 'Bookings', module: 'scheduling' },
-  b2b: { label: 'Wholesale', module: 'b2b' },
-  invoicing: { label: 'Invoicing', module: 'invoicing' },
-  ai: { label: 'AI', module: 'ai' },
-};
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`. This file kept its own, and so did five
+ * others; measured 2026-09-25, `commerce` alone had SIX names across the two
+ * consoles — Sell (the Piggles rail), Selling, Online store, Online stores,
+ * Store, and the raw slug — and a shop owner could meet four of them on four
+ * screens. Same defect as one order reading four ways on four screens (issue
+ * 260), one level up: the apps themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
-export function moduleLabel(slug: string): string {
-  return MODULE_META[slug]?.label ?? slug;
-}
-
+/** The hue for a module slug. The slug IS the hue for every registered module;
+ *  anything the registry does not know falls back to the platform's. */
 export function moduleHue(slug: string): WorkbenchModule {
-  return MODULE_META[slug]?.module ?? 'platform';
+  return (WORKBENCH_MODULES as readonly string[]).includes(slug)
+    ? (slug as WorkbenchModule)
+    : 'platform';
 }
 
-/** Count keys in the order they read on screen, with plain-language labels.
- *  Ordered so the headline entities (products, orders, customers) come first. */
-export const COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string }[] = [
-  { key: 'products', label: 'Products' },
-  { key: 'orders', label: 'Orders' },
-  { key: 'customers', label: 'Customers' },
-  { key: 'billingDocuments', label: 'Invoices & quotes' },
-  { key: 'bookings', label: 'Bookings' },
-  { key: 'deals', label: 'Sales leads' },
-  { key: 'tickets', label: 'Support requests' },
-  { key: 'articles', label: 'Articles' },
-  { key: 'reviews', label: 'Reviews' },
-  { key: 'questions', label: 'Questions' },
-  { key: 'returns', label: 'Returns' },
-  { key: 'collections', label: 'Collections' },
-  { key: 'categories', label: 'Categories' },
-  { key: 'bundles', label: 'Bundles' },
-  { key: 'movements', label: 'Stock movements' },
-  { key: 'images', label: 'Images' },
-  { key: 'aiPrompts', label: 'AI prompts' },
-  { key: 'toolCalls', label: 'AI activity' },
-];
-
-export function countsTotal(counts: SampleDataCounts): number {
-  return COUNT_LABELS.reduce((sum, { key }) => sum + (counts[key] || 0), 0);
-}
-
-/** A short human sentence of the biggest few things in a count set, for confirm
- *  copy — e.g. "24 products, 10 orders, 8 customers and 30 more records". */
-export function summarizeCounts(counts: SampleDataCounts): string {
-  const present = COUNT_LABELS.map(({ key, label }) => ({ n: counts[key] || 0, label })).filter(
-    (entry) => entry.n > 0
-  );
-  if (present.length === 0) return 'no records';
-
-  const head = present.slice(0, 3);
-  const tailTotal = present.slice(3).reduce((sum, entry) => sum + entry.n, 0);
-
-  const parts = head.map((entry) => `${String(entry.n)} ${entry.label.toLowerCase()}`);
-  const phrase = parts.join(', ');
-  return tailTotal > 0
-    ? `${phrase} and ${String(tailTotal)} more ${tailTotal === 1 ? 'record' : 'records'}`
-    : phrase;
-}
+// The count labels and the sentences built from them live in `counts.ts`, apart
+// from the hooks, so a test can load them without the JSX this file pulls in.
+export {
+  COUNT_LABELS,
+  DURABLE_COUNT_LABELS,
+  countsTotal,
+  durableTotal,
+  summarizeCounts,
+} from './counts';

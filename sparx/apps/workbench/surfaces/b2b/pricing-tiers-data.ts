@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -70,7 +71,7 @@ export function discountSummary(row: {
 }
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */

@@ -50,6 +50,7 @@ import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage, useStockLocations } from './data';
+import { ItemName } from './item-name';
 import {
   stockGridCsvPath,
   useSaveStockGrid,
@@ -305,7 +306,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Stock grid controls"
+        label="Edit stock in a grid controls"
         primary={
           <DownloadButton
             className="ml-auto"
@@ -337,7 +338,6 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
               onChange={(event) => {
                 setWarehouseId(event.target.value);
               }}
-              className="max-w-56"
             >
               <option value="">Every location</option>
               {activeLocations.map((location) => (
@@ -549,25 +549,30 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                     </td>
                     <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
-                        {/* The CODE wraps and the TITLE truncates, which is the
-                            opposite way round from uncosted-row.tsx, on purpose.
-                            A grid of stock is mostly variants: those 74 rows
-                            carry 9 distinct titles between them, eight sizes and
-                            colors of one overshirt sharing "The Ash Overshirt",
-                            so the title does not tell the rows apart and the
-                            code is the only thing that does. Worse, a code is
-                            distinguished by its TAIL — ASH-OVERSHIRT-L-INK
-                            against ASH-OVERSHIRT-XL-MOSS — and truncation cuts
-                            the tail, so a clipped code is not a shortened name,
-                            it is another row's name. Typing a count into the
-                            wrong size is the whole cost of getting this wrong.
+                        {/* This cell used to lead with the CODE, and the note
+                            here argued for it: a grid of stock is mostly
+                            variants, those 74 rows carry 9 distinct titles
+                            between them, so "The Ash Overshirt" twelve times
+                            over tells nobody which row is which.
 
-                            `break-all` and not `break-words`: it is the house
-                            treatment for a product code (stock-item.tsx,
-                            order-detail-lines.tsx) and it keeps a code with no
-                            hyphens in it from pushing the column wider. */}
-                        <span className="font-mono text-sm break-all">{row.sku}</span>
-                        <span className="truncate text-sm">{row.title}</span>
+                            That reading was right and the conclusion was wrong.
+                            The thing that tells the rows apart is the VERSION —
+                            "M / Bone" — and it was in the database all along, as
+                            option values nobody asked for. Promoting the code
+                            instead left a shop owner decoding THE-ASH-OVER-M-
+                            BONE to find out she was looking at a medium.
+
+                            `wrapCode` keeps the rest of the old note's point,
+                            which still stands: a code is distinguished by its
+                            TAIL, so a truncated code is not a shortened name, it
+                            is another row's name. Typing a count into the wrong
+                            size is the whole cost of getting this wrong. */}
+                        <ItemName
+                          productTitle={row.productTitle}
+                          variantName={row.variantName}
+                          code={row.sku}
+                          wrapCode
+                        />
                         {failure ? <span className="text-danger text-sm">{failure}</span> : null}
                       </span>
                     </td>

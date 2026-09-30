@@ -3,11 +3,14 @@
 import { Eye, FileText, GitBranch, LayoutTemplate, Receipt } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { InvoiceEditorSurface } from '../../../surfaces/invoicing/invoice-editor';
+import { newDocumentTitle } from '../../../surfaces/invoicing/document-words';
 import { InvoiceListSurface } from '../../../surfaces/invoicing/invoice-list';
 import { InvoicePreviewSurface } from '../../../surfaces/invoicing/invoice-preview';
+import { TemplateEditorSurface } from '../../../surfaces/invoicing/template-editor';
+import { TemplatePreviewSurface } from '../../../surfaces/invoicing/template-preview';
+import { TemplatesListSurface } from '../../../surfaces/invoicing/templates-list';
 import { WorkflowEditorSurface } from '../../../surfaces/invoicing/workflow-editor';
 import { WorkflowsListSurface } from '../../../surfaces/invoicing/workflows-list';
-import { stub } from './stub';
 
 export const INVOICING_SURFACES: SurfaceDefinition[] = [
   {
@@ -23,7 +26,13 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'invoicing.invoice.edit',
-    title: (params) => (params.id === 'new' ? 'New invoice' : 'Invoice'),
+    // A new document is named after the KIND the caller asked for, so the tab
+    // that opens from "Price up a quote" says quote and not invoice. Same
+    // editor, same registry row, different errand (issue 761).
+    title: (params) =>
+      params.id === 'new'
+        ? newDocumentTitle(typeof params.workflow === 'string' ? params.workflow : null)
+        : 'Invoice',
     module: 'invoicing',
     icon: FileText,
     component: InvoiceEditorSurface,
@@ -65,14 +74,35 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     // mind isn't a thing anyone wants.
     listed: false,
   },
-  stub({
+  {
     key: 'invoicing.templates',
     title: 'Print templates',
     module: 'invoicing',
     icon: LayoutTemplate,
+    component: TemplatesListSurface,
     section: 'Setup',
     order: 11,
     keywords: ['pdf', 'layout', 'letterhead', 'branding'],
-    body: 'Print templates control what an invoice looks like when a customer opens or prints it.',
-  }),
+    createSurface: 'invoicing.template.edit',
+    createLabel: 'New template',
+  },
+  {
+    key: 'invoicing.template.edit',
+    title: (params) => (params.id === 'new' ? 'New template' : 'Print template'),
+    module: 'invoicing',
+    icon: LayoutTemplate,
+    component: TemplateEditorSurface,
+    // Same reasoning as the invoice and workflow editors: reachable from the
+    // list and the nav's `+`, never the launcher.
+    listed: false,
+  },
+  {
+    key: 'invoicing.template.preview',
+    title: 'Preview',
+    module: 'invoicing',
+    icon: Eye,
+    component: TemplatePreviewSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
 ];

@@ -26,6 +26,29 @@ export interface CustomerLite {
   lastName: string | null;
   email: string | null;
   company: string | null;
+  /** Both only ever set by the customer SEARCH, which reads whole customer
+   *  rows. They are what separates two people with the same name — see
+   *  `whichPerson`. The balances list selects neither, so both are optional. */
+  phone?: string | null;
+  createdAt?: string | null;
+}
+
+/** The raw shape `/v1/crm/customers` returns: whole `Customer` rows, so the
+ *  business name arrives as `companyName`.
+ *
+ *  The balances endpoint renames it to `company` on the way out and this one
+ *  does not, and BOTH fed `CustomerLite` — so `customerName`'s company fallback
+ *  was dead on every search result, and a trade buyer with no first name read
+ *  as "A customer". One type, two wire shapes, one of them never taught the
+ *  rename. [[feedback_a_fix_leaves_its_neighbour_behind]] */
+interface CustomerSearchRow {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  companyName: string | null;
+  phone: string | null;
+  createdAt: string | null;
 }
 
 export interface AccountCreditRow {
@@ -144,15 +167,33 @@ export function useAccountCreditLedger(customerId: string | null, currency = 'US
   });
 }
 
-/** Search every customer — used to grant credit to someone who has none yet. */
+/** Search every customer — used to grant credit to someone who has none yet.
+ *
+ *  Maps the wire row to `CustomerLite` here rather than letting the raw shape
+ *  through under that name: the pane must be handed ONE shape whichever
+ *  endpoint filled it, or a rename on one side silently blanks a field on the
+ *  other. */
 export function useCustomerSearch(search: string) {
   return useQuery({
     queryKey: ['commerce', 'customers', 'search', { q: search }] as const,
-    queryFn: () =>
-      api.list<CustomerLite>('/v1/crm/customers', {
+    queryFn: async () => {
+      const page = await api.list<CustomerSearchRow>('/v1/crm/customers', {
         ...(search.trim() ? { q: search.trim() } : {}),
         take: 20,
-      }),
+      });
+      return {
+        ...page,
+        items: page.items.map((row): CustomerLite => ({
+          id: row.id,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          email: row.email,
+          company: row.companyName,
+          phone: row.phone,
+          createdAt: row.createdAt,
+        })),
+      };
+    },
     enabled: search.trim().length > 0,
     staleTime: 30_000,
   });
@@ -176,6 +217,37 @@ export function useGrantAccountCredit() {
   return useMutation({
     mutationFn: (input: GrantCreditInput) =>
       api.post<{ newBalanceCents: number }>('/v1/commerce/account-credit/grant', input),
+    onSuccess: (_result, input) => {
+      void queryClient.invalidateQueries({ queryKey: accountCreditKeys.all });
+      void queryClient.invalidateQueries({
+        queryKey: accountCreditKeys.ledger(input.customerId, input.currency),
+      });
+    },
+  });
+}
+
+/** Taking credit back off an account. `amountCents` is POSITIVE and says how
+ *  much to REMOVE; the ledger line the server writes is negative.
+ *
+ *  Its own endpoint, not a negative grant. Giving money and correcting a
+ *  mistake are two intentions with two audit trails, and on a field whose
+ *  meaning flips with one leading character a sign is far too easy to send by
+ *  accident. */
+export interface TakeBackCreditInput {
+  customerId: string;
+  amountCents: number;
+  currency: string;
+  note?: string;
+}
+
+export function useTakeBackAccountCredit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: TakeBackCreditInput) =>
+      api.post<{ newBalanceCents: number; takenCents: number }>(
+        '/v1/commerce/account-credit/take-back',
+        input
+      ),
     onSuccess: (_result, input) => {
       void queryClient.invalidateQueries({ queryKey: accountCreditKeys.all });
       void queryClient.invalidateQueries({

@@ -209,7 +209,7 @@ export function EngagementComposer({
           if (!result.placed) {
             toast.add({
               title: 'Could not place the call',
-              description: result.error ?? 'Your phone system refused it. Try dialling directly.',
+              description: result.error ?? 'Your phone system refused it. Try dialing directly.',
               type: 'error',
             });
             return;
@@ -363,7 +363,7 @@ export function EngagementComposer({
             <DialogTitle>{COPY[mode].title}</DialogTitle>
             <DialogDescription>{COPY[mode].description}</DialogDescription>
 
-            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
               {mode === 'note' ? (
                 <Field>
                   <FieldLabel>What is worth remembering</FieldLabel>

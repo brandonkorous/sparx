@@ -25,6 +25,8 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
+import { customerKeys } from '../crm/customers-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -138,7 +140,7 @@ export const CONTACT_ROLE_LABELS: Record<ContactRole, string> = {
 };
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -200,6 +202,28 @@ export function useInvalidateAccounts() {
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: accountKeys.all });
     if (id) void queryClient.invalidateQueries({ queryKey: accountKeys.detail(id) });
+  };
+}
+
+/**
+ * Adding or removing a member writes on the CUSTOMER as well, so the customer's
+ * own pane has to hear about it.
+ *
+ * The membership and `Customer.companyId` are kept in step by
+ * `trade-membership.ts` in one transaction (issue 744), which fixed the DATA.
+ * It does not fix the SCREEN: a customer pane open beside this one went on
+ * naming a business it had just been taken off, until somebody pressed refresh.
+ * A pane showing a fact that another pane just changed is the workbench's own
+ * version of the same disagreement.
+ */
+export function useInvalidateMembership() {
+  const queryClient = useQueryClient();
+  const invalidateAccounts = useInvalidateAccounts();
+  return (accountId: string) => {
+    invalidateAccounts(accountId);
+    // The whole root: the pointer shows on the customer's rail, in the list's
+    // company column, and in every filtered window of it.
+    void queryClient.invalidateQueries({ queryKey: customerKeys.all });
   };
 }
 
@@ -289,7 +313,7 @@ export function useDeleteAccount(id: string) {
 }
 
 export function useAddContact(id: string) {
-  const invalidate = useInvalidateAccounts();
+  const invalidate = useInvalidateMembership();
   return useMutation({
     mutationFn: (input: { customerId: string; role: ContactRole }) =>
       api.post(`/v1/crm/b2b-accounts/${id}/contacts`, input),
@@ -300,7 +324,7 @@ export function useAddContact(id: string) {
 }
 
 export function useUpdateContact(id: string) {
-  const invalidate = useInvalidateAccounts();
+  const invalidate = useInvalidateMembership();
   return useMutation({
     mutationFn: (input: { contactId: string; role?: ContactRole; isActive?: boolean }) =>
       api.patch(`/v1/crm/b2b-accounts/${id}/contacts/${input.contactId}`, {

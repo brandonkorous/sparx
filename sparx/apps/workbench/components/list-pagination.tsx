@@ -115,7 +115,10 @@ export function ListPagination({
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-1 py-2">
-      <Text className="text-sm">{range}</Text>
+      {/* `shrink-0`: when the row runs out of width it WRAPS. Left shrinkable,
+          the count was the thing that gave way instead — "Showin" — which is
+          the same clipping one control along. */}
+      <Text className="shrink-0 text-sm whitespace-nowrap">{range}</Text>
 
       {moreAvailable && canLoadMore ? (
         <Button color="module" variant="soft" size="sm" disabled={busy} onClick={onLoadMore}>
@@ -123,7 +126,25 @@ export function ListPagination({
         </Button>
       ) : null}
 
-      <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+      {/* KEEPS OUT OF THE CORNER. The workspace tools — the size glass, and the
+          tidy menu in windows mode — float at the frame's bottom-right, which is
+          exactly where a pane docked against that edge puts this row. Measured
+          2026-09-22: they sat on 57px of the 134px rows-per-page picker,
+          clipping it to "50 per pa" and hiding the arrow you open it with
+          (issue 772).
+
+          Keyed on the CANVAS rather than on a width. A container query cannot
+          answer it — a 600px pane docked right collides and a 900px pane docked
+          left does not — and the compact shell has no floating tools at all, so
+          a phone would have paid for room nothing was standing in. The row
+          wraps rather than squashing, so the cost of the reserved space on a
+          narrow pane is a second line, not a clipped control. */}
+      {/* `grow basis-auto`, not `flex-1`. `flex-1` sets a zero basis, so this
+          cluster never asks for the room it needs — it just shrank to whatever
+          was left and pushed its own contents out of the pane. With its natural
+          width as the basis it drops to a second line instead, which is what
+          `flex-wrap` on the row was always for. */}
+      <div className="flex grow basis-auto flex-wrap items-center justify-end gap-2 [[data-canvas-tools]_&]:pe-36">
         {/* Cursor mode: step through time instead of jumping to a page number.
             Both controls always render once the feed is walkable, disabled at
             the ends — a button that appears and vanishes as you move makes the
@@ -176,7 +197,11 @@ export function ListPagination({
             still renders when there are pages, so somebody who has stepped past
             the end can still step back. */}
         {shown > 0 ? (
-          <label className="flex items-center gap-1.5">
+          // `shrink-0`: the row WRAPS when it runs out of width, it does not
+          // squash. Without it the reserved corner above simply came out of this
+          // control instead, and "50 per page" was crushed to "5(" — a narrower
+          // version of the clipping it exists to prevent.
+          <label className="flex shrink-0 items-center gap-1.5">
             <span className="sr-only">Rows per page</span>
             <NativeSelect
               size="sm"

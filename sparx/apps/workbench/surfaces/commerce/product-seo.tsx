@@ -41,6 +41,7 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
+import { plainText } from '@wizeworks/commerce-schemas';
 import { ImageOff } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { FormSection } from '../../components/form-section';
@@ -94,14 +95,17 @@ function buildPatch(draft: Draft, saved: Draft): ProductPatch {
   return patch;
 }
 
-/** The first sentence or so of the description, with any HTML stripped — what a
- *  search engine would show if no summary is written. */
+/** The first sentence or so of the description — what a search engine would show
+ *  if no summary is written.
+ *
+ *  `plainText` is the shared rule, not a local strip. The version that lived here
+ *  was `/<[^>]*>/g`, which matches from a `<` to the next `>` wherever they fall:
+ *  "fits anything < 3 inches, weighs > 2oz" lost the words between them, and an
+ *  `&amp;` in the row was shown to her as `&amp;` (issue 848).
+ */
 function fromDescription(description: string | null): string {
   if (!description) return '';
-  const plain = description
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const plain = plainText(description).replace(/\s+/g, ' ').trim();
   if (plain.length <= DESCRIPTION_COMFORT) return plain;
   return `${plain.slice(0, DESCRIPTION_COMFORT).trimEnd()}…`;
 }

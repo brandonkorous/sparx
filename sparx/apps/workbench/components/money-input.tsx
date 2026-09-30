@@ -37,7 +37,18 @@
 
 import { useEffect, useState } from 'react';
 import { Input } from '@wizeworks/silicaui-react';
-import { readMoney, settleMoney } from '@/lib/read-money';
+import {
+  optionalMoneyText,
+  readCents,
+  readMoney,
+  settleMoney,
+  type CentsReading,
+} from '@/lib/read-money';
+
+// Re-exported so a surface takes the field and the text it holds from one
+// place. The function itself lives in the .ts module: a .ts test cannot import
+// a .tsx file, and the guard on this rule is a .ts test.
+export { moneyText } from '@/lib/read-money';
 
 interface MoneyInputProps {
   value: number;
@@ -78,8 +89,12 @@ export function MoneyInput({
       disabled={disabled}
       className={`text-right tabular-nums ${className ?? ''}`}
       value={text}
-      onFocus={() => {
+      onFocus={(event) => {
         setEditing(true);
+        // SELECT what is there. The field opens holding a real "0.00", so a caret
+        // dropped in front of it turns 9.00 into 9.000.00 — a delivery charge, or a
+        // price, a thousand times over (issues 169 and 205).
+        event.target.select();
       }}
       onChange={(event) => {
         setText(event.target.value);
@@ -167,4 +182,86 @@ export function moneyCents(text: string): number | null {
   if (text.trim() === '') return 0;
   const { amount } = readMoney(text, { allowZero: true });
   return amount === null ? null : Math.round(amount * 100);
+}
+
+/**
+ * A money field for an owner that stores CENTS rather than the typed text.
+ *
+ * `MoneyTextInput` above is CONTROLLED: it draws exactly the `text` it is
+ * handed, and every one of its callers holds that text verbatim — except the
+ * two build editors, which held cents and re-derived the text on every render.
+ * That turns each keystroke into a reformat, which is precisely what the header
+ * of this file warns against. Typing "18" into "adds to price" went "1.00"
+ * after the first digit, then "1.008", and settled as **1.01**: a monogram
+ * priced at eighteen dollars was saved at one dollar and a cent, with the wrong
+ * number showing on screen and nothing said (issue 792).
+ *
+ * So the typed text lives HERE, and follows the stored amount only when that
+ * amount moves for some other reason and the field is not being typed into —
+ * the same rule `MoneyInput` above follows, for the same reason.
+ *
+ * Blank means NOTHING SET, not zero. An answer that adds nothing to the price
+ * is a real answer and is 0; an answer nobody has priced is neither.
+ */
+export function MoneyCentsInput({
+  cents,
+  disabled,
+  className,
+  size = 'md',
+  color,
+  placeholder = '0.00',
+  onCentsChange,
+  ...rest
+}: {
+  /** The stored amount, or undefined when nothing is set. */
+  cents: number | undefined;
+  disabled?: boolean;
+  'aria-label'?: string;
+  className?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  color?: 'neutral' | 'primary' | 'module' | 'error';
+  placeholder?: string;
+  /** Both readings at once. A caller that ignores `problem` stores the amount
+   *  that was already there while showing text that does not match it, so it is
+   *  not optional in the type. */
+  onCentsChange: (reading: CentsReading) => void;
+}) {
+  const [text, setText] = useState(() => optionalMoneyText(cents));
+  const [editing, setEditing] = useState(false);
+
+  // Follow an amount that moved elsewhere — a record loading, a reset — but
+  // never while this field has focus, or the reformat lands mid-word.
+  useEffect(() => {
+    if (!editing) setText(optionalMoneyText(cents));
+  }, [cents, editing]);
+
+  return (
+    <Input
+      {...rest}
+      size={size}
+      {...(color ? { color } : {})}
+      type="text"
+      inputMode="decimal"
+      disabled={disabled}
+      placeholder={placeholder}
+      className={`tabular-nums ${className ?? ''}`}
+      value={text}
+      onFocus={(event) => {
+        setEditing(true);
+        // SELECT what is there, so a caret dropped in front of a settled "9.00"
+        // cannot make it "1.009.00" (issues 169 and 205).
+        event.target.select();
+      }}
+      onChange={(event) => {
+        setText(event.target.value);
+        onCentsChange(readCents(event.target.value, cents));
+      }}
+      onBlur={() => {
+        setEditing(false);
+        const settled = settleMoney(text, { allowZero: true });
+        setText(settled);
+        onCentsChange(readCents(settled, cents));
+      }}
+    />
+  );
 }

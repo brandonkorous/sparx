@@ -40,7 +40,6 @@ import {
   Ban,
   CheckCircle2,
   MessageSquare,
-  MoreHorizontal,
   RotateCcw,
   Send,
   Sparkles,
@@ -53,7 +52,17 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useTeamRoster } from '../../lib/api/team';
 import { useViewer, useSites } from '../../lib/api/shell-data';
 import { describeAgo } from '../../lib/api/activity';
+import { useReachableModules } from '../../lib/surfaces/use-visible-nav';
+import { ModuleScope } from '../../components/module-scope';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import {
+  formatDate as formatOrderDate,
+  formatMoney as formatOrderMoney,
+  shippingState,
+  useOrders,
+} from '../commerce/data';
+import { targetFor } from '../commerce/orders-list-filters';
+import { hasHistory, whoBadge, whoNote } from './who-line';
 import {
   chatErrorMessage,
   conversationName,
@@ -73,19 +82,29 @@ import {
   type ConversationDetail,
 } from './data';
 import { emitTyping, useChatLive, useTypingIndicator } from './live';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 /* ── The "who you're talking to" card ─────────────────────────────────────── */
 
 function ContextCard({
   conversation,
   siteName,
+  ctx,
 }: {
   conversation: ConversationDetail;
   siteName: string | null;
+  ctx: SurfaceContext;
 }) {
   const context = useCustomerContext(conversation.id);
+  const reachable = useReachableModules();
   const name = conversationName(conversation);
   const data = context.data;
+  // `null` while the module list loads, which every caller reads as "show
+  // everything" rather than blanking the screen group by group.
+  const sells = reachable === null || reachable.has('commerce');
+  const match = data?.match ?? 'none';
+  const badge = whoBadge(match);
+  const note = whoNote(match, name, data?.name ?? null);
 
   return (
     <section className="card bg-base-100 flex flex-col gap-2 p-3">
@@ -93,16 +112,22 @@ function ContextCard({
         <Text as="span" className="text-base font-semibold">
           {name}
         </Text>
-        {data?.linked ? (
-          <Badge color="module" variant="soft" size="sm">
-            Customer
+        {/* Three states, and the middle one is the point: the email the
+            visitor typed matches somebody this shop knows, which is a strong
+            hint and not proof. A colorless badge for the unknown state rather
+            than `neutral`, which is not ours to choose. */}
+        {badge.color === null ? (
+          <Badge variant={badge.variant} size="sm">
+            {badge.label}
           </Badge>
         ) : (
-          <Badge color="neutral" variant="outline" size="sm">
-            Visitor
+          <Badge color={badge.color} variant={badge.variant} size="sm">
+            {badge.label}
           </Badge>
         )}
       </div>
+
+      {note !== null ? <Text className="text-sm">{note}</Text> : null}
 
       <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-sm">
         {(data?.email ?? conversation.customerEmail) ? (
@@ -116,9 +141,11 @@ function ContextCard({
         </span>
       </div>
 
-      {/* Only a linked customer has a spend history worth pulling up — an
-          anonymous visitor's numbers would all be zero and say nothing. */}
-      {data?.linked ? (
+      {/* Only somebody this shop knows has a spend history worth pulling up.
+          An anonymous visitor's numbers would all be zero and say nothing.
+          `hasHistory` is held against the badge by a test, so a history can
+          never appear under a badge saying they have never been here. */}
+      {hasHistory(match) && data ? (
         <div className="border-base-300 flex flex-wrap gap-x-6 gap-y-1 border-t pt-2 text-sm">
           <span>
             <span className="font-semibold tabular-nums">{data.orderCount}</span>{' '}
@@ -131,7 +158,86 @@ function ContextCard({
           {data.lastOrderAt ? <span>Last ordered {describeAgo(data.lastOrderAt)}</span> : null}
         </div>
       ) : null}
+
+      {hasHistory(match) && data?.customerId != null && sells ? (
+        <RecentOrders ctx={ctx} customerId={data.customerId} />
+      ) : null}
     </section>
+  );
+}
+
+/**
+ * WHAT THEY BOUGHT, WHICH IS USUALLY WHAT THE CHAT IS ABOUT.
+ *
+ * The server used to send a thin five-field `recentOrders` array of its own for
+ * this panel, and nothing ever drew it: a five-row query on every panel load
+ * whose only reader threw it away (issue 864).
+ * [[feedback_fetched_but_never_rendered]]
+ *
+ * Replaced rather than rendered, because that array could not say the one thing
+ * a shopper is asking about. It carried the stored status word, and "fulfilled"
+ * reads as finished to anybody who has not worked in commerce when it means the
+ * opposite. So this reuses the Commerce order data layer whole instead, which is
+ * the rule the CRM's own orders tab already follows: the delivery state reads in
+ * the words `shippingState` was written to keep honest, a collection order does
+ * not claim to be with a carrier, and a click opens the real order.
+ */
+function RecentOrders({ ctx, customerId }: { ctx: SurfaceContext; customerId: string }) {
+  const { data, isPending, isError } = useOrders({
+    customerId,
+    // Canceled orders left out, because this list sits directly beneath the
+    // lifetime figures and those do not count them either.
+    countedOnly: true,
+    sortBy: 'placedAt',
+    order: 'desc',
+    take: 3,
+    skip: 0,
+  });
+  const rows = data?.items ?? [];
+
+  if (isError) {
+    return (
+      <div className="border-base-300 border-t pt-2">
+        <Text className="text-warning text-sm">Could not load their orders just now.</Text>
+      </div>
+    );
+  }
+  if (isPending || rows.length === 0) return null;
+
+  return (
+    // Selling's data, so the rows read as Selling: the Commerce hue on the badges.
+    <ModuleScope module="commerce">
+      <div className="border-base-300 flex flex-col gap-1 border-t pt-2">
+        <Text as="span" className="text-sm font-semibold">
+          {rows.length === 1 ? 'Their last order' : `Their last ${rows.length} orders`}
+        </Text>
+        <ul className="flex flex-col">
+          {rows.map((row) => {
+            const state = shippingState(row);
+            return (
+              <li key={row.id}>
+                <button
+                  type="button"
+                  className="hover:bg-base-200 flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-md px-1.5 py-2 text-left"
+                  onClick={(event) => {
+                    ctx.open('commerce.order.detail', { id: row.id }, { target: targetFor(event) });
+                  }}
+                >
+                  <span className="font-mono text-sm">{row.orderNumber}</span>
+                  <Badge color={state.tone} variant="soft" size="sm">
+                    {state.label}
+                  </Badge>
+                  <span className="text-sm">{formatOrderDate(row.placedAt)}</span>
+                  <span className="ml-auto font-mono text-sm tabular-nums">
+                    {formatOrderMoney(row.total, row.currency)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </ModuleScope>
   );
 }
 
@@ -140,9 +246,12 @@ function ContextCard({
 function MessageBubble({
   message,
   customerName,
+  viewerId,
 }: {
   message: ChatMessage;
   customerName: string | null;
+  /** Who is reading, so their own reply says "You" rather than "Your team". */
+  viewerId: string | null;
 }) {
   const fromCustomer = message.senderType === 'customer';
   const isAi = message.senderType === 'ai' || message.aiGenerated;
@@ -156,7 +265,7 @@ function MessageBubble({
       >
         <div className="flex items-center gap-2">
           <Text as="span" className="text-sm font-semibold">
-            {senderLabel(message, customerName)}
+            {senderLabel(message, customerName, viewerId)}
           </Text>
           {isAi ? (
             <Badge color="info" variant="soft" size="sm">
@@ -305,7 +414,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
   useChatLive(id);
   const otherTyping = useTypingIndicator(id === '' ? undefined : id);
 
-  const { data, isPending, isError, refetch } = useConversation(id);
+  const { data, error, isPending, isError, refetch } = useConversation(id);
   const { data: sites } = useSites();
   const { members } = useTeamRoster();
   const { data: viewer } = useViewer();
@@ -364,25 +473,22 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (isError || !data) {
     return (
+      // `PaneLoadError`, not a hand-rolled Alert. This console already has the
+      // component and it owns two things this did not: it tells a MISSING
+      // conversation from an unreachable server (opening one that belongs to
+      // another business said "a problem reaching the server" over a Try again
+      // that fails every time), and it withholds the retry button when there is
+      // nothing to retry. [[feedback_one_outcome_two_causes]]
       <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <AlertContent>
-            <AlertTitle>Could not load this conversation</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. The conversation itself is unaffected.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="error"
-            variant="soft"
-            onClick={() => {
-              void refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
+        <PaneLoadError
+          title="Could not load this conversation"
+          error={error}
+          noun="conversation"
+          description="This is a problem reaching the server. The conversation itself is unaffected."
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       </div>
     );
   }
@@ -503,43 +609,34 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
                 Resolve
               </Button>
             )}
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  shape="square"
-                  aria-label="More actions"
-                >
-                  <MoreHorizontal className="size-4" aria-hidden />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {viewer?.userId && data.assignedToId !== viewer.userId ? (
-                  <DropdownMenuItem onClick={onAssignToMe}>
-                    <UserCheck className="size-4" aria-hidden />
-                    Assign to me
-                  </DropdownMenuItem>
-                ) : null}
-                {!isSpam ? (
-                  <DropdownMenuItem
-                    onClick={() => {
-                      void onMarkSpam();
-                    }}
-                  >
-                    <Ban className="size-4" aria-hidden />
-                    Mark as spam
-                  </DropdownMenuItem>
-                ) : null}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </>
         }
+        /* VALUES rather than an ellipsis menu. The trigger was a nameless glyph,
+           and it relocates into the overflow popover - where the hamburger
+           beside it already means "the rest of the controls", so one menu
+           opened another. As actions they arrive as labelled rows in the same
+           place. scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={[
+          ...(viewer?.userId && data.assignedToId !== viewer.userId
+            ? [{ label: 'Assign to me', icon: UserCheck, onClick: onAssignToMe }]
+            : []),
+          ...(isSpam
+            ? []
+            : [
+                {
+                  label: 'Mark as spam',
+                  icon: Ban,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void onMarkSpam();
+                  },
+                },
+              ]),
+        ]}
       />
 
       <div className="flex min-h-0 flex-1 flex-col gap-2">
-        <ContextCard conversation={data} siteName={siteName} />
+        <ContextCard conversation={data} siteName={siteName} ctx={ctx} />
 
         {/* Assigning lives here, beside the identity, rather than crowding the
             action bar — it is a property of the conversation, not a lifecycle
@@ -571,7 +668,12 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
             </li>
           ) : (
             data.messages.map((message) => (
-              <MessageBubble key={message.id} message={message} customerName={data.customerName} />
+              <MessageBubble
+                key={message.id}
+                message={message}
+                customerName={data.customerName}
+                viewerId={viewer?.userId ?? null}
+              />
             ))
           )}
           {otherTyping ? (

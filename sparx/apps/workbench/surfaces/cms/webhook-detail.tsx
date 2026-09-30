@@ -47,19 +47,26 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { InlineWaiting } from '../../components/inline-waiting';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
+  deliveryState,
+  eventLabel,
   formatDateTime,
   useCreateWebhook,
   useDeleteWebhook,
   useUpdateWebhook,
   useWebhook,
+  useInvalidateWebhooks,
+  useWebhookDeliveries,
   webhookErrorMessage,
   webhookState,
+  whyItFailed,
   WEBHOOK_EVENTS,
   WEBHOOK_EVENT_GROUPS,
+  type WebhookDelivery,
   type WebhookEventKey,
   type WebhookSubscription,
 } from './webhooks-data';
@@ -238,6 +245,96 @@ function SecretBox({ value, onCopy }: { value: string; onCopy?: () => void }) {
   );
 }
 
+/* ── What has been sent ─────────────────────────────────────────────────── */
+
+// What we actually sent, and whether it arrived.
+//
+// `webhook_deliveries` has recorded every attempt since the feature shipped,
+// with an index built for exactly this screen, and nothing read it. The pane
+// could only report the SETTING ("Active"), never the result, so a mistyped
+// address looked exactly like a working one (issue 403).
+//
+// A stacked list rather than a table: four facts per attempt, one of them a
+// sentence, and a table squeezes that sentence to a word per line in a narrow
+// pane.
+
+function WebhookDeliveries({ id }: { id: string }) {
+  const { data, isPending, isError, refetch } = useWebhookDeliveries(id);
+  const items = data?.items ?? [];
+
+  return (
+    <FormSection
+      title="What has been sent"
+      description="The last few messages we tried to send, newest first."
+    >
+      {isPending ? <InlineWaiting label="Checking what has been sent…" /> : null}
+
+      {isError ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <Text className="text-sm">
+            We could not check this just now. It is a problem reaching the server, not a problem
+            with your notifications.
+          </Text>
+          <Button
+            size="sm"
+            variant="soft"
+            color="module"
+            onClick={() => {
+              void refetch();
+            }}
+          >
+            Try again
+          </Button>
+        </div>
+      ) : null}
+
+      {!isPending && !isError && items.length === 0 ? (
+        <Text className="text-sm">
+          Nothing yet. None of the events you picked has happened since this was set up, so we have
+          had nothing to send. This is not a sign that anything is wrong.
+        </Text>
+      ) : null}
+
+      {items.length > 0 ? (
+        <ul className="divide-base-300 flex flex-col divide-y">
+          {items.map((delivery) => (
+            <DeliveryRow key={delivery.id} delivery={delivery} />
+          ))}
+        </ul>
+      ) : null}
+    </FormSection>
+  );
+}
+
+function DeliveryRow({ delivery }: { delivery: WebhookDelivery }) {
+  const state = deliveryState(delivery);
+  // Why it did not arrive, only once there is an answer to explain. A message
+  // still queued for its first try has not failed at anything yet, and "we
+  // could not reach that address" would be a guess dressed as a fact.
+  const explain =
+    delivery.status === 'failed' || (delivery.status !== 'delivered' && delivery.attempt_count > 0);
+  return (
+    <li className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <Badge color={state.tone} variant="soft" size="sm">
+          {state.label}
+        </Badge>
+        <Text as="span" className="font-medium">
+          {eventLabel(delivery.event_type)}
+        </Text>
+        <Text as="span" className="text-sm">
+          {formatDateTime(delivery.created_at)} · {tries(delivery.attempt_count)}
+        </Text>
+      </div>
+      {explain ? <Text className="text-sm">{whyItFailed(delivery)}</Text> : null}
+    </li>
+  );
+}
+
+function tries(n: number): string {
+  return n === 1 ? '1 try' : `${String(n)} tries`;
+}
+
 /* ── Create ─────────────────────────────────────────────────────────────── */
 
 function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
@@ -398,6 +495,9 @@ function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
 /* ── Edit / manage ──────────────────────────────────────────────────────── */
 
 function EditWebhook({ ctx, id }: { ctx: SurfaceContext; id: string }) {
+  // The toolbar refresh reloads the list row AND the delivery history, so the
+  // badge and the "What has been sent" panel cannot answer from two moments.
+  const refreshAll = useInvalidateWebhooks();
   const { webhook, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useWebhook(id);
 
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -454,7 +554,6 @@ function EditWebhook({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           </AlertContent>
           <Button
             size="sm"
-            color="neutral"
             variant="outline"
             onClick={() => {
               ctx.close();
@@ -485,9 +584,7 @@ function EditWebhook({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       dirty={dirty}
       isFetching={isFetching}
       dataUpdatedAt={dataUpdatedAt}
-      refetch={() => {
-        void refetch();
-      }}
+      refetch={refreshAll}
       onSaved={(saved) => {
         const next: Draft = {
           name: saved.name,
@@ -532,7 +629,8 @@ function ManageBody({
   const update = useUpdateWebhook(id);
   const del = useDeleteWebhook(id);
 
-  const state = webhookState(webhook.active);
+  // Read off what actually happened, not off the `active` switch (issue 403).
+  const state = webhookState(webhook.active, webhook.health);
 
   const canSave =
     draft.name.trim() !== '' && draft.url.trim() !== '' && draft.events.size > 0 && dirty;
@@ -632,6 +730,8 @@ function ManageBody({
           </Alert>
 
           <WebhookFields draft={draft} onChange={change} />
+
+          <WebhookDeliveries id={id} />
 
           <FormSection
             title="Signing secret"

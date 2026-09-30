@@ -46,6 +46,7 @@ import {
 import { AppWindow, Ellipsis, Maximize2, Minimize2, PanelsTopLeft, X } from 'lucide-react';
 import { ChromeWindowBoundary } from './window-boundary';
 import { TabListMenu } from './tab-list-menu';
+import { TabScrollButtons } from './tab-scroll';
 import { useWorkbench } from '../workbench/context';
 
 export function GroupActions(props: IDockviewHeaderActionsProps) {
@@ -100,6 +101,17 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
     // The boundary keeps these buttons' tooltips and menus in the group's own
     // window once it is torn off — same fix the panes get, chrome-sized.
     <ChromeWindowBoundary api={props.api}>
+      {/* Reaching the tabs that no longer fit, which is a different job from
+          going to one by name. At this end rather than at the strip's own edges
+          because these are window controls: everything that acts on the bar
+          itself sits together, and a pair of arrows floating mid-bar would
+          compete with the tabs they are there to move.
+
+          This console had the jump list and no arrows; the other console had
+          the arrows and an orphaned jump list. Two halves of one answer, one in
+          each tree. [[feedback_a_fix_leaves_its_neighbour_behind]] */}
+      <TabScrollButtons />
+
       <TabListMenu panels={props.panels} activePanel={props.activePanel} />
 
       {/* Neither `color` nor `variant` beyond ghost on any of these: a bare

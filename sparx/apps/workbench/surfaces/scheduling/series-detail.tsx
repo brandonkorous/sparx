@@ -50,7 +50,6 @@ import {
   formatWhen,
   fromLocalInputValue,
   humanizeRrule,
-  isNotFound,
   schedulingErrorMessage,
   seriesStateMeta,
   useBookingSeries,
@@ -65,6 +64,7 @@ import {
   type RecurrenceDraft,
 } from './bookings-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -225,13 +225,12 @@ function RecurrenceFields({
           <FieldLabel>Last day it can happen</FieldLabel>
           <FieldControl
             render={
-              <Input
+              <DayInput
                 color="module"
-                type="date"
                 className="max-w-48"
                 value={draft.until}
-                onChange={(event) => {
-                  set('until', event.target.value);
+                onValueChange={(value) => {
+                  set('until', value);
                 }}
               />
             }
@@ -626,17 +625,14 @@ export function SeriesDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   if (series.isError) {
-    const gone = isNotFound(series.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This repeating booking no longer exists' : 'Could not load this'}
-          description={
-            gone
-              ? 'It may have been removed. Any bookings it already made are unaffected.'
-              : 'This is a problem reaching the server. Nothing has changed.'
-          }
+          error={series.error}
+          title="Could not load this"
+          description="This is a problem reaching the server. Nothing has changed."
+          missingTitle="This repeating booking no longer exists"
+          missingDescription="It may have been removed. Any bookings it already made are unaffected."
           onRetry={() => {
             void series.refetch();
           }}

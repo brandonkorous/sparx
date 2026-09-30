@@ -47,7 +47,10 @@ import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage, useStockLocations } from './data';
 import {
+  afterSent,
   cadenceSentence,
+  localZone,
+  zoneOptions,
   deliveryStatusLabel,
   deliveryStatusTone,
   useCreateReportSchedule,
@@ -103,7 +106,7 @@ const EMPTY: FormState = {
   dayOfWeek: 1,
   dayOfMonth: 1,
   hour: 7,
-  timezone: 'UTC',
+  timezone: localZone(),
   recipients: '',
   format: 'csv',
   days: 30,
@@ -433,13 +436,15 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="When"
-            description={`Sent ${cadenceSentence({
-              cadence: form.cadence,
-              dayOfWeek: form.dayOfWeek,
-              dayOfMonth: form.dayOfMonth,
-              hour: form.hour,
-              timezone: form.timezone,
-            }).toLowerCase()}.`}
+            description={`Sent ${afterSent(
+              cadenceSentence({
+                cadence: form.cadence,
+                dayOfWeek: form.dayOfWeek,
+                dayOfMonth: form.dayOfMonth,
+                hour: form.hour,
+                timezone: form.timezone,
+              })
+            )}.`}
           >
             <div className="grid grid-cols-1 gap-3 @md:grid-cols-3">
               <Field>
@@ -518,17 +523,25 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
             <Field>
               <FieldLabel>Time zone</FieldLabel>
-              <Input
+              {/* A list, not a text box. This asked a shop owner to type
+                  "Europe/London" from memory, and defaulted to UTC when she
+                  did not. The browser already knows where she is. */}
+              <NativeSelect
                 color="module"
                 value={form.timezone}
-                placeholder="Europe/London"
                 onChange={(event) => {
                   patch({ timezone: event.target.value });
                 }}
-              />
+              >
+                {zoneOptions(form.timezone).map((zone) => (
+                  <option key={zone} value={zone}>
+                    {zone === 'UTC' ? 'UTC' : zone.replace(/_/g, ' ')}
+                  </option>
+                ))}
+              </NativeSelect>
               <Text className="text-sm">
-                The hour above is local to this zone, and it follows the clocks: a 7am report stays
-                a 7am report through the summer.
+                The hour above is the time in this zone, and it follows that zone&rsquo;s clocks: a
+                7am report stays a 7am report through the summer.
               </Text>
             </Field>
 

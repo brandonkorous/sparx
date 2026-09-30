@@ -184,7 +184,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Places list controls"
+        label="Places controls"
         primary={
           <Button
             color="module"

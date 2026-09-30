@@ -51,6 +51,17 @@ export interface Author {
   user_id: string | null;
   /** The media asset id of their photo, or null. */
   avatar_asset_id: string | null;
+  /**
+   * The site this byline writes for, or null for every site the business runs.
+   *
+   * A byline is a public persona attached to a publication, so a magazine's
+   * masthead has no business in a clothing shop's picker, which is exactly what
+   * shipped: the column existed and nothing read it (issue 387). api-rest now
+   * scopes every read to this site's bylines plus the shared ones, and resolves
+   * a new byline's site from `x-sparx-property-id`; this field is what lets the
+   * editor SAY which site that is, and move it.
+   */
+  property_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -125,6 +136,10 @@ export interface CreateAuthorInput {
   slug?: string;
   bio?: string;
   avatar_asset_id?: string;
+  /** Omitted lands the byline on the site being worked in: the server reads
+   *  that from the site switcher's header. An explicit null shares it with
+   *  every site; a site id files it under that site. */
+  property_id?: string | null;
 }
 
 export function useCreateAuthor() {
@@ -144,14 +159,25 @@ export interface UpdateAuthorInput {
   bio?: string | null;
   /** null removes the photo; undefined leaves it as it was. */
   avatar_asset_id?: string | null;
+  /** null puts the byline on every site; a site id moves it there; undefined
+   *  leaves it where it is. Moving is the ONLY way to give one person's name to
+   *  more than one site: a second copy is impossible, because the web address
+   *  is unique across the whole business. */
+  property_id?: string | null;
 }
 
 export function useUpdateAuthor(id: string) {
+  const queryClient = useQueryClient();
   const invalidate = useInvalidateAuthors();
   return useMutation({
     mutationFn: (input: UpdateAuthorInput) => api.patch<Author>(`/v1/authors/${id}`, input),
-    onSuccess: () => {
-      invalidate(id);
+    onSuccess: (saved) => {
+      // The PATCH answers with the whole byline, so the detail is WRITTEN from
+      // it rather than refetched. A refetch is wrong here, not merely slower:
+      // moving a byline to another site takes it out of what this site may
+      // read, so the refetch 404s while the pane is closing over it.
+      queryClient.setQueryData(authorsKeys.detail(id), saved);
+      invalidate();
     },
   });
 }

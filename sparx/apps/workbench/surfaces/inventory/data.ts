@@ -43,6 +43,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatCentsAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -75,6 +76,16 @@ export interface StockLevel {
   leadTimeDays: number | null;
   /** Units deliberately held back from your website as a cushion. */
   safetyBuffer: number;
+  /** Units in the building that nothing may be taken off — a quarantine shelf, a
+   *  damaged shelf, something awaiting repair.
+   *
+   *  Optional only for a row cached before the endpoint began sending it. It was
+   *  optional for a better-sounding reason than the true one: the endpoint did not
+   *  select it AT ALL, so "absent means zero" was applied to every row on the
+   *  platform rather than to the few without shelves, and the sellable arithmetic
+   *  quietly ran three terms of four (issue 862).
+   *  [[feedback_absent_behaves_like_fine]] */
+  unsellableOnHand?: number;
   /** The standard cost, typed in. `avgCostCents` is the moving average the
    *  system recomputes from costed deliveries. */
   unitCostCents: number | null;
@@ -193,8 +204,12 @@ export interface StockQuery {
   q?: string;
   /** Narrow to one location. Undefined means everywhere. */
   warehouseId?: string;
-  /** Only what is at or below its reorder point. */
+  /** Only what is at or below its reorder point AND still sellable. */
   lowStockOnly?: boolean;
+  /** Only what has nothing left to sell. Disjoint from `lowStockOnly` above:
+   *  being out needs no reorder point to be true, so a business that set none
+   *  can never be "low" and can still be out. */
+  outOfStockOnly?: boolean;
   sortBy: StockSortKey;
   order: SortDirection;
   take: number;
@@ -295,6 +310,28 @@ export interface CatalogMatch {
 }
 
 /**
+ * What the stock list asks the server, as query params. Apart from the hook so
+ * the two state filters can be pinned by a test: they are the answers to one
+ * question and must never overlap.
+ */
+export function stockLevelParams(query: StockQuery): NonNullable<Parameters<typeof api.list>[1]> {
+  return {
+    ...(query.q ? { q: query.q } : {}),
+    ...(query.warehouseId ? { warehouse_id: query.warehouseId } : {}),
+    // `sellable_only` alongside `low_stock_only` is what makes the filter agree
+    // with the badge. Bare, the low predicate also matches a level at ZERO,
+    // which every row badges "None to sell" and never "Running low", so
+    // "Running low" returned rows its own State column contradicted.
+    ...(query.lowStockOnly ? { low_stock_only: true, sellable_only: true } : {}),
+    ...(query.outOfStockOnly ? { out_of_stock_only: true } : {}),
+    sort_by: query.sortBy,
+    order: query.order,
+    take: query.take,
+    skip: query.skip,
+  };
+}
+
+/**
  * One window of the stock list.
  *
  * Every narrowing is a SERVER filter, including "running low" — which is an
@@ -305,16 +342,7 @@ export interface CatalogMatch {
 export function useStockLevels(query: StockQuery) {
   return useQuery({
     queryKey: stockKeys.levels(query),
-    queryFn: () =>
-      api.list<StockLevel>('/v1/inventory', {
-        ...(query.q ? { q: query.q } : {}),
-        ...(query.warehouseId ? { warehouse_id: query.warehouseId } : {}),
-        ...(query.lowStockOnly ? { low_stock_only: true } : {}),
-        sort_by: query.sortBy,
-        order: query.order,
-        take: query.take,
-        skip: query.skip,
-      }),
+    queryFn: () => api.list<StockLevel>('/v1/inventory', stockLevelParams(query)),
     // Keeps the current window on screen while the next one loads, so paging
     // and re-sorting don't blink the table out to an empty state and back.
     placeholderData: (previous) => previous,
@@ -506,13 +534,23 @@ export type Tone =
  * path also withholds the safety buffer — so on a buffered level `available` is
  * a number nobody can ever reach. Derived here rather than corrected in the API
  * because `available` is a documented public field integrators already read.
+ *
+ * FOUR terms, not three. A unit on the quarantine or damaged shelf is counted in
+ * on-hand because it is genuinely in the building, and no shopper can be sold it.
+ * This line stopped at three, so sending a returned item to quarantine moved it
+ * on one screen and left it for sale on every other — which is the exact failure
+ * the server's own definition was written to prevent, restated in the console.
  */
 export function sellable(level: {
   onHand: number;
   allocated: number;
   safetyBuffer: number;
+  unsellableOnHand?: number;
 }): number {
-  return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
+  return Math.max(
+    0,
+    level.onHand - level.allocated - level.safetyBuffer - (level.unsellableOnHand ?? 0)
+  );
 }
 
 export interface StockState {
@@ -530,6 +568,12 @@ export function levelState(level: {
   onHand: number;
   allocated: number;
   safetyBuffer: number;
+  /** The fourth term, and the reason this signature is written out: it was
+   *  MISSING here while `sellable()` below took it, so the badge asked for three
+   *  of the four numbers and got a true answer to the wrong question. A level
+   *  holding its last unit on a quarantine shelf badged "In stock" on the same
+   *  row the "None to sell" filter had returned (issue 862). */
+  unsellableOnHand?: number;
   reorderPoint: number | null;
 }): StockState {
   const canSell = sellable(level);
@@ -670,7 +714,7 @@ export function isNotFound(error: unknown): boolean {
 }
 
 export function formatCents(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 export function plural(count: number, one: string, many: string): string {

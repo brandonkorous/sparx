@@ -16,7 +16,6 @@
 
 import { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useQuery } from '@wizeworks/query';
 import {
   Button,
   Dialog,
@@ -29,69 +28,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ImageOff, ImagePlus, Trash2, Upload } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
-import { api } from '../../lib/api/client';
-import { useMediaAssets, useUploadMedia, type MediaAsset } from './products-data';
-
-/* ── The media-library list (images only) ───────────────────────────────── */
-
-interface MediaAssetWire {
-  id: string;
-  original_filename: string;
-  mime_type: string;
-  status: string;
-  original_url: string | null;
-  variants: { id: string; format: string; width: number; height: number; url: string }[];
-}
-
-/** Same path-based test the product data layer and next.config use: is this one
- *  of OUR media URLs, so the image optimizer may touch it? A stranger's CDN URL
- *  (blueprint or dropship import) renders unoptimized rather than crashing. */
-function isOwnMediaUrl(url: string | null): boolean {
-  if (!url) return false;
-  try {
-    return new URL(url, 'http://localhost').pathname.startsWith('/v1/public/media/');
-  } catch {
-    return false;
-  }
-}
-
-function thumbnailUrl(wire: MediaAssetWire): string | null {
-  const sorted = [...wire.variants].sort((a, b) => a.width - b.width);
-  const big = sorted.find((variant) => variant.width >= 320);
-  return big?.url ?? sorted.at(-1)?.url ?? wire.original_url;
-}
-
-function toAsset(wire: MediaAssetWire): MediaAsset {
-  const url = thumbnailUrl(wire);
-  return {
-    id: wire.id,
-    filename: wire.original_filename,
-    mimeType: wire.mime_type,
-    width: null,
-    height: null,
-    altText: null,
-    url,
-    canOptimize: isOwnMediaUrl(url),
-    status: wire.status,
-  };
-}
-
-function useMediaLibrary(search: string, open: boolean) {
-  return useQuery({
-    queryKey: ['media', 'library', 'image', { q: search }],
-    queryFn: async () => {
-      const { items } = await api.list<MediaAssetWire>('/v1/media/assets', {
-        type: 'image',
-        status: 'ready',
-        ...(search ? { q: search } : {}),
-        take: 60,
-      });
-      return items.map(toAsset);
-    },
-    // Only fetch while the picker is open — the library is otherwise never read.
-    enabled: open,
-  });
-}
+import { useMediaAssets, useUploadMedia } from './products-data';
+import { useMediaLibrary } from './media-field-library';
 
 /* ── The field ──────────────────────────────────────────────────────────── */
 
@@ -126,7 +64,9 @@ export function MediaField({
           {value && asset?.url ? (
             <Image
               src={asset.url}
-              alt={asset.filename}
+              // The owner's description first. The filename is a fallback only here, in
+              // the console, where it names which file is chosen; it is never published.
+              alt={asset.altText ?? asset.filename}
               fill
               sizes="80px"
               className="object-cover"
@@ -155,7 +95,6 @@ export function MediaField({
             <Button
               size="sm"
               variant="ghost"
-              color="neutral"
               onClick={() => {
                 onChange(null);
               }}
@@ -286,7 +225,6 @@ function MediaPickerDialog({
                 <Button
                   size="sm"
                   variant="outline"
-                  color="neutral"
                   onClick={() => {
                     void library.refetch();
                   }}
@@ -346,7 +284,7 @@ function MediaPickerDialog({
           </div>
 
           <div className="flex justify-end">
-            <Button size="sm" variant="ghost" color="neutral" onClick={onClose}>
+            <Button size="sm" variant="ghost" onClick={onClose}>
               Cancel
             </Button>
           </div>

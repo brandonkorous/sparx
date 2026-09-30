@@ -54,9 +54,20 @@ import {
   useDeleteAsset,
   useMediaAsset,
   useUpdateAsset,
+  usedInLabel,
   type MediaAsset,
   type MediaKind,
 } from './media-admin';
+import {
+  CROP_SHAPES,
+  FOCAL_CELLS,
+  focalClassFor,
+  focalHelp,
+  focalToWire,
+  isAutomatic,
+  isCellChosen,
+  type FocalPoint,
+} from './focal-point';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -204,13 +215,125 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 
 /* ── Manage ─────────────────────────────────────────────────────────────── */
 
+/* ── Framing ───────────────────────────────────────────── */
+
+/**
+ * Which part of the picture survives a crop (issue 869).
+ *
+ * Four layers read `focal_point_x/y` and nothing wrote it: the media worker
+ * bakes four social crops around it, the PATCH route republishes
+ * `media.uploaded` with `reason: 'recrop'` when it moves, the social composer
+ * positions every preview by it, and the article serializer writes it into
+ * published HTML as `object-position`.
+ *
+ * Dead centre is not "the middle". It is the worker's "nobody told me", where it
+ * asks libvips to find the subject instead of obeying the stored pair. That is
+ * why the middle tile says "Let us choose" rather than naming a position, and
+ * why the shape previews only appear once a part IS chosen: while the machine is
+ * choosing, this console cannot know what it will keep, and four previews drawn
+ * at centre would be claiming otherwise.
+ */
+function Framing({
+  url,
+  point,
+  onPick,
+}: {
+  url: string;
+  point: FocalPoint;
+  onPick: (next: FocalPoint) => void;
+}) {
+  return (
+    <FormSection
+      title="Which part matters"
+      description="This picture gets cut to other shapes when it goes out: a square for most posts, a tall one for stories, a wide one for a link. This decides what survives the cut. Saving re-cuts those copies."
+    >
+      <Field>
+        <FieldLabel>The part to keep</FieldLabel>
+        <FieldControl
+          render={
+            <div
+              role="group"
+              aria-label="The part of the picture to keep"
+              className="grid w-full max-w-sm grid-cols-3 gap-1.5"
+            >
+              {FOCAL_CELLS.map((cell) => {
+                const chosen = isCellChosen(point, cell);
+                return (
+                  <Button
+                    key={cell.label}
+                    size="sm"
+                    aria-pressed={chosen}
+                    {...(chosen ? { color: 'module' as const } : { variant: 'outline' as const })}
+                    onClick={() => {
+                      onPick({ x: cell.x, y: cell.y });
+                    }}
+                  >
+                    {cell.label}
+                  </Button>
+                );
+              })}
+            </div>
+          }
+        />
+        <FieldDescription>{focalHelp(point)}</FieldDescription>
+      </Field>
+
+      {isAutomatic(point) ? (
+        <Text className="text-sm">Pick a part above to see what each shape would keep.</Text>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <Text className="text-sm font-medium">What each shape keeps</Text>
+          <div className="grid grid-cols-2 gap-3 @lg:grid-cols-4">
+            {CROP_SHAPES.map((shape) => (
+              <div key={shape.aspect} className="flex flex-col gap-1">
+                <div
+                  className={`bg-base-200 rounded-box border-base-300 relative overflow-hidden border ${shape.className}`}
+                >
+                  <Image
+                    src={url}
+                    alt=""
+                    fill
+                    sizes="240px"
+                    className={`object-cover ${focalClassFor(point.x, point.y)}`}
+                    // Unoptimized for the same reason as the preview above.
+                    unoptimized
+                  />
+                </div>
+                <Text className="text-sm font-medium">{shape.label}</Text>
+                <Text className="text-sm">{shape.where}</Text>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </FormSection>
+  );
+}
+
 interface Draft {
   altText: string;
   caption: string;
+  focal: FocalPoint;
+}
+
+/** One place the draft is built from a saved asset, because it is built in four:
+ *  first render, the dirty snapshot, the re-seed when the pane changes asset, and
+ *  after a save. A field added to three of the four is a field that silently
+ *  resets on the fourth. */
+function draftFrom(asset: MediaAsset): Draft {
+  return {
+    altText: asset.altText ?? '',
+    caption: asset.caption ?? '',
+    focal: { x: asset.focalX, y: asset.focalY },
+  };
 }
 
 function serialize(draft: Draft): string {
-  return JSON.stringify({ altText: draft.altText.trim(), caption: draft.caption.trim() });
+  return JSON.stringify({
+    altText: draft.altText.trim(),
+    caption: draft.caption.trim(),
+    focal: draft.focal,
+  });
 }
 
 function ManageAsset({
@@ -231,20 +354,15 @@ function ManageAsset({
   const update = useUpdateAsset(asset.id);
   const del = useDeleteAsset(asset.id);
 
-  const [draft, setDraft] = useState<Draft>({
-    altText: asset.altText ?? '',
-    caption: asset.caption ?? '',
-  });
-  const initialRef = useRef<string>(
-    serialize({ altText: asset.altText ?? '', caption: asset.caption ?? '' })
-  );
+  const [draft, setDraft] = useState<Draft>(draftFrom(asset));
+  const initialRef = useRef<string>(serialize(draftFrom(asset)));
   // Initialise ONCE per asset id. Re-seeding on every background refetch would
   // wipe an in-progress edit; Save resets the snapshot itself (below).
   const initializedFor = useRef<string>(asset.id);
   useEffect(() => {
     if (initializedFor.current === asset.id) return;
     initializedFor.current = asset.id;
-    const next: Draft = { altText: asset.altText ?? '', caption: asset.caption ?? '' };
+    const next = draftFrom(asset);
     setDraft(next);
     initialRef.current = serialize(next);
   }, [asset]);
@@ -253,6 +371,9 @@ function ManageAsset({
   useDirtySource(dirty, 'You have unsaved changes to this file’s details. Close anyway?');
 
   const state = assetStatusState(asset.status);
+  // COUNTED server-side on the detail read (issue 381), so this is the same
+  // number api-rest's delete guard refuses on. It used to be a column nothing
+  // wrote, which left this button enabled under a photo on a live product page.
   const inUse = asset.usageCount > 0;
   const isImage = asset.kind === 'image';
 
@@ -261,10 +382,11 @@ function ManageAsset({
       {
         alt_text: draft.altText.trim() ? draft.altText.trim() : null,
         caption: draft.caption.trim() ? draft.caption.trim() : null,
+        ...focalToWire(draft.focal),
       },
       {
         onSuccess: (saved) => {
-          const next: Draft = { altText: saved.altText ?? '', caption: saved.caption ?? '' };
+          const next = draftFrom(saved);
           setDraft(next);
           initialRef.current = serialize(next);
           toast.add({ title: 'Saved', type: 'success' });
@@ -374,6 +496,16 @@ function ManageAsset({
 
           <Preview asset={asset} />
 
+          {isImage && asset.previewUrl !== null ? (
+            <Framing
+              url={asset.previewUrl}
+              point={draft.focal}
+              onPick={(next) => {
+                setDraft((current) => ({ ...current, focal: next }));
+              }}
+            />
+          ) : null}
+
           <FormSection title="Details">
             {isImage ? (
               <Field>
@@ -430,10 +562,14 @@ function ManageAsset({
               {dimensions ? <Fact label="Dimensions">{dimensions}</Fact> : null}
               {duration ? <Fact label="Length">{duration}</Fact> : null}
               <Fact label="Uploaded">{formatDateTime(asset.createdAt)}</Fact>
+              {/* Names the kinds ("2 product photos and 1 page or article"), so
+                  the answer says which screen to open. When nothing is counted it
+                  says what the count CANNOT see, rather than a flat "not used
+                  anywhere": a picture placed straight into a page in the site
+                  editor has no reference row to count (see `MediaAsset.usage`). */}
               <Fact label="Used in">
-                {inUse
-                  ? `${String(asset.usageCount)} ${asset.usageCount === 1 ? 'place' : 'places'} on your site`
-                  : 'Not used anywhere yet'}
+                {usedInLabel(asset) ??
+                  'Nothing we can see. A picture placed straight into a page in the site editor is not counted here, so check there before deleting it.'}
               </Fact>
               {asset.previewUrl ? (
                 <Fact label="Original">
@@ -459,8 +595,8 @@ function ManageAsset({
               <Text className="font-medium">Delete this file</Text>
               <Text className="text-sm">
                 {inUse
-                  ? `It is used in ${String(asset.usageCount)} ${asset.usageCount === 1 ? 'place' : 'places'}. Remove it from there first, then you can delete it.`
-                  : 'Removes it from your library for good. This cannot be undone.'}
+                  ? `It is used by ${usedInLabel(asset) ?? 'something on your site'}. Remove it from there first, then you can delete it.`
+                  : 'Removes it from your library for good. This cannot be undone. Check the site editor first: a picture placed straight into a page is not counted above.'}
               </Text>
             </div>
             <Button

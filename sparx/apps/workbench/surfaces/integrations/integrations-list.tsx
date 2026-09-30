@@ -190,8 +190,12 @@ function IntegrationTile({
           </Badge>
         ) : null}
         {/* A contributor's integration says so plainly — a tenant is trusting somebody
-            other than sparx with their data, and that is theirs to know. */}
-        {integration.publisher !== 'sparx' ? (
+            other than us with their data, and that is theirs to know.
+            `firstParty` and not `publisher !== 'sparx'`: the publisher string is
+            filled with the tenant's own brand name before it gets here, so that
+            comparison never matched under Piggles and badged EVERY first-party
+            service, including the brand's own payment product. */}
+        {!integration.firstParty ? (
           <Badge color="info" variant="soft" size="sm">
             Community
           </Badge>
@@ -341,7 +345,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Integration list controls"
+        label="Integrations controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

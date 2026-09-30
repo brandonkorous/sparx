@@ -36,7 +36,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { Plus, RefreshCw, Settings, Star, Trash2 } from 'lucide-react';
 import { CopyValue } from '../../components/copy-value';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -50,6 +50,7 @@ import {
   recordPurpose,
   regionLabel,
   sendingDomainState,
+  sendsFromDomain,
   useDeleteSendingDomain,
   useEmailSettings,
   useProvisionSendingDomain,
@@ -420,22 +421,24 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
                 Use as default
               </Button>
             ) : null}
-            <Button
-              size="sm"
-              variant="ghost"
-              color="danger"
-              shape="square"
-              aria-label="Remove this address"
-              title="Remove this address"
-              loading={remove.isPending}
-              onClick={() => {
-                void onDelete();
-              }}
-            >
-              <Trash2 className="size-4" aria-hidden />
-            </Button>
           </>
         }
+        /* A VALUE, not bespoke JSX. `controls` relocates into the narrow
+           bar's overflow popover verbatim, so this was a bare red bin under
+           "Check now" and "Use as default".
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={[
+          {
+            label: 'Remove',
+            title: 'Remove this address',
+            icon: Trash2,
+            tone: 'danger' as const,
+            loading: remove.isPending,
+            onClick: () => {
+              void onDelete();
+            },
+          },
+        ]}
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
@@ -498,11 +501,43 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
               a plain row rather than crowding the toolbar for pending domains. */}
           {isVerified ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-              <Text className="text-sm">
-                {isDefault
-                  ? 'This site sends its email from this address by default.'
-                  : 'Make this the address this site sends its email from by default.'}
-              </Text>
+              {/* The From line is read off the server's resolved header, not
+                  assumed from the default pointer: the send builds it from the
+                  From address in Email settings, so a verified default can still
+                  go out from the shared address until that box names it. */}
+              <div className="flex min-w-0 flex-col items-start gap-2">
+                <Text className="text-sm">
+                  {isDefault
+                    ? 'This is the default sending address for this site.'
+                    : 'Make this the default sending address for this site.'}
+                </Text>
+                {settings ? (
+                  sendsFromDomain(settings.resolvedFrom, domain.domain) ? (
+                    <Text className="text-sm">
+                      Your email arrives as{' '}
+                      <span className="font-medium break-all">{settings.resolvedFrom}</span>.
+                    </Text>
+                  ) : (
+                    <>
+                      <Text className="text-sm">
+                        Your email still arrives as{' '}
+                        <span className="font-medium break-all">{settings.resolvedFrom}</span>. To
+                        send from {domain.domain}, put an address at it (like hello@
+                        {domain.domain}) in the From address box in Email settings.
+                      </Text>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          ctx.open('email.settings', {}, { target: 'beside' });
+                        }}
+                      >
+                        <Settings className="size-4" aria-hidden />
+                        Open email settings
+                      </Button>
+                    </>
+                  )
+                ) : null}
+              </div>
               {isDefault ? (
                 <Badge color="success" variant="soft" size="sm">
                   Default for this site

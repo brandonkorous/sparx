@@ -240,7 +240,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
           one line in a docked pane, so this is one of the rare bars that wraps.
           Nothing is a create action; the refresh button carries `ml-auto`. */}
       <PaneToolbar
-        label="Lots and serials controls"
+        label="Lots & serials controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -281,7 +281,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
             reaches the element that lays out. */}
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Show what is kept at"
               value={locationId}
               onChange={(event) => {

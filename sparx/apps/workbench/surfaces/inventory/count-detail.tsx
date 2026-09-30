@@ -45,8 +45,8 @@ import {
   SearchInput,
   Table,
   Text,
+  Textarea,
   Timestamp,
-  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -72,7 +72,6 @@ import {
   countErrorMessage,
   countState,
   countTypeLabel,
-  isCountNotFound,
   useAddCountLine,
   useApproveCount,
   useCancelCount,
@@ -88,6 +87,7 @@ import {
   type CountLine,
   type CountType,
 } from './counts-data';
+import { askWhy, whyFieldLabel, whyIntro, whyPlaceholder } from './count-why';
 import { ScanInput, playScanFeedback } from './scan-input';
 import { useScanQueue, useScanToCount, type ScanActionResult } from './scan-data';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -397,6 +397,8 @@ function LinesCard({
   editable,
   drafts,
   setDraft,
+  whyDrafts,
+  setWhy,
   onRemove,
   removingId,
 }: {
@@ -404,6 +406,10 @@ function LinesCard({
   editable: boolean;
   drafts: Record<string, string>;
   setDraft: (lineId: string, value: string) => void;
+  /** What has been typed into the why boxes, by line id. Kept apart from
+   *  `drafts` so correcting a number never disturbs the words beside it. */
+  whyDrafts: Record<string, string>;
+  setWhy: (lineId: string, value: string) => void;
   onRemove: (line: CountLine) => void;
   removingId: string | null;
 }) {
@@ -430,6 +436,10 @@ function LinesCard({
               ? 'Put in what you actually find on the shelf. The difference from what we expected is worked out for you.'
               : 'The quantities counted, and how they differed from what was expected.'}
         </Text>
+        {/* Said once here rather than as a label over every box: a full
+            count is a hundred lines, and a hundred repetitions of the same
+            four words down the screen is not a label, it is wallpaper. */}
+        {editable ? <Text className="text-sm">{whyIntro(blind)}</Text> : null}
       </div>
 
       <Table size="sm">
@@ -451,6 +461,11 @@ function LinesCard({
               counted === null || line.expectedQuantity === null
                 ? null
                 : counted - line.expectedQuantity;
+            const why = whyDrafts[line.id] ?? line.note ?? '';
+            const ask =
+              editable &&
+              askWhy({ counted, difference: variance, hasWords: why.trim().length > 0 });
+            const what = line.variantSku ?? line.productTitle ?? 'this item';
             return (
               <tr key={line.id}>
                 <td className="w-full max-w-0 min-w-56">
@@ -464,6 +479,32 @@ function LinesCard({
                         We think {String(line.expectedQuantity ?? '—')} here
                       </span>
                     )}
+                    {/* The words live in the item's own cell rather than in
+                        a column or a row of their own. A column would take
+                        width from the item name, which is already the cell
+                        that gives; a separate row would be cut off from its
+                        line by the table's row border. */}
+                    {ask ? (
+                      <Textarea
+                        color="module"
+                        rows={2}
+                        className="mt-1 w-full min-w-0"
+                        aria-label={whyFieldLabel(blind, what)}
+                        placeholder={whyPlaceholder(blind)}
+                        maxLength={2000}
+                        value={why}
+                        onChange={(event) => {
+                          setWhy(line.id, event.target.value);
+                        }}
+                      />
+                    ) : null}
+                    {/* Read back once the count is closed. This is the whole
+                        reason the box exists: applying a count rewrites the
+                        stock numbers, so the figures look after themselves
+                        and the reason does not. */}
+                    {!editable && line.note ? (
+                      <span className="mt-1 block text-sm whitespace-pre-wrap">{line.note}</span>
+                    ) : null}
                   </span>
                 </td>
 
@@ -621,6 +662,10 @@ function CountSession({
   const removeLine = useRemoveCountLine(count.id);
 
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  // Kept apart from `drafts` on purpose. They are saved together, but they
+  // are two different edits, and folding them into one record would mean a
+  // keystroke in a number touching the state of the words beside it.
+  const [whyDrafts, setWhyDrafts] = useState<Record<string, string>>({});
   const [removingId, setRemovingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -630,18 +675,27 @@ function CountSession({
   const editable = count.status === 'counting';
   const state = countState(count.status);
 
-  /** Lines whose typed value is valid and actually differs from what the server
-   *  holds — the only ones a Save needs to send. */
-  const changed = useMemo(
+  /** Lines whose NUMBER has moved or whose WORDS have — the only ones a Save
+   *  needs to send. Saving either one sends both, because the server records
+   *  a note against a counted quantity rather than on its own. */
+  const changed = useMemo<{ line: CountLine; value: number; note?: string }[]>(
     () =>
-      count.lines
-        .filter((line) => drafts[line.id] !== undefined)
-        .map((line) => ({ line, value: parseQty(drafts[line.id]) }))
-        .filter(
-          (entry): entry is { line: CountLine; value: number } =>
-            entry.value !== null && entry.value !== entry.line.countedQuantity
-        ),
-    [count.lines, drafts]
+      count.lines.flatMap((line) => {
+        const value =
+          drafts[line.id] !== undefined ? parseQty(drafts[line.id]) : line.countedQuantity;
+        // Nothing counted yet, so there is no quantity to hang a note on.
+        // The box is not offered on such a line either, so this cannot drop
+        // words somebody typed.
+        if (value === null) return [];
+        const why = whyDrafts[line.id];
+        // Compared TRIMMED against what is stored, so opening a box and
+        // closing it again is not an edit, and a note of two spaces is not
+        // one either. Emptying a filled box IS one, and sends `''`.
+        const whyMoved = why !== undefined && why.trim() !== (line.note ?? '').trim();
+        if (value === line.countedQuantity && !whyMoved) return [];
+        return [{ line, value, ...(whyMoved ? { note: why } : {}) }];
+      }),
+    [count.lines, drafts, whyDrafts]
   );
 
   const uncounted = count.lines.filter((line) => {
@@ -651,16 +705,27 @@ function CountSession({
 
   useDirtySource(
     changed.length > 0,
-    `You have counted quantities on ${count.number} that are not saved. Close anyway?`
+    `Counts or notes you have put in on ${count.number} are not saved. Close anyway?`
   );
 
   const setDraft = (lineId: string, value: string) => {
     setDrafts((current) => ({ ...current, [lineId]: value }));
   };
 
+  const setWhy = (lineId: string, value: string) => {
+    setWhyDrafts((current) => ({ ...current, [lineId]: value }));
+  };
+
   const saveEntries = () =>
     enter.mutateAsync(
-      changed.map(({ line, value }) => ({ lineId: line.id, countedQuantity: value }))
+      changed.map(({ line, value, note }) => ({
+        lineId: line.id,
+        countedQuantity: value,
+        // Three states on the wire: the key is absent when the words were
+        // not touched, an empty string when a filled box was emptied, and
+        // the text otherwise.
+        ...(note !== undefined ? { note } : {}),
+      }))
     );
 
   const doSave = async () => {
@@ -822,31 +887,6 @@ function CountSession({
             <Badge color={state.tone} variant="soft" size="sm">
               {state.label}
             </Badge>
-            {/* The sticker that makes "scan the count sheet" true. Without it that
-            instruction in warehouse mode has nothing to scan. */}
-            <Tooltip content="Print a scannable label for the count sheet">
-              <Button
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                shape="square"
-                className="shrink-0"
-                aria-label="Print a scannable label for this count"
-                onClick={() => {
-                  ctx.open(
-                    'inventory.documents.label',
-                    {
-                      number: count.number,
-                      title: 'Stock count',
-                      subtitle: count.warehouseName ?? '',
-                    },
-                    { target: 'beside' }
-                  );
-                }}
-              >
-                <Printer className="size-4" aria-hidden />
-              </Button>
-            </Tooltip>
             {editable ? (
               <>
                 {changed.length > 0 ? (
@@ -915,6 +955,30 @@ function CountSession({
             ml-auto itself when no primary action is present to push it over. */}
           </>
         }
+        /* The sticker that makes "scan the count sheet" true. Without it that
+           instruction in warehouse mode has nothing to scan.
+
+           A VALUE rather than bespoke `controls` JSX: `controls` is relocated
+           into the narrow bar's overflow popover verbatim, so this was a bare
+           printer glyph among rows that had words. */
+        actions={[
+          {
+            label: 'Print a label',
+            title: 'Print a scannable label for the count sheet',
+            icon: Printer,
+            onClick: () => {
+              ctx.open(
+                'inventory.documents.label',
+                {
+                  number: count.number,
+                  title: 'Stock count',
+                  subtitle: count.warehouseName ?? '',
+                },
+                { target: 'beside' }
+              );
+            },
+          },
+        ]}
         refresh={
           <RefreshButton
             className={editable || canApprove || canApply ? undefined : 'ml-auto'}
@@ -995,6 +1059,8 @@ function CountSession({
               editable={editable}
               drafts={drafts}
               setDraft={setDraft}
+              whyDrafts={whyDrafts}
+              setWhy={setWhy}
               onRemove={removeItem}
               removingId={removingId}
             />
@@ -1112,17 +1178,14 @@ function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }
 
   if (count.isError) {
-    const gone = isCountNotFound(count.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This count no longer exists' : 'Could not load this count'}
-          description={
-            gone
-              ? 'It may have been removed. Your stock and its movement history are unaffected.'
-              : 'This is a problem reaching the server. The count is unaffected. It just could not be read just now.'
-          }
+          error={count.error}
+          title="Could not load this count"
+          description="This is a problem reaching the server. The count is unaffected. It just could not be read just now."
+          missingTitle="This count no longer exists"
+          missingDescription="It may have been removed. Your stock and its movement history are unaffected."
           onRetry={() => {
             void count.refetch();
           }}

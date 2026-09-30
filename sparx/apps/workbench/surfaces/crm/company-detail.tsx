@@ -59,6 +59,7 @@ import { stageTypeMeta } from './pipelines-data';
 import { priorityLabel, priorityTone, useTickets } from './tickets-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
+import { creditStanding } from '../../lib/credit-standing';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaymentTermsField } from '../../components/payment-terms-field';
 import { SaveFailure } from '@/components/save-failure';
@@ -152,6 +153,48 @@ function firstBadDomain(raw: string): string | null {
 
 function numberOrEmpty(value: string): string {
   return value.trim();
+}
+
+/**
+ * The credit line beside the status badge, or nothing when there is no news.
+ *
+ * It read `{used} of {limit} used`, guarded only on the balance, so an account
+ * at a zero limit got "$1,193.00 of $0.00 used" — which reads as a rounding
+ * error and is in fact the most important thing on the screen. A zero limit
+ * refuses every order placed on terms, and eleven companies are sitting at one.
+ */
+function creditHeadline(a: Company): string {
+  switch (creditStanding(a.creditLimit, a.creditUsed)) {
+    case 'limit':
+      return `${formatMoney(a.creditUsed)} of ${formatMoney(a.creditLimit)} used`;
+    case 'owing':
+      return `${formatMoney(a.creditUsed)} owed, and no more on terms`;
+    default:
+      return 'Cannot order on terms';
+  }
+}
+
+/** The note under the Credit limit box, which answers a different question than
+ *  the headline: not "where do they stand" but "what am I typing here".
+ *
+ *  It offered "Leave blank for none", a blank saves as a zero, and a zero turns
+ *  every order on terms away at the checkout. So the field invited somebody to
+ *  close an account without ever saying that is what it does. */
+function creditFieldNote(a: Company | undefined): string {
+  if (a) {
+    const standing = creditStanding(a.creditLimit, a.creditUsed);
+    if (standing === 'limit') {
+      const left = Number(a.creditLimit) - Number(a.creditUsed);
+      return left > 0
+        ? `They have used ${formatMoney(a.creditUsed)} of this, with ${formatMoney(left)} left.`
+        : `They have used all of this, and ${formatMoney(a.creditUsed)} in total.`;
+    }
+    if (standing === 'owing') {
+      return `They still owe you ${formatMoney(a.creditUsed)}, and cannot order on terms until you put an amount here.`;
+    }
+    return 'They cannot order on terms. Put an amount here to let them, up to that much at once.';
+  }
+  return 'The most they can owe you on account at once. Left empty, they cannot order on terms at all.';
 }
 
 function toDraft(a: Company): Draft {
@@ -280,7 +323,7 @@ function CompanyEditor({
   const creditCents = draft.creditLimit.trim() === '' ? null : moneyCents(draft.creditLimit);
   const creditError =
     draft.creditLimit.trim() !== '' && creditCents === null
-      ? 'Enter the credit limit as a number, or leave it blank for none.'
+      ? 'Enter the credit limit as a number, or leave it blank to stop them ordering on terms.'
       : null;
   const discountError =
     draft.discountPercent.trim() !== '' &&
@@ -403,9 +446,9 @@ function CompanyEditor({
             <Badge color={meta.tone} variant="soft" size="sm">
               {meta.label}
             </Badge>
-            {tradeEnabled && account && Number(account.creditUsed) > 0 ? (
+            {tradeEnabled && account ? (
               <Text as="span" className="hidden shrink-0 text-sm @md:inline">
-                {formatMoney(account.creditUsed)} of {formatMoney(account.creditLimit)} used
+                {creditHeadline(account)}
               </Text>
             ) : null}
           </>
@@ -559,9 +602,7 @@ function CompanyEditor({
                   {creditError && touched ? (
                     <FieldStatus status="error">{creditError}</FieldStatus>
                   ) : (
-                    <FieldDescription>
-                      The most they can owe you on account at once. Leave blank for none.
-                    </FieldDescription>
+                    <FieldDescription>{creditFieldNote(account)}</FieldDescription>
                   )}
                 </Field>
                 <Field>
@@ -570,6 +611,7 @@ function CompanyEditor({
                     render={
                       <div className="flex max-w-[10rem] items-center gap-2">
                         <Input
+                          aria-label="Discount"
                           color={discountError && touched ? 'error' : 'module'}
                           type="number"
                           min={0}
@@ -661,19 +703,18 @@ function CompanyEditor({
                 <FieldLabel>Fleet size</FieldLabel>
                 <FieldControl
                   render={
-                    <div className="max-w-[10rem]">
-                      <Input
-                        color="module"
-                        type="number"
-                        min={0}
-                        inputMode="numeric"
-                        value={draft.fleetSize}
-                        placeholder="Optional"
-                        onChange={(event) => {
-                          set('fleetSize', numberOrEmpty(event.target.value));
-                        }}
-                      />
-                    </div>
+                    <Input
+                      className="max-w-[10rem]"
+                      color="module"
+                      type="number"
+                      min={0}
+                      inputMode="numeric"
+                      value={draft.fleetSize}
+                      placeholder="Optional"
+                      onChange={(event) => {
+                        set('fleetSize', numberOrEmpty(event.target.value));
+                      }}
+                    />
                   }
                 />
                 <FieldDescription>

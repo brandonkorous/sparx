@@ -330,23 +330,17 @@ export function installState(
   }
 }
 
-/** The friendly name for a module slug, for the "what this needs" note. Falls
- *  back to a capitalised slug so an unknown module still reads as words. */
-export function moduleLabel(slug: string): string {
-  const names: Record<string, string> = {
-    builder: 'Site',
-    commerce: 'Store',
-    cms: 'Content',
-    email: 'Email',
-    crm: 'Customers',
-    b2b: 'Wholesale',
-    invoicing: 'Invoicing',
-    inventory: 'Inventory',
-    scheduling: 'Scheduling',
-    dropship: 'Dropshipping',
-  };
-  return names[slug] ?? slug.charAt(0).toUpperCase() + slug.slice(1);
-}
+/**
+ * What this console calls a part of the platform.
+ *
+ * ONE table, in `lib/surfaces/nav.ts`. This file kept its own, and so did five
+ * others; measured 2026-09-25, `commerce` alone had SIX names across the two
+ * consoles — Sell (the Piggles rail), Selling, Online store, Online stores,
+ * Store, and the raw slug — and a shop owner could meet four of them on four
+ * screens. Same defect as one order reading four ways on four screens (issue
+ * 260), one level up: the apps themselves.
+ */
+export { moduleLabel } from '../../lib/surfaces/nav';
 
 /** A short "what it creates" line for a card: the two or three biggest things,
  *  in plain words. Empty designs (a bare starting point) say so rather than
@@ -418,6 +412,70 @@ export function examplesSentence(sampleData: boolean): string {
   return sampleData
     ? 'Its example products, articles and bookings come too, so there is something real on every screen to look at and change.'
     : 'Its examples are left out, so nothing arrives that is not yours. The pages and shelves come in empty, ready for your own.';
+}
+
+/* ── What adding a design DOES to the site it is pointed at ────────────────── */
+
+/**
+ * A design is a whole site, and adding one to a site that has pages REPLACES
+ * them. This is the sentence that says so, sized to the chosen site.
+ *
+ * It exists because this pane promised the opposite in three places: "nothing
+ * here replaces what you already have", and a confirm reading "Your existing
+ * pages and products are left exactly as they are". The install path is
+ * `siteService.installSite`, which syncs with `allowReplace: true`, and
+ * `pagesToDelete` then returns every stored page absent from the incoming
+ * roster. That is all of them, since an install mints fresh page ids. Adding a
+ * design to a nine-page site left nine pages, all of them the design's.
+ *
+ * And it cannot be undone from here. A draft version restore brings back the
+ * content of pages that still exist and never resurrects a deleted one, so the
+ * sentence says that too rather than implying a recovery that is not there.
+ *
+ * What genuinely survives is everything that is not the site itself. The
+ * installer only DELETES builder pages; products, articles, customers and
+ * orders are added to, never removed. Saying so is the difference between a
+ * warning somebody can act on and one that reads as "you may lose everything".
+ */
+export interface InstallImpact {
+  /** True when pages will be destroyed, which is what makes this a danger. */
+  readonly replaces: boolean;
+  /** How many go. Null when nobody counted, never 0, which would mean "empty". */
+  readonly pages: number | null;
+  readonly sentence: string;
+}
+
+/** `pageCount` is the sites LIST's count (`Site.pageCount`). Undefined means it
+ *  was not counted (the list has not landed, or a server predating the field),
+ *  and the sentence then says what is true either way instead of guessing. */
+export function installImpact(siteName: string, pageCount: number | undefined): InstallImpact {
+  const kept =
+    'Everything else stays as it is: your products, articles, customers and orders are not touched.';
+
+  if (pageCount === 0) {
+    return {
+      replaces: false,
+      pages: 0,
+      sentence: `${siteName} has no pages yet, so this design gives it its first ones. They arrive as drafts only you can see, and nothing is live until you publish it.`,
+    };
+  }
+
+  // Nobody counted. Say the thing that is true either way rather than guessing
+  // at a number, and never the reassuring half.
+  if (pageCount === undefined) {
+    return {
+      replaces: true,
+      pages: null,
+      sentence: `A design is a whole site, not a set of pages added to one. Whatever ${siteName} has now is replaced by this design, along with its header, footer and look, and that cannot be undone. ${kept}`,
+    };
+  }
+
+  const many = pageCount === 1 ? 'its 1 page' : `all ${String(pageCount)} of its pages`;
+  return {
+    replaces: true,
+    pages: pageCount,
+    sentence: `A design is a whole site, not a set of pages added to one. ${siteName} has ${pageCount === 1 ? '1 page' : `${String(pageCount)} pages`} now, and adding this design replaces ${many}, along with its header, footer and look. That cannot be undone. ${kept}`,
+  };
 }
 
 /** The server's own sentence for a 4xx, shown verbatim: the blueprint routes

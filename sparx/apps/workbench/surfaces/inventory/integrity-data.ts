@@ -55,6 +55,7 @@ export interface ReconciliationDrift {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
   warehouseCode: string | null;
@@ -74,6 +75,7 @@ export interface OversellIncident {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
+  variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
   warehouseCode: string | null;
@@ -108,6 +110,7 @@ export interface OversellSummary {
     variantId: string;
     variantSku: string | null;
     productTitle: string | null;
+    variantName: string | null;
     incidents: number;
     unitsShort: number;
   }[];
@@ -219,6 +222,7 @@ export function useSourceFreshness() {
 export function useRunReconciliation() {
   const queryClient = useQueryClient();
   return useMutation({
+    meta: { running: 'check your stock' },
     mutationFn: (input: { scope?: 'full' | 'sample' | 'variant'; variantId?: string }) =>
       api.post<ReconciliationRun>('/v1/inventory/integrity/reconciliation', {
         ...(input.scope ? { scope: input.scope } : {}),
@@ -232,8 +236,42 @@ export function useRunReconciliation() {
 
 /* ── Plain words ────────────────────────────────────────────────────────── */
 
-/** What a check result MEANS, said the way someone would say it out loud. */
-export function runVerdict(run: ReconciliationRun): { label: string; tone: Tone } {
+/** How long after its last finish a nightly check stops speaking for today.
+ *
+ *  The sweep runs at 04:30 every morning (`k8s/cronjobs/inventory-integrity-sweep.yaml`).
+ *  One missed night puts the newest run at most 47 hours old, so 48 is the first
+ *  threshold that cannot be tripped by a single late or skipped pass - it takes
+ *  two. */
+export const CHECK_STALE_AFTER_HOURS = 48;
+
+/** Hours since the check last finished, or null while it is still running. */
+export function checkAgeHours(run: ReconciliationRun, now = Date.now()): number | null {
+  if (run.finishedAt === null) return null;
+  const ms = now - new Date(run.finishedAt).getTime();
+  return ms < 0 ? 0 : ms / 3_600_000;
+}
+
+/** The headline over the whole pane.
+ *
+ *  ── Why the age is part of the verdict ──────────────────────────────────
+ *
+ *  "Everything adds up" is a claim about NOW, and it was being made from
+ *  whatever the last run happened to find, however long ago that was. A nightly
+ *  job that quietly stops - a failed pod, a tenant flag turned off, a broken
+ *  cron - leaves a green tick and a reassuring sentence on this pane for as long
+ *  as anyone cares to look, and the one screen whose entire job is to say
+ *  whether the numbers can be trusted becomes the least trustworthy thing on it.
+ *
+ *  The date was already on screen, inside the sentence underneath, where it read
+ *  as provenance rather than as a warning. It is the verdict now.
+ *
+ *  This pane already does exactly this for a connected system four sections
+ *  further down, which is where the idea came from: a feed whose last update
+ *  SUCCEEDED four days ago is worthless, and so is this. */
+export function runVerdict(
+  run: ReconciliationRun,
+  now = Date.now()
+): { label: string; tone: Tone } {
   if (run.status === 'running') return { label: 'Checking now', tone: 'info' };
   if (run.status === 'error') return { label: 'The check could not finish', tone: 'warning' };
   if (run.status === 'drift') {
@@ -241,6 +279,10 @@ export function runVerdict(run: ReconciliationRun): { label: string; tone: Tone 
       label: `${run.driftCount} ${run.driftCount === 1 ? 'item does' : 'items do'} not add up`,
       tone: 'danger',
     };
+  }
+  const hours = checkAgeHours(run, now);
+  if (hours !== null && hours >= CHECK_STALE_AFTER_HOURS) {
+    return { label: 'Nothing has been checked lately', tone: 'warning' };
   }
   return { label: 'Everything adds up', tone: 'success' };
 }
@@ -279,6 +321,56 @@ export function policyLabel(policy: string): string {
   if (policy === 'continue') return 'Keep selling past zero';
   if (policy === 'preorder') return 'Take pre-orders';
   return policy;
+}
+
+/** "a", "a and b", "a, b and c" - the one rule for joining a short list into a
+ *  sentence, so two places in this pane cannot disagree about the comma. */
+export function listOf(parts: string[]): string {
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return parts[0] ?? '';
+  return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1] ?? ''}`;
+}
+
+/** Where the rest of the shelf went, at the moment the sale was refused.
+ *
+ *  The pane is called "things that do not add up", and its own table was the
+ *  thing that did not: it printed "wanted 1, had 0" beside an item with five
+ *  units in the building and offered no reason, so the honest reading of the
+ *  row was that Piggles had lost count. The three numbers that answer it were
+ *  already fetched by this file and drawn by nothing.
+ *
+ *  FOUR terms decide what is free to sell, and the incident stores three of
+ *  them. The fourth is not missing, it is DERIVED: `available` was worked out
+ *  as on-hand minus allocated minus buffer minus the quarantine shelf, so
+ *
+ *      onHand - allocated - buffer - available  ===  unsellable
+ *
+ *  exactly. Storing it as a fourth column would be storing a value that can
+ *  only ever disagree with the other four later, so it is recovered here
+ *  instead. On a row written before the guard had its fourth term the residual
+ *  is zero, which is the correct answer for it: that sale really was decided
+ *  without the quarantine shelf in the arithmetic.
+ *
+ *  `negative_on_hand` is deliberately excluded. Its `availableQuantity` means
+ *  "what the level held before the movement", not "what was free to sell", so
+ *  the same subtraction would produce a number that means nothing.
+ */
+export function heldBackAtDecision(incident: OversellIncident): string | null {
+  if (incident.kind === 'negative_on_hand') return null;
+  const onHand = incident.onHandAtDecision;
+  if (onHand <= 0) return null;
+
+  const allocated = Math.max(0, incident.allocatedAtDecision);
+  const buffer = Math.max(0, incident.bufferAtDecision);
+  const unsellable = Math.max(0, onHand - allocated - buffer - incident.availableQuantity);
+
+  const held: string[] = [];
+  if (allocated > 0) held.push(`${String(allocated)} spoken for`);
+  if (unsellable > 0) held.push(`${String(unsellable)} not fit to sell`);
+  if (buffer > 0) held.push(`${String(buffer)} held back`);
+  if (held.length === 0) return null;
+
+  return `${String(onHand)} on the shelf: ${listOf(held)}`;
 }
 
 /** How stale a feed is, and whether that is a problem yet. Returns null when the
@@ -369,13 +461,27 @@ export function countVerdict(
   const every = `every ${intervalDays === 1 ? 'day' : `${String(intervalDays)} days`}`;
   if (typeof lastCountedAt !== 'string') {
     return {
-      label: 'Never counted',
+      // "Never CHECKED", not "never counted", and the difference is the whole
+      // point of the word. This row HAS a number — it is in the stock list, it
+      // says 45 to sell — and what has never happened is somebody looking at the
+      // shelf to see whether 45 is still true.
+      //
+      // "Never counted" belongs to the band above this list, where it means
+      // something else entirely: no number exists at all, the row is not here,
+      // and the website is selling it without limit. Both sentences were on the
+      // same screen at once, four inches apart, in the same three words — the
+      // band saying never-counted things "are not below" and a row below it
+      // badged "Never counted" with a quantity beside it (issue 856).
+      //
+      // The header on this function had it right the whole time: "when this
+      // stock was last CHECKED against the shelf".
+      label: 'Never checked',
       tone: 'warning',
-      detail: `You count this ${every}, and nobody has counted it yet.`,
+      detail: `You count this ${every}, and nobody has checked it against the shelf yet.`,
     };
   }
   const countedMs = new Date(lastCountedAt).getTime();
-  // A date that will not parse is NOT "never counted". It is not known, and
+  // A date that will not parse is NOT "never checked". It is not known, and
   // either sentence would be one the screen cannot stand behind.
   if (!Number.isFinite(countedMs)) return null;
   const dueSeconds = intervalDays * 24 * 60 * 60;

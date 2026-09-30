@@ -118,7 +118,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Duplicate controls"
+        label="Duplicates controls"
         status={
           <Text as="span" className="shrink-0 text-sm">
             {isPending

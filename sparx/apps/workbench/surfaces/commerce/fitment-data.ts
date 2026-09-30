@@ -293,6 +293,17 @@ export function pluralize(word: string, count: number): string {
   return `${word}s`;
 }
 
+/** "No models", "1 model", "4 models" — how many entries sit under one, named
+ *  by the level below it.
+ *
+ *  The zero case used to skip `pluralize` and read "No model", three lines from
+ *  the branch that gets it right. The same shape as issue 794: a rule applied
+ *  in one branch of the thing that needed it in both. */
+export function childCountLabel(levelLabel: string, count: number): string {
+  const word = pluralize(levelLabel.toLowerCase(), count === 0 ? 2 : count);
+  return count === 0 ? `No ${word}` : `${String(count)} ${word}`;
+}
+
 /** "4 makes", "8 sizes" — the top-level count named by the first level. */
 export function rootCountLabel(domain: FitmentDomain): string {
   const first = levelDimensions(domain)[0]?.label.toLowerCase() ?? 'entry';

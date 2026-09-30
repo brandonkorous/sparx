@@ -209,7 +209,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier return controls"
+        label="Sent back controls"
         status={
           <Text className="text-sm">
             {owedCount === 0

@@ -27,6 +27,7 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import type { CustomerType, LeadStatus, LifecycleStage } from '@wizeworks/crm-schemas';
 import { api } from '../../lib/api/client';
+import { formatAmount } from '../../lib/money-format';
 
 // Classification is three orthogonal axes (docs/137), each enum straight from
 // `@wizeworks/crm-schemas` (the server's own Zod) so nothing can drift: `type` is the
@@ -56,6 +57,12 @@ export interface Customer {
   firstName: string | null;
   lastName: string | null;
   company: string | null;
+  /** The business this person is LINKED to, as the order screens publish it.
+   *  Separate from `company` above, which is the employer they TYPED — a
+   *  wholesale buyer usually has the link and no typed name. Carried under its
+   *  own key because `Customer.company` is a computed field that shadows the
+   *  relation (see @wizeworks/db's client). */
+  b2bAccount: { id: string; companyName: string } | null;
   jobTitle: string | null;
   preferredContactMethod: string | null;
   doNotContact: boolean;
@@ -66,8 +73,14 @@ export interface Customer {
   customProperties: Record<string, unknown>;
   /** Optional profile photo — a MediaAsset id, resolved to a URL for display. */
   avatarMediaAssetId: string | null;
-  /** Serialized Prisma Decimal — a string like `"1234.50"`. */
+  /** Money RECEIVED. Serialized Prisma Decimal, a string like `"1234.50"`. */
   totalSpent: string;
+  /** What their orders are WORTH, net of refunds: the other half of the same
+   *  question, and the one a shop taking payment by hand lives on. Answering
+   *  only "spent" printed $0.00 above orders worth hundreds for every customer
+   *  who pays on collection or on an invoice. Maintained by the same rollup as
+   *  `totalSpent` (customer-rollup.ts in @wizeworks/crm). */
+  totalOrdered: string;
   orderCount: number;
   firstOrderAt: string | null;
   lastOrderAt: string | null;
@@ -103,7 +116,8 @@ export interface CustomerAddress {
   phone: string | null;
 }
 
-export type CustomerSort = 'score' | 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'createdAt';
+export type CustomerSort =
+  'score' | 'lastOrderAt' | 'totalSpent' | 'totalOrdered' | 'updatedAt' | 'createdAt';
 
 export interface CustomerListParams {
   q?: string;
@@ -150,8 +164,40 @@ export function customerName(c: {
   return 'Unnamed contact';
 }
 
+/**
+ * A name somebody typed into a picker, split into the two boxes the form has.
+ *
+ * The reverse of `customerName`, and it exists for one moment: they searched
+ * for a person who is not in the book yet, so the name is already typed and
+ * making them type it again is how the same person ends up in there twice
+ * (issue 745).
+ *
+ * Everything before the LAST space is the first name. "Mary Jane Vale" is
+ * "Mary Jane" and "Vale", not "Mary" and "Jane Vale", because a surname is one
+ * word far more often than a first name is. One word is a first name and no
+ * surname; both boxes stay editable, so a wrong guess costs a click.
+ */
+export function splitTypedName(typed: string): { firstName: string; lastName: string } {
+  const words = typed.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return { firstName: '', lastName: '' };
+  if (words.length === 1) return { firstName: words[0] ?? '', lastName: '' };
+  const lastName = words.pop() ?? '';
+  return { firstName: words.join(' '), lastName };
+}
+
 interface AxisMeta {
   label: string;
+  /**
+   * A REGISTERED color name, as spelled in the app's `@plugin` block — module
+   * hues are `module-<slug>`, not `<slug>`.
+   *
+   * This is a plain `string` because silica's own `SilicaColor` is
+   * `… | (string & {})`, so nothing here can be caught by the compiler. An
+   * unregistered name emits no class at all and the component falls back to
+   * grey, which looks like a deliberate choice and is why Wholesale and
+   * Individual read identically for months (issue 747). `check:colors` is the
+   * thing that actually catches it.
+   */
   color: string;
   description: string;
 }
@@ -167,13 +213,13 @@ export function customerTypeMeta(type: CustomerType): AxisMeta {
     case 'retail':
       return {
         label: 'Individual',
-        color: 'commerce',
+        color: 'module-commerce',
         description: 'A regular customer at your standard prices.',
       };
     case 'b2b':
       return {
         label: 'Wholesale',
-        color: 'b2b',
+        color: 'module-b2b',
         description: 'A business on a trade account, at agreed prices.',
       };
     case 'partner':
@@ -218,7 +264,7 @@ export function lifecycleStageMeta(stage: LifecycleStage): AxisMeta {
       return {
         label: 'Lead',
         color: 'info',
-        description: 'Made contact or enquired, beyond just subscribing.',
+        description: 'Made contact or inquired, beyond just subscribing.',
       };
     case 'marketing_qualified_lead':
       return {
@@ -302,7 +348,7 @@ export function leadStatusMeta(status: LeadStatus): AxisMeta {
 export function formatMoney(value: number | string | null | undefined, currency = 'USD'): string {
   const n = typeof value === 'string' ? Number(value) : (value ?? 0);
   if (!Number.isFinite(n)) return '—';
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(n);
+  return formatAmount(n, currency);
 }
 
 /** Two letters for a monogram, from whatever identity is present — name, then

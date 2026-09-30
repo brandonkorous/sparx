@@ -106,18 +106,41 @@ function Kpi({ label, value, hint }: { label: string; value: string; hint?: stri
 }
 
 function WorthKpis({ customer }: { customer: Customer }) {
+  // Two questions, and answering only the second is what made this card read
+  // "$0.00 spent" above a list of orders worth hundreds: every customer who
+  // pays on collection or on an invoice looked like one who had bought nothing.
+  // Both figures are net of refunds, so the gap between them is money still
+  // owed rather than money returned.
+  const ordered = Number(customer.totalOrdered);
   const spent = Number(customer.totalSpent);
   const orders = customer.orderCount;
-  const avg = orders > 0 ? spent / orders : 0;
+  const outstanding = ordered - spent;
+  // The real average order value: order VALUE over orders placed. It was the
+  // size of a payment over the count of orders, which described nothing.
+  const avg = orders > 0 ? ordered / orders : 0;
 
   return (
     // Commerce's data, so the band reads as Selling — the one signal that these
     // numbers come from orders, not something typed into the CRM.
     <ModuleScope module="commerce">
       <div className="grid grid-cols-2 gap-3 @2xl:grid-cols-4">
-        <Kpi label="Total spent" value={formatMoney(spent)} />
+        <Kpi
+          label="Their orders come to"
+          value={orders > 0 ? formatMoney(ordered) : '—'}
+          hint={orders > 0 ? `${formatMoney(avg)} an order on average` : undefined}
+        />
+        <Kpi
+          label="Paid you so far"
+          value={formatMoney(spent)}
+          hint={
+            outstanding > 0
+              ? `${formatMoney(outstanding)} still to come`
+              : orders > 0
+                ? 'Paid in full'
+                : undefined
+          }
+        />
         <Kpi label="Orders" value={orders.toLocaleString()} />
-        <Kpi label="Average order" value={orders > 0 ? formatMoney(avg) : '—'} />
         <Kpi
           label="Last order"
           value={orders > 0 ? describeOrderRecency(customer.lastOrderAt) : 'None yet'}
@@ -423,8 +446,18 @@ export function CustomerOverviewTab({
   // section quietly disappearing on its own.
   const dealsQ = useDeals({ customerId: customer.id, state: 'open' });
   const tasksQ = useTasks({ customerId: customer.id, status: 'open' });
+  // `countedOnly` because these rows sit directly under the figures above, and
+  // those figures leave canceled orders out. Without it the card said "3 orders,
+  // $582.60" over three rows summing to $636.90, one of them canceled, having
+  // pushed off the only order she had actually been paid for (issue 332).
+  //
+  // Fixed in the other console and never mirrored here, and the query shape did
+  // not even carry the flag. Measured 2026-09-28: 18 customers across 10
+  // businesses have a canceled order inside their most recent three, so on each
+  // of those the card counted a row its own total refuses to count.
   const ordersQ = useOrders({
     customerId: customer.id,
+    countedOnly: true,
     sortBy: 'placedAt',
     order: 'desc',
     take: 3,

@@ -59,7 +59,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 /** A row that opens a detail pane — click, or Enter/Space with the keyboard,
  *  and shift/alt pick where it lands. The one interaction every related list
  *  shares, so it lives in one place. */
-function openableRowProps(open: (event: { shiftKey: boolean; altKey: boolean }) => void) {
+export function openableRowProps(open: (event: { shiftKey: boolean; altKey: boolean }) => void) {
   return {
     className: 'cursor-pointer',
     tabIndex: 0,
@@ -77,7 +77,7 @@ function openableRowProps(open: (event: { shiftKey: boolean; altKey: boolean }) 
 
 /** The card every related list sits in, with its loading / error / empty faces
  *  handled once so each tab is just its table. */
-function RelatedCard({
+export function RelatedCard({
   isPending,
   isError,
   isEmpty,

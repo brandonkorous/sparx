@@ -65,6 +65,13 @@ export function blindSpot(gaps: SearchGaps | undefined): { total: number; label:
 export function recordSearchLine(input: {
   searching: boolean;
   found: number;
+  /** How many SCREENS matched. The two endings below describe those rows, so
+   *  without it the sentence is guessing at what the reader can see: typing a
+   *  customer's name returns records and no screens at all, under "The rest are
+   *  screens", and a query that matches nothing empties the list and still
+   *  finishes "Everything below is a screen".
+   *  [[feedback_never_present_absence_as_measurement]] */
+  screens: number;
   query: string;
   gaps: SearchGaps | undefined;
 }): string {
@@ -72,17 +79,28 @@ export function recordSearchLine(input: {
   if (input.searching) return 'Looking through your records…';
 
   const blind = blindSpot(input.gaps);
+  // `blindSpot` has always named a single record in the singular. This sentence
+  // did not, so the box told Devi "1 customer are not in this box yet, so it
+  // cannot look at them." The noun agreed and nothing around it did: the verb
+  // and the pronoun were both written for a crowd.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
   const cannotSee = blind
-    ? ` ${blind.label} are not in this box yet, so it cannot look at them.`
+    ? blind.total === 1
+      ? ` ${blind.label} is not in this box yet, so it cannot look at that one.`
+      : ` ${blind.label} are not in this box yet, so it cannot look at them.`
     : '';
 
   if (input.found > 0) {
-    return `${plural(input.found, 'record', 'records')} matched. The rest are screens.${cannotSee}`;
+    const rest = input.screens > 0 ? ' The rest are screens.' : '';
+    return `${plural(input.found, 'record', 'records')} matched.${rest}${cannotSee}`;
   }
   // "Nothing in your records matches" is a claim about her business. Only make
   // it when the box has actually looked at her business.
+  // When no screen matched either, the list is empty and its own empty state is
+  // already saying so. Adding "Everything below is a screen" points at nothing.
+  const below = input.screens > 0 ? ' Everything below is a screen.' : '';
   if (blind) {
-    return `Nothing the box can see matches “${typed}”.${cannotSee} Everything below is a screen.`;
+    return `Nothing the box can see matches “${typed}”.${cannotSee}${below}`;
   }
-  return `Nothing in your records matches “${typed}”. Everything below is a screen.`;
+  return `Nothing in your records matches “${typed}”.${below}`;
 }

@@ -31,6 +31,7 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { Tone } from './bookings-data';
+import { inRange, padRange } from './calendar-zone';
 
 /* ── Shapes: a calendar event ───────────────────────────────────────────── */
 
@@ -51,8 +52,15 @@ export interface CalendarEvent {
   status: string;
   startAt: string;
   endAt: string;
+  /** The zone the booking was made in. The grid places the block on this clock,
+   *  the same one the booking's own text uses, never the viewer's. */
+  timezone: string;
   color: string | null;
   customerId: string | null;
+  /** Who it is for, named: the guest name written on the booking, else the
+   *  linked customer's. Null when nobody was recorded, which is a real answer
+   *  and the one a block must not dress up. Resolved server-side. */
+  customerName: string | null;
   resourceIds: string[];
   resourceNames: string[];
   partySize: number | null;
@@ -119,12 +127,18 @@ const BOOKINGS_ROOT = ['scheduling', 'bookings'] as const;
 export function useCalendarRange(query: RangeQuery, enabled = true) {
   return useQuery({
     queryKey: calendarKeys.range(query),
-    queryFn: () =>
-      api.get<CalendarEvent[]>('/v1/scheduling/bookings/calendar', {
-        from: query.from,
-        to: query.to,
+    queryFn: async () => {
+      // Asked for a day more each side, then trimmed to the days on screen by
+      // each booking's OWN day: the viewer's week and the business's week do not
+      // start at the same instant (see calendar-zone).
+      const padded = padRange(query);
+      const rows = await api.get<CalendarEvent[]>('/v1/scheduling/bookings/calendar', {
+        from: padded.from,
+        to: padded.to,
         ...(query.resourceId ? { resourceId: query.resourceId } : {}),
-      }),
+      });
+      return inRange(rows, query);
+    },
     enabled,
     // Keep the current week/day on screen while the next loads, so paging through
     // time doesn't blink the grid empty and back.
@@ -419,13 +433,6 @@ export function hourLabel(hour: number): string {
   const date = new Date();
   date.setHours(hour, 0, 0, 0);
   return new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).format(date);
-}
-
-/** The clock part of an instant, e.g. "9:30 AM". */
-export function clockLabel(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
 }
 
 /* ── Errors ─────────────────────────────────────────────────────────────── */

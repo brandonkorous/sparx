@@ -121,6 +121,21 @@ export interface Booking {
   service: ServiceLite;
   resources: BookingResourceRow[];
   attendees: BookingAttendeeRow[];
+  /** Who it is for, NAMED: null for a walk-in with no account. The list used to
+   *  have only `customerId` and printed the words "A customer" beside a booking
+   *  whose customer the database could name (issue 138). The API read fetched
+   *  the name and the route dropped it on the way out; both are fixed. */
+  customer: BookedCustomer | null;
+}
+
+/** The part of a customer a booking surface needs to say who turned up, and how
+ *  to reach them when they have not. */
+export interface BookedCustomer {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  phone: string | null;
 }
 
 /* ── Shapes: recurring series ───────────────────────────────────────────── */
@@ -181,6 +196,9 @@ export interface CustomerLite {
   firstName: string | null;
   lastName: string | null;
   email: string | null;
+  /** Ring them when they are late. The API has always returned it; nothing had
+   *  ever asked, so a booking could not show a phone number (issue 111). */
+  phone: string | null;
   company: string | null;
 }
 
@@ -192,6 +210,18 @@ export interface BookingQuery {
   q?: string;
   status?: BookingStatus | '';
   bookingType?: BookingType | '';
+  /** Only this customer's bookings. The API has always taken it; nothing asked,
+   *  so a person's record could not show what they had ever been booked for. */
+  customerId?: string;
+  /** Only bookings for this service. Also always taken by the API, also never
+   *  asked for, so nothing could count what a service was about to lose when
+   *  someone removed it (issue 145). */
+  serviceId?: string;
+  /** ISO instant; bookings that start at or after it. "What is still to come". */
+  from?: string;
+  /** Any of these statuses. A canceled appointment in the future is not one
+   *  that is still to come, so counting what is ahead has to say which. */
+  statusIn?: BookingStatus[];
   order: BookingOrder;
   take: number;
   skip: number;
@@ -256,6 +286,10 @@ export function useBookings(query: BookingQuery) {
         ...(query.q ? { q: query.q } : {}),
         ...(query.status ? { status: query.status } : {}),
         ...(query.bookingType ? { bookingType: query.bookingType } : {}),
+        ...(query.customerId ? { customerId: query.customerId } : {}),
+        ...(query.serviceId ? { serviceId: query.serviceId } : {}),
+        ...(query.from ? { from: query.from } : {}),
+        ...(query.statusIn?.length ? { statusIn: query.statusIn.join(',') } : {}),
         order: query.order,
         take: query.take,
         skip: query.skip,
@@ -388,8 +422,9 @@ export function useSchedulingResources() {
   });
 }
 
-/** One customer by id — used to put a real name on a booking whose row carries
- *  only a `customerId` (the booking API does not join the customer name). */
+/** One customer by id, for the contact details and company a booking's own
+ *  `customer` does not carry. Needs the CRM app; the booking's `customer` does
+ *  not, so a surface names the person from that and only enriches from this. */
 export function useCustomer(id: string | null | undefined) {
   return useQuery({
     queryKey: lookupKeys.customer(id ?? ''),
@@ -692,17 +727,36 @@ export function customerName(customer: CustomerLite | null | undefined): string 
   return 'A customer';
 }
 
-/** Who a booking is for, from what the list actually carries. There is no
- *  customer name on a booking row (the API does not join it), so this reads the
- *  guest name off a single-attendee booking, or falls back to the party count. */
+/**
+ * Who a booking is for, in the fewest words that are true.
+ *
+ * The ladder runs from the most specific thing anyone wrote down to the least:
+ * a name typed onto the booking, then the linked customer's own name, then a
+ * count, then the honest admission that nobody was recorded.
+ *
+ * The customer step is new. It used to end at `customerId ? 'A customer' : …`,
+ * which meant a booking with a customer attached, the ordinary case, printed
+ * the words "A customer" down the whole list while the name sat one read away
+ * (issue 138). "A customer" survives only for a linked customer the database
+ * can no longer find, which is the one case it is true.
+ */
 export function bookingWhoLabel(booking: Booking): string {
   const named = booking.attendees.find((a) => a.guestName?.trim());
   if (named?.guestName) return named.guestName;
+  if (booking.customer) return bookedCustomerName(booking.customer);
   if (booking.attendees.length > 1) return `${String(booking.attendees.length)} people`;
   if (booking.partySize && booking.partySize > 1) {
     return `Party of ${String(booking.partySize)}`;
   }
   return booking.customerId ? 'A customer' : 'No one assigned';
+}
+
+/** A booked customer's name, falling back to whatever else identifies them. */
+export function bookedCustomerName(customer: BookedCustomer): string {
+  const full = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+  if (full) return full;
+  if (customer.email?.trim()) return customer.email;
+  return 'A customer';
 }
 
 /** The staff / rooms a booking is with, named. */

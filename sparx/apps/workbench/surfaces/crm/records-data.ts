@@ -23,6 +23,7 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { PropertyField } from './object-types-data';
+import { formatAmount } from '../../lib/money-format';
 
 /** One row of a tenant-invented object. `values` is the whole record. */
 export interface CrmRecord {
@@ -189,7 +190,7 @@ export function cellText(value: unknown, field?: PropertyField): string {
  *  a business selling in two currencies must not see them rendered alike. */
 function formatMoney(amount: number, code: string): string {
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(amount);
+    return formatAmount(amount, code);
   } catch {
     // An unknown code is a data problem, not a reason to show nothing.
     return `${code} ${amount.toLocaleString()}`;

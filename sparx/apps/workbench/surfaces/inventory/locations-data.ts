@@ -59,6 +59,11 @@ export interface Location {
   /** Whether this location is currently in use. A closed location keeps its
    *  history but takes no new stock. Distinct from archiving, which removes it. */
   isActive: boolean;
+  /** Created by sample data rather than by the owner. Removing the sample data
+   *  deliberately leaves locations alone (a tenant may have renamed one and made
+   *  it theirs), so this outlives the rest of the pack and the list has to say
+   *  so, or a place nobody set up reads exactly like one they did (issue 174). */
+  isSample: boolean;
   createdAt: string;
   updatedAt: string;
   /**

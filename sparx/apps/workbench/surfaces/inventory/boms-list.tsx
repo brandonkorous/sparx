@@ -27,6 +27,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
+import { ItemName } from './item-name';
 import { bomState, useBoms, type Bom } from './assembly-data';
 import { ActionLabel } from '../../components/action-label';
 
@@ -127,10 +128,11 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
               >
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">
-                      {bom.outputTitle ?? 'Untitled product'}
-                    </span>
-                    <span className="truncate font-mono text-sm">{bom.outputSku ?? 'No code'}</span>
+                    <ItemName
+                      productTitle={bom.outputTitle}
+                      variantName={bom.outputVariantName}
+                      code={bom.outputSku}
+                    />
                   </span>
                 </td>
                 <td className="hidden max-w-48 @lg:table-cell">
@@ -145,8 +147,17 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden text-right tabular-nums @md:table-cell">
                   {bom.componentCount}
                 </td>
+                {/* The SAME figure the detail card shows, not `laborCostCents`.
+                    This column has been headed "Costs about" while printing the
+                    time cost per run, which is a different number about a
+                    different thing. And a part with no cost recorded is not a
+                    free part: a recipe nobody has costed says so rather than
+                    claiming $0.00.
+                    [[feedback_never_present_absence_as_measurement]] */}
                 <td className="hidden text-right tabular-nums @xl:table-cell">
-                  {formatCents(bom.laborCostCents)}
+                  {bom.uncostedComponentCount > 0 && bom.estimatedUnitCostCents === 0
+                    ? 'Not known'
+                    : formatCents(bom.estimatedUnitCostCents)}
                 </td>
                 <td className="text-right">
                   <Badge color={state.tone} variant="soft" size="sm">
@@ -164,7 +175,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Recipe list controls"
+        label="Recipes controls"
         search={
           <SearchInput
             value={q}

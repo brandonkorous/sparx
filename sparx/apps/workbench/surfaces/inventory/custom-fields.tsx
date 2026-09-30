@@ -339,7 +339,11 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
       <EmptyState
         icon={<Columns3 className="size-6" aria-hidden />}
         title="No columns of your own here yet"
-        description={ENTITY_HELP[entity]}
+        /* NOT `ENTITY_HELP` — the FormSection header two lines above this is
+           already showing that exact sentence, so the pane said the same thing
+           twice, forty pixels apart, four times over. An empty state has to add
+           something the heading did not: what happens once there IS one. */
+        description={`Add one and it appears ${ENTITY_REACH[entity]}.`}
       />
     );
   }
@@ -460,7 +464,7 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Custom column controls"
+        label="Your own columns controls"
         refresh={
           <RefreshButton
             isFetching={fields.isFetching}

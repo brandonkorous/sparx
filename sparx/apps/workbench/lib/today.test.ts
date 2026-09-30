@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { dayFromStored, dayIso, dayStartUtc, pickedDayUtc, todayIso, todayStartUtc } from './today';
+import {
+  dayBoxProblem,
+  dayFromStored,
+  dayIso,
+  dayStartUtc,
+  HALF_A_DAY,
+  NOT_A_DATE,
+  pickedDayUtc,
+  todayIso,
+  todayStartUtc,
+} from './today';
 
 /**
  * THE EVENING A COST DISAPPEARED.
@@ -213,5 +223,44 @@ describe('a picked day survives the round trip', () => {
     expect(dayFromStored(null)).toBeNull();
     expect(dayFromStored('')).toBeNull();
     expect(dayFromStored('not a date')).toBeNull();
+  });
+});
+
+/**
+ * THE DATE THAT WAS TYPED AND NOT SAVED.
+ *
+ * A wholesale price was being agreed until the end of March. The date box took
+ * "03", "31" and "2027" and showed all three on screen. The form read the box,
+ * got the empty string, decided no end date had been given, and lit its button
+ * with the words "Set this price" instead of "Record this agreement".
+ *
+ * A native date box holds three cells and reports a value only when all three
+ * are filled. Until then `value` is "" and `validity.badInput` is true, and
+ * every one of the 82 date boxes in the two consoles read the first and asked
+ * nothing about the second. Issue 741.
+ */
+describe('dayBoxProblem', () => {
+  it('says nothing about an empty box, because empty is a different question', () => {
+    expect(dayBoxProblem('', false)).toBeNull();
+  });
+
+  it('says nothing about a real day', () => {
+    expect(dayBoxProblem('2027-03-31', false)).toBeNull();
+  });
+
+  it('catches the half-typed box the value cannot describe', () => {
+    // The state that shipped invisibly: what the control reports is EMPTY, and
+    // the only thing that knows better is the control's own validity.
+    expect(dayBoxProblem('', true)).toBe(HALF_A_DAY);
+  });
+
+  it('still catches a complete date that is not a real day', () => {
+    expect(dayBoxProblem('2027-02-31', false)).toBe(NOT_A_DATE);
+  });
+
+  it('tells the two apart, because the remedies are different', () => {
+    // "Finish it" and "that is not a date" send a person to do different
+    // things. [[feedback_one_outcome_two_causes]]
+    expect(dayBoxProblem('', true)).not.toBe(dayBoxProblem('2027-02-31', false));
   });
 });

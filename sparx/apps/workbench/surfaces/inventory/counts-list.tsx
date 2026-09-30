@@ -235,7 +235,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Stock count controls"
+        label="Stock counts controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -290,7 +290,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Show counts at"
               value={locationId}
               onChange={(event) => {

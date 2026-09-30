@@ -144,7 +144,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Receiving controls"
+        label="Scan a delivery controls"
         controls={
           <>
             {/* The consequence, colored as one. Everything else on this screen is
@@ -184,7 +184,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
         {/* Who and what, once, at the top. A receiver working two deliveries
             needs to be able to tell at a glance which one this screen is. */}
         <Card>

@@ -37,7 +37,17 @@ describe('paneLoadReason', () => {
     expect(paneLoadReason(apiError(503))).toBe('failed');
   });
 
-  it('leaves a 4xx that is not 404 on unreachable, unchanged by this split', () => {
+  it('calls a 400 missing: the server answered, and the address is wrong', () => {
+    expect(paneLoadReason(apiError(400))).toBe('missing');
+  });
+
+  it('calls a 422 missing too, which is what a truncated id in a link returns', () => {
+    expect(paneLoadReason(apiError(422))).toBe('missing');
+  });
+
+  // 403 is the thing being THERE and out of reach, which is neither of the
+  // other two. It stays where it was rather than being called deleted.
+  it('leaves a 403 on unreachable', () => {
     expect(paneLoadReason(apiError(403))).toBe('unreachable');
   });
 

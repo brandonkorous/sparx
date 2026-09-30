@@ -87,16 +87,24 @@ export interface QuickReply {
   updatedAt: string;
 }
 
-export interface RecentOrder {
-  id: string;
-  orderNumber: string;
-  status: string;
-  total: number;
-  placedAt: string;
-}
+/**
+ * How sure the server is who this is.
+ *
+ *   `record`  the conversation names a customer. Proof.
+ *   `email`   the address the visitor TYPED matches a customer on this site.
+ *             A strong hint, and not proof, which is why it has its own word
+ *             here and its own sentence on screen.
+ *   `none`    an anonymous visitor.
+ *
+ * This replaced a bare `linked: boolean`. Nothing on the platform writes
+ * `chat_conversations.customer_id` — the public widget is the only creator and
+ * passes none — so that flag was false on every conversation ever recorded and
+ * the whole history block below it was unreachable (issue 864).
+ */
+export type CustomerMatch = 'record' | 'email' | 'none';
 
 export interface CustomerContext {
-  linked: boolean;
+  match: CustomerMatch;
   customerId: string | null;
   name: string | null;
   email: string | null;
@@ -106,7 +114,6 @@ export interface CustomerContext {
   orderCount: number;
   lifetimeValue: number;
   lastOrderAt: string | null;
-  recentOrders: RecentOrder[];
 }
 
 /* ── Widget configuration ─────────────────────────────────────────────────── */
@@ -203,6 +210,8 @@ export interface ConversationsFilter {
   property?: string;
   status?: ConversationStatus;
   mine?: boolean;
+  /** Only conversations with a message nobody on the team has read. */
+  unread?: boolean;
   assignedTo?: string;
   q?: string;
   take?: number;
@@ -256,6 +265,7 @@ export function useConversations(filter: ConversationsFilter) {
         ...(filter.property ? { property: filter.property } : {}),
         ...(filter.status ? { status: filter.status } : {}),
         ...(filter.mine ? { mine: 'true' } : {}),
+        ...(filter.unread ? { unread: 'true' } : {}),
         ...(filter.assignedTo ? { assigned_to: filter.assignedTo } : {}),
         ...(filter.q ? { q: filter.q } : {}),
         ...(filter.take ? { take: filter.take } : {}),
@@ -488,12 +498,19 @@ export function sourceLabel(source: ChatSource): string {
 
 /** Who sent a message, for its label. AI and staff are "your side"; the customer
  *  is the person you are helping. */
-export function senderLabel(message: ChatMessage, customerName: string | null): string {
+export function senderLabel(
+  message: ChatMessage,
+  customerName: string | null,
+  viewerId?: string | null
+): string {
   switch (message.senderType) {
     case 'customer':
       return customerName ?? 'Visitor';
     case 'staff':
-      return 'Your team';
+      // "Your team" only when somebody ELSE answered. Without this a one-person
+      // shop is told its own sentence came from a team, one second after
+      // sending it.
+      return viewerId && message.senderId === viewerId ? 'You' : 'Your team';
     case 'ai':
       return 'AI assistant';
   }

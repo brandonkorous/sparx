@@ -292,7 +292,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Timesheet controls"
+        label="Timesheets controls"
         primary={
           <Button
             size="sm"

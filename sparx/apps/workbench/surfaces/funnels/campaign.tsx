@@ -429,22 +429,30 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   >
                     Save
                   </Button>
-                  <Button
-                    size="sm"
-                    color="danger"
-                    variant="ghost"
-                    shape="square"
-                    aria-label="Delete this campaign"
-                    onClick={() => {
-                      void onDelete();
-                    }}
-                  >
-                    <Trash2 className="size-4" aria-hidden />
-                  </Button>
                 </>
               ) : null}
             </div>
           </>
+        }
+        /* A VALUE, not bespoke JSX. The header above used to say a
+           ToolbarAction had no color of its own to say "destructive" - it has
+           had `tone: 'danger'` since the assembly run's "Call this run off" hit
+           the same wall, and this call site was not swept with it.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={
+          canEdit
+            ? [
+                {
+                  label: 'Delete',
+                  title: 'Delete this campaign',
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
+            : undefined
         }
       />
 

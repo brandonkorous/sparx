@@ -87,7 +87,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
           {
             '@type': 'HowToStep',
             name: 'Drop the file in',
-            text: 'sparx reads it in your browser, recognises which platform it came from, and tells you exactly what is in it. Nothing is uploaded at this point.',
+            text: 'sparx reads it in your browser, recognizes which platform it came from, and tells you exactly what is in it. Nothing is uploaded at this point.',
           },
           {
             '@type': 'HowToStep',

@@ -268,6 +268,8 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
             {joined.length > 0 ? `${String(onCount)} of ${String(joined.length)} on` : ''}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         controls={
           <>
             <div className="ml-auto hidden w-40 shrink-0 @md:block">

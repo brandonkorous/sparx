@@ -61,6 +61,15 @@ export interface FunnelStage {
   kind: StageKind;
   /** Which page counts as this stage. `view` stages only. */
   path?: string;
+  /** What records this step on its own. Kept through every edit, never drawn raw. */
+  match?: StageMatch;
+}
+
+/** A step's rule: the same condition group automations use. Only read to say
+ *  in words what records the step (recorded-by.ts). */
+export interface StageMatch {
+  logic: 'AND' | 'OR';
+  conditions: ({ field: string; operator: string; value?: unknown } | StageMatch)[];
 }
 
 export interface Funnel {
@@ -297,7 +306,7 @@ export const KIND_LABEL: Record<FunnelKind, string> = {
   lead: 'Finding new customers',
   recovery: 'Winning back a lost sale',
   purchase: 'Selling something',
-  booking: 'Filling the diary',
+  booking: 'Filling the calendar',
   winback: 'Bringing people back',
   custom: 'Something else',
 };

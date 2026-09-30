@@ -109,7 +109,7 @@ function ActionDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
 
-          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+          <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             {children}
           </div>
 
@@ -612,11 +612,13 @@ export function ExchangeReturnModal({
   // most do not. Left empty, the swap settles and the tracking number is
   // recorded afterwards through "Say how it went out".
   const [shipping, setShipping] = useState<ShipmentForm>(EMPTY_SHIPMENT_FORM);
+  const [staffNote, setStaffNote] = useState('');
 
   useEffect(() => {
     if (open) {
       setPicked(null);
       setShipping(EMPTY_SHIPMENT_FORM);
+      setStaffNote('');
     }
   }, [open]);
 
@@ -627,6 +629,7 @@ export function ExchangeReturnModal({
       {
         replacementVariantId: picked.id,
         quantity: 1,
+        ...(staffNote.trim() ? { staffNote: staffNote.trim() } : {}),
         ...(shipment ? { shipment } : {}),
       },
       {
@@ -722,6 +725,20 @@ export function ExchangeReturnModal({
         onChange={setShipping}
         trackingHint="Leave this empty if it has not gone yet. You can add it when you post it, and that is when the customer is told."
       />
+
+      <Field>
+        <FieldLabel>Note for your team</FieldLabel>
+        <Textarea
+          color="module"
+          rows={2}
+          value={staffNote}
+          placeholder="Optional. Why this swap, for whoever looks at it next. The customer never sees it."
+          aria-label="Note for your team"
+          onChange={(event) => {
+            setStaffNote(event.target.value);
+          }}
+        />
+      </Field>
 
       <Text className="text-base">
         One of these comes off your stock the moment you send it. What came back went on the shelf

@@ -8,7 +8,7 @@
 // (⇧-click), tears off to a second monitor, survives in a saved layout, and can
 // be starred — none of which an overlay can do.
 
-import { Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import { Button, Table } from '@wizeworks/silicaui-react';
 import { MessageSquarePlus } from 'lucide-react';
 import { describeAgo } from '../../lib/api/activity';
 import { useMyFeedback, type FeedbackSubmission } from '../../lib/api/feedback';
@@ -17,6 +17,7 @@ import { CATEGORY_ICON, FeedbackStatusBadge, deriveTitle } from '../../component
 import { useFeedback } from '../../components/feedback/provider';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 /** Same modifier contract as the launcher and every other list. */
@@ -52,13 +53,15 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Feedback list controls"
+        label="Your feedback controls"
         status={
           <p className="shrink-0 text-sm whitespace-nowrap">
             {rows.length === 1 ? '1 message' : `${String(rows.length)} messages`}
             {data && data.unreadCount > 0 ? ` · ${String(data.unreadCount)} with a new reply` : ''}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"
@@ -84,7 +87,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
             Loading…
           </p>
         ) : rows.length === 0 ? (
-          <EmptyState
+          <PaneEmpty
             icon={<MessageSquarePlus className="size-6" aria-hidden />}
             title="You haven’t sent anything yet"
             description="Tell us what’s broken, what’s missing, or what you wish worked differently. A real person reads every message, and replies land right here."

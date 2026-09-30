@@ -162,13 +162,23 @@ function KpiValue({
 
 /* ── Timeseries (the hero chart) ─────────────────────────────────────────── */
 
-function TimeseriesTile({ result }: { result: MetricResult }) {
+function TimeseriesTile({ tile, result }: { tile: DashboardTile; result: MetricResult }) {
   const series = result.data as TimeseriesData;
   const hasData = series.points.some((p) => series.series.some((s) => Number(p[s.key] ?? 0) > 0));
   if (!hasData) {
     return <TileMessage>No figures for this period yet.</TileMessage>;
   }
-  return <TrendChart series={series.series} points={series.points} grain={series.grain} />;
+  return (
+    <TrendChart
+      series={series.series}
+      points={series.points}
+      grain={series.grain}
+      // The same formatter the donut beside it already got. Without it the axis
+      // prints the stored number, and money is stored in cents.
+      format={(n) => formatValue(n, result.unit)}
+      label={tile.title}
+    />
+  );
 }
 
 /* ── Breakdown (donut) ───────────────────────────────────────────────────── */
@@ -177,6 +187,22 @@ function BreakdownTile({ tile, result }: { tile: DashboardTile; result: MetricRe
   const rows = (result.data as BreakdownData).rows;
   if (rows.length === 0) {
     return <TileMessage>{tile.emptyHint ?? 'Nothing to break down in this period.'}</TileMessage>;
+  }
+  // A PIE OF ONE THING IS NOT A CHART.
+  //
+  // "Where sales came from" drew a full circle labelled "Unattributed · 100%",
+  // which is a picture of not knowing, drawn with all the authority of a
+  // measurement. Every breakdown can land here: one channel, one campaign, one
+  // source. Saying it in a sentence is both shorter and true.
+  // [[feedback_never_present_absence_as_measurement]]
+  const only = rows.length === 1 ? rows[0] : undefined;
+  if (only) {
+    return (
+      <TileMessage>
+        All of it falls under one heading, {only.label}: {formatValue(only.value, result.unit)}.
+        There is nothing here to compare it against yet.
+      </TileMessage>
+    );
   }
   return (
     <DonutChart
@@ -357,7 +383,7 @@ export function Tile({ tile, result, onDrill }: TileProps) {
     if (result.status !== 'ok') return <StatusLine result={result} tile={tile} />;
     switch (result.shape) {
       case 'timeseries':
-        return <TimeseriesTile result={result} />;
+        return <TimeseriesTile tile={tile} result={result} />;
       case 'breakdown':
         return <BreakdownTile tile={tile} result={result} />;
       case 'list':

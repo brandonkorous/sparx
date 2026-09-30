@@ -45,6 +45,7 @@ import { SaveFailure } from '@/components/save-failure';
 import { missingPieces } from './broadcast-ready';
 import { BroadcastPreview } from './broadcast-preview';
 import {
+  broadcastableEmails,
   broadcastErrorMessage,
   broadcastState,
   senderDisplay,
@@ -196,6 +197,10 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
     [designed.data, draft.builderEmailId]
   );
   const emailUnpublished = chosenEmail != null && !chosenEmail.published;
+  // A draft saved before the picker stopped offering built-in emails can still
+  // hold one. It is named here rather than silently dropped, so the select does
+  // not read "Choose an email" while the draft still points at "Payment failed".
+  const emailBuiltIn = chosenEmail != null && chosenEmail.key !== null;
 
   const name = draft.name.trim();
   const subject = draft.subject.trim();
@@ -212,6 +217,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
     name,
     subject,
     emailUnpublished,
+    emailBuiltIn,
     recipientCount,
     mailingAddress: settings.data?.physicalAddress,
   });
@@ -322,7 +328,9 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
   };
 
   const audienceItems = audiences.data ?? [];
-  const designedItems = designed.data ?? [];
+  // Only emails the owner wrote: a built-in like "Order confirmation" is sent by
+  // one event and reads that event's details, so it has nothing to say to a list.
+  const designedItems = broadcastableEmails(designed.data);
 
   return (
     <div className={PANE_SHELL}>
@@ -517,12 +525,10 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
 
           <FormSection
             title="What you’re sending"
-            description="Pick one of your designed emails. It has to be published: a draft design has nothing to send yet."
+            description="Pick one of the emails you’ve written. It has to be published: a draft design has nothing to send yet."
             action={
               <Button
                 size="sm"
-                variant="outline"
-                color="neutral"
                 onClick={() => {
                   ctx.open(EMAIL_DESIGNER_KEY, {}, { target: 'beside' });
                 }}
@@ -541,10 +547,12 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                   </AlertDescription>
                 </AlertContent>
               </Alert>
-            ) : designed.isSuccess && designedItems.length === 0 ? (
+            ) : designed.isSuccess && designedItems.length === 0 && !emailBuiltIn ? (
               <Text className="text-sm">
-                You haven’t designed any emails yet. Use “Design emails” above to build one, publish
-                it, then choose it here.
+                You haven’t written an email to send yet. Use “Design emails” above to write one,
+                publish it, then choose it here. The ready-made emails sparx sends for you (order
+                confirmations, reminders) aren’t offered, because each is written about one
+                customer’s order or booking.
               </Text>
             ) : (
               <Field>
@@ -558,6 +566,11 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                   }}
                 >
                   <option value="">Choose an email…</option>
+                  {emailBuiltIn && chosenEmail ? (
+                    <option value={chosenEmail.id} disabled>
+                      {chosenEmail.name} (sent automatically, can’t go to a list)
+                    </option>
+                  ) : null}
                   {designedItems.map((email) => (
                     <option key={email.id} value={email.id}>
                       {email.name}
@@ -565,6 +578,13 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                     </option>
                   ))}
                 </NativeSelect>
+                {emailBuiltIn && chosenEmail ? (
+                  <FieldDescription>
+                    “{chosenEmail.name}” is one of the emails sparx sends by itself, to one customer
+                    at a time, when something happens to them. It’s written about that one moment,
+                    so it can’t go to your whole audience. Choose an email you wrote instead.
+                  </FieldDescription>
+                ) : null}
                 {emailUnpublished ? (
                   <FieldDescription>
                     This design hasn’t been published yet, so it can’t be sent. Open it in the email
@@ -593,8 +613,6 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
             action={
               <Button
                 size="sm"
-                variant="outline"
-                color="neutral"
                 onClick={() => {
                   ctx.open(SETTINGS_KEY, {}, { target: 'beside' });
                 }}

@@ -51,7 +51,7 @@ export function FinanceFalseFix() {
           lede={
             <>
               Not a worse one: a different one. Your books exist to be filed: they sort every dollar
-              into the categories a tax form recognises, and they get it right. Then you ask the
+              into the categories a tax form recognizes, and they get it right. Then you ask the
               question you actually had, and the categories have already thrown the answer away.
             </>
           }
@@ -224,7 +224,7 @@ const RECORDED: { amount: string; what: string; kind: CostKind; when: string; no
   },
   {
     amount: '$1,240.00',
-    what: 'Aluminium sheet: Sutter Supply',
+    what: 'Aluminum sheet: Sutter Supply',
     kind: 'work',
     when: 'Mar 6',
     note: 'unpaid · due Mar 20',

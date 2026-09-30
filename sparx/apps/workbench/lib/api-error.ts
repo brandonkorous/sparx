@@ -35,6 +35,18 @@ export function isNotFound(error: unknown): boolean {
 export function paneLoadReason(error: unknown): 'missing' | 'unreachable' | 'failed' {
   if (isNotFound(error)) return 'missing';
   if (error instanceof ApiError && error.status >= 500) return 'failed';
+  // A 400 or a 422 on a READ is the same answer as a 404 wearing a different
+  // number: the server was reached, and what it said was that there is nothing
+  // at that address. It reaches a person through a link whose id got cut off in
+  // a chat message, and it was landing on "the server could not be reached"
+  // over a Try again that could only ever fail - the exact fault the two
+  // paragraphs above this one were written about. The `missing` copy already
+  // covers it: "deleted, or the address points at something that is not in this
+  // business."
+  //
+  // 403 stays where it is. The thing IS there and somebody simply cannot open
+  // it; calling that deleted would be a different lie.
+  if (error instanceof ApiError && (error.status === 400 || error.status === 422)) return 'missing';
   return 'unreachable';
 }
 

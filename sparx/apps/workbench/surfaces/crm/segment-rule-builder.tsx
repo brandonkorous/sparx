@@ -36,6 +36,7 @@ import {
   type SegmentField,
   type SegmentOperator,
 } from './segment-rules';
+import { DayInput } from '../../components/day-input';
 
 const MAX_DEPTH = 2;
 
@@ -163,14 +164,13 @@ function ValueControl({
       );
     case 'date':
       return (
-        <Input
+        <DayInput
           color="module"
-          type="date"
           aria-label="Value"
           className="max-w-[12rem]"
           value={node.value}
-          onChange={(event) => {
-            set(event.target.value);
+          onValueChange={(value) => {
+            set(value);
           }}
         />
       );

@@ -74,6 +74,10 @@ export interface StockProvenance {
   onHand: number;
   allocated: number;
   safetyBuffer: number;
+  /** Units here that nothing may be sold from: a quarantine shelf, a damaged
+   *  shelf, something awaiting repair. Optional because an older cached reply
+   *  will not carry it; absent means zero. */
+  unsellableOnHand?: number;
   sellable: number;
   channel: {
     channel: string;

@@ -7,8 +7,10 @@
 // FIRST: an order carries TWO states, not one. Has it been paid for, and has it
 // been sent — stored as independent columns because they genuinely are. So the
 // table shows both, and the filter chips are phrased as the work rather than as
-// the enum: "Not paid" and "To send" are the two questions this list gets opened
-// to answer, and neither is a single status value.
+// the enum: "Still owed" and "To pack" are the two questions this list gets
+// opened to answer, and neither is a single status value. "Still owed" is not a
+// payment value at all — a canceled order carries 'unpaid' and is owed by
+// nobody, so it asks the named question instead (issue 859).
 //
 // SECOND: it lives in a pane of unknown width — 320px beside an order, or the
 // whole window. Columns disclose with @container, never a viewport query: pane
@@ -21,7 +23,7 @@ import { ArrowDown, ArrowUp, ShoppingBag } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   customerName,
   formatDate,
@@ -34,51 +36,7 @@ import {
   type SortDirection,
 } from './data';
 import { RowOpenHint } from '../../components/row-open-hint';
-
-/**
- * The chips are work states, not status values.
- *
- * Each maps to ONE server filter, so what is on screen is always exactly one
- * server answer — no chip means "these two statuses, sort of". "Refunded" is
- * deliberately absent as a chip: it is rare, it is visible on any row it applies
- * to, and a sixth chip costs every operator a wider bar forever to save a few
- * people one search.
- */
-const FILTERS = [
-  { value: 'all', label: 'All', status: undefined, paymentStatus: undefined },
-  { value: 'unpaid', label: 'Not paid', status: undefined, paymentStatus: 'unpaid' },
-  { value: 'to_send', label: 'To send', status: 'placed', paymentStatus: undefined },
-  { value: 'sent', label: 'On the way', status: 'fulfilled', paymentStatus: undefined },
-  { value: 'delivered', label: 'Delivered', status: 'delivered', paymentStatus: undefined },
-  { value: 'cancelled', label: 'Canceled', status: 'cancelled', paymentStatus: undefined },
-] as const;
-
-type FilterValue = (typeof FILTERS)[number]['value'];
-
-/**
- * What to try when nothing matched — naming ONLY what is actually narrowing the
- * list. Telling someone to clear a filter they never set sends them looking for
- * a control that is already off, and a search box they did not type in.
- */
-function emptyAdvice(search: string, filterLabel: string | null): string {
-  const parts: string[] = [];
-  if (search) {
-    parts.push('Try part of an order number, or the customer’s name, company or email.');
-  }
-  if (filterLabel) {
-    parts.push(
-      `You are only seeing orders marked “${filterLabel}”. Switch back to All for the rest.`
-    );
-  }
-  return parts.join(' ');
-}
-
-/** Same modifier contract as every other list in the app. */
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
-}
+import { FILTERS, emptyAdvice, targetFor, type FilterValue } from './orders-list-filters';
 
 export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
@@ -102,7 +60,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useOrders({
     q: search.trim(),
     status: active.status,
-    paymentStatus: active.paymentStatus,
+    owing: active.owing,
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -164,7 +122,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     // in a pane docked beside an order, 12px a side is real column width.
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Order list controls"
+        label="Orders controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

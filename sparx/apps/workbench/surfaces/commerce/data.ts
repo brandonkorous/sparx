@@ -28,9 +28,11 @@
 import { carrierLabel } from '@wizeworks/commerce-schemas';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { TAKE_OFF_REASON } from './payment-undo';
 import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
 import { paymentMethodLabels } from '../../lib/payment-methods';
 import { apiErrorMessage } from '../../lib/api-error';
+import { formatAmount } from '../../lib/money-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -44,7 +46,17 @@ export interface OrderCustomer {
   companyName: string | null;
   email: string | null;
   companyId: string | null;
-  company: {
+  /**
+   * The trade account this order is for.
+   *
+   * NOT `company`. That name belongs to the customer's TYPED employer on the
+   * wire, and the Prisma client publishes it as a computed field which shadows
+   * the relation of the same name — so the join the order service used to make
+   * came back null on every order ever placed, and the "Trade account" line on
+   * the order detail has never rendered for anybody (issue 751). The service
+   * attaches this after the query, under a name nothing can shadow.
+   */
+  b2bAccount: {
     id: string;
     companyName: string;
     paymentTerms: string | null;
@@ -133,7 +145,12 @@ export interface Order {
 export interface OrderPayment {
   id: string;
   processor: string;
+  /** The GATEWAY's reference for this charge. Null on anything taken by hand:
+   *  what a person wrote down about a cheque lives in `metadata.note`. */
   processorRef: string | null;
+  /** The platform's own scratch space on a payment. Read it through
+   *  `paymentNote()`, never by key at a call site. */
+  metadata?: Record<string, unknown> | null;
   amount: number;
   currency: string;
   status: string; // pending | authorized | captured | failed | voided | refunded
@@ -217,7 +234,14 @@ export type SortDirection = 'asc' | 'desc';
 export interface OrderQuery {
   q?: string;
   status?: string;
+  /** Only the orders that count toward a customer's figures — canceled ones
+   *  left out. For a list shown BESIDE those figures. */
+  countedOnly?: boolean;
   paymentStatus?: string;
+  /** Orders with money still to collect. A named question, not a payment column
+   *  value: a canceled order carries 'unpaid' and is owed by nobody, and a
+   *  part-paid one never carries it. See `isOwingOrder`. */
+  owing?: boolean;
   /** Scope the list to one customer — the customer's-side lens on Selling. The
    *  endpoint (`GET /v1/orders?customer_id=`) is the join; there is no separate
    *  per-customer orders route. */
@@ -236,7 +260,9 @@ export function useOrders(query: OrderQuery) {
         .list<Order>('/v1/orders', {
           ...(query.q ? { q: query.q } : {}),
           ...(query.status ? { status: query.status } : {}),
+          ...(query.countedOnly ? { counted_only: 'true' } : {}),
           ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
+          ...(query.owing ? { owing: 'true' } : {}),
           ...(query.customerId ? { customer_id: query.customerId } : {}),
           sort_by: query.sortBy,
           order: query.order,
@@ -296,6 +322,37 @@ export function useOrderRefunds(id: string) {
   });
 }
 
+/** The processors this console's own "Anything to note" box ever wrote a
+ *  note into `processorRef` for, before the note moved to `metadata`. On these
+ *  that field only ever held what somebody typed. On a gateway charge it is the
+ *  gateway's id and on a gift card it is the card's code, neither of which is
+ *  anybody's note. */
+const HAND_TAKEN = new Set(['manual', 'check', 'wire']);
+
+/**
+ * What a person wrote down about this payment, or null when nobody did.
+ *
+ * `metadata.note` is where it belongs and where it goes now. `processorRef` is
+ * read as a fallback on money taken by hand, because payments recorded before
+ * the note moved have it stored there, and on those rows showing it is the
+ * honest reading. Before this, the note was typed into the order pane's own box
+ * and then drawn nowhere at all: the cheque number somebody took care to write
+ * down could not be found again.
+ */
+export function paymentNote(
+  payment: Pick<OrderPayment, 'processor' | 'processorRef' | 'metadata'>
+): string | null {
+  const note = payment.metadata?.note;
+  if (typeof note === 'string' && note.trim()) return note.trim();
+  if (!HAND_TAKEN.has(payment.processor)) return null;
+  // Money that came in against an invoice is recorded by the invoice, whose
+  // `processorRef` is the invoice payment's id (billing-payment-service.ts), not
+  // anybody's note. Measured: one such row printed a bare id under the amount.
+  if (payment.metadata?.billingDocumentId !== undefined) return null;
+  const older = payment.processorRef?.trim() ?? '';
+  return older === '' ? null : older;
+}
+
 /**
  * Record money the business took ITSELF — cash over the counter, a cheque, a
  * bank transfer.
@@ -332,7 +389,14 @@ export function useRecordOrderPayment(id: string) {
         processor: input.processor,
         status: 'captured',
         capturedAt: new Date().toISOString(),
-        ...(input.reference?.trim() ? { processorRef: input.reference.trim() } : {}),
+        // Her note goes in `metadata`, NOT `processorRef`. That field means "the
+        // gateway's own reference for this charge", and it is one third of a
+        // UNIQUE key (tenant, processor, processorRef): two cash sales both
+        // noted "paid at the counter" collided, so the second could not be
+        // written down at all. It also carried a hand-typed note into the
+        // refund path's idea of a charge to reverse, which the server now
+        // guards against by processor, not by this field.
+        ...(input.reference?.trim() ? { metadata: { note: input.reference.trim() } } : {}),
       }),
     onSuccess: () => {
       // The order's own payment_status and amount_paid move with this, so the
@@ -817,7 +881,7 @@ export function amountDue(order: Order): number {
 }
 
 export function formatMoney(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  return formatAmount(amount, currency);
 }
 
 export function formatDate(value: string | null | undefined): string {
@@ -912,6 +976,92 @@ export function useCreateInvoiceForOrder(id: string) {
       // pane does, and so does the Invoices screen.
       void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
+    },
+  });
+}
+
+/**
+ * Where this order is going, and who it is billed to.
+ *
+ * ── WHY THIS WAS MISSING AND WHY THAT MATTERED ──────────────────────────────
+ *
+ * `PATCH /v1/orders/:id` has always taken `shippingAddress` and
+ * `billingAddress`. The order pane READ them — "Where it goes" prints both, and
+ * prints **Not given** when there are none — and offered no way to fill one in.
+ * So an order with no address said so permanently, and the shop could not post
+ * it.
+ *
+ * That is not a rare corner. An order made by converting an accepted quote
+ * arrives with no address at all, because a quote is a price and was never
+ * asked where the goods go. Measured 2026-09-22 on a seeded tenant: a $504.00
+ * trade order with nowhere to send it and no box to type one in.
+ * [[feedback_screen_over_a_function_nobody_calls]]
+ *
+ * ADDRESSES ARE A SNAPSHOT, and stay one. This writes the order's own copy; it
+ * does not touch the customer's address book, and changing the customer's
+ * address later still never rewrites this order.
+ */
+export function useSetOrderAddresses(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: {
+      shippingAddress?: OrderAddress | null;
+      billingAddress?: OrderAddress | null;
+    }) => api.patch<Order>(`/v1/orders/${id}`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
+ * The shop's own note about this order.
+ *
+ * `PATCH /v1/orders/:id` takes FOUR things. Two of them are the addresses above,
+ * wired when a quote-turned-order arrived with nowhere to send it. The other two
+ * are the notes, and this pane READ them and offered no way to write one: the
+ * Notes section rendered nothing at all while both were empty, which they were on
+ * every order on the platform (0 of 122, measured 2026-09-29). See
+ * `order-notes.tsx` for why only the shop's half is a box (issue 874).
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ */
+export function useSetOrderNote(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    // Empty clears it. `null` is what the schema takes for "there is no note";
+    // an empty string would be stored and then printed as a blank line under a
+    // heading. Same reason `useUpdateTracking` above sends null.
+    mutationFn: (note: string) =>
+      api.patch<Order>(`/v1/orders/${id}`, { internalNote: note.trim() || null }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
+ * Taking a payment off the order because the money never came in.
+ *
+ * The last of the order endpoints nothing called. See `payment-undo.ts` for what
+ * this is for, why it is offered only on money the shop took itself, and why the
+ * one remedy on offer until now made the books less true rather than more.
+ *
+ * The reason rides along on the record: the API stores it on the payment and this
+ * pane already prints it under the row, so the line says why it is off rather
+ * than only that it is.
+ */
+export function useTakePaymentOff(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (paymentId: string) =>
+      api.post<OrderPayment>(`/v1/orders/${id}/payments/${paymentId}/void`, {
+        reason: TAKE_OFF_REASON,
+      }),
+    onSuccess: () => {
+      // The order's own amountPaid and payment_status move with this, and so does
+      // the buyer's lifetime total, so the order is refetched rather than the
+      // payments list alone.
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
     },
   });
 }

@@ -15,7 +15,7 @@
 
 import { useEffect } from 'react';
 import { Badge, Button, Heading, Text, useToast } from '@wizeworks/silicaui-react';
-import { Database, FlaskConical, Trash2 } from 'lucide-react';
+import { Database, FlaskConical, Trash2, Warehouse } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -25,7 +25,9 @@ import { ModuleScope } from '../../components/module-scope';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   COUNT_LABELS,
+  DURABLE_COUNT_LABELS,
   countsTotal,
+  durableTotal,
   moduleHue,
   moduleLabel,
   summarizeCounts,
@@ -48,19 +50,74 @@ function ModuleChip({ slug }: { slug: string }) {
   );
 }
 
-/** The non-zero counts as a grid of small figures — the proof that real records
- *  exist. Zeroes are dropped so the grid shows what is there, not a wall of 0s. */
+function Figure({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="border-base-300 flex flex-col gap-0.5 rounded-lg border p-3">
+      <span className="text-2xl font-semibold tabular-nums">{String(value)}</span>
+      <span className="text-sm">{label}</span>
+    </div>
+  );
+}
+
+/** The non-zero REMOVABLE counts as a grid of small figures, the proof that real
+ *  records exist. Zeroes are dropped so the grid shows what is there, not a wall
+ *  of 0s. Locations are deliberately not in it: see `KeptLocations`. */
 function CountsGrid({ counts }: { counts: SampleDataCounts }) {
   const present = COUNT_LABELS.filter(({ key }) => (counts[key] || 0) > 0);
   return (
     <div className="grid grid-cols-2 gap-2 @sm:grid-cols-3">
       {present.map(({ key, label }) => (
-        <div key={key} className="border-base-300 flex flex-col gap-0.5 rounded-lg border p-3">
-          <span className="text-2xl font-semibold tabular-nums">{String(counts[key])}</span>
-          <span className="text-sm">{label}</span>
-        </div>
+        <Figure key={key} value={counts[key]} label={label} />
       ))}
     </div>
+  );
+}
+
+/**
+ * The sample locations, which Remove leaves where they are (issue 174).
+ *
+ * They were the one thing sample data made that this screen never mentioned, so
+ * an owner found a place in her Stock list and nothing anywhere said it came from
+ * here. Shown APART from the removable grid, because one grid would agree with a
+ * Remove that does not do what it says. Drawn whether or not the rest is still
+ * loaded: after a Remove these are exactly what is left, and "Nothing is loaded
+ * right now" alone would be the same silence again.
+ */
+function KeptLocations({ ctx, counts }: { ctx: SurfaceContext; counts: SampleDataCounts }) {
+  const n = durableTotal(counts);
+  if (n === 0) return null;
+  const one = n === 1;
+  return (
+    <ModuleScope module="inventory" className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-2 @sm:grid-cols-3">
+        {DURABLE_COUNT_LABELS.filter(({ key }) => (counts[key] || 0) > 0).map(({ key, label }) => (
+          <Figure key={key} value={counts[key]} label={label} />
+        ))}
+      </div>
+      <Text className="text-sm">
+        {one
+          ? 'Sample data added this location, and removing sample data leaves it where it is.'
+          : `Sample data added these ${String(n)} locations, and removing sample data leaves them where they are.`}{' '}
+        Places are yours to keep in case you have renamed one or counted stock into it.{' '}
+        {one
+          ? 'It is marked Sample in your list of locations, where you can archive it if you do not want it.'
+          : 'They are marked Sample in your list of locations, where you can archive any you do not want.'}
+      </Text>
+      <Button
+        size="sm"
+        color="module"
+        variant="outline"
+        className="self-start"
+        onClick={(event) => {
+          ctx.open('inventory.warehouses.list', undefined, {
+            target: event.shiftKey ? 'beside' : 'tab',
+          });
+        }}
+      >
+        <Warehouse className="size-4" aria-hidden />
+        See your locations
+      </Button>
+    </ModuleScope>
   );
 }
 
@@ -94,6 +151,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const loaded = data?.loaded ?? false;
   const modules = data?.modules ?? [];
+  const kept = data ? durableTotal(data.counts) : 0;
 
   const onLoad = async () => {
     if (!data) return;
@@ -131,9 +189,18 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!data) return;
     const ok = await confirm({
       title: 'Remove all sample data?',
+      // The locations are named here because they are the one thing this does
+      // NOT delete, and a confirmation that stays silent about them lets the
+      // owner believe the account is back to how it was (issue 174).
       description: `This permanently deletes the ${summarizeCounts(
         data.counts
-      )} that were added as samples. Your real records are not touched, and this cannot be undone.`,
+      )} that were added as samples. Your real records are not touched, and this cannot be undone.${
+        kept > 0
+          ? kept === 1
+            ? ' The sample location stays, in case you have made it yours.'
+            : ` The ${String(kept)} sample locations stay, in case you have made them yours.`
+          : ''
+      }`,
       confirmLabel: 'Remove sample data',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -252,9 +319,11 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : (
                 <Text className="text-sm">
                   Nothing is loaded right now. Loading is safe to undo. One click removes every
-                  sample record and leaves your real ones exactly as they are.
+                  sample record except any locations it adds, and leaves your real records exactly
+                  as they are.
                 </Text>
               )}
+              <KeptLocations ctx={ctx} counts={data.counts} />
             </FormSection>
 
             {/* Destructive action: a quiet row after the work, under a divider —
@@ -264,7 +333,9 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                 <div className="flex min-w-0 flex-col">
                   <span className="text-base font-medium">Remove all sample data</span>
                   <Text className="text-sm">
-                    Deletes every sample record. Your real records are left untouched.
+                    {kept > 0
+                      ? 'Deletes every sample record except the locations above. Your real records are left untouched.'
+                      : 'Deletes every sample record. Your real records are left untouched.'}
                   </Text>
                 </div>
                 <Button

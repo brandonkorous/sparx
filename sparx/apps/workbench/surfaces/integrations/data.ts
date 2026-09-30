@@ -22,6 +22,7 @@
 
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { moduleLabel } from '../../lib/surfaces/nav';
 
 /** Mirrors @wizeworks/integrations. `subscription_billing` and `identity` are absent
  *  because nothing implements either — see the note on IntegrationCategory there. */
@@ -60,6 +61,9 @@ export interface Integration {
   blurb: string;
   /** `sparx` for first-party; an approved contributor's slug for an uploaded one. */
   publisher: string;
+  /** Did WE publish this? A boolean rather than a name comparison, because
+   *  the name is the tenant's own brand by the time it arrives. */
+  firstParty: boolean;
   availability: IntegrationAvailability;
   unavailableReason?: string;
   recommended?: boolean;
@@ -119,20 +123,10 @@ export function connectionState(connection: ConnectionState): {
   }
 }
 
-/** The sentence under a category a tenant has not unlocked. Names the modules in the
- *  owner's words rather than echoing slugs. */
-const MODULE_LABEL: Record<string, string> = {
-  commerce: 'Selling',
-  invoicing: 'Invoicing',
-  b2b: 'Wholesale',
-  scheduling: 'Bookings',
-  social: 'Social posting',
-  dropship: 'Dropshipping',
-  ai: 'AI',
-};
-
 export function lockedReason(view: IntegrationCategoryView): string {
-  const names = view.unlockedBy.map((m) => MODULE_LABEL[m] ?? m);
+  // The names come from `lib/surfaces/nav.ts`. This file kept its own table, one
+  // of six across the two consoles; see the note there.
+  const names = view.unlockedBy.map((m) => moduleLabel(m));
   if (names.length === 0) return 'This is not available on your plan yet.';
   const list =
     names.length === 1

@@ -347,7 +347,7 @@ function PlanTable({
             <AlertTitle>{plural(errors.length, 'row', 'rows')} could not be used</AlertTitle>
             <AlertDescription>
               {newItems.length > 0
-                ? `${plural(newItems.length, 'row carries a code', 'rows carry codes')} sparx has never seen. Create them as new items, or leave them out. Either way the decision is recorded with the import.`
+                ? `${plural(newItems.length, 'row carries a code', 'rows carry codes')} sparx has never seen. ${newItems.length === 1 ? 'Create it as a new item, or leave it out.' : 'Create them as new items, or leave them out.'} Either way the decision is recorded with the import.`
                 : 'Sort these out below, or fix them in the file and upload it again. A missing code usually means a whole column is off by one.'}
             </AlertDescription>
           </AlertContent>
@@ -631,7 +631,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Stock import controls"
+        label="Import from a spreadsheet controls"
         primary={
           <Button
             color="module"
@@ -746,7 +746,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                   ))}
                 </NativeSelect>
                 <Text className="text-sm">
-                  Only widens the list of headings sparx recognises. It never changes what the
+                  Only widens the list of headings sparx recognizes. It never changes what the
                   import does.
                 </Text>
               </Field>

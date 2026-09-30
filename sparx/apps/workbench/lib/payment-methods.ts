@@ -1,17 +1,25 @@
 // The words for how money moved.
 //
-// Four panes named the same thing and disagreed: a cheque read "Check" on an
+// Four panes named the same thing and disagreed: a check read "Check" on an
 // invoice and "Cheque" on an order, a transfer was "Wire" in one place and
 // "Bank transfer" in two others, and `ach` read "Bank transfer (ACH)" — US bank
 // jargon on a screen for people who have never heard it.
+//
+// That first disagreement was settled here on the BRITISH spelling while the
+// stored value stayed `check`, so a Denver shop owner recording a check she had
+// just been handed watched the console call it a cheque. American spelling is
+// the house rule; the label follows the value. Piggles fixed its copy of this
+// file as issue 384 and wrote that reason down; this one kept the old label for
+// another two months, because nothing read this tree.
+// [[feedback_a_fix_leaves_its_neighbour_behind]]
 
 /** One word per way money moves, whatever column it came out of. */
 const MONEY_WORDS: Record<string, string> = {
   cash: 'Cash',
-  // What the order form writes when the shopkeeper picks Cash — a cheque and a
+  // What the order form writes when the shopkeeper picks Cash — a check and a
   // transfer have their own values, so nothing else lands here (issue 044).
   manual: 'Cash',
-  check: 'Cheque',
+  check: 'Check',
   ach: 'Bank transfer',
   // Kept apart from `ach` because a distributor settling by wire means the
   // same-day, fee-bearing one, and the two sit in the same menu on a B2B invoice.

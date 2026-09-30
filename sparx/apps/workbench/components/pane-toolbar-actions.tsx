@@ -43,7 +43,15 @@ export interface ToolbarAction {
   href?: string;
   disabled?: boolean;
   loading?: boolean;
-  /** Hover text. Defaults to `label`; set it when the action needs the longer form. */
+  /**
+   * Hover text. Defaults to `label`; set it when the action needs the longer
+   * form.
+   *
+   * Read by all three shapes. It used to be read by `ToolbarPrimaryAction`
+   * alone, so "Import a list of old links: hold Alt to open in a new window"
+   * was written on a secondary action and shown nowhere - and the Alt modifier
+   * it names is not discoverable any other way.
+   */
   title?: string;
   /**
    * Wear ANOTHER module's hue.
@@ -54,6 +62,26 @@ export interface ToolbarAction {
    * and bespoke JSX is what looks foreign in the popover.
    */
   module?: WorkbenchModule;
+  /**
+   * The action's own tone, worn in both shapes.
+   *
+   * `success` is here for the same reason `danger` is: bringing somebody back
+   * off the leavers list is a good outcome and says so, and the only way to
+   * give it that color was to hand-write the button in `controls` - where it
+   * then lost its name. A tone missing from this list quietly pushes an action
+   * out of the one slot that keeps it.
+   *
+   * Destructive, so it wears `danger` in both shapes.
+   *
+   * Without it the only way to give Delete / Call it off / Disconnect the color
+   * RULE #4 requires was to hand-write the button in `controls`, and a control
+   * RELOCATES: in the overflow popover it arrives as a bare red glyph with no
+   * row label, because only `actions` are re-authored as labelled rows there. So
+   * the missing tone was quietly pushing every destructive action out of the one
+   * slot that keeps its name. "Call this run off" was a naked circle-slash above
+   * two labelled rows. [[feedback_a_fix_leaves_its_neighbour_behind]]
+   */
+  tone?: 'danger' | 'success';
 }
 
 /** Wraps in a nested provider only when the action belongs to another module. */
@@ -70,11 +98,11 @@ export function ToolbarActionButtons({ actions }: { actions: readonly ToolbarAct
         // `module`, because an action that belongs to an app wears that app's
         // hue (RULE #4). Ghost so it never competes with the primary beside it.
         <Hue key={action.label} module={action.module}>
-          <Tooltip content={action.label}>
+          <Tooltip content={action.title ?? action.label}>
             <Button
               size="sm"
               variant="ghost"
-              color="module"
+              color={action.tone ?? 'module'}
               className="shrink-0"
               aria-label={action.label}
               disabled={action.disabled}
@@ -106,8 +134,12 @@ export function ToolbarActionRows({ actions }: { actions: readonly ToolbarAction
           <Button
             size="sm"
             variant="ghost"
-            color="module"
+            color={action.tone ?? 'module'}
             className={MENU_ROW}
+            // Native hover text rather than a Tooltip: this row is already
+            // inside a popover, and a floating panel over a floating panel is
+            // a second thing to dismiss.
+            title={action.title ?? action.label}
             disabled={action.disabled}
             loading={action.loading}
             {...(action.href

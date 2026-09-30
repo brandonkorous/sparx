@@ -101,7 +101,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Sending address list controls"
+        label="Sending addresses controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -122,6 +122,8 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(all.length)} addresses`}
           </p>
         }
+        statusReady={!isPending}
+        statusFailed={isError}
         primary={
           <Button
             color="module"

@@ -18,7 +18,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { skuStem, slotsOf, suggestSlotSku } from './product-variant-slots';
+import { claimantOf, gridOf, skuStem, slotsOf, suggestSlotSku } from './product-variant-slots';
 import type { Product, ProductOption, Variant } from './products-data';
 
 const size: ProductOption = {
@@ -95,5 +95,114 @@ describe('suggestSlotSku', () => {
     expect(suggestSlotSku('ASH-OVERSHIRT', slate!, new Set(['ash-overshirt-s-slate']))).toBe(
       'ASH-OVERSHIRT-S-SLATE-2'
     );
+  });
+});
+
+// A square whose version was STOPPED is not an empty square (issue 305). Read as
+// empty, the grid offered "Set a price" on it and the bulk fill minted "-2"
+// codes with no stock beside the real, stopped versions holding every garment.
+describe('slotsOf, with stopped versions', () => {
+  const stopped = (over: Partial<Variant>) =>
+    variant({ isDefault: false, deletedAt: '2026-08-28T00:00:00.000Z', ...over });
+
+  it('puts a stopped version in its square instead of calling the square empty', () => {
+    const clay = stopped({
+      id: 'xs-clay',
+      sku: 'ASH-OVERSHIRT-XS-CLAY',
+      optionValueIds: ['xs', 'clay'],
+    });
+    const slots = slotsOf([size, color], [], [clay]);
+    const square = slots.find((slot) => slot.key === 'xs|clay');
+    expect(square?.variant).toBeNull();
+    expect(square?.retired.map((v) => v.id)).toEqual(['xs-clay']);
+    // And only there.
+    expect(slots.filter((slot) => slot.retired.length > 0)).toHaveLength(1);
+  });
+
+  it('lists EVERY stopped version on a shared square, not whichever came first', () => {
+    // What repairing a damaged shop produces: the real version back beside the
+    // "-2" that displaced it. Showing one let array order pick her stock count.
+    const real = stopped({
+      id: 'real',
+      sku: 'ASH-OVERSHIRT-XS-CLAY',
+      optionValueIds: ['clay', 'xs'],
+    });
+    const copy = stopped({
+      id: 'copy',
+      sku: 'ASH-OVERSHIRT-XS-CLAY-2',
+      optionValueIds: ['xs', 'clay'],
+    });
+    const square = slotsOf([size, color], [], [real, copy]).find((slot) => slot.key === 'xs|clay');
+    expect(square?.retired.map((v) => v.id)).toEqual(['real', 'copy']);
+  });
+
+  it('keeps a stopped version in its square when something else is on sale there', () => {
+    // Replacing a line is ordinary. The old one still sits on its combination,
+    // and calling it placeless sent people to fix a version nothing was wrong with.
+    const now = variant({ id: 'now', sku: 'NEW', optionValueIds: ['s', 'slate'] });
+    const then = stopped({ id: 'then', sku: 'OLD', optionValueIds: ['s', 'slate'] });
+    const square = slotsOf([size, color], [now], [then]).find((slot) => slot.key === 's|slate');
+    expect(square?.variant?.id).toBe('now');
+    expect(square?.retired.map((v) => v.id)).toEqual(['then']);
+  });
+});
+
+describe('claimantOf', () => {
+  it('names the placeless version that already carries the code of a square', () => {
+    // Without this the square is offered ASH-OVERSHIRT-XS-CLAY-2, a new version
+    // with no stock, beside the real one nothing could reach.
+    const lost = variant({ id: 'lost', sku: 'ash-overshirt-xs-clay', optionValueIds: [] });
+    const square = slotsOf([size, color], []).find((slot) => slot.key === 'xs|clay');
+    expect(claimantOf('ASH-OVERSHIRT', square!, [lost])?.id).toBe('lost');
+    expect(suggestSlotSku('ASH-OVERSHIRT', square!, new Set(['ash-overshirt-xs-clay']))).toBe(
+      'ASH-OVERSHIRT-XS-CLAY-2'
+    );
+  });
+
+  it('names nobody when no placeless version carries the code', () => {
+    const other = variant({ id: 'other', sku: 'ASH-OVERSHIRT-S-SLATE', optionValueIds: [] });
+    const square = slotsOf([size, color], []).find((slot) => slot.key === 'xs|clay');
+    expect(claimantOf('ASH-OVERSHIRT', square!, [other])).toBeNull();
+    expect(claimantOf('ASH-OVERSHIRT', square!, [])).toBeNull();
+  });
+});
+
+// What the bulk fill is handed. Handing it a square whose version was only
+// stopped is the exact path that put five stockless "-2" codes on sale.
+describe('gridOf', () => {
+  const stopped = (over: Partial<Variant>) =>
+    variant({ isDefault: false, deletedAt: '2026-08-28T00:00:00.000Z', ...over });
+  const keys = (slots: { key: string }[]) => slots.map((slot) => slot.key).sort();
+
+  it('never offers a square holding a stopped version to the bulk fill', () => {
+    const live = [variant({ id: 'on', sku: 'ASH-OVERSHIRT', optionValueIds: ['xs', 'slate'] })];
+    const retired = [
+      stopped({ id: 'off', sku: 'ASH-OVERSHIRT-XS-CLAY', optionValueIds: ['xs', 'clay'] }),
+    ];
+    const slots = slotsOf([size, color], live, retired);
+    const grid = gridOf(slots, true, live, retired, 'ASH-OVERSHIRT');
+    expect(keys(grid.empty)).toEqual(['s|clay', 's|slate']);
+    expect(keys(grid.fillable)).toEqual(['s|clay', 's|slate']);
+    // It is still somewhere a lost version may be put, and says so in the picker.
+    expect(keys(grid.free)).toEqual(['s|clay', 's|slate', 'xs|clay']);
+    expect(grid.homeless).toEqual([]);
+  });
+
+  it('holds back a square whose code a lost version carries, and names that version', () => {
+    const live = [variant({ id: 'on', sku: 'ASH-OVERSHIRT', optionValueIds: ['xs', 'slate'] })];
+    const lost = stopped({ id: 'lost', sku: 'ASH-OVERSHIRT-S-CLAY', optionValueIds: [] });
+    const slots = slotsOf([size, color], live, [lost]);
+    const grid = gridOf(slots, true, live, [lost], 'ASH-OVERSHIRT');
+    expect(grid.homeless.map((v) => v.id)).toEqual(['lost']);
+    expect(grid.claimants.get('s|clay')?.id).toBe('lost');
+    expect(keys(grid.fillable)).toEqual(['s|slate', 'xs|clay']);
+  });
+
+  it('files a replaced version as resting, not as lost', () => {
+    const live = [variant({ id: 'now', sku: 'NEW', optionValueIds: ['s', 'slate'] })];
+    const retired = [stopped({ id: 'then', sku: 'OLD', optionValueIds: ['s', 'slate'] })];
+    const grid = gridOf(slotsOf([size, color], live, retired), true, live, retired, 'NEW');
+    expect(grid.resting.map((v) => v.id)).toEqual(['then']);
+    expect(grid.homeless).toEqual([]);
   });
 });

@@ -32,6 +32,7 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
+  Button,
   Card,
   DateInput,
   EmptyState,
@@ -51,8 +52,11 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
 import {
+  costCoverage,
+  deadStockLevelCount,
   agingBucketLabel,
   agingBucketTone,
+  deadStockSplit,
   deadStockValueCents,
   rangeForDays,
   RANGE_PRESETS,
@@ -134,7 +138,31 @@ function Headline({
   const { valuation } = summary;
   const currency = valuation.currency;
   const deadValue = aging ? deadStockValueCents(aging) : null;
+  /** Lines that have had three months to sell and did not. The never-sold band
+   *  is in the FIGURE, because that money is genuinely sitting still, and it is
+   *  not what makes the figure alarming. */
+  const deadStale = aging ? deadStockSplit(aging).stale : 0;
   const turns = turnover ? turnoverHeadline(turnover) : null;
+  // Every money figure below is built on recorded costs, and cost is optional,
+  // so each asks this before printing an amount. $0.00 over 372 garments is not
+  // a valuation, it is an absence wearing a number's clothes; and a figure that
+  // covers nine items in ten is short without saying so.
+  const cover = costCoverage(valuation);
+  const held = `${plural(valuation.totalUnits, 'unit', 'units')} on hand`;
+  const retail = `worth ${formatCents(valuation.totalRetailCents, currency)} at your selling prices`;
+  const worthCaption = cover.none
+    ? `${held}, ${retail}. What they cost you has not been recorded.`
+    : cover.partial
+      ? `${held} · ${retail}. ${plural(cover.uncostedUnits, 'unit has', 'units have')} no cost recorded, so the figure above is short by whatever ${cover.uncostedUnits === 1 ? 'that one costs' : 'those cost'}.`
+      : `${held} · ${retail}`;
+  // The same absence under the second figure: dead stock with no cost behind it
+  // sums to $0.00, which reads as "nothing is sitting still" over lines that are.
+  const deadFigure =
+    deadValue === null
+      ? '—'
+      : cover.none && aging && deadStockLevelCount(aging) > 0
+        ? 'No cost yet'
+        : formatCents(deadValue, currency);
 
   return (
     <Card className="shrink-0">
@@ -144,26 +172,35 @@ function Headline({
         <Stat>
           <StatTitle>What your stock is worth</StatTitle>
           <StatValue className="text-2xl tabular-nums">
-            {formatCents(valuation.totalCostCents, currency)}
+            {cover.none ? 'No cost yet' : formatCents(valuation.totalCostCents, currency)}
           </StatValue>
-          <StatDesc>
-            {plural(valuation.totalUnits, 'unit', 'units')} on hand · worth{' '}
-            {formatCents(valuation.totalRetailCents, currency)} at your selling prices
-          </StatDesc>
+          <StatDesc>{worthCaption}</StatDesc>
         </Stat>
 
         <Stat>
           <StatTitle>Money sitting still</StatTitle>
+          {/* Amber is a CLAIM. The figure covers two bands, and the never-sold
+              one is excluded from dead stock below ("not the same thing as
+              dead"), so a shop whose whole figure is never-sold got an alarm
+              above a green box saying nothing was wrong. */}
           <StatValue
             className={
-              deadValue && deadValue > 0
-                ? 'text-warning text-2xl tabular-nums'
-                : 'text-2xl tabular-nums'
+              deadStale > 0 ? 'text-warning text-2xl tabular-nums' : 'text-2xl tabular-nums'
             }
           >
-            {deadValue === null ? '—' : formatCents(deadValue, currency)}
+            {deadFigure}
           </StatValue>
-          <StatDesc>{aging === undefined ? 'Working it out…' : stillCaption(aging)}</StatDesc>
+          {/* When every costed unit is in the dead bands, this figure and "What
+              your stock is worth" beside it are the SAME number. Both right, and
+              shown as two unrelated figures that happen to match, which reads as
+              the software being broken rather than as the finding it is. */}
+          <StatDesc>
+            {aging === undefined
+              ? 'Working it out…'
+              : deadValue !== null && deadValue > 0 && deadValue === valuation.totalCostCents
+                ? `${stillCaption(aging)}. That is every bit of the stock value you hold.`
+                : stillCaption(aging)}
+          </StatDesc>
         </Stat>
 
         <Stat>
@@ -176,9 +213,52 @@ function Headline({
   );
 }
 
+/**
+ * The one place a money figure admits a gap AND offers to close it.
+ *
+ * "No cost yet" on its own is honest and useless: it tells somebody their
+ * valuation is not a valuation without telling them what to do, and the thing to
+ * do is not on any screen they would think to look at. This is the door. Amber
+ * when nothing is costed (every figure here is empty), blue when some is (the
+ * figures are real, just short).
+ */
+function UncostedNotice({ ctx, summary }: { ctx: SurfaceContext; summary: InventorySummary }) {
+  const cover = costCoverage(summary.valuation);
+  if (!cover.none && !cover.partial) return null;
+  const units = cover.uncostedUnits;
+
+  return (
+    <Alert color={cover.none ? 'warning' : 'info'}>
+      <AlertContent>
+        <AlertTitle>
+          {cover.none
+            ? 'Nothing you hold has a cost recorded'
+            : `${plural(units, 'unit', 'units')} ${units === 1 ? 'has' : 'have'} no cost recorded`}
+        </AlertTitle>
+        <AlertDescription>
+          {cover.none
+            ? 'Every figure on this page about what your stock is worth needs it, which is why each one says No cost yet instead of a number. Put in what you paid and the figures become real.'
+            : 'The figures above are real but short by whatever that stock cost. It is usually stock that was on the shelf before you started recording deliveries.'}
+        </AlertDescription>
+        <Button
+          size="sm"
+          color="module"
+          className="mt-3 self-start"
+          onClick={(event) => {
+            ctx.open('inventory.costing.uncosted', {}, { target: targetFor(event) });
+          }}
+        >
+          <Coins className="size-4" aria-hidden />
+          Put in what you paid
+        </Button>
+      </AlertContent>
+    </Alert>
+  );
+}
+
 /* ── Stock health ────────────────────────────────────────────────────────── */
 
-function HealthCard({ summary }: { summary: InventorySummary }) {
+function HealthCard({ ctx, summary }: { ctx: SurfaceContext; summary: InventorySummary }) {
   const { healthy, lowStock, outOfStock, skuCount } = summary.stockStatus;
 
   return (
@@ -204,11 +284,29 @@ function HealthCard({ summary }: { summary: InventorySummary }) {
           </Text>
           <Text className="text-sm">Running low</Text>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col items-start">
           <Text className="text-danger text-2xl font-semibold tabular-nums">
             {NUMBER.format(outOfStock)}
           </Text>
           <Text className="text-sm">Sold out</Text>
+          {/* The one figure here the stock list can show row for row: both
+              count a level with nothing a customer can buy. "Running low" is
+              NOT linked, because this card counts levels with no reorder rule
+              against a default line and the list only counts rules somebody
+              set, so the list would disagree with the number that opened it. */}
+          {outOfStock > 0 ? (
+            <Button
+              size="sm"
+              color="danger"
+              variant="link"
+              className="px-0"
+              onClick={(event) => {
+                ctx.open('inventory.stock.list', { level: 'out' }, { target: targetFor(event) });
+              }}
+            >
+              See which
+            </Button>
+          ) : null}
         </div>
       </div>
       <Text className="text-sm">
@@ -894,7 +992,9 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
 
         <Headline summary={data} aging={aging.data} turnover={turnover.data} />
 
-        <HealthCard summary={data} />
+        <UncostedNotice ctx={ctx} summary={data} />
+
+        <HealthCard ctx={ctx} summary={data} />
 
         {data.byLocation.length > 1 ? <LocationsCard summary={data} /> : null}
 
@@ -992,7 +1092,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Report controls"
+        label="Reports controls"
         filters={[
           {
             label: 'Selling period',

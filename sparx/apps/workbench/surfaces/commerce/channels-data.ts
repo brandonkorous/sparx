@@ -16,6 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { apiErrorMessage } from '../../lib/api-error';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -101,4 +102,53 @@ export function connectionState(status: string): {
     default:
       return { label: status.replace(/_/g, ' '), tone: 'neutral' };
   }
+}
+
+/* ── Connecting one ─────────────────────────────────────────────────────── */
+
+// The handshake the API has always had and nothing ever started.
+//
+// `GET /v1/channels/:slug/connect-url` signs a short-lived state, hands back the
+// shop's consent URL, and `POST /v1/channels/callback` trades the code for a
+// stored, encrypted connection. Both shipped. **MEASURED 2026-09-19: neither had
+// a single caller anywhere in either console**, while the pane above showed Meta
+// with a green **Available** badge and a line reading "can be connected from
+// your settings" — a settings screen that does not connect it either.
+//
+// So a shop the platform was ready to sell through could not be reached from
+// any screen. Issue 733. [[feedback_screen_over_a_function_nobody_calls]]
+//
+// Same shape as Search Console and the social platforms: the pane opens a popup,
+// our own callback route relays the code back, and the pane does the exchange on
+// the console's own token.
+
+/** The shop's consent URL. `redirectUri` is a route on this app that hands the
+ *  code back through `window.opener`. */
+export function useChannelConnectUrl() {
+  return useMutation({
+    mutationFn: (input: { slug: string; redirectUri: string }) =>
+      api.get<{ url: string }>(`/v1/channels/${input.slug}/connect-url`, {
+        redirect_uri: input.redirectUri,
+      }),
+  });
+}
+
+/** Trade the code the shop returned for a stored, encrypted connection. */
+export function useCompleteChannelConnect() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { code: string; state: string }) =>
+      api.post<{ connected: boolean; channel: string; externalId: string | null }>(
+        '/v1/channels/callback',
+        input
+      ),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: channelKeys.overview() });
+    },
+  });
+}
+
+/** What went wrong, in words, for anything this layer does. */
+export function channelErrorMessage(error: unknown, fallback: string): string {
+  return apiErrorMessage(error, fallback);
 }

@@ -95,7 +95,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
           afterCommit(() => {
             toast.add({
               title: `${row.purchaseOrderNumber ?? 'Order'} approved`,
-              description: `It has gone to ${row.supplierName ?? 'the supplier'}.`,
+              description: `It is placed. Print it or pass it on to ${row.supplierName ?? 'the supplier'}.`,
               type: 'success',
             });
           });
@@ -313,7 +313,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Approval queue controls"
+        label="Sign-offs controls"
         status={
           <Text className="text-sm">
             {pending === 0

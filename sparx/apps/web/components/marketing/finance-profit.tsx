@@ -327,7 +327,7 @@ export function FinanceJobs() {
             <Text>
               An order knows exactly what it collected. A booking only knows what that service is
               priced at: a deposit, a discount at the counter or a no-show fee never reached it. So
-              a booking’s row is labelled instead of quietly averaged into the same column, and the
+              a booking’s row is labeled instead of quietly averaged into the same column, and the
               summary counts the two separately. A number nobody measured should never appear as
               though somebody had.
             </Text>
@@ -419,7 +419,7 @@ export function FinanceHandoff() {
               What you can send today
             </Heading>
             <Text>
-              A spreadsheet of your spending for any date range, every column labelled in plain
+              A spreadsheet of your spending for any date range, every column labeled in plain
               words, already posted to your account codes and filtered to one business or all of
               them. Any accounting package will import it, and an accountant who just wants the
               numbers can open it as it is.

@@ -21,6 +21,8 @@
 // diary is telling you something a calendar cannot fix.
 // ══════════════════════════════════════════════════════════════════════════
 
+import { zoned } from './calendar-zone';
+
 /** Pixels per 15-minute slot. An hour is four of these. */
 export const SLOT_PX = 16;
 /** Minutes in one slot. */
@@ -252,22 +254,28 @@ export interface Placement {
   widthClass: string;
   /** `left-*` for the block's horizontal offset. */
   leftClass: string;
+  /** How many 15-minute slots tall the block is. The block reads this to decide
+   *  how much it can SAY: three stacked lines need about fifty pixels and a
+   *  half-hour booking is thirty-two, so a block that always drew three sliced
+   *  the last two through the middle of the letters (issue 148). */
+  slots: number;
 }
 
 /** Anything with a start and end instant — the only shape the geometry needs. */
 export interface Span {
   startAt: string;
   endAt: string;
+  /** The zone whose clock places it. The booking's own, never the viewer's. */
+  timezone?: string | null;
 }
 
 function clamp(value: number, low: number, high: number): number {
   return Math.min(Math.max(value, low), high);
 }
 
-/** Local minutes past midnight for an instant, on the operator's own clock. */
-export function minutesOfDay(iso: string): number {
-  const date = new Date(iso);
-  return date.getHours() * 60 + date.getMinutes();
+/** Minutes past midnight for an instant, on the clock of the zone given. */
+export function minutesOfDay(iso: string, timezone?: string | null): number {
+  return zoned(iso, timezone).minutes;
 }
 
 function floorSlot(minutes: number): number {
@@ -286,14 +294,6 @@ export interface TimeWindow {
   slots: number;
 }
 
-function sameCalendarDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
 /**
  * The hour window a whole VIEW shares — one time axis for every day/resource
  * column so the gutter lines up across all of them.
@@ -309,11 +309,11 @@ export function windowForEvents(spans: Span[]): TimeWindow {
   let startMin = 8 * 60;
   let endMin = 18 * 60;
   for (const span of spans) {
-    const start = new Date(span.startAt);
-    const end = new Date(span.endAt);
-    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) continue;
-    const localStart = minutesOfDay(span.startAt);
-    const localEnd = sameCalendarDay(start, end) ? minutesOfDay(span.endAt) || 24 * 60 : 24 * 60;
+    const start = zoned(span.startAt, span.timezone);
+    const end = zoned(span.endAt, span.timezone);
+    if (start.dayKey === '' || end.dayKey === '') continue;
+    const localStart = start.minutes;
+    const localEnd = start.dayKey === end.dayKey ? end.minutes || 24 * 60 : 24 * 60;
     startMin = Math.min(startMin, Math.floor(localStart / 60) * 60);
     endMin = Math.max(endMin, Math.ceil(localEnd / 60) * 60);
   }
@@ -401,21 +401,13 @@ export function placeEvents<T extends Span>(
   return out;
 }
 
-function startOfLocalDay(iso: string): number {
-  const date = new Date(iso);
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
-}
-
 function place(span: Span, windowStartMin: number, laneCount: number, lane: number): Placement {
-  const rawStart = minutesOfDay(span.startAt);
-  const startMs = new Date(span.startAt).getTime();
-  const dayStart = startOfLocalDay(span.startAt);
-  // A booking that began on a previous day is pinned to the top of today.
-  const startMin = startMs < dayStart ? windowStartMin : floorSlot(rawStart);
-  const endSameDay = new Date(span.endAt);
-  const spansPastMidnight = endSameDay.getTime() >= dayStart + 24 * 60 * 60 * 1000;
-  const endMin = spansPastMidnight ? 24 * 60 : ceilSlot(minutesOfDay(span.endAt) || 24 * 60);
+  // On the booking's own clock, so the block sits where its text says it is.
+  const start = zoned(span.startAt, span.timezone);
+  const end = zoned(span.endAt, span.timezone);
+  const startMin = floorSlot(start.minutes);
+  // Running past midnight draws it to the bottom of the day it starts on.
+  const endMin = end.dayKey !== start.dayKey ? 24 * 60 : ceilSlot(end.minutes || 24 * 60);
 
   const topSlots = clamp((startMin - windowStartMin) / SLOT_MIN, 0, 96);
   const spanSlots = clamp((endMin - startMin) / SLOT_MIN, 1, 96 - topSlots);
@@ -425,5 +417,6 @@ function place(span: Span, windowStartMin: number, laneCount: number, lane: numb
     heightClass: HEIGHT_PX[spanSlots] ?? 'h-[16px]',
     widthClass: LANE_WIDTH[laneCount - 1] ?? 'w-full',
     leftClass: (LANE_LEFT[laneCount - 1] ?? LANE_LEFT[0])?.[lane] ?? 'left-0',
+    slots: spanSlots,
   };
 }

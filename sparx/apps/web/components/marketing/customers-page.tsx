@@ -97,7 +97,7 @@ const MORE_INDUSTRIES = [
   'Accountants & law',
   'Publishers & newsletters',
   'Photography & design studios',
-  'Music, theatre & ticketed events',
+  'Music, theater & ticketed events',
   'Florists, weddings & events',
   'Wine, beer & spirits',
   'Farming & landscaping',

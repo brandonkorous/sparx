@@ -146,3 +146,45 @@ describe('the ordinary rejections are unchanged', () => {
     expect(failure.reference).toBe('req_test');
   });
 });
+
+// ─── The body never repeats the title ────────────────────────────────────────
+//
+// These messages are only ever drawn UNDER `writeFailureTitle`, which is one of
+// "Couldn't <do the thing>", "Couldn't save <the thing>" or, when the mutation
+// said neither, "That didn't save". So a body that also opened with "that didn't
+// save" printed the same sentence twice, one line apart:
+//
+//     That didn't save
+//     That didn't save. Check what you entered and try again.
+//
+// Seen on Juniper Row 2026-09-22 (persona issue 771). The title says it did not
+// save; the body says WHY and WHAT TO DO.
+describe('the body says something the title did not', () => {
+  const everyFailure = [
+    apiError(0, 'OFFLINE', ''),
+    apiError(0, 'NETWORK', ''),
+    apiError(0, '', ''),
+    apiError(401, 'UNAUTHORIZED', ''),
+    apiError(403, 'FORBIDDEN', ''),
+    apiError(404, 'NOT_FOUND', ''),
+    apiError(409, 'CONFLICT', ''),
+    apiError(412, 'PRECONDITION_FAILED', 'x'),
+    apiError(422, 'VALIDATION_ERROR', 'Request validation failed.'),
+    apiError(429, 'RATE_LIMITED', ''),
+    apiError(500, 'INTERNAL', 'boom'),
+    apiError(503, 'UNAVAILABLE', ''),
+  ];
+
+  it('never says the thing did not save, because the title just did', () => {
+    const repeats = everyFailure
+      .map((error) => describeWriteFailure(error).message)
+      .filter((message) => /did ?n.t save|Could ?n.t save/i.test(message));
+    expect(repeats).toEqual([]);
+  });
+
+  it('still says something', () => {
+    for (const error of everyFailure) {
+      expect(describeWriteFailure(error).message.length).toBeGreaterThan(15);
+    }
+  });
+});

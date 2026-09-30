@@ -45,6 +45,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '@/components/money-input';
@@ -73,12 +74,9 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { badDayIn, dayEndUtc, dayStartUtc } from '../../lib/today';
 import { createdWithoutPrices, saveFailureLine, type SavePoint } from './price-list-save-words';
 import { ChoiceListNote, choiceListState } from '../../components/choice-list-note';
+import { DayInput } from '../../components/day-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-// The currencies offered when creating a list. A tenant selling in another
-// currency keeps it on load — see `currencyOptions`.
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'] as const;
 
 type Audience = 'everyone' | 'segment' | 'account';
 type EntryMode = 'fixed' | 'percent';
@@ -549,14 +547,6 @@ function PriceListEditor({
 
   /* ── Options ──────────────────────────────────────────────────────────── */
 
-  // Keep whatever currency the list was created in selectable, even if it's not
-  // one of the common few — so opening an existing list never silently offers to
-  // change its currency.
-  const currencyOptions = useMemo(() => {
-    const set = new Set<string>([...CURRENCIES, draft.currency]);
-    return [...set].map((code) => ({ value: code, label: code }));
-  }, [draft.currency]);
-
   // The three everyday channels, plus the list's own if it's something else — so
   // a list scoped to, say, Subscriptions elsewhere round-trips without being
   // quietly widened to "everywhere".
@@ -655,25 +645,15 @@ function PriceListEditor({
               />
             </Field>
 
-            <Field>
-              <FieldLabel>Currency</FieldLabel>
-              <FieldControl
-                render={
-                  <div className="max-w-40">
-                    <Select
-                      color="module"
-                      aria-label="Currency for these prices"
-                      value={draft.currency}
-                      items={currencyOptions}
-                      onValueChange={(next) => {
-                        set('currency', String(next));
-                      }}
-                    />
-                  </div>
-                }
-              />
-              <FieldDescription>The currency every price on this list is set in.</FieldDescription>
-            </Field>
+            <CurrencyField
+              label="Currency for these prices"
+              required
+              value={draft.currency}
+              onChange={(next) => {
+                set('currency', next);
+              }}
+              description="The currency every price on this list is set in."
+            />
           </FormSection>
 
           {/* 2 — Who gets it */}
@@ -834,13 +814,12 @@ function PriceListEditor({
                 <FieldLabel>Start date</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color="module"
-                      type="date"
                       value={draft.startDate}
                       aria-label="Start date"
-                      onChange={(event) => {
-                        set('startDate', event.target.value);
+                      onValueChange={(value) => {
+                        set('startDate', value);
                       }}
                     />
                   }
@@ -851,13 +830,12 @@ function PriceListEditor({
                 <FieldLabel>End date</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <DayInput
                       color={dateError ? 'error' : 'module'}
-                      type="date"
                       value={draft.endDate}
                       aria-label="End date"
-                      onChange={(event) => {
-                        set('endDate', event.target.value);
+                      onValueChange={(value) => {
+                        set('endDate', value);
                       }}
                     />
                   }

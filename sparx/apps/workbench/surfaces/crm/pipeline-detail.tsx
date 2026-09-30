@@ -336,6 +336,13 @@ function PipelineEditor({
               />
               {nameError && touched ? <FieldStatus status="error">{nameError}</FieldStatus> : null}
             </Field>
+            {/* SET ONCE, THEN LEFT ALONE. `bootstrapDefaultPipeline` finds
+                the starter sales process by this exact slug, so editing it
+                afterwards makes that lookup miss: the next module activation
+                creates a SECOND sales process with six fresh steps while every
+                deal stays on the first. Nothing here needs renaming either —
+                it is an id, it is never shown to a customer, and the name above
+                is the thing people read. */}
             <Field>
               <FieldLabel>Short id</FieldLabel>
               <FieldControl
@@ -343,9 +350,10 @@ function PipelineEditor({
                   <Input
                     color={slugError && touched ? 'error' : 'module'}
                     value={identity.slug}
-                    placeholder="new-b2b-acquisition"
+                    placeholder="repeat-orders"
                     spellCheck={false}
                     autoComplete="off"
+                    disabled={!isNew}
                     className="font-mono"
                     onChange={(event) => {
                       setSlug(event.target.value);
@@ -356,7 +364,11 @@ function PipelineEditor({
               {slugError && touched ? (
                 <FieldStatus status="error">{slugError}</FieldStatus>
               ) : (
-                <FieldDescription>A short, lowercase id used behind the scenes.</FieldDescription>
+                <FieldDescription>
+                  {isNew
+                    ? 'A short, lowercase id used behind the scenes. It is set now and stays put.'
+                    : 'A short, lowercase id used behind the scenes. It cannot change once things are using it.'}
+                </FieldDescription>
               )}
             </Field>
           </FormSection>
@@ -371,8 +383,8 @@ function PipelineEditor({
             </Alert>
           ) : (
             <FormSection
-              title="Stages"
-              description="The steps a deal moves through, top to bottom. Mark the ones that mean the deal is won or lost."
+              title="Steps"
+              description="The steps something moves through here, top to bottom. Mark the ones that mean it is finished."
               action={
                 <Button
                   size="sm"
@@ -382,7 +394,7 @@ function PipelineEditor({
                   onClick={onAddStage}
                 >
                   <Plus className="size-4" aria-hidden />
-                  Add a stage
+                  Add a step
                 </Button>
               }
             >
@@ -536,7 +548,7 @@ function StageRow({
   };
 
   const onConfirmRemove = async () => {
-    const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another stage';
+    const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another step';
     const ok = await confirm({
       title: `Remove ${stage.name}?`,
       description: `Any deals still on this stage move to “${targetName}”. This cannot be undone, but no deal is lost.`,
@@ -592,7 +604,7 @@ function StageRow({
         </div>
 
         <Field className="min-w-[10rem] flex-1">
-          <FieldLabel>Stage name</FieldLabel>
+          <FieldLabel>Step name</FieldLabel>
           <FieldControl
             render={
               <Input
@@ -624,19 +636,26 @@ function StageRow({
           <FieldLabel>Chance</FieldLabel>
           <FieldControl
             render={
-              <Input
-                color="module"
-                type="number"
-                min={0}
-                max={100}
-                inputMode="numeric"
-                value={probability}
-                placeholder="%"
-                onChange={(event) => {
-                  setProbability(event.target.value);
-                }}
-                onBlur={commitProbability}
-              />
+              /* The % is a sibling, not the placeholder. As a placeholder it
+                 showed only while the box was EMPTY, so every filled row read
+                 "10", "25", "50" with nothing on screen saying what of. */
+              <div className="flex items-center gap-1">
+                <Input
+                  color="module"
+                  type="number"
+                  min={0}
+                  max={100}
+                  inputMode="numeric"
+                  value={probability}
+                  aria-label="Chance of winning, as a percentage"
+                  placeholder="0"
+                  onChange={(event) => {
+                    setProbability(event.target.value);
+                  }}
+                  onBlur={commitProbability}
+                />
+                <Text as="span">%</Text>
+              </div>
             }
           />
         </Field>

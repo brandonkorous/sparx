@@ -110,7 +110,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Supplier list controls"
+        label="Suppliers controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -228,7 +228,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((supplier) => {
-                const state = supplierState(supplier.status);
+                const state = supplierState(supplier.status, supplier.type);
                 return (
                   <tr
                     key={supplier.id}

@@ -50,7 +50,16 @@ import {
   Input,
   Text,
 } from '@wizeworks/silicaui-react';
-import { ArrowUpRight, CalendarClock, Check, CircleCheck, LogIn, UserX, X } from 'lucide-react';
+import {
+  ArrowUpRight,
+  CalendarClock,
+  Check,
+  CircleCheck,
+  LogIn,
+  Phone,
+  UserX,
+  X,
+} from 'lucide-react';
 // The pane's imperative-confirm wrapper — the app standardised on this over the
 // raw silica hook (it yields the flushSync commit before returning).
 import { useConfirm } from '../../lib/confirm';
@@ -62,7 +71,7 @@ import {
   bookingResourceLabel,
   bookingStateMeta,
   bookingTypeLabel,
-  customerName,
+  bookingWhoLabel,
   formatClock,
   formatWhen,
   fromLocalInputValue,
@@ -266,7 +275,17 @@ function LoadedModal({
     ? calendarErrorMessage(failed.error, 'That did not go through. Nothing was changed.')
     : null;
 
-  const who = booking.customerId ? customerName(customer) : null;
+  // The list's own ladder, so a block, its quick-look and its row never name one
+  // person three ways. This used to be `customerId ? customerName(fetched) : null`,
+  // which said "For A customer" until a second read landed, and forever when the
+  // CRM app was off, while the booking itself carried the name (issue 138).
+  const whoLabel = bookingWhoLabel(booking);
+  const who = whoLabel === 'No one assigned' ? null : whoLabel;
+  // The number to ring when they are late (issue 111). The record's copy first,
+  // since it is the one an edit on their record keeps current.
+  // A blank string is no number, so it falls through like a missing one.
+  const phone =
+    [customer?.phone, booking.customer?.phone].map((value) => value?.trim()).find(Boolean) ?? null;
   const facts = [
     bookingTypeLabel(booking.bookingType),
     `With ${bookingResourceLabel(booking)}`,
@@ -333,13 +352,27 @@ function LoadedModal({
             {duration ? ` · ${duration}` : ''}
           </Text>
           <Text className="text-sm break-words">{facts}</Text>
+          {phone ? (
+            <div>
+              <Button
+                size="sm"
+                variant="outline"
+                color="module"
+                // eslint-disable-next-line jsx-a11y/anchor-has-content -- content is the Button's children; the anchor is the render target, and the a11y rule can't see through Button's render prop.
+                render={<a href={`tel:${phone}`} />}
+              >
+                <Phone className="size-4" aria-hidden />
+                Call {phone}
+              </Button>
+            </div>
+          ) : null}
         </div>
         <Badge color={state.tone} variant="soft" size="sm" className="shrink-0">
           {state.label}
         </Badge>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
         <SaveFailure title="That did not go through" message={actionError} />
 
         {booking.status === 'cancelled' && booking.cancellationReason ? (

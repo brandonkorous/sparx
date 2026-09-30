@@ -229,7 +229,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Purchase order list controls"
+        label="Purchase orders controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -277,7 +277,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </NativeSelect>
             <NativeSelect
               size="sm"
-              className="max-w-40 shrink"
+              className="shrink"
               aria-label="Filter by supplier"
               value={supplierId}
               onChange={(event) => {

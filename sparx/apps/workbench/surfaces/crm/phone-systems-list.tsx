@@ -84,7 +84,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Phone system controls"
+        label="Phone systems controls"
         controls={
           <>
             <Button

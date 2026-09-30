@@ -1,6 +1,6 @@
 'use client';
 
-// Who the invoice is for.
+// Who the document is for.
 //
 // Two things that look redundant and aren't: the CUSTOMER is the record this
 // document is attached to (required by the API, drives their account history
@@ -19,7 +19,7 @@ import {
   Input,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { CustomerPicker, customerLabel } from './customer-picker';
+import { billingName, CustomerPicker } from './customer-picker';
 import { useCustomerOnRecord } from './customer-picker-data';
 import {
   clearedFromCustomer,
@@ -27,6 +27,7 @@ import {
   misdirectedEmail,
   type BilledParty,
 } from './bill-to-fill';
+import { DayInput } from '../../components/day-input';
 
 export interface BillToValue {
   name: string;
@@ -39,11 +40,38 @@ interface BillToProps {
   value: BillToValue;
   /** `YYYY-MM-DD`, or '' for none. */
   dueAt: string;
+  /** What this document is called in a sentence: "invoice", "quote", "estimate".
+   *  Passed in rather than assumed, because this same form is the one screen
+   *  that makes all three (issue 762). */
+  noun: string;
+  /** True when the document offers a price rather than demands money. The date
+   *  then means "this offer runs out", not "pay by", and the two are stored in
+   *  different columns — see `./save`. */
+  priceOffer: boolean;
   readOnly?: boolean;
   onChange: (patch: { customerId?: string | null; billTo?: BillToValue; dueAt?: string }) => void;
+  /**
+   * Make a customer who is not in the book yet, with what was typed.
+   *
+   * Passed down rather than done here because opening a screen belongs to the
+   * pane, not to a field. Without it the picker says "Add them in Customers
+   * first", which sends somebody off to find that screen and type the name a
+   * second time (issue 745) — and a document must reference a real customer, so
+   * this is the one picker that cannot be skipped.
+   */
+  onAddCustomer?: (typed: string) => void;
 }
 
-export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToProps) {
+export function BillTo({
+  customerId,
+  value,
+  dueAt,
+  noun,
+  priceOffer,
+  readOnly,
+  onChange,
+  onAddCustomer,
+}: BillToProps) {
   const setField = (field: keyof BillToValue, next: string) => {
     onChange({ billTo: { ...value, [field]: next } });
   };
@@ -53,7 +81,7 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
   // "she typed this" from "we filled it from the last customer".
   const onRecord = useCustomerOnRecord(customerId);
   const attached: BilledParty | null = onRecord.data
-    ? { name: customerLabel(onRecord.data), email: onRecord.data.email ?? '' }
+    ? { name: billingName(onRecord.data), email: onRecord.data.email ?? '' }
     : null;
   const wrongAddress = misdirectedEmail(value.email, attached);
 
@@ -64,6 +92,7 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
         <CustomerPicker
           value={customerId}
           disabled={readOnly}
+          {...(onAddCustomer ? { onAddNew: onAddCustomer } : {})}
           onSelect={(customer) => {
             onChange({
               customerId: customer.id,
@@ -74,7 +103,7 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
                 // different on purpose. `attached` is still the PREVIOUS
                 // customer here, which is exactly the comparison needed.
                 ...fillFromCustomer(value, attached, {
-                  name: customerLabel(customer),
+                  name: billingName(customer),
                   email: customer.email ?? '',
                 }),
               },
@@ -92,7 +121,7 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
           }}
         />
         <FieldDescription>
-          The customer record this invoice belongs to. It shows up in their history
+          {`The customer record this ${noun} belongs to. It shows up in their history`}
         </FieldDescription>
       </Field>
 
@@ -115,7 +144,7 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
               />
             }
           />
-          <FieldDescription>As it should be printed on the invoice</FieldDescription>
+          <FieldDescription>{`As it should be printed on the ${noun}`}</FieldDescription>
         </Field>
         <Field>
           <FieldLabel>Email</FieldLabel>
@@ -139,7 +168,7 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
           {wrongAddress ? (
             <FieldStatus status="warning">{wrongAddress}</FieldStatus>
           ) : (
-            <FieldDescription>Where the invoice gets sent</FieldDescription>
+            <FieldDescription>{`Where the ${noun} gets sent`}</FieldDescription>
           )}
         </Field>
       </div>
@@ -150,24 +179,27 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
           an invoice raised straight into one never got a date and could never
           be chased (issue 512). */}
       <Field className="@lg:max-w-64">
-        <FieldLabel>When it should be paid</FieldLabel>
+        <FieldLabel>{priceOffer ? 'Good until' : 'When it should be paid'}</FieldLabel>
         <FieldControl
           render={
-            <Input
+            <DayInput
               color="module"
-              type="date"
               value={dueAt}
               disabled={readOnly}
-              onChange={(event) => {
-                onChange({ dueAt: event.target.value });
+              onValueChange={(value) => {
+                onChange({ dueAt: value });
               }}
             />
           }
         />
         <FieldDescription>
-          {dueAt
-            ? 'After this, the invoice starts counting how many days late it is.'
-            : 'Leave it empty if there is no deadline. Without one this invoice never counts as late, so it will not show up when you look for who owes you.'}
+          {priceOffer
+            ? dueAt
+              ? `After this date the ${noun} is marked as run out, so you can see at a glance which prices you no longer stand behind.`
+              : `Leave it empty and this ${noun} stands forever. Put a date on it and the price you quoted is only promised until then.`
+            : dueAt
+              ? `After this, the ${noun} starts counting how many days late it is.`
+              : `Leave it empty if there is no deadline. Without one this ${noun} never counts as late, so it will not show up when you look for who owes you.`}
         </FieldDescription>
       </Field>
 

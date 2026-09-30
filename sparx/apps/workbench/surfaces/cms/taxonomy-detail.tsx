@@ -55,6 +55,7 @@ import {
   isValidKey,
   taxonomyErrorMessage,
   taxonomyKind,
+  taxonomyDeleteWarning,
   toKey,
   useCreateTaxonomy,
   useCreateTerm,
@@ -428,13 +429,9 @@ function ManageBody({
   };
 
   const onDelete = async () => {
-    const count = taxonomy.term_count;
     const ok = await confirm({
       title: `Delete “${taxonomy.plural_name}”?`,
-      description:
-        count > 0
-          ? `This removes this way of filing and all ${String(count)} of its labels, and takes those labels off any content using them. This cannot be undone.`
-          : 'This removes this way of filing content. This cannot be undone.',
+      description: taxonomyDeleteWarning(taxonomy),
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',

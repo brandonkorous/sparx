@@ -32,9 +32,9 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { ArrowDown, ArrowUp, Check, ChevronRight, Pencil, Plus, Trash2, X } from 'lucide-react';
 import {
-  dimensionSummary,
   fitmentErrorMessage,
   levelDimensions,
+  childCountLabel,
   pluralize,
   slugifyNode,
   useCreateFitmentNode,
@@ -195,7 +195,21 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
   };
 
   const levelLabel = currentLevel?.label ?? 'Entries';
-  const firstLevelLower = (levels[0]?.label ?? 'entry').toLowerCase();
+
+  // What a shopper picks from, in one sentence.
+  //
+  // It read `the ${first}s you support, each narrowing down through ${summary}`,
+  // which assumed MORE THAN ONE level. On a one-level list it said "the sizes
+  // you support, each narrowing down through size" — a thing narrowing down
+  // through itself. And it pluralized by adding "s" to a label the tenant chose,
+  // three lines from a `pluralize` that knows about "class" and "category".
+  const levelNames = levels.map((level) => level.label);
+  const firstPlural = pluralize(levelNames[0] ?? 'entry', 2).toLowerCase();
+  const deeper = levelNames.slice(1).map((label) => pluralize(label, 2).toLowerCase());
+  const picksFrom =
+    deeper.length === 0
+      ? `This is what a shopper picks from: the ${firstPlural} you support.`
+      : `This is what a shopper picks from: the ${firstPlural} you support, and under each one the ${deeper.join(', then the ')}.`;
 
   return (
     <section className="card bg-base-100 flex flex-col gap-4 p-4">
@@ -203,39 +217,48 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
         <Heading level={2} className="text-lg font-semibold">
           The entries in this list
         </Heading>
-        <Text className="text-sm">
-          {`This is what a shopper picks from: the ${firstLevelLower}s you support, each narrowing down through ${dimensionSummary(domain).toLowerCase()}.`}
-        </Text>
+        <Text className="text-sm">{picksFrom}</Text>
       </div>
 
       {/* Where you are, and the way back up. A drill with no visible path is a
-          maze — you cannot tell a dead end from the bottom. */}
+          maze — you cannot tell a dead end from the bottom.
+          WHERE YOU ARE IS TEXT, not a disabled button: greyed-out and
+          unclickable is how this console draws something you MAY NOT USE, and
+          this line is the only thing naming the list you are adding to. */}
       <div className="flex flex-wrap items-center gap-1">
-        <Button
-          size="sm"
-          variant="ghost"
-          color="neutral"
-          disabled={path.length === 0}
-          onClick={() => {
-            drillTo(0);
-          }}
-        >
-          {domain.displayName}
-        </Button>
+        {path.length === 0 ? (
+          <Text as="span" className="px-2 text-sm font-medium">
+            {domain.displayName}
+          </Text>
+        ) : (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              drillTo(0);
+            }}
+          >
+            {domain.displayName}
+          </Button>
+        )}
         {path.map((step, index) => (
           <span key={step.id} className="flex items-center gap-1">
             <ChevronRight className="size-3 shrink-0" aria-hidden />
-            <Button
-              size="sm"
-              variant="ghost"
-              color="neutral"
-              disabled={index === path.length - 1}
-              onClick={() => {
-                drillTo(index + 1);
-              }}
-            >
-              {step.name}
-            </Button>
+            {index === path.length - 1 ? (
+              <Text as="span" className="px-2 text-sm font-medium">
+                {step.name}
+              </Text>
+            ) : (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  drillTo(index + 1);
+                }}
+              >
+                {step.name}
+              </Button>
+            )}
           </span>
         ))}
       </div>
@@ -304,7 +327,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
       ) : children.length === 0 ? (
         <Text className="text-sm">
           {path.length === 0
-            ? `No ${firstLevelLower}s yet. Add your first one above.`
+            ? `No ${firstPlural} yet. Add your first one above.`
             : `Nothing under ${path[path.length - 1]?.name ?? 'here'} yet. Add one above.`}
         </Text>
       ) : (
@@ -354,7 +377,6 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                     <Button
                       size="sm"
                       variant="ghost"
-                      color="neutral"
                       shape="square"
                       aria-label="Cancel rename"
                       title="Cancel"
@@ -376,10 +398,8 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                         }}
                       >
                         <span className="min-w-0 flex-1 truncate font-medium">{node.name}</span>
-                        <Badge color="neutral" variant="outline" size="sm">
-                          {node.childCount === 0
-                            ? `No ${nextLevel?.label.toLowerCase() ?? ''}`.trim()
-                            : `${String(node.childCount)} ${pluralize(nextLevel?.label.toLowerCase() ?? 'entry', node.childCount)}`}
+                        <Badge variant="outline" size="sm">
+                          {childCountLabel(nextLevel?.label ?? 'entry', node.childCount)}
                         </Badge>
                         <ChevronRight className="size-4 shrink-0" aria-hidden />
                       </button>
@@ -393,7 +413,6 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                       <Button
                         size="sm"
                         variant="ghost"
-                        color="neutral"
                         shape="square"
                         disabled={index === 0 || reorder.isPending}
                         aria-label={`Move ${node.name} up`}
@@ -407,7 +426,6 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                       <Button
                         size="sm"
                         variant="ghost"
-                        color="neutral"
                         shape="square"
                         disabled={index === children.length - 1 || reorder.isPending}
                         aria-label={`Move ${node.name} down`}
@@ -421,7 +439,6 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                       <Button
                         size="sm"
                         variant="ghost"
-                        color="neutral"
                         shape="square"
                         aria-label={`Rename ${node.name}`}
                         title="Rename"

@@ -74,6 +74,7 @@ export function useBillingPortal() {
  *  managing an existing one goes through the portal. Returns the single-use URL. */
 export function useBillingCheckout() {
   return useMutation({
+    meta: { running: 'open checkout' },
     mutationFn: (returnUrl: string) =>
       api.post<{ url: string }>('/v1/billing/checkout', { returnUrl }),
   });

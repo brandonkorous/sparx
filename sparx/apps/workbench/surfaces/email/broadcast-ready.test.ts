@@ -14,6 +14,7 @@ const sound: ReadinessFacts = {
   segmentId: 'seg-1',
   builderEmailId: 'mail-1',
   emailUnpublished: false,
+  emailBuiltIn: false,
   recipientCount: 23,
   mailingAddress: '12 Juniper Row\nBristol BS1 4TR\nUnited Kingdom',
 };
@@ -58,6 +59,21 @@ describe('the mailing address the law wants', () => {
   });
 });
 
+describe('a built-in email chosen for a list', () => {
+  it('stops a draft that already points at one', () => {
+    // A draft saved before the picker filtered them out still holds the id of,
+    // say, "Payment failed". Sending it would tell a whole list their payment
+    // failed, so it is one more thing standing between her and Send.
+    const missing = missingPieces(facts({ emailBuiltIn: true }));
+    expect(missing).toHaveLength(1);
+    expect(missing[0]).toContain('an email you wrote yourself');
+  });
+
+  it('lets an email she wrote through', () => {
+    expect(missingPieces(facts({ emailBuiltIn: false }))).toEqual([]);
+  });
+});
+
 describe('the pieces that were already checked', () => {
   it('still names each one', () => {
     const cases: [Partial<ReadinessFacts>, string][] = [
@@ -88,6 +104,7 @@ describe('the pieces that were already checked', () => {
       segmentId: '',
       builderEmailId: '',
       emailUnpublished: false,
+      emailBuiltIn: false,
       recipientCount: undefined,
       mailingAddress: null,
     });

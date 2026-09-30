@@ -51,7 +51,7 @@ import { GripVertical, Plus, Workflow } from 'lucide-react';
 import { Badge } from '@wizeworks/silicaui-react';
 import type { StageDraft } from './workflow-data';
 import { stageTone } from './types';
-import { effectSummary, typeLabel } from './stage-presentation';
+import { effectSummary, typeBadge } from './stage-presentation';
 
 export const SETTINGS_NODE = 'settings';
 
@@ -255,8 +255,17 @@ function StageNode({
         >
           <NodeBody title={headline}>
             <span className="flex flex-wrap items-center gap-1.5">
+              {/* The badge beside a stage name says what the stage MEANS, not what the schema
+                  calls it. `typeLabel` gives "Draft", "Committed", "Void" — a second vocabulary
+                  sitting beside the tenant's own word for the step, which on the seeded B2B
+                  Quotes workflow read "Submitted · Draft", "Under Review · Draft" and
+                  "Quoted · Draft" on three rows running, and "Declined · Void" on the fourth.
+                  Issue 766 replaced exactly that badge in lifecycle.tsx and stopped there; this
+                  is the screen where the stage is CONFIGURED, so it mattered more here
+                  (issue 782). With both fixed, `typeLabel` had no callers left and is gone:
+                  the inspector's SELECT carries the whole sentence already. */}
               <Badge color={stageTone(stage.stageType)} variant="soft" size="sm">
-                {typeLabel(stage.stageType)}
+                {typeBadge(stage.stageType)}
               </Badge>
               {index === 0 ? (
                 <Badge color="module" variant="soft" size="sm">
@@ -281,7 +290,7 @@ function DragCard({ stage }: { stage: StageDraft }) {
       <NodeBody title={headline}>
         <span className="flex flex-wrap items-center gap-1.5">
           <Badge color={stageTone(stage.stageType)} variant="soft" size="sm">
-            {typeLabel(stage.stageType)}
+            {typeBadge(stage.stageType)}
           </Badge>
         </span>
       </NodeBody>

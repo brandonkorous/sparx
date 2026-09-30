@@ -82,10 +82,22 @@ export function TrendChart({
   series,
   points,
   grain,
+  format,
+  label,
 }: {
   series: TimeseriesSeries[];
   points: TimeseriesPoint[];
   grain: string;
+  /**
+   * How to write one value. REQUIRED in practice, because the raw numbers are
+   * whatever the metric stores and money is stored in CENTS: without this the
+   * Sales dashboard drew an axis reading 0 to 80,000 with no currency on it,
+   * beside a card saying Revenue $2,391. The donut four lines below this in
+   * `tiles.tsx` was already being handed a formatter; the hero chart was not.
+   */
+  format?: (value: number) => string;
+  /** What this chart is OF, for a screen reader. */
+  label?: string;
 }) {
   const { ref, colors } = useTokenColors(TREND_TOKENS);
 
@@ -97,6 +109,7 @@ export function TrendChart({
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'line' },
+        ...(format ? { valueFormatter: (value: unknown) => format(Number(value)) } : {}),
       },
       legend: {
         top: 2,
@@ -118,6 +131,7 @@ export function TrendChart({
         type: 'value',
         splitNumber: 4,
         minInterval: 1,
+        ...(format ? { axisLabel: { formatter: (value: number) => format(value) } } : {}),
       },
       series: series.map((s, index) => ({
         name: s.label,
@@ -131,17 +145,21 @@ export function TrendChart({
         data: points.map((p) => Number(p[s.key] ?? 0)),
       })),
     };
-  }, [series, points, grain, colors]);
+  }, [series, points, grain, colors, format]);
 
   return (
     <div ref={ref} className="w-full">
       {/* h-80! (320px) — the important modifier beats the Chart's inline default
           height (20rem), so the size is ours to set, not a class the inline style
           silently wins over. Height via a class, never an inline style. */}
+      {/* The name came from the Traffic dashboard this chart was built for and
+          stayed hardcoded when it became the hero of every dashboard, so a
+          screen reader on Sales heard "Visitors and page views over time" over
+          a revenue line. It is the tile's own title now. */}
       <Chart
         option={option}
         className="h-80! w-full"
-        aria-label="Visitors and page views over time"
+        aria-label={label ?? series.map((s) => s.label).join(' and ')}
       />
     </div>
   );

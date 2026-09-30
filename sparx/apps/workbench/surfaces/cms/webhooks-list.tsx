@@ -82,7 +82,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Webhooks list controls"
+        label="Webhooks controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -195,12 +195,13 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>Endpoint</th>
                 <th className="hidden @xl:table-cell">Events</th>
                 <th className="hidden @4xl:table-cell">Added</th>
-                <th>Status</th>
+                <th>How it is going</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((webhook) => {
-                const state = webhookState(webhook.active);
+                // What actually came back, not the on/off switch (issue 403).
+                const state = webhookState(webhook.active, webhook.health);
                 return (
                   <tr
                     key={webhook.id}
@@ -229,7 +230,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {formatDateTime(webhook.createdAt)}
                     </td>
                     <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
+                      <Badge color={state.tone} variant="soft" size="sm" title={state.detail}>
                         {state.label}
                       </Badge>
                     </td>

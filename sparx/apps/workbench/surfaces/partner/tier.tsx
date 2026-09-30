@@ -89,7 +89,7 @@ export function TierSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Tier controls"
+        label="Your tier controls"
         controls={
           <>
             <Badge color="module" variant="soft" size="sm">

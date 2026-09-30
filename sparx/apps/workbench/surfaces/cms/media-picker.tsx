@@ -68,6 +68,10 @@ export interface PickedAsset {
   id: string;
   url: string | null;
   filename: string;
+  /** The library's own description, or null. A filename is NOT a description, so
+   *  a caller writing alt text into published content must leave it empty rather
+   *  than fall back to one (see `MediaAsset.altText`). */
+  altText: string | null;
 }
 
 const MediaPickerContext = createContext<{
@@ -260,9 +264,25 @@ function MediaPickerDialog({
       }
     );
   };
+  // Taking a picture OUT of an album is visible on its own (the tile leaves the
+  // album), so there is nothing to say when it works. A failure had nothing to
+  // say either: the tile stayed put and no message appeared, which reads as a
+  // click that never landed. Its partner above has said both since the day it
+  // was written. [[feedback_a_fix_leaves_its_neighbour_behind]]
   const removeAssetFrom = (assetId: string) => {
     if (!collectionId) return;
-    removeFromCollection.mutate({ collectionId, assetId });
+    removeFromCollection.mutate(
+      { collectionId, assetId },
+      {
+        onError: () => {
+          toast.add({
+            title: 'Could not take that picture out of the album',
+            description: 'It is still in there. Nothing else was changed.',
+            type: 'error',
+          });
+        },
+      }
+    );
   };
 
   const assets = library.data ?? [];
@@ -292,7 +312,12 @@ function MediaPickerDialog({
         // real src, not just an id.
         fetchAsset(assetId)
           .then((asset) => {
-            takePicked({ id: asset.id, url: asset.url, filename: asset.filename });
+            takePicked({
+              id: asset.id,
+              url: asset.url,
+              filename: asset.filename,
+              altText: asset.altText,
+            });
           })
           .catch(() => {
             toast.add({
@@ -329,7 +354,12 @@ function MediaPickerDialog({
       }
       try {
         const asset = await fetchAsset(result.value);
-        uploaded.push({ id: asset.id, url: asset.url, filename: asset.filename });
+        uploaded.push({
+          id: asset.id,
+          url: asset.url,
+          filename: asset.filename,
+          altText: asset.altText,
+        });
       } catch {
         // Uploaded to the library but its URL would not resolve — it is still
         // pickable from the grid, so count it as a soft failure for the summary.
@@ -540,6 +570,7 @@ function MediaPickerDialog({
                     id: asset.id,
                     url: asset.url,
                     filename: asset.filename,
+                    altText: asset.altText,
                   };
                   const order = multiple ? selected.findIndex((p) => p.id === asset.id) : -1;
                   const isSelected = order >= 0;

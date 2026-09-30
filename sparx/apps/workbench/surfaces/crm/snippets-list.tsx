@@ -82,6 +82,11 @@ interface Draft {
 
 const BLANK: Draft = { shortcut: '', name: '', body: '', isShared: true };
 
+/** ONE object, two places: the toolbar button and the invitation in the
+ *  first-run state. Split, the label drifts — this pane said "New paragraph"
+ *  above and "Save your first paragraph" below, for the same action. Issue 729. */
+const CREATE_LABEL = 'Save a paragraph';
+
 export function SnippetsListSurface() {
   const snippets = useSalesSnippets();
   const { create, update, remove } = useSalesSnippetMutations();
@@ -231,10 +236,12 @@ export function SnippetsListSurface() {
                 : `${String(rows.length)} saved paragraphs`}
           </Text>
         }
+        statusReady={!snippets.isPending}
+        statusFailed={snippets.isError}
         primary={
           <Button color="module" size="sm" className="ml-auto shrink-0" onClick={startNew}>
             <Plus className="size-4" aria-hidden />
-            New paragraph
+            {CREATE_LABEL}
           </Button>
         }
         controls={
@@ -260,11 +267,11 @@ export function SnippetsListSurface() {
               firstRun={{
                 title: 'Stop retyping your own opening hours',
                 description:
-                  'Save a paragraph once (your hours, your returns policy, your usual lead time) give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
+                  'Save a paragraph once: your hours, your returns policy, your usual lead time. Give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
                 actions: (
                   <Button color="module" onClick={startNew}>
                     <Plus className="size-4" aria-hidden />
-                    Save your first paragraph
+                    {CREATE_LABEL}
                   </Button>
                 ),
               }}

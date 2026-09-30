@@ -77,7 +77,6 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatCents,
   holderLabel,
-  isNotFound,
   levelState,
   locationLabel,
   movementReason,
@@ -299,7 +298,7 @@ function CountForm({
         />
         <FieldDescription>
           {current
-            ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted. We work out the difference and record it.`
+            ? `We currently think you have ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted. We work out the difference and record it.`
             : 'This has never been counted here. Put in what is on the shelf and your website starts keeping track of it.'}
         </FieldDescription>
       </Field>
@@ -1014,17 +1013,14 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
   // "Record a count" button, which would invite someone to correct a number
   // they cannot see.
   if (item.isError) {
-    const gone = isNotFound(item.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This item no longer exists' : 'Could not load this item’s stock'}
-          description={
-            gone
-              ? 'It has been removed from your catalog. Its past orders and its stock history are unaffected.'
-              : 'This is a problem reaching the server. Your stock is unaffected: the numbers just could not be read just now.'
-          }
+          error={item.error}
+          title="Could not load this item’s stock"
+          description="This is a problem reaching the server. Your stock is unaffected: the numbers just could not be read just now."
+          missingTitle="This item no longer exists"
+          missingDescription="It has been removed from your catalog. Its past orders and its stock history are unaffected."
           onRetry={() => {
             void item.refetch();
           }}

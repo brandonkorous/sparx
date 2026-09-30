@@ -19,7 +19,6 @@
 import { useSyncExternalStore } from 'react';
 import {
   Button,
-  Kbd,
   Navbar,
   NavbarCenter,
   NavbarEnd,
@@ -37,6 +36,7 @@ import { FeedbackButton } from './feedback/button';
 import { NotificationCenter } from './notification-center';
 import { TrialChip } from './billing/trial-chip';
 import { QuickAdd } from './toolbar/quick-add';
+import { LauncherKey } from './shortcut-keys';
 import { SiteSwitcher } from './toolbar/site-switcher';
 import { ViewerMenu } from './toolbar/viewer-menu';
 
@@ -162,7 +162,7 @@ export function Toolbar({
           >
             <Search className="size-3.5 shrink-0" aria-hidden />
             <span className="flex-1 truncate text-left">Search everything</span>
-            <Kbd size="sm">⌘K</Kbd>
+            <LauncherKey size="sm" />
           </Button>
         </span>
       </NavbarCenter>

@@ -452,7 +452,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Messages overview controls"
+        label="Overview controls"
         refresh={
           <RefreshButton
             className="ml-auto"

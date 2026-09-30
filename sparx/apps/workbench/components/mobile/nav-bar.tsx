@@ -81,6 +81,15 @@ export function NavBar({ active, openCount, activeModule, onSelect }: NavBarProp
                 color={on ? 'module' : undefined}
                 variant={on ? 'soft' : 'ghost'}
                 aria-current={on ? 'true' : undefined}
+                // Open carries the count. The badge is a SIBLING of this button,
+                // so a screen reader met "Open, button" and then a loose number
+                // with nothing joining them; the visible word still starts the
+                // name, so saying "Open" out loud still works.
+                aria-label={
+                  tab.key === 'open' && openCount > 0
+                    ? `${tab.label}, ${String(openCount)}`
+                    : undefined
+                }
                 // 52px, over the 44px thumb floor.
                 className="min-h-13 flex-col gap-1 text-sm font-medium"
                 onClick={() => {

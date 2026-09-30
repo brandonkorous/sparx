@@ -93,6 +93,12 @@ export interface PieceUsage {
   pages: Placement[];
   layouts: Placement[];
   total: number;
+  /** How many of those would REFUSE a delete. Not the same as `total`: a piece
+   *  placed by the current editor DETACHES (the page keeps the design and stops
+   *  following the master), so it is used without standing in the way. Only a
+   *  placement made by the retired builder blocks. `scanUsages` in
+   *  component-service.ts has sent this all along. */
+  blocking: number;
   pinnedVersions: number[];
 }
 

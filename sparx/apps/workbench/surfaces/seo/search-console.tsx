@@ -31,6 +31,7 @@ import {
 import { Check, LineChart, Link2, Plug, RefreshCw, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { surfaceTitle, type SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
@@ -328,29 +329,24 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Search Console actions"
-        controls={
-          <>
-            {status.data ? (
-              <Badge color={configured ? badge.tone : 'info'} variant="soft" size="sm">
-                {configured ? badge.label : 'Not available'}
-              </Badge>
-            ) : null}
-            <div className="flex-1" />
-            <Button
-              size="sm"
-              variant="ghost"
-              color="neutral"
-              shape="square"
-              aria-label="Check the connection again"
-              title="Check the connection again"
-              loading={status.isFetching}
-              onClick={() => {
-                void status.refetch();
-              }}
-            >
-              <RefreshCw className="size-4" aria-hidden />
-            </Button>
-          </>
+        status={
+          status.data ? (
+            <Badge color={configured ? badge.tone : 'info'} variant="soft" size="sm">
+              {configured ? badge.label : 'Not available'}
+            </Badge>
+          ) : null
+        }
+        /* The house refresh control, which says when it last looked. This pane
+           hand-rolled its own as a bare circular arrow with no words - the same
+           button piggles has always drawn from `RefreshButton` here. */
+        refresh={
+          <RefreshButton
+            isFetching={status.isFetching}
+            updatedAt={status.data ? status.dataUpdatedAt : undefined}
+            onRefresh={() => {
+              void status.refetch();
+            }}
+          />
         }
       />
 

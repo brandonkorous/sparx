@@ -129,7 +129,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Run history controls"
+        label="Automation runs controls"
         controls={
           <>
             <ListChecks className="size-4 shrink-0" aria-hidden />

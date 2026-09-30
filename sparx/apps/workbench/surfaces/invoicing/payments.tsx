@@ -77,20 +77,33 @@ function usePayments(documentId: string, enabled: boolean) {
 
 interface PaymentsSectionProps {
   doc: BillingDocument;
+  /** What this document is called in a sentence — "invoice", "quote", "estimate". */
+  noun: string;
+  /** True when the document offers a price rather than demands money. */
+  priceOffer: boolean;
 }
 
-export function PaymentsSection({ doc }: PaymentsSectionProps) {
+export function PaymentsSection({ doc, noun, priceOffer }: PaymentsSectionProps) {
   const { data: payments, isLoading } = usePayments(doc.id, true);
 
   return (
     <FormSection
-      title="Payments"
+      title={priceOffer ? 'Deposits' : 'Payments'}
+      // A price offer has no balance: nobody has agreed to it, so nobody owes
+      // anything, and saying "$1,008.00 still owed" on a quote nobody has even
+      // seen states a debt that does not exist. A deposit taken to hold a job
+      // is a real thing and stays available; what changes is the sentence
+      // above it (issue 762).
       description={
-        doc.balance > 0
-          ? `${formatMoney(doc.balance, doc.currency)} still owed of ${formatMoney(doc.total, doc.currency)}.`
-          : doc.amountPaid > 0
-            ? 'Paid in full.'
-            : 'Nothing owed yet.'
+        priceOffer
+          ? doc.amountPaid > 0
+            ? `${formatMoney(doc.amountPaid, doc.currency)} taken so far to hold this.`
+            : `Nothing is owed on a ${noun}. Record a deposit here only if you have taken money to hold the job.`
+          : doc.balance > 0
+            ? `${formatMoney(doc.balance, doc.currency)} still owed of ${formatMoney(doc.total, doc.currency)}.`
+            : doc.amountPaid > 0
+              ? 'Paid in full.'
+              : 'Nothing owed yet.'
       }
       action={<RecordPaymentDialog doc={doc} />}
     >
@@ -100,8 +113,9 @@ export function PaymentsSection({ doc }: PaymentsSectionProps) {
         </Text>
       ) : !payments || payments.length === 0 ? (
         <Text className="text-sm">
-          No payments recorded yet. When money comes in (however it comes in), record it here and
-          the balance updates everywhere.
+          {priceOffer
+            ? `No deposit taken. A ${noun} is a price, not a bill, so this stays empty unless somebody pays up front to hold it.`
+            : 'No payments recorded yet. When money comes in (however it comes in), record it here and the balance updates everywhere.'}
         </Text>
       ) : (
         <Table size="sm">

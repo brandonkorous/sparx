@@ -164,7 +164,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
         {error ? (
           <Alert color="danger" variant="soft">
             <AlertContent>

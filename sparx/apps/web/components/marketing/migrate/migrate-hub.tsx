@@ -57,7 +57,7 @@ export function MigrateHub() {
       id: 'migrate-not-listed',
       question: 'What if my platform is not listed?',
       answer:
-        'Drop the CSV in anyway. Anything we do not recognize goes to a mapping screen that guesses what your columns mean and asks you to confirm, so any spreadsheet with labelled columns works, including one your bookkeeper has kept since 2011.',
+        'Drop the CSV in anyway. Anything we do not recognize goes to a mapping screen that guesses what your columns mean and asks you to confirm, so any spreadsheet with labeled columns works, including one your bookkeeper has kept since 2011.',
     },
     {
       id: 'migrate-run-both',
@@ -222,8 +222,8 @@ export function MigrateHub() {
             </Display>
             <Text size={18}>
               Drop any CSV in and tell us what the columns mean. We guess first, so on a
-              well-labelled file there is usually nothing left to correct. Your own stock
-              spreadsheet works exactly as well as a competitor&rsquo;s export.
+              well-labeled file there is usually nothing left to correct. Your own stock spreadsheet
+              works exactly as well as a competitor&rsquo;s export.
             </Text>
           </div>
         </div>

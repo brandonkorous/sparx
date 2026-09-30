@@ -14,6 +14,13 @@
 // status, carried by the blocks themselves (see calendar-timegrid), so a glance
 // tells you what is confirmed, what still needs a nod, and what is under way.
 //
+// Behind the blocks, the hours nobody works are shaded (issue 084; the bands come
+// from calendar-hours). A week of one person shows their week; the day view
+// shades each person's own column, since each column IS one person. The week of
+// everybody at once shades nothing, because there is no single set of hours to
+// draw and shading the union would claim the business is open when only one
+// chair is.
+//
 // Clicking a booking opens a quick-look MODAL over the diary — reschedule, the
 // lifecycle moves, and its change history, without splitting or hiding the grid.
 // Shift-click opens the full booking pane alongside, alt-click in its own window,
@@ -28,7 +35,6 @@ import {
   Text,
   ToggleGroup,
   ToggleGroupItem,
-  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { CalendarOff, ChevronLeft, ChevronRight, Link2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -41,7 +47,6 @@ import {
   addWeeks,
   dayLabel,
   dayWindow,
-  isSameDay,
   isToday,
   useCalendarRange,
   weekDays,
@@ -50,7 +55,10 @@ import {
   weekWindow,
   type CalendarEvent,
 } from './calendar-data';
-import { windowForEvents } from './calendar-grid';
+import { windowForEvents, type TimeWindow } from './calendar-grid';
+import { closedBandsFor, worksOn, type ClosedBand } from './calendar-hours';
+import { localDayKey, zoned } from './calendar-zone';
+import { useExceptions, useResourceWindows, useResourcesWindows } from './setup-data';
 import { TimeGrid, targetFor, type GridColumn } from './calendar-timegrid';
 import { RowOpenHint } from '../../components/row-open-hint';
 
@@ -68,13 +76,23 @@ function WeekHeader({ date }: { date: Date }) {
   );
 }
 
-/** The week's seven day columns, each carrying the bookings that START on it. */
-function weekColumns(anchor: Date, events: CalendarEvent[]): GridColumn[] {
+/** The week's seven day columns, each carrying the bookings that START on it,
+ *  and, when one person is in view, the hours they are shut. */
+function weekColumns(
+  anchor: Date,
+  events: CalendarEvent[],
+  chosenResourceId: string,
+  shut: ShutHours
+): GridColumn[] {
   return weekDays(anchor).map((date) => ({
     key: date.toISOString(),
     header: <WeekHeader date={date} />,
     today: isToday(date),
-    events: events.filter((event) => isSameDay(new Date(event.startAt), date)),
+    ...(chosenResourceId ? { closed: shut.bands(date, chosenResourceId) } : {}),
+    // By the day it falls on in its OWN zone, the same clock the block is placed on.
+    events: events.filter(
+      (event) => zoned(event.startAt, event.timezone).dayKey === localDayKey(date)
+    ),
   }));
 }
 
@@ -87,18 +105,30 @@ function weekColumns(anchor: Date, events: CalendarEvent[]): GridColumn[] {
 function dayColumns(
   events: CalendarEvent[],
   resources: { id: string; name: string }[],
-  chosenResourceId: string
+  chosenResourceId: string,
+  anchor: Date,
+  shut: ShutHours
 ): GridColumn[] {
   if (chosenResourceId) {
     const name = resources.find((resource) => resource.id === chosenResourceId)?.name ?? 'Booked';
-    return [{ key: chosenResourceId, header: headerText(name), events }];
+    return [
+      {
+        key: chosenResourceId,
+        header: headerText(name),
+        closed: shut.bands(anchor, chosenResourceId),
+        events,
+      },
+    ];
   }
   if (resources.length === 0) {
     return [{ key: 'all', header: headerText('All bookings'), events }];
   }
+  // Each column is one person, so each is shaded by that person's own hours:
+  // "who is on, and where the gaps are" is the question the day view exists for.
   const columns: GridColumn[] = resources.map((resource) => ({
     key: resource.id,
     header: headerText(resource.name),
+    closed: shut.bands(anchor, resource.id),
     events: events.filter((event) => event.resourceIds.includes(resource.id)),
   }));
   const unassigned = events.filter((event) => event.resourceIds.length === 0);
@@ -112,6 +142,93 @@ function headerText(label: string) {
   return <span className="truncate text-sm font-semibold">{label}</span>;
 }
 
+/** What the diary knows about when people are shut. */
+interface ShutHours {
+  /** The bands to shade for one person on one date; undefined while their hours
+   *  are still arriving, which draws nothing rather than guessing. */
+  bands: (date: Date, resourceId: string) => ClosedBand[] | undefined;
+  /** Whether anybody in view works at all on this date. */
+  anyoneWorks: (date: Date) => boolean;
+  /** False while the hours are still arriving, so the empty state waits rather
+   *  than guessing. Absence is not a measurement. */
+  known: boolean;
+}
+
+function useShutHours(
+  resourceId: string,
+  // `timezone` is on every resource the API sends (its `resourceView`); the
+  // shut hours are that person's clock, not the viewer's.
+  resources: { id: string; timezone?: string | null }[],
+  view: TimeWindow
+): ShutHours {
+  const one = useResourceWindows(resourceId || null);
+  // The everyone view asks for everybody's hours; the single view does not need
+  // them, so it asks for none. Both land in the same per-resource cache.
+  const everyone = useResourcesWindows(resourceId ? [] : resources.map((r) => r.id));
+  const exceptions = useExceptions();
+  const rows = resourceId ? one.data : everyone.rows;
+  const closures = exceptions.data;
+  const ids = useMemo(
+    () => (resourceId ? [resourceId] : resources.map((r) => r.id)),
+    [resourceId, resources]
+  );
+  const zones = useMemo(
+    () => new Map(resources.map((r) => [r.id, r.timezone ?? null])),
+    [resources]
+  );
+
+  return useMemo(() => {
+    if (ids.length === 0 || !rows || !closures) {
+      return { bands: () => undefined, anyoneWorks: () => true, known: false };
+    }
+    return {
+      bands: (date: Date, id: string) =>
+        closedBandsFor(date, id, rows, closures, view, zones.get(id)),
+      anyoneWorks: (date: Date) =>
+        ids.some((id) => worksOn(date, id, rows, closures, zones.get(id))),
+      known: true,
+    };
+  }, [ids, rows, closures, view, zones]);
+}
+
+/** Nobody can be booked in the whole view, said about one person or everybody. */
+function shutLine(one: boolean, view: View): string {
+  if (view === 'week') {
+    return one
+      ? 'They are not working at all this week, so nothing can be booked in it.'
+      : 'Nobody is working at all this week, so nothing can be booked in it.';
+  }
+  return one
+    ? 'They are not working this day, so nothing can be booked in it.'
+    : 'Nobody is working this day, so nothing can be booked in it.';
+}
+
+/**
+ * What to say when nothing is booked.
+ *
+ * "An open diary" was said to everyone, including someone whose week is shut on
+ * two of its days, right after they set those days, which reads as the hours not
+ * having saved (issue 084). A shut day is not an empty one, and the difference is
+ * the whole reason anybody looks.
+ */
+function emptyLine(resourceId: string, view: View, anchor: Date, shut: ShutHours): string {
+  if (!shut.known) {
+    return resourceId
+      ? 'Nothing is booked here. Try a different week, or show everyone.'
+      : 'Nothing is booked yet. New bookings appear here as soon as they are made.';
+  }
+  const days = view === 'week' ? weekDays(anchor) : [anchor];
+  if (!days.some((date) => shut.anyoneWorks(date))) return shutLine(Boolean(resourceId), view);
+  // The week of everybody shades nothing (see the header), so it must not point
+  // at shading that is not there.
+  if (!resourceId && view === 'week') {
+    return 'Nothing is booked yet. New bookings appear here as soon as they are made.';
+  }
+  // Never "the parts left white": in dark mode the shut hours are the DARK ones
+  // and the sentence would be backwards.
+  return 'The shaded hours are when nobody can be booked. Nothing is booked in the rest yet.';
+}
+
 export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const [view, setView] = useState<View>('week');
   const [anchor, setAnchor] = useState<Date>(() => new Date());
@@ -120,7 +237,9 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
   const resources = useSchedulingResources();
-  const activeResources = resources.data ?? [];
+  // Memoised: a fresh `[]` every render would recompute the shut hours, and so
+  // every column, on every render.
+  const activeResources = useMemo(() => resources.data ?? [], [resources.data]);
 
   const range = view === 'week' ? weekWindow(anchor) : dayWindow(anchor);
   const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useCalendarRange({
@@ -130,13 +249,14 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const events = useMemo(() => data ?? [], [data]);
   const timeWindow = useMemo(() => windowForEvents(events), [events]);
+  const shut = useShutHours(resourceId, activeResources, timeWindow);
 
   const columns = useMemo(
     () =>
       view === 'week'
-        ? weekColumns(anchor, events)
-        : dayColumns(events, resources.data ?? [], resourceId),
-    [view, anchor, events, resources.data, resourceId]
+        ? weekColumns(anchor, events, resourceId, shut)
+        : dayColumns(events, activeResources, resourceId, anchor, shut),
+    [view, anchor, events, activeResources, resourceId, shut]
   );
 
   const label = view === 'week' ? weekLabel(anchor) : dayLabel(anchor);
@@ -204,11 +324,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               <Text className="font-medium">
                 {view === 'week' ? 'Nothing booked this week' : 'Nothing booked this day'}
               </Text>
-              <Text className="text-sm">
-                {resourceId
-                  ? 'This person or resource has an open diary here. Try a different week, or clear the filter.'
-                  : 'An open diary. New bookings appear here as soon as they are made.'}
-              </Text>
+              <Text className="text-base">{emptyLine(resourceId, view, anchor, shut)}</Text>
             </div>
           </div>
         ) : null}
@@ -279,7 +395,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
             and twenty chips is a bar taller than the grid. */}
             <NativeSelect
               size="sm"
-              className="hidden max-w-40 shrink @md:block"
+              className="hidden shrink @md:block"
               aria-label="Show the diary for"
               value={resourceId}
               disabled={activeResources.length === 0}
@@ -294,23 +410,25 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
                 </option>
               ))}
             </NativeSelect>
-            <Tooltip content="Linked outside calendars" align="end">
-              <Button
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                shape="square"
-                aria-label="Linked outside calendars"
-                onClick={() => {
-                  ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
-                }}
-              >
-                <Link2 className="size-4" aria-hidden />
-              </Button>
-            </Tooltip>
             {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
           </>
         }
+        /* Linked calendars is an ACTION, not a control: it does something to the
+           pane rather than narrowing what the pane shows. Written as a value so
+           the narrow bar can give it its name - as bespoke `controls` JSX it was
+           relocated verbatim, and a popover row holding one bare chain glyph and
+           no words is a button with no meaning on a device that cannot hover.
+           Piggles was fixed and this, its mirror, was not.
+           scripts/check-toolbar-glyph.mjs holds the line. */
+        actions={[
+          {
+            label: 'Linked outside calendars',
+            icon: Link2,
+            onClick: () => {
+              ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
+            },
+          },
+        ]}
         refresh={
           <RefreshButton
             isFetching={isFetching}

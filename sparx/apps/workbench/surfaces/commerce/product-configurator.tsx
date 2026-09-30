@@ -77,6 +77,7 @@ import {
   Trash2,
   Undo2,
 } from 'lucide-react';
+import { MoneyCentsInput } from '../../components/money-input';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -90,8 +91,10 @@ import {
   type ProductScope,
 } from './product-scope';
 import {
+  deltaLabel,
   formatCents,
   productErrorMessage,
+  ruleSentence,
   useConfiguratorPreview,
   useConfiguratorTemplate,
   useCreateConfiguratorTemplate,
@@ -100,6 +103,7 @@ import {
   useProductTemplates,
   useUpdateConfiguratorTemplate,
   type Bundle,
+  type ConfiguratorAddOn,
   type ConfiguratorChoice,
   type ConfiguratorOption,
   type ConfiguratorOptionType,
@@ -110,7 +114,12 @@ import {
 } from './products-data';
 import { ActionLabel } from '../../components/action-label';
 
-const LABEL = 'Configurator';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'the build-your-own options';
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 type ReadyScope = Extract<ProductScope, { state: 'ready' }>;
@@ -183,71 +192,7 @@ function statusMeaning(status: string): { label: string; tone: Tone; detail: str
 }
 
 /** A price difference in the words a shopper would read. */
-function deltaLabel(cents: number | undefined, currency: string): string | null {
-  if (cents === undefined || cents === 0) return null;
-  return cents > 0 ? `+${formatCents(cents, currency)}` : `−${formatCents(-cents, currency)}`;
-}
-
 /* ── Rules, said out loud ───────────────────────────────────────────────── */
-
-/**
- * One rule as a sentence.
- *
- * A rule stored as `{optionKey, op, value}` is unreadable to the person who
- * wrote it, let alone a colleague. Every rule in this pane is rendered as
- * English against the question and answer LABELS, never the keys.
- */
-function ruleSentence(
-  rule: ConfiguratorRule,
-  options: ConfiguratorOption[],
-  currency: string
-): string {
-  const labelOf = (key: string) => options.find((o) => o.key === key)?.label ?? key;
-  const answerOf = (optionKey: string, choiceKey: string) =>
-    options.find((o) => o.key === optionKey)?.choices.find((c) => c.key === choiceKey)?.label ??
-    choiceKey;
-
-  const conditions = rule.conditions.map((condition) => {
-    const question = labelOf(condition.optionKey);
-    const values = Array.isArray(condition.value)
-      ? condition.value.map((v) => answerOf(condition.optionKey, v)).join(' or ')
-      : answerOf(condition.optionKey, String(condition.value));
-    switch (condition.op) {
-      case 'not_in':
-        return `${question} is not ${values}`;
-      case 'gt':
-        return `${question} is more than ${values}`;
-      case 'lt':
-        return `${question} is less than ${values}`;
-      default:
-        return `${question} is ${values}`;
-    }
-  });
-
-  const actions = rule.actions.map((action) => {
-    switch (action.kind) {
-      case 'require':
-        return `${labelOf(action.optionKey)} must be answered`;
-      case 'hide':
-        return `${labelOf(action.optionKey)} is not asked`;
-      case 'show_only_choices':
-        return `${labelOf(action.optionKey)} only offers ${action.choiceKeys
-          .map((key) => answerOf(action.optionKey, key))
-          .join(', ')}`;
-      case 'price_adjust':
-        return `the price changes by ${deltaLabel(action.deltaCents, currency) ?? 'nothing'}${
-          action.label ? ` (${action.label})` : ''
-        }`;
-      case 'add_addon':
-        return `an extra is added to the order`;
-      default:
-        return `it is refused: “${action.message}”`;
-    }
-  });
-
-  const joiner = rule.match === 'any' ? ' or ' : ' and ';
-  return `When ${conditions.join(joiner)}, ${actions.join(' and ')}.`;
-}
 
 /* ── Draft ──────────────────────────────────────────────────────────────── */
 
@@ -261,6 +206,10 @@ interface TemplateDraft {
   /** Carried whole and returned whole — including rule kinds this editor does
    *  not build, which must survive a save made from here. */
   rules: ConfiguratorRule[];
+  /** Read, never written: the rule sentences below name the extra a rule
+   *  adds, and only these carry that name. The save payload leaves them out,
+   *  which the server reads as "leave them alone" (issue 797). */
+  addOns: ConfiguratorAddOn[];
 }
 
 function toDraft(template: ConfiguratorTemplate): TemplateDraft {
@@ -272,6 +221,7 @@ function toDraft(template: ConfiguratorTemplate): TemplateDraft {
       template.status === 'active' || template.status === 'archived' ? template.status : 'draft',
     options: template.options,
     rules: template.rules,
+    addOns: template.addOns,
   };
 }
 
@@ -283,6 +233,7 @@ function emptyDraft(productTitle: string): TemplateDraft {
     status: 'draft',
     options: [],
     rules: [],
+    addOns: [],
   };
 }
 
@@ -319,12 +270,19 @@ function ChoiceRow({
   onChange: (next: ConfiguratorChoice) => void;
   onRemove: () => void;
 }) {
-  const deltaText =
-    choice.priceDeltaCents === undefined ? '' : String((choice.priceDeltaCents / 100).toFixed(2));
+  // What is wrong with the amount as typed, or null. Held here rather than on
+  // the draft because it is a fact about the KEYSTROKES, not about the answer:
+  // it goes away the moment the text reads again, and it must never be saved.
+  const [priceProblem, setPriceProblem] = useState<string | null>(null);
 
   return (
     <div className="border-base-300 flex flex-wrap items-end gap-2 border-b py-2 last:border-b-0">
-      <div className="min-w-0 flex-1">
+      {/* The row WRAPS rather than crushing the answer. It used to be min-w-0,
+          so in a docked pane the fixed w-32 price box kept all 128px and the
+          answer collapsed to about 64: "Three initials, hand stitched" read as
+          "Three initials," while five digits of price sat in twice the room
+          (issue 803). A floor here is what makes flex-wrap actually wrap. */}
+      <div className="min-w-40 flex-1">
         <Field>
           <FieldLabel>Answer</FieldLabel>
           <FieldControl
@@ -347,24 +305,16 @@ function ChoiceRow({
           <FieldLabel>Adds to price</FieldLabel>
           <FieldControl
             render={
-              <Input
-                color="module"
+              <MoneyCentsInput
+                // The field itself carries the refusal, so it is visible while
+                // the caret is in it rather than only in the line below.
+                color={priceProblem === null ? 'module' : 'error'}
                 size="sm"
-                type="number"
-                step="0.01"
-                inputMode="decimal"
-                value={deltaText}
-                placeholder="0.00"
-                onChange={(event) => {
-                  const value = event.target.value;
-                  const parsed = Number(value);
-                  onChange({
-                    ...choice,
-                    priceDeltaCents:
-                      value.trim() === '' || !Number.isFinite(parsed)
-                        ? undefined
-                        : Math.round(parsed * 100),
-                  });
+                aria-label="Adds to price"
+                cents={choice.priceDeltaCents}
+                onCentsChange={(reading) => {
+                  onChange({ ...choice, priceDeltaCents: reading.cents });
+                  setPriceProblem(reading.problem);
                 }}
               />
             }
@@ -382,7 +332,11 @@ function ChoiceRow({
       >
         <Trash2 className="size-4" aria-hidden />
       </Button>
-      {deltaLabel(choice.priceDeltaCents, currency) === null ? null : (
+      {/* Across the whole row, not inside the amount's own column: the column is
+          eight characters wide and a sentence set in it is a word per line. */}
+      {priceProblem !== null ? (
+        <Text className="text-danger w-full text-sm">{priceProblem}</Text>
+      ) : deltaLabel(choice.priceDeltaCents, currency) === null ? null : (
         <Text className="w-full text-sm">
           Choosing this changes the price by {deltaLabel(choice.priceDeltaCents, currency)}.
         </Text>
@@ -1126,7 +1080,9 @@ function TemplateEditor({
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <Text className="font-semibold">{rule.name}</Text>
-                <Text className="text-sm">{ruleSentence(rule, draft.options, currency)}</Text>
+                <Text className="text-sm">
+                  {ruleSentence(rule, draft.options, currency, draft.addOns)}
+                </Text>
               </div>
               <Button
                 size="sm"
@@ -1516,10 +1472,10 @@ export function ProductConfiguratorSurface({ ctx }: { ctx: SurfaceContext }) {
   // draft before anyone could be asked about it.
   const [draft, setDraft] = useState<TemplateDraft | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const scope = useProductScope(ctx, { label: LABEL, hold: draft !== null });
+  const scope = useProductScope(ctx, { noun: NOUN, hold: draft !== null });
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} />;
   }
   return (
     <ConfiguratorBody

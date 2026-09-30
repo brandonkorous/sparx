@@ -46,16 +46,15 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Languages, Plus, Save, ServerCrash, Trash2 } from 'lucide-react';
+import { Languages, Save, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { AddLanguage } from '../../components/add-language';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  canonicalLocale,
-  isValidLocale,
   localeName,
   productStatusState,
   translationErrorMessage,
@@ -507,7 +506,11 @@ function Editor({
             </Tabs>
           )}
 
-          <AddLanguage existing={locales} onAdd={addLanguage} />
+          <AddLanguage
+            existing={locales}
+            description="Pick the language you want to write this product in. Its own wording lives on its own tab, and anything you leave empty falls back to your words."
+            onAdd={addLanguage}
+          />
         </div>
       </div>
     </ModuleScope>
@@ -547,66 +550,5 @@ function TranslatedField({
       </div>
       <FieldDescription>{description}</FieldDescription>
     </Field>
-  );
-}
-
-/* ── Add a language ─────────────────────────────────────────────────────── */
-
-function AddLanguage({ existing, onAdd }: { existing: string[]; onAdd: (locale: string) => void }) {
-  const [raw, setRaw] = useState('');
-  const canonical = canonicalLocale(raw);
-  const duplicate = existing.includes(canonical);
-  const valid = raw.trim() !== '' && isValidLocale(raw) && !duplicate;
-
-  const commit = () => {
-    if (!valid) return;
-    onAdd(canonical);
-    setRaw('');
-  };
-
-  return (
-    <FormSection
-      title="Add a language"
-      description="Use the short code for the language: “es” for Spanish, “fr-CA” for Canadian French, “de” for German."
-    >
-      <Field>
-        <FieldLabel>Language code</FieldLabel>
-        <FieldControl
-          render={
-            <Input
-              color="module"
-              value={raw}
-              spellCheck={false}
-              autoComplete="off"
-              placeholder="es"
-              onChange={(event) => {
-                setRaw(event.target.value);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  commit();
-                }
-              }}
-            />
-          }
-        />
-        <FieldDescription>
-          {raw.trim() === ''
-            ? 'Two letters for a language, optionally followed by a country: es, pt-BR, zh-Hans.'
-            : duplicate
-              ? `You already have ${localeName(canonical)} below.`
-              : isValidLocale(raw)
-                ? `Adds ${localeName(canonical)} (${canonical}).`
-                : 'That is not a language code. Try two letters, like “es”, optionally with a country: “es-MX”.'}
-        </FieldDescription>
-      </Field>
-      <div className="flex justify-end">
-        <Button size="sm" color="module" disabled={!valid} onClick={commit}>
-          <Plus className="size-4" aria-hidden />
-          Add this language
-        </Button>
-      </div>
-    </FormSection>
   );
 }

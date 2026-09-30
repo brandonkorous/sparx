@@ -12,6 +12,13 @@
 // Every narrowing — the search, the booking kind, "active only" — is a SERVER
 // filter, so a page of results is always the answer to the whole question and
 // never fifty rows sieved in the browser.
+//
+// ── The way back ──────────────────────────────────────────────────────────
+//
+// Removing a service only ever stamped the row; the server has always been able
+// to put it back. The console could not: the list hid removed services and the
+// remove confirm said "This cannot be undone" (issue 145). "Removed" widens the
+// list to include them, and a removed row carries the one action it can take.
 
 import { useState } from 'react';
 import {
@@ -24,8 +31,9 @@ import {
   Table,
   ToggleGroup,
   ToggleGroupItem,
+  useToast,
 } from '@wizeworks/silicaui-react';
-import { Briefcase, EyeOff, Plus } from 'lucide-react';
+import { Briefcase, EyeOff, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -36,7 +44,9 @@ import {
   bookingTypeLabel,
   formatDuration,
   formatMoney,
+  schedulingErrorMessage,
   serviceState,
+  useRestoreService,
   useServices,
   type BookingType,
   type SchedulingService,
@@ -53,11 +63,19 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 /** What to try when nothing matched — naming ONLY what is actually narrowing the
  *  list, so no one hunts for a filter they never set. */
-function emptyAdvice(search: string, typeLabel: string | null, activeOnly: boolean): string {
+function emptyAdvice(
+  search: string,
+  typeLabel: string | null,
+  activeOnly: boolean,
+  showRemoved: boolean
+): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of a service’s name.');
   if (typeLabel) parts.push(`You are only seeing “${typeLabel}” bookings. Switch to every kind.`);
   if (activeOnly) parts.push('Switched-off services are hidden: include those to see them.');
+  if (!showRemoved) {
+    parts.push('Anything you have removed is hidden too. Turn on Removed to see it.');
+  }
   return parts.join(' ');
 }
 
@@ -65,6 +83,9 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
   const [activeOnly, setActiveOnly] = useState(false);
+  const [showRemoved, setShowRemoved] = useState(false);
+  const toast = useToast();
+  const restore = useRestoreService();
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -76,6 +97,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
     q: search.trim(),
     ...(type ? { bookingType: type as BookingType } : {}),
     activeOnly,
+    includeRemoved: showRemoved,
     take,
     skip,
   });
@@ -97,6 +119,29 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (service: SchedulingService, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open(DETAIL_KEY, { id: service.id }, { target: targetFor(event) });
   };
+
+  const putBack = (service: SchedulingService) => {
+    restore.mutate(service.id, {
+      onSuccess: () => {
+        toast.add({
+          title: `${service.name} is back`,
+          description: 'It is on your booking page again, and people can book it.',
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not put it back',
+          description: schedulingErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  // The column only exists when there is something to put back, so the ordinary
+  // list does not carry an empty column for a rare case.
+  const anyRemoved = rows.some((service) => service.removedAt);
 
   const body = () => {
     if (isError) {
@@ -135,7 +180,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           noResults={{
             icon: <Briefcase className="size-6" aria-hidden />,
             title: 'Nothing matches that',
-            description: emptyAdvice(search.trim(), typeLabel, activeOnly),
+            description: emptyAdvice(search.trim(), typeLabel, activeOnly, showRemoved),
           }}
           firstRun={{
             title: 'No services yet',
@@ -167,25 +212,35 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th className="hidden whitespace-nowrap @xl:table-cell">Length</th>
             <th className="hidden whitespace-nowrap @xl:table-cell">Price</th>
             <th>State</th>
+            {anyRemoved ? <th className="text-right">Bring back</th> : null}
           </tr>
         </thead>
         <tbody>
           {rows.map((service) => {
             const state = serviceState(service);
+            const removed = Boolean(service.removedAt);
             return (
               <tr
                 key={service.id}
-                className="cursor-pointer"
-                tabIndex={0}
-                role="button"
-                onClick={(event) => {
-                  open(service, event);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return;
-                  event.preventDefault();
-                  open(service, event);
-                }}
+                // A removed service has no detail pane to open (every read but
+                // this list filters it out, so it would open on "no longer
+                // exists"), and its row holds a real button of its own. So the
+                // row is not a button.
+                {...(removed
+                  ? {}
+                  : {
+                      className: 'cursor-pointer',
+                      tabIndex: 0,
+                      role: 'button',
+                      onClick: (event: React.MouseEvent) => {
+                        open(service, event);
+                      },
+                      onKeyDown: (event: React.KeyboardEvent) => {
+                        if (event.key !== 'Enter' && event.key !== ' ') return;
+                        event.preventDefault();
+                        open(service, event);
+                      },
+                    })}
               >
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
@@ -215,6 +270,26 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     {state.label}
                   </Badge>
                 </td>
+                {anyRemoved ? (
+                  <td className="text-right">
+                    {removed ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="module"
+                        className="whitespace-nowrap"
+                        loading={restore.isPending && restore.variables === service.id}
+                        disabled={restore.isPending}
+                        onClick={() => {
+                          putBack(service);
+                        }}
+                      >
+                        <RotateCcw className="size-4" aria-hidden />
+                        Put it back
+                      </Button>
+                    ) : null}
+                  </td>
+                ) : null}
               </tr>
             );
           })}
@@ -226,7 +301,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Services list controls"
+        label="Services controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -289,6 +364,27 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
               >
                 <EyeOff className="size-4" aria-hidden />
                 <span className="hidden @2xl:inline">Active only</span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+            {/* Its own group, not a third state of the one above: that toggle
+                narrows to what is live, this one widens to what is gone. */}
+            <ToggleGroup
+              size="sm"
+              color="module"
+              className="shrink-0"
+              value={showRemoved ? ['removed'] : []}
+              onValueChange={(next: unknown[]) => {
+                setShowRemoved(next.includes('removed'));
+                resetWindow();
+              }}
+            >
+              <ToggleGroupItem
+                value="removed"
+                aria-label="Show services you have removed"
+                title="Show services you have removed, so you can put one back"
+              >
+                <Trash2 className="size-4" aria-hidden />
+                <span className="hidden @2xl:inline">Removed</span>
               </ToggleGroupItem>
             </ToggleGroup>
           </>

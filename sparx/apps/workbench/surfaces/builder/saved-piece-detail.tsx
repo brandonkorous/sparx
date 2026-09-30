@@ -201,6 +201,14 @@ function ManagePiece({
   // stale 0 is showing is how a live placement gets orphaned.
   const usageKnown = usage.isSuccess;
   const inUse = usageKnown && usageTotal > 0;
+  // BEING USED AND BEING BLOCKED ARE DIFFERENT. A piece the current editor placed
+  // detaches on delete: the page keeps the design and stops following the master,
+  // so it is used without standing in the way. Only an old-style placement
+  // refuses. Reading `total` as the block is how this pane told her she could not
+  // delete a piece the server would delete happily, and sent her to strip it off
+  // every page by hand first, for nothing.
+  const blockedTotal = usage.data?.blocking ?? 0;
+  const blocked = usageKnown && blockedTotal > 0;
 
   const save = () => {
     if (nameEmpty) return;
@@ -236,14 +244,20 @@ function ManagePiece({
   };
 
   const onDelete = async () => {
-    // The server refuses a delete while the piece is placed, so we never offer a
-    // proceed path that would just 400. Deletion is only presented when reach is
-    // known to be zero; the confirm still names the piece and is explicit that it
-    // cannot be undone.
+    // The confirm says what will HAPPEN to her pages, which is not the same
+    // sentence in both cases. Unplaced: nothing changes anywhere. Placed: every
+    // page keeps the design exactly as it looks and simply stops following this
+    // piece, because the server detaches rather than leaving a hole. A piece
+    // with an old-style placement never reaches here; Delete is disabled.
     const ok = await confirm({
       title: `Delete “${piece.name}”?`,
-      description:
-        'This removes the piece and its whole history for good. It is not on any of your pages, so nothing your visitors see will change. This cannot be undone.',
+      description: inUse
+        ? `This removes the piece and its whole history for good. ${
+            usageTotal === 1 ? 'The page' : 'The pages'
+          } it is on will keep the design exactly as it looks now and simply stop following it, so nothing your visitors see will change. You will not be able to change ${
+            usageTotal === 1 ? 'it' : 'them'
+          } from one place any more. This cannot be undone.`
+        : 'This removes the piece and its whole history for good. It is not on any of your pages, so nothing your visitors see will change. This cannot be undone.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -398,26 +412,30 @@ function ManagePiece({
           <UsagePanel usage={usage.data} isPending={usage.isPending} isError={usage.isError} />
 
           {/* Destructive action as a plain row under a divider — not a card with
-              equal weight to the work above it. Deletion is only possible when the
-              piece is used nowhere; while it is in use, we say why, plainly. */}
+              equal weight to the work above it. Deletion is refused only while an
+              old-style placement would be left with a hole; then we say why. */}
           <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
             <div className="flex min-w-0 flex-col">
               <Text className="font-medium">Delete this piece</Text>
               <Text className="text-sm">
-                {inUse
+                {blocked
                   ? `You can't delete this while it's on ${
-                      usageTotal === 1 ? '1 page' : `${String(usageTotal)} places`
-                    }. Remove it from those in the editor first, otherwise they'd be left with a hole.`
-                  : usageKnown
-                    ? 'Removes it and its history for good. This cannot be undone.'
-                    : 'Checking where this is used before this can be deleted.'}
+                      blockedTotal === 1 ? '1 page' : `${String(blockedTotal)} places`
+                    } built the old way. Remove it from those in the editor first, otherwise they'd be left with a hole.`
+                  : !usageKnown
+                    ? 'Checking where this is used before this can be deleted.'
+                    : inUse
+                      ? `Removes it for good. ${
+                          usageTotal === 1 ? 'The page' : 'The pages'
+                        } it is on will keep the design and stop following it. This cannot be undone.`
+                      : 'Removes it and its history for good. This cannot be undone.'}
               </Text>
             </div>
             <Button
               size="sm"
               variant="outline"
               color="danger"
-              disabled={!usageKnown || inUse}
+              disabled={!usageKnown || blocked}
               loading={del.isPending}
               onClick={() => {
                 void onDelete();

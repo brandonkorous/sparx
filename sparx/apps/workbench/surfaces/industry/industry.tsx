@@ -63,6 +63,30 @@ function ModuleChip({ slug }: { slug: string }) {
   );
 }
 
+/**
+ * A list of module slugs, reduced to ONE per app.
+ *
+ * An app routinely fronts several modules — Piggles' Sell is commerce + B2B +
+ * dropship — so a starter that sets up both `commerce` and `b2b` drew the chips
+ * **Sell · Sell**, which reads as a rendering fault rather than as two parts of
+ * one app. Deduplicated on the NAME, because the name is what is on screen and
+ * the slugs are genuinely different things.
+ */
+function oneChipPerApp(slugs: readonly string[]): string[] {
+  const seen = new Set<string>();
+  return slugs.filter((slug) => {
+    const name = moduleLabel(slug);
+    if (seen.has(name)) return false;
+    seen.add(name);
+    return true;
+  });
+}
+
+/** The same list, as the words themselves. */
+function appNames(slugs: readonly string[]): string[] {
+  return oneChipPerApp(slugs).map((slug) => moduleLabel(slug));
+}
+
 function StarterCard({
   starter,
   selected,
@@ -100,7 +124,7 @@ function StarterCard({
         </div>
         {starter.enabledModules.length > 0 ? (
           <div className="mt-auto flex flex-wrap gap-1.5">
-            {starter.enabledModules.map((slug) => (
+            {oneChipPerApp(starter.enabledModules).map((slug) => (
               <ModuleChip key={slug} slug={slug} />
             ))}
           </div>
@@ -154,7 +178,7 @@ export function IndustrySurface() {
 
   const onApply = async () => {
     if (!chosen) return;
-    const enabledList = chosen.enabledModules.map(moduleLabel).join(', ');
+    const enabledList = appNames(chosen.enabledModules).join(', ');
     const ok = await confirm({
       title: isReapply
         ? `Update the starting setup for ${chosen.name}?`
@@ -286,9 +310,8 @@ export function IndustrySurface() {
                     </Text>
                     {offModules.length > 0 ? (
                       <Text>
-                        It also has a setup ready for {offModules.map(moduleLabel).join(', ')}, that
-                        part waits quietly until you switch{' '}
-                        {offModules.length === 1 ? 'it' : 'them'} on.
+                        It also has a setup ready for {appNames(offModules).join(', ')}, that part
+                        waits quietly until you switch {offModules.length === 1 ? 'it' : 'them'} on.
                       </Text>
                     ) : null}
                   </FormSection>

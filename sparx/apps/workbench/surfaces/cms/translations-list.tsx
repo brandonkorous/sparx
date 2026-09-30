@@ -106,7 +106,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <ModuleScope module="commerce" className={PANE_SHELL}>
       <PaneToolbar
-        label="Product translations controls"
+        label="Translations controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

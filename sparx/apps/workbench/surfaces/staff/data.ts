@@ -84,6 +84,11 @@ export interface StaffMember {
   endedOn: string | null;
   userId: string | null;
   resourceId: string | null;
+  /** Whether customers can book time with them. `null` when Bookings is off,
+   *  which is not "no": the business has not taken on the thing the answer
+   *  would be about, so the pane draws NO switch rather than an off one that
+   *  invites them to flip it and meet a module error (issue 120). */
+  bookable: boolean | null;
   externalPayrollId: string | null;
   color: string | null;
   photoUrl: string | null;
@@ -433,6 +438,27 @@ export function useArchiveMember() {
         {}
       ),
     onSuccess: invalidate,
+  });
+}
+
+/** Offer somebody for appointments, or stop. ONE ROSTER: this does not create a
+ *  second record of them under Bookings. It turns the bookable side of the one
+ *  person on or off (issue 120), so it refreshes BOTH trees: the team's copy of
+ *  them, and every Bookings picker and resource list that now does or does not
+ *  offer them. Refreshing only the team left a stylist missing from the booking
+ *  form for as long as that form's cache lived. */
+export function useSetBookable() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { id: string; bookable: boolean }) =>
+      api.put<StaffMember>(`/v1/staff/members/${encodeURIComponent(input.id)}/bookable`, {
+        bookable: input.bookable,
+      }),
+    onSuccess: () =>
+      Promise.all([
+        client.invalidateQueries({ queryKey: STAFF_KEY }),
+        client.invalidateQueries({ queryKey: ['scheduling'] }),
+      ]),
   });
 }
 

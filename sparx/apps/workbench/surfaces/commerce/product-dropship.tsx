@@ -55,7 +55,12 @@ import {
   type ProductDropshipVariant,
 } from './products-data';
 
-const LABEL = 'Dropshipping';
+/**
+ * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
+ * NOT the tab title: that is the catalog's, so the brand's rename reaches it.
+ * See `ProductScopeOptions.noun`.
+ */
+const NOUN = 'who ships this';
 
 /** What a supplier connection is doing, in words a person can act on. */
 function supplierState(link: DropshipLink): {
@@ -274,12 +279,12 @@ function SupplierCard({
 }
 
 export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
-  const scope = useProductScope(ctx, { label: LABEL });
+  const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const dropship = useProductDropship(productId);
 
   if (scope.state !== 'ready') {
-    return <ProductScopeFallback ctx={ctx} scope={scope} label={LABEL} />;
+    return <ProductScopeFallback ctx={ctx} scope={scope} noun={NOUN} />;
   }
 
   const product = scope.product;
@@ -290,7 +295,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${LABEL} actions`}
+        label={`${NOUN} actions`}
         controls={
           <>
             <Truck className="size-4 shrink-0" aria-hidden />
@@ -375,10 +380,24 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
                     </Text>
                   ) : null}
                   <Text className="text-sm">
-                    To have someone else ship it, connect that supplier and bring the product in
-                    from their catalog: a product becomes dropshipped by being imported, not by
-                    being flagged.
+                    To have someone else ship it for you, add that supplier and bring the product in
+                    from their own list. That is the only way a product becomes theirs to ship:
+                    there is no switch for it here, because the link carries their price, their
+                    stock and where the order has to go.
                   </Text>
+                  <div className="flex justify-start">
+                    <Button
+                      size="sm"
+                      color="module"
+                      variant="soft"
+                      onClick={() => {
+                        ctx.open('dropship.suppliers.list', {}, { target: 'tab' });
+                      }}
+                    >
+                      <Truck className="size-4" aria-hidden />
+                      Go to your suppliers
+                    </Button>
+                  </div>
                 </FormSection>
               ) : (
                 data.links.map((link) => (

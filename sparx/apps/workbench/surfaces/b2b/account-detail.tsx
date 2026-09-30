@@ -40,7 +40,7 @@ import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from '../crm/custom-properties-panel';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '@/components/money-input';
-import { CustomerPicker, customerLabel, type CustomerSummary } from '../invoicing/customer-picker';
+import { CustomerPicker, customerName, type CustomerSummary } from '../invoicing/customer-picker';
 import { PaymentTermsField } from '../../components/payment-terms-field';
 import { SaveFailure } from '@/components/save-failure';
 import {
@@ -64,6 +64,7 @@ import {
   type ContactRole,
   type PaymentTerms,
 } from './accounts-data';
+import { creditStanding } from '../../lib/credit-standing';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -132,6 +133,31 @@ function normalizeWebsite(value: string): string | null {
   if (trimmed === '') return null;
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
+}
+
+/**
+ * The note under the Credit limit box.
+ *
+ * It said "Leave at zero for no credit", which is right about the outcome and
+ * silent about the stakes: the checkout works out `creditLimit - creditUsed`
+ * and refuses anything larger, so a zero turns every order on terms away. It
+ * also had two branches, and an account owing money behind a closed door fell
+ * into the wrong one.
+ */
+function creditFieldNote(account: AccountDetail | undefined): string {
+  if (account) {
+    const standing = creditStanding(account.creditLimitCents, account.creditUsedCents);
+    if (standing === 'limit') {
+      return account.creditRemainingCents > 0
+        ? `They have used ${formatCents(account.creditUsedCents)} of this, with ${formatCents(account.creditRemainingCents)} left.`
+        : `They have used all of this, and ${formatCents(account.creditUsedCents)} in total.`;
+    }
+    if (standing === 'owing') {
+      return `They still owe you ${formatCents(account.creditUsedCents)}, and cannot order on terms until you put an amount here.`;
+    }
+    return 'They cannot order on terms. Put an amount here to let them, up to that much at once.';
+  }
+  return 'The most they can owe you at once on terms. Left at zero, they cannot order on terms at all.';
 }
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -536,11 +562,7 @@ function AccountEditor({
                     </div>
                   }
                 />
-                <FieldDescription>
-                  {account && account.creditLimitCents > 0
-                    ? `They've used ${formatCents(account.creditUsedCents)} of this, with ${formatCents(account.creditRemainingCents)} left.`
-                    : 'The most they can owe you at once on terms. Leave at zero for no credit.'}
-                </FieldDescription>
+                <FieldDescription>{creditFieldNote(account)}</FieldDescription>
               </Field>
               <Field>
                 <FieldLabel>Extra discount</FieldLabel>
@@ -657,7 +679,7 @@ function AccountEditor({
               </Text>
             </FormSection>
           ) : account ? (
-            <ContactsSection accountId={account.id} />
+            <ContactsSection ctx={ctx} accountId={account.id} />
           ) : null}
 
           {/* Fleet — read-only, only when the account has one recorded */}
@@ -803,7 +825,7 @@ const ROLE_OPTIONS: { value: ContactRole; label: string }[] = (
   Object.keys(CONTACT_ROLE_LABELS) as ContactRole[]
 ).map((role) => ({ value: role, label: CONTACT_ROLE_LABELS[role] }));
 
-function ContactsSection({ accountId }: { accountId: string }) {
+function ContactsSection({ ctx, accountId }: { ctx: SurfaceContext; accountId: string }) {
   const toast = useToast();
   const contactsQuery = useAccountContacts(accountId);
   const addContact = useAddContact(accountId);
@@ -824,7 +846,7 @@ function ContactsSection({ accountId }: { accountId: string }) {
         onSuccess: () => {
           setPicked(null);
           setRole('buyer');
-          toast.add({ title: `${customerLabel(picked)} added`, type: 'success' });
+          toast.add({ title: `${customerName(picked)} added`, type: 'success' });
         },
         onError: (error) => {
           toast.add({
@@ -883,6 +905,12 @@ function ContactsSection({ accountId }: { accountId: string }) {
             }}
             onClear={() => {
               setPicked(null);
+            }}
+            onAddNew={(typed) => {
+              // Opened with the name already typed and this business already
+              // chosen, so she saves once and comes back to a person who is
+              // already a member. Issue 745.
+              ctx.open('crm.customer.detail', { id: 'new', name: typed, companyId: accountId });
             }}
           />
           <div className="flex flex-wrap items-center gap-2">

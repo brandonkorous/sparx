@@ -27,7 +27,9 @@
 // expected. The access one is `info`: nothing is wrong, you are simply not the
 // audience.
 
-import { Button, EmptyState } from '@wizeworks/silicaui-react';
+import { useEffect } from 'react';
+import { Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
+import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
 import { Ban, HelpCircle, Lock, Building2, type LucideIcon } from 'lucide-react';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 import { getSurface } from '../lib/surfaces/registry';
@@ -37,6 +39,13 @@ import type { UnresolvedReason } from '../lib/workbench/deep-link';
 interface Explanation {
   readonly icon: LucideIcon;
   readonly tone: 'warning' | 'info';
+  /**
+   * Two or three words for the TAB, which is the only part of this visible
+   * once the pane is behind another. The catalog titles this surface "Link",
+   * which says nothing at all: a person who followed a link from an email and
+   * has five tabs open cannot tell which one is the bad news.
+   */
+  readonly tab: string;
   readonly title: string;
   readonly description: string;
   /** An action that can actually resolve this, when one exists. */
@@ -63,6 +72,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
     return {
       icon: Ban,
       tone: 'warning',
+      tab: 'Module not switched on',
       title: name ? `${name} isn't switched on` : "That part of sparx isn't switched on",
       description: name
         ? `This link opens something in ${name}, and this business isn't using ${name} yet. You can turn it on whenever you like. You only pay for the parts you use.`
@@ -76,6 +86,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
     return {
       icon: Lock,
       tone: 'info',
+      tab: 'No access',
       title: name ? `You don't have access to ${name}` : "You don't have access to this",
       description: name
         ? `This business uses ${name}, but your account isn't set up to open it. Whoever looks after this business can change that.`
@@ -87,6 +98,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
     return {
       icon: Building2,
       tone: 'warning',
+      tab: 'Another business',
       title: 'That link is for a different business',
       description: `The link says it belongs to “${detail}”, which isn't one of the businesses you can open, or it has been renamed since the link was written. Whoever sent it can send a fresh one.`,
     };
@@ -95,6 +107,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
   return {
     icon: HelpCircle,
     tone: 'warning',
+    tab: 'Broken link',
     title: "That link doesn't open anything",
     description: `Nothing in sparx lives at “${detail}”. The address may have been cut short on its way here (links sometimes break when they travel through a chat or an email) so it is worth asking for it again.`,
   };
@@ -103,44 +116,71 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
 export function LinkUnresolvedSurface({ ctx }: { ctx: SurfaceContext }) {
   const reason = (ctx.params.reason ?? 'unknown-path') as UnresolvedReason;
   const detail = ctx.params.detail ?? '';
-  const { icon: Icon, tone, title, description, action } = explain(reason, detail);
+  const { icon: Icon, tone, tab, title, description, action } = explain(reason, detail);
+
+  // The tab is the part of this a person still sees once the pane is behind
+  // something else, and "Link" told them nothing about which of their tabs
+  // holds the bad news.
+  useEffect(() => {
+    ctx.setTitle(tab);
+  }, [ctx, tab]);
 
   return (
-    <div className="grid h-full place-items-center overflow-y-auto p-8">
-      <EmptyState
-        className="max-w-md"
-        icon={
-          <Icon
-            className={tone === 'info' ? 'text-info size-8' : 'text-warning size-8'}
-            aria-hidden
-          />
-        }
-        title={title}
-        description={description}
-        actions={
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {action ? (
-              <Button
-                color="primary"
-                onClick={() => {
-                  ctx.open(action.surface, undefined, { target: 'replace' });
-                }}
-              >
-                {action.label}
-              </Button>
-            ) : null}
-            <Button
-              color="neutral"
-              variant={action ? 'outline' : 'solid'}
-              onClick={() => {
-                ctx.close();
-              }}
-            >
-              Close
-            </Button>
-          </div>
+    <div className={PANE_SHELL}>
+      {/* Every other pane in the console carries a bar, and this one is reached
+          by somebody who has just been surprised — the LAST place to drop the
+          chrome that tells them where they are. It holds the reason in a word
+          and nothing else, because there is nothing here to control. */}
+      <PaneToolbar
+        label="Link controls"
+        status={
+          <>
+            <Icon className="size-4 shrink-0" aria-hidden />
+            <Text as="span" className="min-w-0 truncate text-sm">
+              {tab}
+            </Text>
+          </>
         }
       />
+      <div className="grid min-h-0 flex-1 place-items-center overflow-y-auto p-8">
+        {/* On a card, like every other pane's content. It was floating on the
+            recessed surface. */}
+        <Card className="max-w-md p-8">
+          <EmptyState
+            icon={
+              <Icon
+                className={tone === 'info' ? 'text-info size-8' : 'text-warning size-8'}
+                aria-hidden
+              />
+            }
+            title={title}
+            description={description}
+            actions={
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {action ? (
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      ctx.open(action.surface, undefined, { target: 'replace' });
+                    }}
+                  >
+                    {action.label}
+                  </Button>
+                ) : null}
+                <Button
+                  color="neutral"
+                  variant={action ? 'outline' : 'solid'}
+                  onClick={() => {
+                    ctx.close();
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
+            }
+          />
+        </Card>
+      </div>
     </div>
   );
 }

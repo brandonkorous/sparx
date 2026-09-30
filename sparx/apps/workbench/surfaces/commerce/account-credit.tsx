@@ -46,10 +46,12 @@ import {
   useAccountCredits,
   useCustomerSearch,
   useGrantAccountCredit,
+  useTakeBackAccountCredit,
   type AccountCreditSort,
   type CustomerLite,
   type SortDir,
 } from './account-credit-data';
+import { balanceNote, pickerState, takeBackCheck, whichPerson } from './account-credit-words';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -323,8 +325,12 @@ function CustomerFinder({
   onCancel: () => void;
 }) {
   const [query, setQuery] = useState('');
-  const { data, isFetching } = useCustomerSearch(query);
+  // `isError` is the whole point. Without it a search the server never answered
+  // fell through to the empty branch and told her the shop has nobody by that
+  // name — see `pickerState`.
+  const { data, isFetching, isError } = useCustomerSearch(query);
   const results = data?.items ?? [];
+  const state = pickerState({ query, isError, isFetching, count: results.length });
 
   return (
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
@@ -345,36 +351,53 @@ function CustomerFinder({
       </div>
       <SearchInput
         size="sm"
+        // Focus via a ref, not `autoFocus`: this panel appears because she just
+        // pressed Grant credit, so moving the cursor into the one box it
+        // contains follows her rather than stealing. It did neither before —
+        // the panel opened with focus left on the button behind it, so the
+        // first word typed went nowhere.
+        ref={(node: HTMLInputElement | null) => node?.focus()}
         aria-label="Search all customers"
         placeholder="Search by name, email or company…"
         value={query}
         onValueChange={setQuery}
       />
-      {query.trim() === '' ? (
-        <Text className="text-sm">Start typing to find the customer to give credit to.</Text>
-      ) : isFetching && results.length === 0 ? (
-        <Text className="text-sm" role="status">
-          Searching…
+      {state.mood === 'failed' ? (
+        <Alert color="error">
+          <AlertContent>
+            <AlertTitle>Could not search your customers</AlertTitle>
+            <AlertDescription>{state.message}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : state.mood !== 'results' ? (
+        <Text className="text-sm" role={state.mood === 'searching' ? 'status' : undefined}>
+          {state.message}
         </Text>
-      ) : results.length === 0 ? (
-        <Text className="text-sm">No customer matches that. Try a different word.</Text>
       ) : (
         <div className="border-base-300 max-h-72 overflow-y-auto rounded border p-1">
           {results.map((customer) => (
             <button
               key={customer.id}
               type="button"
-              className="hover:bg-base-200 flex w-full items-center gap-2 rounded px-2 py-2 text-left"
+              className="hover:bg-base-200 flex w-full min-w-0 flex-col items-start gap-0.5 rounded px-2 py-2 text-left"
               onClick={() => {
                 onPick(customer);
               }}
             >
-              <span className="min-w-0 flex-1 font-medium">{customerName(customer)}</span>
-              {customer.email ? (
-                <Text as="span" className="shrink-0 text-sm">
-                  {customer.email}
-                </Text>
-              ) : null}
+              <span className="w-full truncate font-medium">{customerName(customer)}</span>
+              {/* Stacked under the name, not beside it, and ALWAYS present. Two
+                  customers here really are called Priya Anand; the row that had
+                  no email rendered as the name and a blank space, which reads
+                  as a tidy row rather than as two people the screen cannot tell
+                  apart. Money goes on this choice. */}
+              <Text as="span" className="w-full truncate text-sm">
+                {whichPerson({
+                  email: customer.email,
+                  company: customer.company,
+                  phone: customer.phone,
+                  addedOn: customer.createdAt ? formatDate(customer.createdAt) : null,
+                })}
+              </Text>
             </button>
           ))}
         </div>
@@ -396,8 +419,13 @@ function CustomerCredit({
 }) {
   const toast = useToast();
   const grant = useGrantAccountCredit();
+  const takeBack = useTakeBackAccountCredit();
   const ledger = useAccountCreditLedger(customer.id, currency);
 
+  /** Adding and taking back are the same three fields pointed the opposite way,
+   *  so they share one form rather than sitting in two stacked cards competing
+   *  for the same "Amount" label. */
+  const [mode, setMode] = useState<'add' | 'take'>('add');
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState<'grant' | 'refund' | 'adjust' | 'loyalty_conversion'>(
     'grant'
@@ -405,11 +433,67 @@ function CustomerCredit({
   const [note, setNote] = useState('');
 
   const amountCents = dollarsToCents(amount);
-  const canGrant = amountCents !== undefined && amountCents > 0;
   const balanceCents = ledger.data?.balanceCents ?? 0;
+  const balance = formatCents(balanceCents, currency);
+  const name = customerName(customer);
+  const canGrant = amountCents !== undefined && amountCents > 0;
+  const take = takeBackCheck(amountCents, balanceCents, balance);
+  const busy = grant.isPending || takeBack.isPending;
+
+  /** Switching intention clears the amount. Carrying "18.50" from Add into
+   *  Take back would put a number she typed for one purpose under a button
+   *  that does the other. */
+  const switchTo = (next: 'add' | 'take') => {
+    setMode(next);
+    setAmount('');
+    setNote('');
+  };
+
+  const done = (title: string, movedCents: number, newBalanceCents: number) => {
+    setAmount('');
+    setNote('');
+    afterPaneChange(() => {
+      toast.add({
+        title,
+        // The server answers both writes with the new balance and the pane used
+        // to drop it, so the only confirmation of an amount she had just typed
+        // was the word "added".
+        description: balanceNote(
+          formatCents(movedCents, currency),
+          name,
+          formatCents(newBalanceCents, currency)
+        ),
+        type: 'success',
+      });
+    });
+  };
 
   const submit = () => {
     if (amountCents === undefined || amountCents <= 0) return;
+    if (mode === 'take') {
+      if (!take.ok) return;
+      takeBack.mutate(
+        {
+          customerId: customer.id,
+          amountCents,
+          currency,
+          ...(note.trim() ? { note: note.trim() } : {}),
+        },
+        {
+          onSuccess: (result) => {
+            done('Store credit taken back', result.takenCents, result.newBalanceCents);
+          },
+          onError: (error) => {
+            toast.add({
+              title: 'Could not take the credit back',
+              description: accountCreditErrorMessage(error, 'Nothing was changed.'),
+              type: 'error',
+            });
+          },
+        }
+      );
+      return;
+    }
     grant.mutate(
       {
         customerId: customer.id,
@@ -419,12 +503,8 @@ function CustomerCredit({
         ...(note.trim() ? { note: note.trim() } : {}),
       },
       {
-        onSuccess: () => {
-          setAmount('');
-          setNote('');
-          afterPaneChange(() => {
-            toast.add({ title: 'Store credit added', type: 'success' });
-          });
+        onSuccess: (result) => {
+          done('Store credit added', amountCents, result.newBalanceCents);
         },
         onError: (error) => {
           toast.add({
@@ -466,9 +546,25 @@ function CustomerCredit({
       </div>
 
       <div className="flex flex-col gap-3">
-        <Heading level={3} className="text-base font-semibold">
-          Add store credit
-        </Heading>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Heading level={3} className="text-base font-semibold">
+            {mode === 'add' ? 'Add store credit' : 'Take store credit back'}
+          </Heading>
+          {/* The way out of a typo. A grant used to be permanent: type 1850
+              where you meant 18.50 and the customer was holding $1,850 of your
+              money with nothing in the console able to reach it. The ledger
+              always expected this — `deltaCents` is signed and the history
+              below has drawn a minus sign since the day it shipped. */}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              switchTo(mode === 'add' ? 'take' : 'add');
+            }}
+          >
+            {mode === 'add' ? 'Take some back instead' : 'Add credit instead'}
+          </Button>
+        </div>
         <div className="grid gap-3 @md:grid-cols-2">
           <Field>
             <FieldLabel>Amount</FieldLabel>
@@ -480,32 +576,44 @@ function CustomerCredit({
                   </Text>
                   <MoneyTextInput
                     color="module"
-                    aria-label="How much credit to give"
+                    aria-label={
+                      mode === 'add' ? 'How much credit to give' : 'How much credit to take back'
+                    }
                     text={amount}
-                    placeholder="25.00"
+                    placeholder={mode === 'add' ? '25.00' : '18.50'}
                     onTextChange={setAmount}
                   />
                 </div>
               }
             />
+            {mode === 'take' ? (
+              // Said before the press, not after a round trip. The server
+              // refuses an over-take and names the balance; there is no reason
+              // for her to learn it from the server.
+              <FieldDescription>
+                {take.problem ?? `They hold ${balance}. You cannot take back more than that.`}
+              </FieldDescription>
+            ) : null}
           </Field>
-          <Field>
-            <FieldLabel>Why</FieldLabel>
-            <Select
-              color="module"
-              aria-label="Why"
-              value={reason}
-              items={{
-                grant: 'A gift or gesture',
-                refund: 'A refund kept as credit',
-                adjust: 'A correction',
-                loyalty_conversion: 'From loyalty points',
-              }}
-              onValueChange={(next) => {
-                setReason(next as typeof reason);
-              }}
-            />
-          </Field>
+          {mode === 'add' ? (
+            <Field>
+              <FieldLabel>Why</FieldLabel>
+              <Select
+                color="module"
+                aria-label="Why"
+                value={reason}
+                items={{
+                  grant: 'A gift or gesture',
+                  refund: 'A refund kept as credit',
+                  adjust: 'A correction',
+                  loyalty_conversion: 'From loyalty points',
+                }}
+                onValueChange={(next) => {
+                  setReason(next as typeof reason);
+                }}
+              />
+            </Field>
+          ) : null}
         </div>
         <Field>
           <FieldLabel>Note (optional)</FieldLabel>
@@ -515,7 +623,11 @@ function CustomerCredit({
                 color="module"
                 rows={2}
                 value={note}
-                placeholder="Anything worth remembering about this credit."
+                placeholder={
+                  mode === 'add'
+                    ? 'Anything worth remembering about this credit.'
+                    : 'Why it is coming back off, so the history makes sense later.'
+                }
                 onChange={(event) => {
                   setNote(event.target.value);
                 }}
@@ -524,17 +636,33 @@ function CustomerCredit({
           />
           <FieldDescription>Kept in the history below so you remember why later.</FieldDescription>
         </Field>
-        <Button
-          size="sm"
-          color="module"
-          className="self-start"
-          disabled={!canGrant}
-          loading={grant.isPending}
-          onClick={submit}
-        >
-          <Wallet className="size-4" aria-hidden />
-          Add credit
-        </Button>
+        {mode === 'add' ? (
+          <Button
+            size="sm"
+            color="module"
+            className="self-start"
+            disabled={!canGrant}
+            loading={busy}
+            onClick={submit}
+          >
+            <Wallet className="size-4" aria-hidden />
+            Add credit
+          </Button>
+        ) : (
+          // `danger`, because this is the one control on the pane that takes
+          // something away from a customer who may already be counting on it.
+          <Button
+            size="sm"
+            color="danger"
+            className="self-start"
+            disabled={!take.ok}
+            loading={busy}
+            onClick={submit}
+          >
+            <ArrowDown className="size-4" aria-hidden />
+            Take it back
+          </Button>
+        )}
       </div>
 
       <div className="border-base-300 flex flex-col gap-2 border-t pt-3">

@@ -47,6 +47,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { Archive, MapPin, Save, Warehouse } from 'lucide-react';
+import { CountryField } from '../../components/country-field';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -56,7 +57,6 @@ import { SaveFailure } from '@/components/save-failure';
 import {
   LOCATION_TYPES,
   conflictField,
-  isNotFound,
   locationErrorMessage,
   locationPlace,
   locationState,
@@ -375,6 +375,16 @@ function LocationEditor({
               </Heading>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-mono text-sm">{existing.code}</span>
+                {/* Says where the place came FROM. Removing the sample data
+                    deliberately leaves locations alone (a tenant may have
+                    renamed one and made it theirs), so this outlives the rest
+                    of the pack, and without it a location nobody set up is
+                    indistinguishable from one they did. See issue 174. */}
+                {existing.isSample ? (
+                  <Badge color="info" variant="soft" size="sm">
+                    Sample
+                  </Badge>
+                ) : null}
                 {place ? (
                   <>
                     <span aria-hidden>·</span>
@@ -476,7 +486,7 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.line1}
-                    placeholder="14 Mill Lane"
+                    placeholder="123 Main St"
                     onChange={(event) => {
                       set('line1', event.target.value);
                     }}
@@ -509,7 +519,6 @@ function LocationEditor({
                     <Input
                       color="module"
                       value={draft.city}
-                      placeholder="Bristol"
                       onChange={(event) => {
                         set('city', event.target.value);
                       }}
@@ -525,7 +534,6 @@ function LocationEditor({
                     <Input
                       color="module"
                       value={draft.region}
-                      placeholder="Somerset"
                       onChange={(event) => {
                         set('region', event.target.value);
                       }}
@@ -535,13 +543,12 @@ function LocationEditor({
               </Field>
 
               <Field>
-                <FieldLabel>Postcode or ZIP (optional)</FieldLabel>
+                <FieldLabel>Postal code (optional)</FieldLabel>
                 <FieldControl
                   render={
                     <Input
                       color="module"
                       value={draft.postalCode}
-                      placeholder="BS1 4RW"
                       onChange={(event) => {
                         set('postalCode', event.target.value);
                       }}
@@ -550,26 +557,17 @@ function LocationEditor({
                 />
               </Field>
 
-              <Field>
-                <FieldLabel>Country</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.country}
-                      placeholder="GB"
-                      className="max-w-24 font-mono uppercase"
-                      onChange={(event) => {
-                        set('country', cleanCountry(event.target.value));
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  The two-letter country code: GB for the United Kingdom, US for the United States,
-                  DE for Germany.
-                </FieldDescription>
-              </Field>
+              {/* Picked by name. This was a two-character box under a line
+                  teaching the operator that Germany is DE - a filing system
+                  asked to be learned, on the screen where stock's own address
+                  is written down. `lib/geo.ts` has said "a shop owner should
+                  never SEE a code" since it was written. Issue 721. */}
+              <CountryField
+                value={draft.country}
+                onChange={(next) => {
+                  set('country', cleanCountry(next));
+                }}
+              />
             </div>
 
             <Field>
@@ -579,7 +577,7 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.phone}
-                    placeholder="+44 117 496 0000"
+                    placeholder="+1 555 010 0000"
                     onChange={(event) => {
                       set('phone', event.target.value);
                     }}
@@ -598,8 +596,8 @@ function LocationEditor({
                 <AlertContent>
                   <AlertTitle>The address needs a little more</AlertTitle>
                   <AlertDescription>
-                    A street address, a town or city, and a two-letter country code are needed
-                    before this can be saved.
+                    A street address, a town or city and a country are needed before this can be
+                    saved.
                   </AlertDescription>
                 </AlertContent>
               </Alert>
@@ -672,17 +670,14 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // A failed load REPLACES the form — never an empty form beside a dead Save,
   // which invites editing a location you cannot see.
   if (location.isError) {
-    const gone = isNotFound(location.error);
     return (
       <div className={PANE_SHELL}>
         <PaneLoadError
-          reason={gone ? 'missing' : 'unreachable'}
-          title={gone ? 'This location no longer exists' : 'Could not load this location'}
-          description={
-            gone
-              ? 'It has been archived or removed. Its past stock movements are unaffected.'
-              : 'This is a problem reaching the server. Nothing about the location has changed.'
-          }
+          error={location.error}
+          title="Could not load this location"
+          description="This is a problem reaching the server. Nothing about the location has changed."
+          missingTitle="This location no longer exists"
+          missingDescription="It has been archived or removed. Its past stock movements are unaffected."
           onRetry={() => {
             void location.refetch();
           }}

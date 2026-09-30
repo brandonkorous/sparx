@@ -35,6 +35,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { CheckCircle, Plus, Trash2 } from 'lucide-react';
 import { afterPaneChange } from '../../lib/defer';
+import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -86,7 +87,7 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Approval controls"
+        label="Approvals controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
@@ -332,6 +333,7 @@ function DecisionDialog({
 
 function RulesSection() {
   const toast = useToast();
+  const confirm = useConfirm();
   const rulesQuery = useApprovalRules();
   const accountsQuery = useApprovalAccountChoices();
   const createRule = useCreateRule();
@@ -354,6 +356,39 @@ function RulesSection() {
     ],
     [accountsQuery.data]
   );
+
+  /**
+   * Removing a limit is the one action here that cannot be undone, and the
+   * control for it is a small icon a thumb-width from the on/off switch. What
+   * it takes away is the thing holding big orders back, so it says what stops
+   * happening rather than only asking twice. [[feedback_destructive_actions_confirm]]
+   */
+  const removeRule = async (rule: ApprovalRule) => {
+    const ok = await confirm({
+      title: `Remove the limit over ${rule.minAmountFormatted}?`,
+      description:
+        rule.accountName === null
+          ? 'No order will be held for sign-off on size alone. Every trade order goes straight ' +
+            'through, however large.'
+          : `No order from ${rule.accountName} will be held for sign-off again, however large.`,
+      confirmLabel: 'Remove the limit',
+      cancelLabel: 'Keep it',
+      color: 'danger',
+    });
+    if (!ok) return;
+    deleteRule.mutate(rule.id, {
+      onSuccess: () => {
+        toast.add({ title: 'Limit removed', type: 'success' });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not remove that limit',
+          description: approvalErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
 
   const onCreate = () => {
     createRule.mutate(
@@ -476,10 +511,29 @@ function RulesSection() {
               rule={rule}
               busy={updateRule.isPending || deleteRule.isPending}
               onToggle={(next) => {
-                updateRule.mutate({ id: rule.id, isActive: next });
+                // A switch that springs back and says nothing is the same
+                // screen as a switch that never moved. The list is only
+                // invalidated on success, so a failure reverts it silently.
+                updateRule.mutate(
+                  { id: rule.id, isActive: next },
+                  {
+                    onError: (error) => {
+                      toast.add({
+                        title: next
+                          ? 'Could not switch that limit on'
+                          : 'Could not switch that limit off',
+                        description: approvalErrorMessage(
+                          error,
+                          'The limit is unchanged, so orders are still being held the way they were.'
+                        ),
+                        type: 'error',
+                      });
+                    },
+                  }
+                );
               }}
               onDelete={() => {
-                deleteRule.mutate(rule.id);
+                void removeRule(rule);
               }}
             />
           ))}

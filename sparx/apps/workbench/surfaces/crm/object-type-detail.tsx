@@ -35,6 +35,7 @@ import { Boxes, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CurrencyField } from '../../components/currency-field';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
@@ -169,6 +170,16 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     loaded && snapshot !== baseline,
     'This record type has changes you have not saved. Close it anyway?'
   );
+
+  // The tab says the same words as the row that opened it: the list names each
+  // record type by its PLURAL, and so does the open action beside it. Read off
+  // the draft rather than the server row, so renaming one renames its tab as it
+  // is typed.
+  useEffect(() => {
+    ctx.setTitle(
+      isNew ? 'New record type' : draft.labelPlural.trim() || draft.label.trim() || 'Record type'
+    );
+  }, [ctx, isNew, draft.labelPlural, draft.label]);
 
   const isBuiltin = type?.kind === 'builtin';
 
@@ -349,9 +360,22 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
+          {/* A READY-MADE TYPE DOES NOT GET A SIDEBAR ROW OF ITS OWN.
+              `useTenantRecordTypeRows` builds a nav row per type a business
+              INVENTED, and says in its own comment why the four built-ins are
+              excluded: they already have purpose-built screens, and a second
+              row into the same records would be two doors into one room. So
+              renaming Customer to Client changes the word on its records and
+              leaves the rail saying Customers — and this sentence promised
+              otherwise, which is the kind of promise you only find out about
+              after you have saved. [[feedback_a_promise_in_copy_is_a_contract]] */}
           <FormSection
             title="What this is"
-            description="The name you want to see in your sidebar and on your records."
+            description={
+              isBuiltin
+                ? 'The name you want to see on these records. This one came ready-made, so it keeps its own place in your sidebar whatever you call it here.'
+                : 'The name you want to see in your sidebar and on your records.'
+            }
           >
             <Field>
               <FieldLabel>Name for one</FieldLabel>
@@ -711,21 +735,14 @@ function FieldRow({
           ) : null}
 
           {field.type === 'currency' ? (
-            <Field>
-              <FieldLabel>Currency</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={field.currency ?? 'USD'}
-                    maxLength={3}
-                    onChange={(e) => {
-                      onChange({ ...field, currency: e.target.value.toUpperCase() });
-                    }}
-                  />
-                }
-              />
-            </Field>
+            <CurrencyField
+              required
+              value={field.currency ?? 'USD'}
+              onChange={(next) => {
+                onChange({ ...field, currency: next });
+              }}
+              description="Every amount saved in this field is in this currency."
+            />
           ) : null}
 
           {field.type !== 'calculated' ? (

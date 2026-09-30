@@ -71,6 +71,7 @@ import { useAccounts } from './companies-data';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { useMediaAssets, useUploadMedia } from '../commerce/products-data';
 import { CustomerAddressesSection } from './customer-addresses';
+import { CustomerBookingsTab } from './customer-bookings';
 import { CustomerDocumentsTab } from './customer-documents-tab';
 import { CustomerOverviewTab } from './customer-overview';
 import {
@@ -93,6 +94,7 @@ import {
   leadStatusMeta,
   lifecycleStageMeta,
   joinedMonth,
+  splitTypedName,
   useCreateCustomer,
   useCustomer,
   useDeleteCustomer,
@@ -128,6 +130,10 @@ const TABS: { value: string; label: string }[] = [
   // Next to Orders on purpose: what they bought and what they were asked to pay
   // are the two money questions, and a business can have either without the other.
   { value: 'invoices', label: 'Invoices' },
+  // Only when the Bookings app is on (see `tabs` in CustomerEditor). For a salon,
+  // a clinic or a garage this is the customer history; for a business that takes
+  // no appointments it is a tab that can only ever say "never booked in".
+  { value: 'bookings', label: 'Bookings' },
   { value: 'deals', label: 'Deals' },
   { value: 'tasks', label: 'Tasks' },
   { value: 'subscriptions', label: 'Subscriptions' },
@@ -158,13 +164,28 @@ interface Draft {
   customProperties: Record<string, unknown>;
 }
 
-function emptyDraft(): Draft {
+/**
+ * A blank customer, or as much of one as whoever opened this screen already
+ * knew.
+ *
+ * A picker somewhere else was searched for a person who turned out not to
+ * exist, so the name is already typed and the business is already chosen
+ * (issue 745). Arriving with an empty form would make her type both again, and
+ * typing a name a second time is how the same person ends up in the book twice.
+ *
+ * Everything here is a STARTING POINT and stays editable; nothing is locked.
+ */
+function emptyDraft(seed: { name?: string; companyId?: string } = {}): Draft {
+  const { firstName, lastName } = splitTypedName(seed.name ?? '');
+
   return {
-    firstName: '',
-    lastName: '',
+    firstName,
+    lastName,
     company: '',
     jobTitle: '',
-    type: 'retail',
+    // Filed under a business, so they buy as one. The relationship picker is
+    // right there if that is wrong.
+    type: seed.companyId ? 'b2b' : 'retail',
     lifecycleStage: 'lead',
     leadStatus: '',
     email: '',
@@ -172,7 +193,7 @@ function emptyDraft(): Draft {
     preferredContactMethod: '',
     doNotContact: false,
     assignedRepId: '',
-    companyId: '',
+    companyId: seed.companyId ?? '',
     tags: [],
     customProperties: {},
   };
@@ -261,7 +282,18 @@ function CustomerEditor({
   const { members } = useTeamRoster();
   const { data: accounts } = useAccounts();
 
-  const saved = useMemo(() => (customer ? toDraft(customer) : emptyDraft()), [customer]);
+  const seedName = typeof ctx.params.name === 'string' ? ctx.params.name : undefined;
+  const seedCompanyId = typeof ctx.params.companyId === 'string' ? ctx.params.companyId : undefined;
+  const saved = useMemo(
+    () =>
+      customer
+        ? toDraft(customer)
+        : emptyDraft({
+            ...(seedName ? { name: seedName } : {}),
+            ...(seedCompanyId ? { companyId: seedCompanyId } : {}),
+          }),
+    [customer, seedName, seedCompanyId]
+  );
   const [draft, setDraft] = useState<Draft>(saved);
   const [touched, setTouched] = useState(false);
   useEffect(() => {
@@ -428,6 +460,10 @@ function CustomerEditor({
   // so its kind is never silently lost.
   const { data: moduleStates } = useModuleStates();
   const b2bEnabled = (moduleStates ?? []).some((m) => m.slug === 'b2b' && m.enabled);
+  const bookingsEnabled = (moduleStates ?? []).some(
+    (m) => m.slug === 'scheduling' && m.enabled && m.reachable !== false
+  );
+  const tabs = TABS.filter((entry) => entry.value !== 'bookings' || bookingsEnabled);
   const kindTypes = RELATIONSHIP_TYPES.filter(
     (t) => t !== 'b2b' || b2bEnabled || draft.type === 'b2b'
   );
@@ -678,7 +714,8 @@ function CustomerEditor({
               }}
             />
             <FieldDescription>
-              The business this person buys on behalf of. They get its agreed prices and terms.
+              The business this person buys for. They get its agreed prices and terms, and they are
+              listed under Who can order on that account.
             </FieldDescription>
           </Field>
         ) : null}
@@ -891,7 +928,7 @@ function CustomerEditor({
                     to say they were there. */}
                 <div className="bg-base-300 shrink-0 rounded-full px-2 py-2">
                   <TabsList scrollable>
-                    {TABS.map((entry) => (
+                    {tabs.map((entry) => (
                       <TabsTab
                         key={entry.value}
                         value={entry.value}
@@ -940,6 +977,13 @@ function CustomerEditor({
                     <CustomerInvoicesTab ctx={ctx} customerId={customer.id} />
                   ) : null}
                 </TabsPanel>
+                {bookingsEnabled ? (
+                  <TabsPanel value="bookings">
+                    {visited.current.has('bookings') ? (
+                      <CustomerBookingsTab ctx={ctx} customerId={customer.id} />
+                    ) : null}
+                  </TabsPanel>
+                ) : null}
                 <TabsPanel value="deals">
                   {visited.current.has('deals') ? (
                     <CustomerDealsTab ctx={ctx} customerId={customer.id} />

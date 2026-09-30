@@ -36,7 +36,6 @@ import {
   Switch,
   Text,
   Timestamp,
-  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Archive, Grid3x3, QrCode, Save } from 'lucide-react';
@@ -222,7 +221,9 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       title: `Remove ${bin.data?.code ?? 'this shelf'}?`,
       description:
         held > 0
-          ? `It still holds ${plural(held, 'unit', 'units')}. Move them to another shelf first, otherwise they stay counted in your totals but nobody can find them.`
+          ? held === 1
+            ? 'It still holds 1 unit. Move it to another shelf first, otherwise it stays counted in your totals but nobody can find it.'
+            : `It still holds ${plural(held, 'unit', 'units')}. Move them to another shelf first, otherwise they stay counted in your totals but nobody can find them.`
           : 'It will stop appearing in shelf pickers. Its history is kept.',
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
@@ -260,38 +261,38 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             Save
           </Button>
         }
-        controls={
-          <>
-            {!isNew && !isSystem ? (
-              <Tooltip content="Remove this shelf">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="danger"
-                  aria-label="Remove this shelf"
-                  onClick={() => void onArchive()}
-                >
-                  <Archive className="size-4" aria-hidden />
-                </Button>
-              </Tooltip>
-            ) : null}
-            {!isNew ? (
-              <Tooltip content="Print a label for this shelf">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  aria-label="Print a label for this shelf"
-                  onClick={() => {
+        // Declared as VALUES, not bespoke JSX. `controls` is relocated into the
+        // narrow bar's overflow popover VERBATIM, and only `actions` are
+        // re-authored there as labelled rows - so as buttons these two arrived
+        // as a red glyph and a grey one, side by side, with no words on either.
+        // scripts/check-toolbar-glyph.mjs holds the line.
+        actions={[
+          ...(!isNew && !isSystem
+            ? [
+                {
+                  label: 'Remove',
+                  title: 'Remove this shelf',
+                  icon: Archive,
+                  tone: 'danger' as const,
+                  onClick: () => {
+                    void onArchive();
+                  },
+                },
+              ]
+            : []),
+          ...(!isNew
+            ? [
+                {
+                  label: 'Print a label',
+                  title: 'Print a label for this shelf',
+                  icon: QrCode,
+                  onClick: () => {
                     ctx.open('inventory.bins.labels', { binId: id }, { target: 'beside' });
-                  }}
-                >
-                  <QrCode className="size-4" aria-hidden />
-                </Button>
-              </Tooltip>
-            ) : null}
-          </>
-        }
+                  },
+                },
+              ]
+            : []),
+        ]}
         refresh={
           <RefreshButton
             className="ml-auto"

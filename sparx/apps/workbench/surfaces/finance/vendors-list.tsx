@@ -348,7 +348,7 @@ export function VendorsListSurface() {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Vendor list controls"
+        label="Controls for who you pay"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput

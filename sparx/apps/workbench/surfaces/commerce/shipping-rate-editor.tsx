@@ -42,13 +42,16 @@ import {
   useCreateShippingRate,
   useDeleteShippingRate,
   useShippingProfiles,
+  useShippingReadiness,
   useZoneRates,
   type ShippingRate,
   type ShippingRateType,
 } from './shipping-data';
+import { formatCentsAmount } from '../../lib/money-format';
+import { bandsWarning, weightGap } from './weight-readiness';
 
 function money(cents: number, currency = 'USD'): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100);
+  return formatCentsAmount(cents, currency);
 }
 
 const TYPE_OPTIONS: { value: ShippingRateType; label: string }[] = [
@@ -143,6 +146,16 @@ function RateComposer({
   const unit = bandUnit(draft.type);
   const isBand =
     draft.type === 'by_price' || draft.type === 'by_weight' || draft.type === 'by_item_count';
+
+  // Priced by weight, over a shop where nothing has a weight. The server prices
+  // those lines at a nominal figure so a quote is always obtainable, which is
+  // right, but it means the bands about to be typed in kilograms would really be
+  // counting items: a coat and a scarf land in the same one (issue 873). Said
+  // HERE because this is the last moment before that work is done for nothing.
+  // The same query the surface above already reads, so this costs no fetch.
+  const readiness = useShippingReadiness();
+  const gap = readiness.data ? weightGap(readiness.data) : null;
+  const weightWarning = gap && draft.type === 'by_weight' ? bandsWarning(gap) : null;
   const nameError = draft.name.trim() === '';
   const profileError = draft.profileId === '';
 
@@ -276,6 +289,15 @@ function RateComposer({
           }
         />
       </Field>
+
+      {weightWarning ? (
+        <Alert color="warning">
+          <AlertContent>
+            <AlertTitle>These steps would not do what they say</AlertTitle>
+            <AlertDescription>{weightWarning}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
 
       {draft.type === 'flat' ? (
         <Field>
@@ -517,6 +539,14 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
   const nameById = new Map(profileList.map((p) => [p.id, p.name]));
   const rows = rates.data ?? [];
 
+  // An option saved before anyone set a weight is priced on the guess right now,
+  // every order, and nothing said so. The composer warning only reaches the ones
+  // still being made, so the ones already made get told here (issue 873).
+  const readiness = useShippingReadiness();
+  const gap = readiness.data ? weightGap(readiness.data) : null;
+  const listWeightWarning =
+    gap && rows.some((rate) => rate.type === 'by_weight') ? bandsWarning(gap) : null;
+
   const onDelete = (rate: ShippingRate) => {
     void (async () => {
       const ok = await confirm({
@@ -545,6 +575,15 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
+      {listWeightWarning ? (
+        <Alert color="warning">
+          <AlertContent>
+            <AlertTitle>A delivery price here is worked out from a guess</AlertTitle>
+            <AlertDescription>{listWeightWarning}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
       {rates.isError ? (
         <Alert color="error">
           <AlertContent>

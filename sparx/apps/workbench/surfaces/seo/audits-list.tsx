@@ -21,9 +21,11 @@ import {
   NativeSelect,
   SearchInput,
   Text,
+  Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { RefreshCw, Search, ShieldCheck } from 'lucide-react';
+import { scoreAge, scoreAgeAdvice } from './score-age';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -201,6 +203,11 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [typeFilter, setTypeFilter] = useState('');
 
   const rows = useMemo(() => audits.data ?? [], [audits.data]);
+  // Off `rows`, not `matches`: the age is a fact about the whole snapshot, and a
+  // filter that happens to show three fresh pages does not make the rest newer.
+  // `Date.now()` at render is right here — nothing re-renders on a clock tick,
+  // and the answer only has to be honest to the nearest day.
+  const age = useMemo(() => scoreAge(rows, Date.now()), [rows]);
   const needle = search.trim().toLowerCase();
 
   const matches = useMemo(() => {
@@ -272,6 +279,8 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
               : `${rows.length} ${rows.length === 1 ? 'page' : 'pages'}`}
           </p>
         }
+        statusReady={!audits.isPending}
+        statusFailed={audits.isError}
         primary={
           <Button
             color="module"
@@ -355,6 +364,18 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 Every page scored for how easily people can find it on a search engine. Open a page
                 to see exactly what to change.
               </Text>
+              {/* How old these scores actually are. The list is a STORED snapshot,
+                  so the refresh control's `dataUpdatedAt` answers when the browser
+                  asked rather than when anything was scored, and 370 of 370 audits
+                  platform-wide were over a week old while it read "a few seconds
+                  ago" (issue 872). The age is also the whole input to the Rescan
+                  decision sitting in the toolbar above. */}
+              {age ? (
+                <Text>
+                  Scored <Timestamp value={age.oldest} format="relative" />
+                  {age.stale ? `. ${scoreAgeAdvice(age)}` : '.'}
+                </Text>
+              ) : null}
             </div>
 
             {checklist.data && checklist.data.summary.pagesScored > 0 ? (

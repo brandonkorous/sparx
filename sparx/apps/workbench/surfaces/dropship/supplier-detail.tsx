@@ -124,10 +124,41 @@ function pricingToDraft(
   return { pricingKind: rule.type, pricingValue: value, roundTo: rule.roundTo ?? 'cent' };
 }
 
+/**
+ * What this section is, for THIS vendor.
+ *
+ * It said "The keys that let us talk to this supplier on your behalf. They are
+ * stored securely and never shown again" for every vendor, and then "Already
+ * stored securely and never shown" once saved. Measured 2026-09-25 across the
+ * five vendors: **4 fields are secret and 19 are not** — a store id, a shop id,
+ * a feed address and fifteen spreadsheet COLUMN NAMES. For the CSV vendor it is
+ * 0 secret and 15 plain, so the sentence described nothing that was there, and
+ * hiding the values meant a business could not read back its own mapping.
+ */
+function connectionSectionWords(
+  fields: { type: string }[],
+  isNew: boolean,
+  brandSentence: string
+): string {
+  const secrets = fields.filter((f) => f.type === 'password').length;
+  if (secrets === 0) {
+    return isNew
+      ? 'How we reach this supplier. Nothing here is a password, so you can come back and read it.'
+      : 'How we reach this supplier. Change anything here and save.';
+  }
+  if (isNew) return brandSentence;
+  return secrets === fields.length
+    ? 'Already stored safely and never shown again. Fill a field in only to replace it.'
+    : 'The password is stored safely and never shown again: fill it in only to replace it. Everything else is shown, and you can change it.';
+}
+
 function toDraft(supplier: Supplier): Draft {
   return {
     name: supplier.name,
-    credentials: {},
+    // What is NOT a secret comes back and is shown. The form used to seed this
+    // empty for every field, so a business could not read back the fifteen
+    // spreadsheet column names it had typed — only retype them.
+    credentials: { ...supplier.credentialValues },
     ...pricingToDraft(supplier.pricingRule),
     notes: supplier.notes ?? '',
     allSites: supplier.siteScope.length === 0,
@@ -364,12 +395,19 @@ function SupplierEditor({
           onSuccess: (created) => {
             ctx.open('dropship.supplier.detail', { id: created.id }, { target: 'replace' });
             afterPaneChange(() => {
+              // The TITLE has to agree with the body. It said "<name> connected"
+              // over "the connection did not come up healthy", which is a toast
+              // telling somebody two opposite things in two lines. It says what
+              // happened, and the warning below repeats the reason in full.
               toast.add({
-                title: `${created.name} connected`,
+                title:
+                  created.status === 'active'
+                    ? `${created.name} connected`
+                    : `${created.name} saved, but we could not reach it`,
                 description:
                   created.status === 'active'
-                    ? 'Now sync its catalog to bring its products in.'
-                    : 'Check its credentials: the connection did not come up healthy.',
+                    ? 'Now bring its products in.'
+                    : 'Nothing is lost. The pane says what went wrong and what to change.',
                 type: created.status === 'active' ? 'success' : 'warning',
               });
             });
@@ -455,7 +493,7 @@ function SupplierEditor({
     });
   };
 
-  const state = supplier ? supplierState(supplier.status) : null;
+  const state = supplier ? supplierState(supplier.status, supplier.type) : null;
   const showRoundTo =
     draft.pricingKind === 'percentage_markup' ||
     draft.pricingKind === 'multiplier' ||
@@ -594,11 +632,11 @@ function SupplierEditor({
               {credentialFields.length > 0 ? (
                 <FormSection
                   title="Connection details"
-                  description={
-                    isNew
-                      ? 'The keys that let sparx talk to this supplier on your behalf. They are stored securely and never shown again.'
-                      : 'Already stored securely and never shown. Fill a field in only to replace it.'
-                  }
+                  description={connectionSectionWords(
+                    credentialFields,
+                    isNew,
+                    'The keys that let sparx talk to this supplier on your behalf. They are stored safely and never shown again.'
+                  )}
                   action={
                     !isNew && supplier?.credentialsSet ? (
                       <Badge color="success" variant="soft" size="sm">
@@ -626,7 +664,7 @@ function SupplierEditor({
                               spellCheck={false}
                               value={draft.credentials[field.key] ?? ''}
                               placeholder={
-                                isNew
+                                isNew || field.type !== 'password'
                                   ? field.placeholder
                                   : supplier?.credentialsSet
                                     ? 'Leave blank to keep the stored value'
@@ -693,6 +731,12 @@ function SupplierEditor({
                               </Text>
                             ) : null}
                             <Input
+                              // The wrapper div between this and its FieldControl
+                              // means Base UI never wires the FieldLabel to it, so
+                              // without this the box has no name at all. The label
+                              // above is computed, so the name is computed the same
+                              // way rather than written out twice.
+                              aria-label={pricingValueLabel(draft.pricingKind)}
                               color={pricingError ? 'error' : 'module'}
                               type="number"
                               min={0}

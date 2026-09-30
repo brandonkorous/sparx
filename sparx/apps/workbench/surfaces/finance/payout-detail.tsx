@@ -41,7 +41,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Payout controls"
+        label="Deposit controls"
         status={<p className="text-sm">Deposit</p>}
         refresh={
           <RefreshButton

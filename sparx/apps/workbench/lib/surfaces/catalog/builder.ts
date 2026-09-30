@@ -135,7 +135,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     icon: Inbox,
     section: 'Forms',
     order: 20,
-    keywords: ['contact', 'enquiries', 'leads', 'messages'],
+    keywords: ['contact', 'inquiries', 'enquiries', 'leads', 'messages'],
     component: FormSubmissionsListSurface,
   },
   {

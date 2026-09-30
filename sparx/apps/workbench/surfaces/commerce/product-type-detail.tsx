@@ -565,7 +565,7 @@ function MetaForm({
               <Input
                 color="module"
                 value={draft.name}
-                placeholder="Apparel"
+                placeholder="Jacket"
                 onChange={(event) => {
                   onName(event.target.value);
                 }}
@@ -581,14 +581,14 @@ function MetaForm({
               <Input
                 color="module"
                 value={draft.pluralName}
-                placeholder="Apparel"
+                placeholder="Jackets"
                 onChange={(event) => {
                   set('pluralName', event.target.value);
                 }}
               />
             }
           />
-          <FieldDescription>What you call several: shown in menus. Optional.</FieldDescription>
+          <FieldDescription>What you call several of them. Optional.</FieldDescription>
         </Field>
       </div>
 
@@ -673,10 +673,17 @@ function FieldsSection({
     [types]
   );
 
+  // Her own plural if she gave one, her singular if she did not, and a
+  // phrase that works on a blank form. NEVER an inflected copy of a name
+  // she chose — inflecting a tenant's own word is what issue 794 took out
+  // of the compatibility lists, and the plural field above exists exactly
+  // so this sentence never has to guess (issue 798).
+  const belonging = draft.pluralName.trim() || draft.name.trim() || 'these products';
+
   return (
     <FormSection
       title="Attributes"
-      description="The extra details every product of this kind holds. Drag to reorder, or use the arrows."
+      description={`The extra details every one of your ${belonging} holds. Drag to reorder, or use the arrows.`}
     >
       <FieldBuilder
         fields={draft.fields}
@@ -844,6 +851,7 @@ function FieldRow({
   onDragEnd,
 }: FieldRowProps) {
   const label = field.label.trim() || 'Untitled attribute';
+  const ownHelp = field.helpText?.trim() ?? '';
 
   return (
     <li
@@ -865,14 +873,18 @@ function FieldRow({
         dropTarget ? 'border-module border-dashed' : ''
       }`}
     >
-      <div className="flex items-start gap-2 p-3">
+      {/* WRAPS at a narrow width rather than squeezing the words. Docked at
+          360px the three buttons kept their ~110px and the detail’s own help
+          text was left about 150, so a two-line sentence became six lines
+          beside a column of empty space (issue 804). */}
+      <div className="flex flex-wrap items-start gap-2 p-3">
         <div className="flex shrink-0 flex-col items-center pt-0.5">
           <GripVertical className="size-4 cursor-grab" aria-hidden />
         </div>
 
         <button
           type="button"
-          className="flex min-w-0 flex-1 cursor-pointer flex-col items-start gap-1 text-left"
+          className="flex min-w-48 flex-1 cursor-pointer flex-col items-start gap-1 text-left"
           onClick={onToggle}
           aria-expanded={expanded}
         >
@@ -884,7 +896,7 @@ function FieldRow({
             )}
             <span className="text-base font-semibold">{label}</span>
             {field.key ? <span className="font-mono text-sm">{field.key}</span> : null}
-            <Badge color="neutral" variant="soft" size="sm">
+            <Badge variant="soft" size="sm">
               {FIELD_TYPE_META[field.type].label}
             </Badge>
             {field.required ? (
@@ -893,14 +905,20 @@ function FieldRow({
               </Badge>
             ) : null}
           </span>
-          <Text className="text-sm">{FIELD_TYPE_META[field.type].hint}</Text>
+          {/* Her own words for this detail if she wrote any, and only the
+              generic description of the KIND when she did not. Apparel ships
+              three Long text details in a row, so the row read "Several lines
+              of plain writing, with no formatting." three times while each one
+              carried a sentence of its own that nothing drew (issue 804). */}
+          <Text className="text-sm">
+            {ownHelp === '' ? FIELD_TYPE_META[field.type].hint : ownHelp}
+          </Text>
         </button>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="ms-auto flex shrink-0 items-center gap-1">
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             aria-label={`Move ${label} up`}
             title="Move up"
@@ -914,7 +932,6 @@ function FieldRow({
           <Button
             size="sm"
             variant="ghost"
-            color="neutral"
             shape="square"
             aria-label={`Move ${label} down`}
             title="Move down"

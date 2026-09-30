@@ -30,6 +30,7 @@ import {
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
 import { ArrowUpRight, BarChart3 } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { notKnownNote, splitLeadSources } from './lead-sources';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useTeamRoster } from '../../lib/api/team';
@@ -162,8 +163,13 @@ function Panel({
   return (
     <Card>
       <CardBody className="gap-3">
-        <div className="flex items-center justify-between gap-2">
-          <Heading level={2} className="text-base font-semibold">
+        {/* WRAPS, BECAUSE A PANEL HEADER CARRIES CONTROLS AND NOT JUST A NAME.
+            At 360px the "how things move" header held a title, a picker and a
+            link on one unwrapping row, and the link was sliced in half by the
+            card's own edge. A heading and its controls sit side by side while
+            there is room and stack when there is not. */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Heading level={2} className="min-w-0 text-base font-semibold">
             {title}
           </Heading>
           {action}
@@ -298,7 +304,8 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   const acqPoints = acquisition.data ?? [];
   const acqHasData = acqPoints.some((p) => p.newCustomers > 0);
   const funnelPeak = Math.max(1, ...(funnel.data ?? []).map((b) => b.count));
-  const leadPeak = Math.max(1, ...(leads.data?.bySource ?? []).map((r) => r.count));
+  const leadView = useMemo(() => splitLeadSources(leads.data?.bySource), [leads.data]);
+  const leadNote = notKnownNote(leadView.notKnown, leadView.total);
   const segPeak = Math.max(1, ...(segments.data?.segments ?? []).map((r) => r.memberCount));
 
   return (
@@ -456,8 +463,10 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
               title="Pipeline"
               action={
                 (pipelines?.items.length ?? 0) > 0 ? (
-                  <div className="flex min-w-0 items-center gap-1">
-                    <div className="w-44">
+                  <div className="flex min-w-0 flex-wrap items-center gap-1">
+                    {/* `max-w-full` so the picker gives way rather than pushing
+                        the link off the card on a phone. */}
+                    <div className="w-44 max-w-full">
                       <Select
                         size="sm"
                         color="module"
@@ -543,20 +552,21 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
             <Panel title="Where new customers come from">
               {leads.isPending ? (
                 <Loading />
-              ) : (leads.data?.bySource.length ?? 0) === 0 ? (
+              ) : leadView.total === 0 ? (
                 <Empty>No new customers in this period yet.</Empty>
               ) : (
                 <div className="flex flex-col gap-3">
                   <Text className="text-sm">{leads.data?.rangeLabel}</Text>
-                  {leads.data?.bySource.map((row) => (
+                  {leadView.observed.map((row) => (
                     <ProportionRow
                       key={row.source}
                       label={row.label}
                       value={row.count}
-                      peak={leadPeak}
+                      peak={leadView.peak}
                       trailing={`${row.count.toLocaleString()} · ${row.sharePct}%`}
                     />
                   ))}
+                  {leadNote ? <Text className="text-sm">{leadNote}</Text> : null}
                 </div>
               )}
             </Panel>
