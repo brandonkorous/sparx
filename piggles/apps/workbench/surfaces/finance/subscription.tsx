@@ -85,7 +85,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   const [returnStatus, setReturnStatus] = useState<'success' | 'cancelled' | null>(null);
 
   useEffect(() => {
-    ctx.setTitle(productCopy('finance.bill.title', 'Your sparx bill'));
+    ctx.setTitle(productCopy('finance.bill.title', 'What you pay us'));
   }, [ctx]);
 
   // Stripe sends the tenant back here after Checkout with `?billing=success|cancelled`
@@ -148,8 +148,8 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label={`${productCopy('finance.bill.title', 'Your sparx bill')} controls`}
-        status={<p className="text-sm">{productCopy('finance.bill.title', 'Your sparx bill')}</p>}
+        label={`${productCopy('finance.bill.title', 'What you pay us')} controls`}
+        status={<p className="text-sm">{productCopy('finance.bill.title', 'What you pay us')}</p>}
         refresh={
           <RefreshButton
             isFetching={isFetching}

@@ -71,7 +71,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // Params make a distinct pane, so a narrowed one opens as a SECOND tab beside
   // any inbox already open. It says which it is, following the chips.
   useEffect(() => {
-    const base = surfaceTitle('builder.forms') ?? 'Form submissions';
+    const base = surfaceTitle('builder.forms') ?? 'Form replies';
     ctx.setTitle(statusFilter === 'all' ? base : `${base} · ${activeStatus.label.toLowerCase()}`);
   }, [ctx, statusFilter, activeStatus.label]);
 
