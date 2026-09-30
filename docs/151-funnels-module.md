@@ -1,8 +1,8 @@
 # 151 — Funnels: a named path to an outcome, and whether people finish it
 
-Version: 1.1.0
+Version: 1.3.0
 Author: Brandon Korous
-Last Updated: 2026-08-26
+Last Updated: 2026-09-30
 
 ## Purpose
 
@@ -206,6 +206,11 @@ It re-implements nothing. Goals evaluate through
 `@wizeworks/automation-schemas`' existing evaluator, so there is exactly one
 condition language in the platform. Follow-up runs through `Automation` and
 `EmailSequence` as they already are.
+
+**Where steps and goals are checked:** the automation worker, on every event it
+already receives, via `advanceOnEvent` (docs/152 G3, G4). A rung with a `match`
+records people on its own, and the goal finishes them. Rungs that read only the
+customer (such as "went quiet") are found by the worker's daily pass.
 
 Dependencies are backend-safe only (`@wizeworks/db` + the schemas), the same
 discipline `@wizeworks/email-sequences` keeps, so the reconcile runs in the

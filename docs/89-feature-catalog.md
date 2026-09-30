@@ -443,7 +443,7 @@ surface — **337 endpoints** — is listed in [docs/150](150-inventory-api-refe
 - ✅ **Per-site content/catalog scoping (Model B)** — product/content ↔ site junctions (empty = all sites).
 - ✅ **Per-site brand override** — businessName/colors/logo merged over tenant brand.
 - ✅ **Per-site orders, carts & customer memberships** — origin-site tagging; memberships per property.
-- 🗺️ **Per-site module scope** — disable a module on one site (field exists; enforcement deferred).
+- ✅ **Per-site module scope** — disable a module on one site. Enforced end to end: the site refuses that module's routes and its own pages, drops the links to them from its chrome and its account nav, and leaves them out of its sitemap.
 - 🗺️ **Per-site SiteSettings** — currency/policies/pricing visibility per site.
 
 ---

@@ -1,8 +1,8 @@
 # WizeWorks Platform — CRM PRD
 
-**Version:** 1.0.1  
+**Version:** 1.1.0  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-09-25
 
 ---
 
@@ -88,8 +88,18 @@ The pipeline tracks sales opportunities from first contact to closed deal.
 Default stages (fully customizable):
 
 ```
-Lead → Qualified → Proposal Sent → Negotiation → Closed Won / Closed Lost
+New inquiry → Worth pursuing → Quote sent → Agreeing terms → Won / Lost
 ```
+
+These read as a business owner would say them, not as a sales team would. The
+board is the first CRM screen most tenants open, and the audience is a person
+who runs a shop. "Quote sent" also names a record the platform actually has, so
+the stage points at something they can go and look at.
+
+**A stage's identity is its `sortOrder` and its `stageType`, never its name.**
+The name is display and a tenant renames it freely. Five integration test files
+used to find a stage by its display name, which is what made renaming these a
+bigger job than it should have been.
 
 Teams create multiple pipelines for different use cases:
 

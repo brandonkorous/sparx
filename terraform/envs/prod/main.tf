@@ -454,10 +454,11 @@ module "pubsub" {
     "order.payment_failed" = []
 
     # Store credit + gift cards
-    "accountcredit.granted" = []
-    "accountcredit.spent"   = []
-    "giftcard.issued"       = []
-    "giftcard.redeemed"     = []
+    "accountcredit.granted"    = []
+    "accountcredit.spent"      = []
+    "accountcredit.taken_back" = []
+    "giftcard.issued"          = []
+    "giftcard.redeemed"        = []
 
     # Returns / RMA
     "return.requested"           = []

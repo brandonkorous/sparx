@@ -222,9 +222,15 @@ Approvals card. Completes: _a draft is a draft until it sends._
   one grant can still stampede a platform.
 - **The composer's focal point is read-only.** [133 §15.2](../133-social-media-posting.md) promised a
   draggable focal point per target. What ships reads `focalX`/`focalY` off the media asset and
-  quantizes to nine buckets ([post-preview.tsx:59](../../apps/workbench/surfaces/social/post-preview.tsx#L59)).
-  The focal point is editable in the media library, just not from the composer, and never per-target.
-  There is also no per-target `mediaOverride`, which the data model supports.
+  quantizes to nine buckets (`focalClassFor`, now in
+  [cms/focal-point.ts](../../apps/workbench/surfaces/cms/focal-point.ts) beside the asset it
+  describes, re-exported from `post-preview.tsx`).
+  **This entry previously read "the focal point is editable in the media library, just not from the
+  composer". That was false, and stayed false for as long as the sentence stood:** no screen in
+  either console could write `focal_point_x/y`, the media pane's draft held alt text and a caption
+  only, and 0 of 3,221 images platform-wide carried a moved point. The media pane now has the
+  control (issue 869, nine tiles rather than a drag, for the reason recorded in that module). Still
+  not per-target, and there is still no per-target `mediaOverride`, which the data model supports.
 - **No per-automation auto-approve.** [133 §9](../133-social-media-posting.md) specified
   `autoApprove` in the action config; the setting that ships is a single tenant-wide
   `requireApproval` switch. An automation cannot be trusted independently of the whole module.

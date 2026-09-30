@@ -1,8 +1,8 @@
 # sparx Platform — Funnels Feature Build Log
 
-**Version:** 1.5
+**Version:** 1.7
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-09-30
 
 ---
 
@@ -1473,6 +1473,116 @@ list's load-bearing assertions are that a form with NO submissions is still
 offered (the whole reason the route exists) and that another site's forms are
 not (a picker leaking them would let a campaign be pointed at a form on a site it
 cannot count).
+
+### G3 — a campaign's goal is finally checked _(2026-09-29)_
+
+**Found:** `evaluateFunnelGoal` had no callers. The goal was required before a
+campaign could run, and nothing ever read it. The converting rung was written
+only by `POST /v1/funnels/:id/stages` and the MCP tool, so a campaign run from a
+console never finished anybody, "brought in" stayed empty, and
+`funnel.converted` never fired. Separately, all seven shipped recipes carried
+the goal `email is_set`, a field no event resolves, so they could not have come
+true even if something had checked.
+
+**Fix:**
+
+- `@wizeworks/funnels` `goals.ts` — `convertOnGoals(ctx, { type, occurredAt,
+fields })`. For each ACTIVE campaign on the event's site (or any site when the
+  event has none), a person converts when they entered BEFORE the event, have
+  not converted, the event is not about the record they entered on, and the goal
+  holds for the event's resolved fields. One row per person, under an advisory
+  lock, written under the identity they ENTERED with (the abandonment sweep
+  folds people by it). Value: the order total when the event carries one, else
+  `goalValueCents`, else null.
+- `automation-worker` `runtime.ts` — `advanceCampaigns` runs after
+  `handleTrigger` on every fan-in envelope, reusing the engine's resolvers, and
+  publishes `funnel.converted`. Skips the entity read when the tenant has no
+  active campaign. `funnel.*` events never convert anything (no loop).
+- `library.ts` — each recipe waits for a real event (paid, ordered again,
+  booked, became a customer, quote accepted).
+- Migration `20270523000000_a_campaign_waits_for_something_that_happens` repairs
+  installed recipes that still hold the old goal (`origin = 'system'` and goal
+  unchanged only), looping tenants for FORCE RLS.
+
+**Verified:** `funnels` 59/59 (goals come true for their event, stay false
+otherwise; the migration's SQL matches the library). Putting the old goal back
+reddens exactly 3. `automation-worker/test/integration/campaigns.test.ts` 3/3
+against docker Postgres through the real push door: converts once (redelivery
+does not double it), keeps the entry identity and attribution, carries
+`goalValueCents`; never converts a person who did not enter, a campaign on
+another site, or an event older than the entry. Commenting out
+`advanceCampaigns` reddens test 1; removing the site filter reddens test 2.
+
+**Still open at the time:** the recipes' own capture rungs. Closed the next
+day by G4.
+
+### G4 — every step records itself _(2026-09-30)_
+
+**Found:** nothing wrote a recipe's first step, so the seven shipped campaigns
+could not put anybody in. Three middle steps ("Read the welcome", "We got back
+in touch", "They opened it") had no event that could ever record them. And
+measured on the dev database, 84 of 91 installed recipes still carried an even
+older goal (`email is_not_empty`, an operator that never existed) that G3's
+repair did not match.
+
+**Fix:**
+
+- `@wizeworks/funnels` `advance.ts` replaces G3's `goals.ts`.
+  `advanceOnEvent` does three things per running campaign on the event's site:
+  1. It puts a person in on the first `capture` rung whose `match` holds. This
+     happens on the campaign's own site only, never from a site-less event, and
+     only when they have no open round.
+  2. It moves them along any `qualify` / `engage` rung whose `match` holds, once
+     per round.
+  3. It finishes them when the goal holds (G3's rules). The event must not be
+     about the record that put them in, and not the event that just entered them.
+
+  `event.type` is added to every event's facts, so a rung can match on what
+  happened. A person may go round again once a round has finished.
+
+- `captureFromScan` handles rungs that read only `customer.*` fields, like "Went
+  quiet" (bought before, nothing for 120 days). It runs in the automation
+  worker's existing daily pass (`/internal/cron/reconcile-seeds`, 02:07), so no
+  new CronJob is needed. It only joins people.
+- New resolvers in `automation-actions`: `cart.abandoned`, `cart.recovered`,
+  `checkout.started` (basket plus owner, and the checkout email for guests), and
+  `review.submitted` / `review.published`. `form.submitted` and billing
+  documents now carry `__propertyId`. Before, a form or quote could never join a
+  site's campaign, and a site-scoped automation on them never ran.
+- Library: every non-finishing step has a `match`. Steps nothing can record were
+  removed rather than shipped. Booking no-show now starts at "Did not turn up".
+- Migration `20270523000000_a_campaign_waits_for_something_that_happens` now
+  refreshes both steps and goal. Its JSON is generated from `library.ts`, and
+  `goals.test.ts` fails if the two differ. It only changes rows still holding
+  the exact shipped value, and matches both old goal shapes. Dry-run on the dev
+  database inside a transaction, then rolled back: 91 rows got steps, 91 got
+  goals, and a second run changed 0.
+- Both consoles: each step row now says in plain words what records it.
+  Examples: "Recorded on its own when somebody leaves a basket without paying"
+  and "Recorded only when you or a connected tool marks it". Edits already kept
+  `match` (every row edit spreads the stage).
+
+**Verified:**
+
+- `funnels`: 84/84.
+- `automation-worker/test/integration/campaigns.test.ts`: 9/9 against docker
+  Postgres through the push door. It covers:
+  - join, move along and finish on events alone
+  - a second round only after the first finished
+  - no join from another site or from a site-less event
+  - a basket left behind joins basket recovery, and its `cartId` is kept
+  - the daily scan joins a lapsed customer once over two nights
+
+  Each guard was removed to prove its test fails:
+  - the site-less rule: fails 1
+  - rounds: fails 2
+  - once-per-step: fails 1
+  - the cart resolver: fails 1
+
+**Known and not ours:** `automation-actions` seed-reconcile tests (3) and
+`automation-worker` reconcile-seeds (1) fail on the uncommitted seed edits in
+`automation-actions/src/seeds/*`. The same failures reproduce with this
+change's `resolvers.ts` swapped for HEAD's.
 
 ### The browser pass: what to actually click
 

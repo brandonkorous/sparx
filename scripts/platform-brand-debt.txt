@@ -7,7 +7,6 @@ fill the slots and they are the tenant’s. For the FRAME prefer sparx.navbar / 
 sparx ${name}
 sparx Managed Hosting
 sparx Pay
-sparx Shipping
 sparx commission (${commissionRateLabel})
 sparx operations
 sparx order ${ref}

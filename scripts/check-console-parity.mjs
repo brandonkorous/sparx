@@ -26,7 +26,15 @@
 //   lib/**          every module under each console's lib tree
 //   routes          every route.ts / page.tsx under app/
 //   deps            each console's package.json dependencies
+//   shapes          the field names of every exported interface under surfaces/
 //   mounting        that the system furniture is REACHABLE from the root layout
+//
+// `shapes` came last and cost the most to be without. For weeks every fix a
+// persona run produced landed in the console where it was found: a retired
+// variant stopped reading as an empty square, a photo on a live page stopped
+// reading as unused, a booking learned its customer's name. The other console
+// kept the old wire type, and a field that is missing is read by nothing, so
+// nothing broke and nothing said so. 54 fields apart before anybody counted.
 //
 // The last one exists because presence is not the same as being wired up. An
 // imported-by-nobody provider renders exactly as much as a deleted one, so the
@@ -47,11 +55,19 @@
 //    paired name hides a capability difference, the fix is to give the missing
 //    capability its own module, at which point this catches it.
 //
+//    `shapes` narrows that blind spot for wire types and no further. It compares
+//    field NAMES, not their types, and only for an interface BOTH consoles
+//    declare: a shape one console has and the other does not is a file-level
+//    difference the components/lib axes already speak to. And a field present in
+//    both is not proof both READ it; that is still a human's job.
+//
 // Pure Node, no dependencies. Same family as check:events / check:routes /
 // check:docker / check:boundaries / check:deletability.
 
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { selfTest, shapesIn } from './lib/interface-shapes.mjs';
 
 /** Resolve the repo root by its marker, never by counting `..` up from here. */
 function repoRoot() {
@@ -553,13 +569,6 @@ const EXCEPTIONS = [
     path: 'components/table',
     why: 'a local default on silica’s Table scroll wrapper. A call-site patch that belongs upstream — raise it against silicaui rather than copying it into sparx (root RULE #1).',
   },
-  {
-    axis: 'lib',
-    only: 'piggles',
-    path: 'lib/dock/tab-scroll',
-    why: 'see lib/window-mode.',
-  },
-
   // ── Vocabulary: one shared service, two product languages ───────────────
   {
     axis: 'lib',
@@ -569,7 +578,144 @@ const EXCEPTIONS = [
   },
 
   // ── The tour: one capability, two deliveries ────────────────────────────
+
+  // ── Shapes: Piggles sells what sparx does not (handoff list C) ──────────
+  //
+  // `path` is `Interface.field`. Deposits, order-ahead notice and a daily cap
+  // are a Piggles selling capability (a bakery takes a deposit on a cake it
+  // bakes on Saturday). sparx does not sell that capability, so it has no
+  // screen to draw these on and no API to send them to.
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'Product.deposit',
+    why: 'Piggles sells deposits on a product; sparx does not sell that capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'Product.orderAheadDays',
+    why: 'Piggles sells order-ahead notice; sparx does not sell that capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'Product.dailyLimit',
+    why: 'Piggles caps how many a day a maker can take on; part of the same order-ahead capability sparx does not sell.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ProductPatch.deposit',
+    why: 'the write half of Product.deposit.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ProductPatch.orderAheadDays',
+    why: 'the write half of Product.orderAheadDays.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ProductPatch.dailyLimit',
+    why: 'the write half of Product.dailyLimit.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'VariantChoice.deposit',
+    why: 'a bundle choice carries its product’s deposit so the bundle can total it; same Piggles-only capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'VariantChoice.orderAheadDays',
+    why: 'a bundle is ready when its slowest choice is; same Piggles-only order-ahead capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'Order.readyOn',
+    why: 'the day an order-ahead order is ready (issue 026); sparx does not sell order-ahead.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ContentEntry.legal_kind',
+    why: 'Piggles opens a policy page with its starter wording and asks the owner to confirm they have read it, keyed on which policy the entry is. A Piggles legal-pages capability, scoped out of sparx by decision (handoff list C, 2026-09-29).',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ContentEntry.legal_reviewed',
+    why: 'the owner has said they read the Piggles starter wording; the other half of legal_kind, same decision.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ChecklistItem.stillGuessing',
+    why: 'the sentences on a Piggles policy page that are still the starter’s guess about how the business works. Part of the same Piggles legal-pages capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'LegalChecklist.shipping',
+    why: 'Piggles asks for a shipping policy when there is EVIDENCE the business posts things (rates set, orders shipped). Part of the same Piggles legal-pages capability.',
+  },
+
+  // ── Shapes: two designs, both correct (handoff list D) ──────────────────
+  {
+    axis: 'shapes',
+    only: 'sparx',
+    path: 'ObservedSource.label',
+    why: 'sparx names a lead source SERVER-side and renders row.label; Piggles renders channelKeyLabel(row.source) and names it client-side. Both print a friendly name and neither shows a raw code (verified 2026-09-29).',
+  },
+  {
+    axis: 'shapes',
+    only: 'sparx',
+    path: 'LeadSourceRow.label',
+    why: 'see ObservedSource.label: the same server-side naming, on the report row.',
+  },
+  {
+    axis: 'shapes',
+    only: 'sparx',
+    path: 'ParsedRedirectRow.error',
+    why: 'two designs of one redirect-import validation: sparx carries one error string (cms/redirects-data.ts), Piggles a state plus a message (cms/redirects-parse.ts). Both refuse the same bad rows.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ParsedRedirectRow.message',
+    why: 'see ParsedRedirectRow.error.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'ParsedRedirectRow.state',
+    why: 'see ParsedRedirectRow.error.',
+  },
 ];
+
+/**
+ * Shape divergences that are DEFECTS, pinned rather than argued to be fine.
+ *
+ * Different from EXCEPTIONS on purpose. An exception is a decision: the two
+ * consoles SHOULD differ, and here is why. A debt entry is a field one console
+ * learned it needed and the other has not caught up with, and each one names
+ * the harm the missing console is still doing. The check fails on a divergence
+ * that is on neither list, AND on a debt entry that no longer diverges, so this
+ * list can only shrink. Delete the line when you carry the field.
+ *
+ * Measured 2026-09-29 at 54 divergent fields; see
+ * piggles/docs/personas/handoff-sparx-parity.md for how each was judged. The
+ * same day every one of lists A and B was carried with the screen that reads
+ * it, and the 18 left are the decisions in EXCEPTIONS, so this starts EMPTY.
+ * That is the point of it: the next field one console learns and the other
+ * does not either gets carried or gets pinned here with its harm, never
+ * neither.
+ */
+const SHAPE_DEBT = [];
 
 /** Furniture that must be REACHABLE from the root layout, not merely present. */
 const MOUNTED = [
@@ -804,6 +950,146 @@ for (const axis of ['components', 'lib', 'routes', 'deps']) {
     );
   }
 }
+
+// ── Shapes ──────────────────────────────────────────────────────────────────
+//
+// Pairing, in order, and never a guess:
+//   1. same interface name AND same path under surfaces/  (the ordinary case)
+//   2. same name, exactly one unpaired declaration left on EACH side
+//      (a file split: Piggles broke commerce/data.ts into six modules under its
+//      250-line rule and re-exports them; sparx keeps one file)
+//   3. several left on both sides: AMBIGUOUS, and a failure, because comparing
+//      the wrong two would print green over a real divergence
+// A leftover with nothing on the other side is a shape one console has and the
+// other does not. That is a file-level difference, not a field one, and is left
+// to the components/lib axes.
+
+function shapeInventory(side) {
+  const base = mustDir(
+    path.join(ROOT, CONSOLES[side].dir, 'surfaces'),
+    `${CONSOLES[side].dir}/surfaces`
+  );
+  const byName = new Map();
+  let files = 0;
+  const visit = (abs) => {
+    for (const entry of fs.readdirSync(abs, { withFileTypes: true })) {
+      if (entry.name.startsWith('.') || SKIP.has(entry.name)) continue;
+      const full = path.join(abs, entry.name);
+      if (entry.isDirectory()) {
+        visit(full);
+        continue;
+      }
+      if (!CODE.has(path.extname(entry.name)) || entry.name.endsWith('.d.ts')) continue;
+      if (/\.test\.[jt]sx?$/.test(entry.name)) continue;
+      files += 1;
+      const rel = path.relative(base, full).split(path.sep).join('/');
+      let shapes;
+      try {
+        shapes = shapesIn(rel, fs.readFileSync(full, 'utf8'));
+      } catch (err) {
+        // Refuse, never skip: a file this cannot read would drop out of the
+        // comparison and take its divergences with it.
+        failures.push(`shapes: ${CONSOLES[side].label}: cannot read ${err.message}`);
+        continue;
+      }
+      for (const [name, fields] of shapes) {
+        if (!byName.has(name)) byName.set(name, []);
+        byName.get(name).push({ rel, fields });
+      }
+    }
+  };
+  visit(base);
+  return { byName, files };
+}
+
+const scannerProblems = selfTest();
+for (const p of scannerProblems) {
+  failures.push(
+    `shapes: the interface scanner is broken (${p}). Nothing it reports can be trusted.`
+  );
+}
+
+const shapeSides = { sparx: shapeInventory('sparx'), piggles: shapeInventory('piggles') };
+const shapePairs = [];
+for (const [name, pList] of shapeSides.piggles.byName) {
+  const sList = shapeSides.sparx.byName.get(name);
+  if (!sList) continue;
+  const taken = new Set();
+  const restP = [];
+  for (const pe of pList) {
+    const hit = sList.find((se) => se.rel === pe.rel && !taken.has(se));
+    if (hit) {
+      taken.add(hit);
+      shapePairs.push({ name, piggles: pe, sparx: hit });
+    } else restP.push(pe);
+  }
+  const restS = sList.filter((se) => !taken.has(se));
+  if (restP.length === 1 && restS.length === 1) {
+    shapePairs.push({ name, piggles: restP[0], sparx: restS[0] });
+  } else if (restP.length > 0 && restS.length > 0) {
+    failures.push(
+      `shapes: ${name} is declared ${restP.length}× in the Piggles console and ${restS.length}× in the sparx workbench` +
+        ` with no path in common (${restP.map((x) => x.rel).join(', ')} vs ${restS.map((x) => x.rel).join(', ')}).` +
+        ' Rename one so the pairing is not a guess.'
+    );
+  }
+}
+
+// A console that suddenly declares nothing would pair nothing and pass.
+if (shapePairs.length === 0) {
+  failures.push(
+    'shapes: no interface paired across the two consoles. The scan is looking in the wrong place.'
+  );
+}
+
+const shapeDivergent = [];
+for (const { name, piggles, sparx } of shapePairs) {
+  for (const side of sides) {
+    const mine = side === 'sparx' ? sparx : piggles;
+    const theirs = side === 'sparx' ? piggles : sparx;
+    for (const field of mine.fields) {
+      if (!theirs.fields.includes(field)) {
+        shapeDivergent.push({ side, key: `${name}.${field}`, where: mine.rel });
+      }
+    }
+  }
+}
+
+const debtHit = new Set();
+let shapeExcused = 0;
+let shapePinned = 0;
+for (const d of shapeDivergent) {
+  const excused = EXCEPTIONS.find(
+    (e) => e.axis === 'shapes' && e.only === d.side && e.path === d.key
+  );
+  if (excused) {
+    used.add(excused);
+    shapeExcused += 1;
+    continue;
+  }
+  const debt = SHAPE_DEBT.find((e) => e.only === d.side && e.shape === d.key);
+  if (debt) {
+    debtHit.add(debt);
+    shapePinned += 1;
+    continue;
+  }
+  failures.push(
+    `shapes: ${d.key} (${d.where}) exists in the ${CONSOLES[d.side].label} only` +
+      `. Carry the field AND whatever reads it into the ${CONSOLES[other[d.side]].label},` +
+      ' or add it to EXCEPTIONS with the decision. A mirrored field nothing reads is not the fix.'
+  );
+}
+for (const d of SHAPE_DEBT.filter((e) => !debtHit.has(e))) {
+  failures.push(
+    `shapes: SHAPE_DEBT entry ${d.shape} (${d.only} only) no longer diverges. Delete the line; the list only shrinks.`
+  );
+}
+
+console.log(
+  `  shapes      ${String(shapeSides.sparx.files).padStart(3)} sparx / ${String(shapeSides.piggles.files).padStart(3)} piggles files` +
+    `  →  ${shapePairs.length} interfaces paired, ${shapeDivergent.length} fields divergent` +
+    ` (${shapeExcused} excused, ${shapePinned} pinned as debt)`
+);
 
 // Mounting — presence proves nothing.
 console.log('');
