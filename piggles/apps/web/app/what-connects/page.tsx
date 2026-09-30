@@ -56,7 +56,7 @@ const OWN_TOOLS = [
 const NOT_YET = [
   {
     name: 'QuickBooks and Xero',
-    body: 'Not connected. Money shows what came in and went out; your accountant’s own software is still where the books are kept.',
+    body: 'No direct sync yet. Money downloads your spending as a spreadsheet with your account codes, which both can import.',
   },
   {
     name: 'Amazon, eBay, Etsy, Walmart and other marketplaces',
@@ -79,7 +79,7 @@ const NOT_YET = [
 const QUESTIONS = [
   {
     q: 'Does Piggles work with QuickBooks?',
-    a: 'Not today. Money in Piggles shows what came in, what went out and what you kept, but it is not accounting software and does not send anything to QuickBooks or Xero. Keep your accountant’s own software for the books.',
+    a: 'Not directly, today. Money shows your profit and loss, spending, bills and money owed, and downloads your spending as a spreadsheet with your accountant’s account codes, which QuickBooks and Xero can import. It does not sync with them, and it is not a full ledger. Keep your accountant’s own software for the books.',
   },
   {
     q: 'Which payment companies can I use?',

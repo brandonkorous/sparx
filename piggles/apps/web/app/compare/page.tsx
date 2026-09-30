@@ -86,7 +86,7 @@ export default function CompareIndex() {
             <li>Every page lists the pages its facts were read from, and the date.</li>
             <li>
               What Piggles does not do is in the same table, in the same words: no card reader, no
-              text messages, no payroll and no accounting.
+              text messages, no payroll and no full accounting.
             </li>
           </ul>
         </div>

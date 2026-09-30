@@ -61,7 +61,7 @@ const HONEST = [
   'We do not show a customer count, logos or reviews, because we will not invent them. When real customers want to be named, they will be.',
   'We do not claim certifications or uptime figures we have not earned or measured.',
   'Where another product is the better choice for you, our comparison pages say so first.',
-  'What Piggles does not do is written down: no card reader, no text messages, no payroll and no accounting.',
+  'What Piggles does not do is written down: no card reader, no text messages, no payroll and no full accounting.',
 ];
 
 function AboutFigure() {

@@ -24,7 +24,7 @@ export const AREA_LABELS: Record<AreaId, string> = {
   payroll: 'Payroll',
   automations: 'Automations',
   ai: 'An AI assistant',
-  accounting: 'Accounting and tax returns',
+  accounting: 'Bookkeeping and accounts',
 };
 
 /** The app a row belongs to, so the Piggles cell links to the page that explains it. */
@@ -92,8 +92,8 @@ export const PIGGLES_AREAS: Record<AreaId, AreaCell> = {
     note: 'Counts per location, reorder points and transfers. One location included.',
   },
   'purchase-orders': {
-    offer: 'partly',
-    note: 'Write, approve and receive orders. You print or send them yourself.',
+    offer: 'built-in',
+    note: 'Write, approve, print and receive orders, with supplier prices and scorecards.',
   },
   team: {
     offer: 'built-in',
@@ -112,7 +112,7 @@ export const PIGGLES_AREAS: Record<AreaId, AreaCell> = {
     note: 'Bring your own Anthropic or OpenAI account, or connect Claude or ChatGPT.',
   },
   accounting: {
-    offer: 'no',
-    note: 'Money shows what came in and went out. It is not accounting software.',
+    offer: 'partly',
+    note: 'Profit and loss, spending, bills and money owed, with a spreadsheet for your accountant. No ledger, bank matching or tax returns.',
   },
 };

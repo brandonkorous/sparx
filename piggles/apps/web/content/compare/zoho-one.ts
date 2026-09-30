@@ -19,7 +19,7 @@ export const ZOHO_ONE: ComparePage = {
   theyWin: [
     {
       title: 'Real accounting',
-      body: 'Zoho One includes Zoho Books, a full accounting app. Piggles is not accounting software: Money shows what came in and went out, and your accountant still needs their own tool.',
+      body: 'Zoho One includes Zoho Books, a full accounting app. Piggles Money is light bookkeeping: profit and loss, spending, bills and money owed. It is not a full ledger, so your accountant still needs their own tool.',
     },
     {
       title: 'HR and payroll',
@@ -105,7 +105,7 @@ export const ZOHO_ONE: ComparePage = {
     },
     {
       q: 'Does Piggles do accounting like Zoho Books?',
-      a: 'No. Money shows what came in, what went out and what you kept, by job and by where you sold. It is not a ledger, it does not prepare tax returns and it does not match bank lines, so keep your accountant’s own software for that.',
+      a: 'Partly. Money shows your profit and loss, spending, bills to pay, money owed to you and profit per job, and hands your accountant a spending spreadsheet with their account codes. It is not a full ledger: no chart of accounts, no bank matching and no tax returns. Zoho Books does all of those.',
     },
     {
       q: 'Can I move from Zoho to Piggles?',

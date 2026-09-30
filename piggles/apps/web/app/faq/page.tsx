@@ -78,7 +78,7 @@ const GROUPS: { id: string; heading: string; items: { q: string; a: string }[] }
       },
       {
         q: 'Is Piggles accounting software?',
-        a: 'No. Money shows what came in, what went out and what you kept, by job and by where you sold. It is not a ledger and does not prepare tax returns, and it does not connect to QuickBooks or Xero today. Keep your accountant’s own software for the books.',
+        a: 'Partly. Money is light bookkeeping: your profit and loss, spending by category, recurring costs, bills to pay, money customers owe you, and profit per job. Your spending downloads as a spreadsheet with your accountant’s account codes. It is not a full ledger: there is no chart of accounts, no bank matching and no tax returns, and it does not sync with QuickBooks or Xero. Keep your accountant’s software for the books.',
       },
       {
         q: 'Does it do payroll?',
