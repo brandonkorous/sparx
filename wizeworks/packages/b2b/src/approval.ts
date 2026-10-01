@@ -11,7 +11,7 @@
 
 import { z } from 'zod';
 import { nameSearchClauses, withTenant, type Prisma } from '@wizeworks/db';
-import { forbidden, notFound } from '@wizeworks/api-core/errors';
+import { forbidden, notFound, validationError } from '@wizeworks/api-core/errors';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { b2bArService } from '@wizeworks/crm';
 import { inventoryService, type CommittedSale } from '@wizeworks/inventory';
@@ -142,11 +142,11 @@ export function ruleGoverningOrder<
   );
   if (matching.length === 0) return null;
 
-  const age = (value: Date | string) =>
-    typeof value === 'string' ? value : value.toISOString();
+  const age = (value: Date | string) => (typeof value === 'string' ? value : value.toISOString());
 
   return [...matching].sort(
-    (a, b) => b.minAmountCents - a.minAmountCents || age(a.createdAt).localeCompare(age(b.createdAt))
+    (a, b) =>
+      b.minAmountCents - a.minAmountCents || age(a.createdAt).localeCompare(age(b.createdAt))
   )[0]!;
 }
 
@@ -178,10 +178,7 @@ export function approverRefusal(
     : 'This order has to be signed off by the person named on the rule that held it.';
 }
 
-function assertNamedApprover(
-  ctx: B2bContext,
-  rule: Parameters<typeof approverRefusal>[1]
-): void {
+function assertNamedApprover(ctx: B2bContext, rule: Parameters<typeof approverRefusal>[1]): void {
   const refusal = approverRefusal(ctx.userId, rule);
   if (refusal) throw forbidden(refusal);
 }
@@ -237,6 +234,33 @@ export async function listRules(ctx: B2bContext): Promise<{ rules: ApprovalRuleV
  * the rule apply everywhere. Defaulting the other way would silently gate
  * checkout on businesses the author wasn't thinking about (docs/131 §4).
  */
+/**
+ * A rule can only name somebody who is in this account and can sign in.
+ *
+ * `approveOrder` and `rejectOrder` now refuse everyone but the named person,
+ * so naming a stranger, somebody from another business, or an invitation nobody
+ * has answered would hold every order the rule catches with nobody able to
+ * release it. Refused at save, where it can be fixed, rather than found later
+ * as a customer's order nobody can move. The spending limits on orders TO
+ * suppliers carry the same check.
+ */
+async function assertApproverIsTeammate(
+  tx: Prisma.TransactionClient,
+  tenantId: string,
+  userId: string | null
+): Promise<void> {
+  if (!userId) return;
+  const member = await tx.member.findFirst({
+    where: { organizationId: tenantId, userId, status: 'active' },
+    select: { id: true },
+  });
+  if (!member) {
+    throw validationError('Only someone who is already on your team can be named to sign off.', [
+      { field: 'requiredApproverUserId', message: 'Pick someone from your team.' },
+    ]);
+  }
+}
+
 export async function createRule(
   ctx: B2bContext,
   rawInput: unknown,
@@ -252,6 +276,7 @@ export async function createRule(
       });
       if (!account) throw notFound('B2B account not found');
     }
+    await assertApproverIsTeammate(tx, ctx.tenantId, body.requiredApproverUserId ?? null);
 
     return tx.purchaseApprovalRule.create({
       data: {
@@ -282,6 +307,7 @@ export async function updateRule(
       select: { id: true },
     });
     if (!existing) throw notFound('Approval rule not found');
+    await assertApproverIsTeammate(tx, ctx.tenantId, body.requiredApproverUserId ?? null);
 
     return tx.purchaseApprovalRule.update({
       where: { id },
