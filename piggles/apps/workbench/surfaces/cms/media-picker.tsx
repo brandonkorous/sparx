@@ -641,7 +641,7 @@ function MediaPickerDialog({
                             variant="soft"
                             color="neutral"
                             className="absolute top-1 left-1"
-                            aria-label={`Save ${asset.filename} to a collection`}
+                            aria-label={`Save ${asset.filename} to an album`}
                           >
                             <Icon glyph={faFolderPlus} className="size-3.5" aria-hidden />
                           </Button>

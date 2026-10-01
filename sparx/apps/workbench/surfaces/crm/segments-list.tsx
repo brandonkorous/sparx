@@ -3,9 +3,11 @@
 // The segments list — the saved groups of customers.
 //
 // A table, matching the customers and accounts lists: name is the anchor, with
-// the rule count and the segment's state (built-in / archived / custom) in their
-// own columns. Counts of members are NOT shown here — that is a per-row read, and
-// the list must stay one request; membership lives on the detail.
+// the rule count and whether a segment came with the app or the tenant made it,
+// in their own columns. Counts of members are NOT shown here — that is a per-row
+// read, and the list must stay one request; membership lives on the detail. An
+// archived segment says so beside its NAME — a state belongs with the thing, not
+// in the column about where it came from (issue 895).
 
 import { useMemo, useState } from 'react';
 import {
@@ -24,7 +26,8 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { segmentMembership, useSegments, type Segment } from './segments-data';
 import { describeRule } from './segment-summary';
-import { RowOpenHint } from '../../components/row-open-hint';
+import { ListFooter } from '../../components/list-footer';
+import { countLabel } from '../../components/list-footer-words';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -45,25 +48,27 @@ function ruleSummary(segment: Segment): string {
   return describeRule(segment.rules);
 }
 
-/** The segment's state as one soft badge — never a bland empty cell. */
-function StateBadge({ segment }: { segment: Segment }) {
-  if (segment.archivedAt) {
-    return (
-      <Badge color="neutral" variant="soft" size="sm">
-        Archived
-      </Badge>
-    );
-  }
-  if (segment.isBuiltIn) {
-    return (
-      <Badge color="module" variant="soft" size="sm">
-        Built-in
-      </Badge>
-    );
-  }
-  return (
-    <Badge color="success" variant="soft" size="sm">
-      Active
+/**
+ * WHICH SIDE A GROUP IS ON: one that came with the app, or one she made.
+ *
+ * This column used to be headed "State" and hold three words from two different
+ * vocabularies: "Archived", "Built-in", "Active". Only ONE of them ever showed
+ * per row, so six of Devi's nine groups said "Built-in" and three said "Active",
+ * which reads as a contrast — as though the six were not running. They all were.
+ *
+ * The sibling list one row down the same menu had already settled this:
+ * `crm/object-types-list.tsx` heads its column "Kind", always names both sides
+ * ("Yours" or the one that came with the app), and lets "put away" ride beside
+ * the NAME, where a state belongs. This is that, applied here.
+ */
+function KindBadge({ segment }: { segment: Segment }) {
+  return segment.isBuiltIn ? (
+    <Badge color="info" variant="soft" size="sm">
+      Comes with sparx
+    </Badge>
+  ) : (
+    <Badge color="module" variant="soft" size="sm">
+      Yours
     </Badge>
   );
 }
@@ -197,7 +202,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     is that" is what this list is opened to find out. */}
                 <th className="text-right">People</th>
                 <th className="hidden @lg:table-cell">Rules</th>
-                <th>State</th>
+                <th>Kind</th>
               </tr>
             </thead>
             <tbody>
@@ -218,6 +223,11 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 >
                   <td>
                     <span className="font-medium">{segment.name}</span>
+                    {segment.archivedAt ? (
+                      <Badge color="neutral" variant="soft" size="sm" className="ml-2">
+                        Archived
+                      </Badge>
+                    ) : null}
                     {segment.description ? (
                       <span className="block truncate text-sm @md:hidden">
                         {ruleSummary(segment)}
@@ -229,7 +239,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </td>
                   <td className="hidden text-sm @lg:table-cell">{ruleSummary(segment)}</td>
                   <td>
-                    <StateBadge segment={segment} />
+                    <KindBadge segment={segment} />
                   </td>
                 </tr>
               ))}
@@ -238,16 +248,15 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <div className="flex shrink-0 items-center justify-between px-1">
-        {rows.length > 0 ? <RowOpenHint /> : null}
-        {typeof total === 'number' && !isPending ? (
-          <p className="text-xs">
-            {filtered
-              ? `${rows.length.toLocaleString()} shown`
-              : `${total.toLocaleString()} in total`}
-          </p>
-        ) : null}
-      </div>
+      <ListFooter
+        shown={rows.length}
+        count={countLabel({
+          shown: rows.length,
+          total,
+          filtered,
+          pending: isPending,
+        })}
+      />
     </div>
   );
 }

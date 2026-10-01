@@ -11,7 +11,7 @@
 
 import { z } from 'zod';
 import { nameSearchClauses, withTenant, type Prisma } from '@wizeworks/db';
-import { notFound } from '@wizeworks/api-core/errors';
+import { forbidden, notFound } from '@wizeworks/api-core/errors';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { b2bArService } from '@wizeworks/crm';
 import { inventoryService, type CommittedSale } from '@wizeworks/inventory';
@@ -102,6 +102,121 @@ const RULE_INCLUDE = {
   account: { select: { id: true, companyName: true } },
   requiredApprover: { select: { id: true, name: true, email: true } },
 } as const;
+
+// ── Which rule governs an order ───────────────────────────────────────────────
+
+/**
+ * The one rule that holds a given order, out of every active rule.
+ *
+ * Checkout only has to know whether ANY rule matches, so its query stops at the
+ * first hit. Deciding has to know WHICH one, because the rule is what names the
+ * person allowed to sign — and when two rules both cover an order they can name
+ * two different people.
+ *
+ * Precedence is the inventory side's, deliberately: the strictest threshold the
+ * order clears wins, and age breaks a tie. A $20,000 order routes to the
+ * $10,000 approver, not the $500 one. The two spending controls in this product
+ * are read by the same person on the same afternoon, and a precedence that
+ * differed between them would be a thing to learn twice.
+ *
+ * Pure, and exported, so the rule can be stated in a test without a database.
+ */
+export function ruleGoverningOrder<
+  T extends {
+    accountId: string | null;
+    propertyId: string | null;
+    minAmountCents: number;
+    createdAt: Date | string;
+  },
+>(
+  order: { accountId: string | null; propertyId: string | null; totalCents: number },
+  rules: readonly T[]
+): T | null {
+  // Two independent axes, matched the way checkout matches them (docs/131 §4):
+  // a null on either axis is "any", never "none".
+  const matching = rules.filter(
+    (rule) =>
+      (rule.accountId === null || rule.accountId === order.accountId) &&
+      (rule.propertyId === null || rule.propertyId === order.propertyId) &&
+      order.totalCents >= rule.minAmountCents
+  );
+  if (matching.length === 0) return null;
+
+  const age = (value: Date | string) =>
+    typeof value === 'string' ? value : value.toISOString();
+
+  return [...matching].sort(
+    (a, b) => b.minAmountCents - a.minAmountCents || age(a.createdAt).localeCompare(age(b.createdAt))
+  )[0]!;
+}
+
+/**
+ * Refuse a decision the governing rule did not ask this person for.
+ *
+ * The inventory twin has said this since it shipped: "A named approver is a
+ * named approver. Anyone else signing would make the rule decorative, and the
+ * trail would record a signature the rule did not ask for." This half of the
+ * product stored the name, printed it on the rule as "Nadia Osei signs off",
+ * and let any editor sign — so the sentence was decorative here and binding
+ * there, in one product, on two screens that do the same job.
+ *
+ * REJECTING is gated too. A rejection cancels a customer's order; "anybody may
+ * refuse it" is the same hole wearing the other outcome.
+ */
+export function approverRefusal(
+  userId: string | null | undefined,
+  rule: {
+    requiredApproverUserId: string | null;
+    requiredApprover?: { name: string | null; email: string } | null;
+  } | null
+): string | null {
+  if (!rule?.requiredApproverUserId) return null;
+  if (rule.requiredApproverUserId === userId) return null;
+  const who = rule.requiredApprover?.name ?? rule.requiredApprover?.email ?? null;
+  return who
+    ? `This order has to be signed off by ${who}.`
+    : 'This order has to be signed off by the person named on the rule that held it.';
+}
+
+function assertNamedApprover(
+  ctx: B2bContext,
+  rule: Parameters<typeof approverRefusal>[1]
+): void {
+  const refusal = approverRefusal(ctx.userId, rule);
+  if (refusal) throw forbidden(refusal);
+}
+
+/** Every active rule for this tenant, with the fields the match needs. */
+async function activeRulesFor(tx: AnyRuleTx, tenantId: string) {
+  return tx.purchaseApprovalRule.findMany({
+    where: { tenantId, isActive: true },
+    select: {
+      id: true,
+      accountId: true,
+      propertyId: true,
+      minAmountCents: true,
+      createdAt: true,
+      requiredApproverUserId: true,
+      requiredApprover: { select: { name: true, email: true } },
+    },
+  });
+}
+
+interface AnyRuleTx {
+  purchaseApprovalRule: {
+    findMany: (args: unknown) => Promise<
+      {
+        id: string;
+        accountId: string | null;
+        propertyId: string | null;
+        minAmountCents: number;
+        createdAt: Date;
+        requiredApproverUserId: string | null;
+        requiredApprover: { name: string | null; email: string } | null;
+      }[]
+    >;
+  };
+}
 
 // ── Rules ──────────────────────────────────────────────────────────────────────
 
@@ -354,6 +469,18 @@ export async function approveOrder(
     });
     if (!existing) throw notFound('Pending order not found');
 
+    assertNamedApprover(
+      ctx,
+      ruleGoverningOrder(
+        {
+          accountId: existing.customer.companyId ?? null,
+          propertyId: existing.propertyId ?? null,
+          totalCents: Math.round(Number(existing.total) * 100),
+        },
+        await activeRulesFor(tx as unknown as AnyRuleTx, ctx.tenantId)
+      )
+    );
+
     const updated = await tx.order.update({
       where: { id: orderId },
       data: { status: 'placed' },
@@ -485,9 +612,30 @@ export async function rejectOrder(
   const order = await withTenant(ctx, async (tx) => {
     const existing = await tx.order.findFirst({
       where: { id: orderId, tenantId: ctx.tenantId, status: 'pending_approval' },
-      select: { id: true, orderNumber: true, customerId: true },
+      // `propertyId`, `total` and the buyer's company are read for the approver
+      // check below — the same three facts the rule was matched on at checkout.
+      select: {
+        id: true,
+        orderNumber: true,
+        customerId: true,
+        propertyId: true,
+        total: true,
+        customer: { select: { companyId: true } },
+      },
     });
     if (!existing) throw notFound('Pending order not found');
+
+    assertNamedApprover(
+      ctx,
+      ruleGoverningOrder(
+        {
+          accountId: existing.customer.companyId ?? null,
+          propertyId: existing.propertyId ?? null,
+          totalCents: Math.round(Number(existing.total) * 100),
+        },
+        await activeRulesFor(tx as unknown as AnyRuleTx, ctx.tenantId)
+      )
+    );
 
     const updated = await tx.order.update({
       where: { id: orderId },

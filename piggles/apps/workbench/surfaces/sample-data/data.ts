@@ -131,7 +131,7 @@ export const COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string
   { key: 'reviews', label: 'Reviews' },
   { key: 'questions', label: 'Questions' },
   { key: 'returns', label: 'Returns' },
-  { key: 'collections', label: 'Collections' },
+  { key: 'collections', label: 'Groups of products' },
   { key: 'categories', label: 'Categories' },
   { key: 'bundles', label: 'Bundles' },
   { key: 'movements', label: 'Stock movements' },

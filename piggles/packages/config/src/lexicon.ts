@@ -176,4 +176,5 @@ export const BANNED_IN_PRODUCT_COPY = [
   // in api-rest, which this check does not read. Same story as `fitment` above:
   // the list is what a reviewer greps, and the word was not on it.
   'storefront',
+  'pipeline',
 ] as const;

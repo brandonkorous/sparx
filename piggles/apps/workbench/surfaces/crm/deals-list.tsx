@@ -67,7 +67,8 @@ import {
   type Deal,
   type DealListParams,
 } from './deals-data';
-import { RowOpenHint } from '../../components/row-open-hint';
+import { ListFooter } from '../../components/list-footer';
+import { countLabel } from '../../components/list-footer-words';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -473,7 +474,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <thead>
                 <tr>
                   <th>Deal</th>
-                  <th>Stage</th>
+                  <th>Step</th>
                   <th className="text-right">Value</th>
                   <th className="hidden @lg:table-cell">For</th>
                 </tr>
@@ -516,22 +517,23 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <div className="flex shrink-0 items-center justify-between gap-3 px-1">
-        {rows.length > 0 ? (
-          <RowOpenHint {...(isBoard ? { what: 'a card to open it' } : {})} />
-        ) : null}
-        {typeof total === 'number' && !isPending ? (
-          <p className="text-xs">
-            {/* Say so when the board is not showing everything. A column that
-                quietly stops reads as "this is all of them". */}
-            {truncated
-              ? `Showing the ${rows.length.toLocaleString()} most recent of ${total.toLocaleString()}`
-              : filtered
-                ? `${rows.length.toLocaleString()} shown`
-                : `${total.toLocaleString()} ${isBoard ? 'on this process' : 'open'}`}
-          </p>
-        ) : null}
-      </div>
+      <ListFooter
+        shown={rows.length}
+        {...(isBoard ? { hint: 'a card to open it' } : {})}
+        count={
+          // Say so when the board is not showing everything. A column that
+          // quietly stops reads as "this is all of them".
+          typeof total === 'number' && !isPending && truncated
+            ? `Showing the ${rows.length.toLocaleString()} most recent of ${total.toLocaleString()}`
+            : countLabel({
+                shown: rows.length,
+                total,
+                filtered,
+                pending: isPending,
+                noun: isBoard ? 'on this process' : 'open',
+              })
+        }
+      />
 
       {pendingLoss ? (
         <LostReasonDialog

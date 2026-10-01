@@ -55,8 +55,7 @@ export function SiteScope({
     >
       {available.length === 0 ? (
         <Text className="text-sm">
-          Nothing to choose yet. This account has no modules switched on beyond the site builder
-          itself.
+          Nothing to choose yet. This account has no other apps switched on beyond My Site itself.
         </Text>
       ) : (
         available.map((slug) => (

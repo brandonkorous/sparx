@@ -30,7 +30,8 @@ import {
   type Task,
   type TaskStatus,
 } from './tasks-data';
-import { RowOpenHint } from '../../components/row-open-hint';
+import { ListFooter } from '../../components/list-footer';
+import { countLabel } from '../../components/list-footer-words';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -228,14 +229,16 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <div className="flex shrink-0 items-center justify-between px-1">
-        {rows.length > 0 ? <RowOpenHint /> : null}
-        {typeof total === 'number' && !isPending ? (
-          <p className="text-xs">
-            {filtered ? `${rows.length.toLocaleString()} shown` : `${total.toLocaleString()} to do`}
-          </p>
-        ) : null}
-      </div>
+      <ListFooter
+        shown={rows.length}
+        count={countLabel({
+          shown: rows.length,
+          total,
+          filtered,
+          pending: isPending,
+          noun: 'to do',
+        })}
+      />
     </div>
   );
 }

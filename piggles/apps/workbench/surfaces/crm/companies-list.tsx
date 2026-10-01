@@ -48,7 +48,8 @@ import {
   type Company,
   type CompanyStatus,
 } from './companies-data';
-import { RowOpenHint } from '../../components/row-open-hint';
+import { ListFooter } from '../../components/list-footer';
+import { countLabel } from '../../components/list-footer-words';
 import { creditStanding } from '../../lib/credit-standing';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -311,16 +312,15 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <div className="flex shrink-0 items-center justify-between px-1">
-        {rows.length > 0 ? <RowOpenHint /> : null}
-        {typeof total === 'number' && !isPending ? (
-          <p className="text-xs">
-            {filtered
-              ? `${rows.length.toLocaleString()} shown`
-              : `${total.toLocaleString()} in total`}
-          </p>
-        ) : null}
-      </div>
+      <ListFooter
+        shown={rows.length}
+        count={countLabel({
+          shown: rows.length,
+          total,
+          filtered,
+          pending: isPending,
+        })}
+      />
     </div>
   );
 }

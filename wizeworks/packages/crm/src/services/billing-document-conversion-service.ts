@@ -28,6 +28,7 @@ import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { nextOrderNumber } from './record-numbers';
+import { recomputeCustomerCommerce } from './customer-rollup';
 
 export interface ConvertDocumentToOrderInput {
   /** Override the document's own customerId — required when the document is
@@ -119,6 +120,20 @@ export async function convertToOrder(
         },
       },
     });
+
+    // The buyer's own figures, worked out from their orders, in the same
+    // transaction that wrote this one.
+    //
+    // This is the house rule for every path that writes an Order, and it is the
+    // rule BECAUSE the alternative was tried: the customer's totals used to be
+    // nudged by the `order.created` consumer, an increment that the bus could
+    // swallow. `order-events.ts` says so where it used to do it. Four writers
+    // learned the new rule — orderService create and update, the payment path,
+    // and channel ingest — and this one, which is how a QUOTE becomes an order,
+    // did not. So a wholesale buyer who accepted a quote today had a record
+    // reading "Orders 3" and "Last order a week ago" directly above the order
+    // itself, dated today (issue 894).
+    await recomputeCustomerCommerce(tx, ctx.tenantId, customerId);
 
     const updatedDoc = await tx.billingDocument.update({
       where: { id: doc.id },

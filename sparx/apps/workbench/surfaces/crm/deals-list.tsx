@@ -64,7 +64,8 @@ import {
   type Deal,
   type DealListParams,
 } from './deals-data';
-import { RowOpenHint } from '../../components/row-open-hint';
+import { ListFooter } from '../../components/list-footer';
+import { countLabel } from '../../components/list-footer-words';
 
 const SURFACE_KEY = 'crm.deals.list';
 
@@ -518,22 +519,24 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <div className="flex shrink-0 items-center justify-between gap-3 px-1">
-        {rows.length > 0 ? (
-          <RowOpenHint what={isBoard ? 'a card to open it' : undefined} className="px-0" />
-        ) : null}
-        {typeof total === 'number' && !isPending ? (
-          <p className="text-xs">
-            {/* Say so when the board is not showing everything. A column that
-                quietly stops reads as "this is all of them". */}
-            {truncated
-              ? `Showing the ${rows.length.toLocaleString()} most recent of ${total.toLocaleString()}`
-              : filtered
-                ? `${rows.length.toLocaleString()} shown`
-                : `${total.toLocaleString()} ${isBoard ? 'on this pipeline' : 'open'}`}
-          </p>
-        ) : null}
-      </div>
+      <ListFooter
+        shown={rows.length}
+        {...(isBoard ? { hint: 'a card to open it' } : {})}
+        hintClassName="px-0"
+        count={
+          // Say so when the board is not showing everything. A column that
+          // quietly stops reads as "this is all of them".
+          typeof total === 'number' && !isPending && truncated
+            ? `Showing the ${rows.length.toLocaleString()} most recent of ${total.toLocaleString()}`
+            : countLabel({
+                shown: rows.length,
+                total,
+                filtered,
+                pending: isPending,
+                noun: isBoard ? 'on this pipeline' : 'open',
+              })
+        }
+      />
 
       {pendingLoss ? (
         <LostReasonDialog

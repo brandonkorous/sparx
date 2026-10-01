@@ -209,6 +209,11 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // Not 'How a deal moves': this pane lists support queues too, and a help
   // request is not a deal.
   'crm.pipelines.list': 'How things move',
+  // The pane names itself once it has loaded — "New process", then the thing's
+  // own name — so this is what a tab says in the moment before that, and what
+  // the launcher offers. It said "Pipeline", which is the one word the pane it
+  // opens spent an act taking off its own buttons (issue 898).
+  'crm.pipeline.detail': 'Process',
   'crm.tasks.list': 'Things to do',
   'crm.tickets.list': 'Help requests',
   // "Record types" and "object types" are both the schema talking. What the

@@ -86,6 +86,82 @@ for (const root of SCAN_ROOTS) {
   }
 }
 
+/**
+ * Screens this brand does not have, so their words are never read HERE.
+ *
+ * `hiddenSurfaces` in lib/console/product.tsx removes whole surfaces from the
+ * Piggles console because they are about a sparx PRODUCT: what a business pays
+ * WizeWorks, turning priced modules on and off, the reseller programme. Their
+ * files still sit in this tree — the two consoles share a surface set — and
+ * their copy is sparx's copy, written for sparx's reader.
+ *
+ * Scanning them reported seven findings on screens nobody using this brand can
+ * open, including "You're not paying for any paid modules right now" on a
+ * billing pane Piggles deliberately does not show. A check that reports work
+ * nobody can act on is a check that gets switched off, so the hidden set is
+ * PARSED from the same file the app reads it from rather than listed again
+ * here. A `partner.*` entry hides the whole namespace, which is the form that
+ * kept an eighth partner screen from being missed.
+ */
+function hiddenSurfaceDirs() {
+  const file = join(PIGGLES, 'apps', 'workbench', 'lib', 'console', 'product.tsx');
+  if (!existsSync(file)) {
+    console.error(`check:plain-words — the brand adapter is missing: ${file}`);
+    console.error('It moved or was renamed. Fix this parser rather than deleting the check.');
+    process.exit(1);
+  }
+  // Comments first. Every entry carries a paragraph saying why that product is
+  // not this brand's, and those paragraphs are full of apostrophes — "the
+  // rail's plan card", "sparx's reseller programme" — so a naive scan for
+  // quoted strings reads the prose BETWEEN two of them as a surface key. The
+  // lexicon parser two functions up learned the same lesson.
+  const block = /const hiddenSurfaces = new Set\(\[([\s\S]*?)\]\);/.exec(
+    stripComments(readFileSync(file, 'utf8'))
+  );
+  if (!block) {
+    console.error('check:plain-words — hiddenSurfaces is not where this expects it.');
+    process.exit(1);
+  }
+  const keys = new Set([...block[1].matchAll(/'([^']+)'/g)].map((m) => m[1]));
+  if (keys.size < 3) {
+    console.error(`check:plain-words — parsed only ${String(keys.size)} hidden surfaces.`);
+    console.error('That is fewer than the adapter has ever hidden; the parse is wrong.');
+    process.exit(1);
+  }
+
+  // The key says which SCREEN; this says which FILE. Derived by hand because a
+  // key does not name its file — `platform.settings.modules` is rendered by
+  // surfaces/modules/modules-list.tsx — and deriving it properly would mean
+  // parsing the catalog's imports to follow a component name back to a path.
+  //
+  // It cannot rot quietly: every key below is checked against the set just
+  // parsed, so un-hiding a screen turns this red rather than silently leaving
+  // its file unscanned.
+  const files = {
+    'finance.subscription': 'finance/subscription.tsx',
+    'platform.settings.modules': 'modules/modules-list.tsx',
+  };
+  const skip = new Set();
+  for (const [key, file] of Object.entries(files)) {
+    if (!keys.has(key)) {
+      console.error(`check:plain-words — "${key}" is no longer hidden from this brand.`);
+      console.error(`Remove it here so ${file} is scanned again.`);
+      process.exit(1);
+    }
+    skip.add(file);
+  }
+  return skip;
+}
+
+const HIDDEN_FILES = hiddenSurfaceDirs();
+
+/** The path under surfaces/, or null for a file that is not a surface. */
+function surfacePath(file) {
+  const parts = file.split(/[\\/]/);
+  const at = parts.lastIndexOf('surfaces');
+  return at === -1 ? null : parts.slice(at + 1).join('/');
+}
+
 const LEXICON = join(PIGGLES, 'packages', 'config', 'src', 'lexicon.ts');
 if (!existsSync(LEXICON)) {
   console.error(`check:plain-words — the lexicon is missing: ${LEXICON}`);
@@ -164,6 +240,9 @@ const ALLOWED = [
   // Bringing a shop over from elsewhere: these are the file types her old
   // system gave her, and the clause after the colon is the definition.
   'whatever your platform gave you',
+  // The name of an HTTP header her supplier's system asks for. It is typed into
+  // their system, not ours, and a plainer name would not be the one that works.
+  'X-API-Key',
 ];
 
 const DEBT_FILE = join(PIGGLES, 'scripts', 'plain-words-debt.txt');
@@ -189,7 +268,36 @@ function stripComments(source) {
 
 /** The props that carry a sentence. `className` is pointedly not one. */
 const COPY_PROPS =
-  /\b(?:title|description|label|placeholder|detail|blurb|body|help|helpText|message|summary|tagline)\s*[:=]\s*(?:\{\s*)?(['"`])([^'"`]{8,600})\1/g;
+  /\b(?:title|description|label|placeholder|detail|blurb|body|help|helpText|message|summary|tagline|noun|confirmLabel|cancelLabel|retryLabel)\s*[:=]\s*(?:\{\s*)?(['"`])([^'"`]{8,600})\1/g;
+
+/**
+ * A TEMPLATE LITERAL with a value in the middle of it, wherever it sits.
+ *
+ * The two passes above reach a named prop and a run of JSX text. A sentence in
+ * the losing half of a ternary is neither:
+ *
+ *     : `This product is also in ${String(n)} collections that are no longer
+ *        in your list.`
+ *
+ * The singular branch beside it had already been reworded to "one group"; this
+ * one kept the word RULE #3 bans first, and no pass could see it, because
+ * COPY_PROPS captures the raw text and `${…}` reads as code (issue 897).
+ * Likewise `aria-label={`Save ${name} to a collection`}` on a pane that says
+ * "album" in all seven of its visible labels.
+ *
+ * Most template literals in a console are NOT sentences, so two rejections
+ * carry this pass: one that starts with a slash is an address, and one with no
+ * capital letter and hyphens through it is a list of classes. Measured over
+ * 1,264 files: without them, 57 findings, 55 of them addresses and class
+ * strings; with them, 2, both real.
+ */
+const TEMPLATE_SENTENCE = /`((?:[^`\\]|\\.)*\$\{(?:[^`\\]|\\.)*)`/g;
+const TEMPLATE_VALUE = /\$\{[^{}]*\}/g;
+
+function isAddressOrClassList(text) {
+  if (text.startsWith('/')) return true;
+  return !/[A-Z]/.test(text) && (text.match(/[a-z]-[a-z]/g) ?? []).length >= 2;
+}
 
 /**
  * A run of text between JSX tags, INCLUDING one with a value in the middle of it.
@@ -223,16 +331,22 @@ const INTERPOLATION = /\{[^{}]*\}/g;
  * findings, almost all of them `api.get`, which is exactly how a check gets
  * switched off instead of read.
  */
-function isProse(text) {
-  if (!/\s/.test(text)) return false;
-  if (/[;={}()[\]|<>]/.test(text)) return false;
+function looksLikeCode(text) {
+  if (/[;={}()[\]|<>]/.test(text)) return true;
   // A method chain wrapped onto the next line — `api\n  .list` — which collapses
   // to "api .list" and is the shape that survived every other test here.
-  if (/\s\./.test(text)) return false;
+  if (/\s\./.test(text)) return true;
   // `a.b` is code, unless a real sentence ended before it: a LETTER, then a full
   // stop, then a space. The letter matters — "id ? api.patch" has a space before
   // its question mark, and without it that read as prose.
-  if (/\w\.\w/.test(text) && !/[a-z][.!?]\s/i.test(text)) return false;
+  if (/\w\.\w/.test(text) && !/[a-z][.!?]\s/i.test(text)) return true;
+  if (!/[A-Za-z]{2,}/.test(text)) return true;
+  return false;
+}
+
+function isProse(text) {
+  if (!/\s/.test(text)) return false;
+  if (looksLikeCode(text)) return false;
   // TWO WORDS, ONE OF THEM REAL. This used to demand two ADJACENT words of two
   // letters or more, which quietly excluded every short phrase whose middle word
   // is one letter: "Add a redirect" has three words and no two long ones side by
@@ -243,7 +357,6 @@ function isProse(text) {
   // written for (measured: 29 new findings, 28 of them `api .list`). The two
   // rejections above are what make it safe — with them, the looser test gains
   // 212 strings, ONE new finding, and loses nothing.
-  if (!/[A-Za-z]{2,}/.test(text)) return false;
   return (
     text
       .trim()
@@ -254,25 +367,61 @@ function isProse(text) {
 
 function readableText(source) {
   const out = [];
-  for (const [, , text] of source.matchAll(COPY_PROPS)) out.push(text.replace(/\s+/g, ' ').trim());
+  // A NAMED COPY PROP IS PROSE BY VIRTUE OF ITS NAME. The two-word rule exists
+  // to throw out code that happened to sit between a `>` and a `<`; a string
+  // assigned to `noun` or `confirmLabel` did not get there by accident. Holding
+  // prop values to that rule hid every ONE-WORD term on the platform: the CRM's
+  // process pane said `noun="pipeline"`, which renders "That pipeline is no
+  // longer here", and this check read the string, counted it, and threw it away
+  // for having one word (issue 897). [[feedback_structural_checks_go_blind]]
+  for (const [, , text] of source.matchAll(COPY_PROPS)) {
+    const value = text.replace(/\s+/g, ' ').trim();
+    if (!looksLikeCode(value)) out.push(value);
+  }
   for (const [, text] of source.matchAll(JSX_TEXT)) {
     // The value stands in as an ellipsis: what is being checked is the words
     // AROUND it, and the value itself is whatever the screen happens to hold.
-    out.push(text.replace(INTERPOLATION, ' … ').replace(/\s+/g, ' ').trim());
+    const value = text.replace(INTERPOLATION, ' … ').replace(/\s+/g, ' ').trim();
+    if (isProse(value)) out.push(value);
   }
-  return out.filter(isProse);
+  for (const [, raw] of source.matchAll(TEMPLATE_SENTENCE)) {
+    const value = raw.replace(TEMPLATE_VALUE, ' … ').replace(/\s+/g, ' ').trim();
+    if (isProse(value) && !isAddressOrClassList(value)) out.push(value);
+  }
+  return out;
 }
 
 const WORDS = [...bannedWords(), ...TECHNICAL];
+
+/**
+ * The banned word, IN THE PLURAL TOO.
+ *
+ * The lexicon lists singulars, and `\bcollection\b` does not match
+ * "collections" — the `s` is a word character, so the boundary fails. That is
+ * the form the word is most often written in: "This product is also in 3
+ * collections that are no longer in your list" sat live on the product pane and
+ * this check read it, matched nothing, and passed (issue 897). The ALLOWED list
+ * already carried 'API key' AND 'API keys' as two entries, which is somebody
+ * meeting this and working around it one word at a time.
+ *
+ * Only a trailing `s`. Nothing here needs "-ies" or "-es", and guessing at
+ * English plurals is how a check starts reporting things that are not words.
+ */
 const patterns = WORDS.map((word) => ({
   word,
-  re: new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'),
+  re: new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}s?\\b`, 'i'),
 }));
 
 const found = [];
 let scanned = 0;
+let skipped = 0;
 for (const root of SCAN_ROOTS) {
   for (const file of walk(root)) {
+    const where = surfacePath(file);
+    if (where !== null && HIDDEN_FILES.has(where)) {
+      skipped += 1;
+      continue;
+    }
     scanned += 1;
     const source = stripComments(readFileSync(file, 'utf8'));
     for (const text of readableText(source)) {
@@ -323,6 +472,7 @@ if (gone.length > 0) {
 
 console.log(
   `check:plain-words — ${String(scanned)} file(s) read, ` +
+    `${String(skipped)} skipped as screens this brand hides, ` +
     `${String(unique.length)} known plain-word debt, no new jargon ` +
     `(${String(WORDS.length)} words watched).`
 );

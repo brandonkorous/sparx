@@ -113,3 +113,56 @@ export function daysUntilDue(
   // `Object.is` or printing it would see a minus sign on a day that is today.
   return past === null ? null : 0 - past;
 }
+
+/** The colors a promised day is allowed to wear. `danger` is the console's word
+ *  for it — 301 call sites to `error`'s 67, and what the deal board already
+ *  uses for the same signal. */
+export type DueTone = 'danger' | 'warning' | 'module';
+
+/**
+ * A PROMISED DAY, SAID OUT LOUD — including the part where it has gone by.
+ *
+ * `daysPastDue` counts. This names what the count MEANS, because a count with
+ * no name gets printed as a bare date and a bare date does not tell anybody
+ * they are late. That is not hypothetical: the orders list printed
+ * "Due Fri, Sep 25" on the thirtieth, in one fixed color, so an order five days
+ * past the day it was promised for looked exactly like one due next week
+ * (issue 896).
+ *
+ * The console says this in two other places already — a bill she owes, and a
+ * deal she is chasing — and both say "N days late" in a red. So does an order
+ * she has not received from a supplier, which has a whole screen to itself. The
+ * only promise it would not call late was the one made to a CUSTOMER.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * `far` is the day beyond which a date is news rather than a warning; past it
+ * the caller gets `module` and prints its own wording. Null means nobody set a
+ * day, which is not the same as a day that has not arrived.
+ */
+export function dueDaySignal(
+  dueOn: string | null | undefined,
+  now = new Date(),
+  timeZone?: string | null,
+  far = 7
+): { label: string; tone: DueTone; late: boolean; days: number } | null {
+  const past = daysPastDue(dueOn, now, timeZone);
+  if (past === null) return null;
+
+  if (past > 0) {
+    return {
+      label: past === 1 ? '1 day late' : `${String(past)} days late`,
+      tone: 'danger',
+      late: true,
+      days: past,
+    };
+  }
+  if (past === 0) return { label: 'Due today', tone: 'warning', late: false, days: 0 };
+  const ahead = 0 - past;
+  if (ahead === 1) return { label: 'Due tomorrow', tone: 'warning', late: false, days: 0 };
+  if (ahead <= far) {
+    return { label: `Due in ${String(ahead)} days`, tone: 'warning', late: false, days: 0 };
+  }
+  // Far enough out to be a fact rather than a warning. The caller supplies the
+  // date, because only the caller knows how much room it has to print one.
+  return { label: '', tone: 'module', late: false, days: 0 };
+}

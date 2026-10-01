@@ -547,7 +547,7 @@ function DealEditor({
                 <FieldLabel>Process</FieldLabel>
                 <Select
                   color={pipelineError && touched ? 'error' : 'module'}
-                  aria-label="Pipeline"
+                  aria-label="Process"
                   value={draft.pipelineId}
                   items={Object.fromEntries(pipelineList.map((p) => [p.id, p.name]))}
                   onValueChange={(next) => {
@@ -559,7 +559,7 @@ function DealEditor({
                 <FieldLabel>Step</FieldLabel>
                 <Select
                   color={stageError && touched ? 'error' : 'module'}
-                  aria-label="Stage"
+                  aria-label="Step"
                   value={draft.stageId}
                   items={Object.fromEntries(stages.map((s) => [s.id, s.name]))}
                   onValueChange={(next) => {
@@ -720,7 +720,7 @@ function DealEditor({
           {!isNew && deal ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
-                Finish a deal by moving it to a Won or Lost stage. Delete is for one added by
+                Finish a deal by moving it to a Won or Lost step. Delete is for one added by
                 mistake. Its history is kept.
               </Text>
               <Button

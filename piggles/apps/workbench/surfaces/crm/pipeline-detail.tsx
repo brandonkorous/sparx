@@ -97,7 +97,7 @@ function PipelineLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             error={error}
-            noun="pipeline"
+            noun="process"
             title="Could not load this process"
             description="This is a problem reaching the server, or the process has been removed. Nothing has been changed."
             onRetry={() => {
@@ -240,7 +240,7 @@ function PipelineEditor({
   const onAddStage = () => {
     if (!pipeline) return;
     addStage.mutate(
-      { name: 'New stage', sortOrder: pipeline.stages.length, stageType: 'open', probability: 0 },
+      { name: 'New step', sortOrder: pipeline.stages.length, stageType: 'open', probability: 0 },
       {
         onError: (error) => {
           toast.add({
@@ -278,7 +278,7 @@ function PipelineEditor({
   const onArchive = async () => {
     if (!pipeline) return;
     const ok = await confirm({
-      title: `Archive ${pipeline.name}?`,
+      title: `Put ${pipeline.name} away?`,
       description:
         'This puts the process away, so it drops out of the list and out of the deal editor. Deals already on it are kept, and you can find it again by including the ones you have put away.',
       confirmLabel: 'Put it away',
@@ -290,7 +290,7 @@ function PipelineEditor({
       onSuccess: () => {
         ctx.close();
         afterPaneChange(() => {
-          toast.add({ title: `${pipeline.name} archived`, type: 'success' });
+          toast.add({ title: `${pipeline.name} put away`, type: 'success' });
         });
       },
       onError: (error) => {
@@ -308,7 +308,7 @@ function PipelineEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Pipeline actions"
+        label="Process actions"
         status={
           <>
             {pipeline?.isDefault ? (
@@ -318,7 +318,7 @@ function PipelineEditor({
             ) : null}
             {isArchived ? (
               <Badge color="neutral" variant="soft" size="sm">
-                Archived
+                Put away
               </Badge>
             ) : null}
           </>
@@ -355,7 +355,7 @@ function PipelineEditor({
             </Text>
           ) : null}
 
-          <SaveFailure title="Could not save this pipeline" message={failure} />
+          <SaveFailure title="Could not save this process" message={failure} />
 
           <FormSection title="Name">
             <Field>
@@ -485,7 +485,7 @@ function PipelineEditor({
                 }}
               >
                 <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-                Archive this pipeline
+                Put this process away
               </Button>
             </div>
           ) : null}
@@ -589,7 +589,7 @@ function StageRow({
     const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another step';
     const ok = await confirm({
       title: `Remove ${stage.name}?`,
-      description: `Any deals still on this stage move to “${targetName}”. This cannot be undone, but no deal is lost.`,
+      description: `Any deals still on this step move to “${targetName}”. This cannot be undone, but no deal is lost.`,
       confirmLabel: 'Remove step',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -744,7 +744,7 @@ function StageRow({
             }}
           >
             <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-            Remove stage
+            Remove step
           </Button>
           <Button
             size="sm"

@@ -68,7 +68,7 @@ const TYPE_FILTERS: { value: string; label: string }[] = [
   { value: 'builder_page', label: 'Pages' },
   { value: 'cms_page', label: 'Articles' },
   { value: 'product', label: 'Products' },
-  { value: 'collection', label: 'Collections' },
+  { value: 'collection', label: 'Groups of products' },
 ];
 
 /* ── The site-wide checklist roll-up ─────────────────────────────────────── */

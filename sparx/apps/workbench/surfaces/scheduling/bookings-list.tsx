@@ -9,6 +9,7 @@
 // so it earns a table: each column answers a different question scanned across.
 // The one the list is really FOR is WHEN, so it leads and sorts the list.
 
+import { CANVAS_CORNER_CLEARANCE } from '../../components/canvas-corner';
 import { useState } from 'react';
 import {
   Badge,
@@ -291,13 +292,16 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       {rows.length > 0 ? (
-        <div className="flex shrink-0 items-center justify-between gap-3 px-1">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 px-1">
           <p className="text-sm">
             {total === undefined
               ? `Showing ${String(from)}–${String(to)}`
               : `Showing ${String(from)}–${String(to)} of ${String(total)}`}
           </p>
-          <div className="flex items-center gap-2">
+          {/* The page buttons stand in the corner the workspace tools float in.
+              Text under them is merely unreadable; a BUTTON under them cannot be
+              pressed at all. */}
+          <div className={`flex items-center gap-2 ${CANVAS_CORNER_CLEARANCE}`}>
             <Button
               size="sm"
               variant="outline"

@@ -1,6 +1,6 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.24
+**Version:** 6.27
 **Author:** Brandon Korous
 **Last Updated:** 2026-09-30
 
@@ -16595,3 +16595,288 @@ about a cause nobody had checked. One was a box that ignored me.
 
 The numbers underneath were right nearly every time. It is the words on top that
 keep telling me things that are not so.
+
+## Act 317 — a customer who had ordered and a record that had not noticed
+
+Tamsin from Loom and Larder said yes to the shirtdress quote this morning, so I
+turned it into an order and got on with the week. Later I opened her record to
+work out what she owes me before I ring her about the spring run.
+
+### Three things on one card that cannot all be true
+
+```
+Their orders come to    Paid you so far    Orders    Last order
+$599.20                 $30.00             3         a week ago
+$199.73 an order        $569.20 still                First September 20
+on average              to come
+```
+
+And three inches under it:
+
+> **Recent orders** · Their 3 most recent. **All 4 are on the Orders tab.**
+>
+> O-000028 · To send · Sep 30, 2026 · **$1,008.00**
+
+Three orders, four orders. Last order a week ago, last order today. Her orders
+come to $599.20, and there is a thousand-dollar one sitting right there.
+
+I nearly rang her and asked for five hundred and sixty-nine dollars.
+
+### What I actually needed from that screen
+
+I open a customer for one reason: to find out where I stand with them before I
+say something to them. How much have they had off me, how much have they paid,
+when did I last hear from them.
+
+Those are the four boxes at the top. They are the whole point of the screen, and
+on the one customer who owes me the most, all four of them were behind.
+
+It is not that the screen was broken. The list underneath was right, and it even
+told me the number — "all 4" — while the box above it said three. If I had been
+in a hurry I would have read the big writing and not the small.
+
+### The bit that bothers me more
+
+I have not moved my old sales over yet. I have been putting it off and the
+reason I have been putting it off is that I do not trust it to come out right.
+
+The import screen tells you, when you bring your customers in, that it ignores
+any "total spent" column in your spreadsheet because it works that out from the
+orders. Fine. Sensible, even. Then you bring the orders in and it does not work
+it out. Everyone lands reading nought.
+
+I would have found that on a Sunday afternoon with four years of sales in a
+spreadsheet and no idea which end to start at.
+
+### The groups screen, reading down the column
+
+```
+At Risk                     No members yet   Built-in
+B2B Fleet                   No members yet   Built-in
+Early Access                No members yet   Built-in
+High Value                  No members yet   Built-in
+New Customers               6 customers      Built-in
+Newsletter Subscribers      23 customers     Built-in
+Bought in the last 90 days  8 customers      Active
+Email engaged               No members yet   Active
+VIP customers               No members yet   Active
+```
+
+The column says **State**. Six say built-in and three say active. I read that as
+six that are not switched on, and four of those six have nobody in them, which
+made me surer.
+
+They are all switched on. "Built-in" just means it came with the app. But it is
+sat in the one place that would have told me whether the thing is running, so it
+answered a question I did not ask instead of the one I did.
+
+It now says **Kind**, and every row says either **Already here** or **Yours**. I
+can read down it in one go.
+
+### What was good
+
+The group screens are honest about what they cannot know. One of them said "0 of
+38 match" and I have forty-one customers, which looked wrong until I thought
+about it: three of mine belong to the other site. It counted the ones that could
+actually be in the group, not the ones that exist.
+
+And "No members yet" on High Value is just true. Nobody has spent five thousand
+dollars with me. It did not round it up or dress it up.
+
+The quote screens are the best part of the app. Draft, submitted, quoted,
+accepted — with **they said yes** written next to Accepted so I know which one I
+mean — and then one press to turn it into an order.
+
+### Where I am
+
+Two things wrong, and one of them was the numbers I actually open that screen
+for. The other was a word in a column.
+
+Last week I said it was the words on top that keep telling me things that are
+not so. This week it was the numbers, and the words underneath them were the
+ones that gave it away.
+
+## Act 318 — the day I promised, and nobody mentioned it had gone
+
+Twenty-nine orders. I opened the list to see what still had to go out.
+
+It is a good list. Two badges on every row and they say different things, which
+is right, because an order can be paid and still sitting here, or gone out and
+still owed for. I pressed each of the six buttons along the top and the counts
+came out the way I would have counted them myself: twenty-two still owed,
+eleven to pack, eleven packed, four they already have, two called off. Twenty
+nine altogether.
+
+One row had a second line under the order number, in a soft pink:
+
+    O-000018   Tamsin Vale   Sep 20, 2026   Part paid   To collect   $52.00
+    Due Fri, Sep 25
+
+Today is the thirtieth.
+
+I read that line three times before it landed. It is not wrong. It is the day
+I said, and that is the day it says. It just does not mention that the day has
+been and gone, and it is the same gentle pink it would be if I had promised it
+for next month.
+
+I opened the order. The first thing on the page:
+
+> **Due Friday, September 25**
+> Something on this order has to be made first, so this is the earliest day it
+> can be collected. It was agreed when the order was placed and does not move
+> if you change the product afterwards.
+
+_Is._ Present tense. About last Friday.
+
+That is a knit dress Tamsin is waiting on, and this app has known for five days
+that I am late and has been writing me a calm little note about my plans.
+
+### The part that annoyed me
+
+It knows how to say this. It says it everywhere else.
+
+My Bills to pay screen tells me **3 days late** in red. The supplier stuff has
+a whole screen called What is overdue, with the most expensive one at the top,
+so I ring the right person first. If I owe somebody money, this app will not
+let me forget for one day.
+
+The only promise it would not tell me I had broken was the one I made to a
+customer.
+
+### What it says now
+
+    O-000018   Tamsin Vale   Sep 20, 2026   Part paid   To collect   $52.00
+    5 days late · Fri, Sep 25
+
+in red. And on the order:
+
+> **5 days late · due Friday, September 25**
+> This was the day it was agreed for, and it has gone by. It is still to
+> collect, so tell Tamsin where it stands and agree a new day if you need one.
+
+The number first, then the day. The number is the bit that makes me pick up the
+phone. The day is the bit I say into it.
+
+On my phone it just says **5 days late** and drops the date, which is fine.
+I am not going to read a date off a phone while I am holding a dress.
+
+### The bit I checked and left alone
+
+The buttons along the top say **To pack** and the column says **To send**, and
+I did think that was sloppy. It is not. Some of these people come and get their
+things and some go in the post, and it is the same job for me either way: find
+it, wrap it, put it by the door. One button for one job. If it said "To send"
+I would have to press two buttons to see one morning's work.
+
+Also: the order numbers. I was sure that first character was a zero. It is a
+letter O. The zeros after it have a little line through them and the letter
+does not, which is the whole point of that typeface.
+
+### Where I am
+
+I have been saying for weeks that this app tells me things that are not so.
+This one was different. Nothing it said was untrue. It said a true date in a
+calm voice and let me work out the rest, and I did not work it out for five
+days.
+
+A date is not news until something tells me which side of today it is on.
+
+## Act 319 — the number I wanted was behind the button
+
+I went to look at how a sale moves through, because somebody asked me last week
+what happens after I send a quote and I realised I had never actually looked.
+
+It is called How things move and there are two in there. Sales, with six steps,
+and Support Queue, with five. Sensible enough.
+
+But the first thing I noticed was not in the list. It was underneath it:
+
+    2 ... total
+
+There is a little round button that floats in the bottom corner of every screen
+in here, for making the panes bigger and smaller. It sits on top of the counting
+line. On this screen it only ate the word "in", so I could still work it out.
+
+I went and looked at my Customers list, which is the one I open most:
+
+    38 ... total
+
+That is thirty-eight customers and I had to count the rows to know it. Fifty-
+three pixels of a fifty-six pixel line, behind a button. It was doing it on my
+orders, my groups of customers, my companies — everywhere that ends with a
+count. I had simply stopped seeing it, which is worse.
+
+### The thing that makes me cross
+
+There is another line, on the longer lists, with the page numbers on it. It gets
+out of the way of that button properly. Somebody noticed this, worked out how
+much room the button needs, and fixed it — for that one line.
+
+The line I was looking at is on twelve screens and it was copied out by hand
+twelve times, so the fix never reached it.
+
+It also turns out that line was printed smaller than the sentence beside it.
+Same row. Two sizes. I had not noticed that either, and now I cannot stop seeing
+it.
+
+### It says it plainly now
+
+    38 in total
+
+Full words, bigger, and a good gap before the button.
+
+### Then the process itself
+
+At the bottom of the Sales process there is a line and a button:
+
+> Putting it away hides this process. Deals already on it are kept.
+> **[ Archive this pipeline ]**
+
+I read that twice. The sentence is talking about putting something away and the
+button says archive. The sentence says process and the button says pipeline.
+I do not know what a pipeline is. Nobody has ever said that word to me.
+
+And pressing it says **Archive Sales?** at the top and **Put it away** on the
+button underneath, in the same little box.
+
+It is the same thing four ways in one corner of one screen.
+
+There was more of it once I looked. Pressing **Add a step** made one called
+"New stage". The button to get rid of a step says "Remove this step" and the
+one in the box that opens says "Remove stage". My deals board has a column
+headed "Stage" and everything else in here calls it a step.
+
+Now it all says the same thing:
+
+> Putting it away hides this process. Deals already on it are kept.
+> **[ Put this process away ]**
+>
+> **Put Sales away?**
+> This puts the process away, so it drops out of the list and out of the deal
+> editor. Deals already on it are kept, and you can find it again by including
+> the ones you have put away.
+> **[ Keep it ] [ Put it away ]**
+
+I pressed it to check and then pressed Keep it, and Sales is still there.
+
+### One more, which I did not go looking for
+
+Fixing that word turned up another one I had never seen, on the pane where I
+file a product. The heading on the box said **Collections**. The button inside
+the box said **Open groups of products**. I have never once called them
+collections and neither does anything else in here.
+
+And on the screen for adding a second website it told me to "Turn on Builder
+from Modules". There is no Modules in my Piggles. I would have gone looking for
+it.
+
+### Where I am
+
+Nothing here was broken. Every one of these screens did exactly what it was
+built to do. They just each said it in their own words, and put one number
+behind a button, and I have been working around all of it for weeks without
+saying so, because it is easier to count thirty-eight rows than to complain
+about a button.
+
+The number I want is the one at the end. It should be the easiest thing on the
+screen to read, not the hardest.

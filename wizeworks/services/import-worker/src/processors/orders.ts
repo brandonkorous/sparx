@@ -18,7 +18,7 @@
 // is a row nobody can find. That is the one write this processor makes beyond the
 // order itself, and it is reported.
 
-import { customerService } from '@wizeworks/crm';
+import { customerService, recomputeCustomerCommerce } from '@wizeworks/crm';
 import { withTenant, type Prisma } from '@wizeworks/db';
 import { toDecimal, toInteger, toIsoDate } from '@wizeworks/migration';
 
@@ -244,6 +244,7 @@ export const ordersProcessor: EntityProcessor = {
                 data: itemData.map((item) => ({ ...item, orderId: existing.id })),
               });
             }
+            await recomputeCustomerCommerce(tx, ctx.tenantId, customerId);
             return;
           }
           const created = await tx.order.create({ data, select: { id: true } });
@@ -252,6 +253,17 @@ export const ordersProcessor: EntityProcessor = {
               data: itemData.map((item) => ({ ...item, orderId: created.id })),
             });
           }
+          // What this person has bought and what they have paid, worked out from
+          // their orders, in the transaction that wrote one.
+          //
+          // The customer importer next door REFUSES a `total_spent` column and
+          // tells the person so in the file report, on the stated ground that
+          // "the spend and order figures are worked out from the person's
+          // orders". Nothing worked them out. So the ordinary way of moving a
+          // business onto the platform — import the people, then import their
+          // order history — left every one of those people reading $0.00 across
+          // 0 orders with all their orders sitting on the next tab (issue 894).
+          await recomputeCustomerCommerce(tx, ctx.tenantId, customerId);
         });
 
         results.push({

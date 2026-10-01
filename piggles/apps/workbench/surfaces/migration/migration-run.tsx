@@ -22,6 +22,7 @@ import { PickSource } from './migration-pick-source';
 import { StagedSource } from './migration-staged';
 import { LiveConnection, type LivePull } from './live-connection';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { moduleLabel } from '../../lib/surfaces/nav';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   entityLabel,
@@ -137,7 +138,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
             description: result.skipped
               .map(
                 (skip) =>
-                  `${entityLabel(skip.entity, skip.rows)}: the ${skip.module} module is switched off.`
+                  `${entityLabel(skip.entity, skip.rows)}: the ${moduleLabel(skip.module)} app is switched off.`
               )
               .join(' '),
             type: 'info',

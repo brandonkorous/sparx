@@ -279,7 +279,7 @@ function CollectionSection({
 
   return (
     <FormSection
-      title="Collections"
+      title="Groups of products"
       description="A themed set of products you show together: a summer sale, a gift guide, this month's arrivals. Unlike a category, a group is not part of your menu: you can put it wherever you like."
     >
       {collections.isError ? (
@@ -368,7 +368,7 @@ function CollectionSection({
             <Text>
               {unknownIds.length === 1
                 ? 'This product is also in one group that is no longer in your list. Most likely it was deleted. Saving here leaves it exactly as it is.'
-                : `This product is also in ${String(unknownIds.length)} collections that are no longer in your list. Most likely they were deleted. Saving here leaves them exactly as they are.`}
+                : `This product is also in ${String(unknownIds.length)} groups that are no longer in your list. Most likely they were deleted. Saving here leaves them exactly as they are.`}
             </Text>
           ) : null}
 
@@ -379,8 +379,8 @@ function CollectionSection({
             onValueChange={setSearch}
             total={(all ?? []).length}
             matched={matches.length}
-            noun="collection"
-            nounPlural="collections"
+            noun="group"
+            nounPlural="groups"
           >
             {matches.map((collection) =>
               collection.type === 'rules' ? (

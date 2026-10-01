@@ -33,6 +33,7 @@
 // numbers would look more consistent and behave worse.
 
 import { Button, NativeSelect, Pagination, Text } from '@wizeworks/silicaui-react';
+import { CANVAS_CORNER_CLEARANCE } from './canvas-corner';
 import { pagerHasContent, rangeLabel } from './list-pagination-words';
 import { faChevronLeft, faChevronRight } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -134,18 +135,19 @@ export function ListPagination({
           clipping it to "50 per pa" and hiding the arrow you open it with
           (issue 772).
 
-          Keyed on the CANVAS rather than on a width. A container query cannot
-          answer it — a 600px pane docked right collides and a 900px pane docked
-          left does not — and the compact shell has no floating tools at all, so
-          a phone would have paid for room nothing was standing in. The row
-          wraps rather than squashing, so the cost of the reserved space on a
-          narrow pane is a second line, not a clipped control. */}
+          Why it is keyed on the canvas rather than on a width, and where the
+          144px comes from, is in canvas-corner — the footer of an unpaged list
+          stands in the same corner and now reserves the same room. The row wraps
+          rather than squashing, so the cost on a narrow pane is a second line,
+          not a clipped control. */}
       {/* `grow basis-auto`, not `flex-1`. `flex-1` sets a zero basis, so this
           cluster never asks for the room it needs — it just shrank to whatever
           was left and pushed its own contents out of the pane. With its natural
           width as the basis it drops to a second line instead, which is what
           `flex-wrap` on the row was always for. */}
-      <div className="flex grow basis-auto flex-wrap items-center justify-end gap-2 [[data-canvas-tools]_&]:pe-36">
+      <div
+        className={`flex grow basis-auto flex-wrap items-center justify-end gap-2 ${CANVAS_CORNER_CLEARANCE}`}
+      >
         {/* Cursor mode: step through time instead of jumping to a page number.
             Both controls always render once the feed is walkable, disabled at
             the ends — a button that appears and vanishes as you move makes the
