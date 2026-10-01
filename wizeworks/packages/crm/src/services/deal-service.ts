@@ -66,6 +66,10 @@ export interface ListDealsFilter {
 const dealSubjectInclude = {
   stage: { select: { name: true, stageType: true } },
   customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
+  // The business the deal is with. A wholesale deal names its company before
+  // any one person at it, and a card that showed only a person said nothing
+  // at all about a deal made with a company alone (issue 911).
+  company: { select: { companyName: true } },
 } satisfies Prisma.DealInclude;
 
 export async function list(

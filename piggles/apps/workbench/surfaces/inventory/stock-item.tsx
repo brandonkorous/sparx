@@ -401,12 +401,23 @@ function ManagementForm({
     quantityValue > 0;
   const bufferValid = Number.isFinite(bufferValue) && bufferValue >= 0;
   const bufferChanged = bufferValid && bufferValue !== level.safetyBuffer;
+  // CHANGED, not merely filled in. The boxes open holding the saved rule, so
+  // "has a number in it" was true the moment the form opened: the pane went
+  // "Not saved", the tab grew a dot, and closing it warned about changes
+  // nobody had made (issue 903). Lead time is compared only when it would be
+  // sent, which is the same test the save below uses.
+  const leadSendable = Number.isFinite(leadValue) && leadValue >= 0;
+  const ruleChanged =
+    ruleValid &&
+    (pointValue !== level.reorderPoint ||
+      quantityValue !== level.reorderQuantity ||
+      (leadSendable && leadValue !== level.leadTimeDays));
 
   // A half-filled rule ("warn me at 5" with no quantity) is the one state the
   // server would reject, and it deserves a sentence rather than a dead button.
   const ruleIncomplete = ruleTouched && !ruleValid;
   const canSave = bufferValid && !ruleIncomplete && (ruleTouched ? ruleValid : true);
-  const somethingToSave = (ruleTouched && ruleValid) || bufferChanged;
+  const somethingToSave = ruleChanged || bufferChanged;
 
   useDirtySource(
     somethingToSave,
@@ -416,14 +427,14 @@ function ManagementForm({
   const submit = async () => {
     if (!canSave || !somethingToSave) return;
     try {
-      if (ruleTouched && ruleValid) {
+      if (ruleChanged) {
         await saveRule.mutateAsync({
           variantId,
           ...(productId ? { productId } : {}),
           warehouseId: level.warehouseId,
           reorderPoint: pointValue,
           reorderQuantity: quantityValue,
-          ...(Number.isFinite(leadValue) && leadValue >= 0 ? { leadTimeDays: leadValue } : {}),
+          ...(leadSendable ? { leadTimeDays: leadValue } : {}),
         });
       }
       if (bufferChanged) {

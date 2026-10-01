@@ -361,7 +361,10 @@ function SourceEditor({
   const hasSavedKey = Boolean(source && (source.config.hasApiKey as boolean | undefined));
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'Where a count comes from' : (source?.name ?? 'Counts from elsewhere'));
+    // The tab says what was pressed. It said "Where a count comes from" while the
+    // `+` that opened it said "Connect somewhere else" and the list's button said
+    // "Add a source": three names for one action (issue 906, the shape of 729).
+    ctx.setTitle(isNew ? 'Add a source' : (source?.name ?? 'Counts from elsewhere'));
   }, [ctx, isNew, source?.name]);
 
   // Serialise the meaningful fields so dirtiness survives any field changing,

@@ -1,8 +1,8 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.28
+**Version:** 6.31
 **Author:** Brandon Korous
-**Last Updated:** 2026-09-30
+**Last Updated:** 2026-10-01
 
 **Status:** in progress
 **Run:** 2026-08-23
@@ -16896,6 +16896,104 @@ Enforced first, then the picker added, in both consoles. A rule can only name
 somebody active on the team.
 
 Checks: b2b 21 tests, inventory 159, piggles 1652, sparx 1324, both console
-typechecks, parity, five copy checks, ESLint, prettier. **Not walked on screen**:
-the dev stack and Docker were off. Next time they are up: name Nadia on the
-$200 limit, see the list read her name, set it back to **The owner**.
+typechecks, parity, five copy checks, ESLint, prettier. Then walked: naming Nadia saved, and the list
+read "Anyone who can edit buying", because her user row belongs to her own
+workspace and the `users` policy hid it from Juniper Row. A new SELECT policy
+lets a business read its own members' rows (migration `20270525000000`); the
+join now reads **Nadia Osei**, and strangers stay hidden. Her limit is back on
+**The owner**.
+
+### Act 321 · Cost vs plan
+
+First the leftover from act 320, on screen: named Nadia on the $200 limit, and
+the list read **Nadia Osei**. Set back to **The owner**. One save of that
+revert answered 500 and the retry saved; it did not come back in two more
+tries, and the API log was not in reach.
+
+Cost vs plan said $1,083.12 of cloth and hardware had no plan, and its button
+sent her to a list of stock with no cost at all. Her linen and brass have a
+cost from their deliveries, so neither was on it
+([902](issues/902-set-a-plan-sent-her-to-a-list-without-her-items.md)). Each
+line now has **Set a plan**, straight to the product's Pricing box. She planned
+linen at $18.00 and brass at $3.80: **$1,056.00 planned, $1,083.12 actual,
+$27.12 more (2.6%)**. Those two plans stay.
+
+On the way, the linen item's rule form marked itself unsaved just by opening
+([903](issues/903-opening-a-form-counted-as-a-change.md)).
+
+Checks: piggles 1652, sparx 1324, inventory 159 plus the costing database suite
+(16, red when the product id is removed), both console typechecks, parity, five
+copy checks, ESLint, prettier.
+
+Then **Connect somewhere else**, typed into the search box the way the `+`
+beside "Counts from elsewhere" words it. Enter opened an automation. No `+`
+action was in the box at all ([904](issues/904-the-search-box-could-not-find-what-the-plus-buttons-say.md)).
+Each labelled `+` is a row in the box now; both phrases open their forms.
+The automation it opened instead shows Devi `content.entry.published`,
+`social.post` and "loop-guard depth 3". Each card now says something she can
+use instead ([905](issues/905-automation-cards-printed-the-machine-names.md)).
+
+Counts from elsewhere: her one source, "Lyon workshop spreadsheet", never run.
+Adding one had three names, and the column "How it is doing" held a schedule
+([906](issues/906-three-names-for-adding-a-source.md)). One name now, **Add a
+source**, and the column reads **How it reaches us**.
+
+Paying for what sold: empty, and its sentence gave two reasons. She holds no
+consigned stock, so it now says that and how to mark some
+([907](issues/907-nothing-outstanding-said-two-things.md)).
+
+Who is worth chasing: no rules yet. She added the one the screen suggests,
+"has bought before: +20". The yes-or-no fact asked for "e.g. 500", and
+anything typed could never match
+([908](issues/908-a-yes-or-no-rule-that-could-never-score.md)); it is a Yes / No
+choice now. Its unsaved chip read "Not saved: a panel"
+([909](issues/909-not-saved-a-panel.md)). "Re-score everyone" moved 7 of 41,
+but 8 customers have bought: Ravi Naidoo has no site, and a customer with no
+site was scored by no model at all; 29 of her 41 are like him
+([910](issues/910-a-customer-with-no-site-was-scored-by-nothing.md)). After the
+fix he reads 20. Her rule stays, as her own data.
+
+Deals: none yet. She added "Thornbury spring linen order", $1,200, closing
+November 15. The form could not name Thornbury, a business with nobody on
+file, and the close date she saved came back empty and would have been wiped
+by the next save ([911](issues/911-a-deal-with-a-business-and-a-date-that-wiped-itself.md)).
+Then she tried the board's own keyboard instructions, and nothing in them
+worked ([912](issues/912-the-board-could-not-be-used-with-a-keyboard.md)). The
+deal now sits at **Quote sent**, with Thornbury named on its card.
+
+Help requests: empty, and it promised "a reply time based on the hours you
+work" to a business with no hours set. Response times could not set any: the
+starter promise had no caller, so only a first help request could make one
+([913](issues/913-a-reply-time-nobody-could-set.md)). She pressed **Set up my
+hours** and set Tuesday to Saturday, closing at 6 on Saturdays, in Denver time.
+
+That is the end of Devi's screen list.
+
+### Act 322 · Back to the deal, then the search box
+
+The list was done, so she went back to the deal to change its value from $1,200
+to $1,250. She clicked the Value box, typed 1,250 and moved on. It read
+**1200001.25**: the box had dropped her cursor in the middle of the old amount
+and kept both. The deal's Value was a plain number box that showed "1200", and
+under it the house money box, which 46 screens use, never selected what it
+held. The Customer list stopped at 100 people, the search pickers said "No
+customer matches that" while they were still looking, and the linked company's
+badge read **Companie**.
+
+Then she searched for a few things she had made. A group's second line was
+**email-engaged**, her orders said **placed** and **fulfilled**, "Take a sale"
+came up twice, and the headings said **Segments** and **Requests** over things
+her own screens call Groups of customers and Help requests. Opening a group,
+its pane said "segment" twenty times. The reply-time promise she set up in act
+321 is called **Standard Support**, and three starter group descriptions still
+carried an em dash in 39 accounts
+([914](issues/914-the-database-talking-on-the-deal-and-in-search.md)).
+
+All fixed. The deal is back at $1,200, saved through the new box as "$1,200".
+Her search now reads To pack, Packed and They have it, and Groups of customers
+over her groups, each with its own description.
+
+One more, in her own list of groups: a built-in called **B2B Fleet**, "primary
+target for parts cross-sell", in a linen shop. It is **Wholesale customers with
+vehicles** now, and says it stays empty for a business without them
+([915](issues/915-a-linen-shop-had-a-group-for-parts-cross-sell.md)).

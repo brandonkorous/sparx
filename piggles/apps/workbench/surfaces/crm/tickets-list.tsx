@@ -32,6 +32,7 @@ import {
   priorityTone,
   sourceLabel,
   ticketSignal,
+  useSlaPolicies,
   useTickets,
   type TicketPriority,
   type TicketView,
@@ -109,6 +110,19 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = data?.items ?? [];
   const total = data?.total;
   const filtered = search.trim() !== '' || view !== 'open' || priority !== 'all';
+
+  // Whether this business has promised a reply time at all. Both empty states
+  // used to assume it had: "every one gets a reply time based on the hours you
+  // work" and "everything is inside the time you promised", over a business
+  // with no response times set, where no request gets a time and none can be
+  // late (issue 913). Null while it is unknown, and then neither is claimed.
+  const policies = useSlaPolicies();
+  const hasPromise = policies.data
+    ? policies.data.items.some((p) => p.isDefault && p.archivedAt === null)
+    : null;
+  const openResponseTimes = () => {
+    ctx.open('crm.sla-policies', {}, { target: 'tab' });
+  };
 
   const viewItems = useMemo(
     () => ({
@@ -237,13 +251,31 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
               // The one empty state that is genuinely good news gets said as
               // good news — a support lead who filters to "Late" and sees
               // nothing should be told that means nothing is late.
+              // Only "Late" with a promise in place is good news. Any other
+              // filter is just a filter, and without a promise nothing can be
+              // late, which is a different sentence.
               description:
-                'If you were looking for late requests, this is the answer you want: everything is inside the time you promised.',
+                view === 'late' && hasPromise
+                  ? 'If you were looking for late requests, this is the answer you want: everything is inside the time you promised.'
+                  : view === 'late' && hasPromise === false
+                    ? 'Nothing can be late yet, because you have not set the hours you reply in. Set them under Response times and every request gets a time to answer by.'
+                    : 'Try part of the subject or the request number, or switch back to “Still open” and “Any urgency”.',
             }}
             firstRun={{
               title: 'No open requests',
               description:
-                'Requests land here when a customer emails you, fills in a form, or starts a live chat, and you can add one by hand for anything that came in another way. Every one gets a reply time based on the hours you work.',
+                hasPromise === false
+                  ? 'Requests land here when a customer emails you, fills in a form, or starts a live chat, and you can add one by hand for anything that came in another way. Set the hours you reply in, and every one gets a time to answer by.'
+                  : 'Requests land here when a customer emails you, fills in a form, or starts a live chat, and you can add one by hand for anything that came in another way. Every one gets a reply time based on the hours you work.',
+              ...(hasPromise === false
+                ? {
+                    actions: (
+                      <Button size="sm" color="module" onClick={openResponseTimes}>
+                        Set your hours
+                      </Button>
+                    ),
+                  }
+                : {}),
             }}
           />
         ) : (
@@ -254,7 +286,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>Request</th>
                 <th className="w-24">Urgency</th>
                 <th className="w-32">Time left</th>
-                <th className="hidden @lg:table-cell">Stage</th>
+                <th className="hidden @lg:table-cell">Step</th>
                 <th className="hidden @2xl:table-cell">Owner</th>
               </tr>
             </thead>

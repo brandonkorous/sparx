@@ -37,6 +37,7 @@ import {
   FieldLabel,
   Heading,
   Input,
+  NativeSelect,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -45,6 +46,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { DayInput } from '../../components/day-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { customerName, useCustomers } from './customers-data';
 import {
@@ -118,6 +120,21 @@ function operatorsFor(kind: ScoringField['kind'] | undefined): (typeof OPERATORS
     );
   }
   return OPERATORS.filter((o) => !['gt', 'gte', 'lt', 'lte'].includes(o.value));
+}
+
+/** The hint in the "compared to" box, for the kind of thing being compared.
+ *  It said "e.g. 500" under every field, a job title included. */
+function valueHint(kind: ScoringField['kind'] | undefined): string {
+  switch (kind) {
+    case 'currency':
+      return 'e.g. 500';
+    case 'number':
+      return 'e.g. 3';
+    case 'list':
+      return 'e.g. Wholesale';
+    default:
+      return 'Type what it should be';
+  }
 }
 
 /* ── One rule row ───────────────────────────────────────────────────────── */
@@ -202,7 +219,13 @@ function RuleRow({
           value={selectedField}
           onValueChange={(next) => {
             const chosen = next as { value: string } | null;
-            if (chosen) setLeaf({ field: chosen.value });
+            if (!chosen) return;
+            // A yes-or-no fact starts on Yes, and leaving one drops its yes:
+            // a `true` carried onto a job title would compare against nothing.
+            const nextKind = fields.find((f) => f.path === chosen.value)?.kind;
+            if (nextKind === 'boolean') setLeaf({ field: chosen.value, value: true });
+            else if (kind === 'boolean') setLeaf({ field: chosen.value, value: '' });
+            else setLeaf({ field: chosen.value });
           }}
         />
         <Combobox
@@ -215,11 +238,45 @@ function RuleRow({
             if (chosen) setLeaf({ operator: chosen.value });
           }}
         />
-        {needsValue ? (
+        {needsValue && kind === 'boolean' ? (
+          // A REAL yes or no. A typed "yes" or "true" was saved as text, and the
+          // engine's `eq` matches only equal values or two numbers, so a rule
+          // on "They have bought something" could never add a point, with
+          // nothing on screen to say so (issue 908).
+          <NativeSelect
+            color="module"
+            aria-label="Compared to"
+            // Only what is STORED shows as an answer. A rule saved before this
+            // box existed may hold the text "true", which the engine never
+            // matches; showing it as Yes would hide exactly that.
+            value={value === true ? 'yes' : value === false ? 'no' : ''}
+            onChange={(e) => {
+              if (e.target.value === '') return;
+              setLeaf({ value: e.target.value === 'yes' });
+            }}
+          >
+            <option value="" disabled>
+              Pick yes or no
+            </option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </NativeSelect>
+        ) : needsValue && kind === 'date' ? (
+          // The shared day box: a half-typed date reads as one, not as an empty
+          // answer, and a stored timestamp opens as its day.
+          <DayInput
+            color="module"
+            aria-label="Compared to"
+            value={scalarText(value)}
+            onValueChange={(next) => {
+              setLeaf({ value: next });
+            }}
+          />
+        ) : needsValue ? (
           <Input
             color="module"
             aria-label="Compared to"
-            placeholder="e.g. 500"
+            placeholder={valueHint(kind)}
             value={scalarText(value)}
             onChange={(e) => {
               const raw = e.target.value;
@@ -351,6 +408,22 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
     const unanswered = rules.findIndex((r) => r.condition.conditions.length === 0);
     if (unanswered >= 0) {
       setError(`Rule ${String(unanswered + 1)} does not ask anything yet.`);
+      return;
+    }
+    // A question with no answer saves fine and then never scores anybody, so
+    // the screen would show a rule that quietly does nothing (issue 908). A
+    // yes-or-no fact needs a real yes or no; anything else needs something
+    // typed, unless its comparison takes no value at all.
+    const blank = rules.findIndex((r) => {
+      const leaf = r.condition.conditions[0] as
+        { field: string; operator: string; value?: unknown } | undefined;
+      if (!leaf || VALUELESS.has(leaf.operator)) return false;
+      const fieldKind = fields.find((f) => f.path === leaf.field)?.kind;
+      if (fieldKind === 'boolean') return typeof leaf.value !== 'boolean';
+      return leaf.value === undefined || leaf.value === null || leaf.value === '';
+    });
+    if (blank >= 0) {
+      setError(`Rule ${String(blank + 1)} does not say what it should be yet.`);
       return;
     }
 

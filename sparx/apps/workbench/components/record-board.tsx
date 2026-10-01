@@ -28,13 +28,16 @@
 // a pane's width has nothing to do with the screen's.
 // ══════════════════════════════════════════════════════════════════════════
 
-import { useId, useMemo, useState, type ReactNode } from 'react';
+import { useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
   pointerWithin,
+  type CollisionDetection,
+  type KeyboardCoordinateGetter,
+  type UniqueIdentifier,
   useDraggable,
   useDroppable,
   useSensor,
@@ -44,6 +47,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { columnStep, nextColumnId } from './board-keyboard';
 import { Badge, Select, Text } from '@wizeworks/silicaui-react';
 
 /** The semantic tones a column may carry. Every one is a registered silica color. */
@@ -135,8 +139,15 @@ function Card<T>({
         onOpen(card.item, event);
       }}
       onKeyDown={(event) => {
-        // Space belongs to the drag sensor (lift / drop); Enter opens.
-        if (event.key !== 'Enter') return;
+        // Space belongs to the drag sensor (lift / drop); Enter opens. This prop
+        // comes AFTER `{...listeners}`, so it REPLACES the sensor's own key
+        // handler rather than adding to it: Space reached nothing, and a
+        // keyboard move could never even start (issue 912). Hand every other
+        // key on to the sensor.
+        if (event.key !== 'Enter') {
+          listeners?.onKeyDown?.(event);
+          return;
+        }
         event.preventDefault();
         onOpen(card.item, event);
       }}
@@ -228,9 +239,40 @@ export function RecordBoard<T>({
   // where new work enters — rather than to nothing.
   const [shownColumnId, setShownColumnId] = useState<string | null>(null);
 
+  // Where a KEYBOARD drag is headed. A mouse drop lands where the pointer is;
+  // a keyboard drag has no pointer, and measuring the lifted card read about
+  // one column off in the dock, so the board keeps the target itself: the
+  // card's own column at lift, then one column per arrow press (issue 912,
+  // see board-keyboard.ts).
+  const keyboardTarget = useRef<string | null>(null);
+
+  const visibleColumnIds = (rects: ReadonlyMap<UniqueIdentifier, { width: number }>) =>
+    columns.map((c) => c.id).filter((id) => (rects.get(id)?.width ?? 0) > 0);
+
+  const oneColumnPerKey: KeyboardCoordinateGetter = (event, { currentCoordinates, context }) => {
+    const step = columnStep(event.code);
+    if (step === null) return undefined;
+    event.preventDefault();
+    const from = keyboardTarget.current;
+    const to = from ? nextColumnId(visibleColumnIds(context.droppableRects), from, step) : null;
+    const fromRect = from ? context.droppableRects.get(from) : undefined;
+    const toRect = to ? context.droppableRects.get(to) : undefined;
+    if (!to || !fromRect || !toRect) return currentCoordinates;
+    keyboardTarget.current = to;
+    // The card is drawn moving by exactly the gap between the two columns.
+    return { x: currentCoordinates.x + (toRect.left - fromRect.left), y: currentCoordinates.y };
+  };
+
+  const dropTarget: CollisionDetection = (args) => {
+    if (args.pointerCoordinates) return pointerWithin(args);
+    const target = keyboardTarget.current;
+    const container = args.droppableContainers.find((c) => c.id === target);
+    return container ? [{ id: container.id, data: { droppableContainer: container } }] : [];
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor, { coordinateGetter: oneColumnPerKey })
   );
 
   const byColumn = useMemo(() => {
@@ -267,6 +309,7 @@ export function RecordBoard<T>({
   };
 
   function handleDragStart(event: DragStartEvent) {
+    keyboardTarget.current = cards.find((c) => c.id === String(event.active.id))?.columnId ?? null;
     setActiveId(String(event.active.id));
   }
 
@@ -300,7 +343,7 @@ export function RecordBoard<T>({
       <DndContext
         id={dndId}
         sensors={sensors}
-        collisionDetection={pointerWithin}
+        collisionDetection={dropTarget}
         accessibility={{ announcements }}
         onDragStart={handleDragStart}
         onDragCancel={() => {
@@ -333,7 +376,7 @@ export function RecordBoard<T>({
       </DndContext>
 
       <Text size="sm" className="shrink-0 px-1">
-        Drag a {noun} to another stage to move it. With the keyboard: tab to one, press space, move
+        Drag a {noun} to another column to move it. With the keyboard: tab to one, press space, move
         with the arrow keys, then space again.
       </Text>
     </div>

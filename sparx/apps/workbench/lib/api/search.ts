@@ -18,6 +18,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from './client';
+import { orderStatusWords } from '../../surfaces/commerce/orders-list-filters';
 
 /** A normalized hit, uniform across both backends — what the palette renders. */
 export interface RecordHit {
@@ -130,7 +131,10 @@ export function useRecordSearch(query: string): RecordSearchResult {
         });
       }
       for (const o of data.orders ?? []) {
-        const line = [o.customer_name, o.status].filter(Boolean).join(' · ');
+        // The list's own word for where the order is, not the stored one.
+        const line = [o.customer_name, o.status ? orderStatusWords(o.status) : null]
+          .filter(Boolean)
+          .join(' · ');
         out.push({
           key: `order:${o.order_id}`,
           entityType: 'order',

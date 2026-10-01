@@ -32,12 +32,12 @@
 
 import { FieldStatus, Input } from '@wizeworks/silicaui-react';
 import { useState, type ComponentProps } from 'react';
-import { HALF_A_DAY } from '../lib/today';
+import { HALF_A_DAY, storedDayText } from '../lib/today';
 
 type InputProps = ComponentProps<typeof Input>;
 
 export interface DayInputProps extends Omit<InputProps, 'type' | 'value' | 'onChange'> {
-  /** `YYYY-MM-DD`, or the empty string. */
+  /** `YYYY-MM-DD`, or the empty string. A full timestamp is shown as its day. */
   value: string;
   /**
    * The day, and whether the box is half typed.
@@ -64,6 +64,11 @@ export function DayInput({
 }: DayInputProps) {
   const [unfinished, setUnfinished] = useState(false);
 
+  // A form handed a stored timestamp showed its saved day as empty, and the
+  // next save sent the empty box back over it (issue 911). Reading the day
+  // HERE covers every form at once. See `storedDayText`.
+  const shown = storedDayText(value);
+
   const report = (target: HTMLInputElement) => {
     const incomplete = target.validity.badInput;
     setUnfinished(incomplete);
@@ -75,7 +80,7 @@ export function DayInput({
       <Input
         {...rest}
         type="date"
-        value={value}
+        value={shown}
         color={unfinished ? 'error' : color}
         onChange={(event) => {
           report(event.target);

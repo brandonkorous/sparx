@@ -159,6 +159,12 @@ export function MoneyTextInput({
       placeholder={placeholder}
       className={`tabular-nums ${className ?? ''}`}
       value={text}
+      onFocus={(event) => {
+        // SELECT what is there, like the two fields either side of this one.
+        // This one did not, so a click landed the caret inside "1200.00" and
+        // typing 1,250 made a deal worth $1,200,001.25 (issues 169, 205, 914).
+        event.target.select();
+      }}
       onChange={(event) => {
         onTextChange(event.target.value);
       }}

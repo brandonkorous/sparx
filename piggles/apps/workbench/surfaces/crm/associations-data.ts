@@ -83,6 +83,22 @@ export function objectLabel(objectKey: string): string {
   return OBJECT_LABELS[objectKey] ?? objectKey.replace(/_/g, ' ');
 }
 
+/** What ONE of each kind is called, for the badge on a single linked row. */
+const OBJECT_SINGULAR: Record<string, string> = {
+  contact: 'Person',
+  company: 'Company',
+  deal: 'Deal',
+  ticket: 'Request',
+};
+
+/**
+ * One record's kind, e.g. "Company". The badge used to cut the last "s" off the
+ * heading, which made "Companie" and left "People" as it was (issue 914).
+ */
+export function objectSingular(objectKey: string): string {
+  return OBJECT_SINGULAR[objectKey] ?? objectKey.replace(/_/g, ' ');
+}
+
 /**
  * Group a record's links by what the relationship is CALLED, in the order they
  * came back — the API sorts primary first, then oldest first, and preserving

@@ -7,6 +7,7 @@ import {
   HALF_A_DAY,
   NOT_A_DATE,
   pickedDayUtc,
+  storedDayText,
   todayIso,
   todayStartUtc,
 } from './today';
@@ -262,5 +263,26 @@ describe('dayBoxProblem', () => {
     // "Finish it" and "that is not a date" send a person to do different
     // things. [[feedback_one_outcome_two_causes]]
     expect(dayBoxProblem('', true)).not.toBe(dayBoxProblem('2027-02-31', false));
+  });
+});
+
+describe('storedDayText, what a date box is handed', () => {
+  // A native date box shows nothing for a value it cannot parse. The deal's
+  // expected close date was handed the API's timestamp, showed empty, and the
+  // next save sent that empty box back over the stored day (issue 911).
+  it('turns a stored day (UTC midnight) back into the day that was saved', () => {
+    expect(storedDayText('2026-11-15T00:00:00.000Z')).toBe('2026-11-15');
+  });
+
+  it('leaves a day alone', () => {
+    expect(storedDayText('2026-11-15')).toBe('2026-11-15');
+  });
+
+  it('leaves the empty string alone, so a blank box stays blank', () => {
+    expect(storedDayText('')).toBe('');
+  });
+
+  it('passes through what it does not recognise rather than inventing a day', () => {
+    expect(storedDayText('soon')).toBe('soon');
   });
 });

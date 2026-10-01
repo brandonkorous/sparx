@@ -41,12 +41,15 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { CurrencyField } from '../../components/currency-field';
+import { MoneyTextInput, moneyCents, moneyProblem } from '../../components/money-input';
+import { moneyText } from '../../lib/read-money';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import { ScorePanel } from './score-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
-import { customerName, useCustomers } from './customers-data';
+import { CustomerPicker } from '../invoicing/customer-picker';
+import { useAccounts } from './companies-data';
 import { usePipelines, stageTypeMeta, type Pipeline } from './pipelines-data';
 import { SaveFailure } from '@/components/save-failure';
 import {
@@ -74,6 +77,7 @@ interface Draft {
   pipelineId: string;
   stageId: string;
   customerId: string;
+  companyId: string;
   assignedRepId: string;
   tags: string[];
   /** Why the deal ended the way it did — only meaningful once it is closed. */
@@ -93,6 +97,7 @@ function emptyDraft(): Draft {
     pipelineId: '',
     stageId: '',
     customerId: '',
+    companyId: '',
     assignedRepId: '',
     tags: [],
     closedReason: '',
@@ -105,14 +110,21 @@ function toDraft(deal: Deal): Draft {
   const prob = Number(deal.probability);
   return {
     title: deal.title,
-    valueDollars: value > 0 ? String(value) : '',
+    // Settled the way every other money field is, so $1,200 reopens as
+    // "1200.00" rather than "1200".
+    valueDollars: value > 0 ? moneyText(Math.round(value * 100)) : '',
     currency: deal.currency,
     probability: prob > 0 ? String(prob) : '',
-    expectedCloseDate: deal.expectedCloseDate ?? '',
+    // The day only. The API sends the stored day as a full timestamp
+    // ("2026-11-15T00:00:00.000Z") and the day box takes "2026-11-15", so a saved
+    // date reopened EMPTY, and the next save from this form sent the empty box
+    // back and wiped it (issue 911).
+    expectedCloseDate: deal.expectedCloseDate ? deal.expectedCloseDate.slice(0, 10) : '',
     source: deal.source ?? '',
     pipelineId: deal.pipelineId,
     stageId: deal.stageId,
     customerId: deal.customerId ?? '',
+    companyId: deal.companyId ?? '',
     assignedRepId: deal.assignedRepId ?? '',
     tags: deal.tags,
     closedReason: deal.closedReason ?? '',
@@ -168,7 +180,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
   const remove = useDeleteDeal(id);
 
   const { members: roster } = useTeamRoster();
-  const { data: customers } = useCustomers({});
+  const { data: companies } = useAccounts({});
   const { data: pipelines } = usePipelines();
 
   const saved = useMemo(() => (deal ? toDraft(deal) : emptyDraft()), [deal]);
@@ -252,23 +264,25 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
     return items;
   }, [roster, draft.assignedRepId]);
 
-  const customerItems = useMemo(() => {
-    const items: Record<string, string> = { '': 'No customer linked' };
-    for (const c of customers?.items ?? []) items[c.id] = customerName(c);
-    if (draft.customerId && !items[draft.customerId])
-      items[draft.customerId] = 'A removed customer';
+  // The company a deal is with. The column, the API and the list's filter all
+  // had it; the form did not, so a wholesale deal could only name one person,
+  // and a business with no contact on file (Thornbury Haberdashery) could not
+  // be named at all until after the deal was made (issue 911).
+  const companyItems = useMemo(() => {
+    const items: Record<string, string> = { '': 'No company linked' };
+    for (const c of companies?.items ?? []) items[c.id] = c.companyName;
+    if (draft.companyId && !items[draft.companyId]) items[draft.companyId] = 'A removed company';
     return items;
-  }, [customers, draft.customerId]);
+  }, [companies, draft.companyId]);
 
   /* ── Validation ───────────────────────────────────────────────────────── */
 
   const titleError = draft.title.trim() === '' ? 'Give the deal a title.' : null;
   const pipelineError = draft.pipelineId === '' ? 'Choose a pipeline.' : null;
-  const stageError = draft.stageId === '' ? 'Choose a stage.' : null;
-  const valueError =
-    draft.valueDollars.trim() !== '' && !(Number(draft.valueDollars) >= 0)
-      ? 'Enter the value as a number, or leave it blank.'
-      : null;
+  const stageError = draft.stageId === '' ? 'Choose a step.' : null;
+  // The money reader every other amount uses. A number box handed "1,200" back
+  // as the empty string, which saved as a deal worth nothing.
+  const valueError = moneyProblem(draft.valueDollars);
   const blocked = titleError ?? pipelineError ?? stageError ?? valueError;
 
   const failure =
@@ -283,12 +297,13 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
 
   const scalarInput = (): Omit<DealInput, 'pipelineId' | 'stageId'> => ({
     title: draft.title.trim(),
-    value: draft.valueDollars.trim() === '' ? 0 : Number(draft.valueDollars),
+    value: (moneyCents(draft.valueDollars) ?? 0) / 100,
     currency: draft.currency,
     probability: draft.probability.trim() === '' ? 0 : Number(draft.probability),
     expectedCloseDate: draft.expectedCloseDate.trim() === '' ? null : draft.expectedCloseDate,
     source: trimOrNull(draft.source),
     customerId: draft.customerId || null,
+    companyId: draft.companyId || null,
     assignedRepId: draft.assignedRepId || null,
     tags: draft.tags,
     closedReason: trimOrNull(draft.closedReason),
@@ -432,7 +447,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
                   <Input
                     color={titleError && touched ? 'error' : 'module'}
                     value={draft.title}
-                    placeholder="Fleet servicing contract"
+                    placeholder="Spring wholesale order"
                     onChange={(event) => {
                       set('title', event.target.value);
                     }}
@@ -449,16 +464,12 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
                 <FieldLabel>Value</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color={valueError && touched ? 'error' : 'module'}
-                      type="number"
-                      min={0}
-                      step="1"
-                      inputMode="decimal"
-                      value={draft.valueDollars}
-                      placeholder="0"
-                      onChange={(event) => {
-                        set('valueDollars', event.target.value);
+                      aria-label="Value"
+                      text={draft.valueDollars}
+                      onTextChange={(next) => {
+                        set('valueDollars', next);
                       }}
                     />
                   }
@@ -588,14 +599,33 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
 
           <FormSection title="Who and where from">
             <Field>
-              <FieldLabel>Customer</FieldLabel>
+              <FieldLabel>Company</FieldLabel>
               <Select
                 color="module"
-                aria-label="Linked customer"
-                value={draft.customerId}
-                items={customerItems}
+                aria-label="Which company the deal is with"
+                value={draft.companyId}
+                items={companyItems}
                 onValueChange={(next) => {
-                  set('customerId', next as string);
+                  set('companyId', next as string);
+                }}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Customer</FieldLabel>
+              {/* Searches every customer. The list it replaced held the first
+                  100, so a business with more could not link the rest. */}
+              <CustomerPicker
+                value={draft.customerId || null}
+                onSelect={(customer) => {
+                  set('customerId', customer.id);
+                  // A person who buys for a business brings that business with
+                  // them, unless the deal already names one.
+                  if (draft.companyId === '' && customer.companyId) {
+                    set('companyId', customer.companyId);
+                  }
+                }}
+                onClear={() => {
+                  set('customerId', '');
                 }}
               />
             </Field>

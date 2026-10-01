@@ -108,7 +108,11 @@ export function RecordPicker({
   // chosen row is remembered rather than re-read.
   const [picked, setPicked] = useState<PickerRow | null>(null);
   const source = sourceFor(objectKey);
-  const search = useRecordSearch(objectKey, source, useDebouncedValue(query, 250));
+  // The box waits a quarter second after each key before it asks. Until it
+  // has asked about what is typed now, that is still a search, not "nobody
+  // matches": the picker said nobody matched Ravi while it waited (issue 914).
+  const term = useDebouncedValue(query, 250);
+  const search = useRecordSearch(objectKey, source, term);
 
   const results = useMemo(
     () =>
@@ -122,7 +126,7 @@ export function RecordPicker({
     <SearchPicker
       chosen={picked?.id === value ? picked : null}
       results={results}
-      searching={search.isFetching}
+      searching={search.isFetching || term !== query}
       query={query}
       onQuery={setQuery}
       disabled={disabled}

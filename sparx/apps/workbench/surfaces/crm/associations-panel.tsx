@@ -45,6 +45,7 @@ import {
   associationErrorMessage,
   groupByLabel,
   objectLabel,
+  objectSingular,
   useAssociationLabels,
   useAssociations,
   useMakeAssociationPrimary,
@@ -263,7 +264,7 @@ function AssociationRow({
           a mixed panel it is the fastest way to tell a person from a company. */}
       {other ? (
         <Badge color={toneFor(other.objectKey)} variant="soft" size="sm">
-          {objectLabel(other.objectKey).replace(/s$/, '')}
+          {objectSingular(other.objectKey)}
         </Badge>
       ) : null}
 

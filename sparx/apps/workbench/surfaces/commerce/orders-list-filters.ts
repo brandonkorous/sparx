@@ -59,6 +59,20 @@ export const CHIP_SERVER_FIELDS = ['status', 'owing'] as const;
 export type FilterValue = (typeof FILTERS)[number]['value'];
 
 /**
+ * An order's stored status in the list's own chip word, for a place that has
+ * only the status and not the whole order (the search box). It printed the
+ * stored word, so a search hit said "placed" or "fulfilled" beside the list
+ * that says "To pack" and "Packed" for the same orders (issue 914).
+ */
+export function orderStatusWords(status: string): string {
+  const chip = FILTERS.find((filter) => filter.status === status);
+  if (chip) return chip.label;
+  if (status === 'refunded') return 'Refunded';
+  const spaced = status.replace(/[-_]+/g, ' ').trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+/**
  * What to try when nothing matched — naming ONLY what is actually narrowing the
  * list. Telling someone to clear a filter they never set sends them looking for
  * a control that is already off, and a search box they did not type in.

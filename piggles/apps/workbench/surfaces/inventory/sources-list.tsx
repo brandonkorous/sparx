@@ -158,7 +158,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             title: 'No counts from elsewhere yet',
             description: productCopy(
               'inventory.sources.description',
-              'Connect somewhere else when something outside Piggles keeps the count: a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
+              'Add a source when something outside Piggles keeps the count: a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
             ),
             actions: (
               <Button size="sm" color="module" onClick={addSource}>
@@ -189,7 +189,10 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>Source</th>
                 <th className="hidden @lg:table-cell">Kind</th>
                 <th className="hidden whitespace-nowrap @xl:table-cell">Last updated</th>
-                <th className="hidden @3xl:table-cell">How it is doing</th>
+                {/* A file or a link reports its SCHEDULE here and a bridge its last
+                    check-in, so "How it is doing" read "Only when I ask" over a
+                    source that had never run (issue 906). */}
+                <th className="hidden @3xl:table-cell">How it reaches us</th>
                 <th>State</th>
               </tr>
             </thead>

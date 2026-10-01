@@ -1000,7 +1000,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
             <thead>
               <tr>
                 <th>Deal</th>
-                <th>Stage</th>
+                <th>Step</th>
                 <th className="text-right">Value</th>
               </tr>
             </thead>
@@ -1049,7 +1049,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                 <th className="w-16 text-right">#</th>
                 <th>Request</th>
                 <th>Urgency</th>
-                <th className="hidden @lg:table-cell">Stage</th>
+                <th className="hidden @lg:table-cell">Step</th>
               </tr>
             </thead>
             <tbody>

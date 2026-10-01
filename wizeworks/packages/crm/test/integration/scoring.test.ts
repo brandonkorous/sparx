@@ -287,6 +287,37 @@ describe('scoringService', () => {
     }
   });
 
+  it('scores a customer with no site by the main site’s model', async () => {
+    // A customer with no site is shown on every site (docs/58 D2), and the
+    // console saves a model against the site it is open on. Looking only for a
+    // business-wide model left such a customer scored by nothing: a buyer read
+    // 0 beside buyers reading 20 under the same rule (issue 910).
+    const other = await makeTestContext();
+    try {
+      await scoringService.createModel(other.ctx, {
+        name: 'Main site score',
+        objectKey: 'contact',
+        propertyId: other.propertyId,
+        rules: [baseline(25, 'Is a contact')],
+        isActive: true,
+      });
+      const customer = await customerService.create(other.ctx, {
+        email: `shared-${Math.random().toString(36).slice(2, 10)}@example.test`,
+        firstName: 'Shared',
+      });
+      await withTenant(other.ctx, (tx) =>
+        tx.customer.update({ where: { id: customer.id }, data: { propertyId: null } })
+      );
+
+      const result = await withTenant(other.ctx, (tx) =>
+        scoringService.scoreRecord(tx, other.tenant.tenantId, 'contact', customer.id)
+      );
+      expect(result?.score).toBe(25);
+    } finally {
+      await disposeTestContext(other);
+    }
+  });
+
   /* ── RLS ──────────────────────────────────────────────────────────────── */
 
   it('keeps models and score events inside their tenant', async () => {

@@ -38,18 +38,32 @@ async function leadPolicy(
   minutes: number;
   warnAtPercent: number;
 } | null> {
-  const row = await withTenant(ctx, (tx) =>
-    tx.ticketSlaPolicy.findFirst({
+  const row = await withTenant(ctx, async (tx) => {
+    // A lead with no site is shared by every site (docs/58 D2). Asking only for
+    // a business-wide promise left it with no clock whenever the business had
+    // set its promise on its main site, which is where the console saves one.
+    // Same blind spot as the scoring model lookup (issue 910): no site means a
+    // business-wide policy, else the main site's.
+    let site = propertyId;
+    if (!site) {
+      const primary = await tx.property.findFirst({
+        where: { isPrimary: true },
+        select: { id: true },
+      });
+      site = primary?.id ?? null;
+    }
+    return tx.ticketSlaPolicy.findFirst({
       where: {
         tenantId: ctx.tenantId,
         archivedAt: null,
         isDefault: true,
         leadResponseMinutes: { not: null },
-        // The site's own promise wins; a tenant-wide policy (propertyId null)
-        // is the fallback. Ordering puts the specific one first.
-        ...(propertyId ? { OR: [{ propertyId }, { propertyId: null }] } : { propertyId: null }),
+        // A lead WITH a site: its site's own promise wins, and a tenant-wide
+        // policy (propertyId null) is the fallback. A lead with NO site: the
+        // tenant-wide policy wins, and the main site's is the fallback.
+        ...(site ? { OR: [{ propertyId: site }, { propertyId: null }] } : { propertyId: null }),
       },
-      orderBy: { propertyId: { sort: 'asc', nulls: 'last' } },
+      orderBy: { propertyId: { sort: 'asc', nulls: propertyId ? 'last' : 'first' } },
       select: {
         timezone: true,
         businessHours: true,
@@ -57,8 +71,8 @@ async function leadPolicy(
         warnAtPercent: true,
         leadResponseMinutes: true,
       },
-    })
-  );
+    });
+  });
   if (!row?.leadResponseMinutes) return null;
   return {
     calendar: {

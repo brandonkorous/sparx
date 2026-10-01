@@ -262,7 +262,11 @@ function AllocationEditor({
 }) {
   const [query, setQuery] = useState('');
   const debounced = useDebouncedValue(query, 250);
-  const { hits, isLoading } = useRecordSearch(debounced);
+  const { hits, isLoading: answering } = useRecordSearch(debounced);
+  // The box waits a quarter second after each key before it asks. Until it
+  // has asked about what is typed now, that is still a search, not "nobody
+  // matches": the picker said nobody matched Ravi while it waited (issue 914).
+  const isLoading = answering || debounced !== query;
 
   const allocated = allocations.reduce((sum, a) => sum + a.amountCents, 0);
   const remaining = totalCents - allocated;

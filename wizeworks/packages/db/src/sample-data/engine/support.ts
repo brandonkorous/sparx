@@ -47,7 +47,7 @@ const TICKET_STAGES = [
  *  hand and for the same reason as the stages above: @wizeworks/db sits below
  *  @wizeworks/crm and must not depend upwards. */
 const SLA_TEMPLATE = {
-  name: 'Standard Support',
+  name: 'Usual hours',
   description: 'Weekday business hours. Edit the hours and targets to match how your team works.',
   timezone: 'UTC',
   businessHours: [

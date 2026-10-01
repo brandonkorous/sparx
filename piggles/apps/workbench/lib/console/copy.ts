@@ -427,7 +427,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'inventory.reportSchedule.recipients':
     'One address per line, or separated by commas. They do not need an account here.',
   'inventory.sources.description':
-    'Connect a stock source when the real count lives somewhere else: a spreadsheet you publish, another system, or something running on your own computers. Its numbers then come in and become what you sell against.',
+    'Add a source when the real count lives somewhere else: a spreadsheet you publish, another system, or something running on your own computers. Its numbers then come in and become what you sell against.',
 
   // ── What is happening ────────────────────────────────────────────────────
   'pulse.activity.description': 'Everything that has happened in your business, newest first.',

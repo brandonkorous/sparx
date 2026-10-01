@@ -50,10 +50,17 @@ const AT_RISK: SegmentTemplate = {
   },
 };
 
+// Every business gets this group, and it was written for one kind: "B2B Fleet",
+// "primary target for parts cross-sell", in a linen shop's list. The rule is
+// still about vehicles, because that is what Fleet size counts, so the words say
+// that plainly and say what happens for a business that has none (issue 915).
+// Found by its slug everywhere, never its name, so the rename is safe; existing
+// accounts are refreshed by 20270527000000_the_fleet_group_fits_any_business.
 const B2B_FLEET: SegmentTemplate = {
-  name: 'B2B Fleet',
+  name: 'Wholesale customers with vehicles',
   slug: 'b2b-fleet',
-  description: 'B2B accounts with a fleet: primary target for parts cross-sell.',
+  description:
+    'Active wholesale customers with a fleet size of at least 1. If you do not sell to businesses that run vehicles, this group stays empty.',
   color: '#0EA5E9',
   rules: {
     kind: 'and',

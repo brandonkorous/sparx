@@ -230,6 +230,22 @@ export function dayFromStored(iso: string | null | undefined): Date | null {
   return new Date(at.getUTCFullYear(), at.getUTCMonth(), at.getUTCDate());
 }
 
+/**
+ * A day as a date box holds it (`YYYY-MM-DD`), from whatever a form was handed.
+ *
+ * A native date box shows NOTHING for a value it cannot parse, and a stored
+ * day comes back from the API as a timestamp (`2026-11-15T00:00:00.000Z`). A
+ * form that passed that straight in showed its saved date as empty, and saving
+ * the form again sent the empty box back over it (issue 911). A timestamp is
+ * read the way `dayFromStored` reads it: its UTC calendar day. Anything else
+ * (a day already, or the empty string) passes through untouched.
+ */
+export function storedDayText(value: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(value)) return value;
+  const at = dayFromStored(value);
+  return at ? dayIso(at) : value;
+}
+
 /** Right now, as the day-valued instant the server stores. The two steps are
  *  separate on purpose: a form shows `todayIso` and saves `dayStartUtc`, and a
  *  row that has no field to show does both at once. Builds the string directly

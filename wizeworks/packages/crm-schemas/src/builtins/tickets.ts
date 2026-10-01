@@ -73,7 +73,10 @@ export interface SlaPolicyTemplate {
  * red is stop looking at it.
  */
 export const DEFAULT_SLA_POLICY_TEMPLATE: SlaPolicyTemplate = {
-  name: 'Standard Support',
+  // Read on every request: "Measured against 'Usual hours'". It was 'Standard
+  // Support', a help-desk product's name in title case (issue 914). Nothing finds
+  // a policy by its name, so an existing one keeps whatever it is called.
+  name: 'Usual hours',
   description: 'Weekday business hours. Edit the hours and targets to match how your team works.',
   isDefault: true,
   timezone: 'UTC',

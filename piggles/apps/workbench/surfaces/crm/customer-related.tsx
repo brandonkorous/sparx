@@ -303,7 +303,7 @@ export function CustomerDealsTab({ ctx, customerId }: { ctx: SurfaceContext; cus
         <thead>
           <tr>
             <th>Deal</th>
-            <th>Stage</th>
+            <th>Step</th>
             <th className="text-right">Value</th>
           </tr>
         </thead>

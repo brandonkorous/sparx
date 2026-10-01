@@ -23,6 +23,7 @@ import { moduleLabel } from '../lib/surfaces/nav';
 import { useWorkbench } from '../lib/workbench/context';
 import { useFeedback } from './feedback/provider';
 import { groupLabel, targetFor, type Entry } from './launcher-match';
+import { createActions } from './launcher-create';
 
 /** Every screen this viewer can open, plus the one action that is not a screen. */
 export function useNavEntries(): Entry[] {
@@ -61,11 +62,29 @@ export function useNavEntries(): Entry[] {
       run: () => feedback.openSend({ source: 'command' }),
     };
 
+    // What the `+` beside each row says, as something to do. See
+    // launcher-create.ts (issue 904).
+    const creates: Entry[] = createActions(
+      surfaces,
+      (s) => s.createLabel,
+      (s) => resolveTitle(s, {})
+    ).map((action) => ({
+      id: action.id,
+      group: groupLabel(action.surface.module),
+      label: action.label,
+      icon: action.surface.icon,
+      module: action.surface.module,
+      keywords: action.keywords,
+      run: (mods) =>
+        controller.open(action.createSurface, action.params, { target: targetFor(mods) }),
+    }));
+
     // Favorites first so their group heads the palette; groups then render in
     // first-appearance order.
     return [
       ...surfaces.filter((s) => favoriteKeys.has(s.key)).map(toEntry),
       ...surfaces.filter((s) => !favoriteKeys.has(s.key)).map(toEntry),
+      ...creates,
       sendFeedback,
     ];
   }, [controller, favorites, reachable, known, feedback]);

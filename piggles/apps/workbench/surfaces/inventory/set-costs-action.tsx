@@ -2,10 +2,9 @@
 
 // THE WAY OUT OF "SET WHAT YOU PAID FOR THEM".
 //
-// Five screens tell a shop owner that some of her stock has no cost price, and
+// Four screens tell a shop owner that some of her stock has no cost price, and
 // that the figures on them are therefore short:
 //
-//   Cost vs plan          "Nothing here had a plan to compare against"
 //   Cost to keep          "68 items have no cost price"
 //   Not selling           "the real amount tied up is higher than it says"
 //   What matters most     "those lines rank at the bottom whatever they are
@@ -18,10 +17,15 @@
 // unpriced item, biggest holding first, with a cost box on each row, so the top
 // few entries fix most of the number. The catalog entry for that screen already
 // claims it "is reached from the figures that admit the gap". It was reached
-// from two screens, and neither of them was one of these five.
+// from two screens, and neither of them was one of these.
 //
-// One component rather than five buttons, so the words and the route stay in
-// step and the sixth screen to admit the gap gets the same way out.
+// Cost vs plan used to carry this button too, and it was the wrong door there:
+// its gap is a missing PLAN on stock that already has a cost, and this list
+// holds only stock with no cost at all. It opens each product's price now
+// (issue 902).
+//
+// One component rather than four buttons, so the words and the route stay in
+// step and the next screen to admit the gap gets the same way out.
 
 import { AlertActions, Button } from '@wizeworks/silicaui-react';
 import { faCoins } from '@fortawesome/pro-solid-svg-icons';

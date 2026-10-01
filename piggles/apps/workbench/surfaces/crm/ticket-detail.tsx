@@ -355,7 +355,7 @@ function TicketEditor({
             title:
               target && (target.stageType === 'resolved' || target.stageType === 'closed')
                 ? 'Marked as sorted: the customer’s clock stops here'
-                : `Moved to ${target?.name ?? 'the next stage'}`,
+                : `Moved to ${target?.name ?? 'the next step'}`,
             type: 'success',
           });
         },

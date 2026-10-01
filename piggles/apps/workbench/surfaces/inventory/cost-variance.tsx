@@ -31,6 +31,7 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
+  Button,
   Card,
   EmptyState,
   Heading,
@@ -57,7 +58,6 @@ import {
   type PriceVarianceRow,
 } from './costing-data';
 import { InlineWaiting } from '../../components/inline-waiting';
-import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 const NUMBER = new Intl.NumberFormat();
@@ -91,6 +91,20 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const openItem = (row: PriceVarianceRow, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('inventory.stock.item', { variantId: row.variantId }, { target: targetFor(event) });
+  };
+
+  // The plan this report reads is the product's own "What it cost you" (or a
+  // per-location cost), so a line with no plan goes straight to that box.
+  // It used to send every reader to "What your stock cost you", which lists
+  // only stock with NO cost at all. Anything that arrived on a delivery has a
+  // cost from that delivery, so every line this report can name was missing
+  // from the list it was sent to: Devi's linen and brass, both (issue 902).
+  const openPlan = (row: PriceVarianceRow, event: { shiftKey: boolean; altKey: boolean }) => {
+    ctx.open(
+      'commerce.product.detail',
+      { id: row.productId, tab: 'pricing' },
+      { target: targetFor(event) }
+    );
   };
 
   const body = () => {
@@ -173,8 +187,11 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                     read, and it sits above a banner that does know the real
                     total. Say there is nothing here and let the banner carry
                     it. */}
+                {/* There WAS something to add up: the banner below names it. What
+                    there is not is any of it with a plan, and only planned
+                    stock is counted in this card. */}
                 {nothingCompared
-                  ? 'Nothing here to add up'
+                  ? 'Only stock with a plan is counted here'
                   : data.comparedUnits === data.totalUnits
                     ? 'Goods plus everything it took to get them here'
                     : 'Goods plus freight, for those same units'}
@@ -222,15 +239,10 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                 {data.comparedUnits === 0
                   ? `Everything that arrived cost ${formatCents(data.allActualCents, currency)}, and there is no plan to weigh it against.`
                   : `Everything that arrived, compared or not, cost ${formatCents(data.allActualCents, currency)}.`}{' '}
-                Set a cost on the product, or on its stock at a location, and it joins the
-                comparison.
+                Press <strong>Set a plan</strong> on a line below to put in what you expect to pay
+                for it, and it joins the comparison.
               </AlertDescription>
             </AlertContent>
-            <SetCostsAction
-              onOpen={() => {
-                ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
-              }}
-            />
           </Alert>
         ) : null}
 
@@ -291,9 +303,22 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                   </td>
                   <td className="text-right whitespace-nowrap">
                     {row.standardUnitCostCents === null ? (
-                      <Badge color="neutral" variant="soft" size="sm">
-                        No plan set
-                      </Badge>
+                      <Button
+                        size="sm"
+                        color="module"
+                        variant="soft"
+                        aria-label={`Set a plan for ${row.title ?? row.sku ?? 'this item'}`}
+                        onClick={(event) => {
+                          // The row opens the stock item; this opens the price.
+                          event.stopPropagation();
+                          openPlan(row, event);
+                        }}
+                        onKeyDown={(event) => {
+                          event.stopPropagation();
+                        }}
+                      >
+                        Set a plan
+                      </Button>
                     ) : (
                       <span className="flex flex-col items-end gap-0.5">
                         <Badge color={varianceTone(row.variancePercent)} variant="soft" size="sm">

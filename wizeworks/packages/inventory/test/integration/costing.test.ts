@@ -638,6 +638,9 @@ describe('true cost — DB-backed', () => {
     const unplannedRow = report.rows.find((row) => row.variantId === unplanned.id);
     expect(plannedRow?.standardUnitCostCents).toBe(500);
     expect(unplannedRow?.standardUnitCostCents).toBeNull();
+    // The unplanned line's "Set a plan" opens THIS product's price, so the row
+    // has to carry it (issue 902).
+    expect(unplannedRow?.productId).toBe(f.productId);
 
     const plannedUnits = plannedRow!.unitsReceived;
     const unplannedUnits = unplannedRow!.unitsReceived;

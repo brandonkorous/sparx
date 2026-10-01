@@ -95,6 +95,31 @@ async function activeModel(
   objectKey: string,
   propertyId: string | null
 ): Promise<ScoringModel | null> {
+  // A record with NO site is shared by every site (docs/58 D2: the customer
+  // list shows it on all of them). It used to look for a business-wide model
+  // only, and the console saves a model against the site it is open on, so a
+  // shared customer was scored by nothing: Ravi Naidoo, two delivered orders,
+  // read 0 on Juniper Row's main site beside buyers reading 20 under "has
+  // bought something: +20". 29 of her 41 customers have no site (issue 910).
+  // A business-wide model still wins; without one, the MAIN site's rules
+  // score it, because the main site is the business it was made under.
+  if (!propertyId) {
+    const shared = await modelFor(tx, objectKey, null);
+    if (shared) return shared;
+    const primary = await tx.property.findFirst({
+      where: { isPrimary: true },
+      select: { id: true },
+    });
+    return primary ? modelFor(tx, objectKey, primary.id) : null;
+  }
+  return modelFor(tx, objectKey, propertyId);
+}
+
+async function modelFor(
+  tx: TxClient,
+  objectKey: string,
+  propertyId: string | null
+): Promise<ScoringModel | null> {
   const models = await tx.scoringModel.findMany({
     where: {
       objectKey,

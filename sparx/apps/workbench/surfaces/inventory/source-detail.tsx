@@ -357,7 +357,9 @@ function SourceEditor({
   const hasSavedKey = Boolean(source && (source.config.hasApiKey as boolean | undefined));
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'Add a stock source' : (source?.name ?? 'Stock source'));
+    // The tab says what was pressed: the list's button and the `+` both say
+    // "Add a source" (issue 906).
+    ctx.setTitle(isNew ? 'Add a source' : (source?.name ?? 'Stock source'));
   }, [ctx, isNew, source?.name]);
 
   // Serialise the meaningful fields so dirtiness survives any field changing,

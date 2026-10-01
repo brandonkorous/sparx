@@ -46,7 +46,12 @@ import { formatCents, plural } from './data';
 /** Registry module for this pane, so the brand draws Stock's own picture rather
  *  than the generic one. */
 const MODULE = 'inventory';
-import { settlementState, useConsignmentSettlements, useUnsettledConsignment } from './demand-data';
+import {
+  settlementState,
+  useConsignmentSettlements,
+  useNonOwnedStock,
+  useUnsettledConsignment,
+} from './demand-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -58,6 +63,13 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
   const [status, setStatus] = useState('');
   const list = useConsignmentSettlements(status ? { status } : {});
   const unsettled = useUnsettledConsignment();
+  // Whether there is any consigned stock at all, so an empty "Not yet settled"
+  // can say WHICH of its two reasons is true. "Either you hold none, or it is
+  // all settled" sent a shop with no consigned stock looking for settlements
+  // she never had, and told one that is all paid up nothing she did not know
+  // (issue 907). Unknown while it loads, and then the old sentence stands.
+  const consigned = useNonOwnedStock({ ownership: 'consignment' });
+  const holdsConsigned = consigned.data ? consigned.data.total > 0 : null;
 
   const rows = list.data?.items ?? [];
   const owedCents = list.data?.owedCents ?? 0;
@@ -139,8 +151,18 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
               <PaneEmpty
                 module={MODULE}
                 icon={<Icon glyph={faHandshake} className="size-6" aria-hidden />}
-                title="Nothing is outstanding"
-                description="Either you hold no consigned stock, or every sale from it has already been settled with its owner."
+                title={
+                  holdsConsigned === false
+                    ? 'You hold no stock on consignment'
+                    : 'Nothing is outstanding'
+                }
+                description={
+                  holdsConsigned === false
+                    ? 'When a supplier leaves stock with you and is paid only for what sells, open the item and press “Whose stock is this?”. What sells from it then adds up here, ready to pay.'
+                    : holdsConsigned
+                      ? 'Every sale from stock you hold on consignment has been settled with its owner.'
+                      : 'Either you hold no consigned stock, or every sale from it has already been settled with its owner.'
+                }
               />
             ) : (
               <Table size="sm">

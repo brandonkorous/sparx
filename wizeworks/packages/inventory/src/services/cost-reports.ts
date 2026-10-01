@@ -234,6 +234,10 @@ export async function valuationAsOf(
 
 export interface PriceVarianceRow {
   variantId: string;
+  /** The product the variant belongs to. The planned cost is the product's own
+   *  "What it cost you", so a row with no plan needs this to send its reader
+   *  to the one box that fixes it. */
+  productId: string;
   sku: string | null;
   title: string | null;
   supplierId: string | null;
@@ -285,6 +289,7 @@ export interface PriceVarianceReport {
 
 interface VarianceSqlRow {
   variant_id: string;
+  product_id: string;
   sku: string | null;
   title: string | null;
   supplier_id: string | null;
@@ -351,7 +356,7 @@ export async function priceVarianceReport(
           AND (${supplier}::uuid IS NULL OR po.supplier_id = ${supplier}::uuid)
         GROUP BY rl.variant_id, po.supplier_id
       )
-      SELECT rc.variant_id, v.sku, COALESCE(p.title, v.sku) AS title,
+      SELECT rc.variant_id, v.product_id, v.sku, COALESCE(p.title, v.sku) AS title,
              rc.supplier_id, s.name AS supplier_name,
              rc.units, rc.standard_unit_cost_cents, rc.actual_cents, rc.standard_cents
       FROM received rc
@@ -396,6 +401,7 @@ export async function priceVarianceReport(
       const varianceCents = hasStandard ? actual - standard : 0;
       return {
         variantId: r.variant_id,
+        productId: r.product_id,
         sku: r.sku,
         title: r.title,
         supplierId: r.supplier_id,

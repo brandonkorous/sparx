@@ -1,8 +1,8 @@
 # WizeWorks Platform — CRM PRD
 
-**Version:** 1.1.0  
+**Version:** 1.1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-09-25
+**Last Updated:** 2026-10-01
 
 ---
 
@@ -32,7 +32,7 @@ Rule-based segments that update automatically:
 
 - "High Value" — Total spend > $5,000
 - "At Risk" — No purchase in 90 days, previously ordered 4+ times
-- "B2B Fleet" — B2B account members with fleet profile
+- "Wholesale customers with vehicles" (slug `b2b-fleet`): active wholesale customers with a fleet size of at least 1. Seeded for every business, so its words fit any business; it stays empty where nobody runs vehicles.
 - "New" — First purchase within 30 days
 - Custom segments with any combination of fields
 

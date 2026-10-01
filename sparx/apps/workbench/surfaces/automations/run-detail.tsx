@@ -26,7 +26,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { actionLabel } from './automations-catalog';
-import { runState, stepState } from './automations-presentation';
+import { actionTypeDetail, runState, stepState } from './automations-presentation';
 import { explainRunError, showsReported } from './run-errors';
 import {
   useAutomation,
@@ -135,7 +135,11 @@ function StepCard({ step, blamed }: { step: AutomationRunStepRow; blamed: boolea
         </Badge>
       </div>
 
-      <span className="font-mono text-xs break-all">{step.actionType}</span>
+      {/* Which app the step works in. It was the stored type in code type
+          (`social.post`) under a heading that already named it (issue 905). */}
+      <Text as="span" className="text-sm">
+        {actionTypeDetail(step.actionType)}
+      </Text>
 
       {/* The card's own heading already names the step, so only the reason and
           the engine's wording go here. See `run-errors`. */}

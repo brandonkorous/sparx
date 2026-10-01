@@ -40,7 +40,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { AddProduct } from './product-add';
 import { useAnnounceProduct } from './product-scope';
 import { useTabSaveRegistry, useVisitedTabs } from './product-tab-save';
-import { ProductTabPanels, ProductTabStrip } from './product-tabs';
+import { PRODUCT_TABS, ProductTabPanels, ProductTabStrip } from './product-tabs';
 import { useProductActions } from './product-detail-actions';
 import { productErrorMessage, productState, useProduct, type Product } from './products-data';
 
@@ -129,7 +129,14 @@ function ProductTabs({
   onRefresh: () => void;
 }) {
   const toast = useToast();
-  const [tab, setTab] = useState('overview');
+  // A pane opened for one job can open on the tab that does it: Cost vs plan
+  // sends a line with no planned cost here with `tab: 'pricing'`, because
+  // "What it cost you" is the plan that report reads. Anything else, or an
+  // old link carrying a tab that has since gone, lands on Overview.
+  const [tab, setTab] = useState(() => {
+    const wanted = ctx.params.tab;
+    return wanted && PRODUCT_TABS.some((entry) => entry.value === wanted) ? wanted : 'overview';
+  });
 
   // Save lives in the toolbar and commits the tab you are standing on. Each tab
   // hands its save up via useTabSave; see product-tab-save.tsx for why the

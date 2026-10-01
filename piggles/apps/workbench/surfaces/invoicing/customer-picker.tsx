@@ -61,7 +61,11 @@ export function CustomerPicker({
   const [query, setQuery] = useState('');
   const queryClient = useQueryClient();
   const onRecord = useCustomerOnRecord(value);
-  const search = useCustomerSearch(useDebouncedValue(query, 250));
+  // The box waits a quarter second after each key before it asks. Until it
+  // has asked about what is typed now, that is still a search, not "nobody
+  // matches": the picker said nobody matched Ravi while it waited (issue 914).
+  const term = useDebouncedValue(query, 250);
+  const search = useCustomerSearch(term);
   const results = search.data?.items ?? [];
 
   // The same read the customer editor's Wholesale customer field makes, so both
@@ -82,7 +86,7 @@ export function CustomerPicker({
       loadingChosen={Boolean(value) && onRecord.isPending}
       chosenError={value && onRecord.isError ? 'That customer could not be loaded.' : null}
       results={results.map(toRow)}
-      searching={search.isFetching}
+      searching={search.isFetching || term !== query}
       query={query}
       onQuery={setQuery}
       disabled={disabled}

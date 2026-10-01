@@ -74,6 +74,7 @@ import type {
   StockLocation,
 } from '../inventory/data';
 import { formatCentsAmount } from '../../lib/money-format';
+import { costingKeys } from '../inventory/costing-data';
 
 /* ── Shapes: the product itself ─────────────────────────────────────────── */
 
@@ -873,6 +874,13 @@ export function useInvalidateProduct() {
     if (!productId) return;
     void queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
     if (!facet) return;
+    // A version's "What it cost you" IS the plan Cost vs plan compares against,
+    // and the figure the other cost reports fall back to. Without this, setting
+    // a plan from a report's own "Set a plan" button and switching back left
+    // the line still asking for one until Refresh was pressed (issue 902).
+    if (facet === 'variants') {
+      void queryClient.invalidateQueries({ queryKey: costingKeys.all });
+    }
     for (const derived of DERIVED_FACETS[facet] ?? []) {
       void queryClient.invalidateQueries({ queryKey: productKeys.facet(productId, derived) });
     }

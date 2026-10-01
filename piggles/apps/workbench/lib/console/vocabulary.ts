@@ -205,6 +205,7 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // RULE #3: never make a person understand "CRM".
   'crm.settings': 'How this app behaves',
   'crm.segments.list': 'Groups of customers',
+  'crm.segment.detail': 'Group of customers',
   'crm.duplicates.list': 'Possible duplicates',
   // Not 'How a deal moves': this pane lists support queues too, and a help
   // request is not a deal.
@@ -337,7 +338,30 @@ export const PIGGLES_CREATE_LABELS: Readonly<Record<string, string>> = {
   'b2b.pricing-tiers.list': 'Add a wholesale group',
   'commerce.pricing.list': 'Add a special price',
   'commerce.subscriptions.list': 'Start a repeat order',
+  'crm.segments.list': 'New customer group',
   'email.broadcasts.list': 'New email campaign',
   'inventory.purchase-orders.list': 'New order',
-  'inventory.sources': 'Connect somewhere else',
+};
+
+/**
+ * What the search box calls each KIND of record it found, where the platform's
+ * heading is not ours. Keyed by entity type.
+ *
+ * Each one is the name of the screen that kind of record lives on, so a heading
+ * and the screen it opens read as the same thing. The platform's words sat above
+ * them before: "Segments" over records from Groups of customers, "Requests"
+ * over Help requests (issue 914).
+ */
+export const PIGGLES_ENTITY_LABELS: Readonly<Record<string, string>> = {
+  b2b_account: 'Wholesale customers',
+  collection: 'Groups of products',
+  dashboard: 'Customer dashboards',
+  email_broadcast: 'Email campaigns',
+  media: 'Photos and files',
+  pipeline: 'Processes',
+  report: 'Customer reports',
+  segment: 'Groups of customers',
+  subscription: 'Repeat orders',
+  task: 'Things to do',
+  ticket: 'Help requests',
 };

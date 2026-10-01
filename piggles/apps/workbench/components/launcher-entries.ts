@@ -14,6 +14,7 @@ import { useDebouncedValue, useRecordSearch } from '../lib/api/search';
 import {
   getSurface,
   listedSurfaces,
+  resolveCreateLabel,
   resolveTitle,
   surfaceKeywords,
 } from '../lib/surfaces/registry';
@@ -23,9 +24,11 @@ import {
   useReachableModules,
 } from '../lib/surfaces/use-visible-nav';
 import { moduleLabel } from '../lib/surfaces/nav';
+import { productEntityLabel } from '../lib/product';
 import { useWorkbench } from '../lib/workbench/context';
 import { useFeedback } from './feedback/provider';
 import { groupLabel, targetFor, type Entry } from './launcher-match';
+import { createActions } from './launcher-create';
 
 /** Every screen this viewer can open, plus the one action that is not a screen. */
 export function useNavEntries(): Entry[] {
@@ -61,11 +64,27 @@ export function useNavEntries(): Entry[] {
       run: () => feedback.openSend({ source: 'command' }),
     };
 
+    // What the `+` beside each row says, as something to do. See
+    // launcher-create.ts (issue 904).
+    const creates: Entry[] = createActions(surfaces, resolveCreateLabel, (s) =>
+      resolveTitle(s, {})
+    ).map((action) => ({
+      id: action.id,
+      group: groupLabel(action.surface.module),
+      label: action.label,
+      icon: action.surface.icon,
+      module: action.surface.module,
+      keywords: action.keywords,
+      run: (mods) =>
+        controller.open(action.createSurface, action.params, { target: targetFor(mods) }),
+    }));
+
     // Favorites first so their group heads the palette; groups then render in
     // first-appearance order.
     return [
       ...surfaces.filter((s) => favoriteKeys.has(s.key)).map(toEntry),
       ...surfaces.filter((s) => !favoriteKeys.has(s.key)).map(toEntry),
+      ...creates,
       sendFeedback,
     ];
   }, [controller, favorites, reachable, known, feedback]);
@@ -112,8 +131,12 @@ export function useRecordEntries(
         // order" depending which door opened it), and `.toString()` on one
         // prints the arrow function's source as a group heading. It also misses
         // this brand's word for the screen. Every entity route carries a label
-        // today, so this fallback is a trap rather than a path.
-        group: route.entityLabel ?? resolveTitle(surface, {}),
+        // today, so this fallback is a trap rather than a path. This brand's
+        // heading comes first, so a group reads like the screen it opens.
+        group:
+          (route.entity ? productEntityLabel(route.entity) : undefined) ??
+          route.entityLabel ??
+          resolveTitle(surface, {}),
         label: hit.title || 'Untitled',
         subtitle: hit.subtitle,
         icon: surface.icon,

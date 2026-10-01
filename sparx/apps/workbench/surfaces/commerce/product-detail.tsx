@@ -395,7 +395,14 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { data: domains } = useDomains();
   const { data: activeSite } = useActiveSiteId();
   const publish = usePublishProduct(id);
-  const [tab, setTab] = useState('overview');
+  // A pane opened for one job can open on the tab that does it: Cost vs plan
+  // sends a line with no planned cost here with `tab: 'pricing'`, because
+  // "What it cost you" is the plan that report reads. Anything else, or an
+  // old link carrying a tab that has since gone, lands on Overview.
+  const [tab, setTab] = useState(() => {
+    const wanted = ctx.params.tab;
+    return wanted && TABS.some((entry) => entry.value === wanted) ? wanted : 'overview';
+  });
 
   // Save lives here, in the toolbar, and commits the tab you are standing on.
   // Each tab hands its save up via useTabSave; see product-tab-save.tsx for why

@@ -105,8 +105,8 @@ function SegmentLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <PaneLoadError
             error={error}
             noun="segment"
-            title="Could not load this segment"
-            description="This is a problem reaching the server, or the segment has been removed. Nothing has been changed."
+            title="Could not load this group"
+            description="This is a problem reaching the server, or the group has been removed. Nothing has been changed."
             onRetry={() => {
               void refetch();
             }}
@@ -180,10 +180,9 @@ function SegmentEditor({
     }),
     [segment]
   );
-  const savedRoot = useMemo<GroupNode>(
-    () => (segment ? parseServerRule(segment.rules) : emptyRoot()),
-    [segment]
-  );
+  const savedRoot = useMemo<GroupNode>(() => {
+    return segment ? parseServerRule(segment.rules) : emptyRoot();
+  }, [segment]);
 
   const savedKind: 'dynamic' | 'static' = segment?.kind ?? 'dynamic';
 
@@ -208,7 +207,7 @@ function SegmentEditor({
   }, [savedIdentity, savedRoot, savedKind, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New segment' : segment ? segment.name : 'Segment');
+    ctx.setTitle(isNew ? 'New customer group' : segment ? segment.name : 'Group of customers');
   }, [ctx, isNew, segment]);
 
   const setName = (name: string) => {
@@ -270,10 +269,10 @@ function SegmentEditor({
 
   /* ── Validation + dirty ───────────────────────────────────────────────── */
 
-  const nameError = identity.name.trim() === '' ? 'Give the segment a name.' : null;
+  const nameError = identity.name.trim() === '' ? 'Give the group a name.' : null;
   const slugError =
     identity.slug.trim() === ''
-      ? 'Give the segment a short id.'
+      ? 'Give the group a short id.'
       : !SLUG_RE.test(identity.slug.trim())
         ? 'The id can use lowercase letters, numbers and dashes, and must start with a letter.'
         : null;
@@ -299,8 +298,8 @@ function SegmentEditor({
   useDirtySource(
     dirty && !create.isSuccess,
     isNew
-      ? 'This segment has not been created yet. Close anyway?'
-      : 'This segment has unsaved changes. Close anyway?'
+      ? 'This group has not been made yet. Close anyway?'
+      : 'This group has changes you have not saved. Close anyway?'
   );
 
   const failure =
@@ -344,7 +343,7 @@ function SegmentEditor({
     update.mutate(input, {
       onSuccess: () => {
         setTouched(false);
-        toast.add({ title: 'Segment saved', type: 'success' });
+        toast.add({ title: 'Group saved', type: 'success' });
       },
       onError: shownInPlace,
     });
@@ -353,10 +352,10 @@ function SegmentEditor({
   const onArchive = async () => {
     if (!segment) return;
     const ok = await confirm({
-      title: `Archive ${segment.name}?`,
+      title: `Put ${segment.name} away?`,
       description:
-        'This stops the segment being used to target anyone. Its definition is kept, so you can find it again by including archived segments in the list. The customers themselves are untouched.',
-      confirmLabel: 'Archive this segment',
+        'Nothing will use this group to choose who to reach any more. Its rules are kept, so you can find it again by showing groups put away in the list. The customers in it are not changed.',
+      confirmLabel: 'Put this group away',
       cancelLabel: 'Keep it',
       color: 'warning',
     });
@@ -365,12 +364,12 @@ function SegmentEditor({
       onSuccess: () => {
         ctx.close();
         afterPaneChange(() => {
-          toast.add({ title: `${segment.name} archived`, type: 'success' });
+          toast.add({ title: `${segment.name} put away`, type: 'success' });
         });
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not archive this segment',
+          title: 'Could not put this group away',
           description: segmentErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -383,7 +382,7 @@ function SegmentEditor({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Segment actions"
+        label="Group actions"
         refresh={
           onRefresh ? (
             <RefreshButton
@@ -465,7 +464,7 @@ function SegmentEditor({
               disabled={Boolean(blocked) || (!isNew && !dirty)}
               onClick={submit}
             >
-              {isNew ? 'Create segment' : 'Save'}
+              {isNew ? 'Make this group' : 'Save'}
             </Button>
           </>
         }
@@ -481,15 +480,15 @@ function SegmentEditor({
             </Text>
           ) : null}
 
-          <SaveFailure title="Could not save this segment" message={failure} />
+          <SaveFailure title="Could not save this group" message={failure} />
 
           {isArchived ? (
             <Alert color="info">
               <AlertContent>
-                <AlertTitle>This segment is archived</AlertTitle>
+                <AlertTitle>This group is put away</AlertTitle>
                 <AlertDescription>
-                  It is not targeting anyone. You can still edit and save it here; saving does not
-                  bring it back on its own.
+                  Nothing uses it to choose who to reach. You can still change it and save it here;
+                  saving does not bring it back on its own.
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -599,7 +598,7 @@ function SegmentEditor({
           {kind === 'dynamic' ? (
             <FormSection
               title="Conditions"
-              description="Build up who belongs in this segment. A customer is in it when they match the rules below."
+              description="Build up who belongs in this group. A customer is in it when they match the rules below."
             >
               {rulesError && touched ? (
                 <Alert color="warning">
@@ -630,7 +629,7 @@ function SegmentEditor({
 
           {!isNew && segment && !isArchived ? (
             <FormSection
-              title="In this segment now"
+              title="In this group now"
               description="The saved membership, refreshed after you save changes to the rules."
             >
               <div className="flex flex-col gap-1">
@@ -696,7 +695,8 @@ function SegmentEditor({
           {!isNew && segment && !isArchived ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
-                Archiving stops this segment targeting anyone. Its definition is kept.
+                Putting it away stops anything using this group to choose who to reach. Its rules
+                are kept.
               </Text>
               <Button
                 size="sm"
@@ -708,7 +708,7 @@ function SegmentEditor({
                 }}
               >
                 <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-                Archive this segment
+                Put this group away
               </Button>
             </div>
           ) : null}

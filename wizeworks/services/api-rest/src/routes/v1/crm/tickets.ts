@@ -10,6 +10,7 @@
 //
 //   GET/POST/PATCH/DELETE /v1/crm/sla-policies[/:id]  → what was promised
 //   POST   /v1/crm/sla-policies/sweep         → run the clock check now
+//   POST   /v1/crm/sla-policies/starter       → set up the starter promise now
 //
 // The stage move is its own endpoint rather than a field on PATCH, mirroring
 // deals: that transition stamps resolved/closed, writes the timeline entry and
@@ -175,6 +176,16 @@ const ticketRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const created = await slaPolicyService.create(toCrmContext(request), request.body);
     return reply.code(201).send(ok(created));
+  });
+
+  // The starter promise, on request. Without this the only way a business got
+  // one was its first help request arriving, and Response times had nothing
+  // to press until then (issue 913). Idempotent: an existing one comes back.
+  app.post('/v1/crm/sla-policies/starter', async (request, reply) => {
+    requireRole(request, 'admin');
+    await requireCrmModule(request);
+    const policy = await slaPolicyService.bootstrapDefaultPolicy(toCrmContext(request));
+    return reply.code(201).send(ok(policy));
   });
 
   app.patch('/v1/crm/sla-policies/:id', async (request) => {

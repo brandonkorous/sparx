@@ -40,6 +40,7 @@ import { describeAgo, useActivity, NOTABLE_ACTIONS } from '../lib/api/activity';
 import { useActiveJobs } from '../lib/api/jobs';
 import type { PaneDescriptor } from '../lib/surfaces/descriptor';
 import { useWorkbench } from '../lib/workbench/context';
+import { getSurface, resolveTitle } from '../lib/surfaces/registry';
 import { useAgoTick, useDetachedWindows, useDirtyPanes, useLastSaved } from './status-bar-signals';
 import { SentimentChip } from './feedback/sentiment-chip';
 import { DetachedChip } from './status/detached-chip';
@@ -53,9 +54,20 @@ import {
 } from './status/activity';
 import { GuideChip } from '../lib/tour/guide-chip';
 
-/** A panel's own name, for the unsaved chip. */
+/**
+ * A panel's own name, for the unsaved chip: the name on its tab.
+ *
+ * A pane carries a title only when it set one (a record's name, "New
+ * product"); everything else is named by the registry, which is where the TAB
+ * gets its words. This read only the first, so a screen that never set a title
+ * went "Not saved: a panel" while its tab said "Who is worth chasing". Issue
+ * 482 fixed that one screen at a time; reading the tab's own source fixes the
+ * rest (issue 909). The detached-window chip already names panes this way.
+ */
 function panelName(pane: PaneDescriptor): string {
-  return pane.title ?? 'a panel';
+  if (pane.title) return pane.title;
+  const definition = getSurface(pane.surface);
+  return definition ? resolveTitle(definition, pane.params ?? {}) : 'a panel';
 }
 
 /**

@@ -212,6 +212,7 @@ export interface AsOfValuation {
 
 export interface PriceVarianceRow {
   variantId: string;
+  productId: string;
   sku: string | null;
   title: string | null;
   supplierId: string | null;

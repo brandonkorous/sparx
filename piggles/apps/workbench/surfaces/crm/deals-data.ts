@@ -65,6 +65,8 @@ export interface Deal {
   /** Present on list + detail via the service include. */
   stage: { name: string; stageType: StageType } | null;
   customer: DealCustomerLink | null;
+  /** The company the deal is with, when it names one. */
+  company: { companyName: string } | null;
 }
 
 export interface DealListParams {
@@ -101,6 +103,20 @@ export function dealCustomerName(link: DealCustomerLink | null): string | null {
   if (link.company?.trim()) return link.company.trim();
   if (link.email?.trim()) return link.email.trim();
   return 'A customer';
+}
+
+/**
+ * Who a deal is with, in one line: the person, the company, or both.
+ *
+ * Read the customer alone and a deal made with a company and nobody at it said
+ * nothing about who it was with (issue 911).
+ */
+export function dealWith(deal: Pick<Deal, 'customer' | 'company'>): string | null {
+  const person = deal.customer ? dealCustomerName(deal.customer) : null;
+  const named = deal.company?.companyName.trim();
+  const company = named === undefined || named === '' ? null : named;
+  if (person && company && person !== company) return `${person} · ${company}`;
+  return person ?? company;
 }
 
 /**
@@ -188,6 +204,9 @@ export interface DealInput {
   pipelineId: string;
   stageId: string;
   customerId?: string | null;
+  /** The business the deal is with. A wholesale deal is with a company before
+   *  it is with any one person at it. */
+  companyId?: string | null;
   assignedRepId?: string | null;
   title: string;
   value?: number;

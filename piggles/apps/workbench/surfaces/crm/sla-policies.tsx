@@ -53,6 +53,7 @@ import {
   ticketErrorMessage,
   ticketKeys,
   useSlaPolicies,
+  workingTimeWords,
   type SlaPolicy,
   type TicketPriority,
 } from './tickets-data';
@@ -126,6 +127,16 @@ function toDraft(policy: SlaPolicy): Draft {
   };
 }
 
+/** A promise in working minutes, read back in words under its box. */
+function WorkingTime({ raw }: { raw: string }) {
+  const words = workingTimeWords(raw);
+  return words ? (
+    <Text as="span" className="mt-1 block text-sm">
+      {words}
+    </Text>
+  ) : null;
+}
+
 /* ── Surface ────────────────────────────────────────────────────────────── */
 
 export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -135,6 +146,25 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   // the pane.
   const policies = useMemo(() => data?.items ?? [], [data]);
   const [selectedId, setSelectedId] = useState<string>('');
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  // The starter promise, on request. Until this, a business got response times
+  // only when its first help request arrived, and this screen had nothing to
+  // press while Help requests sent people here to set their hours (issue 913).
+  const start = useMutation({
+    mutationFn: () => api.post<SlaPolicy>('/v1/crm/sla-policies/starter', {}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ticketKeys.policies });
+    },
+    onError: () => {
+      toast.add({
+        title: 'Could not set up your hours',
+        description: 'Something went wrong reaching the server. Nothing was changed.',
+        type: 'error',
+      });
+    },
+  });
 
   useEffect(() => {
     ctx.setTitle('Response times');
@@ -177,7 +207,19 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
             module={MODULE}
             icon={<Icon glyph={faClock} className="size-6" aria-hidden />}
             title="No response times set up yet"
-            description="A response time is your promise about how quickly you will get back to someone, and it is counted only during the hours you are open, so a message that arrives on a Sunday night is not late on Monday morning. One is created for you the first time a help request comes in."
+            description="A response time is your promise about how quickly you will get back to someone, and it is counted only during the hours you are open, so a message that arrives on a Sunday night is not late on Monday morning. Set one up now and change the hours to yours, or one is created for you the first time a help request comes in."
+            actions={
+              <Button
+                size="sm"
+                color="module"
+                loading={start.isPending}
+                onClick={() => {
+                  start.mutate();
+                }}
+              >
+                Set up my hours
+              </Button>
+            }
           />
         </Card>
       </div>
@@ -548,6 +590,7 @@ function PolicyEditor({
                             setTarget(priority, { firstResponse: event.target.value });
                           }}
                         />
+                        <WorkingTime raw={draft.targets[priority].firstResponse} />
                       </td>
                       <td>
                         <Input
@@ -562,6 +605,7 @@ function PolicyEditor({
                             setTarget(priority, { resolution: event.target.value });
                           }}
                         />
+                        <WorkingTime raw={draft.targets[priority].resolution} />
                       </td>
                     </tr>
                   ))}

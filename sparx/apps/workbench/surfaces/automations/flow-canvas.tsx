@@ -61,7 +61,6 @@ import {
   conditionChips,
   conditionsHeadline,
   conditionsOverflow,
-  isCuratedTriggerEvent,
   triggerDetail,
   triggerHeadline,
   triggerIcon,
@@ -207,7 +206,7 @@ function SettingsNode({
       >
         <NodeBody title={name.trim() || 'Untitled automation'}>
           <span className="text-sm">
-            {state.label} · loop-guard depth {maxDepth}
+            {state.label} · chains up to {maxDepth} deep
           </span>
         </NodeBody>
       </button>
@@ -246,11 +245,7 @@ function TriggerNode({
         onKeyDown={keySelect(() => onSelect(TRIGGER_NODE))}
       >
         <NodeBody title={triggerHeadline(trigger, clock)}>
-          {isCuratedTriggerEvent(trigger) ? (
-            <span className="truncate font-mono text-xs">{detail}</span>
-          ) : (
-            <span className="text-sm">{detail}</span>
-          )}
+          <span className="text-sm">{detail}</span>
         </NodeBody>
       </div>
     </StepRow>
@@ -290,7 +285,7 @@ function ConditionsNode({
       >
         <NodeBody title={conditionsHeadline(group)}>
           {empty ? (
-            <span className="text-sm">Runs on every trigger</span>
+            <span className="text-sm">Add a condition to run it only some of the time</span>
           ) : (
             <span className="flex flex-wrap items-center gap-1">
               {chips.map((c, i) => (
@@ -367,7 +362,7 @@ function ActionNode({
           className={`${nodeCardClass(selected)} cursor-grab ${isDragging ? 'opacity-40' : ''}`}
         >
           <NodeBody title={actionHeadline(action)}>
-            <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
+            <span className="truncate text-sm">{actionDetail(action)}</span>
           </NodeBody>
           {counts ? (
             <span className="ml-auto flex shrink-0 items-center gap-1">
@@ -520,7 +515,7 @@ function BranchStep({
       >
         <Glyph className="size-4 shrink-0" aria-hidden />
         <NodeBody title={actionHeadline(action)}>
-          <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
+          <span className="truncate text-sm">{actionDetail(action)}</span>
         </NodeBody>
       </div>
 
@@ -557,7 +552,7 @@ function DragCard({ action }: { action: Action }) {
   return (
     <div className="border-base-300 bg-base-100 flex items-center gap-3 rounded-lg border px-3 py-2.5 outline-2 outline-offset-2 outline-[color:var(--color-module)]">
       <NodeBody title={actionHeadline(action)}>
-        <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
+        <span className="truncate text-sm">{actionDetail(action)}</span>
       </NodeBody>
       <GripVertical className="text-base-content/40 ml-auto size-4 shrink-0" aria-hidden />
     </div>

@@ -1,6 +1,6 @@
 # 900 — The person who signs off a spending limit could not be named
 
-**Status:** fixed, screen proof pending
+**Status:** fixed
 **Severity:** **major** — Devi has a teammate (Nadia Osei). She could not make
 one order wait for one person, and the screen told her that was coming with a
 screen that already shipped
@@ -45,7 +45,22 @@ name. No form ever sent one. [[feedback_fetched_but_never_rendered]]
 - The sentence now says what is true: a role keeps working when somebody
   leaves; one person is stricter, and the order waits for them.
 
-## Still to prove
+## On the screen, and the second defect under it
 
-Open Devi's "Anything over $200" limit, name Nadia, save, and see the list read
-**Nadia Osei**. Then set it back to **The owner**, which is how she left it.
+Walked 2026-09-30. The picker listed Devi and Nadia; naming Nadia saved, and the
+form reopened on her. The LIST then read **Anyone who can edit buying**, which
+is false: only Nadia could sign.
+
+Nadia's `users` row belongs to her own workspace. The only tenant policy on
+`users` is `tenant_id = current_tenant_id()`, so Juniper Row could see her
+membership and not her. Every join to a teammate who came from another business
+returned null: 4 of 40 memberships, across 39 foreign keys to `users`. The
+Team screen only escaped it by reading on the owner connection.
+
+Fixed in the database, once, for all of them: migration
+`20270525000000_a_teammate_from_another_business_keeps_their_name` adds a
+SELECT policy for any user who is a member of the current tenant. Checked as
+`sparx_app` with Juniper Row set: the limit's join reads **Nadia Osei**, users
+with no membership stay at 0, and `db:rls-audit` passes. Devi's limit is back
+on **The owner**, as she had it. The list itself still wants one look with the
+dev stack up.

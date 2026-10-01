@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { FILTERS, CHIP_SERVER_FIELDS, emptyAdvice } from './orders-list-filters';
+import { FILTERS, CHIP_SERVER_FIELDS, emptyAdvice, orderStatusWords } from './orders-list-filters';
 import { shippingState } from './order-tone';
 import type { Order } from './order-types';
 
@@ -158,5 +158,22 @@ describe('the order status words', () => {
     }
 
     expect(copies, `these surfaces name the stored order statuses themselves`).toEqual([]);
+  });
+});
+
+describe('orderStatusWords', () => {
+  // The search box has the stored status and nothing else, and printed it:
+  // "Tamsin Vale · placed" beside a list that calls the same order "To pack"
+  // (issue 914).
+  it('says what the list chips say', () => {
+    expect(orderStatusWords('placed')).toBe('To pack');
+    expect(orderStatusWords('fulfilled')).toBe('Packed');
+    expect(orderStatusWords('delivered')).toBe('They have it');
+    expect(orderStatusWords('cancelled')).toBe('Canceled');
+    expect(orderStatusWords('refunded')).toBe('Refunded');
+  });
+
+  it('reads a status no chip knows yet as words', () => {
+    expect(orderStatusWords('on_hold')).toBe('On hold');
   });
 });

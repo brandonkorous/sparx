@@ -379,19 +379,29 @@ export async function archive(
 }
 
 /**
- * The starter promise, applied the first time a tenant uses the service
- * surface. Idempotent — a re-run on a tenant that already has one is a no-op,
- * because this also runs from the `module.activated` consumer.
+ * The starter promise, set up on request: "Set up my hours" on Response times.
+ * Idempotent: a re-run on a tenant that already has one hands that one back.
  *
- * `timezone` is passed in rather than defaulted here: the caller knows the
- * site's zone, and a promise measured in a zone the business does not work in
- * is wrong by hours in both directions.
+ * This used to say it "also runs from the `module.activated` consumer". It
+ * had no caller at all, so the only way a business ever got a promise was its
+ * first help request arriving, and until then Response times had nothing to
+ * press (issue 913).
+ *
+ * In the business's OWN zone when one is on file, the same reading the first
+ * ticket uses; an explicit `timezone` wins. A promise measured in a zone the
+ * business does not work in is wrong by hours in both directions.
  */
 export async function bootstrapDefaultPolicy(
   ctx: ServiceContext,
   args: { timezone?: string } = {}
 ): Promise<SlaPolicyWithTargets> {
-  return withTenant(ctx, (tx) => ensureDefaultPolicy(tx, ctx.tenantId, args.timezone));
+  return withTenant(ctx, async (tx) => {
+    const zone =
+      args.timezone ??
+      (await tx.tenantBusiness.findFirst({ select: { timezone: true } }))?.timezone ??
+      undefined;
+    return ensureDefaultPolicy(tx, ctx.tenantId, zone);
+  });
 }
 
 /**

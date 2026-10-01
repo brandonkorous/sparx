@@ -190,6 +190,25 @@ export function sourceLabel(source: TicketSource): string {
   }
 }
 
+/**
+ * A promise typed in working minutes, read back in words: "480" is "8 working
+ * hours". The boxes take minutes because the clock counts minutes, but "2400"
+ * says nothing at a glance to someone deciding how fast to answer (issue 913).
+ * Null for an empty or unusable box, which shows nothing rather than a guess.
+ */
+export function workingTimeWords(raw: string): string | null {
+  const minutes = Number(raw);
+  if (raw.trim() === '' || !Number.isFinite(minutes) || minutes <= 0) return null;
+  const whole = Math.round(minutes);
+  if (whole < 60) return `${String(whole)} working ${whole === 1 ? 'minute' : 'minutes'}`;
+  const hours = Math.floor(whole / 60);
+  const rest = whole % 60;
+  const hourWords = `${String(hours)} working ${hours === 1 ? 'hour' : 'hours'}`;
+  return rest === 0
+    ? hourWords
+    : `${hourWords} ${String(rest)} ${rest === 1 ? 'minute' : 'minutes'}`;
+}
+
 export function priorityLabel(priority: TicketPriority): string {
   return priority.charAt(0).toUpperCase() + priority.slice(1);
 }

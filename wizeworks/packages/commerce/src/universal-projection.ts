@@ -23,6 +23,19 @@ import {
   type UniversalSearchDocument,
   universalId,
 } from '@wizeworks/search';
+import {
+  bundlePricingWords,
+  codeAsWords,
+  collectionKindWords,
+  companyStatusWords,
+  entryStatusWords,
+  fileKindWords,
+  paymentStatusWords,
+  pipelineObjectWords,
+  returnOutcomeWords,
+  segmentKindWords,
+  taskPriorityWords,
+} from './search-words';
 
 // ─── helpers ─────────────────────────────────────────────────────────
 
@@ -202,7 +215,7 @@ const collectionProjector: EntityProjector = {
         module: 'commerce',
         record_id: c.id,
         title: c.name,
-        subtitle: c.handle,
+        subtitle: collectionKindWords(c.type),
         body: snippet(c.description),
         keywords: keywords([c.handle, c.type]),
         // No publish flag on collections — a non-deleted collection is live;
@@ -241,7 +254,8 @@ const categoryProjector: EntityProjector = {
         module: 'commerce',
         record_id: c.id,
         title: c.name,
-        subtitle: c.handle,
+        // No second line. The handle repeated the name in the database's
+        // spelling (issue 914), and it stays a keyword so it still finds it.
         body: snippet(c.description),
         keywords: keywords([c.handle]),
         url: '/commerce/categories',
@@ -280,7 +294,7 @@ const bundleProjector: EntityProjector = {
         module: 'commerce',
         record_id: b.id,
         title: b.bundleProduct.title,
-        subtitle: b.pricingMode,
+        subtitle: bundlePricingWords(b.pricingMode),
         keywords: keywords([b.bundleProduct.handle, b.pricingMode]),
         status: b.bundleProduct.status,
         url: `/commerce/bundles/${b.id}`,
@@ -396,7 +410,7 @@ const returnProjector: EntityProjector = {
         module: 'commerce',
         record_id: r.id,
         title: orderNo ? `Return · ${orderNo}` : `Return ${r.id.slice(0, 8)}`,
-        subtitle: r.preferredOutcome,
+        subtitle: returnOutcomeWords(r.preferredOutcome),
         keywords: keywords([orderNo, r.status, r.preferredOutcome, r.requestedBy]),
         status: r.status,
         url: `/commerce/returns/${r.id}`,
@@ -430,7 +444,7 @@ const b2bAccountProjector: EntityProjector = {
         module: 'crm',
         record_id: a.id,
         title: a.companyName,
-        subtitle: a.pricingTier ?? a.status,
+        subtitle: a.pricingTier ? codeAsWords(a.pricingTier) : companyStatusWords(a.status),
         body: snippet(a.notes),
         keywords: keywords([a.companyName, a.taxId, a.website, ...a.tags]),
         status: a.status,
@@ -475,7 +489,7 @@ const billingDocumentProjector: EntityProjector = {
         module: 'invoicing',
         record_id: doc.id,
         title: doc.number ?? 'Untitled document',
-        subtitle: who ?? doc.status,
+        subtitle: who ?? paymentStatusWords(doc.status),
         keywords: keywords([doc.number, who]),
         status: doc.status,
         url: `/invoicing/documents/${doc.id}`,
@@ -506,7 +520,11 @@ const segmentProjector: EntityProjector = {
         module: 'crm',
         record_id: s.id,
         title: s.name,
-        subtitle: s.slug,
+        // What it is for, the way an automation's row reads, and its kind only
+        // when nobody wrote that. It was the slug: "email-engaged" under "Email
+        // engaged" said nothing new, in the database's words (issue 914). The
+        // slug stays a keyword, so it still finds the segment.
+        subtitle: snippet(s.description, 120) ?? segmentKindWords(s.kind),
         body: snippet(s.description),
         keywords: keywords([s.slug]),
         status: s.archivedAt ? 'archived' : 'active',
@@ -538,7 +556,7 @@ const pipelineProjector: EntityProjector = {
         module: 'crm',
         record_id: p.id,
         title: p.name,
-        subtitle: p.slug,
+        subtitle: pipelineObjectWords(p.objectKey),
         keywords: keywords([p.slug]),
         status: p.archivedAt ? 'archived' : 'active',
         url: `/crm/pipelines/${p.id}`,
@@ -613,7 +631,7 @@ const taskProjector: EntityProjector = {
         module: 'crm',
         record_id: t.id,
         title: t.title,
-        subtitle: t.priority,
+        subtitle: taskPriorityWords(t.priority),
         body: snippet(t.description),
         keywords: keywords([t.priority]),
         status: t.status,
@@ -797,7 +815,7 @@ const contentEntryProjector: EntityProjector = {
         module: 'cms',
         record_id: e.id,
         title,
-        subtitle: `${humanizeTypeKey(e.typeKey)} · ${e.status}`,
+        subtitle: `${humanizeTypeKey(e.typeKey)} · ${entryStatusWords(e.status)}`,
         body: snippet(pickString(body.excerpt) ?? pickString(body.summary)),
         keywords: keywords([e.slug, e.typeKey]),
         status: e.status, // draft | published | scheduled | archived
@@ -836,7 +854,7 @@ const mediaProjector: EntityProjector = {
         module: 'cms',
         record_id: m.id,
         title: m.originalFilename,
-        subtitle: m.altText ?? m.mimeType,
+        subtitle: m.altText ?? fileKindWords(m.mimeType),
         keywords: keywords([m.mimeType, m.altText, m.caption]),
         status: m.status, // uploading | ready | failed
         url: `/cms/media/${m.id}`,

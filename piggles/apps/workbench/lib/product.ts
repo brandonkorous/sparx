@@ -199,6 +199,15 @@ interface ProductAdapter {
    */
   sectionTitles: Readonly<Record<string, string>>;
   /**
+   * What this product calls a KIND of record where the search box groups its
+   * hits, keyed by the entity type (`segment`, `ticket`).
+   *
+   * The headings come from the shared route table, in the platform's words, so
+   * a search showed "Segments" and "Requests" above records whose own screens
+   * are called Groups of customers and Help requests (issue 914).
+   */
+  entityLabels: Readonly<Record<string, string>>;
+  /**
    * The brand's ARTWORK for a pane state, or `null` to keep the platform's
    * tinted glyph.
    *
@@ -244,6 +253,7 @@ const adapter: ProductAdapter = {
   surfaceTitles: {},
   createLabels: {},
   sectionTitles: {},
+  entityLabels: {},
   StateArt: null,
 };
 
@@ -343,6 +353,12 @@ export function productSurfaceTitle(surfaceKey: string): string | undefined {
  *  platform's. See `createLabels`. */
 export function productCreateLabel(surfaceKey: string): string | undefined {
   return adapter.createLabels[surfaceKey];
+}
+
+/** This brand's heading for a kind of record in search, or `undefined` for the
+ *  platform's. See `entityLabels`. */
+export function productEntityLabel(entity: string): string | undefined {
+  return adapter.entityLabels[entity];
 }
 
 /** This brand's name for a nav group heading, or `undefined` for the

@@ -55,6 +55,7 @@ import { ModuleScope, type WorkbenchModule } from '../../components/module-scope
 import {
   actionLabel,
   deriveModules,
+  moduleForActionType,
   moduleLabel,
   operatorDef,
   primitiveText,
@@ -455,15 +456,12 @@ export function triggerDetail(trigger: Trigger): string {
   if (trigger.kind === 'schedule') {
     return `On a schedule · looks at ${scanEntityLabel(trigger.predicate.entity)}`;
   }
-  // For a curated event the headline is the friendly label, so the detail carries
-  // the raw event name; for a custom event the headline already IS the event.
-  return isCuratedTriggerEvent(trigger) ? trigger.eventType : 'When something happens';
-}
-
-/** True when the event is one of the curated suggestions — its headline is the
- *  friendly label, so the canvas shows the raw event name (the detail) in mono. */
-export function isCuratedTriggerEvent(trigger: Trigger): boolean {
-  return trigger.kind === 'event' && TRIGGER_EVENTS.some((e) => e.eventType === trigger.eventType);
+  // The headline already says WHAT happens. This line used to repeat it as the
+  // stored event name in code type - `content.entry.published` under "An
+  // article or page is published" - which says the same thing again in words
+  // a shop owner does not use (issue 905). What the headline does not say is
+  // WHEN the rule runs, and for an event that is straight away.
+  return 'Runs the moment this happens';
 }
 
 export function triggerIcon(trigger: Trigger): NodeIconKey {
@@ -531,8 +529,21 @@ export function actionHeadline(action: Action): string {
   return actionSummaryText(action);
 }
 
+/**
+ * The line under a step: which part of the business it works in.
+ *
+ * It was the stored step type in code type (`social.post`, `crm.add_tag`)
+ * under a headline that already named the step in words. The app's name is
+ * what that code was a clumsy way of saying, and it is what tells two steps
+ * that sound alike apart (issue 905).
+ */
 export function actionDetail(action: Action): string {
-  return action.type;
+  return actionTypeDetail(action.type);
+}
+
+/** The same line for a step known only by its stored type, as on a run. */
+export function actionTypeDetail(type: string): string {
+  return moduleLabel(moduleForActionType(type));
 }
 
 const ACTION_ICONS: Record<string, NodeIconKey> = {

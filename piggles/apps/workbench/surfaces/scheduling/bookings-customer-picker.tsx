@@ -41,14 +41,18 @@ export function CustomerPicker({
   onAddNew?: (typed: string) => void;
 }) {
   const [query, setQuery] = useState('');
-  const search = useCustomerSearch(useDebouncedValue(query, 250));
+  // The box waits a quarter second after each key before it asks. Until it
+  // has asked about what is typed now, that is still a search, not "nobody
+  // matches": the picker said nobody matched Ravi while it waited (issue 914).
+  const term = useDebouncedValue(query, 250);
+  const search = useCustomerSearch(term);
   const results = search.data?.items ?? [];
 
   return (
     <SearchPicker
       chosen={value ? toRow(value) : null}
       results={results.map(toRow)}
-      searching={search.isFetching}
+      searching={search.isFetching || term !== query}
       query={query}
       onQuery={setQuery}
       label="Search for a customer"

@@ -55,7 +55,7 @@ import type { SavedView } from './workspace-data';
 import { readListView, writeListView, type ListView } from '../../lib/view-preference';
 import { usePipelines, stageTypeMeta, type PipelineStage } from './pipelines-data';
 import {
-  dealCustomerName,
+  dealWith,
   dealDueSignal,
   dealErrorMessage,
   formatMoney,
@@ -484,7 +484,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {rows.map((row) => {
                   const meta = stageTypeMeta(row.stage?.stageType ?? 'open');
-                  const customer = dealCustomerName(row.customer);
+                  const customer = dealWith(row);
                   return (
                     <tr
                       key={row.id}
@@ -558,7 +558,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
 /* ── The card ───────────────────────────────────────────────────────────── */
 
 function DealCard({ deal, scoreMax }: { deal: Deal; scoreMax: number | null }) {
-  const customer = dealCustomerName(deal.customer);
+  const customer = dealWith(deal);
   const signal = dealDueSignal(deal);
   // Health only where the business has told us what healthy means. A board full
   // of "Not scored" would be a column of noise on every tenant that never wrote
