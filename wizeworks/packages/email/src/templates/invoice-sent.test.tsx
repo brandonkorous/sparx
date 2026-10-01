@@ -139,7 +139,7 @@ describe('the invoice email', () => {
   it('still bills a real invoice: the fix is scoped to the offer', async () => {
     const { subject, text } = await render();
     expect(subject).toBe('Invoice INV-000148 from Rosa Flowers');
-    expect(text).toContain('It is due by September 3, 2026.');
+    expect(text).toContain('It is due by September 4, 2026.');
     expect(text).toContain('Still owed');
   });
 });

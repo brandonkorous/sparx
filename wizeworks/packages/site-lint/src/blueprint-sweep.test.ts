@@ -96,7 +96,10 @@ function lines(slug: string, report: SiteLintReport, rule?: string): string[] {
     .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule}: ${f.evidence ?? f.title}`);
 }
 
-describe('the shipped blueprints', () => {
+// Each case grades every page of every starter site, which takes a few seconds on
+// a CI runner. Vitest's 5-second default timed the contrast sweep out at 5.2s on
+// a green tree, so the case failed for being slow, not for finding anything.
+describe('the shipped blueprints', { timeout: 30_000 }, () => {
   it('ships a catalog worth sweeping', () => {
     // A guard on the guard: if the bundles move or the directory is restructured, every
     // assertion below would otherwise pass by having nothing to check.

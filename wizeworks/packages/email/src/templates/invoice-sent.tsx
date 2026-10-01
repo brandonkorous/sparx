@@ -53,10 +53,14 @@ function formatMoney(amount: number, currency: string): string {
 function formatDate(iso: string): string | null {
   const t = Date.parse(iso);
   if (Number.isNaN(t)) return null;
+  // Pinned to UTC: the worker that sends this runs in UTC, so that is the day
+  // the customer reads. Left to the host zone, the same email said "September 3"
+  // on a laptop in the Americas and "September 4" in production.
   return new Intl.DateTimeFormat('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'UTC',
   }).format(new Date(t));
 }
 

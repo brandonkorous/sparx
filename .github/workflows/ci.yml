@@ -184,6 +184,20 @@ jobs:
           turbo-cache-key: format
       - run: pnpm format:check
 
+      # TypeScript CANNOT catch this one, so a check is the only thing that can.
+      # A generated `<Model>Select` is a mapped type over a type parameter, and
+      # excess-property checking does not run on those — so `where` is checked
+      # and `select` is not. Six shipped past typecheck, lint and the whole test
+      # suite: `Booking.customer` (no such relation, deliberately) answered 500
+      # on every request the By-job screen makes in its DEFAULT filter, and
+      # `resolveDueAt` threw on every ticket automation before it read a field.
+      #
+      # It lives here and not in Brand isolation because it parses source with
+      # the `typescript` package, and Brand isolation runs no install: there it
+      # died with ERR_MODULE_NOT_FOUND before it read a file.
+      - name: Check no Prisma select names a field that does not exist
+        run: node scripts/check-prisma-selects.mjs
+
   event-topics:
     name: Event ↔ topic parity
     runs-on: ubuntu-latest
@@ -325,16 +339,6 @@ jobs:
       # Overdue view sitting in its own database.
       - name: Check every seeded saved view points at a screen that exists
         run: node scripts/check-saved-view-targets.mjs
-
-      # TypeScript CANNOT catch this one, so a check is the only thing that can.
-      # A generated `<Model>Select` is a mapped type over a type parameter, and
-      # excess-property checking does not run on those — so `where` is checked
-      # and `select` is not. Six shipped past typecheck, lint and the whole test
-      # suite: `Booking.customer` (no such relation, deliberately) answered 500
-      # on every request the By-job screen makes in its DEFAULT filter, and
-      # `resolveDueAt` threw on every ticket automation before it read a field.
-      - name: Check no Prisma select names a field that does not exist
-        run: node scripts/check-prisma-selects.mjs
 
       # Same silent shape, a layer up. A browser can read seven response headers
       # and no others unless CORS names them, and nothing anywhere reports the
