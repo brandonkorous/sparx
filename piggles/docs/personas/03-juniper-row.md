@@ -1,6 +1,6 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.27
+**Version:** 6.28
 **Author:** Brandon Korous
 **Last Updated:** 2026-09-30
 
@@ -16880,3 +16880,22 @@ about a button.
 
 The number I want is the one at the end. It should be the easiest thing on the
 screen to read, not the hardest.
+
+### Act 320 · Who signs it off
+
+Devi opened her one spending limit, "Anything over $200", to make Nadia sign
+off orders while Devi is away. The box offered four roles and a sentence saying
+a person picker was "coming with the team screens". The Team screen ships and
+lists Nadia. Underneath, every layer already handled a named person except the
+box ([900](issues/900-the-person-who-signs-off-could-not-be-named.md)).
+
+The wholesale twin was worse in the other direction: a rule could store a
+person, the screen printed "X signs off", and anyone with edit could sign
+([901](issues/901-a-wholesale-rule-named-who-signs-and-anyone-could-sign.md)).
+Enforced first, then the picker added, in both consoles. A rule can only name
+somebody active on the team.
+
+Checks: b2b 21 tests, inventory 159, piggles 1652, sparx 1324, both console
+typechecks, parity, five copy checks, ESLint, prettier. **Not walked on screen**:
+the dev stack and Docker were off. Next time they are up: name Nadia on the
+$200 limit, see the list read her name, set it back to **The owner**.

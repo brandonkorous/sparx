@@ -53,6 +53,14 @@ import {
   useUpdatePoApprovalRule,
 } from './po-approvals-data';
 import { moneyCents, moneyText, MoneyTextInput } from '../../components/money-input';
+import {
+  APPROVER_ROLES,
+  approverChoice,
+  approverName,
+  approverValue,
+  namableApprovers,
+} from '../../components/approver-choice';
+import { useTeamRoster } from '../../lib/api/team';
 
 /** The column the form is laid out in — the house width for a settings form. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -63,7 +71,9 @@ interface Draft {
   warehouseId: string;
   /** Whole currency units in the box; converted to cents on save. */
   minAmount: string;
-  requiredRole: string;
+  /** A role word, `user:<id>` for one named person, or '' for anyone. One
+   *  control answers "who signs it off", so one field holds the answer. */
+  approver: string;
   isActive: boolean;
 }
 
@@ -72,7 +82,7 @@ const NEW_DRAFT: Draft = {
   supplierId: '',
   warehouseId: '',
   minAmount: '1000',
-  requiredRole: 'admin',
+  approver: 'admin',
   isActive: true,
 };
 
@@ -94,6 +104,21 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   useEffect(() => {
     if (ruleName) ctx.setTitle(ruleName);
   }, [ruleName, ctx]);
+
+  // Only people already in the account can be named: somebody still invited
+  // has no login, and naming them would park every order behind an empty
+  // chair. A rule that already names somebody who has since left keeps them
+  // as an option, so opening it does not quietly change who it waits for.
+  const roster = useTeamRoster();
+  const people = namableApprovers(roster.members);
+  const namedElsewhere =
+    existing?.requiredApproverUserId &&
+    !people.some((person) => person.userId === existing.requiredApproverUserId)
+      ? {
+          userId: existing.requiredApproverUserId,
+          label: existing.requiredApproverName ?? 'The person this limit names',
+        }
+      : null;
 
   const suppliers = useSuppliers({ includeArchived: false, take: 250, skip: 0 });
   const locations = useStockLocations();
@@ -119,7 +144,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       supplierId: existing.supplierId ?? '',
       warehouseId: existing.warehouseId ?? '',
       minAmount: moneyText(existing.minAmountCents),
-      requiredRole: existing.requiredRole ?? '',
+      approver: approverValue(existing),
       isActive: existing.isActive,
     };
     setDraft(seeded);
@@ -146,7 +171,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       supplierId: draft.supplierId === '' ? null : draft.supplierId,
       warehouseId: draft.warehouseId === '' ? null : draft.warehouseId,
       minAmountCents,
-      requiredRole: draft.requiredRole === '' ? null : draft.requiredRole,
+      ...approverChoice(draft.approver),
       isActive: draft.isActive,
     };
     const done = (savedId: string) => {
@@ -367,21 +392,38 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               render={
                 <NativeSelect
                   color="module"
-                  value={draft.requiredRole}
+                  value={draft.approver}
                   onChange={(event) => {
-                    patch({ requiredRole: event.target.value });
+                    patch({ approver: event.target.value });
                   }}
                 >
-                  <option value="">Anyone who can edit buying</option>
-                  <option value="editor">Anyone who can edit</option>
-                  <option value="admin">Any administrator</option>
-                  <option value="owner">The owner</option>
+                  <optgroup label="Anyone with a role">
+                    {APPROVER_ROLES.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                  {people.length > 0 || namedElsewhere ? (
+                    <optgroup label="One person">
+                      {people.map((person) => (
+                        <option key={person.userId} value={`user:${person.userId}`}>
+                          {approverName(person)}
+                        </option>
+                      ))}
+                      {namedElsewhere ? (
+                        <option value={`user:${namedElsewhere.userId}`}>
+                          {namedElsewhere.label}
+                        </option>
+                      ) : null}
+                    </optgroup>
+                  ) : null}
                 </NativeSelect>
               }
             />
             <FieldDescription>
-              Naming one specific person is coming with the team screens. Until then a limit routes
-              to a role, and whoever holds it can sign.
+              A role keeps working when somebody leaves. One person is stricter: only they can sign,
+              so when they are away the order waits for them.
             </FieldDescription>
           </Field>
         </FormSection>

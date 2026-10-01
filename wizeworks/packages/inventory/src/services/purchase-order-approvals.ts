@@ -106,6 +106,7 @@ export async function createPoApprovalRule(
 
   return withTenant(ctx, async (tx) => {
     await assertScopeExists(tx, input.supplierId ?? null, input.warehouseId ?? null);
+    await assertApproverIsTeammate(tx, ctx.tenantId, input.requiredApproverUserId ?? null);
 
     const row = await tx.purchaseOrderApprovalRule.create({
       data: {
@@ -141,6 +142,7 @@ export async function updatePoApprovalRule(
       input.supplierId !== undefined ? input.supplierId : null,
       input.warehouseId !== undefined ? input.warehouseId : null
     );
+    await assertApproverIsTeammate(tx, ctx.tenantId, input.requiredApproverUserId ?? null);
 
     const row = await tx.purchaseOrderApprovalRule.update({
       where: { id },
@@ -517,6 +519,33 @@ async function assertScopeExists(
       select: { id: true },
     });
     if (!warehouse) throw new InventoryNotFoundError('Warehouse', warehouseId);
+  }
+}
+
+/**
+ * A limit can only name somebody who is in this account and can sign in.
+ *
+ * Only the named person may sign (`decidePoApproval` refuses everyone else),
+ * so naming a stranger, a person from another business, or somebody whose
+ * invitation is still unanswered would hold every order it catches with nobody
+ * able to release it. That is a limit nobody can undo from the queue, so it is
+ * refused when the rule is saved, not discovered when an order is stuck.
+ */
+async function assertApproverIsTeammate(
+  tx: TxClient,
+  tenantId: string,
+  userId: string | null
+): Promise<void> {
+  if (!userId) return;
+  const member = await tx.member.findFirst({
+    where: { organizationId: tenantId, userId, status: 'active' },
+    select: { id: true },
+  });
+  if (!member) {
+    throw new InventoryValidationError(
+      'Only someone who is already on your team can be named to sign off.',
+      [{ field: 'requiredApproverUserId', message: 'Pick someone from your team.' }]
+    );
   }
 }
 

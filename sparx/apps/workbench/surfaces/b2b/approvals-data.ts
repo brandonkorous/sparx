@@ -150,6 +150,8 @@ function useInvalidateRules() {
 export interface RuleInput {
   accountId: string | null;
   minAmountCents: number;
+  /** The one person who has to sign, or null for anyone who can approve. */
+  requiredApproverUserId: string | null;
 }
 
 export function useCreateRule() {
@@ -159,6 +161,7 @@ export function useCreateRule() {
       api.post('/v1/b2b/approval-rules', {
         accountId: input.accountId,
         minAmountCents: input.minAmountCents,
+        requiredApproverUserId: input.requiredApproverUserId,
       }),
     onSuccess: () => {
       void invalidate();
@@ -169,9 +172,17 @@ export function useCreateRule() {
 export function useUpdateRule() {
   const invalidate = useInvalidateRules();
   return useMutation({
-    mutationFn: (input: { id: string; minAmountCents?: number; isActive?: boolean }) =>
+    mutationFn: (input: {
+      id: string;
+      minAmountCents?: number;
+      isActive?: boolean;
+      requiredApproverUserId?: string | null;
+    }) =>
       api.patch(`/v1/b2b/approval-rules/${input.id}`, {
         ...(input.minAmountCents !== undefined ? { minAmountCents: input.minAmountCents } : {}),
+        ...(input.requiredApproverUserId !== undefined
+          ? { requiredApproverUserId: input.requiredApproverUserId }
+          : {}),
         ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
       }),
     onSuccess: () => {

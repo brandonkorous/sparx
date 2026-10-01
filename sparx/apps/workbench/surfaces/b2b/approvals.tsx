@@ -26,6 +26,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  NativeSelect,
   SearchInput,
   Select,
   Switch,
@@ -58,6 +59,14 @@ import {
   type ApprovalRule,
   type QueueItem,
 } from './approvals-data';
+import {
+  ANY_APPROVER,
+  approverChoice,
+  approverName,
+  approverValue,
+  namableApprovers,
+} from '../../components/approver-choice';
+import { useTeamRoster } from '../../lib/api/team';
 import { holdQueueNotice } from './approval-hold-notice';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -343,6 +352,13 @@ function RulesSection() {
   const [adding, setAdding] = useState(false);
   const [amount, setAmount] = useState(1000);
   const [accountId, setAccountId] = useState('');
+  const [approver, setApprover] = useState(ANY_APPROVER);
+
+  // Only people already in the account can be named. An invitation nobody has
+  // answered has no login behind it, and naming it would hold every order the
+  // rule catches with nobody able to release them. The server refuses it too.
+  const roster = useTeamRoster();
+  const people = useMemo(() => namableApprovers(roster.members), [roster.members]);
 
   const rules = rulesQuery.data ?? [];
 
@@ -392,12 +408,17 @@ function RulesSection() {
 
   const onCreate = () => {
     createRule.mutate(
-      { accountId: accountId === '' ? null : accountId, minAmountCents: Math.round(amount * 100) },
+      {
+        accountId: accountId === '' ? null : accountId,
+        minAmountCents: Math.round(amount * 100),
+        requiredApproverUserId: approverChoice(approver).requiredApproverUserId,
+      },
       {
         onSuccess: () => {
           setAdding(false);
           setAmount(1000);
           setAccountId('');
+          setApprover(ANY_APPROVER);
           toast.add({ title: 'Rule added', type: 'success' });
         },
         onError: (error) => {
@@ -465,6 +486,25 @@ function RulesSection() {
                 }
               />
             </Field>
+            <Field>
+              <FieldLabel>Who signs it off</FieldLabel>
+              <FieldControl
+                render={
+                  <NativeSelect
+                    color="module"
+                    value={approver}
+                    onChange={(event) => {
+                      setApprover(event.target.value);
+                    }}
+                  >
+                    <ApproverOptions people={people} />
+                  </NativeSelect>
+                }
+              />
+              <FieldDescription>
+                Naming one person means only they can approve or turn down an order this rule holds.
+              </FieldDescription>
+            </Field>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -509,7 +549,28 @@ function RulesSection() {
             <RuleRow
               key={rule.id}
               rule={rule}
+              people={people}
               busy={updateRule.isPending || deleteRule.isPending}
+              onApprover={(next) => {
+                updateRule.mutate(
+                  {
+                    id: rule.id,
+                    requiredApproverUserId: approverChoice(next).requiredApproverUserId,
+                  },
+                  {
+                    onError: (error) => {
+                      toast.add({
+                        title: 'Could not change who signs this off',
+                        description: approvalErrorMessage(
+                          error,
+                          'The rule is unchanged, so the same person signs it off as before.'
+                        ),
+                        type: 'error',
+                      });
+                    },
+                  }
+                );
+              }}
               onToggle={(next) => {
                 // A switch that springs back and says nothing is the same
                 // screen as a switch that never moved. The list is only
@@ -543,14 +604,46 @@ function RulesSection() {
   );
 }
 
+/**
+ * "Anyone who can approve", then the team by name. A rule that names somebody
+ * no longer on the team keeps them listed, so opening the screen does not
+ * quietly change who an order waits for.
+ */
+function ApproverOptions({
+  people,
+  named,
+}: {
+  people: ReturnType<typeof namableApprovers>;
+  named?: { userId: string; name: string | null } | null;
+}) {
+  const gone = named && !people.some((person) => person.userId === named.userId) ? named : null;
+  return (
+    <>
+      <option value={ANY_APPROVER}>Anyone who can approve</option>
+      {people.map((person) => (
+        <option key={person.userId} value={`user:${person.userId}`}>
+          {approverName(person)}
+        </option>
+      ))}
+      {gone ? (
+        <option value={`user:${gone.userId}`}>{gone.name ?? 'The person this rule names'}</option>
+      ) : null}
+    </>
+  );
+}
+
 function RuleRow({
   rule,
+  people,
+  onApprover,
   busy,
   onToggle,
   onDelete,
 }: {
   rule: ApprovalRule;
   busy: boolean;
+  people: ReturnType<typeof namableApprovers>;
+  onApprover: (next: string) => void;
   onToggle: (next: boolean) => void;
   onDelete: () => void;
 }) {
@@ -560,9 +653,28 @@ function RuleRow({
         <span className="block font-medium">Over {rule.minAmountFormatted}</span>
         <Text as="span" className="block text-sm">
           {rule.accountName ?? 'Every account'}
-          {rule.requiredApproverName ? ` · ${rule.requiredApproverName} signs off` : ''}
         </Text>
       </span>
+      <NativeSelect
+        color="module"
+        size="sm"
+        className="w-auto"
+        value={approverValue(rule)}
+        disabled={busy}
+        aria-label={`Who signs off orders over ${rule.minAmountFormatted}`}
+        onChange={(event) => {
+          onApprover(event.target.value);
+        }}
+      >
+        <ApproverOptions
+          people={people}
+          named={
+            rule.requiredApproverUserId
+              ? { userId: rule.requiredApproverUserId, name: rule.requiredApproverName }
+              : null
+          }
+        />
+      </NativeSelect>
       {!rule.isActive ? (
         <Badge color="neutral" variant="soft" size="sm">
           Off
