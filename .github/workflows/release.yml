@@ -146,7 +146,7 @@ jobs:
             terraform_dir: ${{ steps.resolve.outputs.terraform_dir }}
             overlay: ${{ steps.resolve.outputs.overlay }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - name: Resolve the destination
               id: resolve
@@ -225,7 +225,7 @@ jobs:
         outputs:
             image: ${{ steps.ref.outputs.image }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
             - uses: docker/setup-buildx-action@v3
             - uses: docker/login-action@v3
               with:
@@ -334,7 +334,7 @@ jobs:
                     - { name: db, dockerfile: wizeworks/packages/db/Dockerfile }
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
             - uses: docker/setup-buildx-action@v3
             - uses: docker/login-action@v3
               with:
@@ -432,7 +432,7 @@ jobs:
             OVERLAY: ${{ needs.target.outputs.overlay }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: azure/login@v2
               with:
@@ -1041,7 +1041,7 @@ jobs:
             RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: azure/login@v2
               with:
@@ -1335,7 +1335,7 @@ jobs:
             OVERLAY: ${{ needs.target.outputs.overlay }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   # The change check below diffs against the SHA the cluster is running,
                   # which is not reachable from a depth-1 clone.
@@ -1693,7 +1693,7 @@ jobs:
         permissions:
             contents: write # push the tag. Deliberately not granted workflow-wide.
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   fetch-depth: 0 # conventional-commit analysis needs the whole history
 
@@ -1891,7 +1891,7 @@ jobs:
             # indefinitely, so the Actions tab stays a list of things that cannot be
             # run. Deleting runs for workflows that are GONE is pure subtraction; the
             # surviving ones are simply trimmed to the newest $KEEP_RUNS.
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             # GITHUB_TOKEN, not the PAT above: run history is REPO-scoped, which is
             # exactly what this token is good at, and `actions: write` is already
