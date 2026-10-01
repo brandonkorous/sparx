@@ -260,7 +260,11 @@ let signalSources = 0;
 
 function walk(dir) {
   for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name === 'dist' || name === '.turbo') continue;
+    // `.next` is build output, and a running dev server deletes files in it
+    // mid-walk, which crashed this check with ENOENT instead of reporting.
+    if (name === 'node_modules' || name === 'dist' || name === '.turbo' || name === '.next') {
+      continue;
+    }
     const full = join(dir, name);
     if (statSync(full).isDirectory()) {
       walk(full);
