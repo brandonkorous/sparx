@@ -36,7 +36,7 @@ import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import { classifyMediaContainerStatus, waitForContainer } from './_meta.js';
 import { appendLink, firstVideoUrl, imageUrls } from './_media.js';
 import {
-  describeResponse,
+  responseError,
   expiresInSeconds,
   fetchT,
   formBody,
@@ -237,7 +237,7 @@ export class ThreadsAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Threads token exchange failed: ${await describeResponse(res)}`);
+      throw await responseError(`Threads token exchange failed`, res);
     }
     const short = (await res.json()) as ThreadsTokenResponse;
     const longLived = await this.exchangeLongLived(short.access_token, clientSecret);
@@ -262,7 +262,7 @@ export class ThreadsAdapter implements SocialAdapter {
     });
     const res = await fetchT(`${REFRESH_URL}?${params.toString()}`);
     if (!res.ok) {
-      throw new Error(`Threads token refresh failed: ${await describeResponse(res)}`);
+      throw await responseError(`Threads token refresh failed`, res);
     }
     const data = (await res.json()) as ThreadsTokenResponse;
     return {
@@ -394,7 +394,7 @@ export class ThreadsAdapter implements SocialAdapter {
     });
     const res = await fetchT(`${API_BASE}/${externalId}/insights?${params.toString()}`);
     if (!res.ok) {
-      throw new Error(`Threads insights failed: ${await describeResponse(res)}`);
+      throw await responseError(`Threads insights failed`, res);
     }
     const data = (await res.json()) as ThreadsInsightsResponse;
     return mapThreadsMetrics(data.data);
@@ -404,8 +404,7 @@ export class ThreadsAdapter implements SocialAdapter {
     await waitForContainer(async () => {
       const params = new URLSearchParams({ fields: 'status,error_message', access_token: token });
       const res = await fetchT(`${API_BASE}/${containerId}?${params.toString()}`);
-      if (!res.ok)
-        throw new Error(`Threads container status failed: ${await describeResponse(res)}`);
+      if (!res.ok) throw await responseError(`Threads container status failed`, res);
       const data = (await res.json()) as ThreadsStatusResponse;
       const { ready, failed } = classifyMediaContainerStatus(data.status);
       return { ready, failed, detail: data.error_message ?? data.status };
@@ -434,7 +433,7 @@ export class ThreadsAdapter implements SocialAdapter {
     });
     const res = await fetchT(`${LONG_LIVED_URL}?${params.toString()}`);
     if (!res.ok) {
-      throw new Error(`Threads long-lived token exchange failed: ${await describeResponse(res)}`);
+      throw await responseError(`Threads long-lived token exchange failed`, res);
     }
     return (await res.json()) as ThreadsTokenResponse;
   }
@@ -465,7 +464,7 @@ export class ThreadsAdapter implements SocialAdapter {
       body: formBody({ ...fields, access_token: accessToken }),
     });
     if (!res.ok) {
-      throw new Error(`Threads request failed (${path}): ${await describeResponse(res)}`);
+      throw await responseError(`Threads request failed (${path})`, res);
     }
     return (await res.json()) as T;
   }

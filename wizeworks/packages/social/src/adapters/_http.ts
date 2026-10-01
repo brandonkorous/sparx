@@ -136,6 +136,25 @@ export async function describeResponse(res: Response): Promise<string> {
   return detail ? `${res.status} ${detail}` : `${res.status}`;
 }
 
+/**
+ * The error to throw for a platform call that came back not-ok: the same readable
+ * message as {@link describeResponse}, as an {@link HttpError} that keeps the status.
+ *
+ * The status is the whole point. Six adapters threw a bare `Error` here, and
+ * {@link isRetryableError} calls every bare `Error` transient, so a Pinterest
+ * `401 invalid_grant` on a token refresh read as "the platform blipped". Nothing
+ * ever marked that connection expired: the inbox sweep re-picked it every two minutes
+ * and failed five times each pass, publishing left its posts pending, and the owner
+ * was never told to reconnect (2026-10-01, seen in prod).
+ */
+export async function responseError(label: string, res: Response): Promise<HttpError> {
+  return new HttpError(
+    `${label}: ${await describeResponse(res)}`,
+    res.status,
+    parseRetryAfter(res)
+  );
+}
+
 /** Seconds-until-expiry from an OAuth token response, defaulting when the platform
  *  omits `expires_in` (some long-lived grants do). */
 export function expiresInSeconds(raw: unknown, fallbackSeconds: number): number {

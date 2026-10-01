@@ -44,7 +44,8 @@ import type {
 } from '../types.js';
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import {
-  describeResponse,
+  HttpError,
+  responseError,
   expiresInSeconds,
   fetchT,
   formBody,
@@ -277,7 +278,7 @@ export class LinkedInAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`LinkedIn token exchange failed: ${await describeResponse(res)}`);
+      throw await responseError(`LinkedIn token exchange failed`, res);
     }
     const data = (await res.json()) as LinkedInTokenResponse;
 
@@ -308,7 +309,7 @@ export class LinkedInAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`LinkedIn token refresh failed: ${await describeResponse(res)}`);
+      throw await responseError(`LinkedIn token refresh failed`, res);
     }
     const data = (await res.json()) as LinkedInTokenResponse;
     return {
@@ -333,7 +334,7 @@ export class LinkedInAdapter implements SocialAdapter {
       headers: this.v2Headers(auth.accessToken),
     });
     if (!res.ok) {
-      throw new Error(`LinkedIn org lookup failed: ${await describeResponse(res)}`);
+      throw await responseError(`LinkedIn org lookup failed`, res);
     }
     const data = (await res.json()) as OrgAclsResponse;
     const targets: SocialTargetRef[] = [];
@@ -388,7 +389,7 @@ export class LinkedInAdapter implements SocialAdapter {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      throw new Error(`LinkedIn post failed: ${await describeResponse(res)}`);
+      throw await responseError(`LinkedIn post failed`, res);
     }
     // The created post's urn comes back in a response header, not the (empty) body.
     const urn =
@@ -424,7 +425,7 @@ export class LinkedInAdapter implements SocialAdapter {
       headers: this.restHeaders(auth.accessToken),
     });
     if (!res.ok) {
-      throw new Error(`LinkedIn engagement read failed: ${await describeResponse(res)}`);
+      throw await responseError(`LinkedIn engagement read failed`, res);
     }
     const social = (await res.json()) as LinkedInSocialActions;
     const stats = await this.tryShareStatistics(
@@ -488,7 +489,7 @@ export class LinkedInAdapter implements SocialAdapter {
       body: JSON.stringify({ initializeUploadRequest: { owner: ownerUrn } }),
     });
     if (!initRes.ok) {
-      throw new Error(`LinkedIn image init failed: ${await describeResponse(initRes)}`);
+      throw await responseError(`LinkedIn image init failed`, initRes);
     }
     const init = (await initRes.json()) as ImageInitResponse;
     const uploadUrl = init.value?.uploadUrl;
@@ -499,7 +500,7 @@ export class LinkedInAdapter implements SocialAdapter {
 
     const source = await fetchT(imageUrl);
     if (!source.ok) {
-      throw new Error(`Could not fetch the post image (${source.status}).`);
+      throw new HttpError(`Could not fetch the post image (${source.status}).`, source.status);
     }
     const bytes = await source.arrayBuffer();
 
@@ -509,7 +510,7 @@ export class LinkedInAdapter implements SocialAdapter {
       body: bytes,
     });
     if (!putRes.ok) {
-      throw new Error(`LinkedIn image upload failed: ${await describeResponse(putRes)}`);
+      throw await responseError(`LinkedIn image upload failed`, putRes);
     }
     return imageUrn;
   }
@@ -541,7 +542,7 @@ export class LinkedInAdapter implements SocialAdapter {
       { headers: this.restHeaders(auth.accessToken) }
     );
     if (!postsRes.ok) {
-      throw new Error(`LinkedIn posts read failed: ${await describeResponse(postsRes)}`);
+      throw await responseError(`LinkedIn posts read failed`, postsRes);
     }
     const posts = (await postsRes.json()) as LinkedInPostsResponse;
 
@@ -604,7 +605,7 @@ export class LinkedInAdapter implements SocialAdapter {
       }
     );
     if (!res.ok) {
-      throw new Error(`LinkedIn comment reply failed: ${await describeResponse(res)}`);
+      throw await responseError(`LinkedIn comment reply failed`, res);
     }
     const id = res.headers.get('x-restli-id') ?? `${parentExternalId}:reply`;
     return { externalId: id };

@@ -34,7 +34,7 @@ import type {
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import { deriveTitle, firstImageUrl } from './_media.js';
 import {
-  describeResponse,
+  responseError,
   expiresInSeconds,
   fetchT,
   formBody,
@@ -215,7 +215,7 @@ export class PinterestAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Pinterest token exchange failed: ${await describeResponse(res)}`);
+      throw await responseError(`Pinterest token exchange failed`, res);
     }
     const data = (await res.json()) as PinterestTokenResponse;
     const user = await this.userAccount(data.access_token);
@@ -240,7 +240,7 @@ export class PinterestAdapter implements SocialAdapter {
       body: formBody({ grant_type: 'refresh_token', refresh_token: refreshToken }),
     });
     if (!res.ok) {
-      throw new Error(`Pinterest token refresh failed: ${await describeResponse(res)}`);
+      throw await responseError(`Pinterest token refresh failed`, res);
     }
     const data = (await res.json()) as PinterestTokenResponse;
     return {
@@ -291,7 +291,7 @@ export class PinterestAdapter implements SocialAdapter {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      throw new Error(`Pinterest pin failed: ${await describeResponse(res)}`);
+      throw await responseError(`Pinterest pin failed`, res);
     }
     const data = (await res.json()) as PinterestPinResponse;
     return { externalId: data.id, permalink: pinterestPermalink(data.id) };
@@ -319,7 +319,7 @@ export class PinterestAdapter implements SocialAdapter {
       headers: { Authorization: `Bearer ${auth.accessToken}` },
     });
     if (!res.ok) {
-      throw new Error(`Pinterest pin analytics failed: ${await describeResponse(res)}`);
+      throw await responseError(`Pinterest pin analytics failed`, res);
     }
     const data = (await res.json()) as PinterestPinAnalytics;
     return mapPinterestMetrics(data.all?.summary_metrics);
@@ -338,7 +338,7 @@ export class PinterestAdapter implements SocialAdapter {
         headers: { Authorization: `Bearer ${auth.accessToken}` },
       });
       if (!res.ok) {
-        throw new Error(`Pinterest board lookup failed: ${await describeResponse(res)}`);
+        throw await responseError(`Pinterest board lookup failed`, res);
       }
       const data = (await res.json()) as PinterestBoardsResponse;
       for (const board of data.items ?? []) {
@@ -361,7 +361,7 @@ export class PinterestAdapter implements SocialAdapter {
       body: JSON.stringify({ name, privacy: 'PUBLIC' }),
     });
     if (!res.ok) {
-      throw new Error(`Pinterest board create failed: ${await describeResponse(res)}`);
+      throw await responseError(`Pinterest board create failed`, res);
     }
   }
 

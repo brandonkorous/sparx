@@ -36,7 +36,7 @@ import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import { waitForContainer } from './_meta.js';
 import { appendLink, deriveTitle, firstVideoUrl, imageUrls } from './_media.js';
 import {
-  describeResponse,
+  responseError,
   expiresInSeconds,
   fetchT,
   formBody,
@@ -393,7 +393,7 @@ export class TikTokAdapter implements SocialAdapter {
       body: formBody(fields),
     });
     if (!res.ok) {
-      throw new Error(`TikTok token request failed: ${await describeResponse(res)}`);
+      throw await responseError(`TikTok token request failed`, res);
     }
     return (await res.json()) as TikTokTokenResponse;
   }
@@ -455,7 +455,7 @@ export class TikTokAdapter implements SocialAdapter {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      throw new Error(`TikTok request failed (${path}): ${await describeResponse(res)}`);
+      throw await responseError(`TikTok request failed (${path})`, res);
     }
     return (await res.json()) as T;
   }

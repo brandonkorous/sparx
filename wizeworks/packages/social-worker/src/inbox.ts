@@ -53,10 +53,7 @@ export interface ReplyOutcome {
 
 /** Everything an adapter call needs, resolved from a destination row. Shared by both
  *  directions so the token/param plumbing exists once. */
-async function resolveTargetContext(
-  tenantId: string,
-  socialTargetId: string
-): Promise<{
+interface TargetContext {
   adapter: SocialAdapter;
   ref: SocialTargetRef;
   auth: NonNullable<Awaited<ReturnType<typeof resolveSocialAuth>>>;
@@ -67,7 +64,19 @@ async function resolveTargetContext(
   propertyId: string | null;
   targetName: string;
   platform: string;
-} | null> {
+}
+
+/** A destination we could not resolve, and why. The two need different words for the
+ *  owner: `reconnect` is their account (the grant is gone or was refused), `unavailable`
+ *  is ours or nobody's (a disabled destination, a platform we have not switched on). */
+type Resolved =
+  { ok: true; ctx: TargetContext } | { ok: false; reason: 'reconnect' | 'unavailable' };
+
+async function resolveTargetContext(
+  tenantId: string,
+  socialTargetId: string,
+  logger: Logger
+): Promise<Resolved> {
   const target = await withTenant({ tenantId }, (tx) =>
     tx.socialTarget.findFirst({
       where: { id: socialTargetId },
@@ -76,32 +85,54 @@ async function resolveTargetContext(
       },
     })
   );
-  if (!target?.enabled) return null;
+  if (!target?.enabled) return { ok: false, reason: 'unavailable' };
 
   const adapter = getSocialAdapter(target.platform as SocialPlatform);
-  if (!adapter) return null;
+  if (!adapter) return { ok: false, reason: 'unavailable' };
   // OUR app credentials are missing on this process. Bail before resolveSocialAuth, whose
   // refresh would throw requireCreds() out of this function entirely — past syncInbox's
   // try/catch, into the handler, and back as a 500 for Pub/Sub to redeliver five times
   // over something no retry can fix.
-  if (adapter.isConfigured() !== true) return null;
+  if (adapter.isConfigured() !== true) return { ok: false, reason: 'unavailable' };
 
-  const auth = await resolveSocialAuth(tenantId, target.connection, adapter);
-  if (!auth) return null;
+  // A refresh the platform REFUSED (invalid_grant, revoked) is the account being gone,
+  // and only the owner reconnecting fixes it, so say so on the connection, the same way
+  // the publish drain does. Uncaught, it escaped to the handler as a 500: five
+  // redeliveries per pass, the cursor never moved, and the sweep re-picked it every two
+  // minutes while the Connections screen still said "Connected" (2026-10-01, Pinterest
+  // in prod). Only a transient failure is rethrown for a retry.
+  let auth;
+  try {
+    auth = await resolveSocialAuth(tenantId, target.connection, adapter);
+  } catch (e) {
+    if (isRetryableError(e)) throw e;
+    await markConnectionExpired(
+      tenantId,
+      target.connection.id,
+      'refresh_failed',
+      `The connection could not be renewed: ${e instanceof Error ? e.message : String(e)}`,
+      logger
+    );
+    return { ok: false, reason: 'reconnect' };
+  }
+  if (!auth) return { ok: false, reason: 'reconnect' };
 
   return {
-    adapter,
-    ref: {
-      externalTargetId: target.externalTargetId,
-      name: target.name,
-      params: paramsFromTargetMeta(target.metadata),
+    ok: true,
+    ctx: {
+      adapter,
+      ref: {
+        externalTargetId: target.externalTargetId,
+        name: target.name,
+        params: paramsFromTargetMeta(target.metadata),
+      },
+      auth,
+      rowId: target.id,
+      connectionId: target.connection.id,
+      propertyId: target.connection.propertyId,
+      targetName: target.name,
+      platform: target.platform,
     },
-    auth,
-    rowId: target.id,
-    connectionId: target.connection.id,
-    propertyId: target.connection.propertyId,
-    targetName: target.name,
-    platform: target.platform,
   };
 }
 
@@ -123,8 +154,8 @@ export async function syncInbox(
     return { socialTargetId, fetched: 0, created: 0, result: 'skipped' };
   }
 
-  const ctx = await resolveTargetContext(tenantId, socialTargetId);
-  if (!ctx) {
+  const resolved = await resolveTargetContext(tenantId, socialTargetId, logger);
+  if (!resolved.ok) {
     // Stamp the cursor, for the same reason the `unsupported` path below does: a
     // destination we cannot resolve right now (platform not configured, account
     // disconnected, adapter gone) is otherwise re-picked by the sweep every two minutes
@@ -133,6 +164,7 @@ export async function syncInbox(
     await touchSynced(tenantId, socialTargetId);
     return { socialTargetId, fetched: 0, created: 0, result: 'skipped' };
   }
+  const { ctx } = resolved;
 
   // The adapter may publish fine and still have no permission to read comments.
   if (!ctx.adapter.listInbox || ctx.adapter.supportsInbox?.() !== true) {
@@ -195,7 +227,7 @@ export async function syncInbox(
  */
 async function upsertInboxItem(
   tenantId: string,
-  ctx: NonNullable<Awaited<ReturnType<typeof resolveTargetContext>>>,
+  ctx: TargetContext,
   entry: SocialInboxEntry
 ): Promise<boolean> {
   return withTenant({ tenantId }, async (tx) => {
@@ -291,19 +323,28 @@ export async function sendInboxReply(
     return { itemId, result: 'skipped' };
   }
 
-  const ctx = await resolveTargetContext(tenantId, item.socialTargetId);
-  if (!ctx?.adapter.replyToInbox) {
+  // Two causes, two fixes: a dead sign-in is the owner's to repair by reconnecting;
+  // anything else is not something they can change from here.
+  const fail = async (error: string): Promise<ReplyOutcome> => {
     await withTenant({ tenantId }, (tx) =>
       tx.socialInboxItem.update({
         where: { id: itemId },
-        data: {
-          status: 'failed',
-          metadata: { error: 'This platform does not allow replies from here.' },
-        },
+        data: { status: 'failed', metadata: { error } },
       })
     );
     return { itemId, result: 'failed' };
+  };
+
+  const resolved = await resolveTargetContext(tenantId, item.socialTargetId, logger);
+  if (!resolved.ok) {
+    return fail(
+      resolved.reason === 'reconnect'
+        ? 'This account needs reconnecting before a reply can go out.'
+        : 'This platform does not allow replies from here.'
+    );
   }
+  const { ctx } = resolved;
+  if (!ctx.adapter.replyToInbox) return fail('This platform does not allow replies from here.');
 
   try {
     const result = await ctx.adapter.replyToInbox(

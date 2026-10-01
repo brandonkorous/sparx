@@ -37,7 +37,7 @@ import type {
 } from '../types.js';
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import {
-  describeResponse,
+  responseError,
   expiresInSeconds,
   fetchT,
   formBody,
@@ -184,7 +184,7 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Google token exchange failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google token exchange failed`, res);
     }
     const data = (await res.json()) as GoogleTokenResponse;
 
@@ -214,7 +214,7 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Google token refresh failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google token refresh failed`, res);
     }
     const data = (await res.json()) as GoogleTokenResponse;
     return {
@@ -269,7 +269,7 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      throw new Error(`Google Business post failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google Business post failed`, res);
     }
     const data = (await res.json()) as GbpLocalPostResponse;
     return {
@@ -311,7 +311,7 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       }
     );
     if (!res.ok) {
-      throw new Error(`Google Business post insights failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google Business post insights failed`, res);
     }
     const data = (await res.json()) as GbpLocalPostInsightsResponse;
     return mapGoogleBusinessMetrics(data.localPostMetrics?.[0]?.metricValues);
@@ -339,7 +339,7 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       headers: this.authHeaders(auth.accessToken),
     });
     if (!res.ok) {
-      throw new Error(`Google Business reviews failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google Business reviews failed`, res);
     }
     const data = (await res.json()) as GbpReviewsResponse;
     const cutoff = since?.getTime() ?? 0;
@@ -396,7 +396,7 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       }
     );
     if (!res.ok) {
-      throw new Error(`Google Business review reply failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google Business review reply failed`, res);
     }
     return { externalId: `${parentExternalId}:reply` };
   }

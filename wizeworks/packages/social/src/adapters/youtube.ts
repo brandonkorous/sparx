@@ -31,7 +31,8 @@ import type {
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import { appendLink, deriveTitle, firstVideoUrl } from './_media.js';
 import {
-  describeResponse,
+  HttpError,
+  responseError,
   expiresInSeconds,
   fetchT,
   formBody,
@@ -174,7 +175,7 @@ export class YouTubeAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Google token exchange failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google token exchange failed`, res);
     }
     const data = (await res.json()) as GoogleTokenResponse;
     const channel = await this.firstChannel(data.access_token);
@@ -202,7 +203,7 @@ export class YouTubeAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Google token refresh failed: ${await describeResponse(res)}`);
+      throw await responseError(`Google token refresh failed`, res);
     }
     const data = (await res.json()) as GoogleTokenResponse;
     return {
@@ -260,7 +261,7 @@ export class YouTubeAdapter implements SocialAdapter {
       headers: { Authorization: `Bearer ${auth.accessToken}` },
     });
     if (!res.ok) {
-      throw new Error(`YouTube video statistics failed: ${await describeResponse(res)}`);
+      throw await responseError(`YouTube video statistics failed`, res);
     }
     const data = (await res.json()) as YouTubeVideosListResponse;
     // A deleted video comes back as an empty items[] with a 200 — an empty metric set is
@@ -282,7 +283,7 @@ export class YouTubeAdapter implements SocialAdapter {
       }),
     });
     if (!res.ok) {
-      throw new Error(`YouTube upload init failed: ${await describeResponse(res)}`);
+      throw await responseError(`YouTube upload init failed`, res);
     }
     const location = res.headers.get('location');
     if (!location) throw new Error('YouTube upload init returned no upload URL.');
@@ -297,7 +298,7 @@ export class YouTubeAdapter implements SocialAdapter {
   ): Promise<string> {
     const source = await fetchT(videoUrl);
     if (!source.ok) {
-      throw new Error(`Could not fetch the source video (${source.status}).`);
+      throw new HttpError(`Could not fetch the source video (${source.status}).`, source.status);
     }
     const bytes = await source.arrayBuffer();
     const res = await fetchT(
@@ -310,7 +311,7 @@ export class YouTubeAdapter implements SocialAdapter {
       120_000 // a video transfer needs a longer ceiling than the default 20s
     );
     if (!res.ok) {
-      throw new Error(`YouTube upload failed: ${await describeResponse(res)}`);
+      throw await responseError(`YouTube upload failed`, res);
     }
     const data = (await res.json()) as YouTubeVideoResponse;
     if (!data.id) throw new Error('YouTube upload returned no video id.');
