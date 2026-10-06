@@ -123,6 +123,9 @@ const b2bImportExportRoutes: FastifyPluginAsync = async (app) => {
       company_name: a.companyName,
       tax_id: a.taxId ?? '',
       website: a.website ?? '',
+      // The NAME of the tier the account is on (companyService reads it off the
+      // linked tier, never the legacy text), so the file round-trips: the importer
+      // links a `pricing_tier` cell back to the tier of that name.
       pricing_tier: a.pricingTier ?? '',
       credit_limit: Number(a.creditLimit).toFixed(2),
       payment_terms: a.paymentTerms ?? '',

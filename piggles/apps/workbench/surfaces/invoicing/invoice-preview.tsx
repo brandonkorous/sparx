@@ -14,6 +14,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useQuery } from '@wizeworks/query';
 import { Loading } from '@wizeworks/silicaui-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { api, apiRequest } from '../../lib/api/client';
 import { draftKey, readDraft, subscribeDraft, type DraftValue } from '../../lib/drafts';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -52,7 +53,7 @@ export function InvoicePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
   // (issue 842), and a preview is only ever reached from an editor, so this is
   // the editor's OWN query key: open from an editor and it is served from cache
   // at no cost. A preview that outlives its editor fetches once.
-  const { data: doc } = useQuery({
+  const { data: doc, error: docError } = useQuery({
     queryKey: ['invoicing', 'document', id],
     queryFn: () =>
       api.get<BillingDocument>(`/v1/invoicing/documents/${String(id)}`).then(normalizeDocument),
@@ -62,7 +63,13 @@ export function InvoicePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(doc?.number ? `Preview · ${doc.number}` : 'Preview');
   }, [ctx, doc?.number]);
 
-  const { data: html, isFetching } = useQuery({
+  const {
+    data: html,
+    isFetching,
+    isError,
+    error: previewError,
+    refetch,
+  } = useQuery({
     // The draft is part of the key so an edit produces a new render, and
     // identical drafts are served from cache rather than re-rendered.
     queryKey: ['invoicing', 'preview', id, debouncedDraft],
@@ -80,6 +87,26 @@ export function InvoicePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
     // screen while the next one is in flight rather than flashing empty.
     placeholderData: (previous) => previous,
   });
+
+  // With nothing rendered yet, a failure is the whole answer. A missing invoice
+  // (another business's id, or one since deleted) used to leave "Preparing
+  // preview…" on screen for ever (persona issue 226). Once a render exists, a
+  // failed re-render keeps it on screen instead.
+  if (!html && (docError || isError)) {
+    return (
+      <div className="bg-base-200 h-full">
+        <PaneLoadError
+          error={docError ?? previewError}
+          noun="invoice"
+          title="Could not draw this preview"
+          description="This is a problem reaching the server. The invoice itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void refetch();
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-base-200 relative h-full">

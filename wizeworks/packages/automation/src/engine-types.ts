@@ -117,6 +117,15 @@ export interface ActionDescriptor {
   type: ActionType;
   /** Owning module slug, for the module-active global gate; null = platform-level. */
   module: string | null;
+  /**
+   * The module ONE step needs, where that depends on what the step does rather
+   * than on the kind of action. Absent ⇒ `module`, for every step. An email step
+   * that tells a customer about something they did (an order confirmation, a
+   * receipt) needs no email module; the same action sending a campaign does
+   * (sparx persona issue 087). The module-active gate reads this, so the rule
+   * lives in one place per action and every automation using it follows.
+   */
+  moduleFor?: (effect: EffectInput) => string | null;
   /** Per-action gate manifest (§7.1#2). */
   gates: NamedGate[];
   /** Justification for the manifest — required, especially when `gates` is empty. */

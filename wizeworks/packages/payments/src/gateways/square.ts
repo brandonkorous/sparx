@@ -16,6 +16,8 @@ import type {
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
   CreateSetupSessionParams,
+  LookedUpPayment,
+  LookupPaymentParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
@@ -24,10 +26,17 @@ import type {
   RefundResult,
   SetupSession,
   StoredChargeResult,
+  VaultFromPaymentParams,
   VaultedMethod,
   WebhookEvent,
 } from '../gateway';
-import { GatewayApiError, loadCredentials, orderReference, postJson } from './adapter-util';
+import {
+  GatewayApiError,
+  loadCredentials,
+  paymentReference,
+  postJson,
+  requestJson,
+} from './adapter-util';
 
 export const SQUARE_ID = 'square';
 
@@ -96,7 +105,7 @@ export class SquareGateway implements PaymentGateway {
     const creds = await loadCredentials(params.tenantId, SQUARE_ID);
     const token = creds.secrets.access_token;
     const locationId = creds.publicMeta.location_id;
-    const ref = orderReference(params);
+    const ref = paymentReference();
 
     const body = {
       idempotency_key: ref,
@@ -145,19 +154,50 @@ export class SquareGateway implements PaymentGateway {
     return Promise.resolve({ success: false, errorMessage: 'square cancel is not supported' });
   }
 
+  /**
+   * Give money back. Square refunds a PAYMENT, and the reference a checkout
+   * keeps is the ORDER the payment link was made for, so every refund was sent
+   * an order id where a payment id belongs (issue 917). The payment id is the
+   * one the order's payment kept, or the order's card tender when it kept none.
+   * A reference that is not an order (one from before) is taken as the payment.
+   *
+   * The duplicate guard carries the amount: it was one key per payment, so a
+   * second partial refund was refused as a repeat of the first.
+   */
   async refund(params: RefundParams): Promise<RefundResult> {
     try {
       const creds = await loadCredentials(params.tenantId, SQUARE_ID);
+      const headers = {
+        authorization: `Bearer ${creds.secrets.access_token}`,
+        'square-version': SQUARE_VERSION,
+      };
+      let paymentId = params.transactionRef;
+      let currency = 'USD';
+      if (!paymentId) {
+        try {
+          const { order } = await requestJson<{ order?: SquareOrder }>(
+            'GET',
+            `${baseUrl(creds.environment)}/v2/orders/${encodeURIComponent(params.chargeId)}`,
+            undefined,
+            headers
+          );
+          paymentId = order?.tenders?.find((tender) => tender.payment_id)?.payment_id;
+          currency = order?.total_money?.currency ?? currency;
+        } catch (err) {
+          if (!(err instanceof GatewayApiError && err.status === 404)) throw err;
+        }
+      }
+      paymentId ??= params.chargeId;
       const res = await postJson<{ refund: { id: string; amount_money: { amount: number } } }>(
         `${baseUrl(creds.environment)}/v2/refunds`,
         {
-          idempotency_key: `${params.chargeId}-refund`,
-          payment_id: params.chargeId,
+          idempotency_key: idempotency(`${paymentId}-refund-${String(params.amount ?? 'full')}`),
+          payment_id: paymentId,
           ...(params.amount !== undefined
-            ? { amount_money: { amount: params.amount, currency: 'USD' } }
+            ? { amount_money: { amount: params.amount, currency } }
             : {}),
         },
-        { authorization: `Bearer ${creds.secrets.access_token}`, 'square-version': SQUARE_VERSION }
+        headers
       );
       return { success: true, refundId: res.refund.id, amount: res.refund.amount_money.amount };
     } catch (err) {
@@ -269,6 +309,77 @@ export class SquareGateway implements PaymentGateway {
     };
   }
 
+  /**
+   * Keep the card a hosted-checkout payment was made with (issue 739).
+   *
+   * Square's payment link cannot save a card itself, but its Cards API accepts a
+   * completed card PAYMENT's id as `source_id` where it would otherwise take a
+   * card token: the same card-on-file, made from a payment instead of from the
+   * Web Payments SDK. That is the "save it while paying" this gateway has.
+   *
+   * The payment id is the webhook's `transactionRef`, kept on the order's
+   * payment. When it is missing (the webhook raced the order), the order we
+   * created the link for is read back and its card tender's payment id used.
+   */
+  async vaultFromPayment(params: VaultFromPaymentParams): Promise<VaultedMethod | null> {
+    const creds = await loadCredentials(params.tenantId, SQUARE_ID);
+    const headers = {
+      authorization: `Bearer ${creds.secrets.access_token}`,
+      'square-version': SQUARE_VERSION,
+    };
+    let paymentId = params.chargeRef;
+    if (!paymentId) {
+      const res = await requestJson<{
+        order?: { tenders?: { payment_id?: string; type?: string }[] };
+      }>(
+        'GET',
+        `${baseUrl(creds.environment)}/v2/orders/${encodeURIComponent(params.paymentRef)}`,
+        undefined,
+        headers
+      );
+      paymentId = res.order?.tenders?.find((tender) => tender.type === 'CARD')?.payment_id;
+    }
+    // Paid some other way (cash app, a gift card): there is no card to keep.
+    if (!paymentId) return null;
+
+    const customerRef =
+      params.customerRef ??
+      (await this.ensureCustomer(creds, {
+        tenantId: params.tenantId,
+        customerId: params.customerId,
+      }));
+    const res = await postJson<{
+      card: {
+        id: string;
+        card_brand?: string;
+        last_4?: string;
+        exp_month?: number;
+        exp_year?: number;
+      };
+    }>(
+      `${baseUrl(creds.environment)}/v2/cards`,
+      {
+        idempotency_key: idempotency(`${params.customerId}-${paymentId}`),
+        source_id: paymentId,
+        card: {
+          customer_id: customerRef,
+          cardholder_name: cardholderName(params.cardholderName),
+          ...(params.postalCode ? { billing_address: { postal_code: params.postalCode } } : {}),
+          reference_id: params.customerId.slice(0, 40),
+        },
+      },
+      headers
+    );
+    return {
+      methodRef: res.card.id,
+      customerRef,
+      brand: res.card.card_brand ?? null,
+      last4: res.card.last_4 ?? null,
+      expMonth: res.card.exp_month ?? null,
+      expYear: res.card.exp_year ?? null,
+    };
+  }
+
   async chargeStoredMethod(params: ChargeStoredMethodParams): Promise<StoredChargeResult> {
     try {
       const creds = await loadCredentials(params.tenantId, SQUARE_ID);
@@ -329,6 +440,74 @@ export class SquareGateway implements PaymentGateway {
     }
   }
 
+  /**
+   * Where a payment stands at Square, in the words its webhook would use.
+   *
+   * The reference is the Square ORDER the payment link was made for, which is
+   * also what the webhook reports as the charge. The order says whether a card
+   * paid it (a tender with a payment id) and the payment says how that went.
+   * Without this, a shop that never set up Square's webhook left every order
+   * unpaid however the shopper paid (issue 739).
+   */
+  async lookupPayment(params: LookupPaymentParams): Promise<LookedUpPayment | null> {
+    const creds = await loadCredentials(params.tenantId, SQUARE_ID);
+    const base = baseUrl(creds.environment);
+    const headers = {
+      authorization: `Bearer ${creds.secrets.access_token}`,
+      'square-version': SQUARE_VERSION,
+    };
+    let order: SquareOrder | undefined;
+    try {
+      order = (
+        await requestJson<{ order?: SquareOrder }>(
+          'GET',
+          `${base}/v2/orders/${encodeURIComponent(params.paymentRef)}`,
+          undefined,
+          headers
+        )
+      ).order;
+    } catch (err) {
+      if (err instanceof GatewayApiError && err.status === 404) return null;
+      throw err;
+    }
+    if (!order) return null;
+
+    const unpaid = {
+      chargeId: params.paymentRef,
+      amountCents: order.total_money?.amount ?? 0,
+      currency: order.total_money?.currency ?? 'USD',
+    };
+    const paymentId = order.tenders?.find((tender) => tender.payment_id)?.payment_id;
+    // Nobody has paid yet. A link nobody uses stays OPEN; only a cancelled
+    // order is an answer.
+    if (!paymentId)
+      return { status: order.state === 'CANCELED' ? 'failed' : 'pending', data: unpaid };
+
+    const { payment } = await requestJson<{ payment?: SquarePayment }>(
+      'GET',
+      `${base}/v2/payments/${encodeURIComponent(paymentId)}`,
+      undefined,
+      headers
+    );
+    if (!payment) return { status: 'pending', data: unpaid };
+    // The same fields `normalizeSquareEvent` reports for `payment.updated`.
+    const data = {
+      chargeId: params.paymentRef,
+      transactionRef: payment.id,
+      amountCents: payment.amount_money?.amount ?? unpaid.amountCents,
+      currency: payment.amount_money?.currency ?? unpaid.currency,
+    };
+    if (payment.status === 'COMPLETED' || payment.status === 'CAPTURED') {
+      return { status: 'succeeded', data };
+    }
+    if (payment.status === 'FAILED' || payment.status === 'CANCELED') {
+      return { status: 'failed', data };
+    }
+    // APPROVED is a hosted page that has not finished taking the money; Square
+    // completes it on its own, and the webhook ignores it too.
+    return { status: 'pending', data };
+  }
+
   /** A Square customer to hang cards off. Square requires one — a card-on-file
    *  is created against a customer, never standalone. */
   private async ensureCustomer(
@@ -363,16 +542,19 @@ export class SquareGateway implements PaymentGateway {
     notificationUrl: string
   ): Promise<ParsedWebhookEvent> {
     const creds = await loadCredentials(tenantId, SQUARE_ID);
+    // An unsigned message is refused, never trusted. Without a key there is
+    // nothing to check it against, and anyone who knew this address could
+    // otherwise mark an order paid or refunded. Paid status does not depend on
+    // it: checkout and the stranded-payment sweep ask Square directly.
     const sigKey = creds.secrets.webhook_signature_key;
-    if (sigKey) {
-      const expected = createHmac('sha256', sigKey)
-        .update(notificationUrl + event.rawBody.toString('utf8'))
-        .digest('base64');
-      const ok =
-        expected.length === event.signature.length &&
-        timingSafeEqual(Buffer.from(expected), Buffer.from(event.signature));
-      if (!ok) throw new Error('square webhook signature mismatch');
-    }
+    if (!sigKey) throw new Error('square webhook refused: no signature key is set');
+    const expected = createHmac('sha256', sigKey)
+      .update(notificationUrl + event.rawBody.toString('utf8'))
+      .digest('base64');
+    const ok =
+      expected.length === event.signature.length &&
+      timingSafeEqual(Buffer.from(expected), Buffer.from(event.signature));
+    if (!ok) throw new Error('square webhook signature mismatch');
     return normalizeSquareEvent(
       JSON.parse(event.rawBody.toString('utf8')) as SquareEventEnvelope,
       tenantId
@@ -390,6 +572,12 @@ interface SquarePayment {
   status?: string;
   order_id?: string;
   amount_money?: { amount: number; currency: string };
+}
+interface SquareOrder {
+  id: string;
+  state?: string;
+  total_money?: { amount: number; currency: string };
+  tenders?: { payment_id?: string; type?: string }[];
 }
 interface SquareRefund {
   id: string;
@@ -422,6 +610,7 @@ export function normalizeSquareEvent(
           : 'ignored',
       data: {
         chargeId: payment.order_id ?? payment.id,
+        transactionRef: payment.id,
         amountCents: payment.amount_money?.amount ?? 0,
         currency: payment.amount_money?.currency ?? 'USD',
       },

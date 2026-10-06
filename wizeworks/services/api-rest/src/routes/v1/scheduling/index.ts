@@ -4,6 +4,7 @@ import schedulingLocationRoutes from './locations.js';
 import schedulingResourceRoutes from './resources.js';
 import schedulingAvailabilityRoutes from './availability.js';
 import schedulingBookingRoutes from './bookings.js';
+import schedulingBookingFleetRoutes from './booking-fleet.js';
 import schedulingPolicyRoutes from './policies.js';
 import schedulingCalendarConnectionRoutes from './calendar.js';
 import schedulingSeriesRoutes from './series.js';
@@ -18,6 +19,7 @@ const schedulingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(schedulingResourceRoutes);
   await app.register(schedulingAvailabilityRoutes);
   await app.register(schedulingBookingRoutes);
+  await app.register(schedulingBookingFleetRoutes);
   await app.register(schedulingPolicyRoutes);
   await app.register(schedulingCalendarConnectionRoutes);
   await app.register(schedulingSeriesRoutes);

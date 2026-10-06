@@ -46,7 +46,12 @@ export interface Company {
   /** The email domains that belong to this company (docs/144 §11) — what the
    *  association offer matches a new contact's address against. */
   domains: string[];
+  /** The wholesale group they buy in, or null for normal prices. */
+  pricingTierId: string | null;
+  /** The name of the group that prices them (null for normal prices). */
   pricingTier: string | null;
+  /** The group they are still in after it was removed; it prices nothing. */
+  removedTierName?: string | null;
   creditLimit: string;
   creditUsed: string;
   paymentTerms: string | null;
@@ -96,8 +101,12 @@ export const ACCOUNT_STATUSES: CompanyStatus[] = ['active', 'credit_hold', 'susp
  *      them under this sentence and a green badge.
  *    - Suspended said "cannot order". It can still buy paying up front.
  *    - Inactive said "not trading", and nothing in the order path read the
- *      state at all. It does now (`termsRefusal` in checkout-service.ts), so
- *      this sentence became true rather than being reworded around. */
+ *      state at all. It does now (`account-order-gate.ts` in @wizeworks/crm), so
+ *      this sentence became true rather than being reworded around.
+ *    - Active said "Whether they can order on terms depends on the credit limit
+ *      below", which was true while an order past the limit was REFUSED. It now
+ *      waits for the owner's sign-off, as the /b2b page promises, from the
+ *      checkout and from an accepted quote alike (sparx persona issue 085). */
 export function accountStatusMeta(status: string): {
   label: string;
   tone: 'success' | 'warning' | 'danger' | 'neutral';
@@ -109,7 +118,7 @@ export function accountStatusMeta(status: string): {
         label: 'Active',
         tone: 'success',
         description:
-          'Nothing here is holding this account back. Whether they can order on terms depends on the credit limit below.',
+          'Nothing here is holding this account back. An order on terms that would go past the credit limit below waits for your sign-off.',
       };
     case 'credit_hold':
       return {
@@ -178,6 +187,9 @@ export function useInvalidateAccounts() {
     // A customer's linked-account picker reads the account list, and merging /
     // renaming an account changes what that picker shows.
     void queryClient.invalidateQueries({ queryKey: ['crm', 'customers'] });
+    // The same row is the Wholesale pane's customer: a group or terms changed
+    // here must not leave that pane, open beside this one, showing the old ones.
+    void queryClient.invalidateQueries({ queryKey: ['b2b', 'accounts'] });
     if (id) void queryClient.invalidateQueries({ queryKey: accountKeys.detail(id) });
   };
 }
@@ -190,7 +202,7 @@ export interface AccountInput {
   taxId?: string | null;
   website?: string | null;
   domains?: string[];
-  pricingTier?: string | null;
+  pricingTierId?: string | null;
   creditLimit?: number;
   paymentTerms?: PaymentTerms | null;
   discountPercent?: number;

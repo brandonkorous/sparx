@@ -21,17 +21,12 @@ import { sendTenantSms } from '@wizeworks/sms/delivery';
 
 import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
+import { resolveSiteOrigin, siteUrl } from './site-origin.js';
 import { sendTenantEmailByKey } from './tenant-email.js';
 
 const WAITLIST_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_WAITLIST;
 const DEFAULT_INTERVAL_MS = 300_000; // every 5 min
 const SCAN_LIMIT = 200;
-const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
-
-function bookUrl(slug: string, serviceId: string): string {
-  const base = SITE_BASE.replace('{slug}', slug);
-  return `${base}/book/${serviceId}`;
-}
 
 function dateOnly(d: Date): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -80,17 +75,19 @@ export async function sendWaitlistOffer(
   }
 
   if (customer.phone) {
-    const [siteName, tenant] = await Promise.all([
-      resolveActivePropertyName(tenantId, null),
-      withTenant({ tenantId }, (tx) =>
-        tx.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } })
-      ),
+    // The business that runs the service, by name and by address: the text used
+    // to sign as the tenant's primary site and link to a bare `/book/…` path, which
+    // a phone cannot open (issue 064).
+    const siteId = entry.service?.propertyId ?? null;
+    const [siteName, origin] = await Promise.all([
+      resolveActivePropertyName(tenantId, siteId),
+      resolveSiteOrigin(tenantId, siteId),
     ]);
     const body = renderWaitlistOfferSms({
       serviceName: entry.service?.name ?? 'a service',
       windowLabel: `${dateOnly(entry.desiredFrom)} – ${dateOnly(entry.desiredTo)}`,
       siteName: siteName || 'Your booking',
-      bookUrl: bookUrl(tenant?.slug ?? '', entry.serviceId),
+      bookUrl: siteUrl(origin, `/book/${entry.serviceId}`),
     });
     // Guarded, like every other send (docs/152 D1). `transactional`: they joined
     // this waitlist and asked to be told, so it is the thing they signed up for

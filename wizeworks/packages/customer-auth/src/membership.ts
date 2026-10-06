@@ -25,6 +25,10 @@ export interface EnsureMembershipResult {
   /** True when this call CREATED the membership for the active site (drives the
    *  docs/58 D6 "recognized" signal in combination with a pre-existing user). */
   created: boolean;
+  /** True when this call claimed an existing guest or CRM row for the login,
+   *  writing the login (and maybe a site and a name) onto it. The row is
+   *  somebody the business already had, now changed. */
+  adopted: boolean;
 }
 
 /**
@@ -49,6 +53,12 @@ export interface EnsureMembershipResult {
  * A row belonging to a DIFFERENT site is still never taken, which is what keeps
  * docs/58 D6 true: a first sign-in on a sister site gets a fresh membership and
  * fresh consent, never another site's.
+ *
+ * THIS DOES NOT ANNOUNCE THE PERSON. This package cannot reach the CRM bus, so
+ * the caller must, from `created` and `adopted`, once this has returned (it has
+ * committed by then). api-rest's `ensureAnnouncedMembership` is that caller, and
+ * is the one to use: a sign-up that was only written down sat in the customer
+ * list and nowhere in search (sparx persona issue 086).
  */
 export function ensureMembership(
   ctx: EnsureMembershipContext,
@@ -62,7 +72,7 @@ export function ensureMembership(
       where: { propertyId, authUserId, deletedAt: null },
       select: { id: true },
     });
-    if (linked) return { customerId: linked.id, created: false };
+    if (linked) return { customerId: linked.id, created: false, adopted: false };
 
     // This site first, then a row that names no site at all.
     const guest =
@@ -88,7 +98,7 @@ export function ensureMembership(
           ...(names.lastName && !guest.lastName ? { lastName: names.lastName } : {}),
         },
       });
-      return { customerId: guest.id, created: false };
+      return { customerId: guest.id, created: false, adopted: true };
     }
 
     const created = await tx.customer.create({
@@ -103,6 +113,21 @@ export function ensureMembership(
       },
       select: { id: true },
     });
-    return { customerId: created.id, created: true };
+    // The activity bar's line for a new person who arrived through the site by
+    // themselves. Without it a sign-up was the one arrival the business could
+    // not see happen (sparx persona issue 086). Inside the write, so a rolled
+    // back sign-up leaves no line about a person who does not exist.
+    await tx.auditLog.create({
+      data: {
+        tenantId: ctx.tenantId,
+        actorId: null,
+        actorType: 'customer',
+        action: 'crm.customer.captured',
+        entityType: 'Customer',
+        entityId: created.id,
+        diff: { before: null, after: { id: created.id, email, propertyId } },
+      },
+    });
+    return { customerId: created.id, created: true, adopted: false };
   });
 }

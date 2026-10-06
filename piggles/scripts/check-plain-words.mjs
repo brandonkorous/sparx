@@ -237,6 +237,15 @@ const ALLOWED = [
   'In Stripe: Developers',
   'webhook address',
   'Webhook signing secret',
+  // The same job for Square, PayPal and Authorize.net (issue 739): each menu
+  // path is the one on their screen, and each field name is the value their
+  // screen hands back, pasted into the field of that name above. A custom
+  // processor is told the secret by whoever set it up, under that name.
+  'In Square: Developer Console',
+  'In Authorize.net: Account',
+  'Webhook signature key',
+  'Webhook ID',
+  'Webhook secret',
   // Bringing a shop over from elsewhere: these are the file types her old
   // system gave her, and the clause after the colon is the definition.
   'whatever your platform gave you',

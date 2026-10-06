@@ -173,6 +173,7 @@ describe('automation routes', () => {
     const locked = await upsertSystemAutomation(
       { tenantId: t.tenantId },
       {
+        key: 'test.locked-system-rule',
         name: 'Locked system rule',
         trigger: EVENT_TRIGGER,
         conditions: { logic: 'AND', conditions: [] },

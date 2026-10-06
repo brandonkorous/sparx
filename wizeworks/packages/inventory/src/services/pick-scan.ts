@@ -336,7 +336,7 @@ export async function scanToPack(
             FROM inventory_shipment_package_lines pl
             JOIN inventory_shipment_packages pk ON pk.id = pl.package_id
            WHERE pl.order_item_id = oi.id
-             AND pk.status <> 'canceled'
+             AND pk.status <> 'cancelled'
              AND pk.id <> ${packageId}::uuid
         ) other ON TRUE
         LEFT JOIN LATERAL (

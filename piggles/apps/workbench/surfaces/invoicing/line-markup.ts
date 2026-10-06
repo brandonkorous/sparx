@@ -20,7 +20,14 @@ import {
   type LineMarkupInput,
   type MarkupRuleSpec,
 } from '@wizeworks/commerce-schemas';
+import { readMoney } from '../../lib/read-money';
 import type { DraftLine } from './totals';
+
+/** A number as an owner writes one: "8,50", "$15", "12,5". `parseFloat` stopped
+ *  at the comma and read 8 (sparx persona issue 086). Null when unreadable. */
+function typedNumber(text: string): number | null {
+  return readMoney(text, { allowZero: true }).amount;
+}
 
 export const ADHOC = 'adhoc';
 export const PASSTHROUGH = 'passthrough';
@@ -135,8 +142,8 @@ export function seedMarkupState(
 /** Validate the ad-hoc value against the same bounds LineMarkupInput enforces,
  *  so the live preview never shows a price the server would then reject. */
 export function adhocEngineValue(method: BandMethod, raw: string): number | null {
-  const n = parseFloat(raw);
-  if (!raw.trim() || Number.isNaN(n)) return null;
+  const n = typedNumber(raw);
+  if (n === null) return null;
   const v = METHOD_META[method].toEngine(n);
   if (method === 'margin_target' && (v <= 0 || v >= 1)) return null;
   if (method === 'multiplier' && v <= 0) return null;
@@ -151,8 +158,8 @@ export function resolveMarkup(
   rules: MarkupRuleSummary[],
   pricingMode: string
 ): ResolvedMarkup {
-  const costNum = parseFloat(cost);
-  if (!cost.trim() || Number.isNaN(costNum) || costNum < 0) {
+  const costNum = typedNumber(cost);
+  if (costNum === null) {
     return { preview: null, payload: null, error: 'Enter a cost to price this line.' };
   }
   const costCents = Math.round(costNum * 100);

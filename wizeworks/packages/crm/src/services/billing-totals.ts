@@ -12,6 +12,9 @@ export interface BillingLineForTotals {
   unitPrice: number;
   discountAmount: number;
   taxable: boolean;
+  /** Refundable core deposit per unit (sparx issue 051). Never taxed, never in
+   *  the subtotal; added to the total. */
+  coreCharge?: number | null;
 }
 
 export interface ComputedBillingLine {
@@ -27,6 +30,7 @@ export interface ComputedBillingTotals {
   taxTotal: number;
   shippingTotal: number;
   surchargeTotal: number;
+  coreChargeTotal: number;
   total: number;
 }
 
@@ -55,19 +59,24 @@ export function computeBillingTotals(
   let subtotal = 0;
   let discountSum = 0;
   let taxSum = 0;
+  let coreSum = 0;
 
   for (const line of lines) {
     const computed = computeBillingLine(line, taxRate);
     subtotal += computed.lineSubtotal;
     discountSum += computed.discountAmount;
     taxSum += computed.taxAmount;
+    coreSum += line.coreCharge == null ? 0 : round2(line.coreCharge * line.quantity);
   }
 
   const shipping = round2(shippingTotal);
   const surcharge = round2(surchargeTotal);
   const taxTotal = round2(taxSum);
   const discountTotal = round2(discountSum);
-  const total = round2(round2(subtotal) - discountTotal + taxTotal + shipping + surcharge);
+  const coreChargeTotal = round2(coreSum);
+  const total = round2(
+    round2(subtotal) - discountTotal + taxTotal + shipping + surcharge + coreChargeTotal
+  );
 
   return {
     subtotal: round2(subtotal),
@@ -75,6 +84,7 @@ export function computeBillingTotals(
     taxTotal,
     shippingTotal: shipping,
     surchargeTotal: surcharge,
+    coreChargeTotal,
     total,
   };
 }

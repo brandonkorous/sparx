@@ -17,9 +17,11 @@
 // the one content editor the app already has (`cms.content.detail`). Building a
 // second editor here would be building it twice.
 //
-// Everything here commits immediately (create, acknowledge, link, unlink), so
-// there is no draft and no unsaved-work guard — each action is its own confirm or
-// its own button, done in one click.
+// The checklist and the footer links commit immediately (create, acknowledge,
+// link, unlink): each action is its own confirm or its own button, done in one
+// click. The one exception is the cookie banner (`cookie-banner-section.tsx`),
+// four choices that only make sense together, so it holds a draft, saves with its
+// own button, and guards the pane while unsaved.
 
 import { useMemo, useState } from 'react';
 import {
@@ -58,6 +60,8 @@ import {
   type LegalPlacement,
 } from './legal-data';
 import { useSiteIsDark } from '../../lib/billing/site-live';
+import { CookieBannerSection } from './cookie-banner-section';
+import { cookiePolicyNote, useCookieBanner } from './cookie-banner-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -75,6 +79,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const checklist = useLegalChecklist();
   const placements = useLegalPlacements();
+  const cookieBanner = useCookieBanner();
 
   const instantiate = useInstantiateLegalPage();
   const acknowledge = useAcknowledgeLegalPage();
@@ -84,6 +89,8 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
   const completeness = checklist.data?.completeness;
   const requiredItems = items.filter((item) => item.required);
   const optionalItems = items.filter((item) => !item.required);
+  const noteFor = (item: ChecklistItem) =>
+    cookiePolicyNote(item.legalKind, item.entry?.status ?? null, cookieBanner.data);
 
   const allRequiredReady =
     completeness !== undefined &&
@@ -211,10 +218,15 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
         refresh={
           <RefreshButton
             className="ml-auto"
-            isFetching={checklist.isFetching}
+            isFetching={checklist.isFetching || placements.isFetching || cookieBanner.isFetching}
             updatedAt={checklist.data ? checklist.dataUpdatedAt : undefined}
+            // The whole screen, not only the page list: the footer links and the cookie
+            // banner are on it too, and a refresh that skipped them showed a deleted
+            // page's link as still there (sparx persona issue 041).
             onRefresh={() => {
               void checklist.refetch();
+              void placements.refetch();
+              void cookieBanner.refetch();
             }}
           />
         }
@@ -279,6 +291,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                 >
                   <ChecklistRows
                     items={requiredItems}
+                    noteFor={noteFor}
                     onAdd={(item) => {
                       void addPage(item);
                     }}
@@ -303,6 +316,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                 >
                   <ChecklistRows
                     items={optionalItems}
+                    noteFor={noteFor}
                     onAdd={(item) => {
                       void addPage(item);
                     }}
@@ -319,6 +333,10 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                   />
                 </FormSection>
               ) : null}
+
+              <CookieBannerSection
+                cookiePolicy={items.find((item) => item.legalKind === 'cookie-policy')}
+              />
 
               <PlacementsSection ctx={ctx} items={items} placements={placements} />
             </div>
@@ -337,6 +355,9 @@ interface ChecklistRowsProps {
   onEdit: (item: ChecklistItem, event: { shiftKey: boolean; altKey: boolean }) => void;
   onAcknowledge: (item: ChecklistItem) => void;
   onTakeWording: (item: ChecklistItem) => void;
+  /** A sentence to add under a row, when something elsewhere on the site makes
+   *  the page's own words untrue. */
+  noteFor?: (item: ChecklistItem) => string | null;
   /** The legalKind currently being instantiated, so only its row shows a spinner. */
   addingKind: string | undefined;
   /** The entry id currently being acknowledged. */
@@ -351,6 +372,7 @@ function ChecklistRows({
   onEdit,
   onAcknowledge,
   onTakeWording,
+  noteFor,
   addingKind,
   acknowledgingId,
   takingWordingId,
@@ -365,6 +387,7 @@ function ChecklistRows({
         // cannot resolve a newer-version-available (stale) page, whose real fix
         // is editing the text. So it is offered only when that is the whole story.
         const showAcknowledge = entry !== null && !entry.acknowledged && !status.stale;
+        const note = noteFor?.(item) ?? null;
 
         return (
           <li
@@ -380,6 +403,7 @@ function ChecklistRows({
               </div>
               <Text className="text-sm">{legalKindBlurb(item.legalKind)}</Text>
               {status.detail ? <Text className="text-sm">{status.detail}</Text> : null}
+              {note ? <Text className="text-sm font-medium">{note}</Text> : null}
             </div>
 
             <div className="flex shrink-0 flex-wrap items-center gap-2">

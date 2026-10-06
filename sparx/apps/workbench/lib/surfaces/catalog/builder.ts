@@ -41,6 +41,12 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
       'header',
       'footer',
       'menu',
+      // The page an owner means, by name. "product page" found nothing (sparx
+      // persona issue 036).
+      'product page',
+      'home page',
+      'contact page',
+      'about page',
     ],
     // The visual editor — silica `<Builder>`. Owns page selection AND site layout;
     // opened blank (first page) or with `{ pageId }` / `{ componentId }` / `{ mode }`.

@@ -12,13 +12,14 @@
 
 import type { OpenOptions, OpenTarget } from '../surfaces/registry';
 import type { DetachedWindow, PaneHost, PaneHostCapabilities } from './pane-host';
-import { getSurface, isOwnStaticTitle, titleFor } from '../surfaces/registry';
 import {
-  createDescriptor,
-  descriptorKey,
-  type PaneDescriptor,
-  type SurfaceParams,
-} from '../surfaces/descriptor';
+  getSurface,
+  isOwnStaticTitle,
+  paneIdentityKey,
+  titleFor,
+  viewParamsOf,
+} from '../surfaces/registry';
+import { createDescriptor, type PaneDescriptor, type SurfaceParams } from '../surfaces/descriptor';
 
 export interface DirtyGuard {
   isDirty: () => boolean;
@@ -175,7 +176,9 @@ export class WorkbenchController {
     if (!host || !definition) return null;
 
     const descriptor = createDescriptor(surface, params);
-    const key = descriptorKey(descriptor);
+    // What the pane IS, so a link to product X on SEO finds product X open on
+    // Pricing rather than opening a second copy of it (issue 374).
+    const key = paneIdentityKey(descriptor);
 
     // Record the visit BEFORE the dedupe branch, so re-opening an already-open
     // surface still bumps it up the recents list — re-focusing "Orders" is as
@@ -191,7 +194,7 @@ export class WorkbenchController {
     }
 
     for (const [existingId, existing] of this.descriptors) {
-      if (descriptorKey(existing) !== key) continue;
+      if (paneIdentityKey(existing) !== key) continue;
       // A descriptor whose pane is gone is a ghost — the controller outlives
       // the host across remounts (dev strict-mode, popout re-parenting, the
       // desktop⇄mobile shell swap), so descriptors can reference panes that
@@ -203,6 +206,9 @@ export class WorkbenchController {
         continue;
       }
       if (definition.singleton === true || options?.target !== 'replace') {
+        // Asked for a tab: the open pane moves to it. Asked for none: it stays
+        // where its operator left it.
+        this.applyViewParams(existingId, params);
         host.focus(existingId);
         return existingId;
       }
@@ -256,6 +262,51 @@ export class WorkbenchController {
     this.host.retarget(paneId, titleFor(retargeted));
     this.emit();
     return paneId;
+  }
+
+  /**
+   * Change a pane's view params (issue 374). Only the ones its surface
+   * declared: anything else is what the pane IS, and rewriting that from
+   * inside would turn one record's pane into another's. Emits, so the address
+   * bar and the saved layout follow; a no-op change emits nothing.
+   */
+  setViewParams(paneId: string, patch: Readonly<Record<string, string | null>>): void {
+    const descriptor = this.descriptors.get(paneId);
+    if (!descriptor) return;
+    const declared = viewParamsOf(descriptor.surface);
+    const params: Record<string, string> = { ...(descriptor.params ?? {}) };
+    let changed = false;
+    for (const [key, value] of Object.entries(patch)) {
+      if (!declared.includes(key)) {
+        throw new Error(
+          `"${key}" is not a view param of ${descriptor.surface}. Declare it in the surface's viewParams.`
+        );
+      }
+      if (value === null || value === '') {
+        if (key in params) {
+          delete params[key];
+          changed = true;
+        }
+      } else if (params[key] !== value) {
+        params[key] = value;
+        changed = true;
+      }
+    }
+    if (!changed) return;
+    this.descriptors.set(paneId, { ...descriptor, params });
+    this.emit();
+  }
+
+  /** The view params an `open()` carried, applied to the pane it found open. */
+  private applyViewParams(paneId: string, params: SurfaceParams | undefined): void {
+    const descriptor = this.descriptors.get(paneId);
+    if (!descriptor || !params) return;
+    const patch: Record<string, string> = {};
+    for (const key of viewParamsOf(descriptor.surface)) {
+      const value = params[key];
+      if (value !== undefined && value !== '') patch[key] = value;
+    }
+    if (Object.keys(patch).length > 0) this.setViewParams(paneId, patch);
   }
 
   setTitle(paneId: string, title: string): void {

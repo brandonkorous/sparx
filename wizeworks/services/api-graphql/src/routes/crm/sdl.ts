@@ -99,6 +99,9 @@ export const crmSdl = /* GraphQL */ `
     companyName: String!
     taxId: String
     website: String
+    "The price tier the company buys on, or null for normal prices. Set it with pricingTierId."
+    pricingTierId: ID
+    "The name of that price tier, or null for normal prices."
     pricingTier: String
     creditLimit: Float!
     creditUsed: Float!

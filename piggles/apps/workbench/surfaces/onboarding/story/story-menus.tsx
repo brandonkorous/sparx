@@ -5,7 +5,7 @@ import { faSparkles } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import {
   CLAUSE,
-  INDUSTRIES,
+  matchIndustries,
   INDUSTRY_BY_SLUG,
   TENSE,
   TENSE_ORDER,
@@ -144,16 +144,20 @@ export function IndustryMenu({
   onPick,
 }: {
   current: string | null;
-  onPick: (slug: string) => void;
+  onPick: (slug: string, label?: string) => void;
 }): ReactNode {
   const [q, setQ] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
-  const hits = INDUSTRIES.filter(
-    (i) => !q || `${i.name} ${i.noun}`.toLowerCase().includes(q.toLowerCase())
-  );
+  // Word by word, so "diesel parts and repair" still surfaces Auto parts. The
+  // owner's own words are ALWAYS offered beside the matches, and kept verbatim.
+  // Their words ride on the best-matching starter's kit, so "diesel parts and
+  // repair" reads as typed AND still gets the parts-store setup.
+  const hits = matchIndustries(q);
+  const own = q.trim();
+  const kit = hits[0] ?? null;
   return (
     <>
       <input
@@ -165,44 +169,47 @@ export function IndustryMenu({
         onClick={(e) => e.stopPropagation()}
         aria-label="Search industries"
       />
-      {hits.length > 0 ? (
-        hits.map((i) => (
-          <button
-            key={i.slug}
-            type="button"
-            className={current === i.slug ? `${styles.opt} ${styles.optActive}` : styles.opt}
-            onClick={(e) => {
-              e.stopPropagation();
-              onPick(i.slug);
-            }}
-          >
-            <span className={styles.badge} data-module="builder">
-              <IndustryIcon icon={i.icon} size={16} />
-            </span>
-            <span className={styles.ot}>
-              <span>{i.name}</span>
-              <small>{i.noun}</small>
-            </span>
-          </button>
-        ))
-      ) : (
+      {hits.map((i) => (
+        <button
+          key={i.slug}
+          type="button"
+          className={current === i.slug ? `${styles.opt} ${styles.optActive}` : styles.opt}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPick(i.slug);
+          }}
+        >
+          <span className={styles.badge} data-module="builder">
+            <IndustryIcon icon={i.icon} size={16} />
+          </span>
+          <span className={styles.ot}>
+            <span>{i.name}</span>
+            <small>{i.noun}</small>
+          </span>
+        </button>
+      ))}
+      {own ? (
         <button
           type="button"
           className={styles.opt}
           onClick={(e) => {
             e.stopPropagation();
-            onPick('generic');
+            onPick(kit?.slug ?? 'generic', own);
           }}
         >
           <span className={styles.badge} data-module="builder">
             <Icon glyph={faSparkles} size={16} aria-hidden />
           </span>
           <span className={styles.ot}>
-            <span>Use “{q}”</span>
-            <small>starts from the generic kit</small>
+            <span>Use “{own}”</span>
+            <small>
+              {kit
+                ? `your words, with the ${kit.name.toLowerCase()} setup`
+                : 'your words, with the general setup'}
+            </small>
           </span>
         </button>
-      )}
+      ) : null}
     </>
   );
 }

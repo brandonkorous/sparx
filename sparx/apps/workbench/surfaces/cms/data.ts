@@ -96,6 +96,10 @@ export interface ContentEntry {
   parent_entry_id: string | null;
   created_at: string;
   updated_at: string;
+  /** Set when this page IS a policy — privacy, terms, returns and the rest. */
+  legal_kind: string | null;
+  /** Whether the owner has said they have read the starter wording. */
+  legal_reviewed: boolean;
   /** The sites this entry publishes to. **The EMPTY list means every site**, so
    *  `?? []` is not a safe default: it turns a row whose scope never arrived into
    *  a confident claim that all of them show it.
@@ -324,6 +328,9 @@ export function useDeleteEntry(id: string) {
       // flushSync inside a lifecycle method. Left alone, the deleted entry's
       // cache simply garbage-collects once the pane unmounts.
       void queryClient.invalidateQueries({ queryKey: contentKeys.lists() });
+      // A deleted policy page must leave the Legal pages list too; it stayed
+      // listed as "Needs review" until a manual refresh (sparx persona issue 041).
+      void queryClient.invalidateQueries({ queryKey: LEGAL_QUERY_ROOT });
     },
   });
 }

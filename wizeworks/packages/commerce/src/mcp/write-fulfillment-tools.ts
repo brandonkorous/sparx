@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import {
   AssignProductsToProfileInput,
+  ConvertCoreChoicesInput,
   CreateShippingProfileInput,
   CreateShippingRateInput,
   CreateShippingZoneInput,
@@ -15,14 +16,23 @@ import {
   CreateTaxZoneInput,
   DenyReturnInput,
   IssueReturnRefundInput,
+  KeepCoreDepositsInput,
+  ReceiveCoresInput,
   RecordReturnInspectionInput,
+  ReleaseCoreHoldInput,
   UpdateShippingProfileInput,
   UpdateShippingZoneInput,
   UpdateTaxZoneInput,
 } from '@wizeworks/commerce-schemas';
 
 import { closeAndFulfillPackage, fulfillPackedShipment } from '../services/pack-fulfillment';
-import { returnService, shippingService, taxService } from '../services';
+import {
+  coreChoiceService,
+  coreService,
+  returnService,
+  shippingService,
+  taxService,
+} from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
 
 const uuid = () => z.string().uuid();
@@ -235,6 +245,48 @@ const issueReturnRefund: McpToolDefinition = {
   run: (ctx, input) => returnService.issueRefund(ctx, input),
 };
 
+// ─── Core charges on rebuilt parts ────────────────────────────────────────
+
+const receiveCores: McpToolDefinition = {
+  name: 'receive_cores',
+  description:
+    'Record old parts (cores) that came back for one order line sold with a core deposit, or bought by sending the old part first. On a deposit line, `usable` cores get their deposit back: taken off the order’s open invoice first, then to the original payment or, with refundTo "account_credit", onto the customer’s account credit; `unusable` cores keep their deposit and need a `note` saying why. On a send-the-old-part-first line no money moves: each usable core lets one unit ship, and `unusable` is refused because no deposit was paid. Money movement; the server confirms first.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: ReceiveCoresInput,
+  run: (ctx, input) => coreService.receiveCores(ctx, input),
+};
+
+const releaseCoreHold: McpToolDefinition = {
+  name: 'release_core_hold',
+  description:
+    'Ship an order line bought by sending the old part FIRST before that old part arrives (a trusted account, a breakdown that cannot wait). Until then nothing on that line can be picked, packed or shipped. No money moves; the old part is still owed and stays on the cores-owed list. A `note` saying why is required and kept.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: ReleaseCoreHoldInput,
+  run: (ctx, input) => coreService.releaseHold(ctx, input),
+};
+
+const convertCoreChoices: McpToolDefinition = {
+  name: 'convert_core_choices',
+  description:
+    'Turn products whose core charge is sold as a CHOICE (a dearer "Accept Core Charge (+$150)" / "Ship now add $200 core charge" version beside a cheaper "Defer Core Charge" / "Ship when core received" one) into one version with a real refundable core deposit. Per product: the version with the plain code stays at `partPriceCents` (omit it to keep the old-part-first price, required when the product has other choices too) with `coreChargeCents` as its deposit; the other side stops being sold and its photos move over; the choice is removed; with `offerCoreFirst` (default true) the buyer can still send the old part first instead of paying the deposit. Read `list_core_choices` first and use its suggestions. Each product changes on its own and a product that cannot is reported back with why. Rewrites prices; the server confirms first.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: ConvertCoreChoicesInput,
+  run: (ctx, input) => coreChoiceService.convert(ctx, input),
+};
+
+const keepCoreDeposits: McpToolDefinition = {
+  name: 'keep_core_deposits',
+  description:
+    'Keep the core deposit on cores that are not coming back (the customer kept the old part, or it never arrived), so the line stops showing as owed. No money moves. A `note` saying why is required.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: KeepCoreDepositsInput,
+  run: (ctx, input) => coreService.keepDeposits(ctx, input),
+};
+
 // ── Warehouse hand-off (docs/146 Phase 4.6) ──────────────────────────────────
 //
 // Lives HERE rather than in @wizeworks/inventory's tool set because it writes an
@@ -289,5 +341,9 @@ export const fulfillmentWriteTools: AnyMcpTool[] = [
   markReturnReceived,
   recordReturnInspection,
   issueReturnRefund,
+  receiveCores,
+  keepCoreDeposits,
+  releaseCoreHold,
+  convertCoreChoices,
   fulfillPackage,
 ];

@@ -321,7 +321,7 @@
                           "kind": "element",
                           "tag": "p",
                           "class": "max-w-xs text-sm text-base-content",
-                          "children": ["Everything you publish and sell, in one place."],
+                          "children": ["Glad you found us. Get in touch any time."],
                           "slot": {
                             "name": "blurb",
                             "type": "text",
@@ -331,7 +331,11 @@
                             "href": "/"
                           },
                           "id": "4c353631-4462-43d7-8431-cd134718a3e1",
-                          "ord": "a1"
+                          "ord": "a1",
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.tagline"
+                          }
                         },
                         {
                           "kind": "element",

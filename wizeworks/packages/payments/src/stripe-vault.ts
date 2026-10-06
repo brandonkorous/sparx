@@ -14,6 +14,7 @@ import type Stripe from 'stripe';
 import type {
   ChargeStoredMethodParams,
   CreateSetupSessionParams,
+  SaveForLater,
   SetupSession,
   StoredChargeResult,
   VaultedMethod,
@@ -77,7 +78,10 @@ function isPermanent(err: StripeErrorish): boolean {
  *  PaymentMethod off-session unless it is attached to the Customer the mandate
  *  was captured against, so this is created up front and persisted by the
  *  caller — it is half of the (customer, method) pair a renewal needs. */
-async function resolveCustomer(stripe: Stripe, params: CreateSetupSessionParams): Promise<string> {
+async function resolveCustomer(
+  stripe: Stripe,
+  params: Pick<CreateSetupSessionParams, 'tenantId' | 'customerId' | 'customerRef' | 'metadata'>
+): Promise<string> {
   if (params.customerRef) return params.customerRef;
   const created = await stripe.customers.create({
     metadata: {
@@ -117,6 +121,69 @@ export async function createStripeSetupSession(
     ...(publishableKey ? { publishableKey } : {}),
     customerRef,
     setupRef: setupIntent.id,
+  };
+}
+
+/**
+ * The extra PaymentIntent fields that keep the card a shopper pays with
+ * (issue 739: a repeat order started at checkout).
+ *
+ * `setup_future_usage: 'off_session'` is the same mandate a SetupIntent with
+ * `usage: off_session` captures, taken during the payment instead of in a second
+ * step, and it needs the Customer the card will hang off. Cards only: a method
+ * that cannot be charged later must not be offered on a payment that promises a
+ * later charge. Returns the customer so the caller can keep it.
+ */
+export async function stripeSaveForLater(
+  stripe: Stripe,
+  tenantId: string,
+  save: SaveForLater
+): Promise<{
+  customerRef: string;
+  params: Pick<
+    Stripe.PaymentIntentCreateParams,
+    'customer' | 'setup_future_usage' | 'payment_method_types'
+  >;
+}> {
+  const customerRef = await resolveCustomer(stripe, {
+    tenantId,
+    customerId: save.customerId,
+    ...(save.customerRef ? { customerRef: save.customerRef } : {}),
+  });
+  return {
+    customerRef,
+    params: {
+      customer: customerRef,
+      setup_future_usage: 'off_session',
+      payment_method_types: ['card'],
+    },
+  };
+}
+
+/** The card a succeeded PaymentIntent kept because it was created with
+ *  `stripeSaveForLater`. Null when it kept nothing. */
+export async function vaultStripePayment(
+  stripe: Stripe,
+  paymentRef: string
+): Promise<VaultedMethod | null> {
+  const intent = await stripe.paymentIntents.retrieve(paymentRef, {
+    expand: ['payment_method'],
+  });
+  if (intent.status !== 'succeeded' && intent.status !== 'requires_capture') return null;
+  // Asked to keep it, or Stripe did not attach it to a customer: either way
+  // there is nothing a renewal could charge.
+  if (intent.setup_future_usage !== 'off_session') return null;
+  const pm = intent.payment_method;
+  if (!pm || typeof pm === 'string') return null;
+  const customerRef = typeof intent.customer === 'string' ? intent.customer : intent.customer?.id;
+  if (!customerRef) return null;
+  return {
+    methodRef: pm.id,
+    customerRef,
+    brand: pm.card?.brand ?? null,
+    last4: pm.card?.last4 ?? null,
+    expMonth: pm.card?.exp_month ?? null,
+    expYear: pm.card?.exp_year ?? null,
   };
 }
 

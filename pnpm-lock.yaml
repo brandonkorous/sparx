@@ -7,26 +7,26 @@ settings:
 catalogs:
   default:
     '@wizeworks/silicaui':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
     '@wizeworks/silicaui-behaviors':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
     '@wizeworks/silicaui-builder':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
     '@wizeworks/silicaui-charts':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
     '@wizeworks/silicaui-editor':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
     '@wizeworks/silicaui-html':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
     '@wizeworks/silicaui-react':
-      specifier: ^0.56.0
-      version: 0.56.0
+      specifier: ^0.58.2
+      version: 0.58.2
 
 importers:
 
@@ -106,10 +106,10 @@ importers:
         version: link:../../../wizeworks/packages/links
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/usage':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/usage
@@ -176,10 +176,10 @@ importers:
         version: link:../../../wizeworks/packages/legal
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       next:
         specifier: ^16.2.6
         version: 16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -294,22 +294,22 @@ importers:
         version: link:../../../wizeworks/packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-builder':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
       '@wizeworks/silicaui-charts':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/silicaui-editor':
         specifier: 'catalog:'
-        version: 0.56.0(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/site-themes
@@ -468,7 +468,7 @@ importers:
         version: 19.2.15
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react:
         specifier: ^19.0.0
         version: 19.2.6
@@ -501,10 +501,10 @@ importers:
         version: link:../../../wizeworks/packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       geist:
         specifier: ^1.3.1
         version: 1.7.1(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
@@ -577,13 +577,13 @@ importers:
         version: link:../../../wizeworks/packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/site-themes
@@ -713,22 +713,22 @@ importers:
         version: link:../../../wizeworks/packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-builder':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
       '@wizeworks/silicaui-charts':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/silicaui-editor':
         specifier: 'catalog:'
-        version: 0.56.0(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/site-themes
@@ -841,10 +841,10 @@ importers:
         version: link:../../packages/silica-corrections
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -935,13 +935,13 @@ importers:
         version: link:../../packages/silica-corrections
       '@wizeworks/silicaui-behaviors':
         specifier: 'catalog:'
-        version: 0.56.0
+        version: 0.58.2
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../../packages/site-themes
@@ -981,7 +981,7 @@ importers:
         version: 19.2.3(@types/react@19.2.15)
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       postcss:
         specifier: ^8.4.49
         version: 8.5.16
@@ -1428,7 +1428,7 @@ importers:
         version: link:../silica-catalog
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/surface-compile':
         specifier: workspace:*
         version: link:../surface-compile
@@ -1456,7 +1456,7 @@ importers:
         version: link:../cms-editor
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       lucide-react:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.6)
@@ -1487,10 +1487,10 @@ importers:
     dependencies:
       '@wizeworks/silicaui-builder':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -1498,6 +1498,40 @@ importers:
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  wizeworks/packages/cache-revalidation-worker:
+    dependencies:
+      '@prisma/client':
+        specifier: ^6.19.3
+        version: 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
+      '@wizeworks/db':
+        specifier: workspace:*
+        version: link:../db
+      '@wizeworks/events':
+        specifier: workspace:*
+        version: link:../events
+      pino:
+        specifier: ^9.5.0
+        version: 9.14.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.22.3
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1562,7 +1596,7 @@ importers:
     dependencies:
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.3
@@ -1666,7 +1700,7 @@ importers:
         version: link:../silica-corrections
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -2104,7 +2138,7 @@ importers:
         version: link:../cms-editor
       '@wizeworks/silicaui-builder':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../site-themes
@@ -3139,10 +3173,10 @@ importers:
     dependencies:
       '@wizeworks/silicaui':
         specifier: 'catalog:'
-        version: 0.56.0(tailwindcss@4.3.0)
+        version: 0.58.2(tailwindcss@4.3.0)
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
     devDependencies:
       '@types/node':
         specifier: ^25.9.1
@@ -3183,7 +3217,7 @@ importers:
         version: link:../silica-catalog
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../site-themes
@@ -3438,13 +3472,13 @@ importers:
         version: link:../silica-catalog
       '@wizeworks/silicaui-builder':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
+        version: 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@wizeworks/site-themes':
         specifier: workspace:*
         version: link:../site-themes
@@ -3527,7 +3561,7 @@ importers:
         version: link:../silica-corrections
       '@wizeworks/silicaui-react':
         specifier: 'catalog:'
-        version: 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -3987,7 +4021,7 @@ importers:
         version: link:../../packages/silica-catalog
       '@wizeworks/silicaui-html':
         specifier: 'catalog:'
-        version: 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
+        version: 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
       '@wizeworks/site-lint':
         specifier: workspace:*
         version: link:../../packages/site-lint
@@ -4062,42 +4096,14 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
-  wizeworks/services/cache-revalidation-worker:
-    dependencies:
-      '@prisma/client':
-        specifier: ^6.19.3
-        version: 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../packages/db
-      pino:
-        specifier: ^9.5.0
-        version: 9.14.0
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
-    devDependencies:
-      '@types/node':
-        specifier: ^25.9.1
-        version: 25.9.1
-      dotenv:
-        specifier: ^16.4.7
-        version: 16.6.1
-      tsx:
-        specifier: ^4.19.2
-        version: 4.22.3
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-      vitest:
-        specifier: ^4.1.7
-        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
-
   wizeworks/services/event-worker:
     dependencies:
       '@wizeworks/automation-worker':
         specifier: workspace:*
         version: link:../../packages/automation-worker
+      '@wizeworks/cache-revalidation-worker':
+        specifier: workspace:*
+        version: link:../../packages/cache-revalidation-worker
       '@wizeworks/channel-sync-worker':
         specifier: workspace:*
         version: link:../../packages/channel-sync-worker
@@ -4177,6 +4183,9 @@ importers:
       '@wizeworks/commerce':
         specifier: workspace:*
         version: link:../../packages/commerce
+      '@wizeworks/commerce-schemas':
+        specifier: workspace:*
+        version: link:../../packages/commerce-schemas
       '@wizeworks/crm':
         specifier: workspace:*
         version: link:../../packages/crm
@@ -6899,47 +6908,47 @@ packages:
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
 
-  '@wizeworks/silicaui-behaviors@0.56.0':
-    resolution: {integrity: sha512-uo8v1Gpysey3pG9RqyL00b6g4/kJGiecGLbXbWw4iIUQDapAkljbO2S2YW41HTcz+6n83uZ3vG6KSETtQDdZIQ==}
+  '@wizeworks/silicaui-behaviors@0.58.2':
+    resolution: {integrity: sha512-DH/2jV0RrKJuYiv8No/f/OYemz3g1ud7HNjLBLnaioQCVWv5w1sJSQleFP7H2w4aoFpK3cYOL84HWHPynv66jw==}
 
-  '@wizeworks/silicaui-builder@0.56.0':
-    resolution: {integrity: sha512-BtpKOMpTDwEVj3NlJ/nmwJnWUles8RIy1cQ4ZmE0Nd5il/5dY0W5ypiCQQjsSMYNwY42oiB4/DCEYXqdf6Oo1Q==}
+  '@wizeworks/silicaui-builder@0.58.2':
+    resolution: {integrity: sha512-viMJDo4dmuF5ImksO3LrdS2WvTE68jghZSmOliZWi1S6jC4UFSV4anySJEltvms2e9ZKlb/ngL5D5vGqbtIIkw==}
     peerDependencies:
       '@wizeworks/silicaui-react': '>=0.0.0'
       react: '>=18'
       react-dom: '>=18'
 
-  '@wizeworks/silicaui-charts@0.56.0':
-    resolution: {integrity: sha512-2Q4Xj4tfSMH3rsxOPnvjsjLKj8RKGRvlAbLucZjcoTHtFq5wuvQCDY7vpaicBnMxxVMwhlCwSHTV4g8uwwXIcw==}
+  '@wizeworks/silicaui-charts@0.58.2':
+    resolution: {integrity: sha512-Tz2QRKX2Yd2m2PfXTeTXnfvE8oEDap5B3PLAppHTDLQl4fEQ8HORG5whIJMIt28lbyV9ya0gDza7PO0fqNStJA==}
     peerDependencies:
       '@wizeworks/silicaui-react': '>=0.0.0'
       react: '>=18'
       react-dom: '>=18'
 
-  '@wizeworks/silicaui-editor@0.56.0':
-    resolution: {integrity: sha512-6cG5viU3s9BvmXLS5dLd5xeT92UbSNQ9THngTpUyoCZWBOvTbutvc1iBn1Zj0OpyvEy/Y4fHU6BS/YMeUB8PLQ==}
+  '@wizeworks/silicaui-editor@0.58.2':
+    resolution: {integrity: sha512-kZHM4pw2oP09eOF8u1KRbnqvA8boIyFvce4/zq33/nWKp9o3dtQOEHe4DDJNII09bonn3t6dIM5bZqjOKxEFaw==}
     peerDependencies:
       '@wizeworks/silicaui-react': '>=0.0.0'
       react: '>=18'
       react-dom: '>=18'
 
-  '@wizeworks/silicaui-html@0.56.0':
-    resolution: {integrity: sha512-eoCOeGBQurd0+NP0ZtOYJF9QIyBrXY4o+W6SJhMzQR5XECQ1GTq8Gq+EgX+96n4FleU9WoEWIoH6EnDYGTFsRw==}
+  '@wizeworks/silicaui-html@0.58.2':
+    resolution: {integrity: sha512-QPM/KhnuIc/rGL5UIkH0bJ5UxEsXPsRDvFZaQniLxev2mjK9Jw1T5Kwe5zxieAAqEESiBeBVHm50Z9pYhfmjWQ==}
     peerDependencies:
       '@wizeworks/silicaui': '>=0.0.0'
     peerDependenciesMeta:
       '@wizeworks/silicaui':
         optional: true
 
-  '@wizeworks/silicaui-panels@0.56.0':
-    resolution: {integrity: sha512-wc+RVlIZxf284wUhPqntT5D3A0UdO93Bm+JtMLoahKW+VpTZRVMm9RQRk+pNfrs7Jev3h/aw0dVxvPw+5Nv4Dw==}
+  '@wizeworks/silicaui-panels@0.58.2':
+    resolution: {integrity: sha512-3ETNqOE60pggxMuCvfDZ430MNlcBIid+0RkBqj5o0hA3hpgDpmHIuNB7mMfW4J4iyrWuiOe0UmO5NRRJIM/qLg==}
     peerDependencies:
       '@wizeworks/silicaui-react': '>=0.0.0'
       react: '>=18'
       react-dom: '>=18'
 
-  '@wizeworks/silicaui-react@0.56.0':
-    resolution: {integrity: sha512-Hztig7xEa6JYn2llwvzREMZNyvjOxcO0b91gTk8R0wOYfgRGq8tJbcutgb2BJkS0vD/Aueuw0E2vvDdKrddgMA==}
+  '@wizeworks/silicaui-react@0.58.2':
+    resolution: {integrity: sha512-NMYKv8wa5gRzMBvhuJHpT/k9Ib/eY6Fv4coeYomGsgPc1XfuoDNpfIBxz4YymkipN1canPzGrZW6/2pG3sDr9Q==}
     peerDependencies:
       '@wizeworks/silicaui': '>=0.0.0'
       react: '>=18'
@@ -6948,8 +6957,8 @@ packages:
       '@wizeworks/silicaui':
         optional: true
 
-  '@wizeworks/silicaui@0.56.0':
-    resolution: {integrity: sha512-1RU/vDCCeilBzotdvUEtlqUHCPkYz1xlshIoKPeBLBOidLwIl3+O6E/6ZOYkyynaDijJF4+fSkqvAIZbCbTNLg==}
+  '@wizeworks/silicaui@0.58.2':
+    resolution: {integrity: sha512-R74OLjUoqJdgXhUg/OLtvFQqa94BPf0UkmC/xwlTuXuGujJ9j32Gjvxodi1QHHR/FUwjW6wNZcYL/gf/2aBt3g==}
     peerDependencies:
       tailwindcss: '>=4.3.0'
 
@@ -10661,20 +10670,6 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)':
-    dependencies:
-      '@better-auth/utils': 0.4.0
-      '@better-fetch/fetch': 1.1.21
-      '@opentelemetry/semantic-conventions': 1.41.1
-      '@standard-schema/spec': 1.1.0
-      better-call: 1.3.5(zod@4.4.3)
-      jose: 5.10.0
-      kysely: 0.28.17
-      nanostores: 1.3.0
-      zod: 4.4.3
-    optionalDependencies:
-      '@opentelemetry/api': 1.9.1
-
   '@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)':
     dependencies:
       '@better-auth/utils': 0.4.0
@@ -10691,24 +10686,24 @@ snapshots:
 
   '@better-auth/drizzle-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)':
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
 
   '@better-auth/kysely-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(kysely@0.28.17)':
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
     optionalDependencies:
       kysely: 0.28.17
 
   '@better-auth/memory-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)':
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
 
   '@better-auth/mongo-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)':
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
 
   '@better-auth/passkey@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(better-auth@1.6.11(@opentelemetry/api@1.9.1)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(prisma@6.19.3(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.7))(better-call@1.3.5(zod@4.4.3))(nanostores@1.3.0)':
@@ -10725,7 +10720,7 @@ snapshots:
 
   '@better-auth/prisma-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(prisma@6.19.3(typescript@6.0.3))':
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
     optionalDependencies:
       '@prisma/client': 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
@@ -10733,7 +10728,7 @@ snapshots:
 
   '@better-auth/telemetry@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)':
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
       '@better-fetch/fetch': 1.1.21
 
@@ -13021,76 +13016,76 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@wizeworks/silicaui-behaviors@0.56.0': {}
+  '@wizeworks/silicaui-behaviors@0.58.2': {}
 
-  '@wizeworks/silicaui-builder@0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
+  '@wizeworks/silicaui-builder@0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
     dependencies:
-      '@wizeworks/silicaui': 0.56.0(tailwindcss@4.3.0)
-      '@wizeworks/silicaui-html': 0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))
-      '@wizeworks/silicaui-panels': 0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@wizeworks/silicaui-react': 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/silicaui': 0.58.2(tailwindcss@4.3.0)
+      '@wizeworks/silicaui-html': 0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))
+      '@wizeworks/silicaui-panels': 0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/silicaui-react': 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
     transitivePeerDependencies:
       - tailwindcss
 
-  '@wizeworks/silicaui-charts@0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@wizeworks/silicaui-charts@0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@wizeworks/silicaui-react': 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/silicaui-react': 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       echarts: 5.6.0
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@wizeworks/silicaui-editor@0.56.0(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@wizeworks/silicaui-editor@0.58.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@tiptap/extension-link': 2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@tiptap/pm@2.27.2)
       '@tiptap/extension-placeholder': 2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@tiptap/pm@2.27.2)
       '@tiptap/pm': 2.27.2
       '@tiptap/react': 2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@tiptap/pm@2.27.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@tiptap/starter-kit': 2.27.2
-      '@wizeworks/silicaui-react': 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/silicaui-react': 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
     transitivePeerDependencies:
       - '@tiptap/core'
 
-  '@wizeworks/silicaui-editor@0.56.0(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@wizeworks/silicaui-editor@0.58.2(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@tiptap/extension-link': 2.27.2(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@2.27.2)
       '@tiptap/extension-placeholder': 2.27.2(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@2.27.2)
       '@tiptap/pm': 2.27.2
       '@tiptap/react': 2.27.2(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@2.27.2)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@tiptap/starter-kit': 2.27.2
-      '@wizeworks/silicaui-react': 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/silicaui-react': 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
     transitivePeerDependencies:
       - '@tiptap/core'
 
-  '@wizeworks/silicaui-html@0.56.0(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))':
+  '@wizeworks/silicaui-html@0.58.2(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))':
     optionalDependencies:
-      '@wizeworks/silicaui': 0.56.0(tailwindcss@4.3.0)
+      '@wizeworks/silicaui': 0.58.2(tailwindcss@4.3.0)
 
-  '@wizeworks/silicaui-panels@0.56.0(@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@wizeworks/silicaui-panels@0.58.2(@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@wizeworks/silicaui-react': 0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@wizeworks/silicaui-react': 0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
       react-resizable-panels: 2.1.9(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
 
-  '@wizeworks/silicaui-react@0.56.0(@types/react@19.2.15)(@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@wizeworks/silicaui-react@0.58.2(@types/react@19.2.15)(@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@base-ui/react': 1.7.0(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
     optionalDependencies:
-      '@wizeworks/silicaui': 0.56.0(tailwindcss@4.3.0)
+      '@wizeworks/silicaui': 0.58.2(tailwindcss@4.3.0)
     transitivePeerDependencies:
       - '@date-fns/tz'
       - '@types/react'
       - date-fns
 
-  '@wizeworks/silicaui@0.56.0(tailwindcss@4.3.0)':
+  '@wizeworks/silicaui@0.58.2(tailwindcss@4.3.0)':
     dependencies:
       tailwindcss: 4.3.0
 
@@ -13312,7 +13307,7 @@ snapshots:
 
   better-auth@1.6.11(@opentelemetry/api@1.9.1)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(prisma@6.19.3(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.7):
     dependencies:
-      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@5.10.0)(kysely@0.28.17)(nanostores@1.3.0)
+      '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/drizzle-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)
       '@better-auth/kysely-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(kysely@0.28.17)
       '@better-auth/memory-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.1)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)

@@ -8,11 +8,29 @@
 // terms), rejecting cancels it. The bottom half is the RULES that decide when an
 // order gets held: a spending limit, either across every account or on one.
 //
+// WHO SAYS YES (sparx persona issue 087). A limit is signed off either by your
+// team or by the account's own approvers, the contacts whose role is "Can
+// approve orders", on your site. A held order can wait on either side or both,
+// and each row says which. An order only the account is asked about offers no
+// Approve here, because it is not yours to approve and the server refuses it;
+// Reject stays, because the business can always turn an order down.
+//
 // Approving and rejecting each take an optional reason, so they're a short modal
 // — nothing to return to, over in seconds — rather than a bare confirm.
+//
+// WHAT APPROVING DID TO STOCK (sparx persona issue 087). Placing a held order
+// takes its stock then. When the shelves were short, the customer is now owed
+// goods, and that stays above the queue as a warning until it is dismissed: a
+// toast that fades is not where a debt to a customer should be told. It opens
+// the Waiting list, where owed stock is handled.
 
 import { useMemo, useState } from 'react';
 import {
+  Alert,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Dialog,
@@ -47,7 +65,9 @@ import {
   approvalErrorMessage,
   formatCents,
   formatDateTime,
+  formatDay,
   queueBuyer,
+  useAccountApproverChoices,
   useApprovalAccountChoices,
   useApprovalQueue,
   useApprovalRules,
@@ -60,14 +80,28 @@ import {
   type QueueItem,
 } from './approvals-data';
 import {
+  ACCOUNT_APPROVERS,
   ANY_APPROVER,
-  approverChoice,
   approverName,
-  approverValue,
   namableApprovers,
+  signOffChoice,
+  signOffValue,
 } from '../../components/approver-choice';
 import { useTeamRoster } from '../../lib/api/team';
-import { holdQueueNotice } from './approval-hold-notice';
+import { ModuleScope } from '../../components/module-scope';
+import { holdQueueNotice, holdReasonWords } from './approval-hold-notice';
+import {
+  accountApproversOption,
+  approvedStockNotice,
+  approveOutcome,
+  approveWords,
+  queueSignOffView,
+  rejectWords,
+  ruleSignOffNote,
+  type ApprovedStockNotice,
+  type DecisionFacts,
+  type SignOffRule,
+} from './sign-off-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -82,6 +116,9 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [decision, setDecision] = useState<Decision>(null);
+  // Approvals this visit that left the customer owed goods, newest first. Kept
+  // here, not in the dialog, because the dialog is gone the moment it succeeds.
+  const [stockNotices, setStockNotices] = useState<ApprovedStockNotice[]>([]);
 
   const queue = useApprovalQueue(search.trim());
   const items = queue.data?.items ?? [];
@@ -121,9 +158,23 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
+          {stockNotices.map((notice) => (
+            <StockShortNotice
+              key={notice.orderNumber}
+              notice={notice}
+              onOpenWaitingList={() => {
+                ctx.open('inventory.backorders', {}, { target: 'beside' });
+              }}
+              onDismiss={() => {
+                setStockNotices((all) =>
+                  all.filter((one) => one.orderNumber !== notice.orderNumber)
+                );
+              }}
+            />
+          ))}
           <FormSection
             title="Waiting for sign-off"
-            description="Orders held because they went over a limit. Approve to place them, or reject to cancel."
+            description="Orders held because they went over a limit. Each says who still has to approve it: your team, the approvers at the account, or both. Rejecting cancels it, whoever it waits on."
           >
             {queue.isError ? (
               <Text className="text-sm">
@@ -170,7 +221,7 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
             )}
           </FormSection>
 
-          <RulesSection />
+          <RulesSection ctx={ctx} />
         </div>
       </div>
 
@@ -179,6 +230,12 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
           decision={decision}
           onDone={() => {
             setDecision(null);
+          }}
+          onStockShort={(notice) => {
+            setStockNotices((all) => [
+              notice,
+              ...all.filter((one) => one.orderNumber !== notice.orderNumber),
+            ]);
           }}
         />
       ) : null}
@@ -197,6 +254,10 @@ function QueueRow({
   onApprove: () => void;
   onReject: () => void;
 }) {
+  // Who it waits on (sparx persona issue 087). An order only the account is
+  // asked about is not this business's to approve, so Approve is not offered:
+  // a button the server answers with a refusal is worse than none.
+  const signOff = queueSignOffView(item.signOff, item.companyName, formatDay);
   return (
     <li className="border-base-300 flex flex-col gap-3 border-b pb-3 last:border-b-0 last:pb-0">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -214,6 +275,26 @@ function QueueRow({
           {formatCents(item.totalCents, item.currency)}
         </Text>
       </div>
+      {/* Why it is waiting: over a spending limit, over the account's credit,
+          or both (sparx persona issue 085). Each asks a different question of
+          the person signing, so each is said. */}
+      {item.holdReasons.length > 0 ? (
+        <ul className="flex flex-col gap-1">
+          {item.holdReasons.map((reason) => (
+            <li key={reason.kind}>{holdReasonWords(reason, formatCents, item.currency)}</li>
+          ))}
+        </ul>
+      ) : null}
+      {signOff.badges.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {signOff.badges.map((badge) => (
+            <Badge key={badge.label} color={badge.tone} variant="soft" size="sm">
+              {badge.label}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
+      {signOff.line ? <p>{signOff.line}</p> : null}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Text as="span" className="text-sm">
           Placed {formatDateTime(item.createdAt)}
@@ -222,24 +303,79 @@ function QueueRow({
           <Button size="sm" variant="outline" color="danger" onClick={onReject}>
             Reject
           </Button>
-          <Button size="sm" color="module" onClick={onApprove}>
-            <CheckCircle className="size-4" aria-hidden />
-            Approve
-          </Button>
+          {signOff.canApprove ? (
+            <Button size="sm" color="module" onClick={onApprove}>
+              <CheckCircle className="size-4" aria-hidden />
+              Approve
+            </Button>
+          ) : null}
         </div>
       </div>
     </li>
   );
 }
 
+/** The facts both decision dialogs are worded from. */
+function decisionFacts(item: QueueItem): DecisionFacts {
+  return {
+    orderNumber: item.orderNumber,
+    buyer: queueBuyer(item),
+    total: formatCents(item.totalCents, item.currency),
+    companyName: item.companyName,
+    signOff: item.signOff,
+    overCreditLimit: item.holdReasons.some((reason) => reason.kind === 'over_credit_limit'),
+  };
+}
+
 /* ── Decision dialog ────────────────────────────────────────────────────── */
+
+/**
+ * An approval that placed the order short of stock (sparx persona issue 087).
+ * A warning, because the business now owes the customer goods, and it stays
+ * until dismissed. The Waiting list is inventory's, so its button wears that
+ * hue; it is offered only when this customer is owed something, since that is
+ * all the Waiting list holds.
+ */
+function StockShortNotice({
+  notice,
+  onOpenWaitingList,
+  onDismiss,
+}: {
+  notice: ApprovedStockNotice;
+  onOpenWaitingList: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <Alert color="warning" variant="soft" role="status">
+      <AlertContent>
+        <AlertTitle>{notice.title}</AlertTitle>
+        <AlertDescription>{notice.detail}</AlertDescription>
+      </AlertContent>
+      <AlertActions>
+        <Button size="sm" variant="ghost" onClick={onDismiss}>
+          Dismiss
+        </Button>
+        {notice.owed ? (
+          <ModuleScope module="inventory">
+            <Button size="sm" color="module" onClick={onOpenWaitingList}>
+              Open Waiting list
+            </Button>
+          </ModuleScope>
+        ) : null}
+      </AlertActions>
+    </Alert>
+  );
+}
 
 function DecisionDialog({
   decision,
   onDone,
+  onStockShort,
 }: {
   decision: NonNullable<Decision>;
   onDone: () => void;
+  /** Placing it took stock the shelves did not have (sparx persona issue 087). */
+  onStockShort: (notice: ApprovedStockNotice) => void;
 }) {
   const toast = useToast();
   const approve = useApproveOrder();
@@ -247,34 +383,54 @@ function DecisionDialog({
   const [reason, setReason] = useState('');
 
   const isApprove = decision.action === 'approve';
-  const mutation = isApprove ? approve : reject;
-  const buyer = queueBuyer(decision.item);
+  const pending = isApprove ? approve.isPending : reject.isPending;
+  const { item } = decision;
+  const facts = decisionFacts(item);
+
+  const onError = (error: unknown) => {
+    // The server's own sentence: a refusal names who the order is waiting
+    // for, which is the one thing worth reading here.
+    toast.add({
+      title: isApprove ? 'Could not approve this order' : 'Could not reject this order',
+      description: approvalErrorMessage(error, 'Nothing was changed.'),
+      type: 'error',
+    });
+  };
 
   const submit = () => {
-    mutation.mutate(
-      { orderId: decision.item.id, reason: reason.trim() === '' ? undefined : reason.trim() },
-      {
-        onSuccess: () => {
+    const input = { orderId: item.id, reason: reason.trim() === '' ? undefined : reason.trim() };
+    if (isApprove) {
+      approve.mutate(input, {
+        onSuccess: (result) => {
           onDone();
+          // Read what the server did, not what was asked: approving the
+          // business's half of an order the account has yet to sign leaves it
+          // waiting, and "placed" would be a promise about an order that has
+          // not gone anywhere (sparx persona issue 087).
+          const outcome = approveOutcome(result, item.signOff, item.companyName);
           afterPaneChange(() => {
-            toast.add({
-              title: isApprove
-                ? `Order ${decision.item.orderNumber} approved`
-                : `Order ${decision.item.orderNumber} rejected`,
-              description: isApprove ? 'The order is placed.' : 'The order has been canceled.',
-              type: 'success',
-            });
+            toast.add({ ...outcome, type: 'success' });
           });
+          const short = approvedStockNotice(result, queueBuyer(item));
+          if (short) onStockShort(short);
         },
-        onError: (error) => {
+        onError,
+      });
+      return;
+    }
+    reject.mutate(input, {
+      onSuccess: () => {
+        onDone();
+        afterPaneChange(() => {
           toast.add({
-            title: isApprove ? 'Could not approve this order' : 'Could not reject this order',
-            description: approvalErrorMessage(error, 'Nothing was changed.'),
-            type: 'error',
+            title: `Order ${item.orderNumber} rejected`,
+            description: 'The order has been canceled.',
+            type: 'success',
           });
-        },
-      }
-    );
+        });
+      },
+      onError,
+    });
   };
 
   return (
@@ -286,11 +442,15 @@ function DecisionDialog({
         }}
       >
         <DialogContent className="max-w-md">
-          <DialogTitle>{isApprove ? 'Approve this order?' : 'Reject this order?'}</DialogTitle>
+          <DialogTitle>
+            {!isApprove
+              ? 'Reject this order?'
+              : item.signOff.waitingOn.includes('account')
+                ? 'Approve your side of this order?'
+                : 'Approve this order?'}
+          </DialogTitle>
           <DialogDescription>
-            {isApprove
-              ? `Order ${decision.item.orderNumber} from ${buyer}, for ${formatCents(decision.item.totalCents, decision.item.currency)}, will be placed${''}. If they're on terms, it will be invoiced.`
-              : `Order ${decision.item.orderNumber} from ${buyer}, for ${formatCents(decision.item.totalCents, decision.item.currency)}, will be canceled. This can't be undone.`}
+            {isApprove ? approveWords(facts) : rejectWords(facts, formatDay)}
           </DialogDescription>
 
           <div className="py-2">
@@ -319,14 +479,14 @@ function DecisionDialog({
 
           <DialogFooter>
             <DialogClose>
-              <Button color="neutral" variant="ghost" size="sm">
+              <Button variant="ghost" size="sm">
                 Cancel
               </Button>
             </DialogClose>
             <Button
               color={isApprove ? 'module' : 'danger'}
               size="sm"
-              loading={mutation.isPending}
+              loading={pending}
               onClick={submit}
             >
               {isApprove ? 'Approve order' : 'Reject order'}
@@ -340,7 +500,7 @@ function DecisionDialog({
 
 /* ── Rules ──────────────────────────────────────────────────────────────── */
 
-function RulesSection() {
+function RulesSection({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
   const rulesQuery = useApprovalRules();
@@ -360,6 +520,11 @@ function RulesSection() {
   const roster = useTeamRoster();
   const people = useMemo(() => namableApprovers(roster.members), [roster.members]);
 
+  // Who at the chosen account can approve, so the new limit's "their
+  // approvers" choice can name them before it is saved (sparx persona issue
+  // 087). The rules list only names them for limits that already exist.
+  const chosenApprovers = useAccountApproverChoices(accountId);
+
   const rules = rulesQuery.data ?? [];
 
   const accountItems = useMemo(
@@ -372,6 +537,17 @@ function RulesSection() {
     ],
     [accountsQuery.data]
   );
+
+  // The new limit, as the who-signs words read a saved one.
+  const draftSigner: SignOffRule = {
+    signOffBy: signOffChoice(approver).signOffBy,
+    accountName:
+      accountId === ''
+        ? null
+        : (accountItems.find((item) => item.value === accountId)?.label ?? 'This account'),
+    accountApprovers: accountId === '' ? null : (chosenApprovers.data ?? null),
+  };
+  const draftNote = ruleSignOffNote(draftSigner);
 
   /**
    * Removing a limit is the one action here that cannot be undone, and the
@@ -411,7 +587,9 @@ function RulesSection() {
       {
         accountId: accountId === '' ? null : accountId,
         minAmountCents: Math.round(amount * 100),
-        requiredApproverUserId: approverChoice(approver).requiredApproverUserId,
+        // Both halves, always: the server refuses the account signing beside a
+        // named teammate, and a half left out would keep what it was.
+        ...signOffChoice(approver),
       },
       {
         onSuccess: () => {
@@ -432,10 +610,14 @@ function RulesSection() {
     );
   };
 
+  const openAccount = (id: string) => {
+    ctx.open('b2b.account.detail', { id }, { target: 'beside' });
+  };
+
   return (
     <FormSection
       title="When sign-off is needed"
-      description="Hold any order over a set amount for approval: across every account, or just one."
+      description="Hold any order over a set amount until someone says yes: your team, or the approvers at the account, on your site. Set it for every account, or just one."
       action={
         !adding ? (
           <Button
@@ -486,24 +668,34 @@ function RulesSection() {
                 }
               />
             </Field>
-            <Field>
+            <Field className="@md:col-span-2">
               <FieldLabel>Who signs it off</FieldLabel>
               <FieldControl
                 render={
                   <NativeSelect
                     color="module"
+                    className="max-w-full"
                     value={approver}
                     onChange={(event) => {
                       setApprover(event.target.value);
                     }}
                   >
-                    <ApproverOptions people={people} />
+                    <ApproverOptions
+                      people={people}
+                      accountOption={accountApproversOption(draftSigner)}
+                    />
                   </NativeSelect>
                 }
               />
-              <FieldDescription>
-                Naming one person means only they can approve or turn down an order this rule holds.
-              </FieldDescription>
+              {draftNote === null ? (
+                <FieldDescription>
+                  {draftSigner.signOffBy === 'account'
+                    ? 'The approvers at the account say yes on your site.'
+                    : 'Naming one person means only they can approve or turn down an order this rule holds.'}
+                </FieldDescription>
+              ) : (
+                <FieldDescription>{draftNote.text}</FieldDescription>
+              )}
             </Field>
           </div>
           <div className="flex items-center gap-2">
@@ -519,7 +711,6 @@ function RulesSection() {
             <Button
               size="sm"
               variant="ghost"
-              color="neutral"
               onClick={() => {
                 setAdding(false);
               }}
@@ -551,12 +742,11 @@ function RulesSection() {
               rule={rule}
               people={people}
               busy={updateRule.isPending || deleteRule.isPending}
+              onOpenAccount={openAccount}
               onApprover={(next) => {
                 updateRule.mutate(
-                  {
-                    id: rule.id,
-                    requiredApproverUserId: approverChoice(next).requiredApproverUserId,
-                  },
+                  // Both halves, always (see onCreate).
+                  { id: rule.id, ...signOffChoice(next) },
                   {
                     onError: (error) => {
                       toast.add({
@@ -605,29 +795,41 @@ function RulesSection() {
 }
 
 /**
- * "Anyone who can approve", then the team by name. A rule that names somebody
- * no longer on the team keeps them listed, so opening the screen does not
- * quietly change who an order waits for.
+ * Your team first ("Anyone who can approve", then the team by name), then the
+ * account's own approvers. A rule that names somebody no longer on the team
+ * keeps them listed, so opening the screen does not quietly change who an order
+ * waits for.
+ *
+ * Grouped, because "Anyone who can approve" and "Wasatch's approvers" answer
+ * the same question from two different businesses, and the group labels say
+ * which side of the counter each one stands on (sparx persona issue 087).
  */
 function ApproverOptions({
   people,
   named,
+  accountOption,
 }: {
   people: ReturnType<typeof namableApprovers>;
   named?: { userId: string; name: string | null } | null;
+  accountOption: string;
 }) {
   const gone = named && !people.some((person) => person.userId === named.userId) ? named : null;
   return (
     <>
-      <option value={ANY_APPROVER}>Anyone who can approve</option>
-      {people.map((person) => (
-        <option key={person.userId} value={`user:${person.userId}`}>
-          {approverName(person)}
-        </option>
-      ))}
-      {gone ? (
-        <option value={`user:${gone.userId}`}>{gone.name ?? 'The person this rule names'}</option>
-      ) : null}
+      <optgroup label="Your team">
+        <option value={ANY_APPROVER}>Anyone who can approve</option>
+        {people.map((person) => (
+          <option key={person.userId} value={`user:${person.userId}`}>
+            {approverName(person)}
+          </option>
+        ))}
+        {gone ? (
+          <option value={`user:${gone.userId}`}>{gone.name ?? 'The person this rule names'}</option>
+        ) : null}
+      </optgroup>
+      <optgroup label="The account">
+        <option value={ACCOUNT_APPROVERS}>{accountOption}</option>
+      </optgroup>
     </>
   );
 }
@@ -636,6 +838,7 @@ function RuleRow({
   rule,
   people,
   onApprover,
+  onOpenAccount,
   busy,
   onToggle,
   onDelete,
@@ -644,22 +847,59 @@ function RuleRow({
   busy: boolean;
   people: ReturnType<typeof namableApprovers>;
   onApprover: (next: string) => void;
+  onOpenAccount: (accountId: string) => void;
   onToggle: (next: boolean) => void;
   onDelete: () => void;
 }) {
+  const note = ruleSignOffNote(rule);
   return (
-    <li className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 border-b pb-3 last:border-b-0 last:pb-0">
-      <span className="min-w-0 flex-1">
-        <span className="block font-medium">Over {rule.minAmountFormatted}</span>
-        <Text as="span" className="block text-sm">
-          {rule.accountName ?? 'Every account'}
-        </Text>
-      </span>
+    // Two lines, not one wrapping strip. The who-signs select is as wide as its
+    // longest option, and "Wasatch Front Utility Contractors, LLC's approvers
+    // (Teodora Vukić-Hale)" squeezed the account name beside it to one word a
+    // line and pushed the switch and bin onto a line of their own. So what the
+    // limit IS and its on/off controls share the top line, and the select sits
+    // under them at a capped width, where a long option truncates inside the
+    // closed control; the note below the row says it in full (sparx persona
+    // issue 087).
+    <li className="border-base-300 flex flex-col gap-2 border-b pb-3 last:border-b-0 last:pb-0">
+      <div className="flex items-start gap-3">
+        <span className="min-w-0 flex-1 break-words">
+          <span className="block font-medium">Over {rule.minAmountFormatted}</span>
+          <Text as="span" className="block text-sm">
+            {rule.accountName ?? 'Every account'}
+          </Text>
+        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          {/* State on both sides of the switch: a rule that is holding orders
+              says so as plainly as one that is not, and neither is gray. */}
+          <Badge color={rule.isActive ? 'success' : 'warning'} variant="soft" size="sm">
+            {rule.isActive ? 'On' : 'Off'}
+          </Badge>
+          <Switch
+            color="module"
+            checked={rule.isActive}
+            disabled={busy}
+            aria-label={`Turn this rule ${rule.isActive ? 'off' : 'on'}`}
+            onCheckedChange={onToggle}
+          />
+          <Button
+            size="sm"
+            variant="ghost"
+            color="danger"
+            shape="square"
+            disabled={busy}
+            aria-label="Remove this rule"
+            onClick={onDelete}
+          >
+            <Trash2 className="size-4" aria-hidden />
+          </Button>
+        </div>
+      </div>
       <NativeSelect
         color="module"
         size="sm"
-        className="w-auto"
-        value={approverValue(rule)}
+        className="w-full max-w-md"
+        value={signOffValue(rule)}
         disabled={busy}
         aria-label={`Who signs off orders over ${rule.minAmountFormatted}`}
         onChange={(event) => {
@@ -668,6 +908,7 @@ function RuleRow({
       >
         <ApproverOptions
           people={people}
+          accountOption={accountApproversOption(rule)}
           named={
             rule.requiredApproverUserId
               ? { userId: rule.requiredApproverUserId, name: rule.requiredApproverName }
@@ -675,29 +916,30 @@ function RuleRow({
           }
         />
       </NativeSelect>
-      {!rule.isActive ? (
-        <Badge color="neutral" variant="soft" size="sm">
-          Off
-        </Badge>
-      ) : null}
-      <Switch
-        color="module"
-        checked={rule.isActive}
-        disabled={busy}
-        aria-label={`Turn this rule ${rule.isActive ? 'off' : 'on'}`}
-        onCheckedChange={onToggle}
-      />
-      <Button
-        size="sm"
-        variant="ghost"
-        color="danger"
-        shape="square"
-        disabled={busy}
-        aria-label="Remove this rule"
-        onClick={onDelete}
-      >
-        <Trash2 className="size-4" aria-hidden />
-      </Button>
+      {/* Who actually signs, when it is the account. A limit set to an account
+          with nobody who can approve still holds orders, but your team signs
+          them, and the row says so with the way to change it rather than let
+          the option's name imply the account is signing. */}
+      {note === null ? null : note.tone === 'warning' && rule.accountId ? (
+        <Alert color="warning" variant="soft">
+          <AlertContent>
+            <AlertDescription>{note.text}</AlertDescription>
+          </AlertContent>
+          <AlertActions>
+            <Button
+              size="sm"
+              color="warning"
+              onClick={() => {
+                if (rule.accountId) onOpenAccount(rule.accountId);
+              }}
+            >
+              Open the account
+            </Button>
+          </AlertActions>
+        </Alert>
+      ) : (
+        <p>{note.text}</p>
+      )}
     </li>
   );
 }

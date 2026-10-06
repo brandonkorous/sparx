@@ -29,6 +29,9 @@ model Cart {
   taxTotalCents             Int @default(0) @map("tax_total_cents")
   giftCardAppliedCents      Int @default(0) @map("gift_card_applied_cents")
   accountCreditAppliedCents Int @default(0) @map("account_credit_applied_cents")
+  // Refundable core deposits on the lines (Σ coreChargeCents × quantity). Kept
+  // apart from the subtotal: no discount, tax or surcharge is worked out on it.
+  coreChargeTotalCents      Int @default(0) @map("core_charge_total_cents")
   totalCents                Int @default(0) @map("total_cents")
 
   // Per-tenant pricing trace — every step of the resolution pipeline is
@@ -64,8 +67,13 @@ model CartItem {
   variantId String @map("variant_id") @db.Uuid
   quantity  Int    @default(1)
 
-  unitPriceCents Int @map("unit_price_cents")
-  subtotalCents  Int @map("subtotal_cents")
+  unitPriceCents  Int     @map("unit_price_cents")
+  subtotalCents   Int     @map("subtotal_cents")
+  // The variant's core charge per unit when the line was priced, snapshot like
+  // the price, so an owner's edit never moves a basket already open.
+  coreChargeCents Int?    @map("core_charge_cents")
+  // Bought by sending the old part first (issue 057): no deposit on this line.
+  coreFirst       Boolean @default(false) @map("core_first")
 
   // Soft hold against this line (docs/100 §2.4, P2 sell path). Set when the
   // inventory module is active: addItem reserves stock (cart TTL), updateItem
@@ -79,8 +87,14 @@ model CartItem {
   // Configurator payload (when the variant is the resolution of a
   // configurable parent). Stored intact so the line item can be
   // re-resolved on price refresh.
-  configurationPayload Json? @map("configuration_payload")
-  attributes           Json  @default("{}")
+  configurationPayload Json?   @map("configuration_payload")
+  // The shopper asked for this line on repeat (issue 739): deliver it again
+  // every `repeatIntervalCount` `repeatIntervalUnit`s, on the card the first
+  // payment saves. Both null = bought once. Both set or both null, enforced in
+  // the database. Validated against the product's `repeatOptions` on write.
+  repeatIntervalUnit   String? @map("repeat_interval_unit") @db.VarChar(10)
+  repeatIntervalCount  Int?    @map("repeat_interval_count")
+  attributes           Json    @default("{}")
 
   // Per-line trace from pricingService.resolve.
   unitPriceTrace Json @default("[]") @map("unit_price_trace")

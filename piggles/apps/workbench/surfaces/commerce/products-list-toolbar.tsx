@@ -13,14 +13,37 @@ import { faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { PaneToolbar } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { DownloadButton } from '../../components/download-button';
-import type { ProductSortKey, SortDirection } from './products-data';
-import { FILTERS, type FilterValue, type Modifiers } from './products-list-shared';
+import type { ProductSortKey, ProductTypeInUse, SortDirection } from './products-data';
+import { EVERY_KIND, FILTERS, type FilterValue, type Modifiers } from './products-list-shared';
+
+/** Kind of product, once there is more than one: a select, since a parts
+ *  catalog has eighteen kinds and eighteen chips are taller than the table. */
+function kindFilter(kinds: ProductTypeInUse[], kind: string, onKind: (next: string) => void) {
+  if (kinds.length < 2) return [];
+  return [
+    {
+      label: 'Kind of product',
+      key: 'productType',
+      value: kind,
+      onValueChange: (next: string) => onKind(next || EVERY_KIND),
+      options: [
+        { value: EVERY_KIND, label: 'Every kind' },
+        ...kinds.map((entry) => ({ value: entry.name, label: entry.name })),
+      ],
+      neutralValue: EVERY_KIND,
+      present: 'select' as const,
+    },
+  ];
+}
 
 export function ProductsListToolbar({
   search,
   onSearch,
   filter,
   onFilter,
+  kinds,
+  kind,
+  onKind,
   sort,
   onSort,
   onCreate,
@@ -32,6 +55,9 @@ export function ProductsListToolbar({
   onSearch: (next: string) => void;
   filter: FilterValue;
   onFilter: (next: FilterValue) => void;
+  kinds: ProductTypeInUse[];
+  kind: string;
+  onKind: (next: string) => void;
   sort: { key: ProductSortKey; dir: SortDirection };
   onSort: (next: { key: ProductSortKey; dir: SortDirection }) => void;
   onCreate: (event: Modifiers) => void;
@@ -42,12 +68,12 @@ export function ProductsListToolbar({
   return (
     <PaneToolbar
       label="Product list controls"
-      activeControls={filter === 'all' ? 0 : 1}
+      activeControls={(filter === 'all' ? 0 : 1) + (kind === EVERY_KIND ? 0 : 1)}
       search={
         <SearchInput
           size="sm"
           aria-label="Search products"
-          placeholder="Product name or brand…"
+          placeholder="Name, code or brand…"
           value={search}
           onValueChange={(next) => {
             onSearch(next);
@@ -66,6 +92,7 @@ export function ProductsListToolbar({
           },
           options: FILTERS,
         },
+        ...kindFilter(kinds, kind, onKind),
       ]}
       primaryAction={{
         label: 'Add a product',

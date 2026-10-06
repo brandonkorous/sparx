@@ -18,12 +18,19 @@ import {
   type ScannedRow,
   type TenantCtx,
 } from '@wizeworks/automation';
-import { b2bEscalationService } from '@wizeworks/crm/services';
-import { NOT_OWED_STAGE_TYPES, PRICE_OFFER_WORKFLOW_SLUGS } from '@wizeworks/crm';
+import { accountOrderGate, b2bEscalationService } from '@wizeworks/crm/services';
+import {
+  billingDocumentMail,
+  NOT_OWED_STAGE_TYPES,
+  poNumberOf,
+  PRICE_OFFER_WORKFLOW_SLUGS,
+} from '@wizeworks/crm';
+import { resolveSiteOrigin, siteUrl } from '@wizeworks/db/site-origin';
+import { enqueueSend } from '@wizeworks/email-sends';
 import { publishEvent } from '@wizeworks/events';
 import { z } from 'zod';
 
-import { requireEntityId } from './entity.js';
+import { optionalEntityId, requireEntityId } from './entity.js';
 
 /** Prisma Decimal | number | null → number | null. */
 function num(v: unknown): number | null {
@@ -191,4 +198,249 @@ export const installB2bActions = installOnce((): void => {
       };
     },
   });
+
+  // Email the invoice to whoever it bills (sparx persona issue 085).
+  //
+  // The /b2b page promises "orders on terms invoice automatically with the
+  // buyer's PO number". The invoice was written automatically and then sat
+  // there: nothing sent it, because only the business's Send button ever did.
+  // This sends the SAME email that button does (`billingDocumentMail`, one
+  // builder for both), queued like every other automated email so suppression
+  // is honored and the shop's sender is applied at dispatch, and records that it
+  // went so the order page stops saying "Not sent yet".
+  //
+  // A document with no address to send to refuses, and the run says why: an
+  // invoice nobody can receive is a fact the business needs, not a skip.
+  registerAction({
+    type: 'b2b.send_invoice',
+    module: 'b2b',
+    gates: [],
+    manifestNote:
+      'Transactional: emails the triggering invoice to its bill-to through the queued send path (suppression honored, sender applied at dispatch); global gates suffice',
+    async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
+      const invoiceId = requireEntityId(effect.fields, 'invoice.id', 'b2b.send_invoice');
+      const svc = { tenantId: ctx.tenantId, tx: ctx.tx };
+      const email = await billingDocumentMail.billingDocumentEmail(svc, invoiceId);
+      const { enqueued, suppressed } = await enqueueSend(
+        { tenantId: ctx.tenantId, tx: ctx.tx },
+        {
+          recipient: email.to,
+          customerId: optionalEntityId(effect.fields, 'customer.id') ?? null,
+          propertyId: email.propertyId,
+          scope: 'transactional',
+          // One invoice email per invoice, however often the run is retried.
+          dedupeKey: `b2b.send_invoice:${invoiceId}`,
+          body: { template: 'invoice-sent', props: email.props },
+          variables: { source: 'automation' },
+        }
+      );
+      if (enqueued) {
+        await billingDocumentMail.markBillingDocumentSent(svc, invoiceId, {
+          to: email.to,
+          newDueAt: email.newDueAt,
+        });
+      }
+      return { invoiceId, recipient: email.to, enqueued, suppressed };
+    },
+  });
+
+  registerAction({
+    type: 'b2b.ask_account_approvers',
+    module: 'b2b',
+    gates: [],
+    manifestNote:
+      'Transactional: emails the account’s own approvers about the triggering held order through the queued send path (suppression honored, sender applied at dispatch); global gates suffice',
+    execute: askAccountApprovers,
+  });
 });
+
+/** "$58.00", in the order's own currency. */
+function money(amount: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${currency}`;
+  }
+}
+
+/** "3 CS × $96.00", the line as it was bought. `quantity` is always in the base
+ *  stocking unit, so a line bought by the case reads back as cases. */
+function orderLineSubtitle(
+  item: { quantity: number; unitPrice: unknown; uomCode: string | null; unitsPerUom: number },
+  currency: string
+): string {
+  const unit = Number(item.unitPrice);
+  if (item.uomCode && item.unitsPerUom > 1 && item.quantity % item.unitsPerUom === 0) {
+    const bought = item.quantity / item.unitsPerUom;
+    return `${String(bought)} ${item.uomCode} × ${money(unit * item.unitsPerUom, currency)}`;
+  }
+  return `${String(item.quantity)} × ${money(unit, currency)}`;
+}
+
+/**
+ * Ask the account's own approvers to sign off a held order (sparx persona
+ * issue 087).
+ *
+ * A business can put somebody on a trade account as "Can approve orders" and
+ * set a spending limit the account signs off. The order was held, and the
+ * person whose role says they approve orders was never told. This emails each
+ * of them, except whoever placed it (nobody signs off their own order), with the
+ * order and one button to it on the business's site.
+ *
+ * Who is asked is read from the order NOW, through the same sign-off rule the
+ * Approve buttons use, not from the event: by the time this runs the account
+ * may have signed, the order may have been turned down, or the limit may have
+ * changed. Asking somebody to approve an order that is not waiting on them sends
+ * them to a page with nothing to do.
+ *
+ * An approver with no email address cannot be asked, and the run says so by
+ * name. When NONE of them can, it fails, because the order then waits on people
+ * who will never hear about it, and that is a fact the business needs.
+ *
+ * Exported for its test.
+ */
+export async function askAccountApprovers(
+  ctx: TenantCtx,
+  effect: EffectInput
+): Promise<ActionOutput> {
+  const orderId = requireEntityId(effect.fields, 'order.id', 'b2b.ask_account_approvers');
+  const order = await ctx.tx.order.findUnique({
+    where: { id: orderId },
+    select: {
+      id: true,
+      orderNumber: true,
+      status: true,
+      customerId: true,
+      propertyId: true,
+      currency: true,
+      metadata: true,
+      total: true,
+      subtotal: true,
+      discountTotal: true,
+      taxTotal: true,
+      shippingTotal: true,
+      surchargeTotal: true,
+      coreChargeTotal: true,
+      customer: { select: { companyId: true, firstName: true, lastName: true, email: true } },
+      items: {
+        select: {
+          name: true,
+          quantity: true,
+          unitPrice: true,
+          lineTotal: true,
+          uomCode: true,
+          unitsPerUom: true,
+        },
+        orderBy: { createdAt: 'asc' },
+      },
+    },
+  });
+  if (order?.status !== 'pending_approval') {
+    return { orderId, asked: [], skipped: 'The order is no longer waiting for anybody.' };
+  }
+  const accountId = order.customer.companyId ?? null;
+  if (!accountId) {
+    return { orderId, asked: [], skipped: 'The order is not on a wholesale account.' };
+  }
+
+  const totalCents = Math.round(Number(order.total) * 100);
+  const signOff = await accountOrderGate.loadOrderSignOff(ctx.tx, ctx.tenantId, {
+    customerId: order.customerId,
+    accountId,
+    propertyId: order.propertyId ?? null,
+    totalCents,
+    metadata: order.metadata,
+  });
+  if (!signOff.state.waitingOn.includes('account')) {
+    return {
+      orderId,
+      asked: [],
+      skipped: 'The order is not waiting for the account to approve it.',
+    };
+  }
+
+  const account = await ctx.tx.company.findUnique({
+    where: { id: accountId },
+    select: { companyName: true },
+  });
+  const accountName = account?.companyName ?? 'your account';
+  // The site's own name, as every email to a trade buyer is signed: the
+  // business they buy from, never the platform.
+  const site = order.propertyId
+    ? await ctx.tx.property.findUnique({ where: { id: order.propertyId }, select: { name: true } })
+    : null;
+  const tenant = site
+    ? null
+    : await ctx.tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { name: true } });
+  const fromName = site?.name ?? tenant?.name ?? 'us';
+  // The order on the site it was placed on, where an approver signs it.
+  const orderUrl = siteUrl(
+    await resolveSiteOrigin(ctx.tx, ctx.tenantId, order.propertyId),
+    `/account/b2b/${accountId}/orders/${order.id}`
+  );
+
+  const currency = order.currency;
+  const limitCents = signOff.rule?.minAmountCents ?? null;
+  const baseProps = {
+    fromName,
+    accountName,
+    placedBy: accountOrderGate.signerName(order.customer),
+    orderNumber: order.orderNumber,
+    total: Number(order.total),
+    currency,
+    limit: limitCents === null ? null : limitCents / 100,
+    poNumber: poNumberOf(order.metadata),
+    businessToo: signOff.state.needs.includes('business'),
+    lines: order.items.map((item) => ({
+      title: item.name,
+      subtitle: orderLineSubtitle(item, currency),
+      amount: money(Number(item.lineTotal), currency),
+    })),
+    summary: billingDocumentMail.invoiceSummaryRows(
+      {
+        subtotal: Number(order.subtotal),
+        discountTotal: Number(order.discountTotal),
+        taxTotal: Number(order.taxTotal),
+        shippingTotal: Number(order.shippingTotal),
+        surchargeTotal: Number(order.surchargeTotal),
+        coreChargeTotal: Number(order.coreChargeTotal),
+        // Nothing is paid on an order nobody has said yes to.
+        amountPaid: 0,
+      },
+      currency
+    ),
+    orderUrl,
+  };
+
+  const reachable = signOff.approvers.filter((a) => a.email);
+  const unreachable = signOff.approvers.filter((a) => !a.email).map((a) => a.name);
+  if (reachable.length === 0) {
+    throw new Error(
+      `Nobody who can approve orders at ${accountName} has an email address, so nobody was asked to approve order ${order.orderNumber}. Add an email address to ${unreachable.join(', ') || 'an approver'} on the account, or approve it for them under Approvals.`
+    );
+  }
+
+  const asked: string[] = [];
+  const suppressed: string[] = [];
+  for (const approver of reachable) {
+    const result = await enqueueSend(
+      { tenantId: ctx.tenantId, tx: ctx.tx },
+      {
+        recipient: approver.email!,
+        customerId: approver.customerId,
+        propertyId: order.propertyId ?? null,
+        scope: 'transactional',
+        // One ask per approver per order, however often the run is retried.
+        dedupeKey: `b2b.ask_account_approvers:${order.id}:${approver.customerId}`,
+        body: {
+          template: 'order-approval-request',
+          props: { ...baseProps, approverName: approver.name },
+        },
+        variables: { source: 'automation' },
+      }
+    );
+    if (result.enqueued) asked.push(approver.name);
+    if (result.suppressed) suppressed.push(approver.name);
+  }
+  return { orderId, asked, suppressed, unreachable };
+}

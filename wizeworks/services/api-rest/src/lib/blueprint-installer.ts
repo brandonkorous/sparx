@@ -52,6 +52,7 @@ import { isAssetRef, type Blueprint } from '@wizeworks/blueprints';
 import { decodeBindingRef, encodeBindingRef, type SilicaNode } from '@wizeworks/builder-schemas';
 
 import { captureBaselines, resolveBlueprintArtifacts } from './blueprint-baseline.js';
+import { replacedInstallIds } from './blueprint-replaced.js';
 
 /** What the person installing chose, as distinct from what the design declares. */
 export interface InstallOptions {
@@ -1883,6 +1884,9 @@ export async function deleteInstall(ctxIn: InstallContext, installId: string): P
 
   const warn = (label: string, id: string) => (err: unknown) =>
     logger.warn({ err, id }, `uninstall: ${label} delete failed (left in place)`);
+  // Read BEFORE the pages go: once this install's own pages are deleted below,
+  // every install looks replaced.
+  const replacedBeforeRemoval = (await replacedInstallIds(tenantId, [installId])).has(installId);
 
   // Reverse dependency order, so each delete's "is placed" / "has descendants" /
   // FK guard is already satisfied by the time we reach the parent.
@@ -1900,12 +1904,19 @@ export async function deleteInstall(ctxIn: InstallContext, installId: string): P
   // keeps their layout (and any chrome they authored on top), minus the blueprint's
   // frame. Deleting the active layout outright would leave the property with no
   // chrome at all and block a clean reinstall.
-  await withTenant(ctx, (tx) =>
-    tx.builderLayout.updateMany({
-      where: { propertyId, isActive: true },
-      data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
-    })
-  ).catch(warn('frame clear', propertyId));
+  //
+  // Not when a later design replaced this one: the frame on the site now is THAT
+  // design's, or one she has made since, and clearing it would take her current
+  // header and footer away for a design that has nothing left on the site
+  // (persona issue 273).
+  if (!replacedBeforeRemoval) {
+    await withTenant(ctx, (tx) =>
+      tx.builderLayout.updateMany({
+        where: { propertyId, isActive: true },
+        data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+      })
+    ).catch(warn('frame clear', propertyId));
+  }
   // COMMERCE: only what this install MINTED is removed. The commerce slice reconciles
   // by natural key, so these maps also hold rows that already belonged to the tenant —
   // and removing a design from one site used to soft-delete the products and delete the

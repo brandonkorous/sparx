@@ -40,6 +40,8 @@ const CONTACT_TOPICS = [
   'crm.customer.created',
   'crm.customer.updated',
   'crm.customer.subscribed',
+  // A person who arrived through a form, a booking or a checkout (issue 086).
+  'crm.customer.captured',
   'email.opened',
   'email.clicked',
   'crm.engagement.received',

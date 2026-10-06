@@ -1,11 +1,22 @@
 'use client';
 
-// B2B portal — quote list for one account. A quote IS a BillingDocument on
-// the system `b2b-quotes` workflow (docs/87 convergence): its state is the
-// stage it's sitting on (Draft/Submitted/Under Review/Quoted/Accepted/
-// Declined/Expired), not a standalone status enum. This page lists quotes,
-// lets a writer role (primary contact / buyer) submit a new RFQ, and act
-// (accept/decline) once the merchant has priced one ("Quoted").
+// Wholesale account: the quotes on one trade account. A quote IS a
+// BillingDocument on the system `b2b-quotes` workflow (docs/87 convergence):
+// its state is the stage it is on (Draft, Submitted, Under Review, Quoted,
+// Accepted, Declined, Expired), not a standalone status enum. A buyer or the
+// primary contact can ask for a new quote here, and can accept or decline one
+// once the shop has priced it ("Quoted").
+//
+// Asking for a quote is a request the buyer BUILDS (sparx persona issue 086):
+// items arrive from "Add to quote request" on product pages or are added here,
+// with delivery needs, a PO number and notes, and the shop sees it only when it
+// is sent. The request being built is `QuoteRequestBuilder`; sent requests are
+// quotes and are listed below it.
+//
+// Every quote says where it stands in a sentence and lists what is on it.
+// Before the shop has priced a quote its line prices are placeholders ($0.00 for
+// a typed line, the list price for a catalog one), so they are not shown as a
+// price at all (sparx persona issue 084).
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -13,46 +24,37 @@ import { useParams } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
 import {
+  AccountError,
   acceptB2bQuote,
   declineB2bQuote,
   getB2bQuotes,
   getB2bSummary,
-  submitB2bQuote,
+  getQuoteRequest,
+  ORDERING_ROLES,
   type B2bQuoteEntry,
-  type B2bQuoteLineInput,
-  type QuoteProductResult,
+  type QuoteRequest,
 } from '@/lib/customer-client';
+import { neededByWords } from '@/lib/buying-again-words';
 import { formatMoney } from '@/lib/format';
-import { Alert, Badge, Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
-import { QuoteProductPicker } from './product-picker';
+import {
+  QUOTE_ACTIONABLE_STAGE,
+  coreDepositSentence,
+  pricedQuote,
+  quantityWords,
+  quoteStageView,
+  quoteSummaryRows,
+} from '@/lib/trade-account-words';
+import { Alert, Badge, Button, Label, Textarea } from '@wizeworks/silicaui-react';
+import { QuoteRequestBuilder } from './quote-request-builder';
 
 const PAGE_SIZE = 20;
-const WRITER_ROLES = new Set(['primary_contact', 'buyer']);
-const ACTIONABLE_STAGE = 'Quoted';
 
-function formatDate(iso: string | null): string {
-  if (!iso) return '—';
+function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
-}
-
-function stageBadgeTone(stageType: string) {
-  if (stageType === 'committed' || stageType === 'paid') return 'success';
-  if (stageType === 'void') return 'danger';
-  return 'neutral';
-}
-
-function emptyLine(): B2bQuoteLineInput {
-  return { description: '', quantity: 1 };
-}
-
-/** `prompt()` returns '' when the user clears the field and confirms — treat
- *  that the same as "no reason given", not a reason of "". */
-function promptedReason(raw: string | null): string | undefined {
-  return raw && raw.trim().length > 0 ? raw : undefined;
 }
 
 export default function B2bQuotesPage() {
@@ -65,12 +67,31 @@ export default function B2bQuotesPage() {
   const [error, setError] = useState<string | null>(null);
   const [canWrite, setCanWrite] = useState(false);
   const [acting, setActing] = useState<string | null>(null);
+  // The quote whose decline is being confirmed, and the reason typed for it.
+  const [declining, setDeclining] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState('');
+  const [actionError, setActionError] = useState<{ id: string; message: string } | null>(null);
+  // The shop's currency, for list prices in the product picker.
+  const [currency, setCurrency] = useState<string | null>(null);
+  // Accepted, but its order could not be made: the reason, for that quote.
+  const [orderProblem, setOrderProblem] = useState<{ id: string; message: string } | null>(null);
+  // The order each quote accepted here became, from the accept call itself, so
+  // its sentence and link do not wait on the list to reload (sparx persona
+  // issue 087). The list's own `order` wins once it has one.
+  const [acceptedOrders, setAcceptedOrders] = useState<
+    Record<string, NonNullable<B2bQuoteEntry['order']>>
+  >({});
 
-  const [showForm, setShowForm] = useState(false);
-  const [customerNote, setCustomerNote] = useState('');
-  const [lines, setLines] = useState<B2bQuoteLineInput[]>([emptyLine()]);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  // The account's quote request being built (sparx persona issue 086): the one
+  // on the server, whether a new one is being started here, and who it goes to.
+  const [request, setRequest] = useState<QuoteRequest | null>(null);
+  const [requestLoaded, setRequestLoaded] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [requestShop, setRequestShop] = useState<string | null>(null);
+  const [sent, setSent] = useState<{ number: string | null } | null>(null);
+  // Not knowing whether a request exists is not "there is none": starting a new
+  // one then would save over the one already there, so nothing is offered.
+  const [requestError, setRequestError] = useState(false);
 
   function load() {
     setQuotes(null);
@@ -80,7 +101,7 @@ export default function B2bQuotesPage() {
         setQuotes(res.items);
         setTotal(res.total);
       })
-      .catch(() => setError('Could not load quotes.'));
+      .catch(() => setError('The quotes on this account could not be loaded just now.'));
   }
 
   useEffect(() => {
@@ -90,82 +111,94 @@ export default function B2bQuotesPage() {
 
   useEffect(() => {
     getB2bSummary(tenantSlug, accountId)
-      .then((s) => setCanWrite(WRITER_ROLES.has(s.account.role)))
+      .then((s) => {
+        setCanWrite(ORDERING_ROLES.has(s.account.role));
+        setCurrency(s.account.currency);
+      })
       .catch(() => setCanWrite(false));
   }, [tenantSlug, accountId]);
 
-  function updateLine(index: number, patch: Partial<B2bQuoteLineInput>) {
-    setLines((prev) => prev.map((l, i) => (i === index ? { ...l, ...patch } : l)));
-  }
+  useEffect(() => {
+    let active = true;
+    getQuoteRequest(tenantSlug, accountId)
+      .then((r) => {
+        if (!active) return;
+        setRequest(r.request);
+        setRequestShop(r.shopName);
+        setRequestLoaded(true);
+      })
+      .catch(() => active && setRequestError(true));
+    return () => {
+      active = false;
+    };
+  }, [tenantSlug, accountId]);
 
-  function removeLine(index: number) {
-    setLines((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
-  }
+  const building = canWrite && requestLoaded && (request !== null || starting);
 
-  // A picked catalog result appends a new, product-linked line rather than
-  // filling the free-text field — the merchant sees the real SKU behind it
-  // (a product with no live variant falls back to a plain free-text line,
-  // same as typing the title in manually).
-  function addProductLine(product: QuoteProductResult) {
-    setLines((prev) => {
-      const draft = prev[0];
-      const startingBlank = prev.length === 1 && draft?.description === '';
-      const line: B2bQuoteLineInput = {
-        description: product.title,
-        quantity: 1,
-        ...(product.variantId ? { variantId: product.variantId } : {}),
-      };
-      return startingBlank ? [line] : [...prev, line];
-    });
-  }
-
-  async function handleSubmit() {
-    const cleanLines = lines
-      .map((l) => ({ ...l, description: l.description.trim() }))
-      .filter((l) => l.description.length > 0);
-    if (cleanLines.length === 0) {
-      setFormError('Add at least one item you need a quote for.');
-      return;
-    }
-    setSubmitting(true);
-    setFormError(null);
-    try {
-      await submitB2bQuote(tenantSlug, accountId, {
-        ...(customerNote.trim() ? { customerNote: customerNote.trim() } : {}),
-        lines: cleanLines,
-      });
-      setShowForm(false);
-      setCustomerNote('');
-      setLines([emptyLine()]);
-      setSkip(0);
-      load();
-    } catch {
-      setFormError('Could not submit your request. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+  function startRequest() {
+    setSent(null);
+    setStarting(true);
   }
 
   async function handleAccept(quoteId: string) {
     setActing(quoteId);
+    setActionError(null);
+    setOrderProblem(null);
     try {
-      await acceptB2bQuote(tenantSlug, accountId, quoteId);
+      // Accepting places the order (sparx persona issue 085). The quote's own
+      // sentence names the order once the list reloads; only an order that
+      // could not be made needs saying here, with its reason.
+      const accepted = await acceptB2bQuote(tenantSlug, accountId, quoteId);
+      if (accepted.orderProblem) setOrderProblem({ id: quoteId, message: accepted.orderProblem });
+      const made = accepted.order;
+      if (made) {
+        setAcceptedOrders((current) => ({
+          ...current,
+          [quoteId]: {
+            id: made.id,
+            orderNumber: made.orderNumber,
+            status: made.held ? 'pending_approval' : 'placed',
+            signOff: made.signOff ?? null,
+          },
+        }));
+      }
       load();
-    } catch {
-      alert('Could not accept the quote. Please try again.');
+    } catch (err) {
+      // A refusal the buyer can act on (an account on credit hold, suspended,
+      // not trading) says so. "Please try again" was the only answer, and
+      // trying again changes none of those.
+      setActionError({
+        id: quoteId,
+        message:
+          err instanceof AccountError && err.status < 500
+            ? err.message
+            : 'The quote was not accepted. Please try again.',
+      });
     } finally {
       setActing(null);
     }
   }
 
+  function startDecline(quoteId: string) {
+    setActionError(null);
+    setDeclineReason('');
+    setDeclining(quoteId);
+  }
+
   async function handleDecline(quoteId: string) {
-    const reason = promptedReason(prompt('Let us know why (optional):'));
+    const reason = declineReason.trim();
     setActing(quoteId);
+    setActionError(null);
     try {
-      await declineB2bQuote(tenantSlug, accountId, quoteId, reason);
+      await declineB2bQuote(tenantSlug, accountId, quoteId, reason.length > 0 ? reason : undefined);
+      setDeclining(null);
+      setDeclineReason('');
       load();
     } catch {
-      alert('Could not decline the quote. Please try again.');
+      setActionError({
+        id: quoteId,
+        message: 'The quote was not declined. Please try again.',
+      });
     } finally {
       setActing(null);
     }
@@ -173,122 +206,56 @@ export default function B2bQuotesPage() {
 
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem',
-          marginBottom: '1.25rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link href={`/account/b2b/${accountId}`} className="link link-primary text-sm">
-            ← Back
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <Link href={`/account/b2b/${accountId}`} className="link link-primary">
+            ← Back to account
           </Link>
           <h1 className="text-base-content text-3xl font-semibold tracking-tight">Quotes</h1>
         </div>
-        {canWrite && (
-          <Button type="button" color="primary" onClick={() => setShowForm((v) => !v)}>
-            {showForm ? 'Cancel' : 'Request a quote'}
+        {canWrite && requestLoaded && request === null && (
+          <Button
+            type="button"
+            color="primary"
+            variant={starting ? 'ghost' : undefined}
+            onClick={() => (starting ? setStarting(false) : startRequest())}
+          >
+            {starting ? 'Cancel' : 'Request a quote'}
           </Button>
         )}
       </div>
 
-      {showForm && (
-        <div
-          className="card border-base-300 border"
-          style={{ padding: '1.25rem', marginBottom: '1.25rem' }}
-        >
-          <h2
-            className="text-base-content text-xl font-semibold"
-            style={{ marginBottom: '0.75rem' }}
-          >
-            What do you need?
-          </h2>
-          {formError && (
-            <Alert color="danger" role="alert" style={{ marginBottom: '0.75rem' }}>
-              {formError}
-            </Alert>
-          )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            <div>
-              <Label htmlFor="quote-product-search">Add a product from the catalog</Label>
-              <QuoteProductPicker onPick={addProductLine} />
-            </div>
-            {lines.map((line, i) => (
-              <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-                <div style={{ flex: 1 }}>
-                  <Label htmlFor={`quote-line-desc-${i}`}>
-                    Item / description
-                    {line.variantId && (
-                      <Badge color="module" variant="soft" size="sm" className="ml-2">
-                        Catalog item
-                      </Badge>
-                    )}
-                  </Label>
-                  <Input
-                    id={`quote-line-desc-${i}`}
-                    value={line.description}
-                    onChange={(e) => updateLine(i, { description: e.target.value })}
-                    placeholder="e.g. Brake pads for 2018 F-250, front"
-                  />
-                </div>
-                <div style={{ width: '90px' }}>
-                  <Label htmlFor={`quote-line-qty-${i}`}>Qty</Label>
-                  <Input
-                    id={`quote-line-qty-${i}`}
-                    type="number"
-                    min={1}
-                    value={line.quantity}
-                    onChange={(e) => updateLine(i, { quantity: Number(e.target.value) || 1 })}
-                  />
-                </div>
-                {lines.length > 1 && (
-                  <Button
-                    type="button"
-                    color="neutral"
-                    variant="ghost"
-                    onClick={() => removeLine(i)}
-                    aria-label="Remove item"
-                  >
-                    ✕
-                  </Button>
-                )}
-              </div>
-            ))}
-            <div>
-              <Button
-                type="button"
-                color="neutral"
-                variant="outline"
-                onClick={() => setLines((prev) => [...prev, emptyLine()])}
-              >
-                + Add another item
-              </Button>
-            </div>
-            <div>
-              <Label htmlFor="quote-note">Notes for the merchant (optional)</Label>
-              <Textarea
-                id="quote-note"
-                value={customerNote}
-                onChange={(e) => setCustomerNote(e.target.value)}
-                rows={3}
-              />
-            </div>
-            <div>
-              <Button
-                type="button"
-                color="primary"
-                disabled={submitting}
-                onClick={() => void handleSubmit()}
-              >
-                {submitting ? 'Submitting…' : 'Submit request'}
-              </Button>
-            </div>
-          </div>
-        </div>
+      {sent && (
+        <Alert color="success" className="mb-5" role="status">
+          Your request{sent.number ? ` ${sent.number}` : ''} was sent to {requestShop ?? 'the shop'}
+          . It is listed below, and its prices show there when they are ready.
+        </Alert>
+      )}
+
+      {canWrite && requestError && (
+        <Alert color="warning" className="mb-5" role="status">
+          Your quote request could not be loaded just now. Reload the page to see it or start one.
+        </Alert>
+      )}
+
+      {building && (
+        <QuoteRequestBuilder
+          accountId={accountId}
+          shopName={requestShop ?? 'the shop'}
+          currency={currency}
+          request={request}
+          onChanged={(next) => {
+            setRequest(next);
+            if (next === null) setStarting(false);
+          }}
+          onSent={(quote) => {
+            setRequest(null);
+            setStarting(false);
+            setSent({ number: quote.number });
+            setSkip(0);
+            load();
+          }}
+        />
       )}
 
       {error ? (
@@ -296,79 +263,230 @@ export default function B2bQuotesPage() {
           {error}
         </Alert>
       ) : quotes === null ? (
-        <div className="skeleton" style={{ height: 200 }} />
+        <div className="skeleton h-50" />
       ) : quotes.length === 0 ? (
-        <div
-          className="card border-base-300 border"
-          style={{ padding: '2rem', textAlign: 'center' }}
-        >
-          <p className="text-base-content">No quotes found on this account.</p>
+        <div className="card border-base-300 items-center border p-8 text-center">
+          <p className="text-base-content">
+            {canWrite
+              ? 'There are no quotes on this account yet. Use Request a quote, or Add to quote request on any product, to ask for a price.'
+              : 'There are no quotes on this account yet.'}
+          </p>
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="flex flex-col gap-3">
             {quotes.map((q) => {
-              const canAct = canWrite && q.stage.name === ACTIONABLE_STAGE;
+              const order = q.order ?? acceptedOrders[q.id] ?? null;
+              const view = quoteStageView({
+                stageName: q.stage.name,
+                stageType: q.stage.stageType,
+                totalCents: q.totalCents ?? 0,
+                shopName: q.shopName,
+                canWrite,
+                validUntil: q.validUntil ? formatDate(q.validUntil) : null,
+                order,
+              });
+              // The figures, only when the shop has sent them (sparx persona
+              // issue 086): before the offer the portal sends none.
+              const money = view.priced ? pricedQuote(q) : null;
+              const canAct = canWrite && q.stage.name === QUOTE_ACTIONABLE_STAGE;
+              const isDeclining = declining === q.id;
               return (
-                <div
-                  key={q.id}
-                  className="card border-base-300 border"
-                  style={{
-                    padding: '0.875rem 1rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <div>
-                    <strong>{q.number ?? 'Draft'}</strong>
-                    <div
-                      className="text-base-content"
-                      style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
-                    >
-                      Valid until {formatDate(q.validUntil)}
+                <div key={q.id} className="card border-base-300 gap-3 border px-4 py-4">
+                  <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                    <div className="min-w-0">
+                      <strong className="whitespace-nowrap">{q.number ?? 'Quote request'}</strong>
+                      <div className="text-base-content text-sm">
+                        {formatDate(q.createdAt)}
+                        {q.stage.name === QUOTE_ACTIONABLE_STAGE && q.validUntil
+                          ? ` · Good until ${formatDate(q.validUntil)}`
+                          : ''}
+                        {q.poNumber ? ` · Your PO number ${q.poNumber}` : ''}
+                      </div>
+                      {/* What they asked for about delivery when they sent it
+                          (sparx persona issue 086). */}
+                      {q.delivery && (
+                        <div className="text-base-content text-sm">
+                          {[
+                            q.delivery.neededBy
+                              ? `Needed by ${neededByWords(q.delivery.neededBy) ?? q.delivery.neededBy}`
+                              : null,
+                            q.delivery.deliverTo ? `Deliver to ${q.delivery.deliverTo}` : null,
+                            q.delivery.notes,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge color={view.tone} variant="soft">
+                        {view.label}
+                      </Badge>
+                      {money ? (
+                        <strong className="whitespace-nowrap">
+                          {formatMoney(money.totalCents, q.currency)}
+                        </strong>
+                      ) : (
+                        <span className="text-base-content whitespace-nowrap">Not priced yet</span>
+                      )}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Badge color={stageBadgeTone(q.stage.stageType)} variant="soft">
-                      {q.stage.customerLabel ?? q.stage.name}
-                    </Badge>
-                    <strong style={{ whiteSpace: 'nowrap' }}>
-                      {formatMoney(q.totalCents, q.currency)}
-                    </strong>
-                    {canAct && (
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        <Button
-                          type="button"
-                          color="primary"
-                          size="sm"
-                          disabled={acting === q.id}
-                          onClick={() => void handleAccept(q.id)}
+
+                  {view.note && <p className="text-base-content">{view.note}</p>}
+
+                  {q.lines.length > 0 && (
+                    <ul className="border-base-300 divide-base-300 flex flex-col divide-y border-t">
+                      {(money?.lines ?? q.lines).map((l) => (
+                        <li key={l.id} className="flex flex-col gap-1 py-2">
+                          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                            <span className="min-w-0">{l.description}</span>
+                            <span className="flex items-baseline gap-4 whitespace-nowrap">
+                              <span className="text-base-content text-sm">
+                                {money && l.unitPriceCents !== null
+                                  ? `${quantityWords(l.quantity)} × ${formatMoney(l.unitPriceCents, q.currency)}`
+                                  : `Quantity ${quantityWords(l.quantity)}`}
+                              </span>
+                              {money && l.lineSubtotalCents !== null && (
+                                <span>{formatMoney(l.lineSubtotalCents, q.currency)}</span>
+                              )}
+                            </span>
+                          </div>
+                          {money && l.coreDepositCents != null && l.coreDepositCents > 0 && (
+                            <span className="text-base-content">
+                              {coreDepositSentence(
+                                formatMoney(l.coreDepositCents, q.currency),
+                                l.quantity
+                              )}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {money && (
+                    <dl className="border-base-300 flex flex-col gap-1 border-t pt-2">
+                      {quoteSummaryRows({ ...money.totals, totalCents: money.totalCents }).map(
+                        (row) => (
+                          <div
+                            key={row.label}
+                            className={
+                              row.total
+                                ? 'flex justify-between gap-4 font-semibold'
+                                : 'flex justify-between gap-4'
+                            }
+                          >
+                            <dt>{row.label}</dt>
+                            <dd className="whitespace-nowrap">
+                              {formatMoney(row.cents, q.currency)}
+                            </dd>
+                          </div>
+                        )
+                      )}
+                    </dl>
+                  )}
+
+                  {orderProblem?.id === q.id && (
+                    <Alert color="warning" role="status">
+                      Your order could not be placed yet. {orderProblem.message} {q.shopName} has
+                      been told and will be in touch about it.
+                    </Alert>
+                  )}
+
+                  {actionError?.id === q.id && (
+                    <Alert color="danger" role="alert">
+                      {actionError.message}
+                    </Alert>
+                  )}
+
+                  {/* The same branded page the shop prints, for her to print or
+                      keep as a PDF (sparx persona issue 085). Only once it is
+                      priced: before that there is nothing on it to keep. */}
+                  {money && (
+                    <div className="flex flex-wrap gap-x-6 gap-y-2">
+                      <Link
+                        href={`/account/b2b/${accountId}/documents/${q.id}`}
+                        className="link link-primary"
+                      >
+                        Print or save as PDF
+                      </Link>
+                      {/* Straight to the order it became, which says who it is
+                          waiting on and who has approved it. */}
+                      {order && (
+                        <Link
+                          href={`/account/b2b/${accountId}/orders/${order.id}`}
+                          className="link link-primary whitespace-nowrap"
                         >
-                          Accept
-                        </Button>
+                          See order {order.orderNumber}
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
+                  {canAct && !isDeclining && (
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        color="primary"
+                        disabled={acting === q.id}
+                        onClick={() => void handleAccept(q.id)}
+                      >
+                        Accept quote
+                      </Button>
+                      <Button
+                        type="button"
+                        color="danger"
+                        variant="outline"
+                        disabled={acting === q.id}
+                        onClick={() => startDecline(q.id)}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  )}
+
+                  {canAct && isDeclining && (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1">
+                        <Label htmlFor={`decline-reason-${q.id}`}>
+                          Why are you declining? (optional)
+                        </Label>
+                        <Textarea
+                          id={`decline-reason-${q.id}`}
+                          value={declineReason}
+                          onChange={(e) => setDeclineReason(e.target.value)}
+                          rows={2}
+                          maxLength={500}
+                        />
+                      </div>
+                      <div className="flex flex-wrap gap-2">
                         <Button
                           type="button"
-                          color="neutral"
-                          variant="outline"
-                          size="sm"
+                          color="danger"
                           disabled={acting === q.id}
                           onClick={() => void handleDecline(q.id)}
                         >
-                          Decline
+                          Decline this quote
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          disabled={acting === q.id}
+                          onClick={() => setDeclining(null)}
+                        >
+                          Keep it
                         </Button>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
           {total > PAGE_SIZE && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+            <div className="mt-4 flex items-center justify-between gap-3">
               <Button
                 type="button"
                 color="primary"
@@ -378,11 +496,8 @@ export default function B2bQuotesPage() {
               >
                 Previous
               </Button>
-              <span
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
-              >
-                {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
+              <span className="text-base-content text-sm">
+                {skip + 1} to {Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button
                 type="button"

@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Fragment, type ReactNode } from 'react';
 import {
   BarChart3,
@@ -170,9 +172,12 @@ function CommerceHero() {
               {lede}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('commerce-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Start selling →
-              </Button>
+              </a>
               <a href="#journey">
                 <Button size="lg" variant="outline">
                   See how an order flows
@@ -866,9 +871,12 @@ function CommercePricing() {
               genuinely untyped action, and like every silica component it
               resolves its own foreground rather than inheriting the band's. */}
           <div className="mt-1 flex flex-wrap items-center gap-3">
-            <Button color="neutral" size="lg">
+            <a
+              href={signupHref('commerce-pricing')}
+              className={buttonClasses({ color: 'neutral', size: 'lg' })}
+            >
               Activate Commerce
-            </Button>
+            </a>
             <a href="/pricing">
               <Button size="lg">See all plans →</Button>
             </a>
@@ -966,9 +974,12 @@ function CommerceCta() {
           processor relationships.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <Button color="module-commerce" size="xl">
+          <a
+            href={signupHref('commerce-final')}
+            className={buttonClasses({ color: 'module-commerce', size: 'xl' })}
+          >
             Start selling →
-          </Button>
+          </a>
           <a href="#journey">
             <Button size="xl" variant="outline">
               See how an order flows

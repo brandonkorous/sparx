@@ -3,7 +3,10 @@
 
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const ORDERS_COLLECTION = 'orders';
+import { resolveCollectionName } from './naming';
+
+// Prefixed in tests only; see ./naming.ts.
+export const ORDERS_COLLECTION = resolveCollectionName('orders');
 
 export function ordersSchema(collectionName: string = ORDERS_COLLECTION): CollectionCreateSchema {
   return {
@@ -22,6 +25,14 @@ export function ordersSchema(collectionName: string = ORDERS_COLLECTION): Collec
       { name: 'customer_name', type: 'string', facet: false, optional: true },
       { name: 'customer_email', type: 'string', facet: false, optional: true },
       { name: 'b2b_account_id', type: 'string', facet: true, optional: true },
+      // The trade account the order belongs to, by name, so typing an account's
+      // name finds its orders. The account the order was quoted or invoiced to
+      // when one is on record, else the buyer's pricing account, else the
+      // employer the buyer typed. Optional, so `ensureSchemas` adds it to a live
+      // collection on the next indexer boot. Searches ask for it only once the
+      // live collection has it (`collectionHasField`), because naming a field
+      // the collection lacks in `query_by` fails the whole search.
+      { name: 'company', type: 'string', facet: false, optional: true },
       { name: 'channel', type: 'string', facet: true },
       { name: 'status', type: 'string', facet: true },
       { name: 'payment_status', type: 'string', facet: true },
@@ -47,7 +58,10 @@ export interface OrderSearchDocument {
   customer_id?: string;
   customer_name?: string;
   customer_email?: string;
+  /** The trade account the order belongs to (see `company`). */
   b2b_account_id?: string;
+  /** That account's name; the buyer's typed employer when there is no account. */
+  company?: string;
   channel: string;
   status: string;
   payment_status: string;

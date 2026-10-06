@@ -5,6 +5,14 @@
 // forward the guest cart token so the server can claim the cart for the new
 // session. See docs/27.
 
+import {
+  failureMessage,
+  isTransientStatus,
+  sessionOutcome,
+  SHOP_UNREACHABLE_MESSAGE,
+} from './shop-reach';
+import type { ApprovedStockLine, SignOffSide, SignOffView } from './sign-off-words';
+
 const API_BASE = '/api/sparx';
 const CART_TOKEN_KEY = 'sparx_cart_token';
 
@@ -48,11 +56,23 @@ export const NO_OFFERS: AccountOffers = {
 
 export class AccountError extends Error {
   readonly status: number;
-  constructor(message: string, status: number) {
+  /** The API's own error code, when it sent one. `CART_ALREADY_BOUGHT` is the
+   *  one a caller acts on: the basket it named was already bought, so the cart
+   *  provider starts a fresh one (sparx persona issue 087). */
+  readonly code: string | null;
+  constructor(message: string, status: number, code: string | null = null) {
     super(message);
     this.name = 'AccountError';
     this.status = status;
+    this.code = code;
   }
+}
+
+/** True when the request got no answer (the shop could not be reached, or the
+ *  server failed before answering), as opposed to a refusal. A caller that sees
+ *  this should wait and try again, never conclude anything about the shopper. */
+export function isShopUnreachable(err: unknown): boolean {
+  return err instanceof AccountError && isTransientStatus(err.status);
 }
 
 function url(path: string, tenantSlug: string, propertySlug?: string): string {
@@ -81,7 +101,13 @@ interface Envelope<T> {
 async function parse<T>(res: Response): Promise<T> {
   const json = (await res.json().catch(() => null)) as Envelope<T> | null;
   if (!res.ok || !json || json.success === false) {
-    throw new AccountError(json?.error?.message ?? 'Something went wrong.', res.status);
+    // A response with no readable body from a server error, or the proxy's own
+    // "could not reach the shop", says so in those words (persona issue 086).
+    throw new AccountError(
+      failureMessage(res.status, json?.error, 'Something went wrong.'),
+      res.status,
+      json?.error?.code ?? null
+    );
   }
   return json.data as T;
 }
@@ -166,22 +192,60 @@ export async function resetPassword(
   await parse<{ ok: true }>(res);
 }
 
-/** Returns the current customer and what the shop offers them, or null if not
- *  signed in (401). */
-export async function getMe(
+/**
+ * Who is signed in, as one of three answers.
+ *
+ * `signed-out` only for a real refusal (a 401: no cookie, or a session the
+ * server no longer honors). A request that got NO answer (a network failure,
+ * the proxy's 503 while api-rest restarts, any server error) is `unreachable`:
+ * it says nothing about the shopper, whose cookie is untouched. Reading it as
+ * signed out sent a trade buyer with a valid session to the sign-in page in
+ * the middle of a rolling deploy (sparx persona issue 086).
+ */
+export type SessionRead =
+  | { kind: 'signed-in'; customer: Customer; offers: AccountOffers }
+  | { kind: 'signed-out' }
+  | { kind: 'unreachable' };
+
+export async function readSession(
   tenantSlug: string,
   // WHICH SITE they are signed in on. The account area is one screen on many
   // sites, and `offers` now answers per site — a journal with Selling switched
   // off shows no Orders. Omitted, the server answers for the primary site, which
   // is what a single-site shop has always got.
   propertySlug?: string
+): Promise<SessionRead> {
+  let res: Response;
+  try {
+    res = await fetch(url('/v1/public/commerce/account/me', tenantSlug, propertySlug), {
+      cache: 'no-store',
+    });
+  } catch {
+    return { kind: 'unreachable' };
+  }
+  const outcome = sessionOutcome(res.status);
+  if (outcome === 'signed-out') return { kind: 'signed-out' };
+  if (outcome === 'unknown') return { kind: 'unreachable' };
+  try {
+    const body = await parse<{ customer: Customer; offers?: AccountOffers }>(res);
+    return { kind: 'signed-in', customer: body.customer, offers: body.offers ?? NO_OFFERS };
+  } catch {
+    // A 200 whose body could not be read answered nothing either.
+    return { kind: 'unreachable' };
+  }
+}
+
+/** Returns the current customer and what the shop offers them, or null if not
+ *  signed in. Throws an `isShopUnreachable` error when the question got no
+ *  answer, so no caller can mistake a blip for a sign-out. */
+export async function getMe(
+  tenantSlug: string,
+  propertySlug?: string
 ): Promise<{ customer: Customer; offers: AccountOffers } | null> {
-  const res = await fetch(url('/v1/public/commerce/account/me', tenantSlug, propertySlug), {
-    cache: 'no-store',
-  });
-  if (res.status === 401) return null;
-  const body = await parse<{ customer: Customer; offers?: AccountOffers }>(res);
-  return { customer: body.customer, offers: body.offers ?? NO_OFFERS };
+  const read = await readSession(tenantSlug, propertySlug);
+  if (read.kind === 'signed-out') return null;
+  if (read.kind === 'unreachable') throw new AccountError(SHOP_UNREACHABLE_MESSAGE, 503);
+  return { customer: read.customer, offers: read.offers };
 }
 
 export async function updateProfile(
@@ -254,8 +318,51 @@ export interface OrderDetail extends Omit<OrderSummary, never> {
     /** The share of an order-level code that came off THIS line. */
     discountAmountCents: number;
     lineTotalCents: number;
+    /** Refundable core deposit per unit on a rebuilt part; null = none (sparx
+     *  issue 051). */
+    coreChargeCents: number | null;
+    /** Old parts still to send back for this line. */
+    coresOwed: number;
+    /** Old parts that came back, their deposits refunded. */
+    coresReturned: number;
+    /** Deposits the shop kept. */
+    coresKept: number;
+    /** Bought by sending the old part first: no deposit, and it ships when the old
+     *  part arrives (sparx issue 057). */
+    coreFirst: boolean;
+    /** Units still held until their old part arrives. */
+    waitingForOldPart: number;
   }[];
+  /** Where to send an old part: the business's name and postal address. Null when
+   *  nothing is owed, or the business has no street address on file. */
+  coreReturnTo: { name: string; lines: string[] } | null;
+  /** Refundable core deposits taken on this order, inside the total. */
+  coreChargeTotalCents: number;
   fulfillments: OrderFulfillmentView[];
+  /** A wholesale order held for sign-off: who it is waiting on, at the buyer's
+   *  own account or the business, and who has already said yes (sparx persona
+   *  issue 087). Null for every other order, and absent from an older api-rest. */
+  signOff?: SignOffView | null;
+  /** Approved, but the card held for it could not be charged when it was, so
+   *  it has gone ahead unpaid and the page asks them to pay (sparx persona
+   *  issue 087). Absent from an older api-rest. */
+  cardNotCharged?: boolean;
+  /** Billed to a wholesale account on terms: the terms, and the invoice once it
+   *  is issued (null while the order is held). Null for an order paid at
+   *  checkout, and absent from an older api-rest (sparx persona issue 087). */
+  onAccount?: OrderOnAccount | null;
+}
+
+/** An order billed to a wholesale account, as its buyer's order page reads it. */
+export interface OrderOnAccount {
+  terms: string;
+  invoice: {
+    number: string | null;
+    dueAt: string | null;
+    totalCents: number;
+    balanceCents: number;
+    status: 'unpaid' | 'partial' | 'paid' | 'overdue' | 'void';
+  } | null;
 }
 
 export async function getOrders(
@@ -532,6 +639,8 @@ export interface B2bInvoiceSummary {
 export interface B2bPortalSummary {
   account: B2bAccountEntry & {
     discountPercent: number;
+    /** The business's own currency, for the credit figures and bill totals. */
+    currency: string;
     role: string;
   };
   invoiceSummary: B2bInvoiceSummary;
@@ -549,11 +658,17 @@ export interface B2bInvoiceEntry {
   id: string;
   invoiceNumber: string;
   amountCents: number;
+  /** What is still owed on it; less than `amountCents` once part is paid. */
+  balanceCents: number;
+  currency: string;
   status: string;
   overdueDays: number;
-  dueAt: string;
+  /** Null when the invoice was issued without a due date. */
+  dueAt: string | null;
   paidAt: string | null;
   orderId: string | null;
+  /** The buyer's own purchase order number, when one was given. */
+  poNumber: string | null;
   notes: string | null;
   createdAt: string;
 }
@@ -581,12 +696,61 @@ export interface B2bQuoteEntry {
   id: string;
   number: string | null;
   stage: B2bQuoteStage;
-  totalCents: number;
+  /** Null, like every amount on the quote, until the shop has priced it and
+   *  made the offer: before then its figures are the shop's working copy
+   *  (sparx persona issue 086). */
+  totalCents: number | null;
   currency: string;
   validUntil: string | null;
   createdAt: string;
+  /** The parts that make up `totalCents`; null before the offer. */
+  totals: B2bQuoteTotals | null;
+  /** The buyer's own purchase order number, when one was given. */
+  poNumber: string | null;
+  /** When and where the buyer said they need it, when they did. `neededBy` is
+   *  a calendar day, `YYYY-MM-DD` (sparx persona issue 086). */
+  delivery: { neededBy: string | null; deliverTo: string | null; notes: string | null } | null;
+  /** The site that issued the quote. */
+  shopName: string;
+  /** The order an accepted quote became, or null (sparx persona issue 085).
+   *  `signOff` says who a held one is waiting on, and is null unless it is
+   *  held (sparx persona issue 087). */
+  order: {
+    id: string;
+    orderNumber: string;
+    status: string;
+    signOff?: SignOffView | null;
+  } | null;
+  lines: B2bQuoteLine[];
 }
 
+export interface B2bQuoteTotals {
+  subtotalCents: number;
+  discountCents: number;
+  taxCents: number;
+  shippingCents: number;
+  surchargeCents: number;
+  /** Refundable core deposits on rebuilt parts: in the total, in no line's amount. */
+  coreDepositCents: number;
+}
+
+/** A line on a quote. Its prices are placeholders until the shop has priced
+ *  the quote (see `quoteStageView` in lib/trade-account-words). */
+export interface B2bQuoteLine {
+  id: string;
+  description: string;
+  quantity: number;
+  /** Null before the offer, like the quote's total. */
+  unitPriceCents: number | null;
+  /** Quantity times unit price, before discount and tax. */
+  lineSubtotalCents: number | null;
+  lineTotalCents: number | null;
+  /** Refundable core deposit per unit on a rebuilt part, or null. */
+  coreDepositCents: number | null;
+}
+
+/** A line asked for on an estimate: what, how many, and the catalog item when
+ *  picked from the catalog. */
 export interface B2bQuoteLineInput {
   description: string;
   quantity: number;
@@ -701,6 +865,100 @@ export async function getB2bOrders(
   return { items: json.data ?? [], total: json.meta?.total ?? 0 };
 }
 
+// ── B2B account statement ───────────────────────────────────────────────────
+//
+// What the account owed at the start of a period, every invoice, payment and
+// write-off in it with the buyer's own PO number, what it owes at the end, and
+// how late. Money is CENTS throughout, like the invoice list.
+
+export interface B2bStatementRow {
+  kind: 'invoice' | 'payment' | 'refund' | 'write_off';
+  at: string;
+  documentId: string;
+  documentNumber: string | null;
+  poNumber: string | null;
+  dueAt: string | null;
+  description: string;
+  chargeCents: number;
+  creditCents: number;
+  balanceCents: number;
+}
+
+export interface B2bStatementOpenItem {
+  documentId: string;
+  number: string | null;
+  poNumber: string | null;
+  issuedAt: string;
+  dueAt: string | null;
+  totalCents: number;
+  openCents: number;
+  /** Whole days past due at the end of the period; zero or less is not late. */
+  daysLate: number;
+  bucket: 'current' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_plus';
+}
+
+export interface B2bStatement {
+  account: {
+    id: string;
+    companyName: string;
+    billingAddress: string[];
+    paymentTerms: string | null;
+    paymentTermsWords: string | null;
+    creditLimitCents: number;
+    status: string;
+  };
+  period: { from: string; to: string };
+  currency: string;
+  generatedAt: string;
+  openingCents: number;
+  chargesCents: number;
+  creditsCents: number;
+  closingCents: number;
+  dueNowCents: number;
+  pastDueCents: number;
+  rows: B2bStatementRow[];
+  openItems: B2bStatementOpenItem[];
+  aging: { key: B2bStatementOpenItem['bucket']; label: string; count: number; cents: number }[];
+}
+
+/** A statement period. Blank ends are decided by the shop's calendar: no start
+ *  is the first of the month, no end is today. */
+export interface B2bStatementPeriod {
+  from?: string;
+  to?: string;
+}
+
+function statementQuery(period: B2bStatementPeriod): string {
+  const qs = new URLSearchParams();
+  if (period.from) qs.set('from', period.from);
+  if (period.to) qs.set('to', period.to);
+  const query = qs.toString();
+  return query ? `&${query}` : '';
+}
+
+export async function getB2bStatement(
+  tenantSlug: string,
+  accountId: string,
+  period: B2bStatementPeriod
+): Promise<B2bStatement> {
+  const res = await fetch(
+    `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/statement`, tenantSlug)}${statementQuery(period)}`,
+    { cache: 'no-store' }
+  );
+  return parse<B2bStatement>(res);
+}
+
+/** The statement as a page to print, on this site's own origin through the
+ *  same proxy every other account call uses, so the sign-in cookie travels
+ *  with it and the page's print button prints it. */
+export function b2bStatementPrintUrl(
+  tenantSlug: string,
+  accountId: string,
+  period: B2bStatementPeriod
+): string {
+  return `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/statement/print`, tenantSlug)}${statementQuery(period)}`;
+}
+
 export async function getB2bQuotes(
   tenantSlug: string,
   accountId: string,
@@ -721,26 +979,22 @@ export async function getB2bQuotes(
   return { items: json.data ?? [], total: json.meta?.total ?? 0 };
 }
 
-/** Submit a new RFQ — a draft document + its requested lines, advanced
- *  straight to "Submitted" so it lands in the merchant's queue immediately. */
-export async function submitB2bQuote(
-  tenantSlug: string,
-  accountId: string,
-  input: { customerNote?: string; lines: B2bQuoteLineInput[] }
-): Promise<{ id: string; number: string | null }> {
-  const res = await fetch(b2bPortalUrl(`/${encodeURIComponent(accountId)}/quotes`, tenantSlug), {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  return parse<{ id: string; number: string | null }>(res);
+/** What accepting a quote did. Accepting places the order (sparx persona issue
+ *  085): `order` is it, `held` when it waits for someone to sign it off, and
+ *  `signOff` who that is (sparx persona issue 087).
+ *  `orderProblem` is the reason when the quote was accepted but its order could
+ *  not be made, which the business has been told about. */
+export interface AcceptedQuote {
+  id: string;
+  order: { id: string; orderNumber: string; held: boolean; signOff?: SignOffView | null } | null;
+  orderProblem: string | null;
 }
 
 export async function acceptB2bQuote(
   tenantSlug: string,
   accountId: string,
   quoteId: string
-): Promise<void> {
+): Promise<AcceptedQuote> {
   const res = await fetch(
     b2bPortalUrl(
       `/${encodeURIComponent(accountId)}/quotes/${encodeURIComponent(quoteId)}/accept`,
@@ -748,7 +1002,26 @@ export async function acceptB2bQuote(
     ),
     { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }
   );
-  await parse<{ id: string }>(res);
+  return parse<AcceptedQuote>(res);
+}
+
+/** The branded page for a quote or invoice on this account, as the business
+ *  prints it, for the buyer to print or save as a PDF (sparx persona issue 085).
+ *  Null when it is not theirs to see or not ready yet. */
+export async function getB2bDocumentHtml(
+  tenantSlug: string,
+  accountId: string,
+  documentId: string
+): Promise<string | null> {
+  const res = await fetch(
+    b2bPortalUrl(
+      `/${encodeURIComponent(accountId)}/documents/${encodeURIComponent(documentId)}/print`,
+      tenantSlug
+    ),
+    { cache: 'no-store' }
+  );
+  if (!res.ok) return null;
+  return res.text();
 }
 
 export async function declineB2bQuote(
@@ -769,6 +1042,348 @@ export async function declineB2bQuote(
     }
   );
   await parse<{ id: string }>(res);
+}
+
+// ── Buying again on a trade account (sparx persona issue 086) ───────────────
+//
+// A quote request built up from the catalog (the account's one open request,
+// kept on the server so it follows the buyer between devices), Order again, and
+// the account's named saved carts. Anything that puts items into the cart sends
+// the cart's own token, the same proof of ownership every cart write sends, and
+// comes back with what went in and what did not.
+
+/** Roles that can place orders on an account, and so build a quote request,
+ *  keep saved carts and order again. The server checks the same two. */
+export const ORDERING_ROLES: ReadonlySet<string> = new Set(['primary_contact', 'buyer']);
+
+export interface QuoteRequestLine {
+  id: string;
+  /** Null for something typed in by hand. */
+  variantId: string | null;
+  description: string;
+  quantity: number;
+}
+
+export interface QuoteRequest {
+  id: string;
+  /** `YYYY-MM-DD`, or null. */
+  neededBy: string | null;
+  deliverTo: string | null;
+  deliveryNotes: string | null;
+  poNumber: string | null;
+  notes: string | null;
+  startedBy: string | null;
+  updatedAt: string;
+  lines: QuoteRequestLine[];
+}
+
+export interface QuoteRequestInput {
+  neededBy: string | null;
+  deliverTo: string | null;
+  deliveryNotes: string | null;
+  poNumber: string | null;
+  notes: string | null;
+  lines: { variantId?: string | null; description?: string; quantity: number }[];
+}
+
+export interface RefillResult {
+  added: { name: string; quantity: number; requested: number }[];
+  skipped: {
+    name: string;
+    quantity: number;
+    reason: 'not_sold' | 'out_of_stock' | 'limited';
+    message: string;
+  }[];
+}
+
+export interface SavedCart {
+  id: string;
+  name: string;
+  itemCount: number;
+  unitCount: number;
+  savedBy: string | null;
+  savedAt: string;
+  updatedAt: string;
+}
+
+export interface B2bOrderDetail {
+  id: string;
+  orderNumber: string;
+  status: string;
+  currency: string;
+  placedAt: string;
+  placedBy: string | null;
+  poNumber: string | null;
+  totals: {
+    subtotalCents: number;
+    discountCents: number;
+    shippingCents: number;
+    taxCents: number;
+    surchargeCents: number;
+    coreDepositCents: number;
+    totalCents: number;
+  };
+  items: {
+    id: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    unitPriceCents: number;
+    lineSubtotalCents: number;
+  }[];
+  /** Where a held order's sign-off stands, and whether the contact looking may
+   *  approve or turn it down now (sparx persona issue 087). Null once the order
+   *  is decided, and absent from an older api-rest. */
+  signOff?: (SignOffView & { canDecide: boolean; limitCents: number | null }) | null;
+  /** Approved, but the card held for it could not be charged, so it has gone
+   *  ahead unpaid (sparx persona issue 087). Absent from an older api-rest. */
+  cardNotCharged?: boolean;
+}
+
+/** One order on the account waiting for the signed-in approver's yes (sparx
+ *  persona issue 087). */
+export interface AccountApprovalItem {
+  id: string;
+  orderNumber: string;
+  totalCents: number;
+  currency: string;
+  createdAt: string;
+  placedBy: string;
+  poNumber: string | null;
+  itemCount: number;
+  /** The spending limit it went over. */
+  limitCents: number | null;
+  /** The business has to sign it off too. */
+  businessToo: boolean;
+}
+
+/** What an approver's decision did. `placed` means theirs was the last yes
+ *  needed; otherwise `waitingOn` says who is still to sign. */
+export interface AccountDecisionResult {
+  id: string;
+  orderNumber: string;
+  status: string;
+  waitingOn?: SignOffSide[];
+  /** Set when the yes placed the order and some of it was not in stock: which
+   *  lines, and how many of each are owed (sparx persona issue 087). Null or
+   *  absent when everything was there. */
+  stock?: { lines: ApprovedStockLine[]; note: string } | null;
+}
+
+function accountPath(accountId: string, rest: string): string {
+  return `/${encodeURIComponent(accountId)}${rest}`;
+}
+
+async function send<T>(
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  href: string,
+  body?: unknown,
+  withCartToken = false
+): Promise<T> {
+  const res = await fetch(href, {
+    method,
+    headers: {
+      'content-type': 'application/json',
+      ...(withCartToken ? cartTokenHeader() : {}),
+    },
+    body: JSON.stringify(body ?? {}),
+  });
+  return parse<T>(res);
+}
+
+/** The account's open request (null when there is none, or for a role that
+ *  cannot request quotes), and the name of the business it goes to. */
+export async function getQuoteRequest(
+  tenantSlug: string,
+  accountId: string
+): Promise<{ request: QuoteRequest | null; shopName: string | null }> {
+  const res = await fetch(b2bPortalUrl(accountPath(accountId, '/quote-request'), tenantSlug), {
+    cache: 'no-store',
+  });
+  return parse<{ request: QuoteRequest | null; shopName: string | null }>(res);
+}
+
+/** "Add to quote request" from a product page. */
+export async function addToQuoteRequest(
+  tenantSlug: string,
+  accountId: string,
+  variantId: string,
+  quantity: number
+): Promise<QuoteRequest> {
+  const data = await send<{ request: QuoteRequest }>(
+    'POST',
+    b2bPortalUrl(accountPath(accountId, '/quote-request/items'), tenantSlug),
+    { variantId, quantity }
+  );
+  return data.request;
+}
+
+export async function saveQuoteRequest(
+  tenantSlug: string,
+  accountId: string,
+  input: QuoteRequestInput
+): Promise<QuoteRequest> {
+  const data = await send<{ request: QuoteRequest }>(
+    'PUT',
+    b2bPortalUrl(accountPath(accountId, '/quote-request'), tenantSlug),
+    input
+  );
+  return data.request;
+}
+
+export async function discardQuoteRequest(tenantSlug: string, accountId: string): Promise<void> {
+  await send('DELETE', b2bPortalUrl(accountPath(accountId, '/quote-request'), tenantSlug));
+}
+
+export async function submitQuoteRequest(
+  tenantSlug: string,
+  accountId: string
+): Promise<{ id: string; number: string | null }> {
+  return send('POST', b2bPortalUrl(accountPath(accountId, '/quote-request/submit'), tenantSlug));
+}
+
+export async function getB2bOrder(
+  tenantSlug: string,
+  accountId: string,
+  orderId: string
+): Promise<B2bOrderDetail> {
+  const res = await fetch(
+    b2bPortalUrl(accountPath(accountId, `/orders/${encodeURIComponent(orderId)}`), tenantSlug),
+    { cache: 'no-store' }
+  );
+  return parse<B2bOrderDetail>(res);
+}
+
+/** The account's held orders waiting for this approver. Only an approver may
+ *  ask: the server refuses every other role, so a page asks only for one. */
+export async function getAccountApprovals(
+  tenantSlug: string,
+  accountId: string
+): Promise<AccountApprovalItem[]> {
+  const res = await fetch(b2bPortalUrl(accountPath(accountId, '/approvals'), tenantSlug), {
+    cache: 'no-store',
+  });
+  return (await parse<{ items: AccountApprovalItem[] }>(res)).items;
+}
+
+/** Approve or turn down a held order for the account, with an optional reason. */
+export async function decideAccountOrder(
+  tenantSlug: string,
+  accountId: string,
+  orderId: string,
+  decision: 'approve' | 'reject',
+  reason?: string
+): Promise<AccountDecisionResult> {
+  return send(
+    'POST',
+    b2bPortalUrl(
+      accountPath(accountId, `/orders/${encodeURIComponent(orderId)}/${decision}`),
+      tenantSlug
+    ),
+    reason ? { reason } : {}
+  );
+}
+
+/** Order again from the account's orders: the order's items into `cartId`. */
+export async function reorderB2bOrder(
+  tenantSlug: string,
+  accountId: string,
+  orderId: string,
+  cartId: string
+): Promise<RefillResult> {
+  return send(
+    'POST',
+    b2bPortalUrl(
+      accountPath(accountId, `/orders/${encodeURIComponent(orderId)}/reorder`),
+      tenantSlug
+    ),
+    { cartId },
+    true
+  );
+}
+
+/** Order again from the shopper's own order pages. */
+export async function reorderOwnOrder(
+  tenantSlug: string,
+  orderId: string,
+  cartId: string
+): Promise<RefillResult> {
+  return send(
+    'POST',
+    url(`/v1/public/account/orders/${encodeURIComponent(orderId)}/reorder`, tenantSlug),
+    { cartId },
+    true
+  );
+}
+
+export async function getSavedCarts(tenantSlug: string, accountId: string): Promise<SavedCart[]> {
+  const res = await fetch(b2bPortalUrl(accountPath(accountId, '/saved-carts'), tenantSlug), {
+    cache: 'no-store',
+  });
+  return (await parse<{ savedCarts: SavedCart[] }>(res)).savedCarts;
+}
+
+/** Save what is in `cartId` as one of the account's saved carts. */
+export async function saveCartForAccount(
+  tenantSlug: string,
+  accountId: string,
+  cartId: string,
+  name: string
+): Promise<SavedCart> {
+  return send(
+    'POST',
+    b2bPortalUrl(accountPath(accountId, '/saved-carts'), tenantSlug),
+    { cartId, name },
+    true
+  );
+}
+
+export async function renameSavedCart(
+  tenantSlug: string,
+  accountId: string,
+  savedCartId: string,
+  name: string
+): Promise<void> {
+  await send(
+    'PATCH',
+    b2bPortalUrl(
+      accountPath(accountId, `/saved-carts/${encodeURIComponent(savedCartId)}`),
+      tenantSlug
+    ),
+    { name }
+  );
+}
+
+export async function deleteSavedCart(
+  tenantSlug: string,
+  accountId: string,
+  savedCartId: string
+): Promise<void> {
+  await send(
+    'DELETE',
+    b2bPortalUrl(
+      accountPath(accountId, `/saved-carts/${encodeURIComponent(savedCartId)}`),
+      tenantSlug
+    )
+  );
+}
+
+/** A saved cart's items into `cartId`, priced today. */
+export async function addSavedCartToCart(
+  tenantSlug: string,
+  accountId: string,
+  savedCartId: string,
+  cartId: string
+): Promise<RefillResult> {
+  return send(
+    'POST',
+    b2bPortalUrl(
+      accountPath(accountId, `/saved-carts/${encodeURIComponent(savedCartId)}/add-to-cart`),
+      tenantSlug
+    ),
+    { cartId },
+    true
+  );
 }
 
 // ── Estimates (direct-customer, non-B2B counterpart to B2B quotes) ───────────
@@ -1038,6 +1653,11 @@ export interface MySubscription {
   cycleAmountCents: number;
   currency: string;
   billingMode: string;
+  /** What is in it, so a customer recognizes it as theirs (issue 739). Optional
+   *  for an api-rest that predates it. */
+  lines?: { name: string; variantTitle: string | null; quantity: number }[];
+  /** The saved card it renews on, when it charges one. */
+  card?: { brand: string | null; last4: string | null } | null;
 }
 
 export async function getMySubscriptions(tenantSlug: string): Promise<MySubscription[]> {
@@ -1063,6 +1683,27 @@ export async function setSubscriptionCard(
       body: JSON.stringify({ billingMode: 'card', paymentMethodId }),
     }
   );
+}
+
+/**
+ * Pause, resume, skip the next delivery, or cancel a repeat order (issue 739).
+ * Each is refused by the API unless the repeat order is the signed-in
+ * customer's, and a refusal ("only a repeat order that is running can skip a
+ * delivery") is thrown with its own words so the page can show them.
+ */
+export async function changeMySubscription(
+  tenantSlug: string,
+  subscriptionId: string,
+  action: 'pause' | 'resume' | 'skip' | 'cancel'
+): Promise<void> {
+  const res = await fetch(
+    url(
+      `/v1/public/commerce/account/subscriptions/${encodeURIComponent(subscriptionId)}/${action}`,
+      tenantSlug
+    ),
+    { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }
+  );
+  await parse<{ id: string }>(res);
 }
 
 /* ── Support requests (docs/144 §7) ─────────────────────────────────────────

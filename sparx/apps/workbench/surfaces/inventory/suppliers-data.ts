@@ -170,20 +170,20 @@ export function useInvalidateSuppliers() {
 export interface SupplierInput {
   name: string;
   code: string;
-  contactName?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
-  line1?: string;
-  line2?: string;
-  city?: string;
-  region?: string;
-  postalCode?: string;
-  country?: string;
-  paymentTerms?: string;
-  leadTimeDays?: number;
+  contactName?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  line1?: string | null;
+  line2?: string | null;
+  city?: string | null;
+  region?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  paymentTerms?: string | null;
+  leadTimeDays?: number | null;
   currency: string;
-  notes?: string;
+  notes?: string | null;
 }
 
 export function useCreateSupplier() {

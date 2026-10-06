@@ -15,7 +15,10 @@ import {
   getCustomerSession,
   verifyCustomerMcpToken,
   type CustomerAuthContext,
+  type EnsureMembershipNames,
+  type EnsureMembershipResult,
 } from '@wizeworks/customer-auth';
+import { customerService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
 import { forbidden, unauthorized } from '@wizeworks/api-core/errors';
 
@@ -55,6 +58,50 @@ export interface ResolvedCustomer {
   scopes: ReadonlySet<string> | null;
 }
 
+/**
+ * Find or create the per-site membership for a login, and TELL the platform when
+ * that made somebody new or changed somebody it already had.
+ *
+ * Every route that resolves a login to a customer row goes through here, never
+ * through `ensureMembership` directly. That one only writes; it lives in a
+ * package that cannot reach the CRM bus. Called bare, a sign-up wrote the row and
+ * stopped, so the search worker, the groups, the scores and "Welcome new
+ * customers" never heard of the person: a buyer who registered on a wholesale
+ * business's website was in the customer list and still missing from the
+ * console's search box ten minutes later (sparx persona issue 086).
+ *
+ * `ensureMembership` has committed by the time it returns, so announcing here is
+ * already after the commit.
+ *
+ *   - created: they made an account, so `crm.customer.created`. That is the
+ *     event the welcome email answers, and the welcome email was written for
+ *     exactly this person ("Thanks for joining").
+ *   - adopted: a guest or imported row now carries their login, maybe a site and
+ *     a name too. Somebody already known, changed, so `crm.customer.updated`.
+ *   - neither: an ordinary signed-in request. Nothing happened, so nothing is said.
+ */
+export async function ensureAnnouncedMembership(
+  ctx: CustomerAuthContext,
+  propertyId: string | null,
+  userId: string,
+  email: string,
+  names: EnsureMembershipNames
+): Promise<EnsureMembershipResult> {
+  const result = await ensureMembership(ctx, propertyId, userId, email, names);
+  if (result.created) {
+    await customerService.announceCustomer(ctx.tenantId, 'crm.customer.created', {
+      id: result.customerId,
+      type: 'retail',
+      email,
+    });
+  } else if (result.adopted) {
+    await customerService.announceCustomer(ctx.tenantId, 'crm.customer.updated', {
+      id: result.customerId,
+    });
+  }
+  return result;
+}
+
 /** Adopt a resolved (userId, email) into the per-site membership + return it. */
 async function toMembership(
   ctx: CustomerAuthContext,
@@ -64,7 +111,7 @@ async function toMembership(
   scopes: ReadonlySet<string> | null
 ): Promise<ResolvedCustomer> {
   const propertyId = await activeProperty(request, ctx.tenantId);
-  const { customerId } = await ensureMembership(ctx, propertyId, userId, email, {});
+  const { customerId } = await ensureAnnouncedMembership(ctx, propertyId, userId, email, {});
   return { customerId, userId, scopes };
 }
 

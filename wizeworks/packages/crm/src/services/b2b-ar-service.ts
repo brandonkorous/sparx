@@ -21,6 +21,7 @@
 // authority — it derives totals/balance/status AND re-syncs the account's
 // `credit_used`, so every AR mutation keeps credit utilisation consistent.
 
+import { poNumberOf, withPoNumber } from '@wizeworks/crm-schemas';
 import { NET_TERMS_AR_WORKFLOW, NET_TERMS_AR_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { withTenant } from '@wizeworks/db';
 import type { DocumentStage, Prisma } from '@wizeworks/db';
@@ -28,10 +29,16 @@ import type { DocumentStage, Prisma } from '@wizeworks/db';
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
-import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
+import {
+  ISSUED_BILL_WHERE,
+  recomputeTotals,
+  type DocumentWithLines,
+} from './billing-document-service';
 import { buildSnapshotPayload } from './billing-snapshot';
+import { quoteLinesForOrder } from './ar-invoice-lines';
 import { snapshotIssuer } from './billing-document-stage-service';
 import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
+import { closeWhenDocumentMovesOn } from './task-service';
 
 export interface NetTermsArStages {
   workflowId: string;
@@ -119,19 +126,59 @@ export interface CreateOrderArInput {
   currency?: string;
   /** Net-terms due date, precomputed from the account's payment terms. */
   dueAt: Date;
-  /** The single line's description (e.g. "Order O-000123"). */
+  /** The single line's description (e.g. "Order O-000123"), when the invoice is
+   *  one order line rather than the lines of the quote the order came from. */
   description?: string;
   /** Honour a caller-supplied human number (the manual route passes one); else a
    *  fresh INV- number is allocated from the issuing SITE's document sequence. */
   numberOverride?: string;
   notes?: string | null;
-  /** Frozen bill-to party JSON; defaults to the account's company name. */
+  /** Frozen bill-to party JSON; defaults to `defaultOrderBillTo`. */
   billTo?: Prisma.InputJsonValue;
 }
 
 /**
+ * Who an order's invoice is made out to when the caller names nobody.
+ *
+ * It used to be the company name alone, with no email and no address. So the
+ * invoice a checkout order on terms raised could not be emailed: "Invoice on
+ * terms: email it to the buyer" failed with "There is no email address to send
+ * this to" for every checkout order on account (sparx persona issue 087). Only
+ * an order made from a quote had an address, because the quote carried one.
+ *
+ * The account's last issued bill is the best answer: whoever its accounts
+ * department asked invoices to go to, usually an accounts-payable inbox, and
+ * the address on it. Failing that, the person who placed the order, the same
+ * fallback a statement uses when an account has no invoice address yet.
+ */
+async function defaultOrderBillTo(
+  tx: Prisma.TransactionClient,
+  account: { id: string; companyName: string },
+  orderedBy: string | null
+): Promise<Prisma.InputJsonValue> {
+  const latest = await tx.billingDocument.findFirst({
+    where: { companyId: account.id, deletedAt: null, ...ISSUED_BILL_WHERE },
+    select: { billTo: true },
+    orderBy: { createdAt: 'desc' },
+  });
+  const last =
+    latest?.billTo && typeof latest.billTo === 'object' && !Array.isArray(latest.billTo)
+      ? (latest.billTo as Record<string, unknown>)
+      : {};
+  const lastEmail = typeof last.email === 'string' && last.email.trim() ? last.email.trim() : null;
+  const email = lastEmail ?? (orderedBy?.trim() ? orderedBy.trim() : null);
+  const address = typeof last.address === 'string' && last.address.trim() ? last.address : null;
+  return {
+    name: account.companyName,
+    ...(email ? { email } : {}),
+    ...(address ? { address } : {}),
+  };
+}
+
+/**
  * Create a finalised net-terms AR document for a B2B account. Builds the document
- * at the Invoice stage with one synthetic line carrying the receivable, derives
+ * at the Invoice stage with one synthetic line carrying the receivable (or, for an
+ * order made from a quote, the quote's own lines and costs; ar-invoice-lines.ts), derives
  * totals/balance/status (→ unpaid, balance = amount), freezes the Invoice
  * snapshot, and re-syncs the account's credit utilisation. Composes into the
  * caller's transaction (`ctx.tx`) so it's atomic with order placement.
@@ -155,6 +202,23 @@ export async function createOrderArDocument(
     const amount = round2(input.amount);
     const now = new Date();
 
+    // The order it bills: its PO number below, and the quote it came from. An
+    // order made from a quote is invoiced with the quote's own lines and their
+    // costs, so the invoice shows the margin the quote did (sparx persona issue
+    // 086). Any other order, or a quote that no longer comes to the order total,
+    // keeps the single order line (see ar-invoice-lines.ts).
+    const order = input.orderId
+      ? await tx.order.findUnique({
+          where: { id: input.orderId },
+          select: {
+            metadata: true,
+            convertedFromDocumentId: true,
+            customer: { select: { email: true } },
+          },
+        })
+      : null;
+    const itemized = await quoteLinesForOrder(tx, order?.convertedFromDocumentId, amount);
+
     const doc = await tx.billingDocument.create({
       data: {
         tenantId: ctx.tenantId,
@@ -162,6 +226,12 @@ export async function createOrderArDocument(
         workflowId,
         stageId: invoiceStage.id,
         companyId: input.companyId,
+        // The order this bills, as the real link and not only a note in
+        // metadata. Without it the order's own "Asking for payment" list never
+        // saw the invoice and still offered "Make an invoice", so an order on
+        // terms could be billed twice (sparx persona issue 084). Every one of
+        // the platform's order invoices was written this way: 4 of 4.
+        orderId: input.orderId ?? null,
         currency: input.currency ?? 'USD',
         number,
         numberSeq: seq,
@@ -176,29 +246,54 @@ export async function createOrderArDocument(
         // issuer on it at all.
         issuedBy: await snapshotIssuer(tx, ctx.tenantId, input.propertyId),
         notes: input.notes ?? null,
-        billTo: input.billTo ?? { name: account.companyName },
+        billTo:
+          input.billTo ?? (await defaultOrderBillTo(tx, account, order?.customer?.email ?? null)),
+        // The buyer's PO number from the order, printed on the invoice their
+        // accounts department will match it against (issue 077). Checkout puts
+        // it on the order; it is read from there rather than passed in so every
+        // caller of this function carries it without being told to.
         metadata: input.orderId
-          ? { source: 'b2b_order', orderId: input.orderId }
+          ? (withPoNumber(
+              { source: 'b2b_order', orderId: input.orderId },
+              poNumberOf(order?.metadata)
+            ) as Prisma.InputJsonValue)
           : { source: 'b2b_manual' },
+        // Itemized from the quote: its rate and delivery, so the totals worked
+        // out from its lines are the order's (checked in ar-invoice-lines.ts).
+        ...(itemized
+          ? {
+              taxRate: itemized.taxRate,
+              shippingTotal: itemized.shippingTotal,
+              surchargeTotal: itemized.surchargeTotal,
+            }
+          : {}),
       },
     });
 
-    // One synthetic line carrying the order total. Flat + non-taxable: the order
-    // already computed and included tax, so the AR amount is authoritative as-is.
-    await tx.billingDocumentLine.create({
-      data: {
-        tenantId: ctx.tenantId,
-        documentId: doc.id,
-        lineTypeId: null,
-        description: input.description ?? (input.orderId ? 'Order charge' : 'Invoice'),
-        quantity: 1,
-        unitPrice: amount,
-        taxable: false,
-        lineSubtotal: amount,
-        lineTotal: amount,
-        sortOrder: 0,
-      },
-    });
+    if (itemized) {
+      for (const line of itemized.lines) {
+        await tx.billingDocumentLine.create({
+          data: { tenantId: ctx.tenantId, documentId: doc.id, ...line },
+        });
+      }
+    } else {
+      // One synthetic line carrying the order total. Flat + non-taxable: the order
+      // already computed and included tax, so the AR amount is authoritative as-is.
+      await tx.billingDocumentLine.create({
+        data: {
+          tenantId: ctx.tenantId,
+          documentId: doc.id,
+          lineTypeId: null,
+          description: input.description ?? (input.orderId ? 'Order charge' : 'Invoice'),
+          quantity: 1,
+          unitPrice: amount,
+          taxable: false,
+          lineSubtotal: amount,
+          lineTotal: amount,
+          sortOrder: 0,
+        },
+      });
+    }
 
     // Single money authority — derives subtotal/total/balance/status (→ unpaid)
     // and re-syncs the account's credit_used from open AR.
@@ -318,6 +413,8 @@ export async function voidArDocument(
       entityId: documentId,
       diff: { before: { number: before.number, status: before.status } },
     });
+    // Nothing is left to take on from a voided document.
+    await closeWhenDocumentMovesOn(tx, ctx, { documentId, byUserId: ctx.userId ?? null });
     return tx.billingDocument.findUniqueOrThrow({
       where: { id: documentId },
       include: { lines: { orderBy: { sortOrder: 'asc' } } },

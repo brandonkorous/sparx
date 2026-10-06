@@ -18,6 +18,7 @@
 // a second monitor, or beside, or not at all.
 
 import { useEffect, useRef, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useMutation } from '@wizeworks/query';
 import {
   Alert,
@@ -81,6 +82,7 @@ export function TemplateEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     data: template,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -170,7 +172,19 @@ export function TemplateEditorSurface({ ctx }: { ctx: SurfaceContext }) {
       })
     : null;
 
+  // Publish puts the STORED layout in front of customers, so edits still on
+  // screen are saved first. Pressed without that, it sent the old layout live
+  // under a "Published" toast (persona issue 033).
   const onPublish = () => {
+    if (!original) return;
+    if (dirty) {
+      save.mutate(undefined, { onSuccess: publishStored });
+      return;
+    }
+    publishStored();
+  };
+
+  const publishStored = () => {
     if (!original) return;
     publish.mutate(original.id, {
       onSuccess: (next) => {
@@ -250,12 +264,19 @@ export function TemplateEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     : null;
 
   if (isError) {
+    // Gone (a 404) and unreachable say different things; the shared screen reads
+    // which from the error instead of one sentence hedging both (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <Alert color="danger" variant="soft">
-          This template could not be loaded. It may have been deleted, or this is a problem reaching
-          the server.
-        </Alert>
+        <PaneLoadError
+          error={error}
+          noun="template"
+          title="Could not load this template"
+          description="This is a problem reaching the server. The template itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       </div>
     );
   }

@@ -28,6 +28,7 @@ export {
   EditModeProvider,
   useEditMode,
   type BuilderRuntime,
+  type BuilderAddOptions,
   type BuilderAccount,
 } from './runtime-context';
 

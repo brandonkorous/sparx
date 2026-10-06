@@ -9,31 +9,31 @@
 // the times offered here are the times a stranger would be offered, and the
 // engine re-checks on submit: a slot taken between load and click comes back as
 // a clean refusal in the salon's own words.
+//
+// The day and the times are the BUSINESS's, on the booking's own clock (sparx
+// persona issue 086). They were the reader's: the day ran from the reader's
+// midnight and the times were printed on the reader's clock, so somebody two
+// zones away picked "9:00" and arrived at 11:00. The booking page and the
+// confirmation already said the shop's time; this was the one place that did not.
 
 import { useState } from 'react';
 
 import { loadSlots, type PublicSlot } from '@/lib/scheduling-client';
-import { Alert, Input, Label } from '@wizeworks/silicaui-react';
+import { Alert, Button, Input, Label } from '@wizeworks/silicaui-react';
 
-import { cn } from '@/lib/cn';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-function slotTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
-
-/** Today's date as `yyyy-mm-dd` in the browser's local zone — the min the date
- *  input allows (you can't reschedule into the past). */
-function todayLocal(): string {
-  const d = new Date();
-  const off = d.getTimezoneOffset() * 60_000;
-  return new Date(d.getTime() - off).toISOString().slice(0, 10);
-}
+import {
+  dayAfter,
+  formatTime,
+  isBookableDay,
+  readsTheSame,
+  startOfDay,
+  today,
+  zoneName,
+} from './booking-clock';
 
 interface Props {
   tenantSlug: string;
-  booking: { id: string; serviceId: string; partySize: number | null };
+  booking: { id: string; serviceId: string; partySize: number | null; timezone: string };
   /** Move the booking. Rejecting with an Error shows its message as-is — the
    *  engine's refusals already name the reason (a clash, a closure, nobody
    *  working), so restating them here would only make them vaguer. */
@@ -43,6 +43,7 @@ interface Props {
 }
 
 export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose }: Props) {
+  const tz = booking.timezone || null;
   const [date, setDate] = useState('');
   const [slots, setSlots] = useState<PublicSlot[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,18 +54,17 @@ export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose 
     setDate(value);
     setSlots(null);
     setError(null);
-    if (!value) return;
+    // A box still being typed into ("0002-08-25" on the way to 2026) asks nothing.
+    if (!isBookableDay(value, tz)) return;
     setLoading(true);
     try {
-      // The whole local day → [midnight, next midnight).
-      const from = new Date(`${value}T00:00:00`);
-      const to = new Date(from.getTime() + DAY_MS);
+      // The whole of that day where the business is: [its midnight, the next one).
       setSlots(
         await loadSlots(
           tenantSlug,
           booking.serviceId,
-          from.toISOString(),
-          to.toISOString(),
+          startOfDay(value, tz).toISOString(),
+          startOfDay(dayAfter(value), tz).toISOString(),
           booking.partySize ?? undefined
         )
       );
@@ -107,7 +107,7 @@ export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose 
         <Input
           id={`reschedule-date-${booking.id}`}
           type="date"
-          min={todayLocal()}
+          min={today(tz)}
           value={date}
           onChange={(e) => void findSlots(e.target.value)}
         />
@@ -120,24 +120,29 @@ export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose 
       ) : slots.length === 0 ? (
         <p className="text-base-content text-sm">No openings that day. Try another date.</p>
       ) : (
-        <div className="flex flex-wrap gap-2">
-          {slots.map((s) => (
-            <button
-              key={s.startAt}
-              type="button"
-              className={cn(
-                // The same chip the front of the site offers times in, so a
-                // customer moving an appointment reads the same shape she booked
-                // from rather than a column of full-width rows.
-                'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary cursor-pointer border px-3.5 py-2 text-sm transition-colors',
-                submitting === s.startAt && 'border-primary bg-primary text-primary-content'
-              )}
-              disabled={submitting !== null}
-              onClick={() => void pick(s.startAt)}
-            >
-              {submitting === s.startAt ? 'Moving…' : slotTime(s.startAt)}
-            </button>
-          ))}
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-2">
+            {slots.map((s) => (
+              // The same button the booking page offers times in, so a customer
+              // moving an appointment reads the same shape they booked from.
+              <Button
+                key={s.startAt}
+                type="button"
+                size="sm"
+                color="primary"
+                variant={submitting === s.startAt ? 'solid' : 'outline'}
+                disabled={submitting !== null}
+                onClick={() => void pick(s.startAt)}
+              >
+                {submitting === s.startAt ? 'Moving…' : formatTime(s.startAt, tz)}
+              </Button>
+            ))}
+          </div>
+          {tz && slots[0] && !readsTheSame(slots[0].startAt, tz) ? (
+            <p className="text-base-content text-sm">
+              Times are the business&rsquo;s local time ({zoneName(slots[0].startAt, tz)}).
+            </p>
+          ) : null}
         </div>
       )}
     </div>

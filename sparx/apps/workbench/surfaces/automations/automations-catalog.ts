@@ -131,7 +131,19 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   },
   { eventType: 'form.submitted', label: 'A form on your site is submitted', module: 'cms' },
   // ── Customers (CRM) ──
-  { eventType: 'crm.customer.created', label: 'A new customer is added', module: 'crm' },
+  // Two kinds of new person, told apart because they want different replies: a
+  // welcome email suits somebody who made an account, not a stranger who asked a
+  // question through a contact form (sparx persona issue 086).
+  {
+    eventType: 'crm.customer.created',
+    label: 'A new customer is added by your team or makes an account on your site',
+    module: 'crm',
+  },
+  {
+    eventType: 'crm.customer.captured',
+    label: 'Someone new reaches you through a form, a booking or a checkout',
+    module: 'crm',
+  },
   { eventType: 'crm.customer.updated', label: 'A customer’s details change', module: 'crm' },
   { eventType: 'crm.customer.subscribed', label: 'A customer opts in to marketing', module: 'crm' },
   { eventType: 'crm.deal.created', label: 'A sales deal is created', module: 'crm' },
@@ -213,8 +225,18 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   },
   // ── Wholesale (B2B) ──
   { eventType: 'crm.b2b_account.created', label: 'A wholesale account is created', module: 'b2b' },
+  // Held for sign-off: over a spending limit, or past the account's credit limit
+  // (sparx persona issue 085).
+  {
+    eventType: 'b2b.order.pending_approval',
+    label: 'A wholesale order is waiting for sign-off',
+    module: 'b2b',
+  },
   { eventType: 'b2b.order.approved', label: 'A wholesale order is approved', module: 'b2b' },
   { eventType: 'b2b.order.rejected', label: 'A wholesale order is rejected', module: 'b2b' },
+  // Issued on the account's terms: at checkout, from an accepted quote, or when a
+  // held order is signed off (sparx persona issue 085).
+  { eventType: 'b2b.invoice.created', label: 'A wholesale invoice is issued', module: 'b2b' },
   { eventType: 'b2b.invoice.overdue', label: 'A wholesale invoice is overdue', module: 'b2b' },
   {
     eventType: 'b2b.account.credit_hold',
@@ -447,6 +469,9 @@ export const COMMON_CONDITION_FIELDS: readonly string[] = [
   'order.itemCount',
   'b2bAccount.status',
   'b2bAccount.hasOverdueInvoices',
+  // Who a held wholesale order is waiting on (sparx persona issue 087).
+  'approval.asksBusiness',
+  'approval.asksAccount',
   'form.formName',
   'form.pageSlug',
 ];
@@ -983,6 +1008,24 @@ export const ACTION_DEFS: readonly ActionDef[] = [
       },
       { key: 'suspendDays', label: 'Suspend after (days)', type: 'number', placeholder: '30' },
     ],
+  },
+  {
+    type: 'b2b.send_invoice',
+    label: 'Email the invoice to the buyer',
+    module: 'b2b',
+    description:
+      'Emails the invoice to the buyer, with their PO number and a link to print or save it. The same email as pressing Send on the invoice.',
+    mode: 'none',
+    available: true,
+  },
+  {
+    type: 'b2b.ask_account_approvers',
+    label: 'Ask the buyer’s approvers to sign off',
+    module: 'b2b',
+    description:
+      'Emails everyone who can approve orders at the wholesale customer, except whoever placed it, with the order and a button to approve it or turn it down on your site.',
+    mode: 'none',
+    available: true,
   },
   {
     type: 'b2b.create_quote',

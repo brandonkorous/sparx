@@ -171,7 +171,9 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No tasks to do',
               description:
-                'Tasks are the things you need to do for a customer or a deal. Add your first one to keep track of follow-ups.',
+                // True whether or not tasks exist: the list opens on "To do", so
+                // "add your first one" was said to an owner with five done.
+                'Tasks are the things you need to do for a customer or a deal. Finished ones are under Done in the filter above.',
               action: createFirst,
             }}
           />

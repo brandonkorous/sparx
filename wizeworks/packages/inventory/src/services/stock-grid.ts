@@ -113,7 +113,17 @@ export async function stockGrid(
           : {}),
       },
       ...(filter.warehouseId ? { warehouseId: filter.warehouseId } : {}),
-      ...(filter.lowOnly ? { reorderPoint: { not: null } } : {}),
+      // "Running low" compares two columns, on hand against the reorder level, in
+      // the query itself. Finished in JS after a page was fetched, the total
+      // counted every row WITH a reorder level ("Showing 1 of 3" over one row)
+      // and a low row past the first page was never shown (sparx persona
+      // issue 072).
+      ...(filter.lowOnly
+        ? {
+            reorderPoint: { not: null },
+            onHand: { lte: tx.inventoryLevel.fields.reorderPoint },
+          }
+        : {}),
     };
 
     const [levels, total] = await Promise.all([
@@ -130,45 +140,37 @@ export async function stockGrid(
       tx.inventoryLevel.count({ where }),
     ]);
 
-    const rows = levels
-      // `lowOnly` finishes in JS because "below the reorder point" is a
-      // comparison between two columns, which Prisma cannot express in a filter.
-      // The SQL filter above narrows to rows that HAVE a reorder point first, so
-      // this is not a scan of the whole table.
-      .filter((level) =>
-        filter.lowOnly ? level.reorderPoint !== null && level.onHand <= level.reorderPoint : true
-      )
-      .map((level) => {
-        // The grid used to send `variant.title ?? product.title`, and since no
-        // variant here has a title of its own that resolved to the PRODUCT on
-        // every row: twelve lines reading "The Ash Overshirt" and nothing to
-        // tell a size from a color. The option values were in the database the
-        // whole time. MEASURED 2026-09-18, Juniper Row: 76 stock rows, 0 variant
-        // titles, every one of them carrying "Size: M, Color: Bone".
-        const name = variantLabel(level.variant);
-        return {
-          variantId: level.variantId,
-          warehouseId: level.warehouseId,
-          sku: level.variant.sku,
-          productTitle: name.productTitle,
-          variantName: name.variantName,
-          warehouseCode: level.warehouse.code,
-          warehouseName: level.warehouse.name,
-          onHand: level.onHand,
-          allocated: level.allocated,
-          // The one definition, not a fourth spelling of it: this line subtracted
-          // the buffer and not the quarantine shelf, which is neither the public
-          // `available` (`onHand - allocated`) nor what is actually free to use.
-          available: sellableUnits(level),
-          reorderPoint: level.reorderPoint,
-          reorderQuantity: level.reorderQuantity,
-          safetyBuffer: level.safetyBuffer,
-          unitCostCents: level.unitCostCents,
-          avgCostCents: level.avgCostCents,
-          abcClass: level.abcClass,
-          customFields: readCustomFields(definitions, level.customFields),
-        };
-      });
+    const rows = levels.map((level) => {
+      // The grid used to send `variant.title ?? product.title`, and since no
+      // variant here has a title of its own that resolved to the PRODUCT on
+      // every row: twelve lines reading "The Ash Overshirt" and nothing to
+      // tell a size from a color. The option values were in the database the
+      // whole time. MEASURED 2026-09-18, Juniper Row: 76 stock rows, 0 variant
+      // titles, every one of them carrying "Size: M, Color: Bone".
+      const name = variantLabel(level.variant);
+      return {
+        variantId: level.variantId,
+        warehouseId: level.warehouseId,
+        sku: level.variant.sku,
+        productTitle: name.productTitle,
+        variantName: name.variantName,
+        warehouseCode: level.warehouse.code,
+        warehouseName: level.warehouse.name,
+        onHand: level.onHand,
+        allocated: level.allocated,
+        // The one definition, not a fourth spelling of it: this line subtracted
+        // the buffer and not the quarantine shelf, which is neither the public
+        // `available` (`onHand - allocated`) nor what is actually free to use.
+        available: sellableUnits(level),
+        reorderPoint: level.reorderPoint,
+        reorderQuantity: level.reorderQuantity,
+        safetyBuffer: level.safetyBuffer,
+        unitCostCents: level.unitCostCents,
+        avgCostCents: level.avgCostCents,
+        abcClass: level.abcClass,
+        customFields: readCustomFields(definitions, level.customFields),
+      };
+    });
 
     return { rows, total, customFields: definitions };
   });

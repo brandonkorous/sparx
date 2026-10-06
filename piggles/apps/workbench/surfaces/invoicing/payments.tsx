@@ -115,7 +115,9 @@ export function PaymentsSection({ doc, noun, priceOffer }: PaymentsSectionProps)
       ) : !payments || payments.length === 0 ? (
         <Text className="text-sm">
           {priceOffer
-            ? `No deposit taken. A ${noun} is a price, not a bill, so this stays empty unless somebody pays up front to hold it.`
+            ? // The section's own description has just said why; this only
+              // states the fact (persona issue 083: the card said it twice).
+              'No deposit taken.'
             : 'No payments recorded yet. When money comes in (however it comes in), record it here and the balance updates everywhere.'}
         </Text>
       ) : (

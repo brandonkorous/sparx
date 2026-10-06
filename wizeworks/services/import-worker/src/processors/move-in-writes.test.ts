@@ -293,6 +293,239 @@ describe('products', () => {
     expect(called('inventoryService.updateLevelCount')).toEqual([]);
   });
 
+  it('keeps both choices when a file gives them one SKU, and never merges two products', async () => {
+    // Gillett Diesel's Shopify file, as exported: both core-charge choices carry the
+    // part number, and two unrelated products carry "-". A SKU names one item here.
+    const results = await run('products', [
+      {
+        handle: 'bosch-0986435621-remanufactured-fuel-injector',
+        title: 'Bosch Remanufactured Fuel Injector (0986435621)',
+        option1_name: 'Core Charge',
+        option1_value: 'Accept Core Charge (+$150)',
+        sku: '0986435621',
+        price: '730.15',
+      },
+      {
+        handle: 'bosch-0986435621-remanufactured-fuel-injector',
+        title: 'Bosch Remanufactured Fuel Injector (0986435621)',
+        option1_name: 'Core Charge',
+        option1_value: 'Defer Core Charge',
+        sku: '0986435621',
+        price: '600.00',
+      },
+      { handle: 'bosch-0445226014-fuel-rail', title: 'Bosch Fuel Rail', sku: '-', price: '356.00' },
+      {
+        handle: 'alliant-power-engine-oil-cooler-o-ring-and-gasket',
+        title: 'Alliant Power Engine Oil Cooler O-Ring and Gasket',
+        sku: '-',
+        price: '98.85',
+      },
+    ]);
+
+    expect(results.map((result) => result.status)).toEqual([
+      'imported',
+      'imported',
+      'imported',
+      'imported',
+    ]);
+    expect(called('variantService.update')).toEqual([]);
+    expect(called('productService.create')).toHaveLength(3);
+    const variants = called('variantService.create').map((args) => args[2]) as Record<
+      string,
+      unknown
+    >[];
+    expect(variants.map((variant) => [variant.sku, variant.priceCents])).toEqual([
+      ['0986435621', 73015],
+      ['0986435621-DEFER-CORE-CHARGE', 60000],
+      ['BOSCH-0445226014-FUEL-RAIL-1', 35600],
+      ['ALLIANT-POWER-ENGINE-OIL-COOLE-1', 9885],
+    ]);
+    expect(results[1]!.errorMsg).toContain('saved as “0986435621-DEFER-CORE-CHARGE”');
+    expect(results[3]!.errorMsg).toContain('“-” is not a SKU');
+  });
+
+  it('does not hang the same picture again when the same file comes in twice', async () => {
+    // Re-importing Gillett Diesel's file gave all 643 products every picture
+    // twice (sparx persona issue 055).
+    state.answers.set('product.findFirst', () => ({ id: 'product-live' }));
+    state.answers.set('variantImage.findMany', () => [
+      { variantId: null, mediaAssetId: 'asset:https://cdn.shopify.com/injector.jpg' },
+    ]);
+    await run('products', [
+      {
+        handle: 'injector',
+        title: 'Bosch Injector',
+        sku: '0986435621',
+        images: 'https://cdn.shopify.com/injector.jpg, https://cdn.shopify.com/injector-side.jpg',
+      },
+    ]);
+    const added = called('variantService.addImage').map(
+      (args) => args[1] as { mediaAssetId: string; position: number }
+    );
+    expect(added).toEqual([
+      expect.objectContaining({
+        mediaAssetId: 'asset:https://cdn.shopify.com/injector-side.jpg',
+        position: 1,
+      }),
+    ]);
+  });
+
+  it('shortens a web name too long to keep, without two products sharing one', async () => {
+    // Two of Gillett Diesel's FASS kits: 145 and 140 characters, the same for the
+    // first 127, different only at the end.
+    const base =
+      'fass-fuel-systems-signature-series-adjustable-diesel-fuel-system-100gph-for-2005-2009-dodge-ram-cummins-5-9l-amp-6-7l-fasd07100g';
+    const results = await run('products', [
+      { handle: base, title: 'FASS 100GPH', sku: 'FASD07100G', price: '1199.00' },
+      {
+        handle: `${base}-copy`,
+        title: 'FASS 100GPH (copy)',
+        sku: 'FASD07100G-C',
+        price: '1199.00',
+      },
+    ]);
+    expect(results.map((result) => result.status)).toEqual(['imported', 'imported']);
+    const handles = called('productService.create').map(
+      (args) => (args[1] as { handle: string }).handle
+    );
+    expect(handles).toHaveLength(2);
+    expect(new Set(handles).size).toBe(2);
+    for (const handle of handles) expect(handle.length).toBeLessThanOrEqual(127);
+    expect(results[0]?.errorMsg).toContain('too long to keep');
+  });
+
+  it('leaves off a weight no part can have, instead of failing the product', async () => {
+    const results = await run('products', [
+      {
+        handle: 'cat-60111',
+        title: 'MagnaFlow 60111',
+        sku: '60111',
+        price: '480.00',
+        weight_grams: '27265891',
+      },
+    ]);
+    expect(results[0]?.status).toBe('imported');
+    expect(results[0]?.errorMsg).toContain('cannot be right');
+    const product = called('productService.create')[0]?.[1] as Record<string, unknown>;
+    expect(product).not.toHaveProperty('weight');
+  });
+
+  it('brings an item listed twice in once, instead of inventing a second product', async () => {
+    // Gillett Diesel's file lists Banks part 42806-R twice: same SKU, same price,
+    // no real choice. A rename would have invented "42806-R-DEFAULT-TITLE".
+    const results = await run('products', [
+      { handle: 'banks-ram', title: 'Banks Monster-Ram', sku: '42806-R', price: '898.00' },
+      { handle: 'banks-ram', title: 'Banks Monster-Ram', sku: '42806-R', price: '898.00' },
+    ]);
+    expect(results.map((result) => result.status)).toEqual(['imported', 'skipped']);
+    expect(results[1]?.errorMsg).toContain('brought in once');
+    expect(called('variantService.create')).toHaveLength(1);
+  });
+
+  it('warns in the practice run about a SKU it will rename', async () => {
+    const processor = getProcessor('products');
+    if (!processor) throw new Error('no products processor');
+    const preview = await processor.preview(
+      ctx,
+      [
+        {
+          handle: 'injector',
+          title: 'Bosch Injector',
+          sku: '0986435621',
+          option1_name: 'Core Charge',
+          option1_value: 'Accept Core Charge (+$150)',
+        },
+        {
+          handle: 'injector',
+          title: 'Bosch Injector',
+          sku: '0986435621',
+          option1_name: 'Core Charge',
+          option1_value: 'Defer Core Charge',
+        },
+      ],
+      logger
+    );
+    // The first row of a product whose core charge is a choice says where to
+    // turn it into a real deposit (issue 057); the rename note is the second row's.
+    expect(preview[0]?.errorMsg).toContain('set up as a choice');
+    expect(preview[1]).toMatchObject({
+      action: 'create',
+      naturalKey: '0986435621-DEFER-CORE-CHARGE',
+    });
+    expect(preview[1]?.errorMsg).toContain('saved as');
+  });
+
+  // A core charge the old store sold as a choice (sparx persona issue 057).
+  const injectorRows = [
+    {
+      handle: 'bosch-0986435621-remanufactured-fuel-injector',
+      title: 'Bosch Remanufactured Fuel Injector (0986435621)',
+      option1_name: 'Core Charge',
+      option1_value: 'Accept Core Charge (+$150)',
+      sku: '0986435621',
+      price: '730.15',
+    },
+    {
+      handle: 'bosch-0986435621-remanufactured-fuel-injector',
+      title: 'Bosch Remanufactured Fuel Injector (0986435621)',
+      option1_name: 'Core Charge',
+      option1_value: 'Defer Core Charge',
+      sku: '0986435621',
+      price: '600.00',
+    },
+  ];
+
+  it('brings a core charge sold as a choice in as it was, and says where to change it', async () => {
+    const results = await run('products', injectorRows);
+    expect(results.map((result) => result.status)).toEqual(['imported', 'imported']);
+    expect(results[0]?.errorMsg).toContain('Core charges set up as choices');
+    expect(called('variantService.setOptions')).toHaveLength(1);
+  });
+
+  it('leaves a core choice already turned into a deposit alone when the file comes in again', async () => {
+    // Converted here: no core option left, and the part carries a deposit. The
+    // file's "ship now" price would otherwise go back on top of the deposit.
+    state.answers.set('product.findFirst', () => ({ id: 'product-live' }));
+    state.answers.set('productOption.findMany', () => [{ name: 'Size' }]);
+    state.answers.set('productVariant.findFirst', () => ({ id: 'variant-kept' }));
+    const results = await run('products', injectorRows);
+    expect(results.map((result) => result.status)).toEqual(['skipped', 'skipped']);
+    expect(results[0]?.errorMsg).toContain('a real deposit here now');
+    expect(called('variantService.setOptions')).toEqual([]);
+    expect(called('variantService.update')).toEqual([]);
+    expect(called('variantService.create')).toEqual([]);
+    // Its other details still come across.
+    expect(called('productService.update')).toHaveLength(1);
+  });
+
+  it('says the same in the practice run', async () => {
+    state.answers.set('product.findFirst', () => ({ id: 'product-live' }));
+    state.answers.set('productVariant.findFirst', () => ({ id: 'variant-kept' }));
+    const processor = getProcessor('products');
+    if (!processor) throw new Error('no products processor');
+    const preview = await processor.preview(ctx, injectorRows, logger);
+    expect(preview.map((row) => row.action)).toEqual(['skip', 'skip']);
+    expect(preview[0]?.errorMsg).toContain('a real deposit here now');
+  });
+
+  it('saves a rebuilt part’s core charge, and reads a zero as none', async () => {
+    const rows = moveIn(
+      'products',
+      [
+        { Handle: 'he351ve', Name: 'Holset HE351VE Reman Turbo', Sku: '4043600RX', Core: '450.00' },
+        { Handle: 'gasket', Name: 'Turbo Gasket', Sku: '3955465', Core: '0' },
+      ],
+      { Handle: 'Handle', Name: 'Title', Sku: 'SKU', Core: 'Core charge' }
+    );
+    await run('products', rows);
+    const variants = called('variantService.create').map((args) => args[2]) as Record<
+      string,
+      unknown
+    >[];
+    expect(variants[0]).toMatchObject({ sku: '4043600RX', coreChargeCents: 45_000 });
+    expect(variants[1]).toMatchObject({ sku: '3955465', coreChargeCents: null });
+  });
+
   it('never clears a product from a blank cell and adds to its collections', async () => {
     state.answers.set('product.findFirst', () => ({ id: 'product-live' }));
     state.answers.set('collectionProduct.findMany', () => [{ collectionId: 'collection-kept' }]);

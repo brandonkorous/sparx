@@ -9,6 +9,12 @@
 // business, or one addressed to an accounts-payable department, is exactly that
 // case. Picking a customer seeds the printed fields; editing them afterwards
 // never changes who the invoice belongs to.
+//
+// A customer who buys for a wholesale account is billed AS that account, at
+// their billing address, and the document is attached to the account so its
+// trade prices and terms apply; the person stays the contact the email goes to
+// (issue 077). What that comes to is ./bill-to-party; the rule for which boxes
+// a pick may change is ./bill-to-fill.
 
 import {
   Field,
@@ -19,8 +25,10 @@ import {
   Input,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { billingName, CustomerPicker } from './customer-picker';
+import { useQueryClient } from '@wizeworks/query';
+import { CustomerPicker } from './customer-picker';
 import { useCustomerOnRecord } from './customer-picker-data';
+import { fetchBilledParty, useBilledParty } from './bill-to-party';
 import {
   clearedFromCustomer,
   fillFromCustomer,
@@ -38,6 +46,8 @@ export interface BillToValue {
 interface BillToProps {
   customerId: string | null;
   value: BillToValue;
+  /** The buyer's own purchase order number, '' for none (issue 077). */
+  poNumber: string;
   /** `YYYY-MM-DD`, or '' for none. */
   dueAt: string;
   /** What this document is called in a sentence: "invoice", "quote", "estimate".
@@ -49,7 +59,13 @@ interface BillToProps {
    *  different columns — see `./save`. */
   priceOffer: boolean;
   readOnly?: boolean;
-  onChange: (patch: { customerId?: string | null; billTo?: BillToValue; dueAt?: string }) => void;
+  onChange: (patch: {
+    customerId?: string | null;
+    companyId?: string | null;
+    billTo?: BillToValue;
+    dueAt?: string;
+    poNumber?: string;
+  }) => void;
   /**
    * Make a customer who is not in the book yet, with what was typed.
    *
@@ -65,6 +81,7 @@ interface BillToProps {
 export function BillTo({
   customerId,
   value,
+  poNumber,
   dueAt,
   noun,
   priceOffer,
@@ -76,13 +93,12 @@ export function BillTo({
     onChange({ billTo: { ...value, [field]: next } });
   };
 
-  // Who the document is on right now. The same cached read the picker itself
-  // makes, so this costs nothing, and it is what lets the printed fields tell
+  const queryClient = useQueryClient();
+  // Who the document is on right now, as it would be made out to them: the
+  // same cached reads the picker makes, and what lets the printed fields tell
   // "she typed this" from "we filled it from the last customer".
   const onRecord = useCustomerOnRecord(customerId);
-  const attached: BilledParty | null = onRecord.data
-    ? { name: billingName(onRecord.data), email: onRecord.data.email ?? '' }
-    : null;
+  const attached: BilledParty | null = useBilledParty(onRecord.data);
   const wrongAddress = misdirectedEmail(value.email, attached);
 
   return (
@@ -94,19 +110,23 @@ export function BillTo({
           disabled={readOnly}
           {...(onAddCustomer ? { onAddNew: onAddCustomer } : {})}
           onSelect={(customer) => {
-            onChange({
-              customerId: customer.id,
-              billTo: {
-                ...value,
-                // A printed field follows the customer while it still agrees
-                // with the one it belongs to, and stays once it has been made
-                // different on purpose. `attached` is still the PREVIOUS
-                // customer here, which is exactly the comparison needed.
-                ...fillFromCustomer(value, attached, {
-                  name: billingName(customer),
-                  email: customer.email ?? '',
-                }),
-              },
+            // The customer and their account land at once, so the field names
+            // them straight away. Who they are billed as, and at what address,
+            // is a read of their account and their addresses, and fills the
+            // printed fields when it arrives. `attached` and `value` are both
+            // as they were at the moment of the pick.
+            onChange({ customerId: customer.id, companyId: customer.companyId });
+            void fetchBilledParty(queryClient, customer).then((party) => {
+              onChange({
+                billTo: {
+                  ...value,
+                  // A printed field follows the customer while it still agrees
+                  // with the one it belongs to, and stays once it has been made
+                  // different on purpose. `attached` is still the PREVIOUS
+                  // customer here, which is exactly the comparison needed.
+                  ...fillFromCustomer(value, attached, party),
+                },
+              });
             });
           }}
           onClear={() => {
@@ -116,6 +136,7 @@ export function BillTo({
             // bug, one step later.
             onChange({
               customerId: null,
+              companyId: null,
               billTo: { ...value, ...clearedFromCustomer(value, attached) },
             });
           }}
@@ -210,7 +231,7 @@ export function BillTo({
           render={
             <Textarea
               color="module"
-              rows={3}
+              rows={5}
               value={value.address}
               disabled={readOnly}
               placeholder={'Street\nCity, State ZIP'}
@@ -220,6 +241,36 @@ export function BillTo({
             />
           }
         />
+        <FieldDescription>
+          Filled in from their billing address when you choose the customer. Change it here if this
+          one goes somewhere else.
+        </FieldDescription>
+      </Field>
+
+      {/* The number the BUYER's books give this purchase. A business on account
+          will not pay what its accounts department cannot match to one, so it is
+          printed on the quote, the order made from it, and the invoice (issue
+          077). Optional: most customers never have one. */}
+      <Field className="@lg:max-w-64">
+        <FieldLabel>Their PO number</FieldLabel>
+        <FieldControl
+          render={
+            <Input
+              color="module"
+              value={poNumber}
+              maxLength={63}
+              disabled={readOnly}
+              onChange={(event) => {
+                onChange({ poNumber: event.target.value });
+              }}
+            />
+          }
+        />
+        <FieldDescription>
+          {priceOffer
+            ? `If they gave you an order number of their own (a PO number), it is printed on this ${noun} and on the order and invoice made from it, so their accounts team can match them. Leave it empty if not.`
+            : `If they gave you an order number of their own (a PO number), it is printed on this ${noun} so their accounts team can match it. Leave it empty if not.`}
+        </FieldDescription>
       </Field>
     </div>
   );

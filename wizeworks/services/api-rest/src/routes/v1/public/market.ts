@@ -37,6 +37,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
 import {
+  CommerceCartBoughtError,
   cartService,
   checkoutService,
   discountService,
@@ -502,7 +503,7 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
     const body = UpdateItemBody.parse(request.body);
     const { tenantId, ctx } = await publicMarketContext(request);
     await assertCartToken(request, tenantId, cartId);
-    await cartService.updateItem(ctx, { cartItemId: itemId, quantity: body.quantity });
+    await cartService.updateItem(ctx, { cartItemId: itemId, cartId, quantity: body.quantity });
     return ok(await serializePublicMarketCart(ctx, tenantId, cartId));
   });
 
@@ -510,7 +511,7 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
     const { cartId, itemId } = ItemParam.parse(request.params);
     const { tenantId, ctx } = await publicMarketContext(request);
     await assertCartToken(request, tenantId, cartId);
-    await cartService.removeItem(ctx, itemId);
+    await cartService.removeItem(ctx, itemId, cartId);
     return ok(await serializePublicMarketCart(ctx, tenantId, cartId));
   });
 
@@ -524,6 +525,9 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
     try {
       await discountService.redeemCode(ctx, { cartId, code: body.code });
     } catch (err) {
+      // A bought basket keeps its own answer (410), as on the storefront
+      // (sparx persona issue 087).
+      if (err instanceof CommerceCartBoughtError) throw err;
       throw badRequest((err as Error).message || 'That code can’t be applied.');
     }
     return ok(await serializePublicMarketCart(ctx, tenantId, cartId));

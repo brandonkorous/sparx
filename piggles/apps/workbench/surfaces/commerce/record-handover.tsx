@@ -1,91 +1,73 @@
 'use client';
 
-// Writing down that the goods went.
-//
-// `POST /v1/orders/:id/fulfillments` has always existed and nothing in either
-// console called it. The order pane listed shipments and said "Nothing has been
-// sent for this order yet" — true, and permanently true.
-//
-// The pane's only fulfilment-shaped action was **Send it to the warehouse**,
-// which builds a picking walk. A walk tells somebody what to go and fetch; it
-// marks nothing as gone. A bakery with a counter has no warehouse, so every
-// order it ever took stayed open forever at `placed`.
-//
-// ── TWO SHAPES, BECAUSE THEY ARE TWO EVENTS ─────────────────────────────────
-//
-// Collected: one button and an optional note. There is no carrier, no tracking
-// number and nothing to follow, so asking for any of it is asking her to answer
-// questions about a van that does not exist.
-//
-// Posted: who took it, and the number the customer will ask about. Three fields
-// at most, and only one of them is required.
+// Writing down that the goods went: one button for a collection, carrier and
+// tracking for a parcel. Only what may leave NOW is sent (order-ship-gate.ts);
+// what must wait says why, in the server's words.
 
 import { useState } from 'react';
-import { Button, Input, NativeSelect, useToast } from '@wizeworks/silicaui-react';
 import {
-  orderErrorMessage,
-  useRecordFulfillment,
-  type DeliveryPlan,
-  type Order,
-  type OrderItem,
-} from './data';
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  Input,
+  NativeSelect,
+  Text,
+  useToast,
+} from '@wizeworks/silicaui-react';
+import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
 import { CARRIERS } from './carriers';
+import { whatCanShipNow, type ShipNow } from './order-ship-gate';
 
-/** Everything still owed on the order, at the quantity still owed. A partial
- *  handover is a real thing, but it is not what this control is for — the
- *  common case by a distance is "all of it, now", and a per-line quantity grid
- *  in front of that is a form standing between her and one button. */
-function outstandingLines(items: OrderItem[]) {
-  return items
-    .map((item) => ({
-      orderItemId: item.id,
-      quantity: item.quantity - item.quantityFulfilled,
-    }))
-    .filter((line) => line.quantity > 0);
+interface HandoverForm {
+  carrier: string;
+  tracking: string;
+  note: string;
+  setCarrier: (next: string) => void;
+  setTracking: (next: string) => void;
+  setNote: (next: string) => void;
 }
 
-export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPlan }) {
-  const record = useRecordFulfillment(order.id);
-  const toast = useToast();
+function useHandoverForm(): HandoverForm {
   const [carrier, setCarrier] = useState<string>('usps');
   const [tracking, setTracking] = useState('');
   const [note, setNote] = useState('');
+  return { carrier, tracking, note, setCarrier, setTracking, setNote };
+}
 
-  const lines = outstandingLines(order.items ?? []);
+/** The toast says which happened: a tracking number to follow, or none yet. */
+function sentWords(plan: DeliveryPlan, tracking: string) {
+  if (plan.collected)
+    return { title: 'Marked as collected', description: 'This order is finished.' };
+  return {
+    title: 'Marked as sent',
+    description: tracking.trim()
+      ? 'The customer has the tracking number and can follow it from here.'
+      : 'The customer has been told it is on its way. Add a tracking number later if you get one.',
+  };
+}
 
-  function submit(event: React.FormEvent) {
+function useHandoverSubmit(order: Order, plan: DeliveryPlan, shipNow: ShipNow, form: HandoverForm) {
+  const record = useRecordFulfillment(order.id);
+  const toast = useToast();
+  const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (lines.length === 0) return;
+    if (shipNow.lines.length === 0) return;
     record.mutate(
       {
         status: plan.collected ? 'delivered' : 'shipped',
-        lines,
-        carrier: plan.collected ? 'pickup' : carrier,
-        // The words the shopper chose, kept on the record so the pane can say
-        // how it went without re-deriving it from a rate ref.
+        lines: shipNow.lines,
+        carrier: plan.collected ? 'pickup' : form.carrier,
         ...(plan.description ? { service: plan.description } : {}),
-        ...(plan.collected ? {} : { trackingNumber: tracking }),
-        notes: note,
+        ...(plan.collected ? {} : { trackingNumber: form.tracking }),
+        notes: form.note,
       },
       {
         onSuccess: () => {
-          setTracking('');
-          setNote('');
-          // "They can follow it from here" is only true when there is something
-          // to follow. The tracking number is optional, and leaving it out is
-          // the normal case for a shop that walks its parcels to the post
-          // office — the customer's email then carries the carrier and nothing
-          // else, and the "Track your package" button is not in it at all. The
-          // message says which of the two just happened.
-          toast.add({
-            title: plan.collected ? 'Marked as collected' : 'Marked as sent',
-            description: plan.collected
-              ? 'This order is finished.'
-              : tracking.trim()
-                ? 'The customer has the tracking number and can follow it from here.'
-                : 'The customer has been told it is on its way. Add a tracking number later if you get one.',
-            type: 'success',
-          });
+          toast.add({ ...sentWords(plan, form.tracking), type: 'success' });
+          form.setTracking('');
+          form.setNote('');
         },
         onError: (error) => {
           toast.add({
@@ -99,52 +81,83 @@ export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPl
         },
       }
     );
-  }
+  };
+  return { submit, busy: record.isPending };
+}
+
+function PostedFields({ form }: { form: HandoverForm }) {
+  return (
+    <>
+      <label className="flex min-w-[9rem] flex-1 flex-col gap-1.5">
+        <span className="text-base font-medium">Who took it</span>
+        <NativeSelect
+          value={form.carrier}
+          onChange={(event) => {
+            form.setCarrier(event.target.value);
+          }}
+        >
+          {CARRIERS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </NativeSelect>
+      </label>
+      <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
+        <span className="text-base font-medium">Tracking number (optional)</span>
+        <Input
+          value={form.tracking}
+          onChange={(event) => {
+            form.setTracking(event.target.value);
+          }}
+        />
+      </label>
+    </>
+  );
+}
+
+/** Nothing may go yet: a held B2B order, or every part waiting for its old part. */
+function NotReady({ plan, why }: { plan: DeliveryPlan; why: string }) {
+  return (
+    <Alert color="warning" className="mt-4">
+      <AlertContent>
+        <AlertTitle>
+          {plan.collected ? 'Not ready to hand over yet' : 'Not ready to send yet'}
+        </AlertTitle>
+        <AlertDescription>{why}</AlertDescription>
+      </AlertContent>
+    </Alert>
+  );
+}
+
+export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPlan }) {
+  const shipNow = whatCanShipNow(order);
+  const form = useHandoverForm();
+  const { submit, busy } = useHandoverSubmit(order, plan, shipNow, form);
+  if (shipNow.refusal !== null) return <NotReady plan={plan} why={shipNow.refusal} />;
 
   return (
     <form
       onSubmit={submit}
       className="border-base-300 mt-4 flex flex-wrap items-end gap-3 border-t pt-4"
     >
-      {plan.collected ? null : (
-        <>
-          <label className="flex min-w-[9rem] flex-1 flex-col gap-1.5">
-            <span className="text-base font-medium">Who took it</span>
-            <NativeSelect
-              value={carrier}
-              onChange={(event) => {
-                setCarrier(event.target.value);
-              }}
-            >
-              {CARRIERS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </NativeSelect>
-          </label>
-          <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
-            <span className="text-base font-medium">Tracking number (optional)</span>
-            <Input
-              value={tracking}
-              onChange={(event) => {
-                setTracking(event.target.value);
-              }}
-            />
-          </label>
-        </>
-      )}
+      {shipNow.held.map((why) => (
+        <Text key={why} className="w-full">
+          {why}
+        </Text>
+      ))}
+      {plan.collected ? null : <PostedFields form={form} />}
       <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
         <span className="text-base font-medium">Anything to note (optional)</span>
         <Input
-          value={note}
+          value={form.note}
           placeholder={plan.collected ? 'Who picked it up…' : 'Left with a neighbor…'}
           onChange={(event) => {
-            setNote(event.target.value);
+            form.setNote(event.target.value);
           }}
         />
       </label>
-      <Button type="submit" color="primary" loading={record.isPending}>
+      <Button type="submit" color="primary" loading={busy}>
         {plan.collected ? 'They collected it' : 'Mark it as sent'}
       </Button>
     </form>

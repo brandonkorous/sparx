@@ -71,12 +71,19 @@ export function ProductSaveView({ variantIds, label, savedLabel }: ProductSaveVi
   const saved = variantId !== null && has(variantId);
   const words = { label, savedLabel };
 
+  // Only a real "nobody is signed in" goes to sign in. While the session is
+  // still being read, or the shop could not be reached to read it, the button
+  // waits (disabled below) rather than sending a signed-in shopper to the
+  // sign-in page (persona issue 086).
+  const unknown = status === 'loading' || status === 'unreachable';
+
   async function onClick() {
     if (!variantId) return;
-    if (status !== 'authenticated') {
+    if (status === 'anonymous') {
       router.push(`/account/login?redirect=${encodeURIComponent(pathname || '/')}`);
       return;
     }
+    if (status !== 'authenticated') return;
     setBusy(true);
     try {
       await toggle(variantId);
@@ -98,8 +105,14 @@ export function ProductSaveView({ variantIds, label, savedLabel }: ProductSaveVi
       aria-label={saveButtonAria(saved, words)}
       // Says why it cannot be pressed rather than sitting dead. A product with
       // several versions and none chosen is the ordinary first second on the page.
-      title={variantId ? undefined : chooseFirstText()}
-      disabled={busy || variantId === null}
+      title={
+        variantId === null
+          ? chooseFirstText()
+          : status === 'unreachable'
+            ? 'We couldn’t reach your account just now. Try again in a moment.'
+            : undefined
+      }
+      disabled={busy || variantId === null || unknown}
       onClick={() => void onClick()}
     >
       <svg

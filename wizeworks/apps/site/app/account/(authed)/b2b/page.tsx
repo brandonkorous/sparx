@@ -1,8 +1,11 @@
 'use client';
 
-// B2B portal entry point — lists the B2B accounts the signed-in customer has
-// access to. If the customer has exactly one account, auto-redirects to that
-// account's dashboard. If none, shows an informational message.
+// Wholesale account entry point: lists the trade accounts the signed-in
+// customer buys for. With exactly one, it goes straight to that account's
+// dashboard. With none, it says so.
+//
+// The buyer never reads "B2B": that is the platform's word for the module, not
+// the shop's word for the relationship (sparx persona issue 084).
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -25,15 +28,16 @@ function statusLabel(status: string): string {
   }
 }
 
-/** Semantic tone for a B2B account status. */
-function accountStatusTone(status: string) {
+/** Semantic tone for a trade account status. Inactive carries no color: it is
+ *  a plain fact, not a warning about anything the buyer can act on. */
+function accountStatusTone(status: string): 'warning' | 'danger' | 'success' | undefined {
   switch (status) {
     case 'credit_hold':
       return 'warning';
     case 'suspended':
       return 'danger';
     case 'inactive':
-      return 'neutral';
+      return undefined;
     default:
       return 'success';
   }
@@ -57,7 +61,7 @@ export default function B2bPortalPage() {
           setAccounts(list);
         }
       })
-      .catch(() => active && setError('Could not load your B2B accounts.'));
+      .catch(() => active && setError('Your wholesale accounts could not be loaded just now.'));
     return () => {
       active = false;
     };
@@ -72,65 +76,44 @@ export default function B2bPortalPage() {
   }
 
   if (accounts === null) {
-    return <div className="skeleton" style={{ height: 120 }} />;
+    return <div className="skeleton h-30" />;
   }
 
   if (accounts.length === 0) {
     return (
-      <div>
-        <h1
-          className="text-base-content text-3xl font-semibold tracking-tight"
-          style={{ marginBottom: '0.5rem' }}
-        >
-          B2B Account
+      <div className="flex flex-col gap-2">
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">
+          Wholesale account
         </h1>
-        <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
-          Your account doesn&apos;t have B2B access yet. Contact your sales representative to set up
-          wholesale purchasing on your account.
+        <p className="text-base-content">
+          Your sign-in is not linked to a wholesale account yet. Ask your sales representative to
+          add you to your business&apos;s account, and its prices and payment terms appear here.
         </p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1
-        className="text-base-content text-3xl font-semibold tracking-tight"
-        style={{ marginBottom: '1.25rem' }}
-      >
-        B2B Accounts
+    <div className="flex flex-col gap-5">
+      <h1 className="text-base-content text-3xl font-semibold tracking-tight">
+        Wholesale accounts
       </h1>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="flex flex-col gap-3">
         {accounts.map((acct) => (
           <Link
             key={acct.accountId}
             href={`/account/b2b/${acct.accountId}`}
-            className="card border-base-300 border"
-            style={{
-              padding: '1rem 1.25rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '1rem',
-            }}
+            className="card border-base-300 flex flex-row flex-wrap items-center justify-between gap-4 border px-5 py-4"
           >
-            <div>
+            <div className="flex flex-col gap-1">
               <strong>{acct.companyName}</strong>
-              <div
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', marginTop: '0.2rem' }}
-              >
-                {acct.role.replace('_', ' ')}
-              </div>
+              <span className="text-base-content text-sm">{acct.role.replace('_', ' ')}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="flex items-center gap-4">
               <Badge color={accountStatusTone(acct.status)} variant="soft">
                 {statusLabel(acct.status)}
               </Badge>
-              <span
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}
-              >
+              <span className="text-base-content text-sm whitespace-nowrap">
                 ${acct.creditAvailable.toLocaleString()} available
               </span>
             </div>

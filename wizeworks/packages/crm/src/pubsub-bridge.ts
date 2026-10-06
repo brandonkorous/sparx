@@ -310,8 +310,18 @@ class PubSubTeePlatformBus implements PlatformEventBus {
 // additional to `this.inner.publish(event)` a few lines down, which is what
 // the in-process consumer is listening to. `check:broker-topics` now fails
 // on any topic teed here that the catalog does not name.
+//
+// `b2b.invoice.created` and `b2b.order.pending_approval` are teed for the same
+// reason `order.placed` is. Checkout and the sign-off route publish them to the
+// broker themselves; a quote turned into an order publishes them HERE, on the
+// in-process bus, where nothing subscribes either. So an invoice issued from an
+// accepted quote never reached the search index or the automation that emails
+// it to the buyer, and an order held from one reached nobody (sparx persona
+// issue 085).
 const PLATFORM_TEE_TOPICS: ReadonlySet<string> = new Set([
   'order.placed',
+  'b2b.invoice.created',
+  'b2b.order.pending_approval',
   'order.paid',
   'order.cancelled',
   'order.payment.recorded',

@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-salon",
   "name": "Salon",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "tagline": "A complete multi-module starter in the Salon look, for hair, beauty, nails, and spa.",
-  "description": "The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Salon look, tuned for hair, beauty, nails, and spa. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "A complete starter in the Salon look, tuned for hair, beauty, nails, and spa: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",

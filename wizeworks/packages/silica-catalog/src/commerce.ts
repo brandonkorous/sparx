@@ -626,6 +626,101 @@ function versionChoice(soldOut: boolean): ElementNode {
   );
 }
 
+/**
+ * HOW OFTEN — buy it once, or have it delivered again on a schedule (issue 739).
+ *
+ * Only drawn for a product that offers a schedule at a shop that can keep a card;
+ * everywhere else `repeat.shown` is false and the buy box reads exactly as it did.
+ * "Buy once" is first and pre-chosen, so nobody signs up to a repeating charge by
+ * pressing Add to cart without looking.
+ *
+ * Radios for the same reason the version picker uses them: the input binds its
+ * `value` (the cadence's key, `1-month`) and the span beside it binds the words.
+ * The sentence under it says what a repeat costs and how to stop one, because a
+ * schedule a shopper cannot see the end of is one they will not pick.
+ */
+export function repeatPicker(): Node {
+  return visibleWhen(
+    el('fieldset', 'flex flex-col gap-2', {
+      children: [
+        el('legend', 'text-base font-medium text-base-content', { text: 'How often' }),
+        el('label', 'flex items-center gap-2 text-base text-base-content', {
+          children: [
+            el('input', 'radio', {
+              attrs: { type: 'radio', name: 'repeat', value: '', checked: 'checked' },
+            }),
+            el('span', '', { text: 'Buy once' }),
+          ],
+        }),
+        repeat(
+          el('div', 'flex flex-col gap-2', {
+            children: [
+              el('label', 'flex items-center gap-2 text-base text-base-content', {
+                children: [
+                  bindAttr(
+                    el('input', 'radio', { attrs: { type: 'radio', name: 'repeat' } }),
+                    'value',
+                    'key'
+                  ),
+                  bind(el('span', '', { text: '' }), 'label'),
+                ],
+              }),
+            ],
+          }),
+          'repeat.choices'
+        ),
+        bind(el('p', 'text-base text-base-content', { text: '' }), 'repeat.note'),
+      ],
+    }),
+    'repeat.shown'
+  );
+}
+
+/**
+ * HOW THE OLD PART COMES BACK, on a rebuilt part that can be bought two ways
+ * (sparx persona issue 057).
+ *
+ * A remanufactured part carries a refundable core deposit (issue 051). Some
+ * businesses also let a buyer skip the deposit by sending the old part FIRST: no
+ * money up front, and the part ships when the old one arrives. Before this, the only
+ * way to say that was a fake option on the product ("Ship when core received"), which
+ * split one part on one shelf into two versions with two stock counts.
+ *
+ * Two radios named `coreFirst`, no JavaScript, built like `repeatPicker`. Paying the
+ * deposit is first and pre-chosen, so nobody is held waiting on a part they did not
+ * know they had to send. The value posts as `""` (pay) or `"1"` (send first), and the
+ * storefront's add-to-cart handler turns `"1"` into `coreFirst: true`; the cart checks
+ * again on the server that the part offers it.
+ *
+ * Both labels are SENTENCES the storefront composes, because the tree has no
+ * arithmetic: the deposit's amount cannot become "Pay the $150.00 core deposit now"
+ * inside a bind. Drawn only on `coreChoice.shown`, which is false on every product that
+ * cannot be bought this way, so every other buy box reads exactly as it did.
+ */
+export function corePicker(): Node {
+  const choice = (value: string, ref: string, checked: boolean): Node =>
+    el('label', 'flex items-center gap-2 text-base text-base-content', {
+      children: [
+        el('input', 'radio', {
+          attrs: checked
+            ? { type: 'radio', name: 'coreFirst', value, checked: 'checked' }
+            : { type: 'radio', name: 'coreFirst', value },
+        }),
+        bind(el('span', '', { text: '' }), ref),
+      ],
+    });
+  return visibleWhen(
+    el('fieldset', 'flex flex-col gap-2', {
+      children: [
+        el('legend', 'text-base font-medium text-base-content', { text: 'Your old part' }),
+        choice('', 'coreChoice.pay', true),
+        choice('1', 'coreChoice.first', false),
+      ],
+    }),
+    'coreChoice.shown'
+  );
+}
+
 export function addToCartForm(): Node {
   return action(
     behave(
@@ -657,6 +752,10 @@ export function addToCartForm(): Node {
             'versions',
             true
           ),
+          repeatPicker(),
+          // Pay the core deposit, or send the old part first (issue 057). Before the
+          // quantity, because it changes what the button commits somebody to.
+          corePicker(),
           // The quantity control nests INSIDE its label, so the pair needs no `id`
           // — a page with two buy boxes would otherwise emit a duplicate id.
           el('label', 'flex items-center gap-3 text-base text-base-content', {
@@ -907,6 +1006,32 @@ export function madeToOrderNote(): Node {
 }
 
 /**
+ * A refundable core deposit on a rebuilt part (sparx persona issue 051).
+ *
+ * A remanufactured part is charged a deposit on top of its price, paid back when
+ * the old part comes back. The price above says $580.15 and the card is charged
+ * $730.15: a page that does not say why charges money it never mentioned. Built
+ * like `madeToOrderNote`: the storefront composes the sentence (the tree has no
+ * arithmetic) and this places it, before the button, because it changes what
+ * somebody is agreeing to pay.
+ */
+export function coreDepositNote(): Node {
+  return visibleWhen(
+    el(
+      'div',
+      'flex flex-col gap-1 rounded-box border border-base-300 bg-base-200 p-3 text-sm text-base-content',
+      {
+        children: [
+          bind(el('span', 'font-semibold', { text: '' }), 'coreDeposit.headline'),
+          bind(el('span', '', { text: '' }), 'coreDeposit.detail'),
+        ],
+      }
+    ),
+    'coreDeposit.shown'
+  );
+}
+
+/**
  * A thing that does not exist yet, and when it will (issue 682).
  *
  * Built exactly like `madeToOrderNote` above and for the same reason: the tree
@@ -1046,6 +1171,7 @@ export function buyBox(): Node {
                 // (issue 184). Self-hides on every product that is not made to
                 // order, which is most of them.
                 madeToOrderNote(),
+                coreDepositNote(),
                 // The same rule for a thing that does not exist yet (issue 682).
                 preorderNote(),
                 // The form and the notice hang off the SAME `soldOut` bind, one negated,

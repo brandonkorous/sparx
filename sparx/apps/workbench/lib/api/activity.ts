@@ -182,6 +182,25 @@ export function useActivity(options: ActivityOptions = {}): {
 }
 
 /** "2m ago" phrasing — deliberately coarse; this is a heartbeat, not a receipt. */
+/**
+ * The fresh events worth a toast for THIS viewer: not the ones they did
+ * themselves.
+ *
+ * `crm.customer.created` is notable when a teammate or a form adds someone, but
+ * when the owner types a customer in, the pane already said "Renée Castañeda
+ * added", and a second "Customer created" a moment later told him what he had
+ * just done (sparx persona issue 078). The chip still shows it; only the
+ * interruption is skipped. An unknown viewer announces everything rather than
+ * nothing.
+ */
+export function announceable(
+  fresh: ActivityItem[],
+  viewerId: string | null | undefined
+): ActivityItem[] {
+  if (!viewerId) return fresh;
+  return fresh.filter((item) => item.actor.id !== viewerId);
+}
+
 export function describeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(ms / 60_000);

@@ -84,6 +84,29 @@ export interface SiteContact {
 
 export const EMPTY_CONTACT: SiteContact = { phone: '', email: '', address: '' };
 
+/** The contact fields Business details holds (`GET /v1/tenant/business`). */
+export interface BusinessContactSource {
+  phone: string | null;
+  supportEmail: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  region: string | null;
+  postalCode: string | null;
+}
+
+/** Business details as a site contact, address laid out like an envelope. Null when
+ *  Business details holds none of it. */
+export function contactFromBusiness(b: BusinessContactSource | undefined): SiteContact | null {
+  if (!b) return null;
+  const place = [b.city, [b.region, b.postalCode].filter(Boolean).join(' ')]
+    .filter(Boolean)
+    .join(', ');
+  const address = [b.addressLine1, b.addressLine2, place].filter(Boolean).join('\n');
+  const contact = { phone: b.phone ?? '', email: b.supportEmail ?? '', address };
+  return contact.phone || contact.email || contact.address ? contact : null;
+}
+
 /** Read a property's own contact details out of its settings bag. Defensive for
  *  the same reason `socialsOf` is — the column is free-form JSON. */
 export function contactOf(property: Site | undefined): SiteContact {

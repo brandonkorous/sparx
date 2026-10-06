@@ -43,7 +43,13 @@ export interface CredentialField {
 
 export interface GatewayCapabilities {
   refunds: boolean;
-  /** Auth-then-capture (manual capture) supported server-side. */
+  /** Can hold a card now and charge it later: `createPaymentIntent` honors
+   *  `captureMethod: 'manual'`, and `capturePayment` and `cancelPayment` work
+   *  server-side. A wholesale order waiting for sign-off is held on the card
+   *  only where this is true, and charged when it is approved; everywhere else
+   *  it is charged at checkout and refunded in full if it is turned down (sparx
+   *  persona issue 087). So this is a promise to a buyer, and is true only where
+   *  the adapter keeps it. */
   capture: boolean;
   /** Hosted payment links for invoices. */
   paymentLinks: boolean;
@@ -91,18 +97,29 @@ export interface GatewayDescriptor {
   docsUrl?: string;
 }
 
-/** A full-service card gateway: everything, including a vault it can charge
- *  off-session. Shared by every gateway whose adapter implements the vault
+/** A full-service card gateway: refunds, payment links, and a vault it can
+ *  charge off-session. Shared by every gateway whose adapter implements the vault
  *  against the vendor's published contract — the two Stripe-backed ones, Square
  *  (Cards API), Authorize.net (CIM) and PayPal (Payment Method Tokens v3). The
- *  checkout STYLE differs; the server-side capabilities do not. */
+ *  checkout STYLE differs; the server-side capabilities do not.
+ *
+ *  Holding a card is NOT in it. Square, Authorize.net and PayPal charge on their
+ *  own hosted page (Square `autocomplete: true`, PayPal intent `CAPTURE`,
+ *  Authorize.net `authCaptureTransaction`) and
+ *  their adapters have no capture or release, so `capture: true` here claimed a
+ *  hold none of the three could keep (sparx persona issue 087). */
 const CARD_CAPS: GatewayCapabilities = {
   refunds: true,
-  capture: true,
+  capture: false,
   paymentLinks: true,
   webhooks: true,
   storedMethods: true,
 };
+
+/** A card gateway that can also hold a card and charge it later: the two
+ *  Stripe-backed adapters, which pass `capture_method: 'manual'` and capture or
+ *  release the intent server-side. */
+const HOLDING_CARD_CAPS: GatewayCapabilities = { ...CARD_CAPS, capture: true };
 
 const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
   {
@@ -114,7 +131,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     recommended: true,
     onboarding: 'sparx_hosted',
     checkout: 'inline',
-    capabilities: CARD_CAPS,
+    capabilities: HOLDING_CARD_CAPS,
     credentialFields: [],
     environments: false,
     sparxFee: true,
@@ -129,7 +146,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
       'Route checkout to your own Stripe account. No {platform} fee. You own disputes, PCI, and payouts. Paste your secret key and webhook signing secret from the Stripe dashboard.',
     onboarding: 'api_keys',
     checkout: 'inline',
-    capabilities: CARD_CAPS,
+    capabilities: HOLDING_CARD_CAPS,
     credentialFields: [
       {
         key: 'secret_key',
@@ -151,7 +168,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
         placeholder: 'whsec_…',
         secret: true,
         optional: true,
-        help: 'From the webhook endpoint you point at {platform}. Optional but recommended.',
+        help: 'Stripe shows this after you add the webhook address below. Optional: card payments show as paid without it, but refunds and disputes you handle in Stripe do not reach {platform}.',
       },
     ],
     environments: false,
@@ -195,7 +212,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
         label: 'Webhook signature key',
         secret: true,
         optional: true,
-        help: 'From your Square webhook subscription. Optional but recommended.',
+        help: 'Square shows this after you add the webhook address below to a webhook subscription. Optional: card payments show as paid without it, but refunds you give in Square do not reach {platform}.',
       },
     ],
     environments: true,
@@ -223,14 +240,14 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
         key: 'transaction_key',
         label: 'Transaction Key',
         secret: true,
-        help: 'Generated alongside your API Login ID.',
+        help: 'Generated alongside your API Login ID. On that same Settings page, switch on Transaction Details API too: it is how {platform} sees that a card payment went through.',
       },
       {
         key: 'signature_key',
         label: 'Signature Key',
         secret: true,
         optional: true,
-        help: 'For webhook verification. Optional but recommended.',
+        help: 'Authorize.net → Account → Settings → API Credentials & Keys, then add the webhook address below under Webhooks. Optional: card payments show as paid without it, but refunds and voids you make in Authorize.net do not reach {platform}.',
       },
       {
         // Needed only to SAVE a card for repeat orders (docs/142): Accept.js runs
@@ -294,7 +311,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     name: 'Custom gateway',
     processor: 'payment processor',
     blurb:
-      'Use any other processor. Point {platform} at your gateway’s hosted checkout URL and credentials; {platform} redirects shoppers there and reconciles on return. For full control, a developer can drop in a code adapter: see the plugin contract.',
+      'Use any other processor. Point {platform} at your gateway’s hosted checkout URL and credentials; {platform} redirects shoppers there and marks the order paid when your processor says so. For full control, a developer can drop in a code adapter: see the plugin contract.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // A generic hosted redirect has no vault seam to reach through, so there is
@@ -322,11 +339,12 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
         help: 'Sent as a bearer token when {platform} confirms/queries the payment, if your gateway needs one.',
       },
       {
+        // Required: with no lookup, a signed message from the processor is the
+        // ONLY way an order here is marked paid, and an unsigned one is refused.
         key: 'webhook_secret',
         label: 'Webhook secret',
         secret: true,
-        optional: true,
-        help: 'Shared secret {platform} verifies inbound webhooks against, if your gateway signs them.',
+        help: 'The secret your processor signs its messages to {platform} with. Each payment is marked paid when your processor sends one to the webhook address below.',
       },
     ],
     environments: true,
@@ -369,11 +387,14 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
         help: 'Alongside the Client ID on the same PayPal app.',
       },
       {
-        key: 'webhook_secret',
-        label: 'Webhook secret',
-        secret: true,
+        // An id, not a secret: PayPal signs with its own certificate, and a
+        // message is checked by handing it back to PayPal with this id.
+        key: 'webhook_id',
+        label: 'Webhook ID',
+        placeholder: '8PT…',
+        secret: false,
         optional: true,
-        help: 'Shared secret {platform} verifies inbound PayPal webhooks against. Optional but recommended.',
+        help: 'PayPal shows this after you add the webhook address below to the same app. Optional: payments show as paid without it, but refunds and disputes you handle in PayPal do not reach {platform}.',
       },
     ],
     environments: true,

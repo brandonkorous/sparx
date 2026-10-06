@@ -17,6 +17,7 @@
 import type { SystemAutomationSpec } from '@wizeworks/automation';
 
 export const FORM_HANDLE_SUBMISSIONS: SystemAutomationSpec = {
+  key: 'forms.handle-submissions',
   name: 'Handle form submissions',
   description:
     'When someone submits a form on your site: emails you (and any custom recipients), sends the visitor a confirmation, adds them to your CRM, and (depending on the form), opens a deal in your sales pipeline or a support request with a reply deadline. Follows each form’s own settings. Edit or add steps to customize what happens.',

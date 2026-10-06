@@ -5,14 +5,21 @@
 // signed-in pages with the account sidebar. The session check is client-side
 // against the CustomerProvider (the session cookie is httpOnly, so the profile
 // is resolved via /account/me rather than read on the server).
+//
+// Only a real "nobody is signed in" redirects. When the account read got no
+// answer (api-rest restarting, a network blip), the page says so and the
+// provider keeps trying; a trade buyer with a valid session was being sent to
+// the sign-in page in the middle of a rolling deploy (sparx persona issue 086).
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Alert } from '@wizeworks/silicaui-react';
 
 import { useCustomer } from '@/components/customer-provider';
 import type { AccountOffers } from '@/lib/customer-client';
 import { cn } from '@/lib/cn';
+import { ACCOUNT_UNREACHABLE_MESSAGE, accountGate } from '@/lib/shop-reach';
 
 interface AccountNavItem {
   label: string;
@@ -42,9 +49,13 @@ const NAV: AccountNavItem[] = [
   // Not gated: an address is the business's record of where this person lives,
   // and it is used by anything that has to reach them, not only by an order.
   { label: 'Addresses', href: '/account/addresses' },
+  // Where a repeat delivery is paused, skipped or canceled (issue 739).
+  { label: 'Repeat orders', href: '/account/repeat-orders', offered: (o) => o.selling },
   { label: 'Payment methods', href: '/account/payment-methods', offered: (o) => o.selling },
   { label: 'Profile', href: '/account/profile' },
-  { label: 'B2B Account', href: '/account/b2b', offered: (o) => o.b2b },
+  // "Wholesale", the word the shop's own footer uses; "B2B" is the platform's
+  // name for the module and means nothing to a buyer (persona issue 084).
+  { label: 'Wholesale account', href: '/account/b2b', offered: (o) => o.b2b },
 ];
 
 export default function AuthedAccountLayout({ children }: { children: React.ReactNode }) {
@@ -52,14 +63,26 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
   const router = useRouter();
   const pathname = usePathname();
 
+  const gate = accountGate(status, customer !== null);
+
   useEffect(() => {
-    if (status === 'anonymous') {
+    if (gate === 'sign-in') {
       const redirect = encodeURIComponent(pathname || '/account');
       router.replace(`/account/login?redirect=${redirect}`);
     }
-  }, [status, pathname, router]);
+  }, [gate, pathname, router]);
 
-  if (status !== 'authenticated' || !customer) {
+  if (gate === 'retrying') {
+    return (
+      <div className="mx-auto w-full max-w-6xl px-6 py-12">
+        <Alert color="warning" role="status" aria-live="polite">
+          {ACCOUNT_UNREACHABLE_MESSAGE}
+        </Alert>
+      </div>
+    );
+  }
+
+  if (gate !== 'show' || !customer) {
     return (
       <div className="mx-auto w-full max-w-6xl px-6 py-12">
         <div className="skeleton h-60" />

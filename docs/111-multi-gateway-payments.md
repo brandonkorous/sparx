@@ -1,8 +1,8 @@
 # sparx Platform — Multi-Gateway Payments (bring-your-own + custom)
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-10-06
 
 > Extends [94-ADR-payment-gateway.md](94-ADR-payment-gateway.md). 94 defined the vendor-agnostic
 > `PaymentGateway` abstraction, the registry, `PaymentService`, the credential seam, and the first two
@@ -128,9 +128,22 @@ re-entry. RLS + hand-edited SQL per [wizeworks/packages/db/CLAUDE.md](../package
    public route → checkout-client); `PaymentStep` branches `inline` (Elements) vs `redirect` (hosted
    handoff; GET, or token form-POST for Authorize.net Accept Hosted).
 
-**Remaining (go-live, §4):** the per-vendor inbound **webhook routes** (each resolves the tenant from its
-path then calls the adapter's `parseWebhookForTenant` → `reconcilePaymentEvent`) and the hosted-return
-**order-completion** flow are wired against the adapters but exercised per-vendor with sandbox credentials.
+9. **Webhook routes** ✅ (2026-10-06) — `/v1/public/webhooks/{square,paypal,authorize-net,custom}/:tenantId`
+   resolve the tenant from the path and call the adapter's `parseWebhookForTenant` →
+   `reconcilePaymentEvent`. Until then only the two Stripe routes existed, although this section said
+   all of them were wired. A message is read only when signed with the tenant's own key; with no key it
+   is refused. PayPal is checked through PayPal's `verify-webhook-signature` with the webhook's ID.
+10. **Paid without a webhook** ✅ — `lookupPayment` on Square, PayPal and Authorize.net; checkout
+    completion and the stranded-payment sweep ask it. PayPal's lookup also captures an order the
+    shopper approved, which nothing did before.
+11. **One reference per attempt** ✅ — `paymentReference()`, 20 characters. The old `orderReference`
+    fell back to `sparx` for every checkout, which no order id ever reached.
+12. **Refunds** ✅ — each adapter refunds the vendor's own object (Square payment, PayPal capture,
+    Authorize.net transaction), from the `transactionRef` `PaymentService.refund` reads off the order's
+    payment. Detail and proof: piggles persona issue 917.
+
+**Remaining (go-live, §4):** a sandbox run per vendor. 1stPay has no webhook route and no paid check:
+its hosted-page and webhook field names were never confirmed against 1stPay.
 
 ---
 

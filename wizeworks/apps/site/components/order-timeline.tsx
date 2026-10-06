@@ -1,5 +1,6 @@
 // Order-status timeline — the lifecycle of an order rendered as a vertical
-// rail (placed → paid → shipped → delivered), with cancelled / refunded as
+// rail (placed, paid, shipped, delivered; paid last when it is paid later),
+// with cancelled / refunded as
 // terminal branches. Driven entirely by the order's own lifecycle timestamps
 // (placedAt / paidAt / fulfilledAt / deliveredAt / cancelledAt), so it needs no
 // extra data beyond the detail payload. When a shipment carries tracking, the
@@ -8,9 +9,11 @@
 // Presentational — composes silica's <Timeline>. Runs in the client tree (the
 // order page is a client component) but holds no state of its own.
 //
-// The rail is one-sided (no <TimelineStart>): each item is a marker + content.
-// A step the order has REACHED wears the order's tone; unreached steps stay
-// neutral, so the colored markers read as progress at a glance.
+// Each item is a date on the start side, a marker, and the step on the end
+// side: silica's timeline is a two-sided grid, and a one-sided rail left the
+// steps in the right half of the card with the left half blank (sparx persona
+// issue 087). A step the order has REACHED wears the order's tone; unreached
+// steps stay plain, so the colored markers read as progress at a glance.
 //
 // The RAIL ITSELF is silica's, drawn from `.timeline-middle`'s ::before/::after
 // — this component adds no <hr> connectors. That markup is another library's
@@ -25,6 +28,7 @@ import {
   CheckCircle2,
   CreditCard,
   ExternalLink,
+  Hourglass,
   Package,
   Receipt,
   RotateCcw,
@@ -37,48 +41,23 @@ import {
   TimelineEnd,
   TimelineItem,
   TimelineMiddle,
+  TimelineStart,
   type SilicaColor,
 } from '@wizeworks/silicaui-react';
 import { carrierLabel } from '@wizeworks/commerce-schemas';
 
 import type { OrderDetail, OrderFulfillmentView } from '@/lib/customer-client';
+import {
+  invoiceStep,
+  orderStatusLabel,
+  orderStatusTone,
+  paymentComesFirst,
+} from '@/lib/order-status-words';
+import { signedSentences, signOffWaitingSentence } from '@/lib/sign-off-words';
 
-/** Semantic tone for an order status — used by the header badge and the
- *  timeline track so the two always agree. */
-export function orderStatusTone(status: string): SilicaColor {
-  switch (status) {
-    case 'delivered':
-      return 'success';
-    case 'fulfilled':
-      return 'info';
-    case 'cancelled':
-      return 'danger';
-    case 'refunded':
-      return 'warning';
-    default:
-      return 'primary';
-  }
-}
-
-/** The status in the SHOPPER's words, shared by the order list and the order
- *  detail so the two can never call one fact two things. `fulfilled` is the
- *  warehouse's word for it; she is waiting on a parcel (issue 295). */
-export function orderStatusLabel(status: string): string {
-  switch (status) {
-    case 'placed':
-      return 'Placed';
-    case 'fulfilled':
-      return 'On its way';
-    case 'delivered':
-      return 'Delivered';
-    case 'cancelled':
-      return 'Cancelled';
-    case 'refunded':
-      return 'Refunded';
-    default:
-      return status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ');
-  }
-}
+// The status words and tones live in `lib/order-status-words`, where they are
+// tested; re-exported here for the pages that already import them from this file.
+export { orderStatusLabel, orderStatusTone };
 
 // Tailwind needs LITERAL class strings — a `text-${tone}` template never emits.
 const MARK_CLASS: Record<string, string> = {
@@ -97,6 +76,11 @@ interface TimelineStep {
   terminal?: boolean;
   icon: ReactNode;
   detail?: ReactNode;
+  /** Beside the rail in place of a time stamp: an invoice's due date. */
+  when?: string | null;
+  /** A step that has gone wrong, like an overdue invoice: marked in danger
+   *  whatever the order's own tone. */
+  problem?: boolean;
 }
 
 function formatStamp(iso: string): string {
@@ -145,7 +129,10 @@ function ShipmentLine({ fulfillment }: { fulfillment: OrderFulfillmentView }): R
 }
 
 /** Build the ordered lifecycle steps + the track's overall tone from the order. */
-function buildTimeline(order: OrderDetail): { steps: TimelineStep[]; color: SilicaColor } {
+function buildTimeline(
+  order: OrderDetail,
+  viewerId: string | null
+): { steps: TimelineStep[]; color: SilicaColor } {
   const cancelled = order.status === 'cancelled';
   const refunded = order.status === 'refunded' || order.paymentStatus === 'refunded';
   const terminal = cancelled ? 'cancelled' : refunded ? 'refunded' : null;
@@ -158,22 +145,54 @@ function buildTimeline(order: OrderDetail): { steps: TimelineStep[]; color: Sili
       f.status === 'delivered'
   );
 
+  // A held wholesale order is not placed until it is signed off, so its first
+  // step says it was received, the words the checkout's last screen used, and
+  // the next says who it is waiting on and who has already said yes. It read
+  // "Waiting for approval" with nobody named, while the one person who could
+  // release it was the buyer's own colleague (sparx persona issue 087).
+  const held = order.status === 'pending_approval';
   const steps: TimelineStep[] = [
     {
       key: 'placed',
-      label: 'Order placed',
+      label: held ? 'Order received' : 'Order placed',
       at: order.placedAt,
       complete: true,
       icon: <Receipt size={16} aria-hidden />,
     },
-    {
-      key: 'paid',
-      label: 'Payment confirmed',
-      at: order.paidAt,
-      complete: Boolean(order.paidAt) || order.paymentStatus === 'paid',
-      icon: <CreditCard size={16} aria-hidden />,
-    },
   ];
+  if (held) {
+    const signOff = order.signOff ?? null;
+    steps.push({
+      key: 'approval',
+      label: 'Waiting for approval',
+      at: null,
+      complete: false,
+      icon: <Hourglass size={16} aria-hidden />,
+      detail: signOff ? (
+        <div className="text-base-content mt-0.5 flex flex-col gap-0.5 text-sm">
+          <span>{signOffWaitingSentence(signOff, null, viewerId)}</span>
+          {signedSentences(signOff, null, viewerId).map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </div>
+      ) : undefined,
+    });
+  }
+  // Where the money sits in the story. A card paid at checkout is confirmed
+  // straight after the order; an order on account terms, against an invoice or
+  // paid by hand is paid after it ships, so its payment is the last step, still
+  // to come, never "next" ahead of the goods (sparx persona issue 087).
+  // On account terms the payment is the invoice, and it is always last.
+  const onAccount = order.onAccount ?? null;
+  const paidFirst = onAccount === null && paymentComesFirst(order);
+  const payment: TimelineStep = {
+    key: 'paid',
+    label: paidFirst ? 'Payment confirmed' : 'Payment received',
+    at: order.paidAt,
+    complete: Boolean(order.paidAt) || order.paymentStatus === 'paid',
+    icon: <CreditCard size={16} aria-hidden />,
+  };
+  if (paidFirst) steps.push(payment);
 
   const shippedComplete = Boolean(order.fulfilledAt);
   const deliveredComplete = Boolean(order.deliveredAt);
@@ -211,6 +230,31 @@ function buildTimeline(order: OrderDetail): { steps: TimelineStep[]; color: Sili
     });
   }
 
+  // Paid later: the last thing to happen to a live order. A canceled or
+  // refunded order shows it only if money actually moved.
+  if (onAccount !== null) {
+    // The invoice: what is due and when, overdue marked as a problem, "Invoice
+    // paid" once it is, and on a held order, that it comes once approved (sparx
+    // persona issue 087). A canceled order shows it only if one was issued.
+    if (!terminal || onAccount.invoice !== null) {
+      const invoice = invoiceStep({ onAccount, held, currency: order.currency });
+      steps.push({
+        key: 'invoice',
+        label: invoice.label,
+        at: onAccount.invoice?.status === 'paid' ? order.paidAt : null,
+        when: invoice.when,
+        complete: invoice.complete,
+        problem: invoice.overdue,
+        icon: <Receipt size={16} aria-hidden />,
+        detail: invoice.detail ? (
+          <span className="text-base-content mt-0.5 block text-sm">{invoice.detail}</span>
+        ) : undefined,
+      });
+    }
+  } else if (!paidFirst && (!terminal || payment.complete)) {
+    steps.push(payment);
+  }
+
   if (cancelled) {
     steps.push({
       key: 'cancelled',
@@ -231,13 +275,13 @@ function buildTimeline(order: OrderDetail): { steps: TimelineStep[]; color: Sili
     });
   }
 
+  // The track wears the order's own status tone, so it always agrees with the
+  // badge above it: in motion is info, waiting is warning, done is success.
   const color: SilicaColor = cancelled
     ? 'danger'
     : refunded
       ? 'warning'
-      : order.status === 'delivered'
-        ? 'success'
-        : 'primary';
+      : orderStatusTone(order.status);
 
   return { steps, color };
 }
@@ -260,8 +304,15 @@ function resolveState(steps: TimelineStep[], terminal: boolean): StepState[] {
   });
 }
 
-export function OrderTimeline({ order }: { order: OrderDetail }) {
-  const { steps, color } = buildTimeline(order);
+export function OrderTimeline({
+  order,
+  viewerId = null,
+}: {
+  order: OrderDetail;
+  /** The signed-in customer, so a sign-off they are part of says "you". */
+  viewerId?: string | null;
+}) {
+  const { steps, color } = buildTimeline(order, viewerId);
   const isTerminal = order.status === 'cancelled' || order.status === 'refunded';
   const states = resolveState(steps, isTerminal);
   const mark = MARK_CLASS[color] ?? 'text-primary';
@@ -272,18 +323,30 @@ export function OrderTimeline({ order }: { order: OrderDetail }) {
         const reached = states[i] !== 'upcoming';
         return (
           <TimelineItem key={step.key}>
-            <TimelineMiddle className={reached ? mark : 'text-base-content'}>
+            {/* When it happened, on the start side of the rail. The silica
+                timeline is a two-sided grid, and with this side left empty the
+                steps sat in the right half of the card with the left half blank
+                (sparx persona issue 087). */}
+            <TimelineStart className={step.problem ? 'text-danger text-sm' : 'text-sm'}>
+              {step.at
+                ? formatStamp(step.at)
+                : (step.when ?? (states[i] === 'active' && !step.terminal ? 'In progress' : null))}
+            </TimelineStart>
+            <TimelineMiddle
+              className={step.problem ? 'text-danger' : reached ? mark : 'text-base-content'}
+            >
               {step.icon}
             </TimelineMiddle>
             <TimelineEnd className="pb-6">
-              <span className="text-base-content block text-base font-semibold">{step.label}</span>
-              {step.at ? (
-                <span className="text-base-content mt-0.5 block text-sm">
-                  {formatStamp(step.at)}
-                </span>
-              ) : states[i] === 'active' && !step.terminal ? (
-                <span className="text-base-content mt-0.5 block text-sm">In progress</span>
-              ) : null}
+              <span
+                className={
+                  step.problem
+                    ? 'text-danger block text-base font-semibold'
+                    : 'text-base-content block text-base font-semibold'
+                }
+              >
+                {step.label}
+              </span>
               {step.detail}
             </TimelineEnd>
           </TimelineItem>

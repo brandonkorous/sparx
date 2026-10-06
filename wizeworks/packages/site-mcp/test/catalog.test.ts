@@ -97,3 +97,55 @@ describe('SiteApiClient', () => {
     ).rejects.toBeInstanceOf(SiteApiError);
   });
 });
+
+describe('cart tools: the old-part choice (sparx issue 057)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const CART = '00000000-0000-4000-8000-000000000001';
+  const VARIANT = '00000000-0000-4000-8000-000000000002';
+  const LINE = '00000000-0000-4000-8000-000000000003';
+
+  async function sentBody(tool: string, input: Record<string, unknown>): Promise<unknown> {
+    const spy = vi.fn(() =>
+      Promise.resolve(new Response(JSON.stringify({ success: true, data: {} }), { status: 200 }))
+    );
+    vi.stubGlobal('fetch', spy);
+    const def = getSiteTool(tool);
+    if (!def) throw new Error(`no tool ${tool}`);
+    const client = new SiteApiClient('http://api-rest', { tenantSlug: 'doty' });
+    await def.call(client, {} as never, def.input.parse(input));
+    const [, init] = spy.mock.calls[0] as unknown as [URL, RequestInit];
+    return JSON.parse(init.body as string);
+  }
+
+  it('adds a rebuilt part by sending the old part first when asked', async () => {
+    const body = await sentBody('add_to_cart', {
+      cartId: CART,
+      cartToken: 'tok',
+      variantId: VARIANT,
+      quantity: 1,
+      coreFirst: true,
+    });
+    expect(body).toEqual({ variantId: VARIANT, quantity: 1, coreFirst: true });
+  });
+
+  it('pays the deposit by default', async () => {
+    const body = await sentBody('add_to_cart', {
+      cartId: CART,
+      cartToken: 'tok',
+      variantId: VARIANT,
+    });
+    expect(body).toEqual({ variantId: VARIANT, quantity: 1 });
+  });
+
+  it('switches a line back to paying the deposit', async () => {
+    const body = await sentBody('update_cart_item', {
+      cartId: CART,
+      cartToken: 'tok',
+      itemId: LINE,
+      quantity: 1,
+      coreFirst: false,
+    });
+    expect(body).toEqual({ quantity: 1, coreFirst: false });
+  });
+});

@@ -20,8 +20,17 @@
 //
 // Gate manifest: both produce an EXTERNAL effect (an email leaves the system), but
 // no send-volume gate exists yet — the global gates (tenant-active, kill-switch,
-// `module: 'email'` active) plus the in-service suppression check are the controls
-// today. A dedicated rate/volume gate is a future addition (docs/81 §7.1).
+// module-active) plus the in-service suppression check are the controls today. A
+// dedicated rate/volume gate is a future addition (docs/81 §7.1).
+//
+// Which module a campaign step needs depends on what it sends (sparx persona
+// issue 087). A transactional email, one a customer gets because of something
+// they did (an order confirmation, a receipt, an invoice, a booking), always
+// sends: a buyer is told their order went through whether or not the business
+// has the email module. The email module gates what it is for: campaigns,
+// broadcasts and marketing sends. The declared `emailType` decides both this and
+// the suppression scope, read once by `campaignEmailType`, so the two can never
+// disagree about a step.
 
 import {
   installOnce,
@@ -109,6 +118,23 @@ const CampaignConfig = z.union([
   }),
 ]);
 
+type CampaignStep = z.infer<typeof CampaignConfig>;
+
+/** What a campaign step sends. A built-in (`builderEmailKey`) declares its
+ *  intent; a designed or coded send is marketing (the broadcast contract). */
+function campaignEmailType(cfg: CampaignStep): 'transactional' | 'marketing' {
+  return 'emailType' in cfg ? cfg.emailType : 'marketing';
+}
+
+/** The module a campaign step needs (sparx persona issue 087): none for a
+ *  transactional send, the email module for anything else. A step whose config
+ *  does not read cleanly is treated as marketing, so it stays behind the email
+ *  module and fails on its own config only where that module is on, as before. */
+function campaignModuleFor(effect: EffectInput): string | null {
+  const parsed = CampaignConfig.safeParse(effect.config);
+  return parsed.success && campaignEmailType(parsed.data) === 'transactional' ? null : 'email';
+}
+
 const InternalConfig = z.object({
   // Recipient resolution, in priority order (docs/90 §3b): a field path on the
   // trigger entity (e.g. a conversation's assigned-staff email), an explicit
@@ -128,19 +154,20 @@ export const installEmailActions = installOnce((): void => {
   registerAction({
     type: 'email.send_campaign',
     module: 'email',
+    // A transactional send needs no email module; a campaign does (see header).
+    moduleFor: campaignModuleFor,
     gates: [],
     manifestNote:
-      'external effect: enqueues a suppression-checked ScheduledSend (marketing) that the email-dispatch tick sends; module-active + kill-switch gates apply',
+      'external effect: enqueues a suppression-checked ScheduledSend that the email-dispatch tick sends; a marketing send needs the email module, a transactional one does not; kill-switch applies to both',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = CampaignConfig.parse(effect.config);
       const recipient = requireStringField(effect.fields, 'customer.email', 'email.send_campaign');
 
-      // A built-in (`builderEmailKey`) declares its intent; a designed/coded send
-      // is marketing by default (the legacy broadcast contract). The scope drives
-      // which suppression entries block the send: a `transactional` campaign (a
-      // welcome, an invoice reminder, a dunning notice) must NOT be withheld by a
-      // marketing-scope unsubscribe — only an `all` suppression stops it.
-      const emailType = 'emailType' in cfg ? cfg.emailType : 'marketing';
+      // The scope drives which suppression entries block the send: a
+      // `transactional` campaign (an order confirmation, an invoice reminder, a
+      // dunning notice) must NOT be withheld by a marketing-scope unsubscribe;
+      // only an `all` suppression stops it.
+      const emailType = campaignEmailType(cfg);
       const scope = emailType === 'marketing' ? 'marketing' : 'transactional';
 
       // Defense in depth: skip a contact the CRM flagged do-not-contact — but only

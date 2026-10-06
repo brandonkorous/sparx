@@ -28,14 +28,16 @@ import {
   UpdateSubscriptionItemsInput,
   UpdateSubscriptionScheduleInput,
 } from '@wizeworks/commerce-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Prisma, Subscription, SubscriptionItem, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { describeRate } from './collection-option';
 import { CUSTOMER_NAME_SELECT, customerDisplayName, type CustomerNameParts } from './customer-name';
+import { choiceOf, heldReason, priceRenewal, readShippingChoice } from './renewal-pricing';
 
 export interface SubscriptionSummary {
   id: string;
@@ -397,18 +399,51 @@ export async function listForProduct(
   });
 }
 
+/** A customer's own view of one repeat order: the summary, plus WHAT is in it
+ *  and how it is paid. "1 item, every month" is not something anybody can
+ *  recognise as theirs; "Linen Shirtdress, every month, Visa ending 4242" is
+ *  (issue 739). */
+export interface CustomerSubscription extends SubscriptionSummary {
+  lines: { name: string; variantTitle: string | null; quantity: number }[];
+  card: { brand: string | null; last4: string | null } | null;
+}
+
 export async function listForCustomer(
   ctx: ServiceContext,
   customerId: string
-): Promise<SubscriptionSummary[]> {
+): Promise<CustomerSubscription[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.subscription.findMany({
       where: { customerId },
-      include: { items: true, customer: { select: CUSTOMER_NAME_SELECT } },
+      include: {
+        items: {
+          include: {
+            variant: { select: { title: true, product: { select: { title: true } } } },
+          },
+        },
+        customer: { select: CUSTOMER_NAME_SELECT },
+        paymentMethod: { select: { brand: true, last4: true } },
+      },
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
-    return rows.map(toSummary);
+    return rows.map((row) => ({
+      ...toSummary(row),
+      lines: row.items
+        .filter((item) => item.addonOfId === null)
+        .map((item) => ({
+          name: item.variant.product.title,
+          // A variant's own title is often just the product's name again.
+          variantTitle:
+            item.variant.title && item.variant.title !== item.variant.product.title
+              ? item.variant.title
+              : null,
+          quantity: item.quantity,
+        })),
+      card: row.paymentMethod
+        ? { brand: row.paymentMethod.brand, last4: row.paymentMethod.last4 }
+        : null,
+    }));
   });
 }
 
@@ -520,16 +555,22 @@ export async function create(
     return sub;
   });
 
-  await publishCommerceEvent({
-    tenantId: ctx.tenantId,
-    actorId: ctx.userId ?? null,
-    topic: 'subscription.created',
-    data: {
-      subscriptionId: result.id,
-      customerId: input.customerId,
-      providerSlug: input.paymentProviderSlug,
-    },
-  });
+  // After commit, not merely after this call: a repeat order started from a paid
+  // order (issue 739) creates this inside the transaction that also marks the
+  // order line, and an announcement for a row that then rolled back would name
+  // a subscription that never existed.
+  await afterCommit('publish subscription.created', () =>
+    publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'subscription.created',
+      data: {
+        subscriptionId: result.id,
+        customerId: input.customerId,
+        providerSlug: input.paymentProviderSlug,
+      },
+    })
+  );
 
   return {
     id: result.id,
@@ -738,7 +779,79 @@ export async function processOccurrence(
    * same clock. [[feedback_a_fix_leaves_its_neighbour_behind]]
    */
   asOf?: string
-): Promise<{ orderId: string | null; nextOccurrenceAt: string | null }> {
+): Promise<{
+  orderId: string | null;
+  nextOccurrenceAt: string | null;
+  /** Set when the renewal could not go out and the repeat order was paused. */
+  held?: string;
+}> {
+  const now = asOf ? new Date(asOf).getTime() : Date.now();
+  const isDue = (row: { status: string; nextOccurrenceAt: Date | null }) =>
+    (row.status === 'active' || row.status === 'trialing') &&
+    row.nextOccurrenceAt !== null &&
+    row.nextOccurrenceAt.getTime() <= now;
+
+  // PRICE FIRST, outside the write transaction, for the reason checkout does:
+  // rating opens its own reads and may call a carrier, and tax has its own.
+  // Neither may nest inside the transaction that writes the order.
+  //
+  // Before this the renewal was written with its items and nothing else, so it
+  // was totalled with $0 postage and $0 tax and the card was charged that
+  // (issue 916). See renewal-pricing.ts.
+  const read = await withTenant(ctx, (tx) =>
+    tx.subscription.findFirst({
+      where: { id: subscriptionId },
+      include: { items: { include: { variant: { include: { product: true } } } } },
+    })
+  );
+  if (!read) throw new CommerceNotFoundError('Subscription', subscriptionId);
+  if (!isDue(read)) return { orderId: null, nextOccurrenceAt: null };
+
+  const choice = readShippingChoice(read.shippingChoice);
+  const price = await priceRenewal(ctx, {
+    propertyId: read.propertyId,
+    currency: read.currency,
+    customerId: read.customerId,
+    shippingAddress: read.shippingAddress,
+    choice,
+    lines: read.items.map((it) => ({
+      variantId: it.variantId,
+      productId: it.variant.productId,
+      taxClass: it.variant.product.taxClass,
+      quantity: it.quantity,
+      unitPriceCents: it.unitPriceCents,
+    })),
+  });
+
+  // Nothing the shop offers can deliver it. Sending it with $0 postage is the
+  // defect this replaces, so it is held instead: paused, with the reason on the
+  // record, and the shopper told by the same paused email dunning sends.
+  if (!price.ok) {
+    const cause = price.reason;
+    const reason = heldReason(cause);
+    const paused = await withTenant(ctx, async (tx) => {
+      const sub = await tx.subscription.findFirst({ where: { id: subscriptionId } });
+      if (!sub || !isDue(sub)) return false;
+      await tx.subscription.update({
+        where: { id: sub.id },
+        data: { status: 'paused', pausedUntil: null },
+      });
+      await recordSubscriptionEvent(tx, ctx, sub.id, 'paused', { reason, cause, bySystem: true });
+      return true;
+    });
+    if (!paused) return { orderId: null, nextOccurrenceAt: null };
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: null,
+      topic: 'subscription.paused',
+      data: { subscriptionId, reason },
+    });
+    return { orderId: null, nextOccurrenceAt: null, held: reason };
+  }
+  const { shipping, tax } = price;
+  const shippingCents = shipping.rate.amountCents;
+  const taxCents = tax?.totalTaxCents ?? 0;
+
   let orderId: string | null = null;
   let nextOccurrenceIso: string | null = null;
   let publishRenewal = false;
@@ -749,62 +862,87 @@ export async function processOccurrence(
       include: { items: { include: { variant: { include: { product: true } } } } },
     });
     if (!sub) throw new CommerceNotFoundError('Subscription', subscriptionId);
-    if (sub.status !== 'active' && sub.status !== 'trialing') {
-      return; // nothing to do
-    }
-    const now = asOf ? new Date(asOf).getTime() : Date.now();
-    if (!sub.nextOccurrenceAt || sub.nextOccurrenceAt.getTime() > now) {
-      return; // not yet due
+    if (!isDue(sub)) return; // paused, canceled or advanced since the read
+    // The price is for the repeat order as it was read. If its items, address or
+    // delivery changed in between, that price is for something else: leave it
+    // due, and the next pass prices what is there now.
+    if (sub.updatedAt.getTime() !== read.updatedAt.getTime()) return;
+    const due = sub.nextOccurrenceAt;
+    if (!due) return;
+
+    if (shipping.replaced) {
+      // The shopper's option is gone. The cheapest delivery went instead, and
+      // it becomes the one this repeat order keeps, so the next renewal does
+      // not have to find it again.
+      await tx.subscription.update({
+        where: { id: sub.id },
+        data: { shippingChoice: choiceOf(shipping.rate) as unknown as Prisma.InputJsonValue },
+      });
+      await recordSubscriptionEvent(tx, ctx, sub.id, 'delivery_changed', {
+        from: choice?.description ?? null,
+        to: describeRate(shipping.rate),
+      });
     }
 
-    const order = await orderService.create(ctx, {
-      customerId: sub.customerId,
-      // Carried from the subscription, which is the only record that still
-      // knows: this runs in a worker months after the signup, with nothing on
-      // hand but the row. Passed straight through INCLUDING null. A
-      // subscription signed before this column existed has no site, and a
-      // renewal that quietly reached for the tenant's primary instead would
-      // file real money against a shop that never took it (issue 878).
-      propertyId: sub.propertyId,
-      channel: 'storefront',
-      source: 'subscription_renewal',
-      currency: sub.currency,
-      shippingAddress: sub.shippingAddress as Parameters<
-        typeof orderService.create
-      >[1] extends infer A
-        ? A
-        : never,
-      billingAddress: (sub.billingAddress ?? sub.shippingAddress) as Parameters<
-        typeof orderService.create
-      >[1] extends infer A
-        ? A
-        : never,
-      items: sub.items.map((it) => ({
-        productId: it.variant.productId,
-        variantId: it.variantId,
-        sku: it.variant.sku,
-        name: it.variant.product.title,
-        quantity: it.quantity,
-        unitPrice: it.unitPriceCents / 100,
-      })),
-      metadata: {
-        commerceSubscriptionId: sub.id,
-        renewalAt: sub.nextOccurrenceAt.toISOString(),
-        providerSlug: sub.providerSlug,
-        providerScheduleRef: sub.providerScheduleRef,
-      },
-    });
-
-    const nextOccurrenceAt = computeNextOccurrence(
-      sub.nextOccurrenceAt,
-      sub.intervalUnit,
-      sub.intervalCount
+    // Composed into THIS transaction: a bare ctx made the order in a separate
+    // one, so the order and the schedule advance below were not the one step
+    // the comment on this function promises.
+    const order = await orderService.create(
+      { ...ctx, tx },
+      {
+        customerId: sub.customerId,
+        // Carried from the subscription, which is the only record that still
+        // knows: this runs in a worker months after the signup, with nothing on
+        // hand but the row. Passed straight through INCLUDING null. A
+        // subscription signed before this column existed has no site, and a
+        // renewal that quietly reached for the tenant's primary instead would
+        // file real money against a shop that never took it (issue 878).
+        propertyId: sub.propertyId,
+        channel: 'storefront',
+        source: 'subscription_renewal',
+        currency: sub.currency,
+        shippingTotal: shippingCents / 100,
+        taxTotal: taxCents / 100,
+        shippingAddress: sub.shippingAddress as Parameters<
+          typeof orderService.create
+        >[1] extends infer A
+          ? A
+          : never,
+        billingAddress: (sub.billingAddress ?? sub.shippingAddress) as Parameters<
+          typeof orderService.create
+        >[1] extends infer A
+          ? A
+          : never,
+        items: sub.items.map((it) => ({
+          productId: it.variant.productId,
+          variantId: it.variantId,
+          sku: it.variant.sku,
+          name: it.variant.product.title,
+          quantity: it.quantity,
+          unitPrice: it.unitPriceCents / 100,
+        })),
+        metadata: {
+          commerceSubscriptionId: sub.id,
+          renewalAt: due.toISOString(),
+          providerSlug: sub.providerSlug,
+          providerScheduleRef: sub.providerScheduleRef,
+          // The same three checkout records, so the console says how a renewal
+          // leaves in the words the shopper chose.
+          shippingProviderSlug: shipping.rate.providerSlug,
+          shippingRateRef: shipping.rate.rateRef,
+          shippingDescription: describeRate(shipping.rate),
+          taxProviderSlug: tax?.providerSlug ?? null,
+          taxBreakdownRef: tax?.breakdownRef ?? null,
+        },
+      }
     );
+
+    const nextOccurrenceAt = computeNextOccurrence(due, sub.intervalUnit, sub.intervalCount);
     await tx.subscription.update({
       where: { id: sub.id },
       data: {
         status: 'active', // trial converts to active on first renewal
-        currentPeriodStart: sub.nextOccurrenceAt,
+        currentPeriodStart: due,
         currentPeriodEnd: nextOccurrenceAt,
         nextOccurrenceAt,
       },

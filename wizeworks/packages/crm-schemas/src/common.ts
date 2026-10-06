@@ -208,6 +208,9 @@ export const ActivityType = z.enum([
   // Task lifecycle
   'task.created',
   'task.completed',
+  // Closed because what it was about went away (an order waiting for sign-off
+  // was canceled), not because anybody did it.
+  'task.cancelled',
   // CRM-internal lifecycle
   'deal.created',
   'deal.stage.changed',

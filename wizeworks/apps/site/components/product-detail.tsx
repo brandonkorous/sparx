@@ -6,16 +6,23 @@
 // client-side with no further fetches until "add to cart".
 
 import Image from 'next/image';
+import type { RepeatCadence } from '@wizeworks/commerce-schemas';
 import { useMemo, useState } from 'react';
 
-import { Button } from '@wizeworks/silicaui-react';
+import { Alert, Button } from '@wizeworks/silicaui-react';
+
+import { ruleSentence, snapQuantity } from '@/lib/account-buying-rules';
+import { fleetFitNotice } from '@/lib/fleet-fit-words';
 
 import { backInStockLine, formatMoney, formatPriceRange, preorderShipsLine } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
 import type { PublicPreorderOffer, PublicProduct, PublicProductVariant } from '@/lib/commerce';
 import { useCart } from './cart-provider';
+import { CoreChoice } from './core-choice';
 import { MadeToOrderNote } from './made-to-order-note';
+import { RepeatChoice } from './repeat-choice';
 import { WishlistButton } from './wishlist-button';
+import { AddToQuoteRequest } from './account/add-to-quote-request';
 
 export interface ProductDetailProps {
   product: PublicProduct;
@@ -30,6 +37,12 @@ export interface ProductDetailProps {
 function variantMatches(variant: PublicProductVariant, selected: Record<string, string>): boolean {
   const chosen = Object.values(selected);
   return chosen.every((valueId) => variant.optionValueIds.includes(valueId));
+}
+
+function FleetFitNotice({ product }: { product: PublicProduct }) {
+  const notice = fleetFitNotice(product.fleetFit);
+  if (!notice) return null;
+  return <Alert color={notice.color}>{notice.text}</Alert>;
 }
 
 export function ProductDetail({
@@ -54,7 +67,15 @@ export function ProductDetail({
     }
     return init;
   });
-  const [qty, setQty] = useState(1);
+  // A trade account can buy this only in whole cases, from a minimum, up to a
+  // maximum (sparx persona issue 086), so the box starts where the account
+  // starts rather than at 1.
+  const [qty, setQty] = useState(() => defaultVariant?.buyingRules?.start ?? 1);
+  // "How often" (issue 739). Null is Buy once, the default.
+  const [repeat, setRepeat] = useState<RepeatCadence | null>(null);
+  // Send the old part first instead of paying the core deposit (issue 057). Paying
+  // is the default, so nobody is held waiting on a part they did not know to send.
+  const [coreFirst, setCoreFirst] = useState(false);
   const [adding, setAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [activeImageId, setActiveImageId] = useState<string | null>(
@@ -91,6 +112,21 @@ export function ProductDetail({
       ) ?? null
     );
   }, [product.variants, selected, allSelected, optionless, selectedVariantId]);
+
+  // The signed-in trade buyer's rule on THIS version, and whether their role lets
+  // them order at all (sparx persona issue 086). + and - move in whole cases
+  // within the rule; a typed amount is brought inside it when the box is left,
+  // where the shopper can see it change, and never silently at the button.
+  const buyingRule = resolvedVariant?.buyingRules ?? null;
+  const qtyStep = buyingRule?.step ?? 1;
+  const ordering = product.accountOrdering ?? null;
+  const orderingRefusal = ordering && !ordering.canOrder ? ordering.refusal : null;
+
+  // Whether THIS version can be bought by sending the old part first (issue 057).
+  const coreChoiceOffered =
+    resolvedVariant !== null &&
+    resolvedVariant.coreFirstOffered &&
+    (resolvedVariant.coreChargeCents ?? 0) > 0;
 
   // Availability per option value: a value is selectable if some variant with
   // that value (consistent with other current selections) is in stock-or-orderable.
@@ -173,7 +209,9 @@ export function ProductDetail({
     setAdding(true);
     setAddError(null);
     try {
-      await addItem(resolvedVariant.id, qty);
+      // Only for a version that offers it: switching to one that does not hides the
+      // choice, and a leftover "send it first" must not ride along to a refusal.
+      await addItem(resolvedVariant.id, qty, repeat ?? undefined, coreFirst && coreChoiceOffered);
     } catch (err) {
       // The button's disabled state already prevents adding a KNOWN-sold-out
       // variant; this catches the race where stock ran out between page load and
@@ -265,6 +303,19 @@ export function ProductDetail({
             </>
           )}
         </div>
+        {/* A rebuilt part's refundable core deposit (sparx issue 051): charged on
+            top of the price, so said beside it, before the button. When the part can
+            also be bought by sending the old one first (issue 057), "Plus" would be
+            a promise of extra money the buyer may not pay, so the note names both
+            and the choice below decides. */}
+        {resolvedVariant?.coreChargeCents != null ? (
+          <p className="text-base-content m-0">
+            {coreChoiceOffered ? 'A' : 'Plus a'}{' '}
+            {formatMoney(resolvedVariant.coreChargeCents, currency, locale)} refundable core deposit
+            {coreChoiceOffered ? ', or send your old part first' : ''}. It is paid back when you
+            return your old part (the core).
+          </p>
+        ) : null}
 
         <StockLine
           inStock={inStock}
@@ -275,6 +326,11 @@ export function ProductDetail({
           locale={locale}
         />
 
+        {/* For a signed-in trade buyer with a fleet: which of their vehicles this
+            fits, or a warning that it fits none of them while they can still buy
+            it. Nothing for a part with no fitment data (sparx persona issue 086). */}
+        <FleetFitNotice product={product} />
+
         {/* Under the price and the stock line, above the choices — the wait and
             the deposit change what somebody is agreeing to, so they have to be
             read before the button and not after it (issue 026). */}
@@ -284,6 +340,18 @@ export function ProductDetail({
           currency={currency}
           locale={locale}
         />
+
+        <RepeatChoice options={product.repeatOptions ?? []} value={repeat} onChange={setRepeat} />
+
+        {coreChoiceOffered && resolvedVariant?.coreChargeCents != null ? (
+          <CoreChoice
+            depositCents={resolvedVariant.coreChargeCents}
+            currency={currency}
+            locale={locale}
+            coreFirst={coreFirst}
+            onChange={setCoreFirst}
+          />
+        ) : null}
 
         {/* Variant selector — option-less products with multiple SKUs. The
             per-option chips below render nothing (no options), so this is the
@@ -361,30 +429,52 @@ export function ProductDetail({
           );
         })}
 
+        {/* A contact whose role cannot order sees why, and who can, where the
+            button would be (sparx persona issue 086). The product, its price and
+            its stock stay on the page. */}
+        {orderingRefusal ? <Alert color="info">{orderingRefusal}</Alert> : null}
+
         {/* Quantity + add to cart */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className={orderingRefusal ? 'hidden' : 'flex flex-wrap items-center gap-3'}>
           <div className="rounded-field border-base-300 inline-flex items-center overflow-hidden border">
             <button
               type="button"
               aria-label="Decrease quantity"
               className="bg-base-100 text-base-content hover:bg-base-200 h-11 w-10 cursor-pointer border-0 text-lg transition-colors"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              onClick={() =>
+                setQty((q) =>
+                  buyingRule
+                    ? snapQuantity(buyingRule, snapQuantity(buyingRule, q) - qtyStep)
+                    : Math.max(1, q - 1)
+                )
+              }
             >
               −
             </button>
             <input
               type="number"
-              min={1}
+              min={buyingRule?.start ?? 1}
+              step={qtyStep}
+              max={buyingRule?.maximum ?? undefined}
               value={qty}
               aria-label="Quantity"
               className="border-base-300 bg-base-100 text-base-content h-11 w-11 [appearance:textfield] border-x text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+              onBlur={() => {
+                if (buyingRule) setQty((q) => snapQuantity(buyingRule, q));
+              }}
             />
             <button
               type="button"
               aria-label="Increase quantity"
               className="bg-base-100 text-base-content hover:bg-base-200 h-11 w-10 cursor-pointer border-0 text-lg transition-colors"
-              onClick={() => setQty((q) => q + 1)}
+              onClick={() =>
+                setQty((q) =>
+                  buyingRule
+                    ? snapQuantity(buyingRule, snapQuantity(buyingRule, q) + qtyStep)
+                    : q + 1
+                )
+              }
             >
               +
             </button>
@@ -412,6 +502,11 @@ export function ProductDetail({
           ) : null}
         </div>
 
+        {/* The account's rule in words, under the box it governs. */}
+        {ruleSentence(buyingRule) && !orderingRefusal ? (
+          <p className="text-base-content m-0 text-[0.95rem]">{ruleSentence(buyingRule)}</p>
+        ) : null}
+
         {addError ? (
           <p className="text-danger m-0 text-[0.95rem] font-medium" role="alert">
             {addError}
@@ -421,6 +516,11 @@ export function ProductDetail({
         {resolvedVariant?.sku ? (
           <span className="text-base-content text-sm">SKU: {resolvedVariant.sku}</span>
         ) : null}
+
+        {/* A wholesale buyer's quote request, built from the catalog and kept
+            apart from the cart (sparx persona issue 086). Renders nothing for
+            anyone who cannot order on a trade account. */}
+        <AddToQuoteRequest variantId={resolvedVariant?.id ?? null} quantity={qty} />
       </div>
     </div>
   );

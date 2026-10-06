@@ -11,6 +11,7 @@ import { faCheckCircle, faCircleInfo, faCreditCard } from '@fortawesome/pro-soli
 import { Icon } from '@piggles/ui';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
+import { StripeWaiting } from '../stripe-waiting';
 
 export function StepPayments({
   connected,
@@ -21,7 +22,7 @@ export function StepPayments({
   actions: OnboardingActions;
   onConnected: () => void;
 }) {
-  const { connect, connecting, error } = useStripeConnect(actions, onConnected);
+  const { connect, connecting, error, cancel } = useStripeConnect(actions, onConnected);
 
   return (
     <div className="flex max-w-xl flex-col gap-4">
@@ -75,6 +76,7 @@ export function StepPayments({
         </div>
       </div>
 
+      {connecting ? <StripeWaiting onCancel={cancel} /> : null}
       {error ? <FieldStatus status="error">{error}</FieldStatus> : null}
     </div>
   );

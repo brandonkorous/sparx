@@ -20,6 +20,7 @@ import {
   CreateOrderInput,
   ListOrdersInput,
   UNCOUNTED_ORDER_STATUS,
+  HELD_FOR_SIGN_OFF_STATUS,
   NOT_COLLECTABLE_ORDER_STATUSES,
   OWING_PAYMENT_STATUSES,
   UpdateOrderInput,
@@ -35,6 +36,7 @@ import { computeLine, computeTotals } from './order-totals';
 import { resolveReadyOn } from './order-ready-on';
 import { nextOrderNumber } from './record-numbers';
 import { recomputeCustomerCommerce } from './customer-rollup';
+import { closeWhenOrderMovesOn } from './task-service';
 
 /** The customer summary joined onto both the list rows and a single order —
  *  enough to name the buyer and, when they belong to one, their B2B account and
@@ -142,6 +144,9 @@ async function oneWithAccount<T extends { customer: PlainOrderCustomer | null }>
 export interface OrderWithItems extends Order {
   items: OrderItem[];
   customer: OrderCustomerSummary;
+  /** Of `refundTotal`, how much went back as returned core deposits. Set by
+   *  `get`; a write path hands its order back without it. */
+  depositsReturned?: number;
 }
 
 /** A list row carries just enough of the customer (and, for a customer who
@@ -150,6 +155,31 @@ export interface OrderWithItems extends Order {
  *  only read order fields are unaffected. */
 export interface OrderListRow extends Order {
   customer: OrderCustomerSummary;
+  /** Of `refundTotal`, how much went back as returned core deposits. */
+  depositsReturned: number;
+}
+
+/**
+ * How much of each order's refunds went back as core deposits, in one query.
+ *
+ * A rebuilt part's deposit coming back when the old part does is the HAPPY end of
+ * the sale, and it is recorded as a refund. Read from `refundTotal` alone it looks
+ * like any other money returned, so every one of Gillett Diesel's finished
+ * rebuilt-part orders showed an amber "Part refunded" (sparx persona issue 057).
+ * The refund records which kind it was; this reads it.
+ */
+async function depositsReturnedFor(tx: TxClient, orderIds: string[]): Promise<Map<string, number>> {
+  if (orderIds.length === 0) return new Map();
+  const rows = await tx.orderRefund.groupBy({
+    by: ['orderId'],
+    where: {
+      orderId: { in: orderIds },
+      status: 'completed',
+      metadata: { path: ['kind'], equals: 'core' },
+    },
+    _sum: { amount: true },
+  });
+  return new Map(rows.map((row) => [row.orderId, Number(row._sum.amount ?? 0)]));
 }
 
 /**
@@ -163,7 +193,7 @@ export interface OrderListRow extends Order {
  * two cannot drift.
  */
 export const OWING_ORDER_WHERE: Prisma.OrderWhereInput = {
-  status: { notIn: [...NOT_COLLECTABLE_ORDER_STATUSES] },
+  status: { notIn: [...NOT_COLLECTABLE_ORDER_STATUSES, HELD_FOR_SIGN_OFF_STATUS] },
   paymentStatus: { in: [...OWING_PAYMENT_STATUSES] },
 };
 
@@ -245,8 +275,21 @@ export async function list(
       }),
       tx.order.count({ where }),
     ]);
-    // One more query for the whole page, never one per row.
-    return { items: withAccounts(items, await accountsFor(tx, items)), total };
+    // One more query for the whole page, never one per row (two: the deposits).
+    const [accounts, deposits] = await Promise.all([
+      accountsFor(tx, items),
+      depositsReturnedFor(
+        tx,
+        items.map((item) => item.id)
+      ),
+    ]);
+    return {
+      items: withAccounts(items, accounts).map((row) => ({
+        ...row,
+        depositsReturned: deposits.get(row.id) ?? 0,
+      })),
+      total,
+    };
   });
 }
 
@@ -261,7 +304,11 @@ export async function get(ctx: ServiceContext, orderId: string): Promise<OrderWi
       include: { items: true, customer: { select: ORDER_CUSTOMER_SELECT } },
     });
     if (!found) return null;
-    return oneWithAccount(tx, found);
+    const [withAccount, deposits] = await Promise.all([
+      oneWithAccount(tx, found),
+      depositsReturnedFor(tx, [found.id]),
+    ]);
+    return { ...withAccount, depositsReturned: deposits.get(found.id) ?? 0 };
   });
   if (!order) throw new CrmNotFoundError('Order', orderId);
   return order;
@@ -332,6 +379,7 @@ export async function create(
         discountTotal: totals.discountTotal,
         surchargeTotal: totals.surchargeTotal,
         appliedSurcharges: (input.appliedSurcharges ?? []) as Prisma.InputJsonValue,
+        coreChargeTotal: totals.coreChargeTotal,
         total: totals.total,
         shippingAddress: (input.shippingAddress ?? null) as Prisma.InputJsonValue,
         billingAddress: (input.billingAddress ?? null) as Prisma.InputJsonValue,
@@ -356,6 +404,8 @@ export async function create(
               taxAmount: line.taxAmount,
               discountAmount: line.discountAmount,
               lineTotal: line.lineTotal,
+              coreCharge: item.coreCharge ?? null,
+              coreFirst: item.coreFirst === true,
               metadata: (item.metadata ?? {}) as Prisma.InputJsonValue,
             };
           }),
@@ -524,6 +574,22 @@ export async function cancel(ctx: ServiceContext, rawInput: unknown): Promise<Or
     // sale went on contributing to the buyer's lifetime spend and order count for
     // ever — the increment had already been applied and nothing took it back.
     await recomputeCustomerCommerce(tx, ctx.tenantId, updated.customerId);
+    // A task waiting on the order to leave the status it was in has nothing left
+    // to wait for: "waiting for your sign-off" on an order that no longer exists
+    // to sign is false. Closed, not done, because nobody did what it asked.
+    const by = ctx.userId
+      ? await tx.user.findUnique({ where: { id: ctx.userId }, select: { name: true, email: true } })
+      : null;
+    // A blank name is no name: fall back to the email, as the trail does.
+    const named = by?.name?.trim();
+    const who = named !== undefined && named.length > 0 ? named : (by?.email ?? null);
+    await closeWhenOrderMovesOn(tx, ctx, {
+      orderId: updated.id,
+      left: before.status,
+      as: 'cancelled',
+      because: `Order ${updated.orderNumber} was canceled${who ? ` by ${who}` : ''}, so there is nothing left to do here.`,
+      byUserId: ctx.userId ?? null,
+    });
     return updated;
   });
 

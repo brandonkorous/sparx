@@ -29,6 +29,7 @@ import { useWorkbench } from '../lib/workbench/context';
 import { useFeedback } from './feedback/provider';
 import { groupLabel, targetFor, type Entry } from './launcher-match';
 import { createActions } from './launcher-create';
+import { SEARCH_MOST_CHARS } from './launcher-search-words';
 
 /** Every screen this viewer can open, plus the one action that is not a screen. */
 export function useNavEntries(): Entry[] {
@@ -101,16 +102,26 @@ export function useNavEntries(): Entry[] {
  */
 export function useRecordEntries(
   query: string,
-  open: boolean
+  open: boolean,
+  /** How many steps of "Show more" have been asked for; 1 is the first page. */
+  pages = 1
 ): {
   entries: Entry[];
   searching: boolean;
+  /** Records that matched and were not sent. See `RecordSearchResult.more`. */
+  more: number | null;
+  canShowMore: boolean;
+  /** The record search did not answer. See `RecordSearchResult.failed`. */
+  failed: boolean;
+  retry: () => void;
 } {
   const { controller } = useWorkbench();
   const reachable = useReachableModules();
   const known = useKnownModules();
   const debounced = useDebouncedValue(query, 180);
-  const records = useRecordSearch(open ? debounced : '');
+  // Not sent past the most the box searches; the note says why instead.
+  const sendable = debounced.trim().length <= SEARCH_MOST_CHARS ? debounced : '';
+  const records = useRecordSearch(open ? sendable : '', pages);
 
   const entries = useMemo<Entry[]>(() => {
     const out: Entry[] = [];
@@ -150,5 +161,12 @@ export function useRecordEntries(
     return out;
   }, [records.hits, reachable, known, controller]);
 
-  return { entries, searching: records.isLoading };
+  return {
+    entries,
+    searching: records.isLoading,
+    more: records.more,
+    canShowMore: records.canShowMore,
+    failed: records.failed,
+    retry: records.retry,
+  };
 }

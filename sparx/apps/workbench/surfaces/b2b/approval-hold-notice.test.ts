@@ -11,7 +11,12 @@
 // reported "every order over $2,500.00".
 
 import { describe, expect, it } from 'vitest';
-import { holdQueueNotice, type HoldRule } from './approval-hold-notice';
+import {
+  holdQueueNotice,
+  holdReasonWords,
+  type HoldRule,
+  type QueueHoldReason,
+} from './approval-hold-notice';
 
 function rule(partial: Partial<HoldRule> = {}): HoldRule {
   return {
@@ -45,7 +50,7 @@ describe('holdQueueNotice', () => {
     const notice = holdQueueNotice([rule({ isActive: false })]);
     expect(notice.title).toBe('Your limit is switched off');
     expect(notice.detail).toContain('it is switched off');
-    expect(notice.detail).toContain('no order is being held');
+    expect(notice.detail).toContain('no order is being held for its size');
     expect(notice.detail).not.toContain('lands here');
   });
 
@@ -94,7 +99,9 @@ describe('holdQueueNotice', () => {
   it('says nobody else is covered when every live limit names a customer', () => {
     const notice = holdQueueNotice([rule({ isActive: false }), loomRule()]);
     expect(notice.detail).toContain('anything over $2,500.00 from Loom and Larder');
-    expect(notice.detail).toContain('No other account’s order is held, however large.');
+    expect(notice.detail).toContain(
+      'No other account’s order is held for its size, however large.'
+    );
     expect(notice.detail).not.toContain('every order');
   });
 
@@ -164,5 +171,97 @@ describe('holdQueueNotice', () => {
         );
       }
     }
+  });
+});
+
+// Sparx persona issue 085: an order over the credit limit waits for sign-off
+// whatever the spending limits say, so no empty-queue sentence may promise that
+// nothing is held.
+describe('the credit limit', () => {
+  it('is mentioned in every state of the empty queue', () => {
+    const shapes: HoldRule[][] = [
+      [],
+      [rule({ isActive: false })],
+      [rule({ isActive: false }), rule({ isActive: false, minAmountCents: 1 })],
+      [rule()],
+      [loomRule()],
+      [rule(), loomRule()],
+    ];
+    for (const rules of shapes) {
+      expect(holdQueueNotice(rules).detail, JSON.stringify(rules)).toContain(
+        'past its credit limit still waits here'
+      );
+    }
+  });
+});
+
+// Sparx persona issue 087: a limit can be signed off by the account's own
+// approvers, so "waits here for your yes" is wrong about the orders it holds.
+describe('a limit the account signs off', () => {
+  it('says the order waits for the account’s approvers, not for you', () => {
+    const shapes: HoldRule[][] = [
+      [rule({ signOffBy: 'account' })],
+      [loomRule({ signOffBy: 'account' })],
+      [rule(), loomRule({ signOffBy: 'account' })],
+    ];
+    for (const rules of shapes) {
+      expect(holdQueueNotice(rules).detail, JSON.stringify(rules)).toContain(
+        'signed off by the account’s own approvers, the order waits here for them'
+      );
+    }
+  });
+
+  it('says nothing of it while that limit is switched off, or when the team signs', () => {
+    expect(
+      holdQueueNotice([rule(), loomRule({ signOffBy: 'account', isActive: false })]).detail
+    ).not.toContain('own approvers');
+    expect(holdQueueNotice([rule({ signOffBy: 'business' })]).detail).not.toContain(
+      'own approvers'
+    );
+  });
+
+  it('offers both when no limit is set yet', () => {
+    expect(holdQueueNotice([]).detail).toContain(
+      'from your team or from the account’s own approvers'
+    );
+  });
+});
+
+describe('holdReasonWords', () => {
+  const money = (cents: number, currency: string) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
+
+  it('gives both figures for an order over the credit limit', () => {
+    const reason: QueueHoldReason = {
+      kind: 'over_credit_limit',
+      orderTotal: 3808,
+      creditLeft: 3807,
+      currency: 'USD',
+    };
+    expect(holdReasonWords(reason, money, 'USD')).toBe(
+      'Over the credit limit: it comes to $3,808.00 and the account has $3,807.00 of credit left.'
+    );
+  });
+
+  it('says there is no credit left rather than printing $0.00', () => {
+    const reason: QueueHoldReason = {
+      kind: 'over_credit_limit',
+      orderTotal: 12.5,
+      creditLeft: 0,
+      currency: 'USD',
+    };
+    expect(holdReasonWords(reason, money, 'USD')).toContain('has no credit left');
+  });
+
+  it('names the spending limit by its amount, and a zero limit as every order', () => {
+    expect(holdReasonWords({ kind: 'approval_rule', limitCents: 250000 }, money, 'USD')).toBe(
+      'Over your $2,500.00 spending limit.'
+    );
+    expect(holdReasonWords({ kind: 'approval_rule', limitCents: 0 }, money, 'USD')).toBe(
+      'You hold every order from them for sign-off.'
+    );
+    expect(holdReasonWords({ kind: 'approval_rule', limitCents: null }, money, 'USD')).toBe(
+      'Over a spending limit you set.'
+    );
   });
 });

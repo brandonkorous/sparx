@@ -1399,16 +1399,26 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
     return socialErrorMessage(failed.error, 'That did not go through. Nothing was changed.');
   }, [update, submit, schedule, approve, reject, publish, remove]);
 
-  const saveChanges = () => {
+  // `then` runs once the edits are stored. Submit, Schedule and Publish pass it,
+  // because all three act on the STORED post: pressed with edits still on screen,
+  // they sent the old wording out (persona issue 033).
+  const saveChanges = (then?: () => void) => {
     if (!changed) return;
     update.mutate(
       { body: body.trim(), link: link.trim() ? link.trim() : null, mediaAssetIds: mediaIds },
       {
         onSuccess: () => {
-          toast.add({ title: 'Changes saved', type: 'success' });
+          if (then) then();
+          else toast.add({ title: 'Changes saved', type: 'success' });
         },
       }
     );
+  };
+
+  /** Store the edits on screen first, if there are any, then do `action`. */
+  const afterSave = (action: () => void) => {
+    if (editable && changed) saveChanges(action);
+    else action();
   };
 
   const doSubmit = () => {
@@ -1596,7 +1606,9 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                 size="sm"
                 disabled={!changed || update.isPending}
                 loading={update.isPending}
-                onClick={saveChanges}
+                onClick={() => {
+                  saveChanges();
+                }}
               >
                 <Save className="size-4" aria-hidden />
                 Save changes
@@ -1824,7 +1836,9 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                       variant="outline"
                       className="self-start"
                       loading={submit.isPending}
-                      onClick={doSubmit}
+                      onClick={() => {
+                        afterSave(doSubmit);
+                      }}
                     >
                       <Send className="size-4" aria-hidden />
                       Submit for approval
@@ -1856,7 +1870,9 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                       color="module"
                       disabled={!scheduleValid || schedule.isPending}
                       loading={schedule.isPending}
-                      onClick={doSchedule}
+                      onClick={() => {
+                        afterSave(doSchedule);
+                      }}
                     >
                       <CalendarClock className="size-4" aria-hidden />
                       {post.scheduledAt ? 'Reschedule' : 'Schedule'}
@@ -1874,7 +1890,9 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                         size="sm"
                         color="module"
                         loading={publish.isPending}
-                        onClick={doPublish}
+                        onClick={() => {
+                          afterSave(doPublish);
+                        }}
                       >
                         <Send className="size-4" aria-hidden />
                         {post.status === 'failed' ? 'Try publishing again' : 'Publish now'}

@@ -9,7 +9,7 @@ vi.mock('@wizeworks/auth', () => ({
     Promise.resolve(moduleStates.get(key) ?? false),
 }));
 
-const { imageWeights, linkTargets, silicaPagesOf, skippedPagesOf, storageKeysOf } =
+const { imageWeights, linkTargets, silicaPagesOf, skippedPagesOf, starterText, storageKeysOf } =
   await import('./site-check.js');
 
 const CTX: PropertyContext = {
@@ -304,5 +304,48 @@ describe('imageWeights', () => {
 
   it('still leaves a source that matches nothing out', async () => {
     expect(await imageWeights(weighTx([]), ['/media/tenant/originals/x/gone.jpg'])).toEqual({});
+  });
+});
+
+describe('starterText', () => {
+  const tree = (line: string) => ({
+    kind: 'element',
+    tag: 'div',
+    children: [{ kind: 'element', tag: 'p', children: [line] }],
+  });
+  const txWith = (rows: unknown[] | Error) =>
+    ({
+      tenantBlueprintInstallArtifact: {
+        findMany: () => (rows instanceof Error ? Promise.reject(rows) : Promise.resolve(rows)),
+      },
+    }) as unknown as TxClient;
+
+  it('reads each page’s design words under the page they belong to, and the frame’s', async () => {
+    const result = await starterText(
+      txWith([
+        {
+          kind: 'page',
+          refId: 'home-id',
+          baseline: { tree: tree('This template is a starting point') },
+        },
+        {
+          kind: 'frame',
+          refId: null,
+          baseline: { tree: tree('Everything you publish and sell, in one place.') },
+        },
+      ]),
+      CTX
+    );
+    expect(result).toEqual({
+      pages: { 'home-id': ['This template is a starting point'] },
+      frame: ['Everything you publish and sell, in one place.'],
+    });
+  });
+
+  it('says it did not look when there is no design, or the read fails', async () => {
+    // `undefined` keeps the rule silent. An empty answer would read as "compared, and
+    // nothing is left", which nobody measured.
+    expect(await starterText(txWith([]), CTX)).toBeUndefined();
+    expect(await starterText(txWith(new Error('down')), CTX)).toBeUndefined();
   });
 });

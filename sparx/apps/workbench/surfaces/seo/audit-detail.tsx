@@ -24,10 +24,12 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
+  Card,
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
 import { CheckCircle2, Lightbulb } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -159,7 +161,15 @@ function CheckRow({ check }: { check: AuditCheck }) {
 /* ── The surface ─────────────────────────────────────────────────────────── */
 
 function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType; id: string }) {
-  const { data: card, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAudit(type, id);
+  const {
+    data: card,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useAudit(type, id);
 
   const worthFixing = useMemo(
     () => (card?.checks ?? []).filter((c) => c.status === 'warn' || c.status === 'fail'),
@@ -220,16 +230,20 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <div className="flex h-full items-center justify-center p-8">
-            <Alert color="error" className="max-w-md">
-              <AlertContent>
-                <AlertTitle>Could not score this page</AlertTitle>
-                <AlertDescription>
-                  This is a problem reaching the server, or the page no longer exists. Nothing about
-                  the page itself has changed.
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
+          <div className={`${PANE_SHELL} p-2`}>
+            <Card className="min-h-0 flex-1 items-center justify-center">
+              {/* Gone (a 404) and unreachable say different things; the shared
+                  screen reads which from the error (persona issue 226). */}
+              <PaneLoadError
+                error={error}
+                noun="page"
+                title="Could not score this page"
+                description="This is a problem reaching the server. Nothing about the page itself has changed."
+                onRetry={() => {
+                  void refetch();
+                }}
+              />
+            </Card>
           </div>
         ) : isPending || !card ? (
           <p className="p-4 text-sm" role="status">
@@ -359,16 +373,13 @@ export function AuditDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (!VALID_TYPES.includes(type as EntityType) || !id) {
     return (
-      <div className="flex h-full items-center justify-center p-8">
-        <Alert color="warning" className="max-w-md">
-          <AlertContent>
-            <AlertTitle>No page to show</AlertTitle>
-            <AlertDescription>
-              Open a page check from the Site checks list to see its breakdown here.
-            </AlertDescription>
-          </AlertContent>
-        </Alert>
-      </div>
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneLoadError
+          reason="missing"
+          title="No page to show"
+          description="Open a page check from the Site checks list to see its breakdown here."
+        />
+      </Card>
     );
   }
 

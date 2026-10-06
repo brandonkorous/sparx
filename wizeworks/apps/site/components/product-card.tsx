@@ -4,11 +4,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
 import type { PublicProductListItem } from '@/lib/commerce';
 import { RatingStars } from './rating-stars';
+import { fleetFitBadge } from '@/lib/fleet-fit-words';
 
 export interface ProductCardProps {
   product: PublicProductListItem;
@@ -81,8 +83,23 @@ export function ProductCard({
           currency={currency}
           locale={locale}
         />
+        <FleetFitBadge product={product} />
       </div>
     </Link>
+  );
+}
+
+/** For a signed-in trade buyer with a fleet: whether this part fits one of their
+ *  vehicles. Nothing at all for a part with no fitment data, which is not the
+ *  same as a part that does not fit (sparx persona issue 086). Silica's badge
+ *  colors come from the shop's own theme. */
+function FleetFitBadge({ product }: { product: PublicProductListItem }) {
+  const badge = fleetFitBadge(product.fleetFit);
+  if (!badge) return null;
+  return (
+    <Badge color={badge.color} variant="soft" className="mt-1.5 self-start">
+      {badge.text}
+    </Badge>
   );
 }
 

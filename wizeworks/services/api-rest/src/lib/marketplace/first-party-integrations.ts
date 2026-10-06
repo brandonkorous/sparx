@@ -27,17 +27,24 @@
 // cannot drift: an integration is on the shelf when it is registered, and gone when it
 // is not.
 //
-// PUBLISHER SCOPING. Only `sparx`-published descriptors are emitted here. A
+// PUBLISHER SCOPING. Only first-party descriptors are emitted here: written as
+// `sparx`, or with the `{platform}` brand token (see `isFirstParty`). A
 // contributor's uploaded integration lands in the same `marketplace_integrations`
 // table through the same columns under THEIR publisher id, and the publisher-scoped
 // prune leaves it alone — the same "one shelf, many publishers" contract that themes,
 // components and blueprints already run on.
 
+import { PLATFORM_TOKEN, fillPlatformName } from '@wizeworks/brand-core';
 import {
   categoryInfo,
   listIntegrationDescriptors,
   type IntegrationDescriptor,
 } from '@wizeworks/integrations';
+
+/** This shelf is sparx's own marketplace, so a descriptor written with the brand
+ *  token is filled with sparx's name as it is published. */
+const SHELF_BRAND = 'sparx';
+const fill = (text: string) => fillPlatformName(text, SHELF_BRAND);
 
 export interface FirstPartyIntegration {
   slug: string;
@@ -77,15 +84,15 @@ function toListing(descriptor: IntegrationDescriptor): FirstPartyIntegration {
     // Category-qualified so two categories can each carry a `meta` or a `pinterest`
     // without colliding on the marketplace's unique slug.
     slug: `${descriptor.category}-${descriptor.slug}`,
-    name: descriptor.name,
+    name: fill(descriptor.name),
     providerSlug: `${descriptor.category}:${descriptor.slug}`,
     kind: info.label,
     // Capabilities double as the listing's scopes — they are already the plain-language
     // statement of what connecting this lets sparx do.
-    scopes: [...descriptor.capabilities],
+    scopes: descriptor.capabilities.map(fill),
     accent: CATEGORY_ACCENT[descriptor.category] ?? ACCENT_FALLBACK,
-    tagline: descriptor.blurb,
-    description: descriptor.blurb,
+    tagline: fill(descriptor.blurb),
+    description: fill(descriptor.blurb),
     sortWeight: descriptor.sortWeight ?? 0,
   };
 }
@@ -102,7 +109,17 @@ function toListing(descriptor: IntegrationDescriptor): FirstPartyIntegration {
  * them is what kept four finished bundles invisible for months.
  */
 export function firstPartyIntegrations(): FirstPartyIntegration[] {
-  return listIntegrationDescriptors()
-    .filter((d) => d.publisher === 'sparx')
-    .map(toListing);
+  return listIntegrationDescriptors().filter(isFirstParty).map(toListing);
+}
+
+/**
+ * Ours: written as `sparx`, or with the brand token, which is how shared packages
+ * name the platform. The same test the Integrations panel uses
+ * (routes/v1/integrations). This filter used to read `'sparx'` alone, and when the
+ * shared packages moved to the token, payments, shipping, tax, sales channels,
+ * social and AI all fell off the shelf without a sound: on 2026-10-01 the
+ * marketplace listed five integrations, every one of them dropship (issue 035).
+ */
+function isFirstParty(descriptor: IntegrationDescriptor): boolean {
+  return descriptor.publisher === PLATFORM_TOKEN || descriptor.publisher === 'sparx';
 }

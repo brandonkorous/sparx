@@ -126,7 +126,12 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     group: 'Customer',
     kind: 'account',
   },
-  'b2bAccount.pricingTier': { label: 'Price tier', group: 'Wholesale account', kind: 'text' },
+  'b2bAccount.pricingTier': {
+    label: 'Price tier',
+    group: 'Wholesale account',
+    kind: 'text',
+    hint: 'The name of the tier, as it reads under Price tiers.',
+  },
   'b2bAccount.creditUtilization': {
     label: 'Credit used (share)',
     group: 'Wholesale account',

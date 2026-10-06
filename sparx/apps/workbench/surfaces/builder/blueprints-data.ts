@@ -313,6 +313,16 @@ export function installState(
         detail:
           'Everything this design adds is on your site as drafts. Only you can see it. Review it, then publish it when you are ready.',
       };
+    case 'replaced':
+      // None of its pages are left (persona issue 273): most often a design added
+      // after it replaced them. It used to keep saying "Added as drafts" over
+      // pages that were gone. The words say what is known, not a guessed cause.
+      return {
+        label: 'Pages gone',
+        tone: 'warning',
+        detail:
+          'None of the pages this design added are on your site now. They go when another design is added to the site, or when they are deleted. To bring them back, remove this design and add it again. Removing it clears what else it left behind, and keeps the header, footer and look your site has now.',
+      };
     case 'running':
       return {
         label: 'Setting up',

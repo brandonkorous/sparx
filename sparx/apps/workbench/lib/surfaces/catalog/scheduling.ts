@@ -30,6 +30,7 @@ import { LocationDetailSurface } from '../../../surfaces/scheduling/location-det
 import { ResourceDetailSurface } from '../../../surfaces/scheduling/resource-detail';
 import { AvailabilitySurface } from '../../../surfaces/scheduling/availability-settings';
 import { PoliciesListSurface } from '../../../surfaces/scheduling/policies-list';
+import { useResourceTabIcon } from '../../../surfaces/scheduling/resource-tab-icon';
 import { PolicyDetailSurface } from '../../../surfaces/scheduling/policy-detail';
 import { SchedulingReportsSurface } from '../../../surfaces/scheduling/reports';
 
@@ -147,6 +148,9 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     title: (params) => (params.id === 'new' ? 'New resource' : 'Resource'),
     module: 'scheduling',
     icon: Users,
+    // A bay draws a door, a technician a person, on every tab, opened or not
+    // (sparx persona issue 086).
+    useTabIcon: useResourceTabIcon,
     component: ResourceDetailSurface,
     listed: false,
     besideWidth: 0.45,
@@ -181,7 +185,16 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     icon: Clock,
     section: 'Setup',
     order: 22,
-    keywords: ['opening hours', 'working hours', 'holidays', 'time off'],
+    // "business hours" offered only support response times (sparx persona issue 036).
+    keywords: [
+      'opening hours',
+      'working hours',
+      'business hours',
+      'store hours',
+      'shop hours',
+      'holidays',
+      'time off',
+    ],
     component: AvailabilitySurface,
     singleton: true,
   },

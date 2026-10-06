@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark, Text } from './primitives';
 import { Cycle } from './cycle';
@@ -35,9 +37,12 @@ export function B2bHero() {
               {lede}
             </Text>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('b2b-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Activate B2B →
-              </Button>
+              </a>
               <a href="#price-list">
                 <Button size="lg" variant="outline">
                   See account pricing

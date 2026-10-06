@@ -70,6 +70,7 @@ function overduePredicate(overdueDays: number): { entity: string; where: Conditi
 
 /** A friendly reminder three days before a user invoice is due. */
 export const INVOICING_REMINDER_3D: SystemAutomationSpec = {
+  key: 'invoicing.reminder-3-days',
   name: 'Invoice reminder (3 days before due)',
   description: 'Emails the customer a friendly reminder three days before an invoice is due.',
   trigger: {
@@ -102,6 +103,7 @@ export const INVOICING_REMINDER_3D: SystemAutomationSpec = {
 
 /** First overdue notice — 7 days past due. */
 export const INVOICING_OVERDUE_7: SystemAutomationSpec = {
+  key: 'invoicing.overdue-7-days',
   name: 'Invoice overdue (7 days)',
   description: 'Emails the customer when an invoice is 7 days overdue.',
   trigger: {
@@ -122,6 +124,7 @@ export const INVOICING_OVERDUE_7: SystemAutomationSpec = {
 
 /** Second overdue notice — 14 days past due. */
 export const INVOICING_OVERDUE_14: SystemAutomationSpec = {
+  key: 'invoicing.overdue-14-days',
   name: 'Invoice overdue (14 days: second notice)',
   previousNames: ['Invoice overdue (14 days — second notice)'],
   description: 'Emails the customer a second notice when an invoice is 14 days overdue.',
@@ -143,6 +146,7 @@ export const INVOICING_OVERDUE_14: SystemAutomationSpec = {
 
 /** Final overdue notice — 30 days past due. */
 export const INVOICING_OVERDUE_30: SystemAutomationSpec = {
+  key: 'invoicing.overdue-30-days',
   name: 'Invoice overdue (30 days: final notice)',
   previousNames: ['Invoice overdue (30 days — final notice)'],
   description: 'Emails the customer a final notice when an invoice is 30 days overdue.',
@@ -167,6 +171,7 @@ export const INVOICING_OVERDUE_30: SystemAutomationSpec = {
  *  receipt too), which is why this doesn't share the `USER_INVOICE` guard the
  *  dunning seeds above use. */
 export const INVOICING_RECEIPT_ON_PAID: SystemAutomationSpec = {
+  key: 'invoicing.receipt-on-paid',
   name: 'Payment received: send receipt',
   previousNames: ['Payment received — send receipt'],
   description: 'Emails the customer a receipt when a billing document is paid in full.',
@@ -185,16 +190,21 @@ export const INVOICING_RECEIPT_ON_PAID: SystemAutomationSpec = {
 /** When a billing document reaches a committed (customer-approved) stage, open a
  *  task to advance it. Scoped to user-authored workflows, not the B2B AR ledger. */
 export const INVOICING_ESTIMATE_APPROVED_TASK: SystemAutomationSpec = {
+  key: 'invoicing.estimate-approved-task',
   name: 'Estimate approved: advance task',
   previousNames: ['Estimate approved — advance task'],
   description:
-    'Opens a task to advance the document when a user-authored billing document is approved (reaches a committed stage).',
+    'Opens a task to advance the document when a user-authored billing document is approved (reaches a committed stage). The task closes itself once the document is moved on, turned into an order, voided or removed.',
   trigger: { kind: 'event', eventType: 'crm.billing_document.stage_changed' },
   conditions: {
     logic: 'AND',
     conditions: [
       { field: 'invoice.stageType', operator: 'eq', value: 'committed' },
       { field: 'invoice.workflowSlug', operator: 'neq', value: 'net-terms-ar' },
+      // A wholesale quote is not one to advance by hand: accepting it places its
+      // order (sparx persona issues 084 and 085). This task read "Q-000002 was
+      // approved: take it to the next step" about a step already taken.
+      { field: 'invoice.workflowSlug', operator: 'neq', value: 'b2b-quotes' },
     ],
   },
   actions: [
@@ -204,6 +214,9 @@ export const INVOICING_ESTIMATE_APPROVED_TASK: SystemAutomationSpec = {
         title: '{{invoice.number}} was approved: take it to the next step',
         assigneeField: 'invoice.assignedUserId',
         dueInDays: 0,
+        // Done once the document is taken to the next step, whoever takes it;
+        // no longer needed once it is voided or removed.
+        closeWhenDocumentMovesOn: true,
       },
     },
   ],

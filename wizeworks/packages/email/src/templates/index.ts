@@ -122,6 +122,21 @@ export {
 } from './document-signature-request';
 
 export { InvoiceSentEmail, invoiceSentSubject, type InvoiceSentEmailProps } from './invoice-sent';
+export {
+  AccountStatementEmail,
+  accountStatementSubject,
+  type AccountStatementEmailProps,
+} from './account-statement';
+export {
+  PurchaseOrderSentEmail,
+  purchaseOrderSentSubject,
+  type PurchaseOrderSentEmailProps,
+} from './purchase-order-sent';
+export {
+  OrderApprovalRequestEmail,
+  orderApprovalRequestSubject,
+  type OrderApprovalRequestEmailProps,
+} from './order-approval-request';
 
 export {
   InvitationAcceptedEmail,

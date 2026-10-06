@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Button, Text } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
@@ -37,9 +39,12 @@ export function DropshipHero() {
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('dropship-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Activate Dropship →
-              </Button>
+              </a>
               <a href="#routing">
                 <Button size="lg" variant="outline">
                   See how an order routes

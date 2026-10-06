@@ -52,16 +52,20 @@ export const Handle = z
   );
 export type Handle = z.infer<typeof Handle>;
 
-// SKU — merchant-defined. Allow upper/lower/digits/dashes/underscores,
-// punctuation/spaces rejected so SKUs are barcode-friendly. Mirrors the
-// VARCHAR(127) cap on ProductVariant.sku.
+// SKU — merchant-defined. Mirrors the VARCHAR(127) cap on ProductVariant.sku.
+// A business's own part numbers, as they write them. Real ones carry "+", "#"
+// and spaces ("07-CC-24V19+", "#80", "0281 006414", all Gillett Diesel's); the
+// old letters-digits-dot-dash rule refused 7 of his 787 on the way in from
+// Shopify (sparx persona issue 054). Only what cannot be printed or typed is
+// refused: control characters, and a space at either end.
 export const Sku = z
   .string()
   .min(1)
   .max(127)
   .regex(
-    /^[A-Za-z0-9._\-/]+$/,
-    'SKU may only contain letters, digits, dot, dash, underscore, slash'
+    // eslint-disable-next-line no-control-regex -- refusing control characters is the point
+    /^[^\s\x00-\x1f\x7f](?:[^\x00-\x1f\x7f]*[^\s\x00-\x1f\x7f])?$/,
+    'A SKU cannot start or end with a space, or hold a tab or a line break.'
   );
 export type Sku = z.infer<typeof Sku>;
 

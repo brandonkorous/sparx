@@ -49,6 +49,12 @@ interface CustomerPickerProps {
    * (issue 745). A picker that can only reject is only half a control.
    */
   onAddNew?: (typed: string) => void;
+  /**
+   * People who cannot be picked here, by customer id, each with the words that
+   * say why. They still show in the results, so a search for them does not
+   * end in "nobody is called that" and an offer to add them a second time.
+   */
+  unavailable?: ReadonlyMap<string, string>;
 }
 
 export function CustomerPicker({
@@ -57,6 +63,7 @@ export function CustomerPicker({
   onSelect,
   onClear,
   onAddNew,
+  unavailable,
 }: CustomerPickerProps) {
   const [query, setQuery] = useState('');
   const queryClient = useQueryClient();
@@ -78,7 +85,11 @@ export function CustomerPicker({
   }, [accounts]);
 
   const toRow = (customer: CustomerSummary) =>
-    customerPickerRow(customer, customer.companyId ? businesses[customer.companyId] : null);
+    customerPickerRow(
+      customer,
+      customer.companyId ? businesses[customer.companyId] : null,
+      unavailable?.get(customer.id)
+    );
 
   return (
     <SearchPicker
@@ -109,7 +120,7 @@ export function CustomerPicker({
       clearLabel="Choose a different customer"
       onSelect={(id) => {
         const picked = results.find((customer) => customer.id === id);
-        if (!picked) return;
+        if (!picked || unavailable?.has(id)) return;
         // Seed the by-id read with the row just chosen, so the field names them
         // straight away instead of blanking to "Loading" on every pick.
         queryClient.setQueryData(customerPickerKeys.one(id), picked);

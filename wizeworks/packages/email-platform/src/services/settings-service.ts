@@ -12,7 +12,7 @@
 // produces — a plausible-looking email sent under the wrong business's name — is
 // invisible in review and only surfaces in a customer's inbox.
 
-import { withTenant } from '@wizeworks/db';
+import { prisma, withTenant } from '@wizeworks/db';
 import type { EmailSettings } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -157,4 +157,31 @@ export async function update(
   });
 
   return toView(ctx.tenantId, propertyId, row, await senderFor(ctx.tenantId, propertyId, row));
+}
+
+/**
+ * `From` and `Reply-To` for a coded TEMPLATE send a business makes to somebody
+ * outside the platform: an invoice to its customer, an order to its supplier, a
+ * document to sign, a download a visitor asked for.
+ *
+ * Those sends published no sender at all, so the worker fell back to the
+ * PLATFORM's: a bakery's invoice arrived from "sparx <noreply@sparx.email>", and
+ * the line at its foot inviting a reply sent it to a mailbox nobody reads (sparx
+ * persona issue 071). Reply-To falls back to the account's own address, as
+ * `{{tenant.supportEmail}}` in body copy already does, so a reply always
+ * reaches the business. One answer for REST and MCP alike.
+ */
+export async function senderHeaders(
+  ctx: ServiceContext,
+  propertyId: string | null
+): Promise<{ from: string; replyTo: string | null }> {
+  const view = await get(ctx, propertyId);
+  if (view.replyTo) return { from: view.resolvedFrom, replyTo: view.replyTo };
+  // `tenants` is the non-RLS dispatch row (see platform-sender.ts).
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: ctx.tenantId },
+    select: { email: true },
+  });
+  const account = tenant?.email.trim() ?? '';
+  return { from: view.resolvedFrom, replyTo: account === '' ? null : account };
 }

@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
 import { Display, getModuleColor, Section, Spark } from './primitives';
@@ -270,9 +272,12 @@ function CrmPricing() {
             a card.
           </p>
         </div>
-        <Button color="neutral" size="xl">
+        <a
+          href={signupHref('crm-hero')}
+          className={buttonClasses({ color: 'neutral', size: 'xl' })}
+        >
           Activate CRM →
-        </Button>
+        </a>
       </div>
     </Section>
   );
@@ -296,9 +301,12 @@ function CrmCta() {
           exportable in full, from a button, without asking anyone.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <Button color="module-crm" size="xl">
+          <a
+            href={signupHref('crm-final')}
+            className={buttonClasses({ color: 'module-crm', size: 'xl' })}
+          >
             Activate CRM →
-          </Button>
+          </a>
           <a href="#record">
             <Button size="xl" variant="outline">
               See a customer record

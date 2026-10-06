@@ -15,7 +15,7 @@ import {
   type OrderSearchDocument,
   type ProductSearchDocument,
 } from '@wizeworks/search';
-import { withTenant } from '@wizeworks/db';
+import { type Prisma, withTenant } from '@wizeworks/db';
 import { plainTextOrNull } from '@wizeworks/commerce-schemas';
 import type { CustomerType } from '@wizeworks/crm-schemas';
 
@@ -313,8 +313,19 @@ export async function projectCustomer(
   const document = await withTenant(ctx, async (tx) => {
     const customer = await tx.customer.findFirst({
       where: { id: customerId, deletedAt: null },
+      include: {
+        // Every trade account they are an ACTIVE contact on. See `companyWords`.
+        // The account that prices them is read below, by its id.
+        b2bContactRoles: {
+          where: { isActive: true, account: { deletedAt: null } },
+          orderBy: { createdAt: 'asc' },
+          select: { account: { select: { companyName: true } } },
+        },
+      },
     });
     if (!customer) return null;
+
+    const pricing = await pricingAccount(tx, customer.companyId);
 
     const name = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
     // full_name is required + non-empty in the Typesense schema; fall back
@@ -332,7 +343,11 @@ export async function projectCustomer(
       full_name: fullName,
       email: customer.email ?? '',
       phone: customer.phone ?? undefined,
-      company: customer.companyName ?? undefined,
+      company: companyWords([
+        pricing?.deletedAt === null ? pricing.companyName : null,
+        ...customer.b2bContactRoles.map((role) => role.account.companyName),
+        customer.companyName,
+      ]),
       type: customer.type as CustomerType,
       lifecycle_stage: customer.lifecycleStage,
       lead_status: customer.leadStatus ?? undefined,
@@ -349,6 +364,65 @@ export async function projectCustomer(
   });
 
   return { document };
+}
+
+/**
+ * Every business a customer's search document should answer to, as one line.
+ *
+ * Three sources, in this order: the account that prices them (`companyId`), each
+ * trade account they are an ACTIVE contact on (`b2b_account_contacts`), then the
+ * employer they typed themselves (`company_name`). The line is both what `company`
+ * matches on and the second line the search box prints under the name.
+ *
+ * It used to be the typed employer alone. That column is not the account: a
+ * person filed under a trade account from the account's own screen, or by the
+ * customer editor's "buys on behalf of" field, has the pointer and the membership
+ * row and nothing typed. MEASURED 2026-10-03 on Gillett Diesel Service: of the
+ * three contacts on Wasatch Front Utility Contractors, LLC, typing "Wasatch"
+ * found only the one whose creator had also typed the company into the free-text
+ * field. The main buyer, with every order on the account, was not found, and
+ * "Wasatch Marcus" could not find Marcus at all.
+ *
+ * Repeats are dropped regardless of case, so a typed employer that matches the
+ * account adds nothing. Undefined when there is nothing, so the optional field is
+ * omitted rather than stored empty.
+ */
+export function companyWords(names: (string | null | undefined)[]): string | undefined {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of names) {
+    const name = raw?.trim();
+    if (!name) continue;
+    const key = name.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+  }
+  // A middle dot, not a comma: account names carry their own commas ("…, LLC").
+  return out.length > 0 ? out.join(' · ') : undefined;
+}
+
+/**
+ * The trade account a customer's `companyId` points at, removed or not, or null.
+ *
+ * Read by id, NEVER joined as `customer.company`: the Prisma client publishes a
+ * computed `company` on every customer (the employer they typed, see
+ * packages/db/src/client.ts), and it SHADOWS the relation. A query that includes
+ * the relation is accepted, runs, and hands back the typed string, so
+ * `customer.company.companyName` is always undefined. MEASURED 2026-10-04: the
+ * customer projection joined it that way, and a buyer priced by Wasatch Front
+ * and on none of its contact lists was not found by the account's name. Nothing
+ * threw and nothing logged.
+ */
+async function pricingAccount(
+  tx: Pick<Prisma.TransactionClient, 'company'>,
+  companyId: string | null | undefined
+): Promise<OrderAccountCandidate | null> {
+  if (!companyId) return null;
+  return tx.company.findUnique({
+    where: { id: companyId },
+    select: { id: true, companyName: true, deletedAt: true },
+  });
 }
 
 /** First non-empty (trimmed) string from the candidates, or undefined. Used
@@ -393,16 +467,42 @@ export async function projectOrder(
   orderId: string
 ): Promise<OrderProjectionResult> {
   const document = await withTenant(ctx, async (tx) => {
+    const account = { select: { id: true, companyName: true, deletedAt: true } } as const;
     const order = await tx.order.findUnique({
       where: { id: orderId },
       include: {
         items: { select: { name: true, sku: true } },
         customer: {
-          select: { firstName: true, lastName: true, email: true, companyId: true },
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            companyName: true,
+            companyId: true,
+          },
+        },
+        // The account the order was quoted to, and the account its first invoice
+        // was raised to. Both were settled while the order was being made, so
+        // they say whose order it was even after the buyer moves on.
+        convertedFromDocument: { select: { company: account } },
+        billingDocuments: {
+          where: { deletedAt: null, companyId: { not: null } },
+          orderBy: { createdAt: 'asc' },
+          take: 1,
+          select: { company: account },
         },
       },
     });
     if (!order) return null;
+
+    const quotedTo = order.convertedFromDocument?.company;
+    const invoicedTo = order.billingDocuments[0]?.company;
+    const owner = orderAccount([
+      quotedTo,
+      invoicedTo,
+      // Read only when neither record names an account: most orders, one query.
+      quotedTo || invoicedTo ? null : await pricingAccount(tx, order.customer?.companyId),
+    ]);
 
     const customerName = [order.customer?.firstName, order.customer?.lastName]
       .filter(Boolean)
@@ -422,7 +522,11 @@ export async function projectOrder(
       customer_id: order.customerId,
       customer_name: customerName || undefined,
       customer_email: order.customer?.email ?? undefined,
-      b2b_account_id: order.customer?.companyId ?? undefined,
+      b2b_account_id: owner?.id,
+      // A removed account is not named: it is out of search, and its name must
+      // stop finding things. The employer the buyer typed stands in only when
+      // the order belongs to no account at all.
+      company: owner ? owner.name : firstNonEmpty(order.customer?.companyName)?.trim(),
       channel: order.channel ?? 'admin',
       status: order.status,
       payment_status: order.paymentStatus,
@@ -442,6 +546,42 @@ export async function projectOrder(
   });
 
   return { document };
+}
+
+/** An account as an order's projection reads it. */
+export interface OrderAccountCandidate {
+  id: string;
+  companyName: string;
+  deletedAt: Date | null;
+}
+
+/**
+ * Which trade account an order belongs to, from the candidates in the order
+ * they should win: the account it was quoted to, the account it was invoiced
+ * to, then the buyer's pricing account today.
+ *
+ * The first two are records made WHILE the order was being made, so they keep
+ * an order with the account it was placed for after the buyer moves to another
+ * one. Most orders have neither (a checkout raises no quote, and a shop paid at
+ * the till raises no invoice), and for those the pricing account is the best
+ * evidence there is: it is the account that priced the checkout and the one the
+ * sign-off rules and the B2B reports already treat as the order's.
+ *
+ * `name` is undefined when the winning account has been removed. It is not
+ * replaced by the next candidate: the order still belonged to the removed
+ * account, and naming a different one would misfile it.
+ *
+ * MEASURED 2026-10-04 on Gillett Diesel Service: typing "Wasatch" found Wasatch
+ * Front Utility Contractors, LLC, its invoices, quotes and contacts, and none of
+ * its five orders, because an order's search document carried no account name.
+ */
+export function orderAccount(
+  candidates: (OrderAccountCandidate | null | undefined)[]
+): { id: string; name: string | undefined } | undefined {
+  const winner = candidates.find((c): c is OrderAccountCandidate => !!c);
+  if (!winner) return undefined;
+  const name = winner.deletedAt === null ? winner.companyName.trim() : '';
+  return { id: winner.id, name: name.length > 0 ? name : undefined };
 }
 
 /** Project many orders in one call (reindex batches by tenant). */
@@ -477,6 +617,101 @@ export async function listCustomerIdsForTenant(ctx: ServiceContext): Promise<str
   return withTenant(ctx, async (tx) => {
     const rows = await tx.customer.findMany({ where: { deletedAt: null }, select: { id: true } });
     return rows.map((r) => r.id);
+  });
+}
+
+/**
+ * Every customer whose search document names this trade account: filed under it
+ * (`companyId`) or on its contact list, active or not.
+ *
+ * Read when the ACCOUNT changes, because each of those documents carries the
+ * account's name (see `companyWords`). Renamed, they must answer to the new name;
+ * removed, they must stop answering to the old one. Inactive contacts are
+ * included on purpose: one switched off before a rename still holds whatever an
+ * earlier projection wrote, and reprojecting a customer is idempotent. Includes
+ * soft-deleted customers so the caller's reprojection deletes their documents.
+ */
+export async function listCustomerIdsForAccount(
+  ctx: ServiceContext,
+  accountId: string
+): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const filed = await tx.customer.findMany({
+      where: { companyId: accountId },
+      select: { id: true },
+    });
+    const contacts = await tx.b2bAccountContact.findMany({
+      where: { accountId },
+      select: { customerId: true },
+    });
+    return [...new Set([...filed.map((c) => c.id), ...contacts.map((c) => c.customerId)])];
+  });
+}
+
+/**
+ * Every order whose search document can name this trade account: quoted to it,
+ * invoiced to it, or bought by somebody it prices. A superset of the orders that
+ * DO name it (an order quoted to another account wins that one), which is fine:
+ * reprojecting an order is idempotent.
+ *
+ * Read when the account's NAME changes or the account is removed (see the
+ * commerce-indexer handler), so its orders answer to the new name and stop
+ * answering to a removed one. Bounded by the account's own order count, and
+ * only paid on a rename or a removal, never on the routine account writes.
+ */
+export async function listOrderIdsForAccount(
+  ctx: ServiceContext,
+  accountId: string
+): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.order.findMany({
+      where: {
+        OR: [
+          { customer: { companyId: accountId } },
+          { convertedFromDocument: { companyId: accountId } },
+          { billingDocuments: { some: { companyId: accountId } } },
+        ],
+      },
+      select: { id: true },
+    });
+    return rows.map((r) => r.id);
+  });
+}
+
+/**
+ * Every order one customer placed. Each of their order documents copies their
+ * name, email and pricing account, so a change to any of those is re-read into
+ * them (see the commerce-indexer handler, which reads them only when one of
+ * those actually moved).
+ */
+export async function listOrderIdsForCustomer(
+  ctx: ServiceContext,
+  customerId: string
+): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.order.findMany({ where: { customerId }, select: { id: true } });
+    return rows.map((r) => r.id);
+  });
+}
+
+/**
+ * The orders a quote or invoice speaks for: the order it bills, and the order it
+ * was converted into. Each one's search document may take its account from this
+ * document (see `orderAccount`), so a quote or invoice written, re-pointed or
+ * removed re-reads them. Usually none or one, never more than two.
+ */
+export async function listOrderIdsForBillingDocument(
+  ctx: ServiceContext,
+  documentId: string
+): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const doc = await tx.billingDocument.findUnique({
+      where: { id: documentId },
+      select: { orderId: true, convertedOrder: { select: { id: true } } },
+    });
+    if (!doc) return [];
+    const ids = [doc.orderId, doc.convertedOrder?.id].filter((id): id is string => !!id);
+    return [...new Set(ids)];
   });
 }
 

@@ -63,6 +63,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { isCoreOptionName } from '@wizeworks/commerce-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { ChevronDown, ChevronUp, Plus, Shapes, Trash2, X } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -221,7 +222,7 @@ function problemWith(draft: OptionDraft[]): OptionProblem | null {
 
 /* ── The tab ────────────────────────────────────────────────────────────── */
 
-export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: Product }) {
+export function ProductOptionsTab({ ctx, product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -360,8 +361,22 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
     ]);
   };
 
+  // A core charge sold as a CHOICE, the way a store with no core deposit had to
+  // fake one (persona issue 057). Read off the SAVED choices: a name being typed
+  // is not yet a claim about how the product is sold.
+  const coreOption = (options.data ?? []).find((option) => isCoreOptionName(option.name));
+
   return (
     <div className="flex flex-col gap-4">
+      {coreOption ? (
+        <CoreChoiceNotice
+          optionName={coreOption.name}
+          onOpen={() => {
+            ctx.open('commerce.core-choices.list', undefined, { target: 'beside' });
+          }}
+        />
+      ) : null}
+
       {/* No Refresh row here: this is a tab BODY, not a list pane. A lone icon
           floating above the first card is anchored to nothing, and the failure
           state above already carries its own "Try again". */}
@@ -428,6 +443,31 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
         </>
       )}
     </div>
+  );
+}
+
+/**
+ * Removing the choice by hand stops every version that depends on it being sold,
+ * so the safe way out is not on this tab: the core charges screen merges the two
+ * versions into one, keeps its stock and photos, and sets a real deposit.
+ */
+function CoreChoiceNotice({ optionName, onOpen }: { optionName: string; onOpen: () => void }) {
+  return (
+    <Alert color="warning">
+      <AlertContent>
+        <AlertTitle>This choice is a core charge set up the way your old store did it</AlertTitle>
+        <AlertDescription>
+          “{optionName}” sells one rebuilt part as two versions, so its stock is split in two and
+          the extra a buyer pays is not a deposit you can give back. Change it to one part with a
+          real core deposit. Buyers can still send their old part first instead.
+        </AlertDescription>
+      </AlertContent>
+      <AlertActions>
+        <Button size="sm" color="warning" variant="outline" onClick={onOpen}>
+          Change it to a core deposit
+        </Button>
+      </AlertActions>
+    </Alert>
   );
 }
 

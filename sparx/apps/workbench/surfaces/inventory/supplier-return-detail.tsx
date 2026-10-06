@@ -20,6 +20,7 @@
 // so the server refuses a line it cannot cost, and asks.
 
 import { useEffect, useRef, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -28,7 +29,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -47,7 +47,7 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Ban, Banknote, PackageX, PlusCircle, Send, Trash2 } from 'lucide-react';
+import { Ban, Banknote, PlusCircle, Send, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -112,12 +112,19 @@ export function SupplierReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isNew) return <NewReturn ctx={ctx} />;
 
   if (existing.isError) {
+    // A 404 (removed, or another business's id) and a failed request say
+    // different things; the shared screen reads which from the error rather
+    // than calling every one a connection problem (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<PackageX className="size-6" aria-hidden />}
+        <PaneLoadError
+          error={existing.error}
+          noun="return"
           title="Could not load that return"
-          description="This is a problem reaching the server, not a statement that the return is gone. Try again in a moment."
+          description="This is a problem reaching the server. The return itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void existing.refetch();
+          }}
         />
       </div>
     );

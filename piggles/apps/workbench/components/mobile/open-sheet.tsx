@@ -31,6 +31,7 @@ import { faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Button, SearchInput } from '@wizeworks/silicaui-react';
 import { getSurface } from '@/lib/surfaces/registry';
+import { TabGlyph } from '@/lib/dock/tab-glyph';
 import { useConfirm } from '@/lib/confirm';
 import { useWorkbench } from '@/lib/workbench/context';
 import type { StackPaneHost } from '@/lib/workbench/stack-host';
@@ -169,9 +170,7 @@ export function OpenSheet({ open, host, order, activeId, onDismiss }: OpenSheetP
                     onDismiss();
                   }}
                 >
-                  {definition ? (
-                    <Icon glyph={definition.icon} className="text-module size-5" aria-hidden />
-                  ) : null}
+                  <TabGlyph descriptor={descriptor} className="text-module size-5" />
                   <span className="min-w-0 flex-1 truncate text-start">{host.titleOf(paneId)}</span>
                   {definition ? (
                     <span className="text-sm">{moduleLabel(definition.module)}</span>

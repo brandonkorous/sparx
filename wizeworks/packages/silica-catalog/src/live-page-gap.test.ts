@@ -33,7 +33,7 @@ const refs = (gaps: { ref: string }[]) => gaps.map((g) => g.ref).sort();
 /** What a page with no sold-out notice at all reports. `backInStock` is NOT among
  *  them: the missing notice brings the date line with it, and naming one repair twice
  *  would have an owner reading two bullets for one press of Publish. */
-const STALE_GAPS = ['madeToOrder.shown', 'preorder.shown', 'soldOut'];
+const STALE_GAPS = ['coreDeposit.shown', 'madeToOrder.shown', 'preorder.shown', 'soldOut'];
 
 describe('what a live page cannot say', () => {
   it('says nothing about a page that has never been published', () => {
@@ -123,6 +123,56 @@ describe('what a live page cannot say', () => {
       expect(gap.says, gap.ref).toMatch(/your page/i);
       expect(gap.says, gap.ref).not.toMatch(/ref|node|bind|tree|silica/i);
     }
+  });
+
+  it('reports a buy box that cannot take an old part first (issue 057)', () => {
+    // A page stamped after the supply notices and before the choice: everything else
+    // is in place, so this is the one thing it is missing. The choice lives INSIDE the
+    // form, which is why it needs asking about separately from the panels beside it.
+    const strip = (node: Node): Node => {
+      if (node.kind === 'outlet') return node;
+      const kids = (node as Extract<Node, { kind: 'element' }>).children;
+      if (!Array.isArray(kids)) return node;
+      return {
+        ...node,
+        children: kids
+          .filter(
+            (k) =>
+              typeof k === 'string' ||
+              k.kind === 'outlet' ||
+              !(k.data?.kind === 'visible' && k.data.ref === 'coreChoice.shown')
+          )
+          .map((k) => (typeof k === 'string' ? k : strip(k))),
+      };
+    };
+    const older = strip(buyBox());
+    expect(refs(livePageGaps([{ draft: older, published: older }]))).toEqual(['coreChoice.shown']);
+    // …and the repair is what clears it, so the report and the fix say the same thing.
+    const healed = upgradePageBody(older).root;
+    expect(livePageGaps([{ draft: healed, published: healed }])).toEqual([]);
+  });
+
+  it('reports a buy box that cannot offer a repeat order (issue 739)', () => {
+    const strip = (node: Node): Node => {
+      if (node.kind === 'outlet') return node;
+      const kids = (node as Extract<Node, { kind: 'element' }>).children;
+      if (!Array.isArray(kids)) return node;
+      return {
+        ...node,
+        children: kids
+          .filter(
+            (k) =>
+              typeof k === 'string' ||
+              k.kind === 'outlet' ||
+              !(k.data?.kind === 'visible' && k.data.ref === 'repeat.shown')
+          )
+          .map((k) => (typeof k === 'string' ? k : strip(k))),
+      };
+    };
+    const older = strip(buyBox());
+    expect(refs(livePageGaps([{ draft: older, published: older }]))).toEqual(['repeat.shown']);
+    const healed = upgradePageBody(older).root;
+    expect(livePageGaps([{ draft: healed, published: healed }])).toEqual([]);
   });
 
   it('reports nothing for the page the factory builds today', () => {

@@ -226,7 +226,9 @@ function DiscountEditor({
               discount={discount}
               activating={writes.activating}
               retiring={writes.retiring}
-              onActivate={writes.activate}
+              onActivate={() => {
+                writes.activate(dirty ? draft : null, Boolean(blocked));
+              }}
               onRetire={() => {
                 void writes.retire();
               }}

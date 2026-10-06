@@ -369,85 +369,6 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
         }
       />
 
-      {selected.size > 0 ? (
-        <div className="border-base-300 bg-base-100 flex flex-wrap items-end gap-2 border-b p-3">
-          <Text className="text-sm font-medium">
-            {plural(selected.size, 'row', 'rows')} selected. Set
-          </Text>
-          <NativeSelect
-            color="module"
-            size="sm"
-            value={bulkColumn}
-            onChange={(event) => {
-              setBulkColumn(event.target.value as EditableColumn);
-            }}
-            className="max-w-44"
-          >
-            {EDITABLE.map((column) => (
-              <option key={column} value={column}>
-                {COLUMN_LABELS[column]}
-              </option>
-            ))}
-          </NativeSelect>
-          <Input
-            color="module"
-            size="sm"
-            inputMode="decimal"
-            placeholder="to"
-            value={bulkValue}
-            onChange={(event) => {
-              setBulkValue(event.target.value);
-            }}
-            className="max-w-28"
-          />
-          <Button color="module" size="sm" disabled={bulkValue.trim() === ''} onClick={applyBulk}>
-            Apply to {selected.size}
-          </Button>
-          <Button
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSelected(new Set());
-            }}
-          >
-            Clear selection
-          </Button>
-        </div>
-      ) : null}
-
-      {pending.edits.length > 0 || pending.invalid > 0 ? (
-        <div className="border-base-300 bg-module bg-soft flex flex-wrap items-center gap-3 border-b p-3">
-          <Text className="font-medium">
-            {plural(pending.edits.length, 'change', 'changes')} not saved
-            {pending.invalid > 0
-              ? ` · ${plural(pending.invalid, 'row is', 'rows are')} not a number`
-              : ''}
-          </Text>
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            disabled={pending.edits.length === 0 || save.isPending}
-            onClick={onSave}
-          >
-            <Save className="size-4" aria-hidden />
-            Save {pending.edits.length}
-          </Button>
-          <Button
-            color="neutral"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setDraft({});
-            }}
-          >
-            <Undo2 className="size-4" aria-hidden />
-            Discard
-          </Button>
-        </div>
-      ) : null}
-
       {failures.size > 0 ? (
         <Alert color="danger" variant="soft" className="m-3">
           <AlertContent>
@@ -617,6 +538,87 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
           </Table>
         )}
       </div>
+
+      {/* Below the table, not above it: inserted above, these bars pushed every
+          row down under the pointer, so the click after ticking a row or typing
+          a number landed on the row below (sparx persona issue 072). */}
+      {selected.size > 0 ? (
+        <div className="border-base-300 bg-base-100 flex flex-wrap items-end gap-2 border-t p-3 pr-16">
+          <Text className="text-sm font-medium">
+            {plural(selected.size, 'row', 'rows')} selected. Set
+          </Text>
+          <NativeSelect
+            color="module"
+            size="sm"
+            value={bulkColumn}
+            onChange={(event) => {
+              setBulkColumn(event.target.value as EditableColumn);
+            }}
+            className="max-w-44"
+          >
+            {EDITABLE.map((column) => (
+              <option key={column} value={column}>
+                {COLUMN_LABELS[column]}
+              </option>
+            ))}
+          </NativeSelect>
+          <Input
+            color="module"
+            size="sm"
+            inputMode="decimal"
+            placeholder="to"
+            value={bulkValue}
+            onChange={(event) => {
+              setBulkValue(event.target.value);
+            }}
+            className="max-w-28"
+          />
+          <Button color="module" size="sm" disabled={bulkValue.trim() === ''} onClick={applyBulk}>
+            Apply to {selected.size}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelected(new Set());
+            }}
+          >
+            Clear selection
+          </Button>
+        </div>
+      ) : null}
+
+      {pending.edits.length > 0 || pending.invalid > 0 ? (
+        <div className="border-base-300 bg-module bg-soft flex flex-wrap items-center gap-3 border-t p-3 pr-16">
+          <Text className="font-medium">
+            {plural(pending.edits.length, 'change', 'changes')} not saved
+            {pending.invalid > 0
+              ? ` · ${plural(pending.invalid, 'row is', 'rows are')} not a number`
+              : ''}
+          </Text>
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto"
+            disabled={pending.edits.length === 0 || save.isPending}
+            onClick={onSave}
+          >
+            <Save className="size-4" aria-hidden />
+            Save {pending.edits.length}
+          </Button>
+          <Button
+            color="danger"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setDraft({});
+            }}
+          >
+            <Undo2 className="size-4" aria-hidden />
+            Discard
+          </Button>
+        </div>
+      ) : null}
 
       {grid.data && grid.data.total > rows.length ? (
         <div className="border-base-300 border-t p-3">

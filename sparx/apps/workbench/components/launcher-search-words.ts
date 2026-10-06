@@ -62,6 +62,14 @@ export function blindSpot(gaps: SearchGaps | undefined): { total: number; label:
  * known to be missing records, so it may not say her records do not match. It
  * says what it can see and what it cannot.
  */
+/**
+ * The longest search the box sends. Past this it says the words are too long
+ * rather than asking: a 24,000-character paste made a request the server
+ * refused every time, and the box then said "try again in a moment", which
+ * could never work. Far longer than any name, number or phrase anybody types.
+ */
+export const SEARCH_MOST_CHARS = 1000;
+
 export function recordSearchLine(input: {
   searching: boolean;
   found: number;
@@ -74,9 +82,27 @@ export function recordSearchLine(input: {
   screens: number;
   query: string;
   gaps: SearchGaps | undefined;
+  /** How many records matched and were NOT sent, because each search backend
+   *  caps what it returns. Null or absent is "nothing said", never "none". */
+  more?: number | null;
+  /** Whether "Show more" can bring any of them back. */
+  canShowMore?: boolean;
+  /** The record search did not answer, so its silence is not a result. */
+  failed?: boolean;
 }): string {
   const typed = input.query.trim();
+  if (typed.length > SEARCH_MOST_CHARS) {
+    return 'That is too long to search. Try a few words from it.';
+  }
   if (input.searching) return 'Looking through your records…';
+  // Checked before any count: a search that did not answer has not looked, and
+  // "Nothing in your records matches" is a claim only a search that looked may
+  // make. A part that did answer is still shown, with what it cannot promise.
+  if (input.failed) {
+    return input.found > 0
+      ? `${plural(input.found, 'record', 'records')} came back, but part of the search did not answer, so there may be more. Try again in a moment.`
+      : 'The search could not reach your records just now, so this is not an answer. Try again in a moment.';
+  }
 
   const blind = blindSpot(input.gaps);
   // `blindSpot` has always named a single record in the singular. This sentence
@@ -92,7 +118,7 @@ export function recordSearchLine(input: {
 
   if (input.found > 0) {
     const rest = input.screens > 0 ? ' The rest are screens.' : '';
-    return `${plural(input.found, 'record', 'records')} matched.${rest}${cannotSee}`;
+    return `${plural(input.found, 'record', 'records')} matched.${heldBackWords(input)}${rest}${cannotSee}`;
   }
   // "Nothing in your records matches" is a claim about her business. Only make
   // it when the box has actually looked at her business.
@@ -103,4 +129,26 @@ export function recordSearchLine(input: {
     return `Nothing the box can see matches “${typed}”.${cannotSee}${below}`;
   }
   return `Nothing in your records matches “${typed}”.${below}`;
+}
+
+/**
+ * The records that matched and were not sent.
+ *
+ * The count above is of the rows the box was HANDED, and both search backends
+ * cap what they hand over. So "12 records matched" was a true count of the
+ * rows on screen and a false one of the records that matched, with nothing to
+ * say the two differed. That is the case this sentence is for: it says how many
+ * more there are, and the button beside it fetches them.
+ * [[feedback_never_present_absence_as_measurement]]
+ */
+function heldBackWords(input: { more?: number | null; canShowMore?: boolean }): string {
+  const more = input.more ?? 0;
+  if (more <= 0) return '';
+  const said = more === 1 ? '1 more matches' : `${String(more)} more match`;
+  if (input.canShowMore) {
+    return more === 1 ? ` ${said} and is not shown yet.` : ` ${said} and are not shown yet.`;
+  }
+  // At the most either backend will send: the only way to reach the rest is
+  // fewer of them.
+  return ` ${said}. Add another word to narrow it down.`;
 }

@@ -10,6 +10,7 @@ import { Badge, Button, FieldStatus } from '@wizeworks/silicaui-react';
 import { CheckCircle, CreditCard, Info } from 'lucide-react';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
+import { StripeWaiting } from '../stripe-waiting';
 
 export function StepPayments({
   connected,
@@ -20,7 +21,7 @@ export function StepPayments({
   actions: OnboardingActions;
   onConnected: () => void;
 }) {
-  const { connect, connecting, error } = useStripeConnect(actions, onConnected);
+  const { connect, connecting, error, cancel } = useStripeConnect(actions, onConnected);
 
   return (
     <div className="flex max-w-xl flex-col gap-4">
@@ -68,12 +69,14 @@ export function StepPayments({
           <p className="text-sm">
             This is the account that{' '}
             <span className="font-medium">receives money from your customers</span>, separate from
-            your own sparx subscription. You can connect it now or come back to it later; checkout
-            simply stays off until you do.
+            your own sparx subscription. sparx Pay keeps a flat 0.5% of each payment; connect your
+            own card processor later under Payment providers and sparx takes nothing. You can
+            connect it now or come back to it later; checkout simply stays off until you do.
           </p>
         </div>
       </div>
 
+      {connecting ? <StripeWaiting onCancel={cancel} /> : null}
       {error ? <FieldStatus status="error">{error}</FieldStatus> : null}
     </div>
   );

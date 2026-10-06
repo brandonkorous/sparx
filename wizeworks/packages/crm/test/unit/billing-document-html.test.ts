@@ -60,6 +60,17 @@ describe('renderBillingDocumentHtml', () => {
     expect(html).toContain('$326.25'); // grand total / balance
   });
 
+  // A business on account matches every invoice to its own purchase order
+  // before it pays (sparx persona issue 077).
+  it("prints the buyer's PO number beside the document number, and nothing without one", () => {
+    const html = renderBillingDocumentHtml(baseData({ poNumber: 'WFUC-24-0817' }));
+    expect(html).toContain('<span>PO number</span><strong>WFUC-24-0817</strong>');
+    expect(renderBillingDocumentHtml(baseData())).not.toContain('PO number');
+    expect(renderBillingDocumentHtml(baseData({ poNumber: '<b>x</b>' }))).toContain(
+      '&lt;b&gt;x&lt;/b&gt;'
+    );
+  });
+
   it('shows the tax row with its rate and the balance due', () => {
     const html = renderBillingDocumentHtml(baseData());
     expect(html).toContain('Tax (8.75%)');

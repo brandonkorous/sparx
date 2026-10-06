@@ -21,6 +21,7 @@
 import { api } from '../../lib/api/client';
 import { documentNoun, isPriceOffer } from './document-words';
 import { isBlank, type DraftLine } from './totals';
+import { lineBody, lineChanged } from './line-body';
 import { normalizeDocument, type BillingDocument } from './types';
 import { dayMiddayUtc } from '../../lib/today';
 
@@ -37,6 +38,16 @@ export interface DocumentWorkflow {
 
 export interface InvoiceHeader {
   customerId: string | null;
+  /**
+   * The wholesale account billed, set when a customer is picked here: their
+   * account, or null for a retail customer (issue 077). Undefined means
+   * nobody picked one in this editor, and it is then left out of the save so
+   * the server's own rule (a person's account follows them onto the document)
+   * still applies.
+   */
+  companyId?: string | null;
+  /** The buyer's purchase order number as typed, or '' for none (issue 077). */
+  poNumber: string;
   billTo: { name: string; email: string; address: string };
   taxRate: number;
   notes: string;
@@ -76,53 +87,7 @@ export interface SaveInput {
 /** A problem the operator can fix, phrased for them rather than for a log. */
 export class InvoiceValidationError extends Error {}
 
-// A markup / pass-through line is priced by the server from cost + directive, so
-// its body sends those and NEVER a unitPrice (the server would ignore it, and
-// sending it invites the two to disagree). A manual line sends its typed price
-// and an optional cost basis. Both may carry a line type, a product link, a
-// discount, and a tax choice.
-function lineBody(line: DraftLine): Record<string, unknown> {
-  const common = {
-    ...(line.lineTypeId ? { lineTypeId: line.lineTypeId } : {}),
-    description: line.description.trim(),
-    quantity: line.quantity,
-    discountAmount: line.discountAmount,
-    taxable: line.taxable,
-    productId: line.productId ?? null,
-    variantId: line.variantId ?? null,
-  };
-
-  if (line.markup) {
-    return {
-      ...common,
-      ...(line.explicitCostCents != null ? { explicitCostCents: line.explicitCostCents } : {}),
-      markup: line.markup,
-    };
-  }
-
-  return {
-    ...common,
-    unitPrice: line.unitPrice,
-    ...(line.explicitCostCents != null ? { explicitCostCents: line.explicitCostCents } : {}),
-  };
-}
-
-function changed(line: DraftLine, previous: DraftLine): boolean {
-  return (
-    line.description !== previous.description ||
-    line.quantity !== previous.quantity ||
-    line.unitPrice !== previous.unitPrice ||
-    line.discountAmount !== previous.discountAmount ||
-    line.taxable !== previous.taxable ||
-    (line.lineTypeId ?? null) !== (previous.lineTypeId ?? null) ||
-    (line.productId ?? null) !== (previous.productId ?? null) ||
-    (line.variantId ?? null) !== (previous.variantId ?? null) ||
-    (line.explicitCostCents ?? null) !== (previous.explicitCostCents ?? null) ||
-    // A markup directive is a fresh object each edit; re-send whenever one is
-    // present (the server re-prices) rather than deep-comparing the union.
-    line.markup != null
-  );
-}
+export { lineMetadata } from './line-body';
 
 /** Drops rows the operator started and abandoned; rejects half-filled ones. */
 function usableLines(lines: DraftLine[]): DraftLine[] {
@@ -153,6 +118,9 @@ function headerBody(header: InvoiceHeader, priceOffer: boolean) {
   const instant = header.dueAt === '' ? null : dayMiddayUtc(header.dueAt);
   return {
     customerId: header.customerId,
+    ...(header.companyId !== undefined ? { companyId: header.companyId } : {}),
+    // Blank clears it; the server merges it into the document's metadata.
+    poNumber: header.poNumber.trim() === '' ? null : header.poNumber.trim(),
     currency: header.currency,
     taxRate: header.taxRate,
     billTo: header.billTo,
@@ -204,12 +172,8 @@ export async function saveInvoice(input: SaveInput): Promise<BillingDocument> {
   return api.get<BillingDocument>(`/v1/invoicing/documents/${documentId}`).then(normalizeDocument);
 }
 
-/**
- * Line writes are sequential, not parallel. Each one makes the server recompute
- * the document's totals, and firing them concurrently means several
- * recomputations racing over the same row — the last writer wins and the totals
- * can settle on a stale set of lines.
- */
+/** Line writes are sequential: each makes the server recompute the document's
+ *  totals, and concurrent ones race, leaving totals from a stale set of lines. */
 async function reconcileLines(
   documentId: string,
   lines: DraftLine[],
@@ -231,24 +195,14 @@ async function reconcileLines(
     const previous = original.find((candidate) => candidate.id === line.id);
     // An untouched line is skipped entirely — resending it would burn a write
     // and a totals recomputation to arrive back where it started.
-    if (previous && !changed(line, previous)) continue;
+    if (previous && !lineChanged(line, previous)) continue;
     await api.patch(`/v1/invoicing/documents/${documentId}/lines/${line.id}`, lineBody(line));
   }
 }
 
-/**
- * The workflows a new document can be created in.
- *
- * A tenant typically has several — Invoice, Service / Repair, Retail quote →
- * invoice, B2B Quotes — and they are NOT interchangeable: the workflow decides
- * the stages the document moves through and whether its first stage mints an
- * INV- number. Picking one silently (say, whichever the API lists first) means a
- * tenant whose list happens to start with "B2B Quotes" gets a quote every time
- * they click New invoice, with nothing on screen explaining why.
- *
- * So this returns all of them and the editor asks. The default is the first,
- * which is only ever a starting point, never the whole answer.
- */
+/** Every workflow a new document can be made in. They are not interchangeable
+ *  (each decides the stages and whether an INV- number is minted), so the editor
+ *  asks rather than silently taking the first. */
 export async function listDocumentWorkflows(): Promise<DocumentWorkflow[]> {
   const workflows = await api.get<DocumentWorkflow[]>('/v1/invoicing/workflows', { take: 50 });
   return workflows.filter((workflow) => !workflow.archivedAt);

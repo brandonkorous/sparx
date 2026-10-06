@@ -9,7 +9,12 @@
 
 import crypto from 'node:crypto';
 
-import { CreateFulfillmentInput, UpdateFulfillmentInput } from '@wizeworks/crm-schemas';
+import {
+  CreateFulfillmentInput,
+  lineShipRefusal,
+  orderShipRefusal,
+  UpdateFulfillmentInput,
+} from '@wizeworks/crm-schemas';
 import { afterCommit, withTenant } from '@wizeworks/db';
 import type { OrderFulfillment, Prisma, TxClient } from '@wizeworks/db';
 
@@ -17,6 +22,7 @@ import { writeAuditLog } from '../audit';
 import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { closeWhenOrderMovesOn } from './task-service';
 
 /**
  * Who the order belongs to, and what it is called.
@@ -105,21 +111,20 @@ export async function createFulfillment(
       include: { items: true },
     });
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
-    if (order.status === 'cancelled' || order.status === 'refunded') {
-      throw new CrmValidationError(`Cannot fulfill an order in status "${order.status}"`);
-    }
+    // The one gate every way out passes through (persona issues 057, 058): a held
+    // B2B order waits for approval, and a send-the-old-part-first line waits for the
+    // old part. Every other path (pick list, box, pack-and-ship, handover, label)
+    // ends here, so this is the refusal that cannot be walked around.
+    const held = orderShipRefusal(order);
+    if (held) throw new CrmValidationError(held);
     buyer.identity = { customerId: order.customerId, orderNumber: order.orderNumber };
 
     const itemsById = new Map(order.items.map((i) => [i.id, i]));
     for (const line of input.lines) {
       const orderItem = itemsById.get(line.orderItemId);
       if (!orderItem) throw new CrmNotFoundError('OrderItem', line.orderItemId);
-      const remaining = orderItem.quantity - orderItem.quantityFulfilled;
-      if (line.quantity > remaining) {
-        throw new CrmValidationError(
-          `Fulfill quantity ${line.quantity} exceeds remaining ${remaining} on item ${orderItem.sku}`
-        );
-      }
+      const refusal = lineShipRefusal(orderItem, line.quantity);
+      if (refusal) throw new CrmValidationError(refusal);
     }
 
     const { shippedAt, deliveredAt } = fulfillmentClocks(input.status, input.shippedAt);
@@ -342,10 +347,23 @@ async function promoteOrderOnFulfillment(
         ...(order.fulfilledAt ? {} : { fulfilledAt: new Date() }),
       },
     });
+    // A task waiting on the order to leave the status it was in is done.
+    await closeWhenOrderMovesOn(tx, order, {
+      orderId,
+      left: order.status,
+      as: 'completed',
+      because: `Order ${order.orderNumber} was delivered.`,
+    });
   } else if (allFulfilled && order.status === 'placed') {
     await tx.order.update({
       where: { id: orderId },
       data: { status: 'fulfilled', fulfilledAt: new Date() },
+    });
+    await closeWhenOrderMovesOn(tx, order, {
+      orderId,
+      left: order.status,
+      as: 'completed',
+      because: `Everything on order ${order.orderNumber} has gone out.`,
     });
   }
 }

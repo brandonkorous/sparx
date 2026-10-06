@@ -30,6 +30,7 @@
 // a quiet row at the end of the Details form.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useViewParam } from '../../lib/workbench/view-param';
 import {
   Alert,
   AlertContent,
@@ -71,6 +72,7 @@ import { useAccounts } from './companies-data';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { useMediaAssets, useUploadMedia } from '../commerce/products-data';
 import { CustomerAddressesSection } from './customer-addresses';
+import { TaxExemptionsSection } from '../commerce/tax-exemptions-section';
 import { CustomerBookingsTab } from './customer-bookings';
 import { CustomerDocumentsTab } from './customer-documents-tab';
 import { CustomerOverviewTab } from './customer-overview';
@@ -175,13 +177,16 @@ interface Draft {
  *
  * Everything here is a STARTING POINT and stays editable; nothing is locked.
  */
-function emptyDraft(seed: { name?: string; companyId?: string } = {}): Draft {
+function emptyDraft(seed: { name?: string; companyId?: string; companyName?: string } = {}): Draft {
   const { firstName, lastName } = splitTypedName(seed.name ?? '');
 
   return {
     firstName,
     lastName,
-    company: '',
+    // Started from a trade account, the business they work for is that
+    // account: an empty Company box beside a chosen account read as a form
+    // that had not noticed (sparx persona issue 079).
+    company: seed.companyName ?? '',
     jobTitle: '',
     // Filed under a business, so they buy as one. The relationship picker is
     // right there if that is wrong.
@@ -284,6 +289,9 @@ function CustomerEditor({
 
   const seedName = typeof ctx.params.name === 'string' ? ctx.params.name : undefined;
   const seedCompanyId = typeof ctx.params.companyId === 'string' ? ctx.params.companyId : undefined;
+  const seedCompanyName = seedCompanyId
+    ? accounts?.items.find((account) => account.id === seedCompanyId)?.companyName
+    : undefined;
   const saved = useMemo(
     () =>
       customer
@@ -291,8 +299,9 @@ function CustomerEditor({
         : emptyDraft({
             ...(seedName ? { name: seedName } : {}),
             ...(seedCompanyId ? { companyId: seedCompanyId } : {}),
+            ...(seedCompanyName ? { companyName: seedCompanyName } : {}),
           }),
-    [customer, seedName, seedCompanyId]
+    [customer, seedName, seedCompanyId, seedCompanyName]
   );
   const [draft, setDraft] = useState<Draft>(saved);
   const [touched, setTouched] = useState(false);
@@ -300,7 +309,13 @@ function CustomerEditor({
     if (!touched) setDraft(saved);
   }, [saved, touched]);
 
-  const [tab, setTab] = useState('overview');
+  // In the pane's address (issue 374): a reload or a link keeps the tab.
+  const [tab, setTab] = useViewParam(
+    ctx,
+    'tab',
+    TABS.map((entry) => entry.value),
+    'overview'
+  );
   // Lazy-then-keep: a tab's data only loads once you open it (so a pane doesn't
   // fire six queries at once), and stays mounted after — read-only tabs cost
   // nothing to keep, and the Details draft lives in this shell, not the panel,
@@ -464,6 +479,9 @@ function CustomerEditor({
     (m) => m.slug === 'scheduling' && m.enabled && m.reachable !== false
   );
   const tabs = TABS.filter((entry) => entry.value !== 'bookings' || bookingsEnabled);
+  // A link to Bookings at a business without them lands on Overview, not on an
+  // empty panel under a strip that has no Bookings pill.
+  const shownTab = tabs.some((entry) => entry.value === tab) ? tab : 'overview';
   const kindTypes = RELATIONSHIP_TYPES.filter(
     (t) => t !== 'b2b' || b2bEnabled || draft.type === 'b2b'
   );
@@ -748,6 +766,30 @@ function CustomerEditor({
           section only appears once the customer exists. */}
       {!isNew && customer ? <CustomerAddressesSection customerId={customer.id} /> : null}
 
+      {/* A certificate that stops sales tax at checkout. Its own records and its
+          own writes, like Addresses. It also says when their wholesale account
+          already holds one that covers them (issue 075). */}
+      {!isNew && customer ? (
+        <TaxExemptionsSection
+          customerId={customer.id}
+          name={customerName(customer)}
+          {...(b2bEnabled
+            ? {
+                onOpenAccount: (
+                  accountId: string,
+                  event: { shiftKey: boolean; altKey: boolean }
+                ) => {
+                  ctx.open(
+                    'b2b.account.detail',
+                    { id: accountId },
+                    { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+                  );
+                },
+              }
+            : {})}
+        />
+      ) : null}
+
       {/* Who else this person is connected to (docs/144 §6) — the company they
           work at, the deals they are involved in, who introduced them. Writes
           immediately, so it is only offered once the person exists. */}
@@ -917,7 +959,7 @@ function CustomerEditor({
               <Tabs
                 variant="pills"
                 color="module"
-                value={tab}
+                value={shownTab}
                 onValueChange={(next) => {
                   setTab(next as string);
                 }}
@@ -943,7 +985,7 @@ function CustomerEditor({
                           <>
                             <span
                               className={
-                                entry.value === tab
+                                entry.value === shownTab
                                   ? 'bg-module-content size-1.5 shrink-0 rounded-full'
                                   : 'bg-module size-1.5 shrink-0 rounded-full'
                               }

@@ -38,6 +38,7 @@ import {
 } from '../../../lib/public-commerce-context.js';
 import { resolveOrderAttribution } from '../../../lib/attribution.js';
 import { reconcileCompletedCheckoutPayment } from '../../../lib/payment-webhook-reconcile.js';
+import { optionalCustomer } from '../../../lib/customer-session.js';
 
 const SessionParam = z.object({ sessionId: z.string().uuid() });
 
@@ -268,10 +269,17 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     const body = IntentBody.parse(request.body ?? {});
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertSessionOwner(request, ctx, tenantId, sessionId);
+    // Who is signed in, for a basket with a repeat delivery in it (issue 739):
+    // the card this payment keeps is charged again later, so it has to belong to
+    // an account the shopper can manage it from. Only a first-party session
+    // counts. A connected assistant's token must never sign anybody up to a
+    // repeating charge.
+    const shopper = await optionalCustomer(request, { tenantId });
     const intent = await checkoutService.createPaymentIntent(ctx, {
       sessionId,
       ...(body.returnUrl ? { returnUrl: body.returnUrl } : {}),
       ...(body.cancelUrl ? { cancelUrl: body.cancelUrl } : {}),
+      signedInCustomerId: shopper?.scopes === null ? shopper.customerId : null,
     });
     return ok({
       paymentRef: intent.paymentRef,
@@ -284,6 +292,9 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       amountCents: intent.amountCents,
       currency: intent.currency,
       status: intent.status,
+      // Held, not charged: the order waits for sign-off and is charged when it is
+      // approved. The card step says so instead of "Pay" (sparx persona issue 087).
+      cardHeld: intent.cardHeld,
     });
   });
 

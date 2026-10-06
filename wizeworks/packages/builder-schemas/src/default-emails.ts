@@ -126,8 +126,9 @@ const unsubscribeLink = (): BuilderNode => node('unsubscribe_link');
 const physicalAddress = (): BuilderNode => node('physical_address');
 
 /** The marketing compliance footer — divider, unsubscribe, physical address. The
- *  three marketing templates (win-back, abandoned-cart, post-purchase-review)
- *  carry it so they pass the gate by construction. */
+ *  five marketing templates (welcome-customer, win-back, abandoned-cart,
+ *  post-purchase-review, chat-satisfaction) carry it so they pass the gate by
+ *  construction. */
 const complianceFooter = (): BuilderNode[] => [
   node('Divider'),
   unsubscribeLink(),
@@ -143,6 +144,7 @@ const welcomeCustomer = (): BuilderNode =>
       'Hi {{customer.firstName ?? "there"}}: thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.'
     ),
     button('Start shopping', '{{site.url}}'),
+    ...complianceFooter(),
   ]);
 
 const winBack = (): BuilderNode =>
@@ -279,6 +281,7 @@ const chatSatisfaction = (): BuilderNode =>
       'Thanks for chatting with {{site.name}}, {{customer.firstName ?? "there"}}. We’d love a quick word on how the conversation went.'
     ),
     button('Rate your chat', '{{site.url}}'),
+    ...complianceFooter(),
   ]);
 
 // ── Commerce + scheduling trees (docs/93 — folded in from coded templates) ───
@@ -513,9 +516,20 @@ const b2bOrderRejected = (): BuilderNode =>
   body([
     heading('Your order wasn’t approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} wasn’t approved, so it hasn’t been placed. Reach out to your account manager with any questions.'
+      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} wasn’t approved, so it hasn’t been placed.'
     ),
+    // Who said no and why, each only when there is one (sparx persona issue 087).
+    conditional('approval.decidedBy', [para('Turned down by {{approval.decidedBy}}.')]),
+    conditional('approval.reason', [para('Why: {{approval.reason}}')]),
     button('View your order', '{{order.statusUrl}}'),
+    conditional('approval.byAccount', [
+      para(
+        'Someone who approves orders at your company turned this one down. If you still need these items, talk it over with them, then place the order again.'
+      ),
+    ]),
+    conditional('approval.byBusiness', [
+      para('Have a question about this decision? Reach out to your account manager any time.'),
+    ]),
   ]);
 
 // ── Scheduling-module booking trees (docs/79 §10) ────────────────────────────
@@ -652,7 +666,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   {
     key: 'welcome-customer',
     name: 'Welcome',
-    type: 'transactional',
+    // Marketing (Brandon, 2026-10-03): a welcome is not something the customer
+    // needs because of something they did, and most new contacts are typed in by
+    // the business. Matches the `Welcome new customers` automation's emailType.
+    type: 'marketing',
     category: 'welcome',
     subject: 'Welcome to {{site.name}}',
     preheader: 'Thanks for joining: here’s what’s next.',
@@ -801,7 +818,9 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   {
     key: 'chat-satisfaction',
     name: 'Chat satisfaction',
-    type: 'transactional',
+    // Marketing (Brandon, 2026-10-03): a survey asks the customer for something.
+    // Matches the `Chat satisfaction survey` automation's emailType.
+    type: 'marketing',
     category: 'survey',
     subject: 'How was your experience?',
     preheader: 'Tell us how we did.',
@@ -836,8 +855,12 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     name: 'Order delivered',
     type: 'transactional',
     category: 'order',
-    subject: 'Your order {{order.number}} was delivered',
-    preheader: 'It’s arrived. We hope you love it.',
+    // Neutral on purpose: this one email goes out for a parcel that arrived AND for
+    // an order somebody collected at the counter, and "was delivered" told the
+    // second customer something that had not happened (issue 064). The body says
+    // which, from `order.delivery` / `order.pickup`.
+    subject: 'Your order {{order.number}} is in your hands',
+    preheader: 'We hope it’s everything you expected.',
     sources: ['customer', 'order', 'tenant'],
     refs: ['customerId', 'orderId'],
     tree: orderDelivered(),
@@ -1052,7 +1075,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     category: 'notification',
     subject: 'About your order {{order.number}}',
     preheader: 'Your order wasn’t approved.',
-    sources: ['customer', 'order', 'tenant'],
+    sources: ['customer', 'order', 'approval', 'tenant'],
     refs: ['customerId', 'orderId'],
     tree: b2bOrderRejected(),
   },

@@ -73,9 +73,10 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     kind: 'account',
   },
   'b2bAccount.pricingTier': {
-    label: 'Wholesale price',
+    label: 'Wholesale group',
     group: 'Wholesale customer',
     kind: 'text',
+    hint: 'The name of the group, as it reads under Wholesale groups.',
   },
   'b2bAccount.creditUtilization': {
     label: 'Credit used (share)',

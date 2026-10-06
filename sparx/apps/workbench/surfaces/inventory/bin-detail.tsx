@@ -21,6 +21,8 @@
 // location total, so the numbers still add up and nobody can find the difference.
 
 import { useEffect, useState } from 'react';
+import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
   Button,
@@ -245,6 +247,32 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const rows = contents.data ?? [];
+
+  // A shelf that is not there (removed, or another business's id) says so,
+  // rather than opening as a blank one that would save as something new
+  // (persona issue 226).
+  if (!isNew && bin.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={bin.error}
+          noun="shelf"
+          title="Could not load this shelf"
+          description="This is a problem reaching the server. The shelf itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void bin.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+  if (!isNew && bin.isPending) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneWaiting />
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>

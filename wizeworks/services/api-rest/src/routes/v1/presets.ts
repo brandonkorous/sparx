@@ -15,7 +15,12 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
 import type { ModulePresetKind, ModuleSlug } from '@wizeworks/auth';
 
-import { installPreset, listInstallablePresets } from '../../lib/preset-registry.js';
+import {
+  installPreset,
+  listInstallablePresets,
+  presetRegistry,
+} from '../../lib/preset-registry.js';
+import { publishSiteUpdated } from '../../lib/site-events.js';
 
 const ListQuery = z.object({
   module: z.string().min(1).max(32).optional(),
@@ -58,6 +63,16 @@ const presetRoutes: FastifyPluginAsync = async (app) => {
       module as ModuleSlug,
       slug
     );
+    // A payments preset selects the tenant's gateway, which decides whether the
+    // website takes card payments at all. The site reads that out of its cached
+    // business payload, so it is announced like any other payment switch
+    // (lib/payments-onboarding.ts).
+    if (presetRegistry.get(module as ModuleSlug, slug)?.kind === 'payments') {
+      await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+        propertyId: null,
+        changed: ['payments'],
+      });
+    }
     reply.code(201);
     return ok(created);
   });

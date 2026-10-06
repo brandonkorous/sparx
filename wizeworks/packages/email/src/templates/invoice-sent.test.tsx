@@ -53,6 +53,11 @@ describe('the invoice email', () => {
     expect(text).toContain('Due on receipt');
   });
 
+  it("prints the buyer's PO number, and nothing when there is none (issue 077)", async () => {
+    expect((await render({ poNumber: 'WFUC-24-0817' })).text).toContain('PO number: WFUC-24-0817');
+    expect((await render({ poNumber: null })).text).not.toContain('PO number');
+  });
+
   it('prints the note the business wrote, and nothing when there is none', async () => {
     expect((await render()).text).toContain('August standing order');
     expect((await render({ note: null })).text).not.toContain('August standing order');
@@ -60,7 +65,12 @@ describe('the invoice email', () => {
 
   it('points replies at the business rather than at us', async () => {
     const { text } = await render();
-    expect(text).toContain('goes straight to Rosa Flowers');
+    expect(text).toContain('Rosa Flowers reads every reply to this email.');
+  });
+
+  it('prints one full stop after a business name that ends in one', async () => {
+    const { text } = await render({ fromName: 'Gillett Diesel Service Inc.' });
+    expect(text).not.toContain('Inc..');
   });
 
   it('carries no platform masthead — the reader never bought anything from us', async () => {
@@ -122,7 +132,7 @@ describe('the invoice email', () => {
   it('never asks a quote to be paid, and never gives it a deadline', async () => {
     const { subject, text } = await render(OFFER);
     expect(subject).toBe('Quote Q-000017 from Juniper Row Textiles LLC');
-    expect(text).toContain('here is quote Q-000017');
+    expect(text).toContain('sent you quote Q-000017');
     expect(text).toContain('Nothing is owed on it. It is a price, not a bill.');
     expect(text).not.toContain('due');
     expect(text).not.toContain('Due');
@@ -141,5 +151,26 @@ describe('the invoice email', () => {
     expect(subject).toBe('Invoice INV-000148 from Rosa Flowers');
     expect(text).toContain('It is due by September 4, 2026.');
     expect(text).toContain('Still owed');
+  });
+});
+
+// Sparx persona issue 085: the /b2b page promises the buyer "a branded quote
+// PDF". A trade buyer gets a button to their own copy on their account page, to
+// print or save as a PDF; a customer with no account page gets the body alone.
+describe("the button to the buyer's own copy", () => {
+  it('links a trade buyer to their copy, named by its number', async () => {
+    const { html, text } = await render({
+      documentNumber: 'INV-000148',
+      viewUrl: 'https://rosasflowers.com/account/b2b/acct-1/documents/doc-1',
+    });
+    expect(html).toContain('href="https://rosasflowers.com/account/b2b/acct-1/documents/doc-1"');
+    expect(text).toContain('Open invoice INV-000148');
+    expect(text).toContain('save it as a PDF');
+  });
+
+  it('offers no button when there is no page to open it on', async () => {
+    const { text } = await render({ viewUrl: null });
+    expect(text).not.toContain('Open invoice');
+    expect(text).not.toContain('save it as a PDF');
   });
 });

@@ -4,8 +4,10 @@
 // name: what kind of thing it is, and whether it is in use.
 
 import { Badge } from '@wizeworks/silicaui-react';
+import { Icon } from '@piggles/ui';
 
 import { Table } from '../../components/table';
+import { resourceKindIcon } from './resource-kind-icon';
 import { resourceKindLabel, resourceState, type SchedulingResource } from './setup-data';
 
 /** The capacity note that makes sense for this KIND — a pooled resource holds
@@ -43,11 +45,14 @@ function ResourceRow({ resource, onOpen }: { resource: SchedulingResource; onOpe
       }}
     >
       <td className="w-full max-w-0 min-w-56">
-        <span className="flex min-w-0 flex-col">
-          <span className="truncate font-medium">{resource.name}</span>
-          <span className="truncate text-sm @lg:hidden">
-            {resourceKindLabel(resource.kind)}
-            {holds ? ` · ${holds}` : ''}
+        <span className="flex min-w-0 items-center gap-2">
+          <Icon glyph={resourceKindIcon(resource.kind)} className="size-4 shrink-0" aria-hidden />
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate font-medium">{resource.name}</span>
+            <span className="truncate text-sm @lg:hidden">
+              {resourceKindLabel(resource.kind)}
+              {holds ? ` · ${holds}` : ''}
+            </span>
           </span>
         </span>
       </td>

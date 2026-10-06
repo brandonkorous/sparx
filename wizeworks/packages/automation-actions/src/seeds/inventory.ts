@@ -12,6 +12,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
  *  reorder point. Seeded `paused` — opt-in (the tenant enables it). The
  *  `inventory.draft_reorder_po` action is module-gated to inventory. */
 export const INVENTORY_AUTO_REORDER: SystemAutomationSpec = {
+  key: 'inventory.auto-reorder',
   name: 'Auto-reorder low stock',
   description:
     'Drafts a purchase order to the preferred supplier when a product variant drops to its reorder point. Review and submit the draft from Purchase orders. Off by default. Turn it on to automate replenishment.',

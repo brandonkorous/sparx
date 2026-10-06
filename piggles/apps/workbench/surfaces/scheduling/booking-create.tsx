@@ -17,9 +17,9 @@ import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingCreateFields, type BookingDraft } from './booking-create-fields';
 import { COLUMN } from './booking-shell';
+import { instantFromWall, wallProblem, type WallClockBox } from '../../lib/wall-clock';
+import { useBookingZone } from './booking-zone';
 import {
-  fromLocalInputValue,
-  localTimezone,
   schedulingErrorMessage,
   useCreateBooking,
   useSchedulingResources,
@@ -53,7 +53,17 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
   const resourceList = resources.data ?? [];
   const noServices = services.isSuccess && serviceList.length === 0;
 
-  const startIso = fromLocalInputValue(startLocal);
+  // The box is typed on the clock the booking will be made on: the service's
+  // place, else the business's (sparx persona issue 086). It used to be this
+  // computer's, so an owner away from the shop booked hours out without a word.
+  const chosenService = serviceList.find((s) => s.id === serviceId) ?? null;
+  const clock = useBookingZone(chosenService?.locationId);
+  const startIso = clock.zone ? instantFromWall(startLocal, clock.zone) : null;
+  const startClock: WallClockBox = {
+    zone: clock.zone,
+    hint: clock.hint,
+    problem: clock.zone ? wallProblem(startLocal, clock.zone) : null,
+  };
   const changed =
     serviceId !== '' ||
     startLocal !== '' ||
@@ -83,13 +93,14 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
     : null;
 
   const submit = () => {
-    if (!canSave || !startIso) return;
+    if (!canSave || !startIso || !clock.zone) return;
     const size = Number.parseInt(partySize, 10);
     create.mutate(
       {
         serviceId,
         startAt: startIso,
-        timezone: localTimezone(),
+        // The zone the box was read in, so the record says the time that was typed.
+        timezone: clock.zone,
         ...(customer ? { customerId: customer.id } : {}),
         // One attendee carrying the written name. Only when there is no account
         // to link: with a customer attached the engine builds the attendee from
@@ -121,6 +132,7 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
     setServiceId,
     startLocal,
     setStartLocal,
+    startClock,
     customer,
     setCustomer,
     guestName,

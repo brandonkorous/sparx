@@ -218,11 +218,12 @@ export function StepDomain({
       <div className="border-base-300 rounded-xl border border-dashed px-4 py-3.5">
         <p className="font-medium">Happy on the free address?</p>
         <p className="text-sm">
-          Your site is live at{' '}
+          Your site replaces the simple starter page at{' '}
           <span className="font-medium">
             {slug}.{SITE_ZONE}
-          </span>
-          . Just hit Continue. You can add a domain anytime from Settings.
+          </span>{' '}
+          when you launch. Just press Continue. Already own a domain, or want one later? Buy or
+          connect it anytime from Domains, under Your business.
         </p>
       </div>
     </div>

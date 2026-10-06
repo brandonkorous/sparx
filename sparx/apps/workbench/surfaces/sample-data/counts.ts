@@ -17,6 +17,9 @@ export const COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string
   { key: 'customers', label: 'Customers' },
   { key: 'billingDocuments', label: 'Invoices & quotes' },
   { key: 'bookings', label: 'Bookings' },
+  // Remove takes these too, and the tiles never said so (persona issue 085).
+  { key: 'services', label: 'Services' },
+  { key: 'resources', label: 'People and equipment' },
   { key: 'deals', label: 'Sales leads' },
   { key: 'tickets', label: 'Support requests' },
   { key: 'articles', label: 'Articles' },

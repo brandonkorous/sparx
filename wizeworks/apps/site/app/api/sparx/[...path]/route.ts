@@ -11,6 +11,12 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 
+import {
+  isGatewayStatus,
+  RETRY_AFTER_SECONDS,
+  unreachableEnvelope,
+} from '../../../../lib/shop-reach';
+
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
 // Request headers we forward upstream (hop-by-hop + host headers are dropped).
@@ -51,24 +57,62 @@ async function forward(request: NextRequest, path: string[]): Promise<NextRespon
   // ArrayBuffer round-trips both JSON and binary faithfully.
   const body = hasBody ? await request.arrayBuffer() : undefined;
 
-  const upstream = await fetch(target, {
-    method,
-    headers,
-    ...(body && body.byteLength > 0 ? { body } : {}),
-    redirect: 'manual',
-    cache: 'no-store',
-  });
+  // api-rest restarting, mid rolling deploy, or briefly unreachable makes this
+  // fetch THROW. Left uncaught, Next answered a bare 500 with no body, and the
+  // site read that as "nobody is signed in" and sent a trade buyer with a valid
+  // session to the sign-in page (sparx persona issue 086). The request never got
+  // an answer, so the proxy says exactly that: 503, try again, in the envelope
+  // every client already reads.
+  let upstream: Response;
+  let payload: ArrayBuffer;
+  try {
+    upstream = await fetch(target, {
+      method,
+      headers,
+      ...(body && body.byteLength > 0 ? { body } : {}),
+      redirect: 'manual',
+      cache: 'no-store',
+    });
+    payload = await upstream.arrayBuffer();
+  } catch (err) {
+    console.warn(
+      `[api/sparx] could not reach api-rest for ${method} /${path.join('/')}: ${(err as Error).message}`
+    );
+    return unreachable();
+  }
+
+  // A load balancer or ingress in front of api-rest answers its own HTML error
+  // page when nothing behind it is up. That is the same "no answer", so it gets
+  // the same reply. api-rest's OWN 503 is JSON and carries its own words, so it
+  // is relayed as written.
+  const contentType = upstream.headers.get('content-type');
+  if (isGatewayStatus(upstream.status) && !contentType?.includes('json')) {
+    console.warn(
+      `[api/sparx] api-rest gateway answered ${upstream.status} for ${method} /${path.join('/')}`
+    );
+    return unreachable();
+  }
 
   // Relay the response, preserving Set-Cookie so login/cart cookies reach the
   // browser as first-party cookies on the storefront origin.
   const resHeaders = new Headers();
-  const contentType = upstream.headers.get('content-type');
   if (contentType) resHeaders.set('content-type', contentType);
   const setCookie = upstream.headers.get('set-cookie');
   if (setCookie) resHeaders.set('set-cookie', setCookie);
 
-  const payload = await upstream.arrayBuffer();
   return new NextResponse(payload, { status: upstream.status, headers: resHeaders });
+}
+
+/** "Could not reach the shop, try again": 503 with the shared envelope, whose
+ *  `SHOP_UNREACHABLE` code is how a client tells a blip from a real refusal. */
+function unreachable(): NextResponse {
+  return NextResponse.json(unreachableEnvelope(), {
+    status: 503,
+    headers: {
+      'retry-after': String(RETRY_AFTER_SECONDS),
+      'cache-control': 'no-store',
+    },
+  });
 }
 
 interface Ctx {

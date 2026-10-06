@@ -35,6 +35,7 @@ import {
   Field,
   FieldControl,
   FieldDescription,
+  FieldError,
   FieldLabel,
   Input,
   NativeSelect,
@@ -52,12 +53,12 @@ import { PaneScope } from '../../lib/dock/window-boundary';
 import { afterPaneChange } from '../../lib/defer';
 import { CustomerPicker } from './bookings-customer-picker';
 import { SaveFailure } from '@/components/save-failure';
+import { instantFromWall, wallProblem, wallValue } from '../../lib/wall-clock';
+import { useServiceZone } from './booking-zone';
 import {
   formatDay,
   formatWhen,
-  fromLocalInputValue,
   schedulingErrorMessage,
-  toLocalInputValue,
   useAcceptWaitlist,
   useCreateWaitlistEntry,
   useOfferWaitlist,
@@ -339,7 +340,12 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
   const meta = waitlistStateMeta(entry.status);
   const active = entry.status === 'waiting' || entry.status === 'offered';
 
-  const startIso = fromLocalInputValue(startLocal);
+  // Their window, and the time they are booked in at, on the clock of the place
+  // the service happens at (sparx persona issue 086). Never this computer's.
+  const clock = useServiceZone(entry.serviceId);
+  const zone = clock.zone;
+  const startIso = zone ? instantFromWall(startLocal, zone) : null;
+  const startProblem = zone ? wallProblem(startLocal, zone) : null;
   const withinWindow =
     startIso !== null && startIso >= entry.desiredFrom && startIso <= entry.desiredTo;
 
@@ -429,13 +435,15 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
         </td>
         <td className="hidden align-top @xl:table-cell">{entry.serviceName ?? 'A service'}</td>
         <td className="hidden align-top text-sm @2xl:table-cell">
-          <div>{formatWhen(entry.desiredFrom)}</div>
-          <div>to {formatWhen(entry.desiredTo)}</div>
+          <div>{formatWhen(entry.desiredFrom, zone)}</div>
+          <div>to {formatWhen(entry.desiredTo, zone)}</div>
           {entry.status === 'offered' && entry.offerExpiresAt ? (
-            <div>Offer open until {formatWhen(entry.offerExpiresAt)}</div>
+            <div>Offer open until {formatWhen(entry.offerExpiresAt, zone)}</div>
           ) : null}
         </td>
-        <td className="hidden align-top text-sm @4xl:table-cell">{formatDay(entry.createdAt)}</td>
+        <td className="hidden align-top text-sm @4xl:table-cell">
+          {formatDay(entry.createdAt, zone)}
+        </td>
         <td className="align-top">
           <Badge color={meta.tone} variant="soft" size="sm">
             {meta.label}
@@ -463,7 +471,9 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
                   size="sm"
                   color="module"
                   onClick={() => {
-                    setStartLocal((current) => current || toLocalInputValue(entry.desiredFrom));
+                    setStartLocal(
+                      (current) => current || (zone ? wallValue(entry.desiredFrom, zone) : '')
+                    );
                     setBooking((open) => !open);
                   }}
                 >
@@ -500,27 +510,32 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
                 </Alert>
               ) : null}
               <div className="flex flex-wrap items-end gap-3">
-                <Field className="min-w-0">
+                <Field className="min-w-0" invalid={startProblem !== null}>
                   <FieldLabel>Book {entry.customerName} in at</FieldLabel>
                   <FieldControl
                     render={
                       <Input
-                        color="module"
+                        color={startProblem ? 'error' : 'module'}
                         type="datetime-local"
                         className="max-w-xs"
-                        min={toLocalInputValue(entry.desiredFrom)}
-                        max={toLocalInputValue(entry.desiredTo)}
+                        min={zone ? wallValue(entry.desiredFrom, zone) : undefined}
+                        max={zone ? wallValue(entry.desiredTo, zone) : undefined}
                         value={startLocal}
+                        disabled={zone === undefined}
                         onChange={(event) => {
                           setStartLocal(event.target.value);
                         }}
                       />
                     }
                   />
-                  <FieldDescription>
-                    A time inside the window they asked for. The booking is checked for a clash
-                    before it takes.
-                  </FieldDescription>
+                  {startProblem ? (
+                    <FieldError match>{startProblem}</FieldError>
+                  ) : (
+                    <FieldDescription>
+                      A time inside the window they asked for. {clock.hint} The booking is checked
+                      for a clash before it takes.
+                    </FieldDescription>
+                  )}
                 </Field>
                 <div className="flex items-center gap-2">
                   <Button
@@ -592,8 +607,14 @@ function AddToWaitlistModal({
     setToLocal('');
   }, [open, defaultServiceId]);
 
-  const fromIso = fromLocalInputValue(fromLocal);
-  const toIso = fromLocalInputValue(toLocal);
+  // The window is typed on the clock of the place the chosen service happens at
+  // (sparx persona issue 086), so it means the same hours to the business.
+  const clock = useServiceZone(serviceId || null);
+  const fromIso = clock.zone ? instantFromWall(fromLocal, clock.zone) : null;
+  const toIso = clock.zone ? instantFromWall(toLocal, clock.zone) : null;
+  const windowProblem = clock.zone
+    ? (wallProblem(fromLocal, clock.zone) ?? wallProblem(toLocal, clock.zone))
+    : null;
   const windowOk = fromIso !== null && toIso !== null && fromIso < toIso;
   const canSave = serviceId !== '' && customer !== null && windowOk && !create.isPending;
 
@@ -689,6 +710,7 @@ function AddToWaitlistModal({
                   color="module"
                   type="datetime-local"
                   value={fromLocal}
+                  disabled={clock.zone === undefined}
                   onChange={(event) => {
                     setFromLocal(event.target.value);
                   }}
@@ -700,18 +722,23 @@ function AddToWaitlistModal({
                   color="module"
                   type="datetime-local"
                   value={toLocal}
+                  disabled={clock.zone === undefined}
                   onChange={(event) => {
                     setToLocal(event.target.value);
                   }}
                 />
               </Field>
             </div>
-            {fromIso !== null && toIso !== null && !windowOk ? (
+            {windowProblem ? (
+              <Text className="text-error text-sm" role="alert">
+                {windowProblem}
+              </Text>
+            ) : fromIso !== null && toIso !== null && !windowOk ? (
               <Text className="text-sm">The latest time needs to be after the earliest.</Text>
             ) : (
               <Text className="text-sm">
                 The window they would accept a slot in. They are offered anything that frees up
-                between these two times.
+                between these two times. {clock.hint}
               </Text>
             )}
           </form>

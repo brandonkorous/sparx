@@ -175,12 +175,15 @@ export type BulkTagCustomersInput = z.infer<typeof BulkTagCustomersInput>;
 export const CreateCustomerAddressInput = z.object({
   customerId: Uuid,
   type: z.enum(['shipping', 'billing', 'both']),
-  label: z.string().max(120).optional(),
+  // `.nullish()`: on an edit, null is how a cleared box takes a value off.
+  // Omitted means "leave it", so "Suite 200" emptied and saved stayed on the
+  // address (sparx persona issue 073).
+  label: z.string().max(120).nullish(),
   isDefault: z.boolean().default(false),
-  recipientName: z.string().max(255).optional(),
-  company: z.string().max(255).optional(),
+  recipientName: z.string().max(255).nullish(),
+  company: z.string().max(255).nullish(),
   line1: z.string().min(1).max(255),
-  line2: z.string().max(255).optional(),
+  line2: z.string().max(255).nullish(),
   city: z.string().min(1).max(120),
   region: z.string().max(120).nullish(),
   postalCode: z.string().max(32).nullish(),

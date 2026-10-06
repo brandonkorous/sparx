@@ -13,9 +13,10 @@
 //                            it up would mean. Nothing is wrong.
 //
 // What those states used to say was that a customer would "choose a delivery
-// frequency at checkout". No storefront could do that, and nothing could create
-// a repeat order at all until issue 738 gave the console a screen for it. The
-// copy now points at the screen that actually exists.
+// frequency at checkout". No storefront could do that until issue 739, and
+// nothing could create a repeat order at all until issue 738 gave the console a
+// screen for it. Now a shopper can, for the schedules ticked in "Offer it on
+// repeat" at the top of this pane, so the copy points at both.
 //   set up, nobody yet     → "Ready to be bought on repeat, nobody has." This is
 //                            the one worth acting on, and it is invisible if you
 //                            collapse it into the case above.
@@ -43,6 +44,7 @@ import { CalendarClock, Repeat2, ServerCrash, ShoppingBag } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { RepeatOfferSection } from './product-repeat-offer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
 import {
@@ -117,8 +119,19 @@ function SubscriberRow({ subscriber }: { subscriber: ProductSubscriber }) {
   );
 }
 
-function SubscriptionsBody({ product, data }: { product: Product; data: ProductSubscriptions }) {
-  const setUpForRepeat = data.fulfillmentType === 'subscription';
+function SubscriptionsBody({
+  ctx,
+  product,
+  data,
+}: {
+  ctx: SurfaceContext;
+  product: Product;
+  data: ProductSubscriptions;
+}) {
+  // Repeatable means shoppers are offered a schedule (issue 739), or the owner
+  // labelled it as delivered on a schedule before there was a way to offer one.
+  const setUpForRepeat =
+    (product.repeatOptions ?? []).length > 0 || data.fulfillmentType === 'subscription';
   const everSubscribed = data.subscriptions.length > 0;
   const live = data.counts.active + data.counts.paused + data.counts.pastDue;
 
@@ -135,6 +148,8 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
         </Text>
       </div>
 
+      <RepeatOfferSection ctx={ctx} product={product} />
+
       {/* NOT set up for repeat and nobody subscribes — the ordinary case. It
           gets a real answer, not an empty list. */}
       {!setUpForRepeat && !everSubscribed ? (
@@ -146,9 +161,9 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
             description={`${product.title} is a normal one-off purchase. Someone buys it, you send it, and that is the end of it. Nothing is missing here.`}
           />
           <Text className="text-sm">
-            If somebody asks for it every month, you can set that up for them. Open Subscriptions
-            and start one: pick the customer, pick what goes out and how often, and it bills them
-            each time. It will show up here once it is running.
+            To let shoppers subscribe, tick how often above. If one customer asks you directly, you
+            can also start a subscription for them from Subscriptions. Either way it shows up here
+            once it is running.
           </Text>
         </FormSection>
       ) : null}
@@ -159,12 +174,12 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
             size="sm"
             icon={<CalendarClock className="size-6" aria-hidden />}
             title="Ready for repeat orders, but nobody has started one"
-            description={`${product.title} is marked as something delivered on a schedule. Nobody has one on repeat yet.`}
+            description={`${product.title} can be ordered on repeat. Nobody has one running yet.`}
           />
           <Text className="text-sm">
-            Subscriptions are set up from Subscriptions, one customer at a time, so this stays empty
-            until somebody asks for one. Shoppers cannot choose a delivery schedule for themselves
-            on your website yet.
+            {(product.repeatOptions ?? []).length > 0
+              ? 'Shoppers can choose a schedule on your website when they buy it. You can also start one for a customer from Subscriptions.'
+              : 'Shoppers are not offered a schedule yet: tick how often above to let them choose one. You can also start one for a customer from Subscriptions.'}
           </Text>
         </FormSection>
       ) : null}
@@ -305,7 +320,7 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
               Loading…
             </p>
           ) : (
-            <SubscriptionsBody product={scope.product} data={data} />
+            <SubscriptionsBody ctx={ctx} product={scope.product} data={data} />
           )}
         </div>
       </div>

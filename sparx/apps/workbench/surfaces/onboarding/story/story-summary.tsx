@@ -7,6 +7,7 @@ import { industryOf } from '@wizeworks/story-schemas';
 import { ModuleScope } from '../../../components/module-scope';
 import {
   MODULE_BY_KEY,
+  SWITCHBOARD_MODULES,
   moduleBilled,
   moduleElsewhere,
   moduleLock,
@@ -33,7 +34,15 @@ const FULFILMENT_TAGS: { key: string; label: string }[] = [
  *  "Included" state, in enabled order. */
 export function storyPlanItems(story: StoryState): SummaryPlanItem[] {
   const on = resolveModules(story);
-  return enabledModuleKeys(story).flatMap((k) => {
+  // Plus every module that comes FREE with one already chosen (Finance with
+  // Commerce): it is switched on for this tenant either way, so leaving it off the
+  // plan read as "not included" (sparx persona issue 007). Listed only, never
+  // added to what setup saves, so no flag is written that the owner did not pick.
+  const chosen = enabledModuleKeys(story);
+  const free = SWITCHBOARD_MODULES.filter(
+    (m) => !chosen.includes(m.key) && moduleLock(on, m.key) === 'included'
+  ).map((m) => m.key);
+  return [...chosen, ...free].flatMap((k) => {
     const m = MODULE_BY_KEY[k];
     if (!m) return [];
     return [

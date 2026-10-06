@@ -1,4 +1,6 @@
-import { Badge, Button } from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
+import { Badge } from '@wizeworks/silicaui-react';
 import { getModuleColor, type MarketingModule, Section, SectionHeader } from './primitives';
 import { Dot } from './primitives';
 
@@ -221,9 +223,12 @@ export function CrmTurn() {
           The supporting line can sit at normal body size because cyan IS a
           reading ground at 5.52:1 — unlike Ember, which is display-only. */}
       <div className="mt-14 flex flex-wrap items-center gap-x-7 gap-y-4">
-        <Button color="neutral" size="xl">
+        <a
+          href={signupHref('crm-hero')}
+          className={buttonClasses({ color: 'neutral', size: 'xl' })}
+        >
           Switch CRM on →
-        </Button>
+        </a>
         <p className="text-md">Free for fourteen days. Nothing to move, nothing to set up.</p>
       </div>
     </Section>

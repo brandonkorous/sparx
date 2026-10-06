@@ -3,9 +3,10 @@
 import { type ReactNode } from 'react';
 import { Button, FieldStatus, Heading, Text } from '@wizeworks/silicaui-react';
 import { CheckCircle } from 'lucide-react';
-import { industryOf, type StoryState } from '@wizeworks/story-schemas';
+import { storySubject, type StoryState } from '@wizeworks/story-schemas';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
+import { StripeWaiting } from '../stripe-waiting';
 
 // The story's "get paid" chapter — the SAME beat the classic wizard calls Payments,
 // but told as the next line of the owner's story instead of a bare integration tile.
@@ -15,8 +16,7 @@ import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
 
 function subject(story: StoryState): string {
   // "a salon" → "Your salon"; the generic fallback stays "Your business".
-  const noun = story.industry ? industryOf(story.industry).noun : 'a business';
-  return `Your ${noun.replace(/^an? /, '')}`;
+  return `Your ${storySubject(story)}`;
 }
 
 export function StoryGetPaid({
@@ -30,7 +30,7 @@ export function StoryGetPaid({
   actions: OnboardingActions;
   onConnected: () => void;
 }): ReactNode {
-  const { connect, connecting, error } = useStripeConnect(actions, onConnected);
+  const { connect, connecting, error, cancel } = useStripeConnect(actions, onConnected);
 
   return (
     <div className="flex min-w-0 flex-col gap-7">
@@ -62,11 +62,14 @@ export function StoryGetPaid({
           <Text className="max-w-[58ch] text-sm">
             Stripe is how the money reaches you: cards, wallets, and bank debits, paid straight to
             your bank. It’s the account that <span className="font-medium">receives</span> customer
-            payments, separate from your own sparx subscription.
+            payments, separate from your own sparx subscription. sparx Pay keeps a flat 0.5% of each
+            payment; connect your own card processor later under Payment providers and sparx takes
+            nothing.
           </Text>
         </div>
       )}
 
+      {connecting ? <StripeWaiting onCancel={cancel} /> : null}
       {error ? <FieldStatus status="error">{error}</FieldStatus> : null}
     </div>
   );

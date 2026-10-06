@@ -5,8 +5,7 @@
 // requests race past the in-app free check, the second INSERT fails and we
 // translate it into a clean SlotUnavailableError instead of a 500.
 
-import type { Prisma } from '@wizeworks/db';
-import { withTenant, type Booking, type TxClient } from '@wizeworks/db';
+import { Prisma, withTenant, type Booking, type TxClient } from '@wizeworks/db';
 import type {
   CancelBookingInput,
   CheckInInput,
@@ -26,6 +25,7 @@ import {
   SlotUnavailableError,
 } from './errors';
 import { recordBookingEvent } from './booking-history';
+import { bookingMoneyFor, type BookingMoney } from './booking-money';
 import { blockedError, blockedResources } from './slot-guards';
 import { findBookingPlaceTx } from './booking-receipt';
 import { lockPooledResources } from './locks';
@@ -367,16 +367,29 @@ export async function confirmBooking(
   return confirmed;
 }
 
+/**
+ * A booking that has ended, and what the card on it needs. `money` is null when
+ * there is nothing to settle. The caller hands it to `bookingPayments.settle` in
+ * @wizeworks/commerce once this has committed (sparx persona issue 087).
+ */
+export interface EndedBooking {
+  booking: Booking;
+  money: BookingMoney | null;
+}
+
 export async function cancelBooking(
   tenantId: string,
   input: CancelBookingInput,
   actorId?: string
-): Promise<Booking> {
+): Promise<EndedBooking> {
   const cancelled = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, input.id);
     if (['cancelled', 'completed', 'no_show'].includes(booking.status)) {
       throw new InvalidBookingStateError(`Cannot cancel a booking that is ${booking.status}`);
     }
+    // Decided from the deposit as it stands before the booking moves, and only
+    // on the transition itself: a second cancel is refused just above.
+    const money = await bookingMoneyFor(tx, input.id, 'cancel', { waiveFee: input.waiveFee });
     // Release the resources so the slot frees immediately (partial EXCLUDE drops them).
     await setAllocationStatus(tx, input.id, 'cancelled');
     const updated = await tx.booking.update({
@@ -393,7 +406,7 @@ export async function cancelBooking(
     // them about, and the schema has promised it since the route shipped.
     if (input.notifyCustomer) await cancelBookingNotifications(tx, tenantId, updated);
     else await dropPendingBookingNotifications(tx, updated.id);
-    return updated;
+    return { booking: updated, money };
   });
   await recordBookingEvent(tenantId, input.id, 'booking.cancelled', actorId, {
     ...(input.reason ? { reason: input.reason } : {}),
@@ -422,7 +435,7 @@ function diffBookingUpdate(
 ): Record<string, FieldChange> {
   const changes: Record<string, FieldChange> = {};
 
-  const scalar = (field: 'notes' | 'staffNotes' | 'workOrderId' | 'locationId') => {
+  const scalar = (field: 'notes' | 'staffNotes' | 'workOrderId' | 'locationId' | 'companyId') => {
     const next = input[field];
     if (next === undefined) return;
     const from = existing[field] ?? null;
@@ -433,6 +446,8 @@ function diffBookingUpdate(
   scalar('staffNotes');
   scalar('workOrderId');
   scalar('locationId');
+  // The trade account, set by staff with the vehicle (sparx persona issue 086).
+  scalar('companyId');
 
   if (input.assetRef !== undefined) {
     const from = existing.assetRef ?? null;
@@ -465,8 +480,11 @@ export async function updateBooking(
       where: { id },
       data: {
         ...rest,
+        // Null CLEARS the vehicle. It used to become `undefined`, which Prisma
+        // reads as "leave it alone", so taking a vehicle off a booking reported
+        // success and kept the old one (sparx persona issue 086).
         ...(assetRef !== undefined
-          ? { assetRef: (assetRef ?? undefined) as Prisma.InputJsonValue | undefined }
+          ? { assetRef: assetRef === null ? Prisma.DbNull : (assetRef as Prisma.InputJsonValue) }
           : {}),
         ...(partsLinked !== undefined ? { partsLinked } : {}),
       },
@@ -601,18 +619,22 @@ export async function completeBooking(
   tenantId: string,
   id: string,
   actorId?: string
-): Promise<Booking> {
+): Promise<EndedBooking> {
   const completed = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, id);
     if (['cancelled', 'no_show'].includes(booking.status)) {
       throw new InvalidBookingStateError(`Cannot complete a booking that is ${booking.status}`);
     }
+    // Completing a completed booking is allowed and changes nothing, so it
+    // settles nothing either: the card was dealt with the first time.
+    const money = booking.status === 'completed' ? null : await bookingMoneyFor(tx, id, 'complete');
     await setAllocationStatus(tx, id, 'completed');
     await dropPendingBookingNotifications(tx, id);
-    return tx.booking.update({
+    const updated = await tx.booking.update({
       where: { id },
       data: { status: 'completed', completedAt: new Date() },
     });
+    return { booking: updated, money };
   });
   await recordBookingEvent(tenantId, id, 'booking.completed', actorId);
   return completed;
@@ -622,7 +644,7 @@ export async function noShowBooking(
   tenantId: string,
   input: NoShowBookingInput,
   actorId?: string
-): Promise<Booking> {
+): Promise<EndedBooking> {
   const noShow = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, input.id);
     if (['cancelled', 'completed'].includes(booking.status)) {
@@ -630,12 +652,18 @@ export async function noShowBooking(
         `Cannot mark no-show on a booking that is ${booking.status}`
       );
     }
+    // Marking a no-show twice charges the fee once.
+    const money =
+      booking.status === 'no_show'
+        ? null
+        : await bookingMoneyFor(tx, input.id, 'no_show', { waiveFee: input.waiveFee });
     await setAllocationStatus(tx, input.id, 'no_show');
     await dropPendingBookingNotifications(tx, input.id);
-    return tx.booking.update({
+    const updated = await tx.booking.update({
       where: { id: input.id },
       data: { status: 'no_show', noShowAt: new Date() },
     });
+    return { booking: updated, money };
   });
   await recordBookingEvent(tenantId, input.id, 'booking.no_show', actorId);
   return noShow;

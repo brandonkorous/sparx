@@ -67,3 +67,13 @@ describe('a refunded order says whether the goods went', () => {
     }
   });
 });
+
+// Sparx persona issue 085: an order held for sign-off read "To send", asking
+// somebody to pack an order nobody had approved.
+describe('an order waiting for sign-off', () => {
+  it('is not to be sent yet, and says why', () => {
+    const state = shippingState(order('pending_approval', false));
+    expect(state.label).toBe('Not to send yet');
+    expect(state.detail).toMatch(/Approvals shows who it waits on/);
+  });
+});

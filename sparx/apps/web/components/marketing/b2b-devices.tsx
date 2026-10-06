@@ -6,7 +6,7 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  * Two structural devices for the /b2b page, split out of b2b-page.tsx:
  *
  *  - B2bTerms ........ net terms & credit: an account's terms + credit bar beside
- *    the A/R aging ledger (current → 60+), the cashflow-risk view.
+ *    the A/R aging ledger (not yet due → 90+ days late), the cashflow-risk view.
  *  - B2bBulkPo ....... bulk / PO ordering: how a wholesale order is placed (PO
  *    number, saved cart reorder, quantity rules, approval hold) as labeled rows.
  *
@@ -81,15 +81,19 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
   );
 }
 
-/** Static A/R aging ledger — the real dashboard buckets (current, 1–30, 31–60,
- *  60+). Illustrative totals; the device is the shape, not a tenant's numbers.
- *  The two older buckets wear the SEMANTIC warning/error hues, not a hex. */
+/** Static A/R aging ledger: the five groups the "Owed to you" screen really
+ *  shows (not yet due, then 1–30, 31–60, 61–90 and 90+ days late). It showed
+ *  four, ending at "60+", which the product never says (sparx persona issue
+ *  086). Illustrative totals; the device is the shape, not a tenant's numbers.
+ *  Late groups wear the SEMANTIC warning/error hues, as the product's do. Each
+ *  bar width is a whole class written out, so Tailwind finds it. */
 function AgingLedger() {
   const rows: { label: string; value: string; bar: string; tone: string }[] = [
-    { label: 'Current', value: '$34,200', bar: '100%', tone: 'bg-module-b2b' },
-    { label: '1–30 days', value: '$11,400', bar: '34%', tone: 'bg-module-b2b' },
-    { label: '31–60 days', value: '$4,100', bar: '12%', tone: 'bg-warning' },
-    { label: '60+ days', value: '$2,400', bar: '7%', tone: 'bg-error' },
+    { label: 'Not yet due', value: '$34,200', bar: 'w-full', tone: 'bg-module-b2b' },
+    { label: '1–30 days late', value: '$11,400', bar: 'w-[34%]', tone: 'bg-warning' },
+    { label: '31–60 days late', value: '$4,100', bar: 'w-[12%]', tone: 'bg-error' },
+    { label: '61–90 days late', value: '$1,600', bar: 'w-[5%]', tone: 'bg-error' },
+    { label: '90+ days late', value: '$800', bar: 'w-[3%]', tone: 'bg-error' },
   ];
   return (
     <div className="bg-base-100 border-base-300 rounded-xl border p-6">
@@ -119,7 +123,7 @@ function AgingLedger() {
               </Text>
             </div>
             <span className="bg-base-200 block h-1.5 overflow-hidden rounded-full">
-              <span className={`${r.tone} block h-full rounded-full`} style={{ width: r.bar }} />
+              <span className={`${r.tone} ${r.bar} block h-full rounded-full`} />
             </span>
           </div>
         ))}
@@ -141,7 +145,7 @@ export function B2bBulkPo() {
     },
     {
       title: 'Quantity rules per account',
-      body: 'Set minimum and maximum order quantities, case packs, and minimum order values per product per account: the rules that make wholesale wholesale.',
+      body: 'Set the least and the most an account can order of each product, and the case size it buys in, plus a minimum order value for each wholesale group. Buyers see the rules beside the quantity box, and checkout will not take an order that breaks them.',
     },
     {
       title: 'Approval holds over a threshold',

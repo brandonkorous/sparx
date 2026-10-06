@@ -14,6 +14,7 @@
 // here. The line under the frame says so rather than leaving it to be noticed.
 
 import { useEffect } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useQuery } from '@wizeworks/query';
 import { Loading, Text } from '@wizeworks/silicaui-react';
 import { apiRequest } from '../../lib/api/client';
@@ -30,12 +31,13 @@ export function TemplatePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
   // WHICH template this is drawing. Two previews open read `Preview  Preview`
   // (issue 842). The editor's own read, so opening from an editor is served
   // from cache; a preview opened on its own fetches once.
-  const { data: template } = useTemplate(id);
+  const templateQuery = useTemplate(id);
+  const { data: template } = templateQuery;
   useEffect(() => {
     ctx.setTitle(template?.name ? `Preview · ${template.name}` : 'Preview');
   }, [ctx, template?.name]);
 
-  const { data: html, isFetching } = useQuery({
+  const preview = useQuery({
     // Keyed off the shared template key, so saving in the editor invalidates
     // this and the frame re-draws without anything here watching the editor.
     queryKey: [...TEMPLATES_KEY, 'preview', id, documentId],
@@ -51,6 +53,28 @@ export function TemplatePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
     },
     placeholderData: (previous) => previous,
   });
+  const { data: html, isFetching } = preview;
+
+  // A template that is not there (removed, or another business's id) says so.
+  // This used to read "Drawing the page…" for ever, because a failed draw left
+  // nothing to draw and nothing said why (persona issue 226).
+  const failed = templateQuery.isError ? templateQuery : preview.isError ? preview : null;
+  if (id !== '' && failed) {
+    return (
+      <div className="flex h-full flex-col">
+        <PaneLoadError
+          error={failed.error}
+          noun="template"
+          title="Could not draw this template"
+          description="This is a problem reaching the server. The template itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void templateQuery.refetch();
+            void preview.refetch();
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-base-200 relative flex h-full flex-col">

@@ -1,35 +1,26 @@
-// Booking deposit / card-hold / fee orchestration (docs/79 §9). The side-effecting
-// counterpart to @wizeworks/scheduling's PURE deposit math (deposits.ts): it drives the
-// tenant's payment gateway (@wizeworks/payments) and the booking's depositStatus across
-// the lifecycle.
+// Booking deposits and card holds (docs/79 §9). The side-effecting counterpart to
+// @wizeworks/scheduling's PURE deposit math (deposits.ts).
 //
-//   createBookingDeposit  — at booking time: authorize a card hold (manual capture)
-//                           or charge a deposit/prepay (automatic), link it to the
-//                           booking, return the clientSecret for the customer to
-//                           confirm.
-//   settleBookingPayment  — at no-show / cancel / complete: capture a fee from the
-//                           hold, void the hold, refund, or forfeit, per policy.
+//   createBookingDeposit  at booking time: authorize a card hold (manual capture)
+//                         or charge a deposit/prepay (automatic), link it to the
+//                         booking, return the clientSecret for the customer to
+//                         confirm.
+//   settleBookingMoney    when a booking ends: hand what its card needs to
+//                         `bookingPayments.settle` in @wizeworks/commerce.
 //
-// depositStatus state model (the `bookings.deposit_status` column):
-//   held      — a card hold is authorized OR a deposit/prepay charge is pending the
-//               customer's confirmation.
-//   captured  — money taken: a deposit/prepay charge, OR a fee captured from a hold.
-//   refunded  — customer not (or no longer) charged: a hold released, or a deposit
-//               refunded on a timely cancel.
-//   forfeited — a charged deposit/prepay kept on a no-show / late cancel.
-//
-// Best-effort: a gateway failure logs + leaves depositStatus for manual handling —
-// it never blocks the booking lifecycle action that triggered it (a cancel still
-// cancels even if the refund call fails).
+// Settling used to live here, so only the console's own routes ever did it: a
+// booking an AI assistant ended, and every booking in a canceled series, kept
+// its hold and its deposit (sparx persona issue 087). The decision now comes back
+// from the lifecycle function that ended the booking (`money` on its result),
+// and the gateway work is in commerce, where api-mcp can reach it too.
 
 import type { FastifyBaseLogger } from 'fastify';
 import { withTenant } from '@wizeworks/db';
+import { bookingPayments } from '@wizeworks/commerce';
 import { paymentService, PaymentConfigError, GatewayNotFoundError } from '@wizeworks/payments';
 import {
-  computeLateCancelFee,
-  computeNoShowFee,
-  isLateCancellation,
   resolveDepositPlan,
+  type BookingMoney,
   type DepositPolicyInput,
   type DepositType,
 } from '@wizeworks/scheduling';
@@ -48,7 +39,9 @@ export interface DepositCreationResult {
 interface SettlementData {
   depositStatus: string | null;
   startAt: Date;
+  timezone: string;
   customerId: string | null;
+  serviceName: string;
   currency: string;
   priceCents: number;
   policy: DepositPolicyInput | null;
@@ -78,9 +71,10 @@ async function loadSettlementData(
       select: {
         depositStatus: true,
         startAt: true,
+        timezone: true,
         customerId: true,
         paymentIntentId: true,
-        service: { select: { priceCents: true, currency: true } },
+        service: { select: { name: true, priceCents: true, currency: true } },
         policy: { select: POLICY_SELECT },
       },
     });
@@ -94,7 +88,9 @@ async function loadSettlementData(
     return {
       depositStatus: booking.depositStatus,
       startAt: booking.startAt,
+      timezone: booking.timezone,
       customerId: booking.customerId,
+      serviceName: booking.service.name,
       currency: booking.service.currency,
       priceCents: booking.service.priceCents,
       policy: booking.policy,
@@ -181,76 +177,28 @@ export async function createBookingDeposit(
   }
 }
 
-export type SettlementAction = 'no_show' | 'cancel' | 'complete';
-
 /**
- * Settle a booking's deposit/hold for a lifecycle transition. Re-resolves the plan
- * type from the policy (deterministic) and applies the right gateway op:
- *   card_hold:  no-show/late-cancel → capture the fee (else release); timely
- *               cancel/complete → release the hold.
- *   deposit/prepay: charged money is forfeited on a no-show/late-cancel, refunded
- *               on a timely cancel, and kept on completion (it IS the payment).
- * Idempotent + best-effort: a non-active depositStatus is a no-op, and a gateway
- * error is logged without throwing.
+ * Settle the card on bookings that have just ended, AFTER the transaction that
+ * ended them has committed. Never throws: the booking has ended either way. What
+ * did not go through is already on the customer's timeline, on the booking's
+ * history, and (where somebody has to act) in the business's tasks; it is logged
+ * here too.
  */
-export async function settleBookingPayment(
+export async function settleBookingMoney(
   logger: FastifyBaseLogger,
-  tenantId: string,
-  bookingId: string,
-  action: SettlementAction,
-  now: Date = new Date()
-): Promise<void> {
-  const data = await loadSettlementData(tenantId, bookingId);
-  if (!data?.policy || !data.intentExternalId) return;
-  // Only an active hold/charge settles; refunded/forfeited/none are terminal.
-  if (data.depositStatus !== 'held' && data.depositStatus !== 'captured') return;
-
-  const plan = resolveDepositPlan(data.policy, data.priceCents);
-  const intentId = data.intentExternalId;
-
-  try {
-    if (plan.type === 'card_hold') {
-      // A hold only settles from the authorized ('held') state.
-      if (data.depositStatus !== 'held') return;
-      if (action === 'complete') {
-        await paymentService.cancelPayment(tenantId, intentId);
-        await setDepositStatus(tenantId, bookingId, 'refunded');
-        return;
-      }
-      const late = action === 'cancel' ? isLateCancellation(data.policy, data.startAt, now) : true;
-      const fee =
-        action === 'no_show'
-          ? computeNoShowFee(data.policy, data.priceCents)
-          : late
-            ? computeLateCancelFee(data.policy, data.priceCents)
-            : 0;
-      if (fee > 0) {
-        await paymentService.capturePayment(tenantId, intentId, Math.min(fee, plan.amountCents));
-        await setDepositStatus(tenantId, bookingId, 'captured');
-      } else {
-        await paymentService.cancelPayment(tenantId, intentId);
-        await setDepositStatus(tenantId, bookingId, 'refunded');
-      }
-      return;
+  ctx: { tenantId: string; userId?: string | null },
+  money: readonly (BookingMoney | null)[]
+): Promise<bookingPayments.SettledBookingMoney[]> {
+  const moves = money.filter((m): m is BookingMoney => m !== null);
+  if (moves.length === 0) return [];
+  const settled = await bookingPayments.settle(ctx, moves);
+  for (const { money: move, ok, error } of settled) {
+    if (!ok) {
+      logger.error(
+        { tenantId: ctx.tenantId, bookingId: move.bookingId, move: move.move, error },
+        'scheduling-payments: the card could not be settled (told on the booking, task given where needed)'
+      );
     }
-
-    // deposit / prepay — a real charge (or a pending one).
-    if (action === 'complete') return; // the deposit/prepayment IS the payment — keep.
-    const keep = action === 'no_show' || isLateCancellation(data.policy, data.startAt, now);
-    if (data.depositStatus === 'held') {
-      // Charge not yet captured (pre-confirmation) → void it; nothing to keep.
-      await paymentService.cancelPayment(tenantId, intentId);
-      await setDepositStatus(tenantId, bookingId, 'refunded');
-    } else if (keep) {
-      await setDepositStatus(tenantId, bookingId, 'forfeited'); // business keeps the charge
-    } else {
-      await paymentService.refund({ tenantId, chargeId: intentId });
-      await setDepositStatus(tenantId, bookingId, 'refunded');
-    }
-  } catch (err) {
-    logger.error(
-      { err, tenantId, bookingId, action },
-      'scheduling-payments: settlement failed, depositStatus left for manual handling'
-    );
   }
+  return settled;
 }

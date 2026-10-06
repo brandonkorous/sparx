@@ -335,6 +335,10 @@ describe('demand-side commitments — DB-backed', () => {
       // undated count was structurally always 0, and on Allocated both were.
       // The nudges were dead on the views that needed them.
       const f = await createInventoryFixture(tenantId);
+      // Sold past zero on purpose, like every other backorder in this file. A
+      // `deny` item nobody has counted is untracked, and a sale of one takes
+      // nothing and owes nothing (sell-path.ts), so it would leave no row here.
+      await allowOversell(f);
       const order = await makeOrder(await makeCustomer('Crosslens'));
       await sell(f, order, 5, 'line-crosslens');
 

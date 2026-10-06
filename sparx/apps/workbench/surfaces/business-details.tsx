@@ -313,8 +313,8 @@ export function BusinessDetailsSurface() {
                   label="Business name"
                   value={form.businessName}
                   onChange={set('businessName')}
-                  placeholder="WizeWorks"
-                  description="The name customers know you by. It may differ from your registered company name."
+                  placeholder="Bob's Barbers"
+                  description="The name printed on your invoices, receipts and purchase orders."
                 />
                 <div className="grid gap-4 @lg:grid-cols-2">
                   <Field>

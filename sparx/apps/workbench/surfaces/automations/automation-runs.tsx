@@ -23,6 +23,7 @@ import {
   Timestamp,
 } from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, History, ListChecks, Target } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -60,11 +61,12 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [status, setStatus] = useState(asked ?? 'all');
   const [sort, setSort] = useState<{ key: SortKey; dir: Dir }>({ key: 'started', dir: 'desc' });
 
-  const { data: automation } = useAutomation(automationId);
+  const { data: automation, error: automationError } = useAutomation(automationId);
   const {
     data: runs,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -196,28 +198,32 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
           run list says a hundred things happened; the funnel says whether any of
           it worked. Somebody who opens this surface is asking the second
           question, and the first is one click away when they need the detail. */}
-      {view === 'results' ? (
+      {/* The rule itself first: a rule that is gone (deleted, or another
+          business's id) has no results and no runs, and both views used to say
+          only that they could not load (persona issue 226). */}
+      {automationError ? (
+        <Card className="min-h-0 flex-1">
+          <PaneLoadError
+            error={automationError}
+            noun="rule"
+            title="Could not load this rule"
+            description="This is a problem reaching the server. The rule itself is unaffected. Try again in a moment."
+          />
+        </Card>
+      ) : view === 'results' ? (
         <div className="min-h-0 flex-1 overflow-y-auto p-1">
           <EnrollmentPanel automationId={automationId} />
         </div>
       ) : (
         <Card className="min-h-0 flex-1 overflow-y-auto">
           {isError ? (
-            <EmptyState
-              icon={<History className="size-6" aria-hidden />}
+            <PaneLoadError
+              error={error}
               title="Could not load these runs"
-              description="Something went wrong reaching the server. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. The rule and its runs are unaffected. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <p className="p-4 text-sm" role="status">

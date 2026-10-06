@@ -17,7 +17,7 @@ import { Plus, Tags } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { taxonomyKind, useTaxonomies, type Taxonomy } from './taxonomy-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -30,6 +30,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('cms.taxonomy.list');
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTaxonomies();
   const [search, setSearch] = useState('');
 
@@ -100,11 +101,11 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add a way to file content. Hold Shift to open alongside, Alt for a new window"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">New</span>
+            <span className="hidden @2xl:inline">{createLabel}</span>
           </Button>
         }
         refresh={
@@ -144,7 +145,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Plus className="size-4" aria-hidden />
-                  Add one
+                  {createLabel}
                 </Button>
               ),
             }}

@@ -190,6 +190,7 @@ function LoadedModal({
         {state.moves.reschedule ? (
           <MoveSection
             when={state.when}
+            clock={state.whenClock}
             setWhen={state.setWhen}
             canMove={state.canMove}
             busy={state.busy.reschedule}

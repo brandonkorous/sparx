@@ -1,7 +1,7 @@
-// What things cost, and what comes off — price lists, discounts, gift cards
-// and account credit.
+// What things cost, and what comes off: price lists, markup rules, discounts,
+// gift cards and account credit.
 
-import { Percent, Tag, Ticket, Wallet } from 'lucide-react';
+import { Calculator, Percent, Tag, Ticket, Wallet } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { DiscountsListSurface } from '../../../surfaces/commerce/discounts-list';
 import { DiscountDetailSurface } from '../../../surfaces/commerce/discount-detail';
@@ -10,6 +10,8 @@ import { GiftCardDetailSurface } from '../../../surfaces/commerce/giftcard-detai
 import { AccountCreditSurface } from '../../../surfaces/commerce/account-credit';
 import { PriceListsListSurface } from '../../../surfaces/commerce/price-lists-list';
 import { PriceListDetailSurface } from '../../../surfaces/commerce/price-list-detail';
+import { MarkupRulesListSurface } from '../../../surfaces/commerce/markup-rules-list';
+import { MarkupRuleDetailSurface } from '../../../surfaces/commerce/markup-rule-detail';
 
 export const PRICING_SURFACES: SurfaceDefinition[] = [
   {
@@ -30,6 +32,37 @@ export const PRICING_SURFACES: SurfaceDefinition[] = [
     module: 'commerce',
     icon: Tag,
     component: PriceListDetailSurface,
+    listed: false,
+  },
+  // How a cost becomes a price (sparx persona issue 086). The quote line editor
+  // offered these and nothing could make one; the keywords are the words an
+  // owner pricing a quote uses, not the screen's name.
+  {
+    key: 'commerce.markup-rules.list',
+    title: 'Markup rules',
+    module: 'commerce',
+    icon: Calculator,
+    section: 'Pricing',
+    order: 20.5,
+    keywords: [
+      'markup',
+      'margin',
+      'cost plus',
+      'price from cost',
+      'pricing rules',
+      'mark up',
+      'profit',
+    ],
+    component: MarkupRulesListSurface,
+    createSurface: 'commerce.markup-rule.detail',
+    createLabel: 'Add a markup rule',
+  },
+  {
+    key: 'commerce.markup-rule.detail',
+    title: (params) => (params.id === 'new' ? 'New markup rule' : 'Markup rule'),
+    module: 'commerce',
+    icon: Calculator,
+    component: MarkupRuleDetailSurface,
     listed: false,
   },
   {

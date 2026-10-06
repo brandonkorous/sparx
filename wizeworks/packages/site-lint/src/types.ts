@@ -135,6 +135,17 @@ export interface SiteLintInput {
    *  here is reported as unsized rather than assumed weightless. Omit it entirely and
    *  every picture is unsized; the HTML weight and the styling count still stand. */
   imageBytes?: Readonly<Record<string, number>>;
+  /** The copy the installed design shipped, from its baseline trees (see
+   *  `starterLinesOf`). A line still word for word on the site is the design's, not
+   *  the owner's. Omitted means the caller did not look (no design installed, or the
+   *  baseline could not be read), and the rule stays silent. */
+  starterText?: StarterText;
+}
+
+/** What a design shipped, per page id and for the header and footer. */
+export interface StarterText {
+  pages?: Readonly<Record<string, readonly string[]>>;
+  frame?: readonly string[];
 }
 
 /* ── What comes back ────────────────────────────────────────────────────────── */
@@ -194,7 +205,9 @@ export type LintRuleId =
   | 'seo-page-hidden'
   // Addressing
   | 'page-address-duplicate'
-  | 'page-unreachable';
+  | 'page-unreachable'
+  // Copy
+  | 'starter-text';
 
 /** Which authored tree a finding lives in — the tree the fix happens in, which is
  *  not always the page it was seen on. A broken link in the footer belongs to the

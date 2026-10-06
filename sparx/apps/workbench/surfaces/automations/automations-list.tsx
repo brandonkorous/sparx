@@ -32,6 +32,7 @@ import {
   automationState,
   ModuleTags,
   parseActions,
+  PlatformUpdateBadge,
   summarizeTrigger,
   TierBadge,
 } from './automations-presentation';
@@ -302,6 +303,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                           </Badge>
                         ) : null}
                         <TierBadge origin={automation.origin} locked={automation.locked} />
+                        <PlatformUpdateBadge platformUpdateAt={automation.platformUpdateAt} />
                       </div>
                     </td>
                     <td className="hidden max-w-64 truncate text-sm @lg:table-cell">

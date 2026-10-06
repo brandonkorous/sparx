@@ -13,13 +13,11 @@ import { z } from 'zod';
 import {
   AcceptWaitlistInput,
   AvailabilityExceptionInput,
-  CancelBookingSeriesInput,
   CheckInInput,
   CreateBookingPolicyInput,
   CreateBookingSeriesInput,
   CreateWaitlistEntryInput,
   JoinSessionInput,
-  NoShowBookingInput,
   OfferWaitlistInput,
   UpdateAttendeeInput,
   UpdateBookingInput,
@@ -27,16 +25,10 @@ import {
 } from '@wizeworks/scheduling-schemas';
 
 import { createAvailabilityException, deleteAvailabilityException } from '../availability-rules';
-import {
-  checkInBooking,
-  completeBooking,
-  confirmBooking,
-  noShowBooking,
-  updateBooking,
-} from '../booking-service';
+import { checkInBooking, confirmBooking, updateBooking } from '../booking-service';
 import { bookClassSeat, updateAttendee } from '../classes';
 import { createBookingPolicy, deleteBookingPolicy, updateBookingPolicy } from '../policies';
-import { cancelBookingSeries, createBookingSeries } from '../series';
+import { createBookingSeries } from '../series';
 import { acceptWaitlistOffer, joinWaitlist, leaveWaitlist, offerWaitlistEntry } from '../waitlist';
 
 import type { McpToolDefinition } from './registry';
@@ -44,6 +36,10 @@ import type { McpToolDefinition } from './registry';
 const uuid = () => z.string().uuid();
 
 // ─── Booking state machine ────────────────────────────────────────────────
+// `complete_booking`, `no_show_booking` and `cancel_booking_series` live in
+// api-mcp (scheduling-ending-tools.ts): ending a booking settles the card on it,
+// which needs the payment gateways this package does not carry (sparx persona
+// issue 087).
 
 const confirmBookingTool: McpToolDefinition = {
   name: 'confirm_booking',
@@ -62,25 +58,6 @@ const checkInBookingTool: McpToolDefinition = {
   confirmation: true,
   input: CheckInInput,
   run: (ctx, input) => checkInBooking(ctx.tenantId, input as CheckInInput, ctx.userId),
-};
-
-const completeBookingTool: McpToolDefinition = {
-  name: 'complete_booking',
-  description: 'Mark a booking as completed (the service was delivered).',
-  scope: 'write:scheduling',
-  confirmation: true,
-  input: z.object({ bookingId: uuid() }),
-  run: (ctx, input) =>
-    completeBooking(ctx.tenantId, (input as { bookingId: string }).bookingId, ctx.userId),
-};
-
-const noShowBookingTool: McpToolDefinition = {
-  name: 'no_show_booking',
-  description: 'Mark a booking as a no-show, optionally waiving any no-show fee.',
-  scope: 'write:scheduling',
-  confirmation: true,
-  input: NoShowBookingInput,
-  run: (ctx, input) => noShowBooking(ctx.tenantId, input as NoShowBookingInput, ctx.userId),
 };
 
 const updateBookingTool: McpToolDefinition = {
@@ -125,15 +102,6 @@ const createBookingSeriesTool: McpToolDefinition = {
   input: CreateBookingSeriesInput,
   run: (ctx, input) =>
     createBookingSeries(ctx.tenantId, input as CreateBookingSeriesInput, ctx.userId),
-};
-
-const cancelBookingSeriesTool: McpToolDefinition = {
-  name: 'cancel_booking_series',
-  description: 'Cancel a recurring booking series (optionally its future occurrences).',
-  scope: 'write:scheduling',
-  confirmation: true,
-  input: CancelBookingSeriesInput,
-  run: (ctx, input) => cancelBookingSeries(ctx.tenantId, input as CancelBookingSeriesInput),
 };
 
 // ─── Waitlist ─────────────────────────────────────────────────────────────
@@ -234,13 +202,10 @@ const deleteAvailabilityExceptionTool: McpToolDefinition = {
 export const lifecycleWriteTools = [
   confirmBookingTool,
   checkInBookingTool,
-  completeBookingTool,
-  noShowBookingTool,
   updateBookingTool,
   addSessionAttendeeTool,
   updateAttendeeTool,
   createBookingSeriesTool,
-  cancelBookingSeriesTool,
   joinWaitlistTool,
   offerWaitlistTool,
   acceptWaitlistTool,

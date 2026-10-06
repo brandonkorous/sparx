@@ -21,7 +21,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useContentTypeList, useEntryCountsByType, type ContentType } from './content-types-data';
 import { TypeGroup } from './content-types-list-table';
 import { productCopy } from '../../lib/product';
@@ -47,6 +47,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('cms.types.list');
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<KindFilterValue>('all');
 
@@ -98,7 +99,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'New type',
+          label: createLabel,
           icon: faPlus,
           onClick: create,
           title: 'Define a new kind of content. Hold Shift to open alongside, Alt for a new window',
@@ -180,7 +181,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Icon glyph={faPlus} className="size-4" aria-hidden />
-                    New type
+                    {createLabel}
                   </Button>
                 ),
               }}
@@ -196,7 +197,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               emptyHint={
                 kind === 'built_in'
                   ? null
-                  : 'You have not defined any of your own yet. Use “New type” above to make one.'
+                  : `You have not defined any of your own yet. Use “${createLabel}” above to make one.`
               }
               onOpen={open}
             />

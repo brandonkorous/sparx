@@ -12,6 +12,7 @@ import {
   faCreditCard,
   faHeart,
   faRepeat,
+  faRotateLeft,
   faStar,
 } from '@fortawesome/pro-solid-svg-icons';
 import type { SurfaceDefinition } from '../registry';
@@ -20,6 +21,7 @@ import { OrdersListSurface } from '../../../surfaces/commerce/orders-list';
 import { SaleDetailSurface } from '../../../surfaces/commerce/sale-detail';
 import { ReturnsListSurface } from '../../../surfaces/commerce/returns-list';
 import { ReturnDetailSurface } from '../../../surfaces/commerce/return-detail';
+import { CoresListSurface } from '../../../surfaces/commerce/cores-list';
 import { CartsListSurface } from '../../../surfaces/commerce/carts-list';
 import { CartDetailSurface } from '../../../surfaces/commerce/cart-detail';
 import { CheckoutSessionsListSurface } from '../../../surfaces/commerce/checkout-list';
@@ -174,6 +176,28 @@ export const ORDER_SURFACES: SurfaceDefinition[] = [
     icon: faBoxes,
     component: ReturnDetailSurface,
     listed: false,
+  },
+  {
+    // Rebuilt parts sold with a core deposit whose old part has not come back
+    // (persona issue 051). Opens the order, where a core is received or kept.
+    key: 'commerce.cores.list',
+    title: 'Cores owed',
+    module: 'commerce',
+    icon: faRotateLeft,
+    section: 'After the sale',
+    order: 45,
+    keywords: [
+      'core',
+      'cores',
+      'core charge',
+      'core deposit',
+      'core return',
+      'old part',
+      'reman',
+      'rebuilt',
+      'deposit refund',
+    ],
+    component: CoresListSurface,
   },
   {
     // The scalable moderation TABLE — the primary, nav-listed reviews surface.

@@ -18,9 +18,12 @@ import type {
 } from '../../../lib/onboarding/types';
 import { SCRATCH } from './step-blueprint';
 import { useSlugCheck } from './use-slug-check';
+import { useStartingPoint } from './use-starting-point';
 import { ctaLabelFor, stepOrder, type Initial } from './wizard-steps';
 import { WizardBody } from './wizard-body';
 import { WizardHeading, WizardSummary, stepMarks } from './wizard-summary';
+import { apiErrorMessage } from '../../../lib/api-error';
+import { useStoryDraftSave } from '../../../lib/onboarding/use-story-draft';
 
 export function WizardInner({
   initial,
@@ -53,17 +56,15 @@ export function WizardInner({
   }, []);
   const story = model.story ?? fallback;
   const modules = resolveModules(story);
+  // A switch flipped here changes the story, so save it here too (sparx persona issue 009).
+  useStoryDraftSave(model, actions.saveStoryDraft, { initialStory: initialStory ?? null });
 
   const [step, setStep] = useState<OnboardingStepKey>(initial.step);
 
-  // choice = the SELECTED starting point; installedKey + installId are what is
-  // actually provisioned. The default is this BRAND's, resolved server-side —
-  // naming one here sold sparx mugs on a Piggles homepage (issue 091).
-  const [choice, setChoice] = useState<string | null>(
-    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : initial.goldenKey)
-  );
-  const [installedKey, setInstalledKey] = useState<string | null>(initial.blueprintKey);
-  const [installId, setInstallId] = useState<string | null>(initial.installId);
+  // selected = what the gallery marks, the summary names and Continue installs. The
+  // fallback default is this BRAND's, resolved server-side (issue 091).
+  const sp = useStartingPoint(initial, story, modules, blueprints);
+  const { selected, setChoice, recommendedKey, installedKey, installId, startingPoint } = sp;
   const [sampleData, setSampleData] = useState(initial.sampleData);
 
   const [companyName, setCompanyName] = useState(initial.companyName);
@@ -100,14 +101,12 @@ export function WizardInner({
         setStep('template');
         return;
       case 'template':
-        if (choice === SCRATCH) {
+        if (selected === SCRATCH) {
           await actions.startFromScratch();
-          setInstalledKey(null);
-          setInstallId(null);
-        } else if (choice) {
-          const res = await actions.selectTemplate({ key: choice, sampleData });
-          setInstalledKey(choice);
-          setInstallId(res.installId);
+          sp.installed(null, null);
+        } else if (selected) {
+          const res = await actions.selectTemplate({ key: selected, sampleData });
+          sp.installed(selected, res.installId);
         }
         setStep('workspace');
         return;
@@ -155,7 +154,12 @@ export function WizardInner({
     setBusy(true);
     commit()
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+        setError(
+          apiErrorMessage(
+            e,
+            'We could not save this step just now. Nothing you chose is lost. Press Continue again in a moment.'
+          )
+        )
       )
       .finally(() => setBusy(false));
   }
@@ -164,26 +168,17 @@ export function WizardInner({
     step === 'modules'
       ? activeModules.length > 0
       : step === 'template'
-        ? choice !== null
+        ? selected !== null
         : step === 'workspace'
           ? companyName.trim().length > 0 && siteName.trim().length > 0 && slugState.ok
           : true;
 
   const ctaLabel = ctaLabelFor(step, {
-    startingFromScratch: choice === SCRATCH,
+    startingFromScratch: selected === SCRATCH,
     paymentsConnected,
     buyingDomain: pendingDomain !== null,
     hasInstall: installId !== null,
   });
-
-  // Before the owner reaches the Template step the summary auto-picks (undefined →
-  // StoryExtras chooses), exactly as the story flow does. Once they pick, their
-  // explicit choice (a blueprint, or scratch → a blank site) wins.
-  const startingPoint: WizardBlueprint | null | undefined = installedKey
-    ? (blueprints.find((b) => b.key === installedKey) ?? null)
-    : choice === SCRATCH
-      ? null
-      : undefined;
 
   return (
     <OnboardingLayout
@@ -198,7 +193,8 @@ export function WizardInner({
             model.toggleModule(key);
           }}
           activeModuleCount={activeModules.length}
-          choice={choice}
+          choice={selected}
+          recommendedKey={recommendedKey}
           onChoice={setChoice}
           sampleData={sampleData}
           onSampleData={setSampleData}

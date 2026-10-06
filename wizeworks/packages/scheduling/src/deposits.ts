@@ -3,9 +3,10 @@
 // no-show or late cancellation. No DB, no payment gateway — just the numbers, so
 // it's fully unit-testable and the same rules apply on every transport.
 //
-// The side-effecting orchestration (creating/capturing/voiding the actual
-// PaymentIntent through @wizeworks/payments) lives in api-rest's scheduling-payments
-// lib, which feeds these results to the gateway.
+// The side effects live elsewhere: api-rest's scheduling-payments lib creates the
+// hold or charge at booking time, `bookingMoneyFor` (booking-money.ts) decides
+// what a booking's card needs when it ends, and `bookingPayments` in
+// @wizeworks/commerce does it through the gateway (sparx persona issue 087).
 
 const HOUR_MS = 60 * 60 * 1000;
 

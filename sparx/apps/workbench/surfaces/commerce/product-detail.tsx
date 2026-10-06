@@ -39,6 +39,7 @@
 // disabled button needing a paragraph of explanation.
 
 import { useEffect, useState } from 'react';
+import { useViewParam } from '../../lib/workbench/view-param';
 import {
   Alert,
   AlertContent,
@@ -64,7 +65,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Share2 } from 'lucide-react';
 import { ModuleScope } from '../../components/module-scope';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -393,16 +394,20 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const confirm = useConfirm();
   const { data: product, isPending, isError, error, refetch } = useProduct(id);
   const { data: domains } = useDomains();
-  const { data: activeSite } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const publish = usePublishProduct(id);
   // A pane opened for one job can open on the tab that does it: Cost vs plan
   // sends a line with no planned cost here with `tab: 'pricing'`, because
   // "What it cost you" is the plan that report reads. Anything else, or an
   // old link carrying a tab that has since gone, lands on Overview.
-  const [tab, setTab] = useState(() => {
-    const wanted = ctx.params.tab;
-    return wanted && TABS.some((entry) => entry.value === wanted) ? wanted : 'overview';
-  });
+  // The tab is the pane's address, not local state (issue 374), so a reload,
+  // a copied link and a restored layout come back to it.
+  const [tab, setTab] = useViewParam(
+    ctx,
+    'tab',
+    TABS.map((entry) => entry.value),
+    'overview'
+  );
 
   // Save lives here, in the toolbar, and commits the tab you are standing on.
   // Each tab hands its save up via useTabSave; see product-tab-save.tsx for why
@@ -454,7 +459,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   // The address a shopper would reach this product at, on the site being worked
   // in. Every site has at least its sparx.zone address, so this is normally
   // present.
-  const propertyId = activeSite?.propertyId ?? null;
+  const propertyId = currentSiteId ?? null;
   const mine = (domains ?? []).filter(
     (domain) =>
       domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)

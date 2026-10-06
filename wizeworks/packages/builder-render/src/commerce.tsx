@@ -115,6 +115,11 @@ interface ProductFormState {
   selectVariant: (variantId: string) => void;
   qty: number;
   setQty: (q: number) => void;
+  /** Whether the resolved version can be bought by sending the old part first
+   *  (sparx issue 057), and whether the buyer chose to. */
+  coreChoiceOffered: boolean;
+  coreFirst: boolean;
+  setCoreFirst: (coreFirst: boolean) => void;
   adding: boolean;
   resolvedVariant: BuilderVariant | null;
   allSelected: boolean;
@@ -165,6 +170,9 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     optionless ? (defaultVariant?.id ?? null) : null
   );
   const [qty, setQty] = React.useState(1);
+  // Paying the deposit is the default, so nobody is held waiting on a part they did
+  // not know they had to send (issue 057).
+  const [coreFirst, setCoreFirst] = React.useState(false);
   const [adding, setAdding] = React.useState(false);
   const [addError, setAddError] = React.useState<string | null>(null);
 
@@ -207,13 +215,23 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
   const compareAtCents = resolvedVariant?.compareAtPriceCents ?? null;
   const onSale = compareAtCents != null && compareAtCents > priceCents;
   const inStock = resolvedVariant ? resolvedVariant.inStock : variants.some((v) => v.inStock);
+  const coreChoiceOffered =
+    resolvedVariant !== null &&
+    resolvedVariant.coreFirstOffered === true &&
+    (resolvedVariant.coreChargeCents ?? 0) > 0;
+  // Only for a version that offers it: switching to one that does not hides the
+  // choice, and a leftover "send it first" must not ride along to a refusal.
+  const addOptions = React.useMemo(
+    () => (coreChoiceOffered && coreFirst ? { coreFirst: true } : {}),
+    [coreChoiceOffered, coreFirst]
+  );
 
   const addToCart = React.useCallback(async () => {
     if (!resolvedVariant?.inStock) return;
     setAdding(true);
     setAddError(null);
     try {
-      await runtime.addToCart(resolvedVariant.id, qty);
+      await runtime.addToCart(resolvedVariant.id, qty, addOptions);
     } catch (err) {
       // The button already disables for a KNOWN sold-out variant; this catches the
       // race where it sold out between load and click (the cart API 409s). Show it
@@ -222,7 +240,7 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     } finally {
       setAdding(false);
     }
-  }, [runtime, resolvedVariant, qty]);
+  }, [runtime, resolvedVariant, qty, addOptions]);
 
   // "Buy now" — add the resolved variant, then the runtime sends the buyer to
   // checkout (live) / does nothing (canvas). Same guard as addToCart.
@@ -231,13 +249,13 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     setAdding(true);
     setAddError(null);
     try {
-      await runtime.buyNow(resolvedVariant.id, qty);
+      await runtime.buyNow(resolvedVariant.id, qty, addOptions);
     } catch (err) {
       setAddError(err instanceof Error ? err.message : 'Sorry, we couldn’t add that to your cart.');
     } finally {
       setAdding(false);
     }
-  }, [runtime, resolvedVariant, qty]);
+  }, [runtime, resolvedVariant, qty, addOptions]);
 
   return {
     product,
@@ -248,6 +266,9 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     selectVariant,
     qty,
     setQty,
+    coreChoiceOffered,
+    coreFirst,
+    setCoreFirst,
     adding,
     resolvedVariant,
     allSelected,
@@ -512,6 +533,54 @@ export function BuilderActionButton({
   );
 }
 
+/**
+ * "Your old part" (sparx issue 057): pay the core deposit and ship now, or send the
+ * old part first, pay no deposit, and ship when it arrives. The same words as the
+ * silica buy box's `corePicker` and the storefront's `<ProductDetail>`, so a shopper
+ * meets one promise whichever page they are on. Renders nothing for a version that
+ * can only be bought one way.
+ */
+function BuilderCoreChoice() {
+  const f = useProductForm();
+  const name = React.useId();
+  if (!f?.coreChoiceOffered || f.resolvedVariant?.coreChargeCents == null) return null;
+  const deposit = moneyOf(f.resolvedVariant.coreChargeCents, f.product.currency);
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="text-base-content text-base font-medium">Your old part</legend>
+      <label className="text-base-content flex items-center gap-2 text-base">
+        <input
+          type="radio"
+          className="radio"
+          name={name}
+          value=""
+          checked={!f.coreFirst}
+          onChange={() => {
+            f.setCoreFirst(false);
+          }}
+        />
+        <span>
+          Pay the {deposit} core deposit now. Your part is ready right away, and we pay the deposit
+          back when your old part comes back.
+        </span>
+      </label>
+      <label className="text-base-content flex items-center gap-2 text-base">
+        <input
+          type="radio"
+          className="radio"
+          name={name}
+          value="1"
+          checked={f.coreFirst}
+          onChange={() => {
+            f.setCoreFirst(true);
+          }}
+        />
+        <span>Send your old part first. No deposit. Your part is ready once it arrives.</span>
+      </label>
+    </fieldset>
+  );
+}
+
 // ── Cohesive BuyBox (own provider + the standard atoms) ───────────────────────
 
 function BuyBoxInner() {
@@ -527,7 +596,20 @@ function BuyBoxInner() {
           </span>
         ) : null}
       </div>
+      {/* A rebuilt part's refundable core deposit (sparx issue 051), said before
+          the button because it is charged on top of the price. When the part can
+          also be bought by sending the old one first (issue 057), "Plus" would be a
+          promise of money the buyer may not pay, so the line names both. */}
+      {f.resolvedVariant?.coreChargeCents != null ? (
+        <p className="m-0">
+          {f.coreChoiceOffered ? 'A' : 'Plus a'}{' '}
+          {moneyOf(f.resolvedVariant.coreChargeCents, f.product.currency)} refundable core deposit
+          {f.coreChoiceOffered ? ', or send your old part first' : ''}, paid back when you return
+          your old part.
+        </p>
+      ) : null}
       <BuilderVariantPicker />
+      <BuilderCoreChoice />
       <div className="flex flex-wrap items-center gap-3">
         <BuilderQuantity />
         <BuilderAddToCart />

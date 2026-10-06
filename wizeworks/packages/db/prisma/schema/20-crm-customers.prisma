@@ -40,10 +40,10 @@ model Customer {
   companyId      String? @map("company_id") @db.Uuid
   assignedRepId  String? @map("assigned_rep_id") @db.Uuid
 
-  email                  String?  @db.VarChar(255)
-  phone                  String?  @db.VarChar(50)
-  firstName              String?  @map("first_name") @db.VarChar(255)
-  lastName               String?  @map("last_name") @db.VarChar(255)
+  email                  String? @db.VarChar(255)
+  phone                  String? @db.VarChar(50)
+  firstName              String? @map("first_name") @db.VarChar(255)
+  lastName               String? @map("last_name") @db.VarChar(255)
   // The employer they TYPED, which is not the same fact as `companyId` below
   // (docs/144 §11). A guest checkout writes this and nothing else; a contact
   // imported from a spreadsheet has it and no company record; and the two
@@ -54,21 +54,21 @@ model Customer {
   // The API field, the segment source (`customer.company`), the scoring path and
   // the CSV import header all still use the key `company` — that is a tenant's
   // stored vocabulary, and renaming it would rewrite saved segments.
-  companyName            String?  @map("company_name") @db.VarChar(255)
-  jobTitle               String?  @map("job_title") @db.VarChar(255)
-  preferredContactMethod String?  @map("preferred_contact_method") @db.VarChar(20) // email | phone | sms
-  doNotContact           Boolean  @default(false) @map("do_not_contact")
+  companyName            String? @map("company_name") @db.VarChar(255)
+  jobTitle               String? @map("job_title") @db.VarChar(255)
+  preferredContactMethod String? @map("preferred_contact_method") @db.VarChar(20) // email | phone | sms
+  doNotContact           Boolean @default(false) @map("do_not_contact")
 
   // The lead response clock (docs/152 D2). `leadResponseDueAt` is when the
   // business's promise runs out, in BUSINESS time, computed once at capture from
   // the SLA policy's calendar; `firstRespondedAt` is when somebody actually got
   // back to them. Both null on a contact nobody promised anything about, which
   // is a normal state and must never render as overdue.
-  leadResponseDueAt      DateTime? @map("lead_response_due_at") @db.Timestamptz
-  firstRespondedAt       DateTime? @map("first_responded_at") @db.Timestamptz
-  gdprConsent            Json     @default("{}") @map("gdpr_consent")
-  tags                   String[] @default([]) @db.VarChar(63)
-  metadata               Json     @default("{}")
+  leadResponseDueAt DateTime? @map("lead_response_due_at") @db.Timestamptz
+  firstRespondedAt  DateTime? @map("first_responded_at") @db.Timestamptz
+  gdprConsent       Json      @default("{}") @map("gdpr_consent")
+  tags              String[]  @default([]) @db.VarChar(63)
+  metadata          Json      @default("{}")
 
   // The extra details THIS business tracks about a person (docs/144 §3) —
   // "warranty expires", "dietary needs", "referred by". Validated on write
@@ -151,6 +151,8 @@ model Customer {
 
   // Commerce module inverse relations
   carts            Cart[]
+  savedB2bCarts    B2bSavedCart[]
+  b2bQuoteRequests B2bQuoteRequest[]
   checkoutSessions CheckoutSession[]
   accountCredits   AccountCredit[]
   subscriptions    Subscription[]

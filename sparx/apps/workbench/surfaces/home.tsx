@@ -24,6 +24,7 @@ import {
 } from '@/components/shortcut-keys';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
+import { SiteBehindOffer } from './builder/site-behind';
 import { WelcomeBanner } from './onboarding/welcome/welcome-banner';
 
 interface Gesture {
@@ -86,6 +87,11 @@ export function HomeSurface({ ctx }: { ctx: SurfaceContext }) {
             the window has passed, so it never crowds the teaching content. */}
         <div className="mb-6 empty:mb-0">
           <WelcomeBanner ctx={ctx} />
+        </div>
+        {/* "Your live site cannot say this yet" — also nothing at all when it can. Here
+            because the page that is behind is one its owner has no reason to open. */}
+        <div className="mb-6 empty:mb-0">
+          <SiteBehindOffer ctx={ctx} />
         </div>
         <Heading level={1} className="text-2xl">
           Your workbench

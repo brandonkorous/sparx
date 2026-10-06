@@ -181,8 +181,21 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  if (isPending || !domain) {
+  if (isPending) {
     return <PaneWaiting />;
+  }
+
+  // The read answers an empty body (not a 404) for a list that is not there:
+  // removed, or another business's id. That is a missing list, not one still
+  // on its way (persona issue 226).
+  if (!domain) {
+    return (
+      <div className={`${PANE_SHELL} p-2`}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneLoadError reason="missing" noun="list" title="Could not load this list" />
+        </Card>
+      </div>
+    );
   }
 
   return (

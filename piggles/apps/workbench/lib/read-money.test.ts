@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { optionalMoneyText, readCents, readMoney } from './read-money';
+import {
+  moneyFieldText,
+  optionalMoneyText,
+  readCents,
+  readMoney,
+  readMoneyField,
+} from './read-money';
 
 /**
  * WHY THIS FILE EXISTS.
@@ -125,5 +131,53 @@ describe('optionalMoneyText', () => {
     expect(optionalMoneyText(0)).toBe('0.00');
     expect(optionalMoneyText(1800)).toBe('18.00');
     expect(optionalMoneyText(123450)).toBe('1234.50');
+  });
+});
+
+/**
+ * `MoneyInput`, for an amount that can be left blank (sparx persona issue 086).
+ *
+ * The Pricing tab drew "What it cost you" as `value={cost ?? 0}`, so every one of
+ * Gillett Diesel's 777 versions, none of which has a cost on record, read 0.00:
+ * a cost nobody entered shown as a cost of nothing. And the way back mapped a
+ * typed 0 to "not set", so a part that really did cost nothing could never be
+ * recorded as one. "Was" did both of the same things.
+ *
+ * Removing the `null` branch of `moneyFieldText` reddens the first case;
+ * reporting a cleared optional box as 0 reddens the third.
+ */
+describe('a money field that can be left blank', () => {
+  it('shows nothing entered as an empty box, not as 0.00', () => {
+    expect(moneyFieldText(null)).toBe('');
+  });
+
+  it('shows a real zero as 0.00, and any other amount settled to the cent', () => {
+    expect(moneyFieldText(0)).toBe('0.00');
+    expect(moneyFieldText(12.5)).toBe('12.50');
+  });
+
+  it('reports a cleared box as nothing entered', () => {
+    expect(readMoneyField('', { blank: null })).toEqual({ value: null });
+    expect(readMoneyField('   ', { blank: null })).toEqual({ value: null });
+  });
+
+  it('reports a typed zero as zero, not as nothing entered', () => {
+    expect(readMoneyField('0', { blank: null })).toEqual({ value: 0 });
+    expect(readMoneyField('0.00', { blank: null })).toEqual({ value: 0 });
+    expect(readMoneyField('$0', { blank: null })).toEqual({ value: 0 });
+  });
+
+  it('reads an amount the same way whether or not the box can be blank', () => {
+    expect(readMoneyField('8,50', { blank: null })).toEqual({ value: 8.5 });
+    expect(readMoneyField('8,50', { blank: 0 })).toEqual({ value: 8.5 });
+  });
+
+  it('keeps a box that cannot be blank reporting a cleared box as zero', () => {
+    expect(readMoneyField('', { blank: 0 })).toEqual({ value: 0 });
+  });
+
+  it('reports nothing at all for text it cannot read yet', () => {
+    expect(readMoneyField('8x', { blank: null })).toBeNull();
+    expect(readMoneyField('8x', { blank: 0 })).toBeNull();
   });
 });

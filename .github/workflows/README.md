@@ -1,8 +1,8 @@
 # Workflows
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-10-03
 
 There are four, and each is a different KIND of thing:
 
@@ -20,7 +20,8 @@ push to main
   build            16 images → ghcr.io/<repo>/<image>:<sha>
   1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
   2 data           roles → migrate → seed platform rows
-  3 containers     pin every image to <sha>, apply k8s/azure/apps, wait
+  3 containers     pin every image to <sha>, apply k8s/azure/apps, wait,
+                   then re-sync system automations from the new code
     tag            cut the v* tag — only if the release actually shipped
   4 cleanup        prune old image versions + obsolete workflow-run history
 ```
@@ -60,6 +61,29 @@ can be skipped, mis-wired to one cloud, or run without the volume it writes to �
 all three of which happened. Publishing because the image booted cannot be any of
 those. The catalog row counts moved to the end of stage 3 accordingly: the pods
 that just came up are what wrote them.
+
+### Why system automations re-sync AFTER the containers
+
+System automations (the dunning ladder, "an order is waiting for sign-off", the
+receipt emails) are a row per business, written from definitions in code: the
+seeds in `wizeworks/packages/automation-actions`. Until now only the daily
+`automation-reconcile-seeds` CronJob (02:07) and a module being switched on ever
+rewrote those rows. So a release that changed a seed shipped the new definition
+and left every business running the old one for up to a day: after the release
+that taught the held-order rules who signs, the business would have kept getting
+a task for an order only the buyer's own approver can sign, and that approver no
+email.
+
+This is data, so it is a step of the release, and it fails the release when it
+fails. It is the one piece of data that comes AFTER the rollout rather than
+before it, because the definitions exist only in the code the rollout brings: run
+from stage 2, it would write the previous release's seeds back. So the last step
+of stage 3, once `rollout status` has retired every old pod, checks the
+event-worker is running this release's SHA and calls the same reconcile the
+CronJob calls, with `?only=seeds` (the CronJob's daily campaign scan stays on its
+own clock). It is idempotent, it runs even when the rollout was skipped (then it
+changes nothing), and the run summary lists, per module, how many businesses and
+rules it wrote and how many it skipped. The CronJob stays as the backstop.
 
 ### Why the k8s overlay is split
 

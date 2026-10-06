@@ -193,7 +193,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.5.1',
+  version: '1.5.2',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -243,7 +243,7 @@ function manifestJson(opts: {
         category: 'blueprint',
         slug: opts.key,
         name: opts.name,
-        version: '1.5.1',
+        version: '1.5.2',
         tagline: opts.tagline,
         description: opts.summary,
         payload: 'blueprint.ts',
@@ -327,9 +327,9 @@ async function main(): Promise<void> {
         // even where the gate is not the thing being tested.
         const name = t;
         const summary =
-            `The complete starter: a faceted shop, a journal, a booking page, and a ` +
-            `wholesale page: in the ${t} look, tuned for ${desc.audience}. Install it, make it ` +
-            `yours, and launch a polished working site in minutes.`;
+            `A complete starter in the ${t} look, tuned for ${desc.audience}: a faceted shop, ` +
+            `a journal, a booking page, and a wholesale page. Install it, make it yours, and ` +
+            `launch a polished working site in minutes.`;
         const tagline = `A complete multi-module starter in the ${t} look, for ${desc.audience}.`;
 
         const brand = {

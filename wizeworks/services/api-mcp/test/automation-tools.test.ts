@@ -15,7 +15,7 @@ import crypto from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { prisma } from '@wizeworks/db';
 import { invalidateModuleCache, issueApiKey } from '@wizeworks/auth';
-import { upsertSystemAutomation } from '@wizeworks/automation';
+import { publishAutomation, updateAutomation, upsertSystemAutomation } from '@wizeworks/automation';
 import { createApp } from '../src/app.js';
 
 interface TestTenant {
@@ -123,6 +123,7 @@ describe('automation MCP tools', () => {
     expect(list.body).toContain('create_automation');
     expect(list.body).toContain('set_automation_status');
     expect(list.body).toContain('clone_automation');
+    expect(list.body).toContain('take_platform_version');
     expect(list.body).toContain('get_automation_runs');
   });
 
@@ -205,6 +206,7 @@ describe('automation MCP tools', () => {
     const locked = await upsertSystemAutomation(
       { tenantId: tenant.tenantId },
       {
+        key: 'test.locked-system-rule-mcp',
         name: 'Locked system rule (mcp)',
         trigger: EVENT_TRIGGER,
         conditions: { logic: 'AND', conditions: [] },
@@ -276,5 +278,49 @@ describe('automation MCP tools', () => {
     );
     expect(denied.body.toLowerCase()).toContain('scope');
     expect(denied.body).toContain('write:automations');
+  });
+
+  it('switches a seeded rule the business changed to the newer platform version', async () => {
+    const ctx = { tenantId: tenant.tenantId };
+    const seed = {
+      key: 'test.mcp-take-welcome',
+      name: 'Welcome (mcp)',
+      description: 'Say hello',
+      trigger: EVENT_TRIGGER,
+      conditions: { logic: 'AND' as const, conditions: [] },
+      actions: [STOP_ACTION],
+      status: 'active' as const,
+    };
+    const row = await upsertSystemAutomation(ctx, seed);
+    await updateAutomation(ctx, row.id, { description: 'Our own hello' });
+    await publishAutomation(ctx, row.id);
+    await upsertSystemAutomation(ctx, { ...seed, description: 'Say hello, better' });
+
+    const taken = await postMcp(
+      app,
+      token,
+      jsonRpc(
+        'tools/call',
+        { name: 'take_platform_version', arguments: { automationId: row.id } },
+        40
+      )
+    );
+    expect(parseToolResult(taken.body)).toMatchObject({
+      description: 'Say hello, better',
+      name: 'Welcome (mcp)',
+      platformUpdateAt: null,
+    });
+
+    // Nothing is waiting any more, and the refusal says so in words.
+    const again = await postMcp(
+      app,
+      token,
+      jsonRpc(
+        'tools/call',
+        { name: 'take_platform_version', arguments: { automationId: row.id } },
+        41
+      )
+    );
+    expect(again.body).toContain('no newer version');
   });
 });

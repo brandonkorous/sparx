@@ -184,7 +184,11 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
     legalKind: 'cookie-policy',
     defaultSlug: 'cookie-policy',
     title: 'Cookie Policy',
-    templateVersion: 4,
+    // 5: "Categories we use" claimed all four kinds were in use, and the choices
+    // were promised from a "Manage cookies" link in the footer, which no site has:
+    // it is a button in the bottom corner, and reads "Do Not Sell or Share My
+    // Info" under the opt-out approach (sparx persona issue 037).
+    templateVersion: 5,
     requirement: 'always',
     doc: doc(
       p(
@@ -194,7 +198,10 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       p(
         'Cookies are small text files stored on your device. Some are essential for the site to work; others help us remember your preferences or understand how the site is used.'
       ),
-      h('Categories we use'),
+      h('Kinds of cookies'),
+      p(
+        'These are the kinds of cookies a site can use. The cookie choices on this site list only the optional kinds it actually uses.'
+      ),
       ul([
         'Strictly necessary: required for core functionality such as signing in and keeping your cart. These cannot be switched off.',
         'Preferences: remember choices such as light or dark mode.',
@@ -203,7 +210,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       ]),
       h('Managing your choices'),
       p(
-        'Where non-essential cookies are used, you can manage your preferences through the cookie banner or the "Manage cookies" link in the footer. You can also control cookies through your browser settings.'
+        'Where optional cookies are used, you can make or change your choices at any time, from the cookie banner or from the cookie button in the bottom corner of every page. You can also control cookies through your browser settings.'
       ),
       h('Contact'),
       p('Questions about our use of cookies? Contact us and we will be glad to help.')

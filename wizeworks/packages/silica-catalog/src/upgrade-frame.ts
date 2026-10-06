@@ -31,7 +31,7 @@
 //   2. The hardcoded `/privacy-policy` + `/terms-of-service` footer links — two
 //      guaranteed 404s on every site whose owner hasn't published those pages yet.
 
-import type { Node } from '@wizeworks/silicaui-html';
+import { bind, type Node } from '@wizeworks/silicaui-html';
 
 import { HOST_KEYS, hostCore } from './host-nodes';
 
@@ -457,6 +457,51 @@ function hasLinkTo(node: Node, href: string): boolean {
   return (node.children ?? []).some((c) => typeof c !== 'string' && hasLinkTo(c, href));
 }
 
+/** The lines the PLATFORM wrote under the business name in a footer. The first is the
+ *  platform's own pitch, captured into the golden `sparx` design and cloned into every
+ *  design made from it, so a diesel shop's footer told its customers "Everything you
+ *  publish and sell, in one place" (issue 851 fixed the generated starter; sparx persona
+ *  issue 046 found the shipped designs still carrying it). The second is what replaced
+ *  it in the starter. Matched LITERALLY: a line the owner wrote is theirs. */
+const SEEDED_FOOTER_BLURBS = new Set([
+  'Everything you publish and sell, in one place.',
+  'Glad you found us. Get in touch any time.',
+]);
+
+/** What a footer blurb shows while the owner has no tagline. */
+export const FOOTER_BLURB_FALLBACK = 'Glad you found us. Get in touch any time.';
+
+/** Bind the platform-written footer blurb to the owner's tagline.
+ *
+ *  Site identity has a Tagline field, and the footer sat one line under the business
+ *  name saying something the platform wrote instead. Bound, it shows his tagline
+ *  ("Diesel Done Right Since 1986!") on every page, and follows it when he changes it.
+ *  A site with no tagline keeps the fallback: the site resolves an unset tagline as
+ *  `null`, which leaves the authored text in place rather than blanking it. */
+function upgradeFooterBlurb(node: Node): Node | null {
+  if (!isElement(node)) return null;
+  const children = node.children ?? [];
+  const only = children.length === 1 ? children[0] : undefined;
+  if (!node.data && typeof only === 'string' && SEEDED_FOOTER_BLURBS.has(only.trim())) {
+    return bind({ ...node, children: [FOOTER_BLURB_FALLBACK] }, 'site.identity.tagline');
+  }
+  let changed = false;
+  const next = children.map((child) => {
+    if (typeof child === 'string') return child;
+    const upgraded = upgradeFooterBlurb(child);
+    if (!upgraded) return child;
+    changed = true;
+    return upgraded;
+  });
+  return changed ? { ...node, children: next } : null;
+}
+
+/** The same binding for a footer being BUILT, so the starter's own footer ships bound
+ *  and a fresh frame never needs healing (`siteFooter`). */
+export function bindFooterBlurb(footer: Node): Node {
+  return upgradeFooterBlurb(footer) ?? footer;
+}
+
 /** Heal a stale frame. Pure — no DB, no IO — so it is safe to run on every studio load
  *  and trivial to test. `changed` lets the caller skip a pointless autosave.
  *
@@ -485,7 +530,9 @@ function hasLinkTo(node: Node, href: string): boolean {
  *      again: Site identity promises the links appear in the footer, the resolver supplies
  *      them on every render, and no published frame has a node that asks for them
  *      (issue 326). Measured against all 191 shipped designs rather than argued: the first
- *      handle read "the empty row beside the brand core" and reached 122 of them. */
+ *      handle read "the empty row beside the brand core" and reached 122 of them.
+ *   5. **Footer blurb** — the line the platform wrote under the business name becomes
+ *      the owner's tagline, bound, with a plain fallback (sparx persona issue 046). */
 export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean } {
   if (!isElement(root)) return { root, changed: false };
 
@@ -545,6 +592,7 @@ export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean }
   healRegion('footer', (footer) =>
     upgradeFooterAccountColumn(footer, !hasLinkTo(footer, '/account/returns'))
   );
+  healRegion('footer', upgradeFooterBlurb);
 
   return { root: next, changed };
 }

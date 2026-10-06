@@ -22,6 +22,7 @@ import {
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { installModuleActions, seedSystemAutomations } from '../../src/index.js';
+import { B2B_NEW_ACCOUNT_TASK, B2B_OVERDUE_ESCALATION } from '../../src/seeds/b2b.js';
 
 const ownerDb = new PrismaClient({
   datasourceUrl:
@@ -138,7 +139,7 @@ describe('per-module seed install', () => {
     const mail = installed.find((a) => a.name === 'Email opens a support request');
     expect(mail?.status).toBe('active');
 
-    // Re-seed is idempotent (upsert by origin+name) — no duplicates.
+    // Re-seed is idempotent (upsert by key): no duplicates.
     const again = await seedSystemAutomations({ tenantId }, { module: 'crm' });
     expect(again).toHaveLength(8);
     const count = await ownerDb.automation.count({ where: { tenantId, origin: 'system' } });
@@ -149,11 +150,11 @@ describe('per-module seed install', () => {
     const { tenantId } = await seedTenant(['b2b']);
     await seedSystemAutomations({ tenantId }, { module: 'b2b' });
     const dunning = await ownerDb.automation.findFirst({
-      where: { tenantId, name: 'B2B overdue escalation' },
+      where: { tenantId, name: B2B_OVERDUE_ESCALATION.name },
     });
     expect(dunning?.locked).toBe(true);
     const task = await ownerDb.automation.findFirst({
-      where: { tenantId, name: 'New B2B account onboarding task' },
+      where: { tenantId, name: B2B_NEW_ACCOUNT_TASK.name },
     });
     expect(task?.locked).toBe(false);
   });

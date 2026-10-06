@@ -12,12 +12,18 @@ import { useToast } from '@wizeworks/silicaui-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { usePolicy } from './setup-data';
+import { thisComputersTimezone } from '../../lib/business-timezone';
+import {
+  instantFromWall,
+  wallClockHint,
+  wallProblem,
+  wallValue,
+  type WallClockBox,
+} from '../../lib/wall-clock';
 import {
   customerName,
-  fromLocalInputValue,
   isTerminalBooking,
   schedulingErrorMessage,
-  toLocalInputValue,
   useCancelBooking,
   useCheckInBooking,
   useCompleteBooking,
@@ -48,7 +54,11 @@ export function useBookingManage(ctx: SurfaceContext, booking: Booking) {
 
   const [notes, setNotes] = useState(booking.notes ?? '');
   const [staffNotes, setStaffNotes] = useState(booking.staffNotes ?? '');
-  const [rescheduleLocal, setRescheduleLocal] = useState(toLocalInputValue(booking.startAt));
+  // On the booking's own clock: the one its header, the diary and every email to
+  // the customer use (sparx persona issue 086). This computer's is a different one.
+  const zone = booking.timezone;
+  const startWall = wallValue(booking.startAt, zone);
+  const [rescheduleLocal, setRescheduleLocal] = useState(startWall);
 
   useEffect(() => {
     ctx.setTitle(booking.service.name || 'Booking');
@@ -57,8 +67,15 @@ export function useBookingManage(ctx: SurfaceContext, booking: Booking) {
   const notesChanged = notes !== (booking.notes ?? '') || staffNotes !== (booking.staffNotes ?? '');
   useDirtySource(notesChanged, 'This booking has unsaved notes. Close anyway?');
 
-  const rescheduleIso = fromLocalInputValue(rescheduleLocal);
-  const rescheduleMoved = rescheduleIso !== null && rescheduleIso !== booking.startAt;
+  const rescheduleIso = instantFromWall(rescheduleLocal, zone);
+  // Compared as the box reads, so the second 1:30 AM of the night the clocks go
+  // back does not count as a move just by being shown.
+  const rescheduleMoved = rescheduleIso !== null && rescheduleLocal !== startWall;
+  const rescheduleClock: WallClockBox = {
+    zone,
+    hint: wallClockHint(zone, thisComputersTimezone()),
+    problem: wallProblem(rescheduleLocal, zone),
+  };
 
   // ONE message, the most specific one — the latest action that failed.
   const actionError = useMemo(() => {
@@ -130,6 +147,7 @@ export function useBookingManage(ctx: SurfaceContext, booking: Booking) {
     rescheduleLocal,
     setRescheduleLocal,
     rescheduleMoved,
+    rescheduleClock,
     actionError,
     guestName,
     who,

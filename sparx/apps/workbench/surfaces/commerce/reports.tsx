@@ -223,6 +223,13 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                     </Stat>
                   </Stats>
 
+                  {(data.coreDepositsHeldCents ?? 0) > 0 ? (
+                    <Text className="text-sm">
+                      {formatCents(data.coreDepositsHeldCents ?? 0, currency)} in core deposits is
+                      still waiting on old parts to come back. It is the customers&rsquo; money
+                      until then, so it is not counted in the revenue above.
+                    </Text>
+                  ) : null}
                   {data.refundedCents > 0 ? (
                     <Text className="text-sm">
                       {formatCents(data.refundedCents, currency)} was refunded in this period,

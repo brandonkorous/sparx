@@ -40,6 +40,7 @@ import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { buildSnapshotPayload } from './billing-snapshot';
+import { closeWhenDocumentMovesOn } from './task-service';
 
 /** 32 bytes of urlsafe base64 — 256 bits, the same strength as an API key. */
 function mintToken(): { token: string; hash: string } {
@@ -394,6 +395,9 @@ export async function signByToken(
         data: { stageId: committed.id },
       });
       movedToStage = committed.name;
+      // A task waiting on the stage it was in is answered: the customer signed.
+      // Nobody on the team did it, so no teammate is named.
+      await closeWhenDocumentMovesOn(tx, { tenantId: row.tenantId }, { documentId: doc.id });
     }
 
     // On the CUSTOMER's timeline, not just the document's. "They signed the

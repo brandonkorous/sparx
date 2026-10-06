@@ -23,6 +23,7 @@ import {
   bulkUpsertOrders,
   bulkUpsertProducts,
   CUSTOMERS_COLLECTION,
+  deleteEntity,
   dropTenantFromCollection,
   ENTITIES_COLLECTION,
   ORDERS_COLLECTION,
@@ -33,6 +34,7 @@ import type { Logger as PinoLogger } from 'pino';
 
 import type { CommerceEventEnvelope } from './handler.js';
 import { REGISTRY } from './registry.js';
+import { SAME_ROW } from './same-row.js';
 
 // Ids are enumerated all-at-once (cheap, id-only), then projected +
 // upserted in chunks this size so a huge tenant doesn't hold every
@@ -239,6 +241,11 @@ async function reindexEntities(
       const res = await bulkUpsertEntities(docs);
       indexed += res.successCount;
       errors += res.errors.length;
+      // A row indexed as one kind clears any entry it still has as another.
+      // Without this a rebuild that keeps old entries (the search box's "Put
+      // them back") would leave every quote ALSO filed under "Invoices", where
+      // it was indexed before quotes had their own kind (issue 086).
+      if (!dropStale) await clearOtherKinds(ctx.tenantId, docs);
     }
     logger.info(
       { tenantId: ctx.tenantId, entityType: projector.entityType, total: ids.length, runId },
@@ -246,6 +253,17 @@ async function reindexEntities(
     );
   }
   return { indexed, errors };
+}
+
+async function clearOtherKinds(
+  tenantId: string,
+  docs: readonly UniversalSearchDocument[]
+): Promise<void> {
+  for (const doc of docs) {
+    for (const kind of SAME_ROW[doc.entity_type] ?? []) {
+      if (kind !== doc.entity_type) await deleteEntity(tenantId, kind, doc.record_id);
+    }
+  }
 }
 
 interface CollectionPlan {

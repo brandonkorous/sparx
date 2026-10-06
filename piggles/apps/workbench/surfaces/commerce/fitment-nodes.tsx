@@ -16,7 +16,7 @@
 // "save my changes" where nothing names what is lost. So deletion is its own
 // action behind its own confirm.
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Alert,
@@ -56,6 +56,7 @@ import {
   type FitmentDomain,
   type FitmentNode,
 } from './fitment-data';
+import { placeholderFor } from './fitment-example';
 
 interface Step {
   id: string;
@@ -70,6 +71,12 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
   const [path, setPath] = useState<Step[]>([]);
   const [addValue, setAddValue] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
+  // Pressing the pencil puts the name in hand, selected, so typing replaces it.
+  // Without this the box opened unfocused, and select-all took the whole page.
+  const renameInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (editingId) renameInputRef.current?.select();
+  }, [editingId]);
   const [editValue, setEditValue] = useState('');
 
   const depth = path.length;
@@ -287,7 +294,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
               color="module"
               size="sm"
               value={addValue}
-              placeholder={placeholderFor(currentLevel.label)}
+              placeholder={placeholderFor(currentLevel.label, path[path.length - 1]?.name)}
               onChange={(event) => {
                 setAddValue(event.target.value);
               }}
@@ -355,6 +362,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
                       color="module"
                       size="sm"
                       className="min-w-0 flex-1"
+                      ref={renameInputRef}
                       value={editValue}
                       aria-label={`Rename ${node.name}`}
                       onChange={(event) => {
@@ -480,21 +488,4 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
       )}
     </section>
   );
-}
-
-/** A concrete, on-topic example for the add box, so an empty field is not a
- *  blank stare. Falls back to the level's own name for a custom domain. */
-function placeholderFor(levelLabel: string): string {
-  const map: Record<string, string> = {
-    Make: 'Ford',
-    Model: 'F-250 Super Duty',
-    Engine: '6.7L Power Stroke',
-    Brand: 'Apple',
-    Size: 'Large',
-    Species: 'Dog',
-    Breed: 'Labrador Retriever',
-    Department: "Men's",
-    Discipline: 'Road',
-  };
-  return map[levelLabel] ?? `A ${levelLabel.toLowerCase()}`;
 }

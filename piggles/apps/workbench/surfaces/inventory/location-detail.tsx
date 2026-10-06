@@ -8,6 +8,7 @@ import { Card } from '@wizeworks/silicaui-react';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { useBusinessCountry } from '../../lib/business-country';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useLocation } from './locations-data';
 import { BLANK, draftFrom } from './location-draft';
@@ -19,9 +20,19 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
   const location = useLocation(id);
+  const businessCountry = useBusinessCountry();
 
   if (isNew) {
-    return <LocationEditor ctx={ctx} id="new" initial={BLANK} existing={null} />;
+    // Opens on the business's own country, not "No country" (sparx issue 043).
+    if (businessCountry === undefined) return <PaneWaiting />;
+    return (
+      <LocationEditor
+        ctx={ctx}
+        id="new"
+        initial={{ ...BLANK, country: businessCountry }}
+        existing={null}
+      />
+    );
   }
 
   // A failed load REPLACES the form — never an empty form beside a dead Save,

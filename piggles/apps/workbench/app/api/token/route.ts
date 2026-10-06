@@ -22,6 +22,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { SignJWT } from 'jose';
 import { requireSession } from '@wizeworks/auth';
+import { ACTIVE_PROPERTY_COOKIE, readActiveSite } from '../../../lib/active-site-cookie';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,7 +102,12 @@ export async function GET(): Promise<NextResponse> {
   // lookup under RLS, so a stale or spoofed value can only ever name one of this
   // same tenant's properties. Forwarding it is a convenience, not a control.
   const cookieStore = await cookies();
-  const propertyId = cookieStore.get('piggles_active_property')?.value ?? null;
+  // Bound to the tenant that set it, so a site left by another company's
+  // operator on this computer is never forwarded (sparx persona issue 011).
+  const propertyId = readActiveSite(
+    cookieStore.get(ACTIVE_PROPERTY_COOKIE)?.value,
+    session.user.tenantId
+  );
 
   const body: WorkbenchTokenResponse = {
     token,

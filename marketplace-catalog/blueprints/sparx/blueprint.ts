@@ -49,7 +49,7 @@ import content from './content.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx',
-  version: '1.6.1',
+  version: '1.6.2',
   name: 'Universal Starter',
   summary:
     'A complete, multi-module starter (shop, journal, booking, and wholesale) in the Ember look. Install it, make it yours, and launch a polished working site in minutes.',

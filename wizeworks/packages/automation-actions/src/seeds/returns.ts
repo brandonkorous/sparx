@@ -9,6 +9,7 @@
 import type { SystemAutomationSpec } from '@wizeworks/automation';
 
 export const RETURN_APPROVED_EMAIL: SystemAutomationSpec = {
+  key: 'returns.approved-email',
   name: 'Return approved: email',
   previousNames: ['Return approved — email'],
   description: 'Emails the customer when their return is approved, with next steps.',
@@ -25,6 +26,7 @@ export const RETURN_APPROVED_EMAIL: SystemAutomationSpec = {
 };
 
 export const RETURN_RECEIVED_EMAIL: SystemAutomationSpec = {
+  key: 'returns.received-email',
   name: 'Return received: email',
   previousNames: ['Return received — email'],
   description: 'Emails the customer when their returned items arrive back.',
@@ -41,6 +43,7 @@ export const RETURN_RECEIVED_EMAIL: SystemAutomationSpec = {
 };
 
 export const RETURN_REFUNDED_EMAIL: SystemAutomationSpec = {
+  key: 'returns.refunded-email',
   name: 'Return refunded: email',
   previousNames: ['Return refunded — email'],
   description: 'Emails the customer when a refund is issued for their return.',
@@ -67,6 +70,7 @@ export const RETURN_REFUNDED_EMAIL: SystemAutomationSpec = {
 // them anything (persona issue 448).
 
 export const RETURN_EXCHANGED_EMAIL: SystemAutomationSpec = {
+  key: 'returns.replacement-sent-email',
   name: 'Replacement sent: email',
   previousNames: ['Replacement sent — email'],
   description: 'Emails the customer when the replacement for their swap goes out.',
@@ -89,6 +93,7 @@ export const RETURN_EXCHANGED_EMAIL: SystemAutomationSpec = {
 // in the email above and never reaches here, so a customer gets one email about
 // their replacement, never two.
 export const RETURN_REPLACEMENT_SHIPPED_EMAIL: SystemAutomationSpec = {
+  key: 'returns.replacement-tracking-email',
   name: 'Replacement tracking: email',
   previousNames: ['Replacement tracking — email'],
   description: 'Emails the customer the tracking number when the replacement is posted.',
@@ -105,6 +110,7 @@ export const RETURN_REPLACEMENT_SHIPPED_EMAIL: SystemAutomationSpec = {
 };
 
 export const RETURN_DENIED_EMAIL: SystemAutomationSpec = {
+  key: 'returns.denied-email',
   name: 'Return turned down: email',
   previousNames: ['Return turned down — email'],
   description: 'Emails the customer the reason when a return is not accepted.',

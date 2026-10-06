@@ -139,10 +139,22 @@ interface BusinessView {
 
 type BusinessRow = Omit<BusinessView, 'tenantId'>;
 
-function toView(tenantId: string, row: BusinessRow | null): BusinessView {
+/**
+ * `companyName` is the tenant's own name, the one setup's "Company name" writes.
+ * Documents print `businessName ?? tenant.name` (billing-document-stage-service.ts),
+ * so a business that never opened this screen still has a name on every invoice.
+ * The screen showed the box EMPTY over that: Gillett Diesel typed "Gillett Diesel
+ * Service Inc." in setup, its invoices carried it, and Business details said it had
+ * no name (sparx persona issue 026). The view now shows what documents print.
+ */
+function toView(
+  tenantId: string,
+  row: BusinessRow | null,
+  companyName: string | null
+): BusinessView {
   return {
     tenantId,
-    businessName: row?.businessName ?? null,
+    businessName: row?.businessName ?? companyName,
     entityType: row?.entityType ?? null,
     registrationNumber: row?.registrationNumber ?? null,
     taxId: row?.taxId ?? null,
@@ -166,10 +178,11 @@ function toView(tenantId: string, row: BusinessRow | null): BusinessView {
 const tenantBusinessRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/tenant/business', async (request) => {
     const auth = requireRole(request, 'viewer');
-    const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
-      tx.tenantBusiness.findUnique({ where: { tenantId: auth.tenantId } })
-    );
-    return ok(toView(auth.tenantId, row));
+    const [row, tenant] = await withTenant({ tenantId: auth.tenantId }, async (tx) => [
+      await tx.tenantBusiness.findUnique({ where: { tenantId: auth.tenantId } }),
+      await tx.tenant.findUnique({ where: { id: auth.tenantId }, select: { name: true } }),
+    ]);
+    return ok(toView(auth.tenantId, row, tenant?.name ?? null));
   });
 
   app.patch('/v1/tenant/business', async (request) => {
@@ -186,14 +199,18 @@ const tenantBusinessRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, (tx) =>
-      tx.tenantBusiness.upsert({
-        where: { tenantId: auth.tenantId },
-        create: { tenantId: auth.tenantId, ...data } as Prisma.TenantBusinessUncheckedCreateInput,
-        update: data,
-      })
+    const [row, tenant] = await withTenant(
+      { tenantId: auth.tenantId, userId: auth.actorId },
+      async (tx) => [
+        await tx.tenantBusiness.upsert({
+          where: { tenantId: auth.tenantId },
+          create: { tenantId: auth.tenantId, ...data } as Prisma.TenantBusinessUncheckedCreateInput,
+          update: data,
+        }),
+        await tx.tenant.findUnique({ where: { id: auth.tenantId }, select: { name: true } }),
+      ]
     );
-    return ok(toView(auth.tenantId, row));
+    return ok(toView(auth.tenantId, row, tenant?.name ?? null));
   });
 };
 

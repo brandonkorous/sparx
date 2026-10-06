@@ -37,7 +37,8 @@ const getCart: SiteTool = {
 
 const addToCart: SiteTool = {
   name: 'add_to_cart',
-  description: 'Add a product variant to the cart.',
+  description:
+    'Add a product variant to the cart. A rebuilt part with a refundable core deposit (`coreChargeCents` on the variant) is bought by paying the deposit, unless the variant has `coreFirstOffered` and you pass `coreFirst: true`: then the buyer sends the old part first, pays no deposit, and the part is held until the old one arrives.',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({
@@ -45,6 +46,12 @@ const addToCart: SiteTool = {
     cartToken,
     variantId: z.string().uuid(),
     quantity: z.number().int().min(1).max(999).default(1),
+    coreFirst: z
+      .boolean()
+      .optional()
+      .describe(
+        'Send the old part first instead of paying the core deposit. Only on a variant with coreFirstOffered.'
+      ),
   }),
   call: (client, _ctx, input) => {
     const {
@@ -52,24 +59,27 @@ const addToCart: SiteTool = {
       cartToken: token,
       variantId,
       quantity,
+      coreFirst,
     } = input as {
       cartId: string;
       cartToken: string;
       variantId: string;
       quantity: number;
+      coreFirst?: boolean;
     };
     return client.request({
       method: 'POST',
       path: `/v1/public/commerce/cart/${encodeURIComponent(id)}/items`,
       cartToken: token,
-      body: { variantId, quantity },
+      body: { variantId, quantity, ...(coreFirst ? { coreFirst: true } : {}) },
     });
   },
 };
 
 const updateCartItem: SiteTool = {
   name: 'update_cart_item',
-  description: 'Set the quantity of a cart line (0 removes it).',
+  description:
+    'Set the quantity of a cart line (0 removes it). On a rebuilt part whose line has a `coreChoice`, `coreFirst` switches it between paying the core deposit (false) and sending the old part first with no deposit (true).',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({
@@ -77,6 +87,10 @@ const updateCartItem: SiteTool = {
     cartToken,
     itemId: z.string().uuid(),
     quantity: z.number().int().min(0).max(999),
+    coreFirst: z
+      .boolean()
+      .optional()
+      .describe('Pay the core deposit (false) or send the old part first (true).'),
   }),
   call: (client, _ctx, input) => {
     const {
@@ -84,17 +98,19 @@ const updateCartItem: SiteTool = {
       cartToken: token,
       itemId,
       quantity,
+      coreFirst,
     } = input as {
       cartId: string;
       cartToken: string;
       itemId: string;
       quantity: number;
+      coreFirst?: boolean;
     };
     return client.request({
       method: 'PATCH',
       path: `/v1/public/commerce/cart/${encodeURIComponent(id)}/items/${encodeURIComponent(itemId)}`,
       cartToken: token,
-      body: { quantity },
+      body: { quantity, ...(coreFirst !== undefined ? { coreFirst } : {}) },
     });
   },
 };

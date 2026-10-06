@@ -11,6 +11,7 @@
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { isModuleEnabled } from '@wizeworks/auth';
+import { customerService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { badRequest, conflict, moduleDisabled, notFound } from '@wizeworks/api-core/errors';
@@ -123,7 +124,7 @@ function splitName(name: string): { firstName: string; lastName: string | null }
  * A row belonging to a DIFFERENT site is never taken. Two sites are two
  * businesses; the donut shop's customer is not the machine shop's.
  */
-async function findOrCreateCustomer(
+export async function findOrCreateCustomer(
   tenantId: string,
   info: z.infer<typeof CustomerInfo>,
   propertyId: string | null
@@ -142,7 +143,13 @@ async function findOrCreateCustomer(
         select: { id: true },
       });
       if (global) {
-        await tx.customer.update({ where: { id: global.id }, data: { propertyId } });
+        const moved = await tx.customer.update({
+          where: { id: global.id },
+          data: { propertyId },
+          select: { id: true, updatedAt: true },
+        });
+        // Which site they belong to is part of what search holds for them.
+        await customerService.announceCustomer(tenantId, 'crm.customer.updated', moved);
         return global.id;
       }
     }
@@ -158,8 +165,13 @@ async function findOrCreateCustomer(
         phone: info.phone ?? null,
         metadata: { source: 'scheduling' },
       },
-      select: { id: true },
+      select: { id: true, type: true, email: true },
     });
+    // A new person who booked a slot through the website. Written and never
+    // announced, so the owner could see the appointment and could not find the
+    // person who made it by searching for them (sparx persona issue 086).
+    // Registered inside the write; `afterCommit` sends it once this commits.
+    await customerService.announceCustomer(tenantId, 'crm.customer.captured', created);
     return created.id;
   });
 }

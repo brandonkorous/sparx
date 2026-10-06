@@ -339,6 +339,14 @@ The gated run step in the audit log is a feature, not a bug. Tenants
 seeing "2 sends gated — Email module required" is a conversion nudge
 built into the product. Do not suppress it.
 
+**Amended 2026-10-03 (sparx persona issue 087):** this gate applies to
+MARKETING sends only (campaigns, broadcasts, sequences, abandoned cart,
+win-back, the review request). A transactional send, one a customer gets
+because of something they did (an order confirmation, a receipt, an
+invoice, a booking), sends whether or not the email module is on. The gate
+reads the step's declared `emailType`. Detail:
+[implementation/transactional-email.md](implementation/transactional-email.md) §1.
+
 ---
 
 ## 5. Locked vs Managed
@@ -379,6 +387,48 @@ Nightly reconcile job:
 
 This makes the system self-healing. A missed activation event doesn't
 leave a tenant without their automations forever.
+
+**Amended 2026-10-03 (what a re-sync may change):** "skip seeds that
+already exist" was never what the code did. `upsertSystemAutomation`
+matched a tenant's copy by name and wrote the stock rule over it on every
+activation and every nightly pass: a published edit was put back, a paused
+rule was switched on again, and a copy the tenant renamed was not found, so
+a second one was installed beside it and both ran. Measured against local
+Postgres that day. The re-sync (activation, nightly, and release) now keeps
+the tenant's choices:
+
+- **Identity is a key, not the name.** Every seed declares a permanent
+  `key` (`crm.welcome-new-customers`), stored on the row as `system_key`
+  (unique per tenant among system rows, which also carries the
+  duplicate-insert race protection). A rename by either side is a label
+  change. A row installed before keys existed is found once by its current
+  name or a `previousNames` entry and keyed then.
+- **Untouched copies take platform fixes.** The row stores a fingerprint of
+  the rule document sparx last wrote (`seeded_fingerprint`). If the live
+  rule still matches it, the new version replaces it. The name is not part
+  of the comparison, so a copy that was only renamed still gets fixes.
+- **Edited copies are left alone.** If the live rule differs, it is the
+  tenant's. It is not touched, and `platform_update_at` records that a
+  newer platform version exists. The console shows "Newer version from
+  sparx" on the rule.
+- **The tenant can take the newer version.** The re-sync writes the held-back
+  document beside the flag (`platform_document`, refreshed every pass and
+  cleared with the flag), because the API cannot load the seed catalog in
+  `@wizeworks/automation-actions`. `POST /v1/automations/:id/take-platform-version`
+  (editor role; MCP `take_platform_version`) publishes it as the next version
+  with `takePlatformVersion`: the name and status stay the tenant's, their
+  version stays in the history (snapshotted first if it never was), and the
+  new fingerprint is recorded so later fixes reach the rule again. Refused with
+  409 `AUTOMATION_PLATFORM_VERSION_UNAVAILABLE` for a tenant's own rule, a rule
+  with nothing waiting, or one with an unpublished draft. The editor's notice
+  carries a "Use sparx's version" button whose confirm lists what differs.
+- **`status` is never written on an existing unlocked copy.** A seed's
+  `status` is only where a new install starts.
+- **Locked seeds (§5) are always the platform's**, status included: the
+  tenant cannot edit them.
+
+Code: `system-seed-sync.ts` and `upsertSystemAutomation` in
+`wizeworks/packages/automation/src/service/`.
 
 ---
 

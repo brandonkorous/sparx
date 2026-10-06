@@ -25,6 +25,7 @@ import {
   ClosePackageInput,
   CreatePackageInput,
   ListPackagesQuery,
+  orderShipRefusal,
   PackItemInput,
   UpdatePackageInput,
 } from '@wizeworks/commerce-schemas';
@@ -114,11 +115,10 @@ export async function createPackage(
       select: { id: true, orderNumber: true, status: true },
     });
     if (!order) throw new InventoryNotFoundError('Order', input.orderId);
-    if (order.status === 'cancelled' || order.status === 'refunded') {
-      throw new InventoryValidationError(
-        `Order ${order.orderNumber} is ${order.status}: nothing should be boxed for it.`
-      );
-    }
+    // The shipping rule every way out shares (issues 057, 058): a cancelled,
+    // refunded or held order gets no box.
+    const held = orderShipRefusal(order);
+    if (held) throw new InventoryValidationError(held);
 
     const number = await nextPackageNumber(tx, ctx.tenantId);
     const created = await tx.shipmentPackage.create({
@@ -199,7 +199,16 @@ export async function packItem(
 
     const item = await tx.orderItem.findFirst({
       where: { id: input.orderItemId, tenantId: ctx.tenantId, orderId: box.orderId },
-      select: { id: true, sku: true, name: true, quantity: true, variantId: true },
+      select: {
+        id: true,
+        sku: true,
+        name: true,
+        quantity: true,
+        variantId: true,
+        coreFirst: true,
+        coreHoldReleasedAt: true,
+        coresReturned: true,
+      },
     });
     if (!item) {
       throw new InventoryValidationError(
@@ -213,7 +222,7 @@ export async function packItem(
         JOIN inventory_shipment_packages pk ON pk.id = pl.package_id
        WHERE pl.tenant_id     = ${ctx.tenantId}::uuid
          AND pl.order_item_id = ${input.orderItemId}::uuid
-         AND pk.status <> 'canceled'
+         AND pk.status <> 'cancelled'
          AND pk.id <> ${packageId}::uuid
     `;
     const packedElsewhere = elsewhere[0]?.units ?? 0;
@@ -224,6 +233,19 @@ export async function packItem(
         packedElsewhere > 0
           ? `${item.sku}: the order is for ${item.quantity} and ${packedElsewhere} are already in another box, so at most ${room} can go in this one.`
           : `${item.sku}: the order is only for ${item.quantity}.`
+      );
+    }
+
+    // A send-the-old-part-first line (issue 057): one unit per old part that has
+    // arrived, counting every box already holding some, until the business chooses
+    // to ship without waiting.
+    const waiting = item.coreFirst && item.coreHoldReleasedAt === null;
+    const coreRoom = waiting ? Math.max(0, item.coresReturned - packedElsewhere) : room;
+    if (input.quantity > coreRoom) {
+      throw new InventoryValidationError(
+        coreRoom === 0
+          ? `${item.name} is held until the customer's old part arrives, and it has not arrived yet. Record it on the order when it does, or choose not to wait for it.`
+          : `${item.name}: only ${String(coreRoom)} can go in this box. The rest are waiting for the customer's old part.`
       );
     }
 
@@ -490,7 +512,7 @@ export async function loadPackageDetail(
           FROM inventory_shipment_package_lines x
           JOIN inventory_shipment_packages xp ON xp.id = x.package_id
          WHERE x.order_item_id = oi.id
-           AND xp.status <> 'canceled'
+           AND xp.status <> 'cancelled'
            AND xp.id <> ${packageId}::uuid
       ) other ON TRUE
       -- What a picker could not find. Summed across every walk that has touched

@@ -58,6 +58,48 @@ export function registerCommerceConsumers(
     })
   );
 
+  // order.placed → take the stock, for an order whose writer did not. Checkout,
+  // the marketplace import and an approved held order take theirs as they write
+  // it; a counter sale, a quote turned into an order and an order typed in by
+  // hand did not, so the shelves never moved for them (sparx persona issue 084).
+  // `commitPlacedOrderSale` leaves an order that already has a sale alone, so
+  // nothing is taken twice. Same gate and isolation as the restock above.
+  teardowns.push(
+    bus.subscribe('order.placed', async (event: PlatformEvent) => {
+      const orderId = (event.payload as { orderId?: string } | null)?.orderId;
+      if (!orderId) return;
+      const enabled = await isModuleEnabled(event.tenantId, 'inventory');
+      if (!enabled) return;
+      try {
+        await inventoryService.commitPlacedOrderSale({ tenantId: event.tenantId }, { orderId });
+      } catch (err) {
+        console.error('[commerce-consumer]', 'order.placed stock commit failed', { orderId, err });
+      }
+    })
+  );
+
+  // b2b.order.pending_approval → set the held order's stock aside while it
+  // waits. Checkout does this itself, inside the transaction that writes the
+  // order (it has the basket's holds to move). A quote accepted over a spending
+  // limit is written by CRM, which stays inventory-agnostic, and announced here
+  // instead, so its stock is held here. `holdHeldOrderStock` counts what the
+  // order already holds first, so an order checkout has already covered is left
+  // as it is, and it leaves an order that is no longer waiting alone. Approving
+  // commits from the hold; turning it down or cancelling it lets it go.
+  teardowns.push(
+    bus.subscribe('b2b.order.pending_approval', async (event: PlatformEvent) => {
+      const orderId = (event.payload as { orderId?: string } | null)?.orderId;
+      if (!orderId) return;
+      const enabled = await isModuleEnabled(event.tenantId, 'inventory');
+      if (!enabled) return;
+      try {
+        await inventoryService.holdHeldOrderStock({ tenantId: event.tenantId }, { orderId });
+      } catch (err) {
+        console.error('[commerce-consumer]', 'held order stock hold failed', { orderId, err });
+      }
+    })
+  );
+
   // order.cancelled / order.refunded → give the sale code back. Both topics, one
   // handler, because the rule is about the ORDER's settled status rather than which
   // way it was undone, and `releaseOrderDiscountUsage` reads that itself — a partial

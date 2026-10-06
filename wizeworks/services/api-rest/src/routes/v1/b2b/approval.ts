@@ -11,32 +11,31 @@
 //   POST   /v1/b2b/approval-queue/:orderId/reject   → reject + cancel order
 //
 // The mutating transitions return the domain events to publish (the service stays
-// free of publisher plumbing); this route emits them through its own createPublisher
-// exactly as before, plus the inventory threshold events for the committed sale.
+// free of publisher plumbing); this route emits them through api-core's publish,
+// plus the inventory threshold events for the committed sale.
 
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyBaseLogger, FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { approvalService, type PendingEvent } from '@wizeworks/b2b';
 import { inventoryService } from '@wizeworks/inventory';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
-import { createPublisher, publishEvent, type PublisherLogger } from '@wizeworks/events';
+import { publish } from '@wizeworks/api-core/pubsub';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 import { resolvePropertyId } from '../../../lib/property.js';
+import { settleHeldOrderMoney } from '../../../lib/held-order-money.js';
 
-const pubLogger: PublisherLogger = {
-  info: (obj, msg) => console.info(msg ?? '', obj),
-  warn: (obj, msg) => console.warn(msg ?? '', obj),
-  error: (obj, msg) => console.error(msg ?? '', obj),
-};
-const publisher = createPublisher({ logger: pubLogger });
-
+/** Publish what a decision caused, once it has committed. Through api-core's
+ *  publish, which also queues the business's own webhooks: a sign-off can
+ *  announce `order.paid`, and a business can subscribe to that one (sparx
+ *  persona issue 087). */
 async function emit(
+  log: FastifyBaseLogger,
   ctx: { tenantId: string; userId: string },
   events: PendingEvent[]
 ): Promise<void> {
   for (const e of events) {
-    await publishEvent(publisher, e.type, ctx.tenantId, ctx.userId ?? null, e.payload, pubLogger);
+    await publish(log, e.type, ctx.tenantId, ctx.userId ?? null, e.payload);
   }
 }
 
@@ -111,7 +110,10 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
     if (result.committedSales.length > 0) {
       await inventoryService.emitSaleEvents(ctx, result.committedSales);
     }
-    await emit(ctx, result.events);
+    // The card held at checkout is charged now it is placed (sparx persona issue
+    // 087). After the commit, like the events.
+    await settleHeldOrderMoney(request.log, ctx, result.money);
+    await emit(request.log, ctx, result.events);
 
     return reply.send(ok(result.order));
   });
@@ -123,7 +125,10 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toB2bContext(request);
     const { orderId } = PathOrderId.parse(request.params);
     const result = await approvalService.rejectOrder(ctx, orderId, request.body);
-    await emit(ctx, result.events);
+    // The buyer gets their money back: a held card let go, a charged one refunded
+    // in full (sparx persona issue 087). It used to be kept.
+    await settleHeldOrderMoney(request.log, ctx, result.money);
+    await emit(request.log, ctx, result.events);
     return reply.send(ok(result.order));
   });
 };

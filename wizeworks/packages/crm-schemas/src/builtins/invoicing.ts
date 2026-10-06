@@ -183,7 +183,8 @@ export const DEFAULT_DOCUMENT_WORKFLOWS: DocumentWorkflowTemplate[] = [
 export const NET_TERMS_AR_WORKFLOW_SLUG = 'net-terms-ar';
 
 export const NET_TERMS_AR_WORKFLOW: DocumentWorkflowTemplate = {
-  name: 'Net-terms AR',
+  // "Net-terms AR" was accounting shorthand (sparx persona issue 085).
+  name: 'Invoices on account',
   slug: NET_TERMS_AR_WORKFLOW_SLUG,
   isDefault: false,
   sortOrder: 100,
@@ -241,7 +242,9 @@ export const NET_TERMS_AR_WORKFLOW: DocumentWorkflowTemplate = {
 export const B2B_QUOTE_WORKFLOW_SLUG = 'b2b-quotes';
 
 export const B2B_QUOTE_WORKFLOW: DocumentWorkflowTemplate = {
-  name: 'B2B Quotes',
+  // A shop owner's word, not ours (sparx persona issue 085). Display only:
+  // everything finds this workflow by its slug.
+  name: 'Wholesale quotes',
   slug: B2B_QUOTE_WORKFLOW_SLUG,
   isDefault: false,
   sortOrder: 101,

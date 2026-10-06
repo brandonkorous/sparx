@@ -12,7 +12,10 @@
 
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const ENTITIES_COLLECTION = 'entities';
+import { resolveCollectionName } from './naming';
+
+// Prefixed in tests only; see ./naming.ts.
+export const ENTITIES_COLLECTION = resolveCollectionName('entities');
 
 export interface UniversalSearchDocument {
   /** `${tenantId}:${entityType}:${recordId}` — globally unique. */

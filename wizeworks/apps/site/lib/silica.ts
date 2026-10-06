@@ -19,6 +19,7 @@ import type {
 import { recordTemplate, starterFrame, starterPages } from '@wizeworks/silica-catalog';
 
 import { resolveActivePropertySlug } from './site-context';
+import { withFleetBadges } from './fleet-fit-tree';
 
 // ── The silica starter as the universal fallback (docs/118 — coverage guarantee) ──
 // A published silica tree ALWAYS wins; but when a tenant has published nothing yet,
@@ -137,10 +138,11 @@ interface ErrorEnvelope {
  * lib/builder.ts and shares its `builder:<slug>` tag — both tiers are invalidated by
  * the same publish, so they belong on the same tag.
  *
- * These were `cache: 'no-store'` because no tag-purge existed. One is now WRITTEN
- * end to end — publish, scope mapping, purge route — but `cache-revalidation-worker`
- * is not deployed anywhere, so no tag is ever actually purged and the `revalidate`
- * below is the mechanism rather than the backstop it was meant to be (issue 302).
+ * These were `cache: 'no-store'` because no tag-purge existed. One now runs end to
+ * end: publish, the event worker's cache-revalidation handler, and the purge route.
+ * That handler ran nowhere until sparx persona issue 040 moved it into the fleet,
+ * so until then the `revalidate` below was the mechanism (issue 302); it is now the
+ * backstop for a purge that is lost.
  *
  * A PREVIEW read is never cached — it serves the DRAFT tree, which changes on every
  * autosave and belongs to one author's in-flight work.
@@ -286,7 +288,7 @@ export async function getPublishedSilicaFrame(
 /** The property's PUBLISHED silica home body (the page whose slug is `/`). Falls back
  *  to the code starter home when none is published, so a fresh tenant's homepage is
  *  the editable silica starter rather than a blank/legacy composition. */
-export async function getPublishedSilicaHome(
+async function readPublishedSilicaHome(
   tenantSlug: string,
   opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
@@ -310,7 +312,7 @@ export async function getPublishedSilicaHome(
  *  for those starter slugs; any OTHER slug (a CMS article) returns null so the caller
  *  keeps its legacy content path. The slug is the joined path segments (`shop`,
  *  `about/team`); api-rest matches it against the stored `/`-prefixed slug. */
-export async function getPublishedSilicaPage(
+async function readPublishedSilicaPage(
   tenantSlug: string,
   slug: string,
   opts: { previewToken?: string } = {}
@@ -336,7 +338,7 @@ export async function getPublishedSilicaPage(
  *  default. Falls back to the code composite (`productDetailPage` / `collectionDetailPage`)
  *  when the tenant has published no template for a KNOWN record type, so every product
  *  and collection renders on silica out of the box; an unknown record type returns null. */
-export async function getPublishedSilicaCollection(
+async function readPublishedSilicaCollection(
   tenantSlug: string,
   recordType: string,
   recordId?: string,
@@ -396,4 +398,33 @@ export function hostKeysIn(node: unknown, found: string[] = []): string[] {
   if (n.kind === 'host' && typeof n.component === 'string') found.push(n.component);
   if (Array.isArray(n.children)) for (const child of n.children) hostKeysIn(child, found);
   return found;
+}
+
+// Every product card on a published page carries the signed-in trade buyer's fleet
+// badges (sparx persona issue 086). Added on read, so pages stamped before fleets
+// existed show them with nothing to republish; hidden for everyone else because
+// every product record carries the badge keys. See lib/fleet-fit-tree.ts.
+
+/** The property's PUBLISHED silica home body; see `readPublishedSilicaHome`. */
+export async function getPublishedSilicaHome(
+  ...args: Parameters<typeof readPublishedSilicaHome>
+): Promise<PublishedSilicaPageDto | null> {
+  const page = await readPublishedSilicaHome(...args);
+  return page ? withFleetBadges(page) : page;
+}
+
+/** The PUBLISHED silica page body owning a slug; see `readPublishedSilicaPage`. */
+export async function getPublishedSilicaPage(
+  ...args: Parameters<typeof readPublishedSilicaPage>
+): Promise<PublishedSilicaPageDto | null> {
+  const page = await readPublishedSilicaPage(...args);
+  return page ? withFleetBadges(page) : page;
+}
+
+/** The PUBLISHED silica record template; see `readPublishedSilicaCollection`. */
+export async function getPublishedSilicaCollection(
+  ...args: Parameters<typeof readPublishedSilicaCollection>
+): Promise<PublishedSilicaPageDto | null> {
+  const page = await readPublishedSilicaCollection(...args);
+  return page ? withFleetBadges(page) : page;
 }

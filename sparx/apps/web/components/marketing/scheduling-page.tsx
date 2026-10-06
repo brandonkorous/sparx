@@ -1,9 +1,10 @@
 // `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
 // In a Server Component the `render` element crosses the RSC boundary as a lazy
 // client reference whose `.type` is undefined, and silica's cloneElement throws.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import {
-  Button,
   Card,
   CardBody,
   Display,
@@ -13,7 +14,6 @@ import {
   StatValue,
   Text,
 } from '@wizeworks/silicaui-react';
-import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
 import { SchedulingHero } from './scheduling-hero';
 import {
@@ -262,9 +262,12 @@ function SchedulingPricing() {
             <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
               See all plans →
             </a>
-            <Button size="lg" color="primary">
+            <a
+              href={signupHref('scheduling-pricing')}
+              className={buttonClasses({ size: 'lg', color: 'primary' })}
+            >
               Activate Scheduling
-            </Button>
+            </a>
           </div>
         </CardBody>
       </Card>
@@ -287,9 +290,12 @@ function SchedulingCta() {
           migration weekend. Turn Scheduling off the day you stop, and your bookings stay yours.
         </Text>
         <div className="flex flex-wrap items-center gap-4">
-          <Button size="xl" color="module-scheduling">
+          <a
+            href={signupHref('scheduling-final')}
+            className={buttonClasses({ size: 'xl', color: 'module-scheduling' })}
+          >
             Activate Scheduling →
-          </Button>
+          </a>
           <a href="#loop" className={buttonClasses({ size: 'xl', variant: 'outline' })}>
             See the whole loop
           </a>

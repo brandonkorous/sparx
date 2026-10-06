@@ -1,13 +1,13 @@
 # 085 — Her price list had two of everything, at two different prices
 
-**Status:** open
+**Status:** open: the count is fixed (act 324); the two menus are not
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 4
 **Surface:** mypiggles › Bookings › Services, and the public booking page
 **Filed:** 2026-08-21
 **Fixed:** —
 **Confirmed by:** —
-**Blocked on:** scope — the two seeders that collide are both shared with sparx
+**Blocked on:** a choice about day-one sample bookings, see act 324 below
 
 ## What happened
 
@@ -124,6 +124,32 @@ Both halves are `wizeworks/**`, shared with sparx, and one is a product decision
 Piggles' own side of it — sending both keys in one call — is deliberate and
 right: she picked a trade and she picked a look, and both answers should be
 honoured. It is the platform's job to reconcile them.
+
+## Act 324
+
+**The count is fixed.** Practice data now counts the sample services and the
+people and equipment it removes, by the same `settings.sample` marker Clear
+deletes them by, and both consoles show them as **Services** and **People and
+equipment** tiles. The seed counts them as it makes them. The removable total
+includes them. 1 console test; dropping the two tiles reddens it.
+
+**The two menus are not.** "Shared with sparx" was never a reason to wait. The
+real question is what a new salon sees on day one, and every answer changes it:
+
+- Skip the pack's services when the design brings its own, and the pack's
+  sample bookings go too, because each one is made against a pack service. A
+  salon then opens to an empty diary, or to the engine's fallback services,
+  which is the duplicate menu again.
+- Point the pack's bookings at the design's services instead, and Clear can no
+  longer find them: a sample booking is recognized by its service's sample
+  marker, and the design's services carry none.
+- Mark the design's services as sample too, and Remove would delete a menu the
+  owner may have priced and kept.
+
+The way through is probably the second, with a sample marker on the booking
+itself so Clear finds it without asking the service. That changes the
+sample-data engine's markers and Clear (`markers.ts`, `clear.ts`), and both hold
+another session's work in progress now, so it waits for that to land.
 
 ## What Nia did instead
 

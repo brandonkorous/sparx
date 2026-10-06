@@ -574,7 +574,7 @@ module "commerce_indexer_cloudrun" {
 #
 # SECRET SEQUENCING: the per-channel platform OAuth client secrets
 # (google-oauth-client-secret, meta-app-secret, pinterest-app-secret,
-# tiktok-app-key, tiktok-app-secret) + the storefront base (SPARX_SITE_BASE) are
+# tiktok-app-key, tiktok-app-secret) are
 # added to `secrets`/`env_vars` when each partner app is APPROVED — the same gate
 # that flips the channel `available`. You cannot bind a secret value that does not
 # exist yet, and no channel can be connected (hence nothing to push) before then.
@@ -609,12 +609,12 @@ module "channel_sync_worker_cloudrun" {
     PUBSUB_INVOKER_SA       = google_service_account.pubsub_invoker.email
     GCP_PROJECT_ID          = var.project_id
     GCS_MEDIA_PUBLIC_BUCKET = module.storage.media_public_bucket_name
-    # SPARX_SITE_BASE (storefront base for the absolute product URL feeds require,
-    # {slug} template — mirrors the email path) + the non-secret per-channel OAuth
-    # client IDs (GOOGLE_OAUTH_CLIENT_ID / META_APP_ID / PINTEREST_APP_ID) are added
-    # here when channels go live; TIKTOK_APP_KEY / TIKTOK_APP_SECRET ride `secrets`
-    # below. Until SPARX_SITE_BASE is set the worker skips catalog pushes (no
-    # absolute URL) rather than feed a broken link — a safe default.
+    # The non-secret per-channel OAuth client IDs (GOOGLE_OAUTH_CLIENT_ID /
+    # META_APP_ID / PINTEREST_APP_ID) are added here when channels go live;
+    # TIKTOK_APP_KEY / TIKTOK_APP_SECRET ride `secrets` below. The absolute product
+    # URL every feed requires needs no setting: it is the product's site's own
+    # address (@wizeworks/db/site-origin). SPARX_SITE_BASE is only a local-dev
+    # override and must stay unset here (sparx persona issue 064).
     #
     # P3 order channels (Etsy / Walmart / eBay / Faire) add their app credentials
     # the same way at go-live, each partner-approval-gated — ETSY_API_KEY/_SECRET,

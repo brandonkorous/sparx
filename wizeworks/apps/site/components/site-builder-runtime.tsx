@@ -41,11 +41,13 @@ export function SiteBuilderRuntime({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const runtime = React.useMemo<BuilderRuntime>(
     () => ({
-      addToCart: (variantId, quantity) => addItem(variantId, quantity),
+      // `coreFirst`: a rebuilt part bought by sending the old part first (issue 057).
+      addToCart: (variantId, quantity, opts) =>
+        addItem(variantId, quantity, undefined, opts?.coreFirst ?? false),
       // Buy now (docs/98 Pillar 7): add the variant, then skip the drawer and send
       // the buyer straight to checkout.
-      buyNow: async (variantId, quantity) => {
-        await addItem(variantId, quantity);
+      buyNow: async (variantId, quantity, opts) => {
+        await addItem(variantId, quantity, undefined, opts?.coreFirst ?? false);
         router.push('/checkout');
       },
       subscribeEmail: (email, nodeId) => subscribeEmail(tenantSlug, email, propertySlug, nodeId),
@@ -62,7 +64,10 @@ export function SiteBuilderRuntime({ children }: { children: React.ReactNode }) 
       // The customer session for the AccountMenu island (docs/27) — signed-in name,
       // status, and a sign-out that clears the session then re-renders.
       account: {
-        status,
+        // The menu knows three states. "Could not reach the shop to ask" is
+        // drawn as still finding out, never as signed out: a blip must not tell
+        // a signed-in buyer to sign in (sparx persona issue 086).
+        status: status === 'unreachable' ? 'loading' : status,
         name: accountName(customer),
         signOut: async () => {
           await logout();

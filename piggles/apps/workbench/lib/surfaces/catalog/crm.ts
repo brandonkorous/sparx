@@ -130,6 +130,7 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
   {
     key: 'crm.customer.detail',
     title: 'Customer',
+    viewParams: ['tab'],
     module: 'crm',
     icon: faUsers,
     component: CustomerDetailSurface,

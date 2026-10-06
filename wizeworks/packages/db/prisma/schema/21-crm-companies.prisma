@@ -82,6 +82,7 @@ model Company {
   deals      Deal[]
   tickets    Ticket[]
   activities CrmActivity[]
+  tasks      Task[]
 
   // Commerce module inverse relations
   priceLists       PriceList[]
@@ -95,6 +96,8 @@ model Company {
   contacts         B2bAccountContact[]
   approvalRules    PurchaseApprovalRule[]
   fleetHolds       B2bFleetHold[]
+  savedCarts       B2bSavedCart[]
+  quoteRequests    B2bQuoteRequest[]
 
   @@index([tenantId, status])
   @@index([tenantId, assignedRepId])

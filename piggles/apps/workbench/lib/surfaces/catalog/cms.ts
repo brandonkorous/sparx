@@ -182,6 +182,7 @@ export const CMS_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'cms.translations.detail',
+    viewParams: ['lang'],
     title: 'Translations',
     module: 'cms',
     icon: faLanguage,
@@ -197,7 +198,28 @@ export const CMS_SURFACES: SurfaceDefinition[] = [
     icon: faScaleBalanced,
     section: 'Setup',
     order: 30,
-    keywords: ['privacy', 'terms', 'policy', 'cookies', 'returns policy', 'gdpr', 'compliance'],
+    keywords: [
+      'privacy',
+      'terms',
+      'policy',
+      'cookies',
+      'returns policy',
+      'gdpr',
+      'compliance',
+      // The names owners type for the pages a design links to: "shipping policy" found
+      // nothing because every word must match (sparx persona issue 031).
+      'shipping policy',
+      'refund policy',
+      'return policy',
+      'privacy policy',
+      'terms of service',
+      // The cookie banner lives on this screen; "cookie banner" found only the
+      // Cookie Policy page (sparx persona issue 044).
+      'cookie banner',
+      'cookie consent',
+      'cookie popup',
+      'do not sell',
+    ],
     component: LegalListSurface,
     // No detail key + no createSurface: each checklist row instantiates its own
     // specific document, and body editing hands off to cms.content.detail.

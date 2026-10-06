@@ -646,7 +646,10 @@ function ManageBody({
   const isPublished = entry.status === 'published';
   const isScheduled = entry.status === 'scheduled';
 
-  const save = () => {
+  // `then` runs once the edits are stored. Publish and Schedule pass it, because
+  // both act on what is STORED: pressed with edits still on screen, they used to
+  // put the old wording live while the toast said it was live (persona issue 033).
+  const save = (then?: () => void) => {
     const sent = pruneEmpty(draft.body);
     // Named here, not waited for. Emptying a required box and saving used to
     // answer "Could not save · Nothing was changed" — true, and no help finding
@@ -667,7 +670,8 @@ function ManageBody({
       {
         onSuccess: (saved) => {
           onSaved(saved);
-          toast.add({ title: 'Saved', type: 'success' });
+          if (then) then();
+          else toast.add({ title: 'Saved', type: 'success' });
         },
         onError: (error) => {
           toast.add({
@@ -678,6 +682,12 @@ function ManageBody({
         },
       }
     );
+  };
+
+  /** Store the edits on screen first, if there are any, then do `action`. */
+  const afterSave = (action: () => void) => {
+    if (dirty) save(action);
+    else action();
   };
 
   const publishNow = () => {
@@ -773,7 +783,9 @@ function ManageBody({
             color="module"
             disabled={!dirty}
             loading={update.isPending}
-            onClick={save}
+            onClick={() => {
+              save();
+            }}
           >
             Save
           </Button>
@@ -782,7 +794,14 @@ function ManageBody({
           // Lifecycle, not commit — these are genuinely secondary and may move.
           <div className="flex flex-wrap items-center gap-2">
             {!isPublished ? (
-              <Button size="sm" color="module" loading={publish.isPending} onClick={publishNow}>
+              <Button
+                size="sm"
+                color="module"
+                loading={publish.isPending || update.isPending}
+                onClick={() => {
+                  afterSave(publishNow);
+                }}
+              >
                 <Icon glyph={faPaperPlane} className="size-4" aria-hidden />
                 {isScheduled ? 'Publish now' : 'Publish'}
               </Button>
@@ -840,6 +859,7 @@ function ManageBody({
 
           {entry.legal_kind ? (
             <PolicyPageNotice
+              entryId={entry.id}
               legalKind={entry.legal_kind}
               reviewed={entry.legal_reviewed}
               published={isPublished}
@@ -917,25 +937,27 @@ function ManageBody({
 
       <ScheduleDialog
         open={scheduleOpen}
-        busy={publish.isPending}
+        busy={publish.isPending || update.isPending}
         onOpenChange={setScheduleOpen}
         onConfirm={(iso) => {
-          publish.mutate(iso, {
-            onSuccess: () => {
-              setScheduleOpen(false);
-              toast.add({
-                title: `${entryTitle(entry)} scheduled`,
-                description: `It will go live ${formatDateTime(iso)}.`,
-                type: 'success',
-              });
-            },
-            onError: (error) => {
-              toast.add({
-                title: 'Could not schedule this',
-                description: contentErrorMessage(error, 'Nothing was changed.'),
-                type: 'error',
-              });
-            },
+          afterSave(() => {
+            publish.mutate(iso, {
+              onSuccess: () => {
+                setScheduleOpen(false);
+                toast.add({
+                  title: `${entryTitle(entry)} scheduled`,
+                  description: `It will go live ${formatDateTime(iso)}.`,
+                  type: 'success',
+                });
+              },
+              onError: (error) => {
+                toast.add({
+                  title: 'Could not schedule this',
+                  description: contentErrorMessage(error, 'Nothing was changed.'),
+                  type: 'error',
+                });
+              },
+            });
           });
         }}
       />

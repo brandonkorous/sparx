@@ -1,8 +1,8 @@
 # Stripe test → live cutover runbook
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-25
+**Last Updated:** 2026-10-03
 
 ---
 
@@ -108,8 +108,12 @@ In the Stripe dashboard, **live mode** (test and live are separate endpoint list
 separate secrets — this is done fresh, not copied):
 
 1. `https://api.sparx.works/v1/public/webhooks/sparx-pay` — **Events on your account**:
-   `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`,
-   `charge.dispute.created`, `charge.dispute.closed`
+   `payment_intent.succeeded`, `payment_intent.payment_failed`,
+   `payment_intent.amount_capturable_updated`, `charge.refunded`,
+   `charge.dispute.created`, `charge.dispute.closed`. The capturable event records a card
+   HELD for a wholesale order waiting for sign-off (sparx persona issue 087); without it the
+   hold still works, but the order's payment reads pending rather than held until approval.
+   A **Stripe Direct** tenant's own endpoint needs the same list.
 2. **Same URL** — **Events on connected accounts**: `account.updated`
 3. Take the **two** live `whsec_…` (one per endpoint above) → **comma-join** into
    `stripe-webhook-secret-sparx-pay` (§1b).

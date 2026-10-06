@@ -48,6 +48,7 @@ import { WindowCanvas, useWindowCanvas } from './window-canvas';
 import { useUnloadGuard } from './use-unload-guard';
 import { applyWindowMode, evictFromGrid, switchWindowMode, type WindowMode } from '../window-mode';
 import { WindowModeProvider } from '../window-mode-context';
+import { CanvasCommandsProvider } from './canvas-commands-context';
 // dockview's reset, then this app's own skin over it — `dock-theme.css` maps
 // every `--dv-*` onto the surface ramp, and it is scoped to `.sparx-dock` so it
 // beats the reset regardless of which order Next injects them in.
@@ -216,25 +217,27 @@ export function ConsoleDock({
       {/* Inside, so the title bars dockview mounts can read the presentation
           they are being asked to offer actions for. */}
       <WindowModeProvider mode={mode}>
-        <DockviewReact
-          className="h-full"
-          components={components}
-          tabComponents={tabComponents}
-          rightHeaderActionsComponent={GroupActions}
-          onReady={onReady}
-          // Tearing a tab out detaches it into its own OS window; dockview loads
-          // /popout there and portals the group across.
-          popoutUrl="/popout"
-          // Floating groups are what "windows mode" is built on — see
-          // lib/window-mode.ts. They are also why a gap matters: dockview floats a
-          // group when a tab is dragged into empty space, and a flush grid has none.
-          disableFloatingGroups={false}
-          // dockview's own overflow dropdown cannot be made good from out here: it
-          // re-renders the TAB component per row and sizes the popup a frame before
-          // React fills it, so a long list renders past both ends of the screen with
-          // nothing to scroll. The replacement is the arrows in the group header.
-          disableTabsOverflowList
-        />
+        <CanvasCommandsProvider commands={commands}>
+          <DockviewReact
+            className="h-full"
+            components={components}
+            tabComponents={tabComponents}
+            rightHeaderActionsComponent={GroupActions}
+            onReady={onReady}
+            // Tearing a tab out detaches it into its own OS window; dockview loads
+            // /popout there and portals the group across.
+            popoutUrl="/popout"
+            // Floating groups are what "windows mode" is built on — see
+            // lib/window-mode.ts. They are also why a gap matters: dockview floats a
+            // group when a tab is dragged into empty space, and a flush grid has none.
+            disableFloatingGroups={false}
+            // dockview's own overflow dropdown cannot be made good from out here: it
+            // re-renders the TAB component per row and sizes the popup a frame before
+            // React fills it, so a long list renders past both ends of the screen with
+            // nothing to scroll. The replacement is the arrows in the group header.
+            disableTabsOverflowList
+          />
+        </CanvasCommandsProvider>
       </WindowModeProvider>
     </WindowCanvas>
   );

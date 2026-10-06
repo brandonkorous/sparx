@@ -53,6 +53,7 @@ export {
   _clearActionRegistry,
   getDescriptor,
   moduleForAction,
+  moduleForEffect,
   registerAction,
   registeredActionTypes,
 } from './actions/registry';
@@ -82,9 +83,11 @@ export {
   listAutomationVersions,
   LockedAutomationError,
   NoDraftError,
+  PlatformVersionUnavailableError,
   publishAutomation,
   restoreAutomationVersion,
   setAutomationStatus,
+  takePlatformVersion,
   updateAutomation,
   upsertSystemAutomation,
   type ActionUseCount,
@@ -92,6 +95,7 @@ export {
   type ServiceCtx,
   type SystemAutomationSpec,
 } from './service/automation-service';
+export type { PlatformVersionRefusal } from './service/system-seed-sync';
 export {
   getAutomationRun,
   listAutomationRuns,

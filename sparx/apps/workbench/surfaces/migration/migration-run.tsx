@@ -49,6 +49,7 @@ import {
   Upload,
 } from 'lucide-react';
 import {
+  bringInLabel,
   summarize,
   type CanonicalEntity,
   type MappedEntity,
@@ -117,7 +118,9 @@ function EntityReport({ mapped }: { mapped: MappedEntity }) {
         >
           {report.blocked
             ? 'Cannot import yet'
-            : `${report.okCount.toLocaleString()} of ${rows.length.toLocaleString()} ready`}
+            : // Rows, said as rows when a thing spans several (a product's versions):
+              // "787 of 787 ready" read as 787 products (sparx persona issue 053).
+              `${report.okCount.toLocaleString()} of ${rows.length.toLocaleString()}${report.recordCount === report.rowCount ? '' : ' rows'} ready`}
         </Badge>
       </div>
 
@@ -140,9 +143,11 @@ function EntityReport({ mapped }: { mapped: MappedEntity }) {
 
       {report.unmappedColumns.length > 0 ? (
         <Text className="text-sm">
-          {report.unmappedColumns.length} column
-          {report.unmappedColumns.length === 1 ? '' : 's'} in this file have no home here and will
-          be left behind: {report.unmappedColumns.slice(0, 6).join(', ')}
+          {report.unmappedColumns.length}{' '}
+          {report.unmappedColumns.length === 1
+            ? 'column in this file has'
+            : 'columns in this file have'}{' '}
+          no home here and will be left behind: {report.unmappedColumns.slice(0, 6).join(', ')}
           {report.unmappedColumns.length > 6 ? '…' : ''}
         </Text>
       ) : null}
@@ -298,7 +303,7 @@ function RunProgress({ runId }: { runId: string }) {
               {(entity.imported + entity.updated).toLocaleString()}
             </Text>
             <Text className="text-sm">
-              of {entity.rowCount.toLocaleString()}{' '}
+              of {entity.rowCount.toLocaleString()} rows{' '}
               {run.dryRun ? 'would come over' : 'brought over'}
               {entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}
             </Text>
@@ -414,8 +419,6 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
     return usable(loaded.result.entities);
   }, [live, loaded, manual]);
 
-  const totalReady = importable.reduce((sum, entity) => sum + entity.report.okCount, 0);
-
   const begin = useCallback(
     async (dryRun: boolean) => {
       if (importable.length === 0) return;
@@ -513,7 +516,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
                   onClick={() => void begin(false)}
                 >
                   <Upload className="size-4" aria-hidden />
-                  Bring in {totalReady.toLocaleString()}
+                  {bringInLabel(importable)}
                 </Button>
               </>
             ) : null}

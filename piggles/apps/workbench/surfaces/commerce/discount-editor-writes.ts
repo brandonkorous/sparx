@@ -22,7 +22,9 @@ import {
 
 export interface DiscountWrites {
   save: (draft: Draft) => void;
-  activate: () => void;
+  /** Switch it on. Pass the draft when it holds unsaved edits: they are saved
+   *  first, because switching on turns on the STORED discount (persona issue 033). */
+  activate: (unsaved: Draft | null, invalid: boolean) => void;
   retire: () => Promise<void>;
   saving: boolean;
   activating: boolean;
@@ -72,7 +74,29 @@ export function useDiscountWrites(
     });
   };
 
-  const onActivate = () => {
+  const onActivate = (unsaved: Draft | null, invalid: boolean) => {
+    if (!unsaved) {
+      switchOn();
+      return;
+    }
+    const input = invalid ? null : buildDiscountInput(unsaved);
+    if (!input) {
+      toast.add({
+        title: 'Could not switch it on',
+        description: 'Fix the boxes marked in red first. Nothing was changed.',
+        type: 'error',
+      });
+      return;
+    }
+    update.mutate(input, {
+      onSuccess: () => {
+        onSaved();
+        switchOn();
+      },
+    });
+  };
+
+  const switchOn = () => {
     activate.mutate(undefined, {
       onSuccess: () => {
         toast.add({ title: 'Discount switched on', type: 'success' });
@@ -120,7 +144,7 @@ export function useDiscountWrites(
     activate: onActivate,
     retire,
     saving: create.isPending || update.isPending,
-    activating: activate.isPending,
+    activating: activate.isPending || update.isPending,
     retiring: archive.isPending,
     failure:
       create.isError || update.isError

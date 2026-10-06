@@ -19,7 +19,8 @@
 //   • each tab hands its save up to the toolbar — product-tab-save.tsx
 //   • the secondary actions are their own hook — product-detail-actions.tsx
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useViewParam } from '../../lib/workbench/view-param';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
@@ -133,10 +134,14 @@ function ProductTabs({
   // sends a line with no planned cost here with `tab: 'pricing'`, because
   // "What it cost you" is the plan that report reads. Anything else, or an
   // old link carrying a tab that has since gone, lands on Overview.
-  const [tab, setTab] = useState(() => {
-    const wanted = ctx.params.tab;
-    return wanted && PRODUCT_TABS.some((entry) => entry.value === wanted) ? wanted : 'overview';
-  });
+  // The tab is the pane's address, not local state (issue 374), so a reload,
+  // a copied link and a restored layout come back to it.
+  const [tab, setTab] = useViewParam(
+    ctx,
+    'tab',
+    PRODUCT_TABS.map((entry) => entry.value),
+    'overview'
+  );
 
   // Save lives in the toolbar and commits the tab you are standing on. Each tab
   // hands its save up via useTabSave; see product-tab-save.tsx for why the

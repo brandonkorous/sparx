@@ -21,7 +21,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useSequences, type SequenceRow } from './sequences-data';
 import { sequenceRowState } from './sequence-words';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -37,6 +37,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('email.sequences.list');
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -86,12 +87,12 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'New series',
+          label: createLabel,
           icon: faPlus,
           onClick: (event) => {
             ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New series: hold Shift to open alongside, Alt for a new window',
+          title: `${createLabel}: hold Shift to open alongside, Alt for a new window`,
         }}
         controls={
           <div className="w-40 shrink-0">
@@ -164,7 +165,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  New series
+                  {createLabel}
                 </Button>
               ),
             }}

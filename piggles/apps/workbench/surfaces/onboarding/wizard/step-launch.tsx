@@ -22,6 +22,7 @@ import { Icon } from '@piggles/ui';
 import { storefrontPreviewUrl, type OnboardingActions } from '../../../lib/onboarding/api';
 import type { PendingDomain, WizardBlueprint } from '../../../lib/onboarding/types';
 import { PRODUCT } from '@piggles/config';
+import { LaunchSuccess, ValuePoint } from './launch-parts';
 
 // The tenant-site suffix comes from the brand, never a literal. It was
 // hardcoded to sparx.zone — another product's domain, offered to a Piggles
@@ -32,13 +33,14 @@ function money(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function contentFacts(bp: WizardBlueprint | null): string[] {
+// Examples off means none arrived, so none are counted (sparx persona issue 020).
+function contentFacts(bp: WizardBlueprint | null, withExamples: boolean): string[] {
   if (!bp) return [];
   const c = bp.contents;
   const facts: string[] = [];
   if (c.pages > 0) facts.push(`${c.pages} pages`);
-  if (c.products > 0) facts.push(`${c.products} products`);
-  if (c.content > 0) facts.push(`${c.content} content entries`);
+  if (withExamples && c.products > 0) facts.push(`${c.products} example products`);
+  if (withExamples && c.content > 0) facts.push(`${c.content} example articles`);
   if (c.emails > 0) facts.push(`${c.emails} emails`);
   facts.push(`${c.theme} theme`);
   return facts;
@@ -52,6 +54,7 @@ export function StepLaunch({
   published,
   moduleCount,
   pendingDomain,
+  sampleData,
   actions,
 }: {
   slug: string;
@@ -61,6 +64,8 @@ export function StepLaunch({
   published: boolean;
   moduleCount: number;
   pendingDomain: PendingDomain | null;
+  /** Whether the starting point brought its examples. */
+  sampleData: boolean;
   actions: OnboardingActions;
 }) {
   const [token, setToken] = useState<string | null>(null);
@@ -84,7 +89,7 @@ export function StepLaunch({
     return <LaunchSuccess slug={slug} host={host} />;
   }
 
-  const facts = contentFacts(blueprint);
+  const facts = contentFacts(blueprint, sampleData);
   const previewHref = installId && token ? storefrontPreviewUrl(slug, token) : null;
 
   return (
@@ -197,7 +202,7 @@ export function StepLaunch({
         <ValuePoint
           icon={<Icon glyph={faReceipt} className="text-module size-4" aria-hidden />}
           title="One login, one invoice"
-          body="One flat price with every app in it: no per-seat fees, no cut of every order, and no upgrade button between you and a feature."
+          body="One flat price with every app in it: no per-seat fees and no upgrade button between you and a feature. Card payments through the Stripe account you connect here carry one flat 0.5% fee."
         />
         <ValuePoint
           icon={<Icon glyph={faArrowTrendUp} className="text-module size-4" aria-hidden />}
@@ -211,50 +216,6 @@ export function StepLaunch({
           {facts.join(' · ')}, installed and ready to edit.
         </Text>
       ) : null}
-    </div>
-  );
-}
-
-function ValuePoint({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
-  return (
-    <div className="flex items-start gap-3">
-      <span className="bg-module soft mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg">
-        {icon}
-      </span>
-      <div>
-        <p className="font-medium">{title}</p>
-        <p className="text-sm">{body}</p>
-      </div>
-    </div>
-  );
-}
-
-function LaunchSuccess({ slug, host }: { slug: string; host: string }) {
-  return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 text-center">
-      <span className="bg-module flex size-14 items-center justify-center rounded-full">
-        <Icon glyph={faRocket} className="text-module-content size-7" aria-hidden />
-      </span>
-      <h2 className="text-2xl font-semibold tracking-tight">You are live</h2>
-      <Text className="max-w-prose">
-        Your site is published and ready for the world. It is live at{' '}
-        <span className="font-medium">{host}</span>, opening your workspace now.
-      </Text>
-      <Button
-        color="module"
-        variant="link"
-        iconEnd={<Icon glyph={faArrowUpRightFromSquare} className="size-3.5" aria-hidden />}
-        render={
-          <a
-            href={storefrontPreviewUrl(slug)}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Open ${host} in a new tab`}
-          />
-        }
-      >
-        {host}
-      </Button>
     </div>
   );
 }

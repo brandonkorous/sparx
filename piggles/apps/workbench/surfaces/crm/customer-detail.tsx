@@ -31,6 +31,7 @@
 
 import { shownInPlace } from '@wizeworks/query';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useViewParam } from '../../lib/workbench/view-param';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
@@ -83,6 +84,7 @@ import { useAccounts } from './companies-data';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { useMediaAssets, useUploadMedia } from '../commerce/products-data';
 import { CustomerAddressesSection } from './customer-addresses';
+import { TaxExemptionsSection } from '../commerce/tax-exemptions-section';
 import { CustomerDocumentsTab } from './customer-documents-tab';
 import { CustomerOverviewTab } from './customer-overview';
 import {
@@ -188,13 +190,16 @@ interface Draft {
  *
  * Everything here is a STARTING POINT and stays editable; nothing is locked.
  */
-function emptyDraft(seed: { name?: string; companyId?: string } = {}): Draft {
+function emptyDraft(seed: { name?: string; companyId?: string; companyName?: string } = {}): Draft {
   const { firstName, lastName } = splitTypedName(seed.name ?? '');
 
   return {
     firstName,
     lastName,
-    company: '',
+    // Started from a trade account, the business they work for is that
+    // account: an empty Company box beside a chosen account read as a form
+    // that had not noticed (sparx persona issue 079).
+    company: seed.companyName ?? '',
     jobTitle: '',
     // Filed under a business, so they buy as one. The relationship picker is
     // right there if that is wrong.
@@ -322,6 +327,9 @@ function CustomerEditor({
 
   const seedName = typeof ctx.params.name === 'string' ? ctx.params.name : undefined;
   const seedCompanyId = typeof ctx.params.companyId === 'string' ? ctx.params.companyId : undefined;
+  const seedCompanyName = seedCompanyId
+    ? accounts?.items.find((account) => account.id === seedCompanyId)?.companyName
+    : undefined;
   const saved = useMemo(
     () =>
       customer
@@ -329,8 +337,9 @@ function CustomerEditor({
         : emptyDraft({
             ...(seedName ? { name: seedName } : {}),
             ...(seedCompanyId ? { companyId: seedCompanyId } : {}),
+            ...(seedCompanyName ? { companyName: seedCompanyName } : {}),
           }),
-    [customer, seedName, seedCompanyId]
+    [customer, seedName, seedCompanyId, seedCompanyName]
   );
   const [draft, setDraft] = useState<Draft>(saved);
   const [touched, setTouched] = useState(false);
@@ -338,7 +347,13 @@ function CustomerEditor({
     if (!touched) setDraft(saved);
   }, [saved, touched]);
 
-  const [tab, setTab] = useState('overview');
+  // In the pane's address (issue 374): a reload or a link keeps the tab.
+  const [tab, setTab] = useViewParam(
+    ctx,
+    'tab',
+    TABS.map((entry) => entry.value),
+    'overview'
+  );
   // Lazy-then-keep: a tab's data only loads once you open it (so a pane doesn't
   // fire six queries at once), and stays mounted after — read-only tabs cost
   // nothing to keep, and the Details draft lives in this shell, not the panel,
@@ -783,6 +798,30 @@ function CustomerEditor({
           the customer Save draft. On "add" there is no customer id yet, so the
           section only appears once the customer exists. */}
       {!isNew && customer ? <CustomerAddressesSection customerId={customer.id} /> : null}
+
+      {/* A certificate that stops sales tax at checkout. Its own records and its
+          own writes, like Addresses. It also says when the wholesale customer
+          they buy for already holds one that covers them (sparx issue 075). */}
+      {!isNew && customer ? (
+        <TaxExemptionsSection
+          customerId={customer.id}
+          name={customerName(customer)}
+          {...(b2bEnabled
+            ? {
+                onOpenAccount: (
+                  accountId: string,
+                  event: { shiftKey: boolean; altKey: boolean }
+                ) => {
+                  ctx.open(
+                    'b2b.account.detail',
+                    { id: accountId },
+                    { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+                  );
+                },
+              }
+            : {})}
+        />
+      ) : null}
 
       {/* Who else this person is connected to (docs/144 §6) — the company they
           work at, the deals they are involved in, who introduced them. Writes

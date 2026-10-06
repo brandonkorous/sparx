@@ -11,8 +11,11 @@ import {
   Button,
   Text,
 } from '@wizeworks/silicaui-react';
+import { poNumberOf } from '@wizeworks/crm-schemas';
+import { orderDeliveryRows } from './order-delivery-needs';
 
 import { FormSection } from '../../components/form-section';
+import { paymentTermsLabel } from '../../lib/payment-terms';
 import { ModuleScope } from '../../components/module-scope';
 import { AddressBlock, CollectedBy } from './order-detail-blocks';
 import { OrderAddressForm } from './order-detail-address-form';
@@ -85,10 +88,22 @@ export function BuyerSection({ order }: { order: Order }) {
             <Text className="text-base">
               Wholesale customer: {order.customer.b2bAccount.companyName}
               {order.customer.b2bAccount.paymentTerms
-                ? ` · pays on ${order.customer.b2bAccount.paymentTerms} terms`
+                ? ` · ${paymentTermsLabel(order.customer.b2bAccount.paymentTerms)}`
                 : ''}
             </Text>
           ) : null}
+          {/* Their own purchase order number, from checkout or from the quote
+              this order was made from (issue 077). */}
+          {poNumberOf(order.metadata) ? (
+            <Text className="text-base">Their PO number: {poNumberOf(order.metadata)}</Text>
+          ) : null}
+          {/* When and where they need it, from the quote request this
+              order came from (sparx persona issue 086). */}
+          {orderDeliveryRows(order.metadata).map((row) => (
+            <Text key={row.label} className="text-base whitespace-pre-line">
+              {row.label}: {row.value}
+            </Text>
+          ))}
         </div>
       </FormSection>
     </ModuleScope>

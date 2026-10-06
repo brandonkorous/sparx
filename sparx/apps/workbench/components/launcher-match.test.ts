@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { rankRecords, recordRank, type Entry } from './launcher-match';
+import { rankRecords, recordRank, scoreQuery, type Entry } from './launcher-match';
 
 /** A record row, shaped the way `useRecordEntries` builds one. */
 function record(label: string, group: string, subtitle?: string): Entry {
@@ -90,5 +90,98 @@ describe('ranking record results against what was typed', () => {
     const row = record('Priya Nandakumar', 'Customers', 'Loom & Larder');
     expect(recordRank(row, 'priya nandakumar')).toBeGreaterThan(0);
     expect(recordRank(row, 'priya adeyemi')).toBe(0);
+  });
+});
+
+describe('a phrase that says what to do', () => {
+  const discounts: Entry = {
+    id: 'commerce.discounts.list',
+    group: 'Selling',
+    label: 'Discounts',
+    keywords: ['promotions', 'coupons', 'sale'],
+    run: () => undefined,
+  };
+
+  it('finds the screen when the phrase starts with "new", "add" or "create"', () => {
+    // sparx persona issue 036: "new discount" found nothing.
+    expect(scoreQuery(discounts, 'new discount')).toBeGreaterThan(0);
+    expect(scoreQuery(discounts, 'add a discount')).toBeGreaterThan(0);
+    expect(scoreQuery(discounts, 'create coupon')).toBeGreaterThan(0);
+  });
+
+  it('still needs the noun to match', () => {
+    expect(scoreQuery(discounts, 'new supplier')).toBe(0);
+    expect(scoreQuery(discounts, 'new')).toBe(0);
+  });
+});
+
+describe('a phrase that asks to make one', () => {
+  const posts: Entry = {
+    id: 'social.posts',
+    group: 'Social',
+    label: 'Posts',
+    run: () => undefined,
+  };
+  const newPost: Entry = {
+    id: 'create:social.posts',
+    group: 'Social',
+    label: 'New post',
+    keywords: ['Posts'],
+    run: () => undefined,
+  };
+
+  it('puts the row that makes one above the list', () => {
+    // sparx persona issue 036: "new social post" offered Posts and Cadence first.
+    expect(scoreQuery(newPost, 'new social post')).toBeGreaterThan(
+      scoreQuery(posts, 'new social post')
+    );
+  });
+
+  it('leaves the list first when nobody asked to make anything', () => {
+    expect(scoreQuery(posts, 'posts')).toBeGreaterThan(scoreQuery(newPost, 'posts'));
+  });
+});
+
+describe('a dash is a space to whoever typed it', () => {
+  // The task reads "waiting for your sign-off: approve or reject it under
+  // Approvals", the Approvals screen was tagged "sign off", and typing the
+  // task's own word found nothing but another module's screen (sparx persona
+  // issue 086).
+  const approvals: Entry = {
+    id: 'surface:b2b.approvals',
+    group: 'Wholesale',
+    label: 'Approvals',
+    keywords: ['approval queue', 'sign off', 'credit limit'],
+    run: () => undefined,
+  };
+
+  it('finds a screen tagged "sign off" when "sign-off" is typed', () => {
+    expect(scoreQuery(approvals, 'sign-off')).toBeGreaterThan(0);
+  });
+
+  it('finds an order by its number with or without the dash', () => {
+    const order = record('O-000012', 'Orders', 'Dana Whitcomb-Nguyen');
+    expect(recordRank(order, 'o-000012')).toBe(100);
+    expect(recordRank(order, 'o 000012')).toBe(100);
+  });
+});
+
+describe('a number in what was typed', () => {
+  const units: Entry = {
+    id: 'inventory.units',
+    group: 'Inventory',
+    label: 'Units',
+    run: () => undefined,
+  };
+
+  it('has to match like any other word', () => {
+    // "Units 31" listed the Units screen, which matched one word, above the task
+    // "Quote Dana the Cheetah turbos ..., Units 31 and 34", which matched both
+    // (sparx persona issue 091).
+    expect(scoreQuery(units, 'Units 31')).toBe(0);
+  });
+
+  it('still leaves short filler words out', () => {
+    expect(scoreQuery(units, 'a units')).toBeGreaterThan(0);
   });
 });

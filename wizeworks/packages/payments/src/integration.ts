@@ -34,7 +34,11 @@ function capabilityPhrases(gateway: GatewayDescriptor): string[] {
   const phrases: string[] = [];
   if (gateway.checkout !== 'none') phrases.push('Card payments');
   if (gateway.capabilities.refunds) phrases.push('Refunds');
-  if (gateway.capabilities.capture) phrases.push('Charge when you ship');
+  // What holding a card actually does on this platform: a booking's card hold, and
+  // a wholesale order waiting for sign-off, charged only once it is approved.
+  // "Charge when you ship" promised a feature nothing ever built, on gateways
+  // that could not hold a card at all (sparx persona issue 087).
+  if (gateway.capabilities.capture) phrases.push('Hold a card and charge it later');
   if (gateway.capabilities.paymentLinks) phrases.push('Payment links on invoices');
   // Worth saying out loud on the picker: whether a processor can run subscriptions
   // is the one capability here a business can only discover AFTER committing to it,

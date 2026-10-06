@@ -42,6 +42,7 @@ import { formatDate, useOrder } from './data';
 import { outcomeLabel, returnState, useReturn, type ReturnDetail } from './returns-data';
 import { ReturnRecord } from './return-detail-record';
 import { ReturnMoves } from './return-detail-moves';
+import { refundFigures } from './return-refund-figures';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -140,12 +141,7 @@ function ReturnDetailBody({
   const gone = detail.orderNumber === null;
   const currency = order?.currency ?? 'USD';
 
-  const suggestedCents = detail.items.reduce((sum, it) => {
-    const unit = (order?.items ?? []).find((line) => line.id === it.orderItemId)?.unitPrice;
-    if (unit === undefined) return sum;
-    const qty = it.approvedQuantity > 0 ? it.approvedQuantity : it.quantity;
-    return sum + Math.round(unit * qty * 100);
-  }, 0);
+  const figures = refundFigures(detail, order);
 
   return (
     <div className={PANE_SHELL}>
@@ -233,7 +229,12 @@ function ReturnDetailBody({
             }}
           />
 
-          <ReturnMoves detail={detail} currency={currency} suggestedCents={suggestedCents} />
+          <ReturnMoves
+            detail={detail}
+            currency={currency}
+            suggestedCents={figures.suggestedCents}
+            coreBackCents={figures.coreBackCents}
+          />
         </div>
       </div>
     </div>

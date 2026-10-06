@@ -1,10 +1,10 @@
 # 374 — Every tab inside a product forgets itself on reload
 
-**Status:** open
+**Status:** fixed (act 323)
 **Severity:** minor
 **Found by:** P03 · Juniper Row · the standing "reload, deep link, restore" check
 **Surface:** mypiggles › Sell › a product › the seven tabs
-**Blocked on:** scope
+**Blocked on:** —
 
 ## What happened
 
@@ -60,27 +60,46 @@ PANELS already have real addresses — `/commerce/products/:productId?/stock`,
 `/fitment`, `/reviews`, `/listings` — because each is a pane in its own right. It
 is specifically state INSIDE one pane that has nowhere to live.
 
-## Why it is not fixed here
+## What changed (act 323)
 
-The fix is a change to the dock's pane model, which every pane in both consoles
-shares. It needs three things that do not exist:
+The three missing pieces, built once in the pane model of both consoles:
 
-1. **A declared set of view-only params per surface** — carried in the address,
-   ignored by `descriptorKey`, so a tab change re-addresses a pane instead of
-   forking it.
-2. **A way for a live pane to update its own params** — a `setParams` on
-   `SurfaceContext`, feeding the same address sync `nav-history.tsx` already runs.
-3. **A decision about the saved layout**: whether a restored workspace remembers
-   which tab each pane was on, or opens them all on their first.
+1. **View params.** A surface declares `viewParams: ['tab']`. They ride in the
+   address and the saved layout, and `paneIdentityKey` leaves them out, so
+   product X on Pricing and product X on SEO are one pane.
+2. **A pane can re-address itself.** `ctx.setViewParams({ tab })` changes only
+   declared params (anything else throws: those are what the pane IS). The
+   address bar follows through the existing sync, as a replace, so Back does not
+   step through tabs. `SurfaceBody` now subscribes to its own descriptor, so a
+   link to an open record moves it to the tab asked for.
+3. **The saved layout remembers the tab**, because the tab is part of the
+   descriptor that is saved. Decided this way because the address and the
+   layout must not disagree about where a pane is.
 
-That is a shared-plumbing change with a design decision inside it, which is
-larger than the surface this run was testing. Filed rather than attempted, with
-the design named so it is a work item and not a shrug.
+`useViewParam` / `useViewParamHandle` (`lib/workbench/view-param.ts`) hold the
+tab in the address with no local copy. A value the pane cannot show (an old
+link to a tab or language that has gone) reads as the default, and the default
+removes the param, so the plain address stays plain.
 
-**A per-product "remember the last tab" in browser storage would fix the reload
-half in an afternoon and is deliberately NOT proposed**: it would make the pane
-appear to have an address it does not have, and the link somebody sends would
-still open on the wrong tab while looking like it worked.
+Every tabbed pane, both consoles: the product (`tab`), product reviews and
+questions (`tab`), the customer (`tab`; Sparx falls back to Overview for
+Bookings at a business without bookings), both translation editors (`lang`),
+and the configurator's builds (`build`, an old link to a deleted build opens
+the first).
+
+Opening a record that is already open now focuses it and moves it to the tab
+asked for, where it used to open a second copy. That also fixes the links that
+already passed a tab (Cost vs plan to Pricing, core choices to Options).
+
+## Proof
+
+- Devi on the Ash Overshirt: Pricing put `?tab=pricing` in the address; F5
+  came back on Pricing; a link with `?tab=seo` moved the one open pane to SEO
+  (one Ash tab, not two); Overview cleared the param.
+- `/crm/customers/<Mara>?tab=orders` opened her customer pane on Orders.
+- `view-params.test.ts`, 8 tests in each console. Putting the old identity check
+  back reddens exactly the 2 "already open" tests. Both consoles: typecheck,
+  lint, and 2145 and 1850 tests green.
 
 ## Where it lives
 

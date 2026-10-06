@@ -78,6 +78,7 @@ import {
 } from './companies-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { tierChoiceItems, useTierChoices } from '../b2b/accounts-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -95,7 +96,8 @@ interface Draft {
   creditLimit: string;
   paymentTerms: string;
   discountPercent: string;
-  pricingTier: string;
+  /** The price tier they buy on; empty for normal prices. */
+  pricingTierId: string;
   assignedRepId: string;
   fleetSize: string;
   notes: string;
@@ -114,7 +116,7 @@ function emptyDraft(): Draft {
     creditLimit: '',
     paymentTerms: '',
     discountPercent: '',
-    pricingTier: '',
+    pricingTierId: '',
     assignedRepId: '',
     fleetSize: '',
     notes: '',
@@ -209,7 +211,7 @@ function toDraft(a: Company): Draft {
     creditLimit: credit > 0 ? String(credit) : '',
     paymentTerms: a.paymentTerms ?? '',
     discountPercent: discount > 0 ? String(discount) : '',
-    pricingTier: a.pricingTier ?? '',
+    pricingTierId: a.pricingTierId ?? '',
     assignedRepId: a.assignedRepId ?? '',
     fleetSize: a.fleetSize === null ? '' : String(a.fleetSize),
     notes: a.notes ?? '',
@@ -219,6 +221,74 @@ function toDraft(a: Company): Draft {
 }
 
 const trimOrNull = (value: string): string | null => (value.trim() === '' ? null : value.trim());
+
+/**
+ * The price tier, as the same choice the Wholesale account pane offers.
+ *
+ * This was a free-text box writing a column nothing priced from, described as
+ * "a named group your price lists can point at". Wasatch Front, on Fleet at 12%
+ * off, showed it empty here while the Wholesale pane showed Fleet (sparx persona
+ * issue 086). Now both panes read and write the one tier that prices the orders.
+ *
+ * Its own component so the tier list is only asked for when trade terms are on
+ * screen: with the wholesale module off there are no tiers to ask for.
+ */
+function PriceTierField({
+  value,
+  currentId,
+  currentName,
+  removed,
+  onChange,
+}: {
+  value: string;
+  currentId: string | null;
+  currentName: string | null;
+  /** The linked tier was removed, so it prices nothing. */
+  removed: boolean;
+  onChange: (next: string) => void;
+}) {
+  const tiers = useTierChoices();
+  const items = useMemo(
+    () =>
+      tierChoiceItems(tiers.data?.items, 'No tier: normal prices', {
+        id: currentId,
+        name: currentName,
+        removed,
+      }),
+    [tiers.data, currentId, currentName, removed]
+  );
+  return (
+    <Field>
+      <FieldLabel>Price tier</FieldLabel>
+      <FieldControl
+        render={
+          <div className="max-w-sm">
+            <Select
+              color="module"
+              aria-label="Price tier"
+              value={value}
+              items={items}
+              onValueChange={(next) => {
+                onChange((next as string | null) ?? '');
+              }}
+            />
+          </div>
+        }
+      />
+      {tiers.isError ? (
+        <FieldStatus status="error">
+          Your price tiers could not be loaded, so only the one they are on is listed. Nothing has
+          changed. Try again in a moment.
+        </FieldStatus>
+      ) : (
+        <FieldDescription>
+          A named discount level (trade, distributor, key account) set up under Price tiers. Leave
+          it on normal prices to charge them the same as everyone else.
+        </FieldDescription>
+      )}
+    </Field>
+  );
+}
 const URL_RE = /^https?:\/\/.+\..+/i;
 
 /* ── Surface ────────────────────────────────────────────────────────────── */
@@ -359,7 +429,7 @@ function CompanyEditor({
     website: trimOrNull(draft.website),
     domains: splitDomains(draft.domains),
     taxId: trimOrNull(draft.taxId),
-    pricingTier: trimOrNull(draft.pricingTier),
+    pricingTierId: draft.pricingTierId === '' ? null : draft.pricingTierId,
     status: draft.status,
     creditLimit: (creditCents ?? 0) / 100,
     discountPercent: draft.discountPercent.trim() === '' ? 0 : Number(draft.discountPercent),
@@ -652,24 +722,15 @@ function CompanyEditor({
                     How long they have to pay after you invoice them.
                   </FieldDescription>
                 </Field>
-                <Field>
-                  <FieldLabel>Price tier</FieldLabel>
-                  <FieldControl
-                    render={
-                      <Input
-                        color="module"
-                        value={draft.pricingTier}
-                        placeholder="Optional"
-                        onChange={(event) => {
-                          set('pricingTier', event.target.value);
-                        }}
-                      />
-                    }
-                  />
-                  <FieldDescription>
-                    A named group your price lists can point at, if you use them.
-                  </FieldDescription>
-                </Field>
+                <PriceTierField
+                  value={draft.pricingTierId}
+                  currentId={account?.pricingTierId ?? null}
+                  currentName={account?.pricingTier ?? account?.removedTierName ?? null}
+                  removed={Boolean(account?.removedTierName)}
+                  onChange={(next) => {
+                    set('pricingTierId', next);
+                  }}
+                />
               </div>
             </FormSection>
           ) : null}

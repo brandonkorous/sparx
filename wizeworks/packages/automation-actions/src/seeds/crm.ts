@@ -13,6 +13,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
  *  the moment they're tagged, so each fires exactly once. The 1000 default is the
  *  ADR's `vipThreshold ?? 1000` — a tenant edits this Managed copy to change it. */
 export const CRM_AUTO_TAG_VIP: SystemAutomationSpec = {
+  key: 'crm.tag-vip-customers',
   name: 'Tag VIP customers',
   description:
     'Tags a customer “vip” once their lifetime spend reaches $1,000. Edit the threshold or the tag on this automation.',
@@ -39,8 +40,10 @@ export const CRM_AUTO_TAG_VIP: SystemAutomationSpec = {
 /** Open a follow-up task when a new deal is created in an open stage. The task is
  *  assigned to the deal's rep (falling back to the tenant owner when unassigned). */
 export const CRM_NEW_LEAD_FOLLOW_UP_TASK: SystemAutomationSpec = {
+  key: 'crm.new-lead-follow-up-task',
   name: 'New lead follow-up task',
-  description: 'Creates a follow-up task, due tomorrow, when a deal is created in an open stage.',
+  description:
+    'Creates a follow-up task, due tomorrow, when a deal is created in an open stage. The task closes itself if the deal is won, lost or removed first.',
   trigger: { kind: 'event', eventType: 'crm.deal.created' },
   conditions: {
     logic: 'AND',
@@ -53,6 +56,9 @@ export const CRM_NEW_LEAD_FOLLOW_UP_TASK: SystemAutomationSpec = {
         title: 'Follow up: {{deal.name}}',
         assigneeField: 'deal.assignedRepId',
         dueInDays: 1,
+        // A follow-up on a deal already won or lost asks for nothing, so the
+        // task closes itself when the deal leaves an open stage.
+        closeWhenDealLeaves: 'open',
       },
     },
   ],
@@ -63,9 +69,11 @@ export const CRM_NEW_LEAD_FOLLOW_UP_TASK: SystemAutomationSpec = {
 /** When a deal moves to a won stage, open a task to create the invoice (the
  *  cross-module bridge to invoicing). Assigned to the deal's rep. */
 export const CRM_DEAL_WON_INVOICE_TASK: SystemAutomationSpec = {
+  key: 'crm.deal-won-invoice-task',
   name: 'Deal won: create invoice task',
   previousNames: ['Deal won — create invoice task'],
-  description: 'Opens a task to create the invoice when a deal is marked won.',
+  description:
+    'Opens a task to create the invoice when a deal is marked won. The task closes itself if the deal is moved back out of won or removed.',
   trigger: { kind: 'event', eventType: 'crm.deal.stage_changed' },
   conditions: {
     logic: 'AND',
@@ -78,6 +86,8 @@ export const CRM_DEAL_WON_INVOICE_TASK: SystemAutomationSpec = {
         title: 'Create invoice: {{deal.name}}',
         assigneeField: 'deal.assignedRepId',
         dueInDays: 1,
+        // A deal moved back out of won has no invoice to make yet.
+        closeWhenDealLeaves: 'won',
       },
     },
   ],
@@ -85,10 +95,18 @@ export const CRM_DEAL_WON_INVOICE_TASK: SystemAutomationSpec = {
   status: 'active',
 };
 
-/** Send the welcome email the moment a customer record is created (a signup, a
- *  first order, a newsletter subscribe). Transactional — it isn't withheld by a
- *  marketing opt-out, and reaches every new customer with an address. */
+/** Send the welcome email the moment a customer record is created: an account
+ *  sign-up, or somebody on the team typing a contact in.
+ *
+ *  Marketing, not transactional (Brandon, 2026-10-03). A welcome is not something
+ *  the customer needs because of something they did. Most rows are typed in by the
+ *  business, and the person never asked to hear from anyone. So it follows the
+ *  email module (a business running CRM with email off does not mail every contact
+ *  it enters) and it honors a marketing unsubscribe and the do-not-contact flag.
+ *  It was declared transactional before the email module gate read this type; the
+ *  same declaration would now have sent it with email switched off. */
 export const CRM_WELCOME_NEW_CUSTOMER: SystemAutomationSpec = {
+  key: 'crm.welcome-new-customers',
   name: 'Welcome new customers',
   description: 'Sends the welcome email when a new customer is created.',
   trigger: { kind: 'event', eventType: 'crm.customer.created' },
@@ -99,7 +117,7 @@ export const CRM_WELCOME_NEW_CUSTOMER: SystemAutomationSpec = {
   actions: [
     {
       type: 'email.send_campaign',
-      config: { builderEmailKey: 'welcome-customer', emailType: 'transactional' },
+      config: { builderEmailKey: 'welcome-customer', emailType: 'marketing' },
     },
   ],
   locked: false,
@@ -111,6 +129,7 @@ export const CRM_WELCOME_NEW_CUSTOMER: SystemAutomationSpec = {
  *  SINGLE nudge as they cross the threshold, not one every day they stay inactive.
  *  Marketing — it respects the unsubscribe/do-not-contact gates. */
 export const CRM_WIN_BACK_INACTIVE: SystemAutomationSpec = {
+  key: 'crm.win-back-inactive',
   name: 'Win back inactive customers',
   description:
     'Emails a customer who has ordered before but hasn’t in 90 days. Edit the window or the message on this automation.',
@@ -167,6 +186,7 @@ export const CRM_WIN_BACK_INACTIVE: SystemAutomationSpec = {
  *  thread to the request, so the customer's actual words land ON it rather than
  *  in a mailbox beside it. */
 export const CRM_EMAIL_OPENS_REQUEST: SystemAutomationSpec = {
+  key: 'crm.email-opens-request',
   name: 'Email opens a support request',
   description:
     'When a customer emails a mailbox you have connected, opens a support request with a reply deadline and attaches the conversation to it. One request per email thread, however many messages arrive. Turn this off if you would rather triage your inbox yourself.',
@@ -195,6 +215,7 @@ export const CRM_EMAIL_OPENS_REQUEST: SystemAutomationSpec = {
  *  dedupe key is the conversation, so turning it on gives one request per
  *  conversation, not per message. */
 export const CRM_CHAT_OPENS_REQUEST: SystemAutomationSpec = {
+  key: 'crm.chat-opens-request',
   name: 'Live chat opens a support request',
   description:
     'When someone starts a live chat, opens a support request with a reply deadline and hands it to whoever is already on the conversation. One request per conversation, however many messages are sent. Off until you turn it on. Most chats are answered on the spot and do not need to become requests.',

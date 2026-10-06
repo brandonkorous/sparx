@@ -23,6 +23,12 @@ export interface BuilderVariant {
   title: string | null;
   priceCents: number;
   compareAtPriceCents: number | null;
+  /** Refundable core deposit on a rebuilt part (sparx issue 051); absent or
+   *  null when there is none. */
+  coreChargeCents?: number | null;
+  /** The buyer may instead send the old part first: no deposit, and the part ships
+   *  when it arrives (sparx issue 057). Absent reads as not offered. */
+  coreFirstOffered?: boolean;
   isDefault: boolean;
   inStock: boolean;
   available: number | null;

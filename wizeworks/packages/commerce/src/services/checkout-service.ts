@@ -10,7 +10,13 @@
 // Order via @wizeworks/crm's orderService and fires the post-commit events
 // (order.placed, inventory.adjusted, email.send).
 
-import { orderService, b2bArService } from '@wizeworks/crm';
+import {
+  orderService,
+  b2bArService,
+  accountOrderGate,
+  customerService,
+  heldOrderMoney,
+} from '@wizeworks/crm';
 import {
   type AppliedSurcharge,
   applySurcharges,
@@ -37,26 +43,25 @@ import {
 import { Prisma, withTenant } from '@wizeworks/db';
 import type { CheckoutSession, TxClient } from '@wizeworks/db';
 import { inventoryService, type CommittedSale } from '@wizeworks/inventory';
-// purchaseApprovalRule not in generated types until migration 20260716000000 runs.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyTx = TxClient & Record<string, any>;
-
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
-import { formatAmount } from './money';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 
+import * as accountBuyingRules from './account-buying-rules';
 import * as cartService from './cart-service';
+import { lineRepeat } from './cart-service';
 import { apportionToLines, gatherCartFacts, readConditions } from './discount-conditions';
 import * as discountService from './discount-service';
+import * as heldOrderPayments from './held-order-payments';
 import * as madeToOrderService from './made-to-order-service';
 import * as marketService from './market';
 import * as pricingService from './pricing-service';
 import * as shippingService from './shipping-service';
 import * as taxService from './tax-service';
 import { taxRegionCode } from './tax-region';
+import { exemptionIdsForBuyer } from './tax-exemption-holders';
 import { resolveShipFromAddress } from './shipping-request-resolver';
 import type {
   AddressSnapshot as AddressSnapshotType,
@@ -105,6 +110,9 @@ export async function start(
       include: { items: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+    // A basket already bought is not bought again: a second checkout on it
+    // would place the same order twice (sparx persona issue 087).
+    await cartService.assertCartOpenOnTx(tx, cart.id);
     if (cart.items.length === 0) {
       throw new CommerceValidationError('Cannot start checkout on an empty cart');
     }
@@ -112,6 +120,26 @@ export async function start(
       throw new CommerceValidationError(
         `Cart currency ${cart.currency} does not match checkout currency ${input.currency}`
       );
+    }
+
+    // A view-only contact (or an approver) is stopped at the door rather than
+    // after typing an address, and before an earlier session is handed back
+    // (sparx persona issue 086). The quantity rules and the minimum are checked
+    // before any payment instead, because the basket can still change while
+    // checkout is open.
+    if (cart.customerId) {
+      const buyer = await tx.customer.findFirst({
+        where: { id: cart.customerId },
+        select: { companyId: true },
+      });
+      const ordering = await accountBuyingRules.resolveAccountOrdering(
+        tx,
+        cart.customerId,
+        buyer?.companyId
+      );
+      if (ordering && !ordering.canOrder) {
+        throw new CommerceValidationError(ordering.refusal ?? '');
+      }
     }
 
     // If an active session already exists for this cart, return it
@@ -162,6 +190,7 @@ export async function start(
         taxTotalCents: cart.taxTotalCents,
         giftCardAppliedCents: cart.giftCardAppliedCents,
         accountCreditAppliedCents: cart.accountCreditAppliedCents,
+        coreChargeTotalCents: cart.coreChargeTotalCents,
         totalCents: cart.totalCents,
         expiresAt,
       },
@@ -260,13 +289,19 @@ async function syncSessionToCart<T extends CheckoutSession | null>(
     // Syncing the discount and not the card left a session priced without a card
     // the basket was already holding — the shopper saw the reduction in the cart
     // and full price at the till.
-    select: { subtotalCents: true, discountTotalCents: true, giftCardAppliedCents: true },
+    select: {
+      subtotalCents: true,
+      discountTotalCents: true,
+      giftCardAppliedCents: true,
+      coreChargeTotalCents: true,
+    },
   });
   if (
     !cart ||
     (cart.subtotalCents === row.subtotalCents &&
       cart.discountTotalCents === row.discountTotalCents &&
-      cart.giftCardAppliedCents === row.giftCardAppliedCents)
+      cart.giftCardAppliedCents === row.giftCardAppliedCents &&
+      cart.coreChargeTotalCents === row.coreChargeTotalCents)
   ) {
     return row;
   }
@@ -274,7 +309,8 @@ async function syncSessionToCart<T extends CheckoutSession | null>(
   const totalCents = Math.max(
     0,
     cart.subtotalCents -
-      cart.discountTotalCents -
+      cart.discountTotalCents +
+      cart.coreChargeTotalCents -
       cart.giftCardAppliedCents -
       row.accountCreditAppliedCents +
       row.shippingTotalCents +
@@ -286,6 +322,7 @@ async function syncSessionToCart<T extends CheckoutSession | null>(
       subtotalCents: cart.subtotalCents,
       discountTotalCents: cart.discountTotalCents,
       giftCardAppliedCents: cart.giftCardAppliedCents,
+      coreChargeTotalCents: cart.coreChargeTotalCents,
       totalCents,
     },
   })) as T;
@@ -311,16 +348,7 @@ export async function get(
     // session computes it live from the active rules + the best-known payment
     // method so the storefront can disclose the fee BEFORE the customer pays.
     // Either way we recompute against active rules to surface the label.
-    const specs = await surchargeService.listActiveSpecs(ctx, 'checkout', tx);
-    const surcharge = applySurcharges(specs, {
-      subtotalCents: Math.max(0, row.subtotalCents - row.discountTotalCents),
-      shippingCents: row.shippingTotalCents,
-      taxCents: row.taxTotalCents,
-      paymentMethod: surchargeMethodForSession(row),
-    });
-    const terminal = row.step === 'completed' || row.step === 'expired';
-    const surchargeTotalCents = terminal ? row.surchargeTotalCents : surcharge.totalCents;
-    const totalCents = terminal ? row.totalCents : row.totalCents + surcharge.totalCents;
+    const { surcharge, surchargeTotalCents, totalCents } = await liveTotal(tx, ctx, row);
 
     const account = row.companyId
       ? await tx.company.findFirst({
@@ -329,7 +357,7 @@ export async function get(
         })
       : null;
 
-    return serializeSession(
+    const snapshot = serializeSession(
       row,
       {
         surchargeTotalCents,
@@ -343,6 +371,15 @@ export async function get(
       await madeToOrderService.forCart(tx, row.cartId, totalCents),
       account?.paymentTerms
     );
+    const approvalPreview = row.companyId
+      ? await previewApproval(tx, ctx.tenantId, {
+          customerId: row.customerId,
+          accountId: row.companyId,
+          cartId: row.cartId,
+          totalCents,
+        })
+      : null;
+    return approvalPreview ? { ...snapshot, approvalPreview } : snapshot;
   });
 }
 
@@ -545,12 +582,32 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
     // is an active B2B contact — never gated on channel (a B2B customer
     // orders on the same checkout everyone uses, per docs/10 §11). Exactly
     // one of "bill to account" or "pay by card" must be present.
-    const billToAccount = Boolean(input.poNumber ?? input.paymentTermsRequested);
+    //
+    // A PO number on its own still means "bill this to my account". With a card
+    // payment beside it, it is the buyer's own reference riding on a card order:
+    // a trade buyer paying by card has a purchase order too, and reading the PO
+    // as a request for terms refused exactly the prepay accounts that have to pay
+    // by card (sparx persona issue 086).
+    const paidByCard = Boolean(input.paymentProviderSlug && input.paymentRef);
+    const billToAccount =
+      Boolean(input.paymentTermsRequested) || (Boolean(input.poNumber) && !paidByCard);
+    if (input.poNumber && !session.companyId) {
+      throw new CommerceValidationError(
+        'PO numbers and net terms are only available to B2B accounts'
+      );
+    }
+    await accountBuyingRules.assertCartMayBeOrdered(tx, {
+      cartId: session.cartId,
+      customerId: session.customerId,
+    });
     if (billToAccount && !session.companyId) {
       throw new CommerceValidationError(
         'PO numbers and net terms are only available to B2B accounts'
       );
     }
+    // The terms an order on account carries are the ones the SHOP gave the
+    // account, never the ones the buyer asked for (issue 082).
+    let accountTerms: string | null = null;
     if (billToAccount && session.companyId) {
       const account = await tx.company.findFirst({
         where: { id: session.companyId },
@@ -561,6 +618,11 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
           'This account is set up for prepayment. Pay by card to complete your order.'
         );
       }
+      accountTerms = account?.paymentTerms ?? null;
+    }
+    const billed = billedTerms(input.paymentTermsRequested, accountTerms);
+    if (billed.refusal) {
+      throw new CommerceValidationError(billed.refusal);
     }
     // The third way to owe money for something, after a card and a B2B account:
     // the business takes payment ITSELF — over the counter, on collection, by
@@ -590,7 +652,7 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
           input.paymentProviderSlug ?? (inPerson && !billToAccount ? MANUAL_GATEWAY_ID : undefined),
         paymentRef: input.paymentRef,
         poNumber: input.poNumber ?? null,
-        paymentTermsRequested: input.paymentTermsRequested ?? null,
+        paymentTermsRequested: billed.terms,
       },
     });
     await writeAuditLog({
@@ -638,6 +700,11 @@ export interface CreatePaymentIntentResult {
   amountCents: number;
   currency: string;
   status: PaymentIntentStatus;
+  /** The card is held, not charged: the order goes over a spending limit and
+   *  waits for sign-off, and the gateway can hold a card. It is charged when the
+   *  order is approved and released if it is turned down (sparx persona issue
+   *  087). False when it is charged now, which is every other card payment. */
+  cardHeld: boolean;
 }
 
 /**
@@ -713,6 +780,69 @@ export async function resolvePaymentMode(
   return config.isActive ? 'card' : 'unavailable';
 }
 
+/**
+ * Who keeps the card when this basket asks for a repeat delivery, or null when
+ * it asks for none (issue 739).
+ *
+ * A repeat order needs a SIGNED-IN shopper. Not as a formality: the account is
+ * the only place they can pause, skip or cancel it, so a guest would be signed
+ * up to something with no way out but ringing the shop. And it must be the
+ * shopper who owns this basket, or a card would be kept against a customer who
+ * never typed it.
+ */
+export async function repeatOwner(
+  tx: TxClient,
+  session: {
+    cartId: string;
+    customerId: string | null;
+    customerEmail: string | null;
+    shippingAddress: unknown;
+  },
+  signedInCustomerId: string | null
+): Promise<{ customerId: string; customerRef?: string; email?: string } | null> {
+  const repeating = await tx.cartItem.count({
+    where: { cartId: session.cartId, repeatIntervalUnit: { not: null } },
+  });
+  if (repeating === 0) return null;
+  // Each repeat delivery is sent to the address this one goes to. Collecting in
+  // person has none, and a repeat order with nowhere to go cannot be started.
+  if (!session.shippingAddress) {
+    throw new CommerceValidationError(
+      'A repeat delivery needs a delivery address. Choose delivery, or change those items to buy once.',
+      [{ field: 'shipping', message: 'repeat_needs_delivery' }]
+    );
+  }
+  if (!signedInCustomerId) {
+    throw new CommerceValidationError(
+      'Sign in to set up a repeat delivery. Your account is where you can pause, skip or cancel it.',
+      [{ field: 'account', message: 'sign_in_required' }]
+    );
+  }
+  const cart = await tx.cart.findFirst({
+    where: { id: session.cartId },
+    select: { customerId: true },
+  });
+  const owner = session.customerId ?? cart?.customerId ?? null;
+  if (owner !== null && owner !== signedInCustomerId) {
+    throw new CommerceValidationError(
+      'This basket belongs to a different account. Sign in as that account, or start a new basket.',
+      [{ field: 'account', message: 'not_basket_owner' }]
+    );
+  }
+  // The gateway-side customer this shopper's earlier saved cards hang off, so a
+  // second repeat order joins the first rather than minting a second customer.
+  const earlier = await tx.customerPaymentMethod.findFirst({
+    where: { customerId: signedInCustomerId, customerRef: { not: null } },
+    select: { customerRef: true },
+    orderBy: { createdAt: 'desc' },
+  });
+  return {
+    customerId: signedInCustomerId,
+    ...(earlier?.customerRef ? { customerRef: earlier.customerRef } : {}),
+    ...(session.customerEmail ? { email: session.customerEmail } : {}),
+  };
+}
+
 /** Resolve the tenant's active payment gateway, or surface a clean validation error
  *  when the tenant is on manual payments / has no gateway configured. */
 async function resolvePaymentGateway(tenantId: string): Promise<PaymentGateway> {
@@ -728,7 +858,15 @@ async function resolvePaymentGateway(tenantId: string): Promise<PaymentGateway> 
 
 export async function createPaymentIntent(
   ctx: ServiceContext,
-  input: { sessionId: string; idempotencyKey?: string; returnUrl?: string; cancelUrl?: string }
+  input: {
+    sessionId: string;
+    idempotencyKey?: string;
+    returnUrl?: string;
+    cancelUrl?: string;
+    /** The shopper signed in on this request, if any. A basket with a repeat
+     *  line needs one (issue 739): see `repeatOwner`. */
+    signedInCustomerId?: string | null;
+  }
 ): Promise<CreatePaymentIntentResult> {
   const session = await withTenant(ctx, (tx) =>
     tx.checkoutSession.findFirst({ where: { id: input.sessionId } })
@@ -745,14 +883,56 @@ export async function createPaymentIntent(
       'Submit contact information before creating a payment intent'
     );
   }
+  // The account's rules, BEFORE the gateway is touched: a card form is only
+  // drawn for a basket the account may order, so a refusal here costs the buyer
+  // nothing (sparx persona issue 086).
+  await withTenant(ctx, (tx) =>
+    accountBuyingRules.assertCartMayBeOrdered(tx, {
+      cartId: session.cartId,
+      customerId: session.customerId,
+    })
+  );
 
   // Made to order (issue 026) — a deposit line is charged for its deposit and
   // no more. Everything else on the basket, tax and delivery included, is taken
   // now, so `dueNowCents` is the whole total whenever nothing asked for one.
-  const madeToOrder = await withTenant(ctx, (tx) =>
-    madeToOrderService.forCart(tx, session.cartId, session.totalCents)
+  //
+  // Split from the total the shopper was SHOWN, card fee included. This read the
+  // stored total, which leaves the fee out until the order is written: with a card
+  // fee on, the card was charged less than the button said, and the paid order then
+  // read as partly paid for the size of the fee.
+  const madeToOrder = await withTenant(ctx, async (tx) =>
+    madeToOrderService.forCart(tx, session.cartId, (await liveTotal(tx, ctx, session)).totalCents)
   );
   const chargeCents = madeToOrder.dueNowCents;
+
+  // A repeat line means this payment also keeps the card (issue 739). Worked out
+  // before the gateway is touched: a refusal here costs the shopper nothing.
+  const saveForLater = await withTenant(ctx, (tx) =>
+    repeatOwner(tx, session, input.signedInCustomerId ?? null)
+  );
+
+  // A wholesale order a spending limit will hold is not placed until it is
+  // approved, so its card is HELD rather than charged, and charged only when the
+  // last person signs it off (sparx persona issue 087). It used to be charged
+  // here whatever happened next, and an order its own company turned down kept
+  // the buyer's money. Decided the way checkout decides the hold: the same rule
+  // as the preview the buyer is shown, against the total `complete` holds on. A
+  // card order is never held for credit, which only orders on terms are. Where
+  // the gateway cannot hold a card it is charged as before, and a turned-down
+  // order is refunded in full instead.
+  const heldForSignOff =
+    session.channel !== 'sparx_market' && session.companyId
+      ? (await withTenant(ctx, (tx) =>
+          previewApproval(tx, ctx.tenantId, {
+            customerId: session.customerId,
+            accountId: session.companyId ?? '',
+            cartId: session.cartId,
+            totalCents: session.totalCents,
+          })
+        )) !== null
+      : false;
+  const holdCard = heldForSignOff && (await paymentService.canHoldCards(ctx.tenantId));
 
   // Resolve the gateway and open the intent. The gateway sets metadata.tenantId on
   // the intent so the payment webhook can resolve the tenant; the intent id IS the
@@ -769,6 +949,11 @@ export async function createPaymentIntent(
   };
   let providerSlug: string;
   let intent: PaymentIntent;
+  if (session.channel === 'sparx_market' && saveForLater) {
+    throw new CommerceValidationError(
+      'Repeat delivery is not available on the marketplace. Change those items to buy once.'
+    );
+  }
   if (session.channel === 'sparx_market') {
     const commissionBps = await withTenant(ctx, (tx) =>
       marketService.resolveTenantCommissionBps(tx, ctx.tenantId)
@@ -796,9 +981,11 @@ export async function createPaymentIntent(
         tenantId: ctx.tenantId,
         amount: chargeCents,
         currency: session.currency.toLowerCase(),
-        metadata,
+        metadata: holdCard ? { ...metadata, ...heldOrderMoney.HELD_CARD_METADATA } : metadata,
+        ...(holdCard ? { captureMethod: 'manual' as const } : {}),
         ...(input.returnUrl ? { returnUrl: input.returnUrl } : {}),
         ...(input.cancelUrl ? { cancelUrl: input.cancelUrl } : {}),
+        ...(saveForLater ? { saveForLater, customerId: saveForLater.customerId } : {}),
       });
     } catch {
       throw new CommerceValidationError(NO_PAYMENTS_MESSAGE);
@@ -837,6 +1024,68 @@ export async function createPaymentIntent(
     amountCents: chargeCents,
     currency: session.currency,
     status: intent.status,
+    cardHeld: holdCard,
+  };
+}
+
+// ─── who signs a held order off ──────────────────────────────────────
+
+/** Who a held order is waiting on, as the buyer is told at the end of checkout
+ *  (sparx persona issue 087). `accountApprovers` are names, oldest first, and
+ *  is empty unless the account is asked. */
+export interface CheckoutApproval {
+  waitingOn: accountOrderGate.SignOffSide[];
+  accountApprovers: string[];
+  /** The spending limit the order went over, when one held it. */
+  limitCents: number | null;
+}
+
+/** Who a spending limit would ask to sign this order off if it were placed now.
+ *  Read the way checkout decides it, against the order's own site. */
+async function previewApproval(
+  tx: TxClient,
+  tenantId: string,
+  input: { customerId: string | null; accountId: string; cartId: string; totalCents: number }
+): Promise<NonNullable<CheckoutSessionSnapshot['approvalPreview']> | null> {
+  const cart = await tx.cart.findFirst({
+    where: { id: input.cartId },
+    select: { propertyId: true },
+  });
+  const propertyId =
+    cart?.propertyId ??
+    (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id ??
+    null;
+  const rule = accountOrderGate.ruleGoverningOrder(
+    { accountId: input.accountId, propertyId, totalCents: input.totalCents },
+    await accountOrderGate.activeApprovalRules(tx, tenantId)
+  );
+  if (!rule) return null;
+  const approvers = await accountOrderGate.accountApprovers(tx, input.accountId, input.customerId);
+  const state = accountOrderGate.signOffState({
+    reasons: [{ kind: 'approval_rule', ruleId: rule.id }],
+    rule,
+    accountApprovers: approvers,
+    signed: {},
+  });
+  return {
+    waitingOn: state.waitingOn,
+    accountApprovers: state.needs.includes('account') ? approvers.map((a) => a.name) : [],
+    limitCents: rule.minAmountCents,
+  };
+}
+
+async function checkoutApproval(
+  tx: TxClient,
+  tenantId: string,
+  order: Parameters<typeof accountOrderGate.loadOrderSignOff>[2]
+): Promise<CheckoutApproval> {
+  const signOff = await accountOrderGate.loadOrderSignOff(tx, tenantId, order);
+  return {
+    waitingOn: signOff.state.waitingOn,
+    accountApprovers: signOff.state.needs.includes('account')
+      ? signOff.approvers.map((approver) => approver.name)
+      : [],
+    limitCents: signOff.rule?.minAmountCents ?? null,
   };
 }
 
@@ -855,6 +1104,10 @@ export async function complete(
   /** True when the order is held for B2B approval — `order.placed` (and fee
    *  metering) is deferred to the approval route. */
   pendingApproval: boolean;
+  /** Who has been asked to sign a held order off, so the confirmation can say
+   *  so: the account's own approvers, the business, or both (sparx persona
+   *  issue 087). Null when the order is not held. */
+  approval: CheckoutApproval | null;
   /** The gateway intent id + provider slug for a card order (absent for
    *  net-terms / manual / idempotent-replay). The checkout-complete route uses
    *  these to close the client-confirm race: right after this commits, it asks
@@ -875,18 +1128,43 @@ export async function complete(
     })
   );
   if (prior?.resultOrderId) {
-    const order = await withTenant(ctx, (tx) =>
-      tx.order.findFirst({
+    // A replay answers what the order IS now. It answered "not held" whatever
+    // the order was, so a retried checkout on a held order thanked the buyer
+    // for an order that had gone through.
+    const replay = await withTenant(ctx, async (tx) => {
+      const order = await tx.order.findFirst({
         where: { id: prior.resultOrderId ?? '' },
-        select: { id: true, orderNumber: true },
-      })
-    );
-    if (order)
+        select: {
+          id: true,
+          orderNumber: true,
+          status: true,
+          customerId: true,
+          propertyId: true,
+          total: true,
+          metadata: true,
+          customer: { select: { companyId: true } },
+        },
+      });
+      if (!order) return null;
+      const approval =
+        order.status === 'pending_approval'
+          ? await checkoutApproval(tx, ctx.tenantId, {
+              customerId: order.customerId,
+              accountId: order.customer?.companyId ?? null,
+              propertyId: order.propertyId,
+              totalCents: Math.round(Number(order.total) * 100),
+              metadata: order.metadata,
+            })
+          : null;
+      return { order, approval };
+    });
+    if (replay)
       return {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
+        orderId: replay.order.id,
+        orderNumber: replay.order.orderNumber,
         freshlyPlaced: false,
-        pendingApproval: false,
+        pendingApproval: replay.approval !== null,
+        approval: replay.approval,
       };
   }
 
@@ -935,7 +1213,11 @@ export async function complete(
       );
     }
 
-    // B2B credit enforcement: net-terms checkouts require available credit.
+    // B2B credit: an account the business has stopped is refused; an order that
+    // would run past the credit limit WAITS for the owner's sign-off, as the
+    // /b2b page promises. It used to be refused, which reached only the buyer.
+    // The rule is shared with an accepted quote (sparx persona issue 085).
+    const holdReasons: accountOrderGate.HoldReason[] = [];
     if (activeB2bAccountId && session.paymentTermsRequested) {
       const account = await tx.company.findFirst({
         where: { id: activeB2bAccountId, tenantId: ctx.tenantId },
@@ -944,12 +1226,15 @@ export async function complete(
       if (!account) {
         throw new CommerceValidationError('B2B account not found');
       }
-      // Every reason this order cannot go on terms, worked out in one place so
-      // it can be tested without a database — see `termsRefusal`.
-      const refusal = termsRefusal(account, session.totalCents, session.currency);
-      if (refusal) {
-        throw new CommerceValidationError(refusal);
+      const decision = accountOrderGate.termsDecision(
+        account,
+        session.totalCents,
+        session.currency
+      );
+      if (decision.kind === 'refuse') {
+        throw new CommerceValidationError(decision.message);
       }
+      if (decision.kind === 'hold') holdReasons.push(decision.reason);
     }
 
     const cart = session.cart;
@@ -1009,21 +1294,43 @@ export async function complete(
     // $42.00 (issue 298).
     const discountByLine = await apportionCartDiscounts(tx, cart);
 
-    const items = cart.items.map((it) => ({
-      productId: it.variant.productId,
-      variantId: it.variantId,
-      sku: it.variant.sku,
-      name: it.variant.product.title,
-      quantity: it.quantity,
-      unitPrice: it.unitPriceCents / 100,
-      discountAmount: (discountByLine.get(it.id) ?? 0) / 100,
-    }));
+    const items = cart.items.map((it) => {
+      // The order is the lasting record of a repeat request (issue 739); the
+      // cart is gone by the time the payment clears. The subscription tick
+      // reads this once the order is paid, starts the repeat order, and writes
+      // the subscription's id beside it.
+      const repeat = lineRepeat(it);
+      return {
+        productId: it.variant.productId,
+        variantId: it.variantId,
+        sku: it.variant.sku,
+        name: it.variant.product.title,
+        quantity: it.quantity,
+        unitPrice: it.unitPriceCents / 100,
+        discountAmount: (discountByLine.get(it.id) ?? 0) / 100,
+        // The deposit rides on the part's own line, so picking, stock and sales
+        // figures never count it as an item (issue 051).
+        ...(it.coreChargeCents !== null ? { coreCharge: it.coreChargeCents / 100 } : {}),
+        // Or the other way: the old part comes first and the line waits for it
+        // (issue 057). The order keeps the promise the basket made.
+        ...(it.coreFirst ? { coreFirst: true } : {}),
+        ...(repeat ? { metadata: { repeat } } : {}),
+      };
+    });
 
     // The basket, settled, is what this order is priced from — not the snapshot
     // start() took, which is as old as the moment checkout began. `get()` keeps
     // an in-flight session in line on every step so the button already shows
     // this; doing it again here closes the gap between that read and the press.
     await cartService.recomputeCartTotals(tx, ctx, cart.id);
+    // The binding check on the account's rules (sparx persona issue 086): who may
+    // order, each line's minimum, maximum and case pack, and the account's
+    // minimum order, read off the settled basket. Checked again here because the
+    // basket or the rules can change after checkout began.
+    await accountBuyingRules.assertCartMayBeOrdered(tx, {
+      cartId: cart.id,
+      customerId: session.customerId,
+    });
     const settled = await tx.cart.findFirstOrThrow({
       where: { id: cart.id },
       // pricingTrace carries WHICH gift card is reserved. The scalar beside it
@@ -1033,6 +1340,7 @@ export async function complete(
         subtotalCents: true,
         discountTotalCents: true,
         giftCardAppliedCents: true,
+        coreChargeTotalCents: true,
         pricingTrace: true,
       },
     });
@@ -1045,7 +1353,8 @@ export async function complete(
     if (
       settled.subtotalCents !== session.subtotalCents ||
       settled.discountTotalCents !== session.discountTotalCents ||
-      settled.giftCardAppliedCents !== session.giftCardAppliedCents
+      settled.giftCardAppliedCents !== session.giftCardAppliedCents ||
+      settled.coreChargeTotalCents !== session.coreChargeTotalCents
     ) {
       throw new CommerceConflictError(
         'Your basket changed while you were checking out. Open it again to see the current total.'
@@ -1091,7 +1400,8 @@ export async function complete(
       Math.max(
         0,
         settled.subtotalCents -
-          settled.discountTotalCents -
+          settled.discountTotalCents +
+          settled.coreChargeTotalCents -
           session.giftCardAppliedCents -
           session.accountCreditAppliedCents +
           session.shippingTotalCents +
@@ -1252,36 +1562,58 @@ export async function complete(
       });
     }
 
-    // B2B approval gate: if an active rule covers this account + amount, hold the
-    // order for staff review instead of immediately placing it. The pending status
+    // B2B approval gate: hold the order for staff review instead of placing it
+    // when an active spending limit covers this account + amount, or when it would
+    // run the account past its credit limit (worked out above). The pending status
     // blocks invoice creation and order.placed until approved (docs/64 B2B Ph6).
+    //
+    // Either reason holds it, and the order keeps BOTH on its metadata so the
+    // person signing can see why it is waiting.
     let pendingApproval = false;
     if (activeB2bAccountId) {
-      // Two independent axes, so two ORs under an AND (docs/131 §4). A rule
-      // covers this order when its ACCOUNT axis matches (this buyer, or any) and
-      // its SITE axis matches (this business, or any). Collapsing them into one
-      // OR would fire a donut-shop rule on a machine-shop order — a spending
-      // control applied to a business nobody had in mind when setting it.
-      const rule = await (tx as AnyTx).purchaseApprovalRule.findFirst({
-        where: {
-          tenantId: ctx.tenantId,
-          isActive: true,
-          minAmountCents: { lte: session.totalCents },
-          AND: [
-            { OR: [{ accountId: activeB2bAccountId }, { accountId: null }] },
-            { OR: [{ propertyId: order.propertyId }, { propertyId: null }] },
-          ],
-        },
-        select: { id: true },
+      const rule = await accountOrderGate.findHoldingRule(tx, ctx.tenantId, {
+        accountId: activeB2bAccountId,
+        propertyId: order.propertyId,
+        totalCents: session.totalCents,
       });
-      if (rule) {
-        await tx.order.update({
-          where: { id: order.id },
-          data: { status: 'pending_approval' },
-        });
-        pendingApproval = true;
-      }
+      if (rule) holdReasons.push({ kind: 'approval_rule', ruleId: rule.id });
     }
+    let approval: CheckoutApproval | null = null;
+    if (holdReasons.length > 0) {
+      const heldMetadata = accountOrderGate.withApprovalHold(
+        (order.metadata ?? {}) as Record<string, unknown>,
+        holdReasons
+      );
+      await tx.order.update({
+        where: { id: order.id },
+        data: {
+          status: 'pending_approval',
+          metadata: heldMetadata as Prisma.InputJsonValue,
+        },
+      });
+      pendingApproval = true;
+      approval = await checkoutApproval(tx, ctx.tenantId, {
+        customerId,
+        accountId: activeB2bAccountId ?? null,
+        propertyId: order.propertyId,
+        totalCents: session.totalCents,
+        metadata: heldMetadata,
+      });
+    }
+
+    // The card was held for a sign-off this order turned out not to need: the
+    // limit changed, or the basket did, between the card form and this press. It
+    // is placed now, so the held card is charged now, after this commits (sparx
+    // persona issue 087). Left alone it would never be charged, and the hold
+    // would drop off the card a week later with the order unpaid.
+    const captureNow =
+      !pendingApproval && session.paymentRef
+        ? await heldOrderMoney.heldOrderMoney(
+            tx,
+            { id: order.id, orderNumber: order.orderNumber, customerId },
+            'placed'
+          )
+        : [];
 
     // B2B net-terms: auto-create the AR document and sync credit_used.
     // Skipped when the order is gated for approval — creation runs inside the
@@ -1337,25 +1669,51 @@ export async function complete(
     // line commits its soft hold (or decrements directly when none exists),
     // writing a `sale` movement referencing the order, atomic with this
     // completion. Skipped when the order is held for B2B approval (placement —
-    // and the decrement — defers to the approval route), when inventory is off
+    // and the decrement — defers to the approval route, and the stock is held
+    // for it below), when inventory is off
     // (untracked = always available), or for a dropship-sourced line (the
     // supplier holds the stock — see cart-service's addItem, which never
     // reserves one of these in the first place). Idempotency keys on the
     // movements make a retried completion safe.
     let committedSales: CommittedSale[] = [];
-    if (inventoryActive && !pendingApproval) {
-      const trackedLines = cart.items.filter((it) => !it.variant.dropshipSourceId);
-      if (trackedLines.length > 0) {
-        committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
-          orderId: order.id,
-          lines: trackedLines.map((it) => ({
-            variantId: it.variantId,
-            quantity: it.quantity,
-            reservationId: it.inventoryReservationId,
-            lineKey: it.id,
-          })),
-        });
-      }
+    const trackedLines = cart.items.filter((it) => !it.variant.dropshipSourceId);
+    if (inventoryActive && !pendingApproval && trackedLines.length > 0) {
+      committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
+        orderId: order.id,
+        lines: trackedLines.map((it) => ({
+          variantId: it.variantId,
+          quantity: it.quantity,
+          reservationId: it.inventoryReservationId,
+          lineKey: it.id,
+        })),
+      });
+    }
+
+    // A HELD order keeps its stock while it waits. The basket's holds move to
+    // the order as they are: keyed to the order, off the basket's thirty-minute
+    // timer, so the reaper cannot let them go and nobody else can buy those
+    // units while somebody decides. Approving commits from them; turning the
+    // order down, or cancelling it, lets them go. The basket lines stop
+    // pointing at them, so an edit to this basket afterwards cannot release
+    // stock that now belongs to the order.
+    //
+    // This used to do nothing here at all. MEASURED on Gillett Diesel's
+    // O-000014 (2026-10-03): the hold stayed on the basket, the approval hours
+    // later took the same kits again without it, and three kits were counted
+    // out twice. See "A held order's stock" in inventory's sell-path.ts.
+    if (inventoryActive && pendingApproval && trackedLines.length > 0) {
+      await inventoryService.holdStockForOrderOnTx(tx, ctx, {
+        orderId: order.id,
+        lines: trackedLines.map((it) => ({
+          variantId: it.variantId,
+          quantity: it.quantity,
+          reservationId: it.inventoryReservationId,
+        })),
+      });
+      await tx.cartItem.updateMany({
+        where: { cartId: cart.id, inventoryReservationId: { not: null } },
+        data: { inventoryReservationId: null },
+      });
     }
 
     // Mark the session completed + record the resulting order so the
@@ -1417,11 +1775,21 @@ export async function complete(
       b2bInvoiceId,
       companyId: session.companyId ?? null,
       pendingApproval,
+      approval,
       committedSales,
+      captureNow,
       paymentRef: session.paymentRef ?? undefined,
       paymentProviderSlug: session.paymentProviderSlug ?? undefined,
     };
   });
+
+  // Gateway calls after the order is committed, never inside it.
+  if (result.captureNow.length > 0) {
+    await heldOrderPayments.settle(
+      { tenantId: ctx.tenantId, userId: ctx.userId ?? null },
+      result.captureNow
+    );
+  }
 
   // Inventory threshold events (inventory.adjusted / low / depleted) fire AFTER
   // the completion transaction commits, never inside it.
@@ -1466,6 +1834,9 @@ export async function complete(
         orderId: result.orderId,
         orderNumber: result.orderNumber,
         companyId: result.companyId,
+        // Who this asks: the business's team gets a task, the account's own
+        // approvers get an email (sparx persona issue 087).
+        asks: result.approval?.waitingOn ?? ['business'],
       },
     });
   } else {
@@ -1480,7 +1851,8 @@ export async function complete(
     });
   }
 
-  return { ...result, freshlyPlaced: true };
+  const { captureNow: _settled, ...placed } = result;
+  return { ...placed, freshlyPlaced: true };
 }
 
 // ─── expire ──────────────────────────────────────────────────────────
@@ -1546,7 +1918,7 @@ export async function findExpiredSessions(ctx: ServiceContext): Promise<string[]
  * defaults to primary) — avoiding a duplicate. Email is normalized to match how
  * the account-registration path stores it.
  */
-async function ensureCheckoutCustomer(
+export async function ensureCheckoutCustomer(
   tx: TxClient,
   tenantId: string,
   cartPropertyId: string | null,
@@ -1591,8 +1963,14 @@ async function ensureCheckoutCustomer(
       // one-off delivery to somebody else must not rename them.
       ...splitName(fullName),
     },
-    select: { id: true },
+    select: { id: true, type: true, email: true },
   });
+  // A buyer the business did not have. Written and never announced, so the owner
+  // could open the order and could not find the person who placed it by
+  // searching for them (sparx persona issue 086). `captured`, not `created`: a
+  // guest who paid did not join anything, and "Welcome new customers" answers
+  // `created`. Registered inside the order's transaction; it goes out on commit.
+  await customerService.announceCustomer(tenantId, 'crm.customer.captured', created);
   return created.id;
 }
 
@@ -1673,8 +2051,11 @@ async function linkKnownCustomer(
  * "US-CA". `taxRegionCode` translates, and says nothing rather than guessing —
  * an unrecognised region then matches only the country-level place, which
  * under-charges visibly instead of charging a stranger the wrong state's rate.
+ *
+ * Exported so `checkout-tax-exemption.test.ts` can pin whose certificates it
+ * reads; `submitShipping` is its only caller.
  */
-async function quoteTaxForSession(
+export async function quoteTaxForSession(
   ctx: ServiceContext,
   input: {
     cartId: string;
@@ -1692,7 +2073,7 @@ async function quoteTaxForSession(
       select: { id: true, customerId: true, channel: true },
     });
     if (!cart) return null;
-    const [items, exemptions] = await Promise.all([
+    const [items, exemptionIds] = await Promise.all([
       tx.cartItem.findMany({
         where: { cartId: input.cartId },
         select: {
@@ -1703,19 +2084,17 @@ async function quoteTaxForSession(
           variant: { select: { productId: true, product: { select: { taxClass: true } } } },
         },
       }),
-      input.customerId
-        ? tx.taxExemption.findMany({
-            where: { customerId: input.customerId },
-            select: { id: true },
-          })
-        : Promise.resolve([]),
+      // The buyer's own certificates AND their wholesale account's. Reading
+      // only the customer's ignored every certificate filed on a trade account,
+      // which is where a reseller's is kept (issue 075).
+      exemptionIdsForBuyer(tx, input.customerId),
     ]);
     // A line is taxed on what it actually costs, so its share of the basket's
     // savings comes off first. CartItem carries no discount column — the
     // apportionment is computed, and it is the same one the order is written
     // from, so tax and the invoice agree about what was discounted.
     const discountByLine = await apportionCartDiscounts(tx, cart);
-    return { items, exemptionIds: exemptions.map((e) => e.id), discountByLine };
+    return { items, exemptionIds, discountByLine };
   });
   if (!read || read.items.length === 0) return null;
 
@@ -1799,65 +2178,32 @@ export function furthestStep(from: string, to: string): string {
 }
 
 /**
- * Why this account may not put this order on payment terms, or null if it may.
+ * The terms an order billed to an account is written on, or why it cannot be.
  *
- * ── WHY IT IS OUT HERE ──────────────────────────────────────────────────────
+ * The storefront used to offer the buyer a choice of Net 15, 30, 60 or 90 and
+ * send whichever they picked (issue 082). The due date ignored it whenever the
+ * account had terms of its own, so a buyer who chose Net 90 was invoiced on the
+ * shop's Net 30, after being shown otherwise. Where the account had NO terms,
+ * the buyer's pick won outright: the customer chose how long they get to pay.
+ * And a Net 45 account could not be represented in the list at all.
  *
- * It was four `if`s in the middle of `complete()`, reachable only through a
- * database transaction, so nothing tested it and one of the four was missing.
- * An account marked **Inactive** — "kept on file but not trading", as the
- * console words it — sailed straight past: `inactive` was never checked
- * anywhere in the order path, so the one state whose whole meaning is "we are
- * not trading with these people" was the only state that stopped nothing.
- *
- * ── WHAT A ZERO LIMIT MEANS ─────────────────────────────────────────────────
- *
- * `companies.credit_limit` is `NUMERIC NOT NULL DEFAULT 0`, and the sum below
- * is the only thing that reads it, so a company nobody has given a limit is
- * refused every order on terms. MEASURED 2026-09-25 on the dev database: all
- * ten Active companies sit at zero, under a console that told their owner
- * "This account can place orders on its agreed terms."
- *
- * The arithmetic is unchanged. What is new is the `inactive` branch and the
- * fact that all five answers can now be checked without a database.
+ * So the request is only ever a signal, "bill this to my account", and the
+ * terms recorded are the account's own. An account the shop has not given
+ * terms to cannot buy on terms yet: there is nothing to put on the invoice.
  */
-export function termsRefusal(
-  account: { status: string; creditLimit: unknown; creditUsed: unknown },
-  orderCents: number,
-  currency: string
-): string | null {
-  if (account.status === 'credit_hold') {
-    return 'Account is on credit hold: payment required before placing new orders';
+export function billedTerms(
+  requested: string | null | undefined,
+  accountTerms: string | null | undefined
+): { terms: string | null; refusal: string | null } {
+  if (!requested) return { terms: null, refusal: null };
+  if (!accountTerms) {
+    return {
+      terms: null,
+      refusal:
+        'Your account does not have payment terms set up yet. Pay by card, or ask your account manager to set up your terms.',
+    };
   }
-  if (account.status === 'suspended') {
-    return 'Account is suspended: contact your account manager';
-  }
-  if (account.status === 'inactive') {
-    return 'Account is not currently trading: contact your account manager';
-  }
-  const available = Number(account.creditLimit) - Number(account.creditUsed);
-  const orderDollars = orderCents / 100;
-  // `NaN > available` and `orderDollars > NaN` are both false, so an unreadable
-  // figure would WAVE THE ORDER THROUGH on the old comparison. Ask the question
-  // the other way round, so anything that is not a number refuses.
-  if (!(orderDollars <= available)) {
-    // The person reading this is a buyer who has just been stopped at
-    // checkout, so the two numbers have to be countable and the sentence has
-    // to say what to do about it. It used to read "Insufficient credit:
-    // $50000.00 available, $52340.00 required" — every credit limit on the
-    // platform is five figures, so the digits a reader has to count were
-    // exactly the ones with no separator between them.
-    const order = formatAmount(orderDollars, currency);
-    const left =
-      available > 0
-        ? `your account has ${formatAmount(available, currency)} of credit left`
-        : 'your account has no credit left';
-    return (
-      `This order comes to ${order} and ${left}. ` +
-      'Pay down what is outstanding, or ask your account manager to raise the limit.'
-    );
-  }
-  return null;
+  return { terms: accountTerms, refusal: null };
 }
 
 /**
@@ -1885,6 +2231,35 @@ function surchargeLabelFor(applied: AppliedSurcharge[]): string | null {
   if (applied.length === 0) return null;
   if (applied.length === 1) return applied[0]!.label;
   return 'Surcharges';
+}
+
+/**
+ * The session's total as the shopper sees it: the stored total plus the card fee
+ * worked out live (docs/48 §6), or the frozen figures once the session is over.
+ * One function so the page and the card charge can never disagree.
+ */
+async function liveTotal(
+  tx: TxClient,
+  ctx: ServiceContext,
+  row: CheckoutSession
+): Promise<{
+  surcharge: ReturnType<typeof applySurcharges>;
+  surchargeTotalCents: number;
+  totalCents: number;
+}> {
+  const specs = await surchargeService.listActiveSpecs(ctx, 'checkout', tx);
+  const surcharge = applySurcharges(specs, {
+    subtotalCents: Math.max(0, row.subtotalCents - row.discountTotalCents),
+    shippingCents: row.shippingTotalCents,
+    taxCents: row.taxTotalCents,
+    paymentMethod: surchargeMethodForSession(row),
+  });
+  const terminal = row.step === 'completed' || row.step === 'expired';
+  return {
+    surcharge,
+    surchargeTotalCents: terminal ? row.surchargeTotalCents : surcharge.totalCents,
+    totalCents: terminal ? row.totalCents : row.totalCents + surcharge.totalCents,
+  };
 }
 
 function serializeSession(
@@ -1928,6 +2303,7 @@ function serializeSession(
       surchargeTotalCents: surcharge.surchargeTotalCents,
       giftCardAppliedCents: row.giftCardAppliedCents,
       accountCreditAppliedCents: row.accountCreditAppliedCents,
+      coreChargeTotalCents: row.coreChargeTotalCents,
       totalCents: surcharge.totalCents,
     },
     expiresAt: row.expiresAt.toISOString(),

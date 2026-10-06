@@ -14,7 +14,14 @@
 // that really are dockview's — the window boundary for torn-off panes, and how
 // a reset is triggered — and this owns the rest.
 
-import { Component, Suspense, useEffect, type ErrorInfo, type ReactNode } from 'react';
+import {
+  Component,
+  Suspense,
+  useEffect,
+  useSyncExternalStore,
+  type ErrorInfo,
+  type ReactNode,
+} from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
@@ -146,7 +153,15 @@ export function PaneConfirmBridge({ paneId }: { paneId: string }) {
 /** The surface itself. Split out so the context hook sits below the boundary. */
 export function SurfaceBody({ paneId }: { paneId: string }) {
   const { controller } = useWorkbench();
-  const descriptor = controller.getDescriptor(paneId);
+  // Subscribed, not read once: a pane's view params (its tab) change while it
+  // is mounted, from its own tab strip or a link to the same record (issue
+  // 374), and the surface reads them from here. `getDescriptor` returns the
+  // same object until that pane changes, so other panes do not re-render it.
+  const descriptor = useSyncExternalStore(
+    controller.subscribe,
+    () => controller.getDescriptor(paneId),
+    () => controller.getDescriptor(paneId)
+  );
   const ctx = useSurfaceContext(descriptor ?? { id: paneId, surface: 'unknown' });
   // Above the early returns, because hooks are. Both are cached shell reads, so
   // this costs a mounted pane nothing.

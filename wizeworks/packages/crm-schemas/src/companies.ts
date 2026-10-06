@@ -56,7 +56,12 @@ export const CreateCompanyInput = z.object({
   // beyond that it is not a company's domains, it is a list of every address
   // somebody pasted, and the association offer stops being trustworthy.
   domains: z.array(EmailDomain).max(20).default([]),
-  pricingTier: z.string().max(63).nullable().optional(),
+  // The price tier the company buys on: the id of one of this business's tiers,
+  // or null for normal prices. The free-text `pricingTier` column this replaced
+  // priced nothing, so a company could read "Wholesale" on one screen while
+  // paying list price on every order (sparx persona issue 086). It is no longer
+  // accepted; a caller still sending it has the key dropped, not stored.
+  pricingTierId: Uuid.nullable().optional(),
   creditLimit: z.number().min(0).max(99_999_999.99).default(0),
   paymentTerms: PaymentTerms.nullable().optional(),
   discountPercent: z.number().min(0).max(100).default(0),

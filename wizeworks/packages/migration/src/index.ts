@@ -80,6 +80,7 @@ export {
 
 export {
   countLabel,
+  bringInLabel,
   failingRows,
   importableRows,
   summarize,

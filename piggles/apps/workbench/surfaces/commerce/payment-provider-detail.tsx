@@ -15,7 +15,7 @@
 // Saved secret keys are never shown back — the form says "on file" and leaving a
 // secret blank keeps whatever is already stored, exactly as the server treats it.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { productCopy, productHidesFeature } from '../../lib/product';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -68,7 +68,10 @@ import {
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
-  const gatewayId = typeof ctx.params.id === 'string' ? ctx.params.id : '';
+  // `key` is the provider's address parameter; `id` is what a tab saved before
+  // that carries, and it still opens.
+  const named = ctx.params.key ?? ctx.params.id;
+  const gatewayId = typeof named === 'string' ? named : '';
   const config = usePaymentConfig();
   const catalog = useGatewayCatalog();
   const credentials = useGatewayCredentials();
@@ -395,6 +398,71 @@ function requiredFilled(
   return true;
 }
 
+/**
+ * What the webhook address is for, in this processor's terms.
+ *
+ * Only Stripe had an address until Square, PayPal, Authorize.net and the custom
+ * gateway got theirs (issue 739), so this sentence and the steps below were
+ * written for Stripe alone, and would have walked a Square owner through
+ * Stripe's dashboard. A custom gateway has no way to be asked about a payment,
+ * so its address is how every payment is marked paid, and it says so.
+ */
+function webhookDescription(gatewayId: string, processorName: string): string {
+  if (gatewayId === 'custom') {
+    return `Your ${processorName} tells us at this address when a shopper has paid. Until it does, the order shows as not paid.`;
+  }
+  return `Add this address in your ${processorName} account so ${processorName} can tell us about things that happen there: a refund or dispute you handle in ${processorName}, or a payment that clears days later. Card payments are checked with ${processorName} at checkout, so they show as paid either way.`;
+}
+
+/** Where, in each processor's own account, the address goes, and which of the
+ *  fields above its answer fills. */
+function webhookSteps(gatewayId: string): ReactNode {
+  switch (gatewayId) {
+    case 'square':
+      return (
+        <>
+          In Square: Developer Console → your app → Webhooks → Subscriptions → Add subscription.
+          Paste the address above, then choose these updates: payment updated and refund updated.
+          Square then shows you a signature key. Paste that into the{' '}
+          <strong>Webhook signature key</strong> field above.
+        </>
+      );
+    case 'paypal':
+      return (
+        <>
+          In PayPal: Developer Dashboard → Apps &amp; Credentials → your app → Add Webhook. Paste
+          the address above, then choose these updates: payment capture completed, denied and
+          refunded, and the dispute updates. PayPal then lists a Webhook ID. Paste that into the{' '}
+          <strong>Webhook ID</strong> field above.
+        </>
+      );
+    case 'authorize_net':
+      return (
+        <>
+          In Authorize.net: Account → Settings → Webhooks → Add Endpoint. Paste the address above,
+          then choose the payment, refund and void notifications. The <strong>Signature Key</strong>{' '}
+          field above comes from Account → Settings → API Credentials &amp; Keys.
+        </>
+      );
+    case 'custom':
+      return (
+        <>
+          Give this address to whoever set up your processor. Each message it sends needs signing
+          with the <strong>Webhook secret</strong> above; one that is not signed is turned away.
+        </>
+      );
+    default:
+      return (
+        <>
+          In Stripe: Developers → Webhooks → Add endpoint. Paste the address above, then choose
+          these updates: successful payments, failed payments, refunds, and disputes. Stripe then
+          shows you a signing secret. Paste that into the <strong>Webhook signing secret</strong>{' '}
+          field above.
+        </>
+      );
+  }
+}
+
 function ApiKeysBody({
   descriptor,
   credential,
@@ -583,15 +651,10 @@ function ApiKeysBody({
       {webhookUrl ? (
         <FormSection
           title={`Tell ${processorName} where to send updates`}
-          description={`Add this address in your ${processorName} account so it can tell us when a payment goes through. Until you do, cards will still be charged, but orders will keep showing as unpaid and your customers won't get a receipt.`}
+          description={webhookDescription(descriptor.id, processorName)}
         >
           <CopyValue value={webhookUrl} label="webhook address" />
-          <Text className="text-sm">
-            In Stripe: Developers → Webhooks → Add endpoint. Paste the address above, then choose
-            these updates: successful payments, failed payments, refunds, and disputes. Stripe then
-            shows you a signing secret. Paste that into the <strong>Webhook signing secret</strong>{' '}
-            field above.
-          </Text>
+          <Text className="text-sm">{webhookSteps(descriptor.id)}</Text>
         </FormSection>
       ) : null}
 

@@ -68,3 +68,26 @@ describe('computeTotals', () => {
     expect(totals.total).toBe(100 - 20 + 8 + 5);
   });
 });
+
+describe('core deposits (sparx issue 051)', () => {
+  it('adds the deposit to the total, untaxed and outside the subtotal, like the server', () => {
+    const totals = computeTotals(
+      [
+        {
+          key: 'injector',
+          description: 'Bosch Remanufactured Fuel Injector (0986435621)',
+          quantity: 2,
+          unitPrice: 580.15,
+          discountAmount: 0,
+          taxable: true,
+          coreCharge: 150,
+        },
+      ],
+      0.0725
+    );
+    expect(totals.subtotal).toBe(1160.3);
+    expect(totals.taxTotal).toBe(84.12);
+    expect(totals.coreChargeTotal).toBe(300);
+    expect(totals.total).toBe(1544.42);
+  });
+});

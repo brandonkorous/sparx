@@ -6,16 +6,16 @@
 // Event emission mirrors the api-mcp domain/search-admin tool registries: a
 // createPublisher from @wizeworks/events (api-mcp does not configure the api-core
 // publisher, so the service returns the events to publish and we emit them here
-// against a real Pub/Sub client — `order.placed` on approval MUST reach the
-// fulfillment consumers).
+// against a real Pub/Sub client).
 //
-// Not here: CSV import/export (a file surface), the read-only reporting rollups,
+// Not here: approving or rejecting a held order (api-mcp b2b-approval-tools.ts,
+// because it settles the card and this package carries no payment gateway), CSV
+// import/export (a file surface), the read-only reporting rollups,
 // and account-record CRUD (companyName / contacts / assigned rep) — that lives on
 // the CRM registry's create_b2b_account / update_b2b_account / add_b2b_account_contact.
 
 import { z } from 'zod';
 import { createPublisher, publishEvent, type PublisherLogger } from '@wizeworks/events';
-import { inventoryService } from '@wizeworks/inventory';
 
 import {
   pricingTierService,
@@ -52,6 +52,14 @@ const overrideFields = {
   priceCents: z.number().int().min(0).optional(),
   discountPercentage: z.number().min(0).max(100).optional(),
   notes: z.string().max(1000).optional(),
+} as const;
+
+// An account's buying rules on one variant (sparx persona issue 086): the least
+// and most it may order at once and the case pack. Null clears a rule.
+const buyingRuleFields = {
+  minOrderQty: z.number().int().min(1).nullable().optional(),
+  maxOrderQty: z.number().int().min(1).nullable().optional(),
+  orderMultiple: z.number().int().min(1).nullable().optional(),
 } as const;
 
 // ── Reads ────────────────────────────────────────────────────────────────────
@@ -112,16 +120,12 @@ const listAccountOverrides: McpToolDefinition = {
     accountService.listAccountOverrides(ctx, (input as { accountId: string }).accountId),
 };
 
-const resolveB2bPrice: McpToolDefinition = {
-  name: 'resolve_b2b_price',
-  description:
-    'Resolve the effective price ONE account pays for ONE variant, running the full trade waterfall (account override → contract price → tier override → tier blanket discount → list). Returns effectivePriceCents (null = list price applies).',
-  scope: 'read:b2b',
-  confirmation: false,
-  input: z.object({ variantId: uuid(), accountId: uuid() }),
-  run: (ctx, input) =>
-    pricingTierService.resolveB2bPrice(ctx, input as { variantId: string; accountId: string }),
-};
+// `resolve_b2b_price` is not here. It has to answer what checkout would charge,
+// which is commerce's price engine (a signed agreement first), and this package
+// does not carry commerce. It lives in api-mcp's `b2b-price-tools.ts`, over the
+// same `pricingService.resolveForAccount` the REST route uses (issue 077). The
+// version that lived here answered from `resolve_b2b_price()` alone, which never
+// reads an agreement, while its description promised that it did.
 
 const getProductPricing: McpToolDefinition = {
   name: 'get_b2b_product_pricing',
@@ -147,7 +151,7 @@ const listApprovalRules: McpToolDefinition = {
 const listApprovalQueue: McpToolDefinition = {
   name: 'list_b2b_approval_queue',
   description:
-    'List B2B orders parked in pending_approval, awaiting an approve/reject decision. Optionally filter by account or search by order number / customer / company.',
+    'List B2B orders parked in pending_approval, awaiting an approve/reject decision. Each carries `signOff`: who has to say yes (`needs`: the account’s own approvers and/or the business), who already has (`signed`), and who is still to (`waitingOn`). An order waiting only on the account is theirs to approve on the site, not the business’s. Optionally filter by account or search by order number / customer / company.',
   scope: 'read:b2b',
   confirmation: false,
   input: z.object({
@@ -309,7 +313,7 @@ const updateAccountTradeConfig: McpToolDefinition = {
 const setAccountFleet: McpToolDefinition = {
   name: 'set_b2b_account_fleet',
   description:
-    'Replace a B2B account’s fleet. Each vehicle is a generalized fitment selection: a fitment domainId, an optional deepest nodeId, optional rangeValues (per-dimension numbers, e.g. a year), plus label / vin / mileage / count. Drives the account’s compatible-products view. Every domain + node is validated against this tenant’s fitment tree.',
+    'Replace a B2B account’s fleet. Each vehicle has a name or unit number (label), and optionally a model year, the entry it was picked from in the shop’s fitment list (domainId + nodeId, the deepest level known, e.g. the engine), make / model typed by hand when the vehicle is not in the list, a VIN, mileage, notes and a count. Send back each existing vehicle’s id to keep it: service bookings are linked to that id. A vehicle without an id is added as new. Drives the “fits your fleet” badges on the shop’s website and the account’s compatible-products view. Every list entry is validated against this tenant’s fitment list.',
   scope: 'write:b2b',
   confirmation: true,
   input: z.object({
@@ -317,9 +321,13 @@ const setAccountFleet: McpToolDefinition = {
     vehicles: z
       .array(
         z.object({
+          id: uuid().optional(),
           label: z.string().min(1).max(127),
+          year: z.number().int().optional(),
+          make: z.string().max(60).optional(),
+          model: z.string().max(60).optional(),
           vin: z.string().length(17).optional(),
-          domainId: uuid(),
+          domainId: uuid().optional(),
           nodeId: uuid().nullish(),
           rangeValues: z
             .array(z.object({ dimensionKey: z.string().min(1), value: z.number() }))
@@ -342,10 +350,10 @@ const setAccountFleet: McpToolDefinition = {
 const addAccountOverride: McpToolDefinition = {
   name: 'add_b2b_account_override',
   description:
-    'Pin a per-product price override to ONE B2B account (the deepest layer of the trade waterfall): exactly one of variantId | collectionId to exactly one of priceCents | discountPercentage.',
+    'Pin a per-product price override and/or buying rules to ONE B2B account (the deepest layer of the trade waterfall): exactly one of variantId | collectionId, at most one of priceCents | discountPercentage, and optionally minOrderQty / maxOrderQty / orderMultiple (a case pack; min and max must be whole cases). Buying rules need a variantId. One row per account and variant: change an existing one with update_b2b_account_override.',
   scope: 'write:b2b',
   confirmation: true,
-  input: z.object({ accountId: uuid(), ...overrideFields }),
+  input: z.object({ accountId: uuid(), ...overrideFields, ...buyingRuleFields }),
   run: (ctx, input) => {
     const { accountId, ...body } = input as { accountId: string } & Record<string, unknown>;
     return accountService.addAccountOverride(ctx, accountId, body);
@@ -354,10 +362,16 @@ const addAccountOverride: McpToolDefinition = {
 
 const updateAccountOverride: McpToolDefinition = {
   name: 'update_b2b_account_override',
-  description: 'Update an account price override.',
+  description:
+    'Update an account price override or its buying rules (minOrderQty, maxOrderQty, orderMultiple; null clears one).',
   scope: 'write:b2b',
   confirmation: true,
-  input: z.object({ accountId: uuid(), overrideId: uuid(), ...overrideFields }),
+  input: z.object({
+    accountId: uuid(),
+    overrideId: uuid(),
+    ...overrideFields,
+    ...buyingRuleFields,
+  }),
   run: (ctx, input) => {
     const { accountId, overrideId, ...body } = input as {
       accountId: string;
@@ -384,7 +398,7 @@ const removeAccountOverride: McpToolDefinition = {
 const createApprovalRule: McpToolDefinition = {
   name: 'create_b2b_approval_rule',
   description:
-    'Create a purchase-approval rule: orders at/above minAmountCents park for staff approval. Scope with accountId (null = every account) and propertyId (explicit null = every site; omit to use the tenant’s primary site). Optional requiredApproverUserId names who must sign off.',
+    'Create a purchase-approval rule: orders at/above minAmountCents park for sign-off. Scope with accountId (null = every account) and propertyId (explicit null = every site; omit to use the tenant’s primary site). signOffBy says who signs: "business" (default; optional requiredApproverUserId names one teammate) or "account" (the account’s own contacts with the role approver sign on the site; an account with none falls back to the business). An order over the account’s credit limit always needs the business too.',
   scope: 'write:b2b',
   confirmation: true,
   input: z.object({
@@ -392,6 +406,7 @@ const createApprovalRule: McpToolDefinition = {
     propertyId: uuid().nullable().optional(),
     minAmountCents: z.number().int().min(0),
     requiredApproverUserId: uuid().nullable().optional(),
+    signOffBy: z.enum(['business', 'account']).optional(),
     isActive: z.boolean().optional(),
   }),
   run: async (ctx, input) => {
@@ -402,13 +417,15 @@ const createApprovalRule: McpToolDefinition = {
 
 const updateApprovalRule: McpToolDefinition = {
   name: 'update_b2b_approval_rule',
-  description: 'Update a purchase-approval rule (threshold, required approver, active flag).',
+  description:
+    'Update a purchase-approval rule: threshold, who signs (signOffBy "business" or "account"), the named teammate when the business signs, and the on/off switch. Naming a teammate sets signOffBy to "business".',
   scope: 'write:b2b',
   confirmation: true,
   input: z.object({
     ruleId: uuid(),
     minAmountCents: z.number().int().min(0).optional(),
     requiredApproverUserId: uuid().nullable().optional(),
+    signOffBy: z.enum(['business', 'account']).optional(),
     isActive: z.boolean().optional(),
   }),
   run: (ctx, input) => {
@@ -419,7 +436,8 @@ const updateApprovalRule: McpToolDefinition = {
 
 const deleteApprovalRule: McpToolDefinition = {
   name: 'delete_b2b_approval_rule',
-  description: 'Deactivate a purchase-approval rule (soft: preserves its history).',
+  description:
+    'Remove a purchase-approval rule for good. To stop it holding orders but keep it, use update_b2b_approval_rule with isActive false.',
   scope: 'write:b2b',
   confirmation: true,
   input: z.object({ ruleId: uuid() }),
@@ -427,40 +445,12 @@ const deleteApprovalRule: McpToolDefinition = {
 };
 
 // ── Approval queue (write) ────────────────────────────────────────────────────
-
-const approveOrder: McpToolDefinition = {
-  name: 'approve_b2b_order',
-  description:
-    'Approve a pending B2B order. This PLACES a real order: it commits stock, issues the net-terms AR invoice (if the order requested terms), and announces order.placed to fulfillment. Confirm before running.',
-  scope: 'write:b2b',
-  confirmation: true,
-  input: z.object({ orderId: uuid(), reason: z.string().max(1000).optional() }),
-  run: async (ctx, input) => {
-    const { orderId, reason } = input as { orderId: string; reason?: string };
-    const result = await approvalService.approveOrder(ctx, orderId, { reason });
-    // Inventory threshold events for the sales just committed, then the domain
-    // events (b2b.order.approved, b2b.invoice.created?, order.placed).
-    if (result.committedSales.length > 0) {
-      await inventoryService.emitSaleEvents(ctx, result.committedSales);
-    }
-    await emit(ctx, result.events);
-    return result.order;
-  },
-};
-
-const rejectOrder: McpToolDefinition = {
-  name: 'reject_b2b_order',
-  description: 'Reject a pending B2B order: cancels it and records the reason on the customer.',
-  scope: 'write:b2b',
-  confirmation: true,
-  input: z.object({ orderId: uuid(), reason: z.string().max(1000).optional() }),
-  run: async (ctx, input) => {
-    const { orderId, reason } = input as { orderId: string; reason?: string };
-    const result = await approvalService.rejectOrder(ctx, orderId, { reason });
-    await emit(ctx, result.events);
-    return result.order;
-  },
-};
+//
+// approve_b2b_order and reject_b2b_order live in api-mcp (b2b-approval-tools.ts):
+// deciding a held order also charges, lets go or refunds the card that paid for
+// it, which needs the payment gateways this package does not carry (sparx persona
+// issue 087). Here they approved and rejected without touching the card, so a
+// rejected order kept the buyer's money.
 
 // ── Invoices / AR (write) ─────────────────────────────────────────────────────
 
@@ -539,7 +529,6 @@ export const readTools: McpToolDefinition[] = [
   listTierOverrides,
   getAccount,
   listAccountOverrides,
-  resolveB2bPrice,
   getProductPricing,
   listApprovalRules,
   listApprovalQueue,
@@ -562,8 +551,6 @@ export const writeTools: McpToolDefinition[] = [
   createApprovalRule,
   updateApprovalRule,
   deleteApprovalRule,
-  approveOrder,
-  rejectOrder,
   createInvoice,
   updateInvoice,
   markInvoicePaid,

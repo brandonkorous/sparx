@@ -2,6 +2,9 @@
 // surface (via the same-origin /api/sparx proxy), carrying the cart ownership
 // token (x-cart-token) on every call. All calls run in the browser.
 
+import { failureMessage, isTransientStatus, SHOP_UNREACHABLE_MESSAGE } from './shop-reach';
+import type { PlacedApproval, SignOffSide } from './sign-off-words';
+
 const API_BASE = '/api/sparx';
 const TOKEN_KEY = 'sparx_cart_token';
 
@@ -56,6 +59,9 @@ export interface CheckoutTotals {
   // that make the total add up. Defaulted on read for an older api-rest.
   giftCardAppliedCents: number;
   accountCreditAppliedCents: number;
+  /** Refundable core deposits on rebuilt parts (sparx issue 051), inside
+   *  totalCents. */
+  coreChargeTotalCents: number;
   totalCents: number;
 }
 
@@ -87,7 +93,21 @@ export interface CheckoutSession {
    *  predates it sends nothing, and the safe reading of nothing is an ordinary
    *  basket paid in full, which is what every checkout did before. */
   madeToOrder?: CheckoutMadeToOrder;
+  /** Who will be asked to sign this order off if it is placed as it stands: the
+   *  account's own approvers, the business, or both (sparx persona issue 087).
+   *  Absent when no spending limit covers it, and from an older api-rest. The
+   *  credit limit is not foreseen here: it depends on how they pay. */
+  approvalPreview?: {
+    waitingOn: SignOffSide[];
+    /** Names, oldest first. Empty unless the account is asked. */
+    accountApprovers: string[];
+    limitCents: number;
+  };
 }
+
+/** What completing checkout says about an order held for sign-off: who has
+ *  been asked (sparx persona issue 087). Null when it is not held. */
+export type CheckoutApproval = PlacedApproval;
 
 export interface CheckoutMadeToOrder {
   readyOn: string | null;
@@ -112,6 +132,50 @@ export interface PaymentIntentResult {
   amountCents: number;
   currency: string;
   status: string;
+  /** The card is held, not charged: the order goes over a spending limit and
+   *  is charged only when it is approved (sparx persona issue 087). Absent from
+   *  an older api-rest, which charged every card. */
+  cardHeld?: boolean;
+}
+
+/**
+ * Whether the card form's answer is a payment the order can be placed on.
+ *
+ * A held card answers `requires_capture`: the bank has said yes to the amount,
+ * and it is charged when the order is approved (sparx persona issue 087). That
+ * is as confirmed as a card gets before then, so it counts, alongside a charge
+ * that went through or is still going through. Anything else means the card
+ * has not said yes yet. No answer at all is the old shape, from before the
+ * status was read, and counts as it always did.
+ */
+export function cardConfirmed(status: string | undefined): boolean {
+  return (
+    status === undefined ||
+    status === 'succeeded' ||
+    status === 'processing' ||
+    status === 'requires_capture'
+  );
+}
+
+/** A refused or unanswered checkout call. `status` is 0 when the request never
+ *  left the browser. */
+export class CheckoutError extends Error {
+  readonly status: number;
+  /** The API's own error code, when it sent one (`CART_ALREADY_BOUGHT`, sparx
+   *  persona issue 087). */
+  readonly code: string | null;
+  constructor(message: string, status: number, code: string | null = null) {
+    super(message);
+    this.name = 'CheckoutError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/** The call got no answer (the shop could not be reached), so trying it again
+ *  is the right move rather than a refusal to show and stop at. */
+export function isCheckoutUnreachable(err: unknown): boolean {
+  return err instanceof CheckoutError && isTransientStatus(err.status);
 }
 
 function token(): string {
@@ -128,22 +192,39 @@ async function call<T>(
   init: RequestInit & { json?: unknown } = {}
 ): Promise<T> {
   const { json, ...rest } = init;
-  const res = await fetch(`${API_BASE}${path}?tenant=${encodeURIComponent(tenantSlug)}`, {
-    ...rest,
-    headers: {
-      'x-cart-token': token(),
-      ...(json !== undefined ? { 'content-type': 'application/json' } : {}),
-      ...(rest.headers ?? {}),
-    },
-    ...(json !== undefined ? { body: JSON.stringify(json) } : {}),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}?tenant=${encodeURIComponent(tenantSlug)}`, {
+      ...rest,
+      headers: {
+        'x-cart-token': token(),
+        ...(json !== undefined ? { 'content-type': 'application/json' } : {}),
+        ...(rest.headers ?? {}),
+      },
+      ...(json !== undefined ? { body: JSON.stringify(json) } : {}),
+    });
+  } catch {
+    // The request never left the browser ("Failed to fetch"). Every step shows
+    // this message as written, so it has to be one a buyer can act on.
+    throw new CheckoutError(SHOP_UNREACHABLE_MESSAGE, 0);
+  }
   const body = (await res.json().catch(() => null)) as
     | { success: true; data: T }
     | { success: false; error: { message: string; code: string } }
     | null;
   if (!res.ok || !body || body.success === false) {
-    const message = body?.success === false ? body.error.message : `Request failed (${res.status})`;
-    throw new Error(message);
+    // The shop's own words when it refused for a reason; "could not reach the
+    // shop" when the request got no answer (persona issue 086), never a status
+    // number like "Request failed (502)".
+    throw new CheckoutError(
+      failureMessage(
+        res.status,
+        body?.success === false ? body.error : null,
+        'Something went wrong with checkout. Please try again.'
+      ),
+      res.status,
+      body?.success === false ? body.error.code : null
+    );
   }
   return body.data;
 }
@@ -247,7 +328,12 @@ export function completeCheckout(
   sessionId: string,
   idempotencyKey: string,
   expectedTotalCents?: number
-): Promise<{ orderId: string; orderNumber: string }> {
+): Promise<{
+  orderId: string;
+  orderNumber: string;
+  pendingApproval?: boolean;
+  approval?: CheckoutApproval | null;
+}> {
   return call(`/v1/public/commerce/checkout/${sessionId}/complete`, tenantSlug, {
     method: 'POST',
     json: { idempotencyKey, ...(expectedTotalCents !== undefined ? { expectedTotalCents } : {}) },

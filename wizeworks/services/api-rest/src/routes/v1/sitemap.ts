@@ -39,7 +39,7 @@ import {
   collectionSiteVisibilityWhere,
   categorySiteVisibilityWhere,
 } from '../../lib/property.js';
-import { mintZoneHost } from '../../lib/domain.js';
+import { canonicalSiteHost } from '../../lib/site-origin.js';
 import { siteChromeOptions } from '../../lib/builder-context.js';
 import { pageAddress, starterAddresses } from '../../lib/sitemap-urls.js';
 
@@ -112,36 +112,25 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
     if (!tenant) throw notFound('Tenant', slug);
     if (!tenant.settings) throw badRequest('Tenant has no published configuration.');
 
-    const settings = tenant.settings as Record<string, unknown>;
-
     // The active site (docs/49). `?property=` names the stable site slug; absent
     // ⇒ the tenant's primary. Every read below is scoped to this property.
     const propertyId = await resolvePublicPropertyId(tenant.id, propertySlug);
     const property = await withTenant({ tenantId: tenant.id }, (tx) =>
       tx.property.findUnique({
         where: { id: propertyId },
-        select: { slug: true, isPrimary: true },
+        select: { id: true, slug: true, isPrimary: true },
       })
     );
 
-    // Base `<loc>` host = the SITE's canonical host. Prefer the property's
-    // canonical domain row (the bare `<tenant>.sparx.zone` for the primary, or a
-    // connected custom domain); fall back to the tenant's `primaryDomain` setting
-    // (primary only, back-compat), then the minted `*.sparx.zone` subdomain.
-    // `domains` is non-RLS, so the bare client reads it directly.
-    const canonical = await prisma.domain.findFirst({
-      where: {
-        propertyId,
-        isCanonical: true,
-        status: { in: ['verified', 'active'] },
-      },
-      select: { host: true },
+    // Base `<loc>` host = the SITE's canonical host, resolved by the same helper
+    // every customer email builds its links on (lib/site-origin.ts), so the
+    // sitemap and the inbox can never name two different addresses for one site.
+    const baseHost = await canonicalSiteHost({
+      tenantId: tenant.id,
+      tenantSlug: slug,
+      tenantSettings: tenant.settings,
+      property,
     });
-    const baseHost =
-      canonical?.host ??
-      (property?.isPrimary && typeof settings.primaryDomain === 'string'
-        ? settings.primaryDomain
-        : mintZoneHost(slug, property?.slug ?? 'primary', property?.isPrimary ?? true));
     const baseUrl = `https://${baseHost}`;
 
     // Everything is read inside this tenant's RLS context in one round-trip.

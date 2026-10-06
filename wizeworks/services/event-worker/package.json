@@ -2,7 +2,7 @@
   "name": "@wizeworks/event-worker",
   "version": "0.0.0",
   "private": true,
-  "description": "The sparx event worker: one process running every broker subscription that does not need its own runtime. Twelve former worker services are libraries under packages/*-worker; media-worker and import-worker stay separate. See src/index.ts for why.",
+  "description": "The sparx event worker: one process running every broker subscription that does not need its own runtime. Every handler is a library under packages/*-worker; media-worker and import-worker stay separate. See src/index.ts for why.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@wizeworks/automation-worker": "workspace:*",
+    "@wizeworks/cache-revalidation-worker": "workspace:*",
     "@wizeworks/channel-sync-worker": "workspace:*",
     "@wizeworks/commerce-indexer": "workspace:*",
     "@wizeworks/db": "workspace:*",

@@ -76,6 +76,18 @@ export type EventType =
   // So the publisher lands FIRST, and ISR becomes a switch rather than a rewrite.
   | 'builder.published'
   | 'builder.rolled_back'
+  // A site's own settings changed WITHOUT a publish: its name, social links,
+  // contact details, brand, cookie banner, shop display settings, which site is
+  // the primary, how it takes payment, or the legal links in its footer. Each of
+  // those is live the moment the owner saves, and each is served to visitors out
+  // of a cached read (the business payload is held for 300 seconds), so this is
+  // what tells `cache-revalidation-worker` to purge it. Published by api-rest
+  // after the write commits. See `SiteUpdatedPayload`.
+  //
+  // Not `tenant.updated`: that one is the TENANT's own profile, and
+  // platform-crm-worker re-mirrors the tenant into sparx's own CRM on every one.
+  // A cookie banner is not a fact about the customer relationship.
+  | 'site.updated'
   // ─── Commerce ───────────────────────────────────────────────────────
   // Catalog
   | 'product.created'
@@ -513,6 +525,18 @@ export interface TenantUpdatedPayload {
   changed: string[];
 }
 
+/** Payload for `site.updated`. The consumer purges by tenant (the envelope's
+ *  `tenantId`), so these fields are for logs and for any later consumer that
+ *  needs to know WHICH site and WHAT moved. */
+export interface SiteUpdatedPayload {
+  /** The site that changed, or null when the change is tenant-wide and every
+   *  site inherits it (the tenant brand, the payment method). */
+  propertyId: string | null;
+  /** What changed, in the owner's terms rather than column names, e.g.
+   *  ['consent'], ['name', 'socials'], ['brand'], ['payments']. */
+  changed: string[];
+}
+
 /** Payload for `tenant.subscription.changed`. `status` is the tenant's platform
  *  subscription status after reconciliation (Stripe's vocabulary: trialing /
  *  active / past_due / unpaid / paused / canceled / …). `mrrCents` is the
@@ -583,6 +607,9 @@ export interface EmailSendPayload {
     | 'email-domain-verified'
     | 'document-signature-request'
     | 'invoice-sent'
+    | 'account-statement'
+    | 'purchase-order-sent'
+    | 'order-approval-request'
     | 'invitation-accepted'
     | 'team-member-removed'
     | 'team-role-changed'

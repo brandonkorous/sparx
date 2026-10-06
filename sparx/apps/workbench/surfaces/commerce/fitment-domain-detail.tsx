@@ -61,6 +61,7 @@ import {
   type FitmentDomain,
 } from './fitment-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { PaneWaiting } from '../../components/pane-waiting';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -165,12 +166,15 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  if (isPending || !domain) {
-    return (
-      <p className="p-4 text-sm" role="status">
-        Loading…
-      </p>
-    );
+  if (isPending) {
+    return <PaneWaiting />;
+  }
+
+  // The read answers an empty body (not a 404) for a list that is not there:
+  // removed, or another business's id. That is a missing list, not one still
+  // on its way (persona issue 226).
+  if (!domain) {
+    return <PaneLoadError reason="missing" noun="list" title="Could not load this list" />;
   }
 
   return <DomainEditor ctx={ctx} id={id} domain={domain} />;

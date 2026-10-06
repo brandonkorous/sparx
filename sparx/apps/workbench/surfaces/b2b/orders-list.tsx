@@ -9,6 +9,14 @@
 //
 // When opened from an account (`accountId` param) the list is pinned to that one
 // business, with a chip saying so and a way back to all of them.
+//
+// ENTERING ONE. A business phones an order through, and this screen had nowhere
+// to type it: no button in the toolbar, no `+` on its nav row, and an empty state
+// that described orders arriving on their own. It sends the order to the till
+// (issue 061), the console's one order-entry screen, which already resolves a
+// wholesale customer's agreed prices. That is a COMMERCE surface reached from a
+// B2B one, which is safe by construction: `requiredModules('b2b')` is
+// `['commerce']`, so wherever this pane exists the till does too.
 
 import { useState } from 'react';
 import {
@@ -21,7 +29,7 @@ import {
   SearchInput,
   Table,
 } from '@wizeworks/silicaui-react';
-import { ShoppingCart, X } from 'lucide-react';
+import { Plus, ShoppingCart, X } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -78,6 +86,11 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('commerce.order.detail', { id: order.id }, { target: targetFor(event) });
   };
 
+  // The same words as the `+` on this pane's nav row: one action, one name.
+  const enterAnOrder = () => {
+    ctx.open('commerce.sale.new', { through: 'wholesale' }, { target: 'tab' });
+  };
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -116,9 +129,14 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </Filter>
           </>
         }
+        primary={
+          <Button color="module" size="sm" className="shrink-0" onClick={enterAnOrder}>
+            <Plus className="size-4" aria-hidden />
+            Enter an order
+          </Button>
+        }
         refresh={
           <RefreshButton
-            className="ml-auto"
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
             onRefresh={() => {
@@ -171,8 +189,16 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                   // her to "try a different word" she had never typed.
                   emptyAdvice(search.trim(), filter === 'all' ? null : active.label)
                 : accountName
-                  ? `${accountName} hasn't placed any orders yet. When they do, it'll show up here.`
-                  : 'When a business you supply places an order, it shows up here with what they bought and what they owe.'
+                  ? `Nothing from ${accountName} yet. Enter one here when they call, or wait for them to order themselves.`
+                  : 'Every order from a business you supply lands here, with what they bought and what they owe. Enter one yourself when a business phones it through.'
+            }
+            actions={
+              narrowed ? undefined : (
+                <Button color="module" size="sm" onClick={enterAnOrder}>
+                  <Plus className="size-4" aria-hidden />
+                  Enter an order
+                </Button>
+              )
             }
           />
         ) : (

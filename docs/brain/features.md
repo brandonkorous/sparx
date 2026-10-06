@@ -33,6 +33,14 @@ Full cross-link detail in [[modules]]. Keys: builder · commerce · cms · crm �
 | **notifications** | web-push | `settings/notifications/` · `v1/push.ts` |
 | **shell chrome** | the dashboard that hosts every module | [[apps]] · [[components]] |
 
+## Module capabilities with their own note
+
+| Capability | Module | Home |
+|---|---|---|
+| **core charges** (rebuilt-part deposits; send the old part first; faked choices converted) | commerce | [[core-charges]] |
+| **one shipping rule** (held B2B orders, old part first) | commerce · inventory | [[ship-gate]] |
+| **account statements** (opening, every bill and payment with the buyer's PO number, closing, aging; print, email, buyer's site page) | b2b | [[account-statements]] |
+
 A platform feature grows its own `features/<slug>.md` note when it accrues real gotchas (boy-scout) — until then its home node/anchor is enough ([[CONTRACT]]).
 
 ## Sources of truth

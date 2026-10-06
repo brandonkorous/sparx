@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { EMPTY_STORY, STORY_EXAMPLES, industryOf, type StoryState } from '@wizeworks/story-schemas';
+import {
+  EMPTY_STORY,
+  STORY_EXAMPLES,
+  industryOf,
+  storySubject,
+  type StoryState,
+} from '@wizeworks/story-schemas';
 import {
   handleSlug,
   pickBlueprint,
@@ -13,6 +19,7 @@ import { isSellingSelected } from '../../../lib/onboarding/modules';
 import { useOnboardingActions } from '../../../lib/onboarding/api';
 import { useConfirm } from '../../../lib/confirm';
 import { useStoryModel } from '../../../lib/onboarding/use-story-model';
+import { useStoryDraftSave } from '../../../lib/onboarding/use-story-draft';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
 import { SummaryCard } from '../../../lib/onboarding/summary-card';
 import { GOLDEN_BLUEPRINT_KEY } from '../wizard/step-blueprint';
@@ -21,6 +28,7 @@ import { StoryComposeStage } from './story-compose-stage';
 import { StoryHelp } from './story-help';
 import { StoryTail } from './story-tail';
 import { StoryExtras, storyPlanItems, storyTotals } from './story-summary';
+import { apiErrorMessage } from '../../../lib/api-error';
 
 // The COMPOSE phase orchestrator. The owner narrates their business (or seeds from an
 // example); each edit updates the live plan beside it. On "Build" it commits through
@@ -59,7 +67,6 @@ export function StoryComposer({
   const confirm = useConfirm();
   const model = useStoryModel();
 
-  const [exampleIdx, setExampleIdx] = useState(0);
   const [committed, setCommitted] = useState<Committed | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -81,27 +88,22 @@ export function StoryComposer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const story = model.story ?? fallback;
+  // Which example the story still IS, by its business: derived, never remembered.
+  // It used to be state starting at 0, so any reload or resumed draft lit up "A
+  // salon" over a story that was nothing of the kind (sparx persona issue 005).
+  // A story in the owner's own words is none of the examples.
+  const exampleIdx = story.industryLabel
+    ? -1
+    : STORY_EXAMPLES.findIndex((e) => e.story.industry === story.industry);
   const started = model.story ? model.started : !!initialStory;
   const dispatch = model.dispatch;
 
   // Persist the in-progress narrative as the owner composes, so a refresh or a trip
-  // away resumes the story instead of losing it. Debounced (~600ms) to coalesce rapid
-  // edits; only runs once the owner is actually composing (`started`) and before the
-  // in-page hand-off (`committed`). Best-effort — a failed save never blocks composing.
-  const savedDraft = useRef<string>(
-    initialStory ? JSON.stringify(toPersistPayload(initialStory)) : ''
-  );
-  useEffect(() => {
-    if (!model.story || !started || committed) return;
-    const payload = toPersistPayload(model.story);
-    const serial = JSON.stringify(payload);
-    if (serial === savedDraft.current) return;
-    const timer = setTimeout(() => {
-      savedDraft.current = serial;
-      void actions.saveStoryDraft(payload).catch(() => undefined);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [model.story, started, committed, actions]);
+  // away resumes the story instead of losing it. Shared with the wizard (issue 009).
+  useStoryDraftSave(model, actions.saveStoryDraft, {
+    initialStory: initialStory ?? null,
+    paused: !!committed,
+  });
 
   // Once built, the same page continues through the tail — no wizard redirect.
   if (committed) {
@@ -122,9 +124,7 @@ export function StoryComposer({
   const on = resolveModules(story);
   const selling = isSellingSelected(on);
   const canBuild = !!story.industry && !!story.audience && handleSlug(story.name).length >= 3;
-  const buildLabel = story.industry
-    ? industryOf(story.industry).noun.replace(/^an? /, '')
-    : 'workspace';
+  const buildLabel = story.industry ? storySubject(story) : 'workspace';
   const { total, elsewhere, savings } = storyTotals(story);
 
   const steps: StepMark[] = [
@@ -156,7 +156,6 @@ export function StoryComposer({
   const onSelectTemplate = (i: number): void => {
     void (async () => {
       if (!(await confirmReplace())) return;
-      setExampleIdx(i);
       model.replace(seedTemplate(i), false);
     })();
   };
@@ -197,7 +196,12 @@ export function StoryComposer({
         });
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+        setError(
+          apiErrorMessage(
+            err,
+            'We could not build your setup just now. Your story is saved. Try again in a moment.'
+          )
+        );
         setPending(false);
       });
   };

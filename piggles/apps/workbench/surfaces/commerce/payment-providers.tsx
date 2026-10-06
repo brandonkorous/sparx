@@ -98,7 +98,7 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
   const credentials = useGatewayCredentials();
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('commerce.provider.detail', { id }, { target: targetFor(event) });
+    ctx.open('commerce.provider.detail', { key: id }, { target: targetFor(event) });
   };
 
   const isFetching = config.isFetching || catalog.isFetching || credentials.isFetching;

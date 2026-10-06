@@ -73,6 +73,9 @@ export interface StudioHostOptions {
    *
    *  Passed in like `renderHostNode` for the same reason: it returns React. */
   inspectorTabs?: BuilderHost['inspectorTabs'];
+  /** The places a link may point that are not builder pages (policy pages, products,
+   *  collections, …), offered by name in the link field (sparx persona issue 042). */
+  linkTargets?: BuilderHost['linkTargets'];
 }
 
 /** The host cores the Insert palette offers (docs/122) — `HOST_COMPONENTS` mapped
@@ -150,5 +153,6 @@ export function buildStudioHost(opts: StudioHostOptions): BuilderHost {
     ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
     ...(opts.inspectorPanels ? { inspectorPanels: opts.inspectorPanels } : {}),
     ...(opts.inspectorTabs ? { inspectorTabs: opts.inspectorTabs } : {}),
+    ...(opts.linkTargets ? { linkTargets: opts.linkTargets } : {}),
   };
 }

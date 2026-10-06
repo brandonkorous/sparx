@@ -251,6 +251,13 @@ const COLLAPSE = [
  * doesn't" is not a reason — it is the gap, written down and waved past.
  */
 const EXCEPTIONS = [
+  // ── Windows mode: what maximize means on a floating window ─────────────
+  {
+    axis: 'lib',
+    only: 'sparx',
+    path: 'lib/dock/canvas-commands-context',
+    why: 'sparx makes a floating window fill the visible canvas from its title bar (sparx persona issue 030); Piggles hides maximize on a floating window, which it resizes by dragging, so its title bar never needs the canvas commands.',
+  },
   // ── Auth: the consoles are entered differently ──────────────────────────
   {
     axis: 'components',
@@ -633,23 +640,45 @@ const EXCEPTIONS = [
     path: 'VariantChoice.orderAheadDays',
     why: 'a bundle is ready when its slowest choice is; same Piggles-only order-ahead capability.',
   },
+  // The till (sparx persona issue 061) came to sparx without the made-to-order
+  // half: a sale line that knows its notice and its up-front deposit, and the
+  // till's offer that asks for that deposit instead of the total. The core
+  // deposit on a rebuilt part is NOT this capability, and both consoles carry it.
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'Sellable.deposit',
+    why: 'the till reads a made-to-order product’s up-front deposit; same Piggles-only capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'Sellable.orderAheadDays',
+    why: 'the till reads a made-to-order product’s notice to set the due day; same Piggles-only order-ahead capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'SaleLine.deposit',
+    why: 'a till line carries its made-to-order deposit; same Piggles-only capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'SaleLine.orderAheadDays',
+    why: 'a till line carries its made-to-order notice; same Piggles-only order-ahead capability.',
+  },
+  {
+    axis: 'shapes',
+    only: 'piggles',
+    path: 'WhatToOffer.depositAsked',
+    why: 'the till offers a made-to-order deposit instead of the total; same Piggles-only capability. Core deposits are inside the total in both consoles.',
+  },
   {
     axis: 'shapes',
     only: 'piggles',
     path: 'Order.readyOn',
     why: 'the day an order-ahead order is ready (issue 026); sparx does not sell order-ahead.',
-  },
-  {
-    axis: 'shapes',
-    only: 'piggles',
-    path: 'ContentEntry.legal_kind',
-    why: 'Piggles opens a policy page with its starter wording and asks the owner to confirm they have read it, keyed on which policy the entry is. A Piggles legal-pages capability, scoped out of sparx by decision (handoff list C, 2026-09-29).',
-  },
-  {
-    axis: 'shapes',
-    only: 'piggles',
-    path: 'ContentEntry.legal_reviewed',
-    why: 'the owner has said they read the Piggles starter wording; the other half of legal_kind, same decision.',
   },
   {
     axis: 'shapes',

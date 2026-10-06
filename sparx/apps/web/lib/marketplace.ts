@@ -20,9 +20,10 @@ import { renderComponentPreview } from './component-preview-render';
 // public routes need no auth. Falls back to the local api-rest port for dev.
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
-// The dashboard origin the signup funnel lives on. sparx/apps/web is sparx.works; the
-// dashboard is app.sparx.works — so the hand-off is an ABSOLUTE cross-origin URL.
-const APP_BASE = process.env.SPARX_APP_URL ?? 'https://app.sparx.works';
+// The workbench origin the signup funnel lives on. sparx/apps/web is sparx.works; the
+// workbench is app.sparx.works — so the hand-off is an ABSOLUTE cross-origin URL.
+// One definition for the whole site, in cta.ts.
+import { APP_BASE } from '@/components/marketing/cta';
 
 export type MarketplaceCategoryId = 'blueprints' | 'themes' | 'components' | 'integrations';
 

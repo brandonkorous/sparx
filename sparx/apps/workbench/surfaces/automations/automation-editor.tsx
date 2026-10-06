@@ -29,7 +29,7 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import { History, ListChecks, Power, Trash2, Undo2, Upload } from 'lucide-react';
 import type { Action, ConditionGroup, Trigger } from '@wizeworks/automation-schemas';
-import { useActiveSiteId, useModuleStates, useSites } from '../../lib/api/shell-data';
+import { useActivePropertyId, useModuleStates, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
@@ -38,6 +38,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { FlowCanvas } from './flow-canvas';
 import { Inspector } from './inspector';
 import { HistoryPanel } from './history-panel';
+import { PlatformVersionAlert } from './platform-version-alert';
 import {
   automationState,
   parseActions,
@@ -210,14 +211,14 @@ export function AutomationEditor({
   const confirm = useConfirm();
 
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const { data: moduleStates } = useModuleStates();
   const enabledModules = useMemo(
     () =>
       moduleStates ? moduleStates.filter((m) => m.enabled).map((m) => m.slug) : FALLBACK_MODULES,
     [moduleStates]
   );
-  const defaultSite = active?.propertyId ?? sites?.find((s) => s.isPrimary)?.id ?? null;
+  const defaultSite = currentSiteId;
 
   const create = useCreateAutomation();
   const update = useUpdateAutomation(automation?.id ?? 'new');
@@ -671,6 +672,14 @@ export function AutomationEditor({
     setShowHistory(false);
   };
 
+  // sparx's newer version is now the live one: load it, at its new version.
+  const onPlatformTaken = (taken: Automation) => {
+    loadFields(docFieldsFrom(taken, 'live'));
+    setServerHasDraft(false);
+    setVersion(taken.version);
+    setStatus(taken.status);
+  };
+
   const state = automationState(status);
   // IS THIS RULE ACTUALLY WORKING? The list has asked that since issue 540, and
   // so has the read-only view of a managed rule. The editor — the screen an
@@ -861,6 +870,20 @@ export function AutomationEditor({
             See what went wrong
           </Button>
         </Alert>
+      ) : null}
+
+      {/* The list marks it with a badge; opened, the rule says it in words and
+          offers sparx's newer version. The re-sync left the business's version
+          alone, so this is the only way they learn the one sparx set up has moved
+          on, and the only way to take it. */}
+      {automation ? (
+        <PlatformVersionAlert
+          automation={automation}
+          name={name}
+          status={status}
+          blocked={hasUnpublished}
+          onTaken={onPlatformTaken}
+        />
       ) : null}
 
       {/* Narrow-pane switch — hidden once the two panes fit side by side. */}

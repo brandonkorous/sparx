@@ -21,6 +21,7 @@ import {
   toSitebuilderContext,
   toSitebuilderPropertyContext,
 } from '../../../lib/sitebuilder-context.js';
+import { publishSiteUpdated } from '../../../lib/site-events.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 
@@ -61,7 +62,15 @@ const savedThemeRoutes: FastifyPluginAsync = (app) => {
     const { id } = IdParam.parse(request.params);
     // `apply` writes the active site's draft config (docs/49 Phase 6) — property
     // context. The library CRUD above stays tenant-wide.
-    const result = await savedThemeService.apply(await toSitebuilderPropertyContext(request), id);
+    const ctx = await toSitebuilderPropertyContext(request);
+    const result = await savedThemeService.apply(ctx, id);
+    // Applying a saved theme writes its colors and fonts straight onto the site's
+    // LIVE brand override (no publish step), and that override is read out of the
+    // website's cached business payload.
+    await publishSiteUpdated(request.log, ctx.tenantId, ctx.userId ?? null, {
+      propertyId: ctx.propertyId,
+      changed: ['brand'],
+    });
     return ok(result);
   });
 

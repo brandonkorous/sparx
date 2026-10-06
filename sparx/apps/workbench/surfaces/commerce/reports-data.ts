@@ -27,6 +27,8 @@ export interface RevenueSummary {
   ordersCount: number;
   grossRevenueCents: number;
   refundedCents: number;
+  /** Core deposits whose old part has not come back: not revenue yet. */
+  coreDepositsHeldCents?: number;
   netRevenueCents: number;
   averageOrderValueCents: number;
   currency: string;

@@ -15,19 +15,101 @@
 import { CreateCompanyInput, UpdateCompanyInput } from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { Company, Prisma } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
 import { schemaFor } from './object-def-service';
 import { crmSettings } from './crm-settings-service';
+import { closeWhenAccountSetUp } from './task-service';
 
 /** A company as the LIST needs it: the record plus how many contacts sit under
  *  it. `_count` is Prisma's own shape and goes over the wire as-is, so the
  *  surface reads `row._count.customers` rather than a second request per row. */
 export type CompanyWithContactCount = Company & { _count: { customers: number } };
+
+/**
+ * The price tier a company is on, read from the tier it actually points at.
+ *
+ * `companies` carries two tier columns. `pricing_tier_id` is the real one: it is
+ * what prices every order. `pricing_tier` is free text left over from before the
+ * tiers table existed, and nothing prices from it. Every row this service handed
+ * out carried that text as `pricingTier`, so Gillett's CRM account screen showed
+ * an empty "Price tier" box for Wasatch Front while the Wholesale screen showed
+ * it on Fleet at 12% off (sparx persona issue 086). Two screens, one business,
+ * two answers.
+ *
+ * So `pricingTier` on the way out is the NAME of the tier that prices the
+ * company, or null when it buys at normal prices (no tier, or a removed one;
+ * `removedTierName` names a removed one for the account screen). The key is kept because the REST API, the
+ * GraphQL `Company` type, the MCP tools and the CSV export already promise a tier
+ * name under it; what changed is that the name is now the true one. The legacy
+ * text is never read: a company whose text names no tier of this business pays
+ * list price, so showing that text would claim a discount it does not get.
+ */
+export const COMPANY_TIER_INCLUDE = {
+  pricingTierFk: { select: { name: true, deletedAt: true } },
+} as const;
+
+/** The tier an account is linked to, as far as this rule needs to see it. */
+export interface LinkedTier {
+  deletedAt: Date | null;
+}
+
+/**
+ * THE rule for a linked tier, shared by every reader that names one.
+ *
+ * Removing a tier only marks it removed (`deleted_at`); accounts keep pointing at
+ * it. A removed tier prices nothing (`resolve_b2b_price` skips it, migration
+ * `20270530000012`), so anything saying what an account PAYS must treat it as no
+ * tier at all. Each reader used to read the name straight off the link and so
+ * kept naming a tier the business had removed (sparx persona issue 086).
+ *
+ * `tierInEffect` is the tier that prices the account, or null for normal prices.
+ * `removedTier` is the removed one, for the one place an owner needs to see that
+ * it was removed: the account's own screen.
+ */
+export function tierInEffect<T extends LinkedTier>(tier: T | null | undefined): T | null {
+  return tier && (tier.deletedAt ?? null) === null ? tier : null;
+}
+
+export function removedTier<T extends LinkedTier>(tier: T | null | undefined): T | null {
+  return tier && (tier.deletedAt ?? null) !== null ? tier : null;
+}
+
+export function withTierName<
+  T extends Company & { pricingTierFk?: { name: string; deletedAt: Date | null } | null },
+>(row: T): Omit<T, 'pricingTierFk'> & { removedTierName: string | null } {
+  const { pricingTierFk, ...rest } = row;
+  return {
+    ...rest,
+    pricingTier: tierInEffect(pricingTierFk)?.name ?? null,
+    removedTierName: removedTier(pricingTierFk)?.name ?? null,
+  };
+}
+
+/** A tier being set must be one of THIS business's live tiers. RLS hides other
+ *  businesses' tiers from this lookup, but a foreign-key check does not go
+ *  through RLS, so without it an id from another business would link. */
+async function requireLiveTier(
+  tx: Prisma.TransactionClient,
+  tierId: string | null | undefined
+): Promise<void> {
+  if (!tierId) return;
+  const tier = await tx.b2bPricingTier.findFirst({
+    where: { id: tierId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!tier) {
+    throw new CrmValidationError(
+      'That price tier no longer exists. Choose another one, or normal prices.',
+      [{ field: 'pricingTierId', message: 'That price tier no longer exists.' }]
+    );
+  }
+}
 
 export interface ListCompaniesFilter {
   status?: 'active' | 'credit_hold' | 'suspended' | 'inactive';
@@ -129,10 +211,13 @@ export async function matchByEmailDomain(
       // merge that was never tidied up — the one that has had it longest is the
       // one the rest of the data already points at.
       orderBy: { createdAt: 'asc' },
+      include: COMPANY_TIER_INCLUDE,
     })
   );
 
-  return company ? { company, domain } : { company: null, domain, reason: 'no-match' };
+  return company
+    ? { company: withTierName(company), domain }
+    : { company: null, domain, reason: 'no-match' };
 }
 
 export async function list(
@@ -158,23 +243,23 @@ export async function list(
         // this is the only number on the row that means anything — a company
         // with nine contacts and one with none are a client and a business card,
         // and the credit limit says the same nothing about both.
-        include: { _count: { select: { customers: true } } },
+        include: { _count: { select: { customers: true } }, ...COMPANY_TIER_INCLUDE },
       }),
       tx.company.count({ where }),
     ]);
 
-    return { items, total };
+    return { items: items.map(withTierName), total };
   });
 }
 
 export async function get(ctx: ServiceContext, accountId: string): Promise<Company> {
   const account = await withTenant(ctx, (tx) =>
-    tx.company.findUnique({ where: { id: accountId } })
+    tx.company.findUnique({ where: { id: accountId }, include: COMPANY_TIER_INCLUDE })
   );
   if (account?.deletedAt !== null) {
     throw new CrmNotFoundError('Company', accountId);
   }
-  return account;
+  return withTierName(account);
 }
 
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Company> {
@@ -190,6 +275,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
       incoming: input.customProperties ?? {},
     });
 
+    await requireLiveTier(tx, input.pricingTierId);
+
     const created = await tx.company.create({
       data: {
         tenantId: ctx.tenantId,
@@ -197,7 +284,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
         taxId: input.taxId ?? null,
         website: input.website ?? null,
         domains: input.domains,
-        pricingTier: input.pricingTier ?? null,
+        pricingTierId: input.pricingTierId ?? null,
         creditLimit: input.creditLimit,
         paymentTerms: input.paymentTerms ?? null,
         discountPercent: input.discountPercent,
@@ -211,6 +298,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
           ? { customProperties: toJsonInput(customProperties) }
           : {}),
       },
+      include: COMPANY_TIER_INCLUDE,
     });
 
     await writeAuditLog({
@@ -224,7 +312,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
       diff: { after: { id: created.id, companyName: created.companyName } },
     });
 
-    return created;
+    return withTierName(created);
   });
 
   await publishCrmEvent({
@@ -260,6 +348,13 @@ export async function update(
       incoming: input.customProperties,
     });
 
+    // Checked only when it CHANGES: the account pane sends the tier it loaded on
+    // every save, and an edit to the notes must not fail over a tier somebody
+    // retired after this company was put on it.
+    if (input.pricingTierId !== before.pricingTierId) {
+      await requireLiveTier(tx, input.pricingTierId);
+    }
+
     const updated = await tx.company.update({
       where: { id: accountId },
       data: {
@@ -267,7 +362,7 @@ export async function update(
         ...(input.taxId !== undefined ? { taxId: input.taxId } : {}),
         ...(input.website !== undefined ? { website: input.website } : {}),
         ...(input.domains !== undefined ? { domains: input.domains } : {}),
-        ...(input.pricingTier !== undefined ? { pricingTier: input.pricingTier } : {}),
+        ...(input.pricingTierId !== undefined ? { pricingTierId: input.pricingTierId } : {}),
         ...(input.creditLimit !== undefined ? { creditLimit: input.creditLimit } : {}),
         ...(input.paymentTerms !== undefined ? { paymentTerms: input.paymentTerms } : {}),
         ...(input.discountPercent !== undefined ? { discountPercent: input.discountPercent } : {}),
@@ -281,6 +376,7 @@ export async function update(
           ? { customProperties: toJsonInput(customProperties) }
           : {}),
       },
+      include: COMPANY_TIER_INCLUDE,
     });
 
     await writeAuditLog({
@@ -294,8 +390,12 @@ export async function update(
       diff: { before: { status: before.status }, after: { status: updated.status } },
     });
 
+    // A "Set up prices and terms" task on this account is false the moment the
+    // account is set up. Asked on every save, by the rule that opened it.
+    await closeWhenAccountSetUp(tx, ctx, { companyId: updated.id, byUserId: ctx.userId ?? null });
+
     changedPropertyKeys = changedProperties(before.customProperties, updated.customProperties);
-    return updated;
+    return withTierName(updated);
   });
 
   await publishCrmEvent({
@@ -318,7 +418,7 @@ export async function update(
 }
 
 export async function softDelete(ctx: ServiceContext, accountId: string): Promise<Company> {
-  return withTenant(ctx, async (tx) => {
+  const removed = await withTenant(ctx, async (tx) => {
     const before = await tx.company.findUnique({ where: { id: accountId } });
     if (before?.deletedAt !== null) {
       throw new CrmNotFoundError('Company', accountId);
@@ -337,6 +437,21 @@ export async function softDelete(ctx: ServiceContext, accountId: string): Promis
       entityId: updated.id,
       diff: null,
     });
+    // Nothing left to set up on an account that is gone.
+    await closeWhenAccountSetUp(tx, ctx, { companyId: updated.id, byUserId: ctx.userId ?? null });
     return updated;
   });
+
+  // Out of search, and out of its people's documents. Removing an account
+  // published nothing, so it went on being found by name, and so did everyone on
+  // its contact list, under a business that no longer exists. The indexer reads
+  // the row as gone, deletes the account's entry, and re-reads each of its
+  // people (commerce-indexer handler, `b2b_account`).
+  await indexEntity({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    entityType: 'b2b_account',
+    recordId: removed.id,
+  });
+  return removed;
 }

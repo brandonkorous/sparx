@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 // ONE SHIPMENT — what they said, and what actually turned up.
 //
@@ -26,7 +27,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Heading,
   Stat,
   StatDesc,
@@ -38,7 +38,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
-import { faBan, faBoxCheck, faBoxMagnifyingGlass } from '@fortawesome/pro-solid-svg-icons';
+import { faBan, faBoxCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
@@ -111,12 +111,19 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   if (notice.isError) {
+    // A 404 (removed, or another business's id) and a failed request say
+    // different things; the shared screen reads which from the error rather
+    // than calling every one a connection problem (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
+        <PaneLoadError
+          error={notice.error}
+          noun="shipment"
           title="Could not load that shipment"
-          description="This is a problem reaching the server, not a statement that the shipment is gone. Try again in a moment."
+          description="This is a problem reaching the server. The shipment itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void notice.refetch();
+          }}
         />
       </div>
     );

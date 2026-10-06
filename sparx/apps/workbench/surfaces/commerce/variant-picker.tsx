@@ -3,16 +3,19 @@
 // A picker over the whole sellable catalog — the shared way a bundle component
 // and a configurator add-on both name the exact product version they point at.
 //
-// The tenant-wide variants endpoint has no search of its own, so this loads a
-// window once and filters it here as you type. It shows the product's name first
-// (that is what a person recognises) and the version + price after, and never
-// exposes the raw variant id — the audience owns a shop, not a database.
+// Before anybody types it lists the first window of the catalog; once they do,
+// the server is asked, so a version past the 500th is as findable as the first
+// (sparx persona P01, issue 069: a parts counter with 693 versions). It shows the
+// product's name first (that is what a person recognises) and the version +
+// price after, and never exposes the raw variant id: the audience owns a shop,
+// not a database.
 
 import { useMemo, useState } from 'react';
-import { Badge, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { PackageSearch } from 'lucide-react';
 import { formatCents, stockNoteFor, type VariantStock } from './products-data';
-import { useVariantCatalog, type VariantChoice } from './bundles-data';
+import { useProductVariantChoices, useVariantSearch, type VariantChoice } from './bundles-data';
+import { pickerRows } from './variant-search';
 
 /**
  * What tells one version of a product from another, on screen.
@@ -106,37 +109,26 @@ export function VariantPicker({
   placeholder?: string;
 }) {
   const [search, setSearch] = useState('');
-  const { data, isPending, isError } = useVariantCatalog();
+  const catalog = useVariantSearch(search);
+  const preferred = useProductVariantChoices(preferProductId);
+  const isPending = catalog.isPending || (Boolean(preferProductId) && preferred.isPending);
+  const isError = catalog.isError;
 
   const excluded = useMemo(() => new Set(excludeIds), [excludeIds]);
-  const results = useMemo(() => {
-    const all = data ?? [];
-    const term = search.trim().toLowerCase();
-    return (
-      all
-        .filter((v) => !excluded.has(v.id))
-        .filter((v) => {
-          if (term === '') return true;
-          return (
-            v.productTitle.toLowerCase().includes(term) ||
-            v.sku.toLowerCase().includes(term) ||
-            (v.title?.toLowerCase().includes(term) ?? false) ||
-            // "slate" and "medium" are what a person types, and on a catalog with
-            // no variant titles they live nowhere else.
-            v.options.some((option) => option.value.toLowerCase().includes(term))
-          );
-        })
-        // The product this pick is about, first. Stable within each group, so the
-        // shop's own option order survives.
-        .sort((a, b) => {
-          if (!preferProductId) return 0;
-          const aMine = a.productId === preferProductId ? 0 : 1;
-          const bMine = b.productId === preferProductId ? 0 : 1;
-          return aMine - bMine;
-        })
-        .slice(0, 40)
-    );
-  }, [data, search, excluded, preferProductId]);
+  // "slate" and "medium" are what a person types, and on a catalog with no
+  // variant titles they live nowhere but the option values: the same words,
+  // the same columns, as the server's search (see variant-search.ts).
+  const results = useMemo(
+    () =>
+      pickerRows({
+        found: catalog.data ?? [],
+        preferred: preferred.data ?? [],
+        preferProductId,
+        query: search,
+        excluded,
+      }),
+    [catalog.data, preferred.data, preferProductId, search, excluded]
+  );
 
   return (
     <div className="flex flex-col gap-3">
@@ -151,12 +143,21 @@ export function VariantPicker({
       </div>
 
       {isError ? (
-        <Text className="text-sm">
-          Your products could not be loaded just now. Try again in a moment.
-        </Text>
+        <div className="flex flex-wrap items-center gap-2">
+          <Text className="text-sm">Your products could not be loaded just now.</Text>
+          <Button size="sm" variant="outline" onClick={catalog.retry}>
+            Try again
+          </Button>
+        </div>
       ) : isPending ? (
         <Text className="text-sm" role="status">
           Loading your products…
+        </Text>
+      ) : results.length === 0 && catalog.searching ? (
+        // Never "no product matches" while the answer is still on its way: the
+        // part may simply be past the rows already in hand.
+        <Text className="text-sm" role="status">
+          Searching your products…
         </Text>
       ) : results.length === 0 ? (
         <div className="flex items-center gap-2">

@@ -35,8 +35,13 @@ export function FormSection({ title, description, action, className, children }:
     <section
       className={`card bg-base-100 flex flex-col gap-4 p-4${className ? ` ${className}` : ''}`}
     >
-      <div className="border-base-300 flex items-start justify-between gap-3 border-b pb-2">
-        <div className="flex flex-col gap-0.5">
+      {/* Wraps rather than squeezes. In a narrow column (an editor's rail) the
+          action took its width out of the description, which stood three words
+          to a line beside "Record a payment" (sparx persona issue 085). Now the
+          words keep at least 16rem and the action drops below them instead;
+          anywhere wider, the row is exactly as it was. */}
+      <div className="border-base-300 flex flex-wrap items-start justify-between gap-3 border-b pb-2">
+        <div className="flex min-w-0 flex-1 basis-64 flex-col gap-0.5">
           {/* Has to clearly outrank a FieldLabel (14px/500) or the grouping does
               no work — at the same size and weight a section title reads as just
               one more field. Rank comes from scale and weight; the ink stays at

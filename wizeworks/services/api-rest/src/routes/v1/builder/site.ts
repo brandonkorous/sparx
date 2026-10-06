@@ -18,6 +18,8 @@
 //                                       plus what each page WEIGHS, which is a
 //                                       measurement rather than a finding.
 //                                       ADVISORY — publish never consults it
+//   GET    /v1/builder/site/link-choices → every non-builder place a link can
+//                                       point, by name (policy pages, products, …)
 //   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published,
 //                                       and seal an immutable release (docs/126 §5.3)
 //   GET    /v1/builder/site/releases  → the publish history, newest first
@@ -84,6 +86,7 @@ import {
 import { getBuilderBroadcaster } from '../../../websocket/builder-broadcast.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 import { runSiteCheck } from '../../../lib/site-check.js';
+import { linkChoices } from '../../../lib/link-choices.js';
 import { publishBuilderEvent } from '../../../lib/builder-events.js';
 
 /** Re-grade every page of the property that was just published. One pass over the
@@ -287,6 +290,21 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const report = await runSiteCheck(request, await toBuilderContext(request));
     return ok(report);
+  });
+
+  /**
+   * Every place a link on this site can point that is not a builder page, by name:
+   * policy and other CMS pages, the shop's routes, products, collections, categories,
+   * blog posts, bookable services. The editor's link field suggests these beside the
+   * site's own pages, so an owner never has to know an address by heart (sparx
+   * persona issue 042). `viewer` for the same reason as the check above.
+   */
+  app.get('/v1/builder/site/link-choices', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const choices = await withRequestTenant(request, (tx) => linkChoices(tx, ctx));
+    return ok(choices);
   });
 
   app.post('/v1/builder/site/publish', async (request) => {

@@ -13,7 +13,8 @@
 //   • GET /healthz — the readiness/liveness probe.
 //   • POST /internal/cron/tick and /internal/cron/reconcile-seeds — driven by
 //     the `automation-tick` (every minute) and `automation-reconcile-seeds`
-//     (daily) CronJobs. Real callers, in-cluster, today.
+//     (daily) CronJobs. Real callers, in-cluster, today. The release pipeline
+//     also calls the reconcile, with `?only=seeds`, once its containers are up.
 //   • POST /internal/cron/renewal-check — the domain renewal sweep, driven by
 //     the `domain-renewal-check` CronJob (daily, 04:20 UTC). It was carried over
 //     here with nothing scheduling it at all: the Cloud Scheduler job its
@@ -34,7 +35,9 @@ import { runRenewalCheck } from '@wizeworks/domain-worker';
 import { env } from './env.js';
 
 async function route(req: IncomingMessage, res: ServerResponse, logger: Logger): Promise<void> {
-  const url = req.url ?? '/';
+  // The path alone. The release calls the reconcile with `?only=seeds`, and an
+  // exact match on the raw URL would send that to the 404 below.
+  const url = (req.url ?? '/').split('?')[0] ?? '/';
 
   if (req.method === 'GET' && (url === '/healthz' || url === '/')) {
     res.statusCode = 200;

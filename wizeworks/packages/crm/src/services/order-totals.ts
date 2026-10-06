@@ -17,6 +17,9 @@ export interface ComputedTotals {
   discountTotal: number;
   shippingTotal: number;
   surchargeTotal: number;
+  /** Refundable core deposits (Σ coreCharge × quantity). In `total`, never in
+   *  `subtotal`: it is money paid, not a sale. */
+  coreChargeTotal: number;
   total: number;
 }
 
@@ -59,19 +62,24 @@ export function computeTotals(
   let subtotal = 0;
   let lineTaxSum = 0;
   let discountSum = 0;
+  let coreChargeSum = 0;
 
   for (const item of items) {
     const line = computeLine(item);
     subtotal += line.lineSubtotal;
     lineTaxSum += line.taxAmount;
     discountSum += line.discountAmount;
+    coreChargeSum += coreChargeOfLine(item);
   }
 
   const taxTotal = round2(taxTotalOverride ?? lineTaxSum);
   const discountTotal = round2(discountTotalOverride ?? discountSum);
   const shipping = round2(shippingTotal);
   const surcharge = round2(surchargeTotal);
-  const total = round2(subtotal - discountTotal + taxTotal + shipping + surcharge);
+  const coreChargeTotal = round2(coreChargeSum);
+  const total = round2(
+    subtotal - discountTotal + taxTotal + shipping + surcharge + coreChargeTotal
+  );
 
   return {
     subtotal: round2(subtotal),
@@ -79,8 +87,14 @@ export function computeTotals(
     discountTotal,
     shippingTotal: shipping,
     surchargeTotal: surcharge,
+    coreChargeTotal,
     total,
   };
+}
+
+/** A line's core deposits: its per-unit core charge × quantity, or 0. */
+export function coreChargeOfLine(item: Pick<LineItemInput, 'coreCharge' | 'quantity'>): number {
+  return item.coreCharge == null ? 0 : round2(item.coreCharge * item.quantity);
 }
 
 function round2(n: number): number {

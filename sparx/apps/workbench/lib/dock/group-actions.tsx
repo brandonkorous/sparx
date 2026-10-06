@@ -48,9 +48,13 @@ import { ChromeWindowBoundary } from './window-boundary';
 import { TabListMenu } from './tab-list-menu';
 import { TabScrollButtons } from './tab-scroll';
 import { useWorkbench } from '../workbench/context';
+import { useCanvasCommandsContext } from './canvas-commands-context';
 
 export function GroupActions(props: IDockviewHeaderActionsProps) {
   const { controller } = useWorkbench();
+  const canvasCommands = useCanvasCommandsContext();
+  // The filled state lives in the canvas commands; this only asks React to re-read it.
+  const [, setFillTick] = useState(0);
 
   // Location is live state, not a render-time constant: the SAME group instance
   // survives the move, so the buttons must re-render from grid → popout.
@@ -77,6 +81,11 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
   }, [props.api, props.containerApi]);
 
   const detached = location === 'popout';
+  // A floating window (windows mode) fills the visible canvas through the canvas
+  // commands; dockview's maximize only applies to the tiled grid.
+  const floating = location === 'floating' && canvasCommands !== null;
+  const filled = floating && canvasCommands.isFilled(props.group.id);
+  const expanded = floating ? filled : maximized;
 
   /**
    * Closes every pane in the group, one at a time, stopping at the first refusal.
@@ -154,20 +163,25 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
       {/* Hidden for a popout: it already owns its screen, so "fill the
           workspace" would be describing something that has already happened. */}
       {detached ? null : (
-        <Tooltip content={maximized ? 'Put it back' : 'Make this fill the workspace'}>
+        <Tooltip content={expanded ? 'Put it back' : 'Make this fill the workspace'}>
           <Button
             variant="ghost"
             size="xs"
             shape="square"
-            aria-label={maximized ? 'Restore this group' : 'Make this group fill the workspace'}
-            aria-pressed={maximized}
+            aria-label={expanded ? 'Restore this group' : 'Make this group fill the workspace'}
+            aria-pressed={expanded}
             onClick={() => {
+              if (floating) {
+                canvasCommands.toggleFill(props.group);
+                setFillTick((n) => n + 1);
+                return;
+              }
               if (maximized) props.api.exitMaximized();
               else props.api.maximize();
               setMaximized(!maximized);
             }}
           >
-            {maximized ? (
+            {expanded ? (
               <Minimize2 className="size-3.5" aria-hidden />
             ) : (
               <Maximize2 className="size-3.5" aria-hidden />

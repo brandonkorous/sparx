@@ -6,6 +6,7 @@
 // Split out of api.ts so the reads stay reads and the writes stay writes.
 
 import { useQuery } from '@wizeworks/query';
+import { ApiError } from '@wizeworks/api-client';
 import { api } from '../api/client';
 import type {
   OnboardingProgress,
@@ -23,13 +24,29 @@ export const ONBOARDING_MODULES_KEY = ['tenant', 'modules'] as const;
 
 /* ── Reads ──────────────────────────────────────────────────────────────────── */
 
+/** The server was not reached, or answered that it had failed or was busy: a blip
+ *  that the next attempt can outlast, as opposed to an answer. */
+function isTransient(error: unknown): boolean {
+  if (!(error instanceof ApiError)) return true; // the request never got an answer
+  return error.status >= 500 || error.status === 429;
+}
+
 /** The raw persisted onboarding state (settings.onboarding). The gate reads this to
- *  decide whether onboarding is finished and which flow to mount. */
+ *  decide whether onboarding is finished and which flow to mount.
+ *
+ *  A blip is retried until it clears, never surfaced as an error. The shell fails
+ *  OPEN on an error, and three quick 503s while the API restarted dropped an owner
+ *  halfway through setup into an empty workspace with no way back to setup short of
+ *  a reload (sparx persona issue 012). During an outage that long the workspace
+ *  cannot load anything either, so waiting costs nobody. A real answer (a 4xx) still
+ *  fails open after three tries. */
 export function useOnboarding() {
   return useQuery({
     queryKey: ONBOARDING_KEY,
     queryFn: () => api.get<OnboardingState>('/v1/tenant/onboarding'),
     staleTime: 30_000,
+    retry: (failures, error) => isTransient(error) || failures < 3,
+    retryDelay: (failures) => Math.min(1000 * 2 ** failures, 5000),
   });
 }
 
@@ -100,20 +117,27 @@ export function useOnboardingProgress() {
   });
 }
 
-/** Map a dashboard onboarding-CTA href onto the workbench surface that does the same
- *  job. Unknown hrefs fall back to the closest platform surface rather than 404. */
-function surfaceForHref(href: string): {
+/** Map an onboarding-checklist href (the server still speaks dashboard paths) onto
+ *  the workbench screen that does that job.
+ *
+ *  The first version matched loosely and fell back to Business details, so four of
+ *  the six checklist buttons opened the wrong screen: "Connect Stripe"
+ *  (`/onboarding?step=payments`), "Open CMS" (`/cms`) and "Browse templates"
+ *  (`/marketplace/blueprints`) all landed on Business details, and `/builder` named
+ *  a screen that does not exist, `builder.pages.list` (sparx persona issue 025). */
+export function surfaceForHref(href: string): {
   surface: string;
   params?: Readonly<Record<string, string>>;
 } {
-  if (href.includes('/builder')) return { surface: 'builder.pages.list' };
+  if (href.includes('step=payments') || href.includes('/settings/payments'))
+    return { surface: 'commerce.providers' };
+  if (href.includes('/marketplace/blueprints')) return { surface: 'builder.blueprints' };
+  if (href.startsWith('/cms')) return { surface: 'cms.content.list' };
+  if (href.includes('/builder')) return { surface: 'builder.pages' };
   if (href.includes('/settings/domains') || href.includes('/domain'))
     return { surface: 'platform.settings.domains' };
-  if (href.includes('/settings/payments') || href.includes('/payments'))
-    return { surface: 'platform.settings.integrations' };
   if (href.includes('/settings/theme') || href.includes('/theme'))
     return { surface: 'platform.settings.sites' };
-  if (href.includes('/settings')) return { surface: 'platform.settings.general' };
   return { surface: 'platform.settings.general' };
 }
 

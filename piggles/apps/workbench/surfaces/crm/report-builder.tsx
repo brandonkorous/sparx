@@ -18,6 +18,8 @@
 // words of a tool that assumes you have used one before.
 
 import { useEffect, useMemo, useState } from 'react';
+import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   Badge,
@@ -348,7 +350,8 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
 
-  const { data: report, isFetching: reportFetching, refetch: refetchReport } = useReport(id);
+  const reportQuery = useReport(id);
+  const { data: report, isFetching: reportFetching, refetch: refetchReport } = reportQuery;
   const { data: catalog, isFetching: catalogFetching, refetch: refetchCatalog } = useReportFields();
   const create = useCreateReport();
   const update = useUpdateReport(id);
@@ -434,6 +437,32 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
     const copy = await duplicate.mutateAsync({ id });
     toast.add({ title: 'Copied. This one is yours to change.', type: 'success' });
     ctx.open('crm.report.builder', { id: copy.id }, { target: 'replace' });
+  }
+
+  // A report that is not there (removed, or another business's id) says so,
+  // rather than opening as a blank one that would save as something new
+  // (persona issue 226).
+  if (!isNew && reportQuery.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={reportQuery.error}
+          noun="report"
+          title="Could not load this report"
+          description="This is a problem reaching the server. The report itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void reportQuery.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+  if (!isNew && reportQuery.isPending) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneWaiting />
+      </div>
+    );
   }
 
   return (

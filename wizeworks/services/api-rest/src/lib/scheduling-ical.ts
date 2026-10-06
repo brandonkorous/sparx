@@ -27,6 +27,7 @@ import {
 
 import { resolveActivePropertyName } from './property.js';
 import { bookingManagePath, signSchedulingToken } from './scheduling-token.js';
+import { resolveSiteOrigin, siteUrl } from './site-origin.js';
 
 // Public api-rest origin — the feed URL must be reachable by external calendar apps
 // (Google/Outlook poll it), so this is the same public base the email links use.
@@ -34,9 +35,6 @@ const API_BASE =
   process.env.SPARX_PUBLIC_API_REST_URL ??
   process.env.SPARX_API_REST_URL ??
   'http://localhost:3100';
-
-// Storefront base for the event's manage link (best-effort; omitted when unset).
-const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 
 const FEED_PAST_MS = 31 * 24 * 60 * 60 * 1000; // show ~1 month of recent history
 const FEED_FUTURE_MS = 180 * 24 * 60 * 60 * 1000; // and ~6 months ahead
@@ -47,11 +45,6 @@ export function bookingIcsUrl(tenantId: string, bookingId: string): string {
 
 export function resourceFeedUrl(tenantId: string, resourceId: string): string {
   return `${API_BASE}/v1/public/scheduling/calendar/feed.ics?t=${signSchedulingToken('f', tenantId, resourceId)}`;
-}
-
-function siteLink(slug: string, path: string): string {
-  if (!SITE_BASE) return '';
-  return `${SITE_BASE.replace('{slug}', slug)}${path}`;
 }
 
 /** Map a booking status to the iCal STATUS keyword: a pending/waitlisted booking is
@@ -105,6 +98,11 @@ export async function loadBookingIcs(
         updatedAt: true,
         locationId: true,
         serviceId: true,
+        // The site it was booked on: the business named as the organizer and the
+        // address its manage link opens. Both used to be the tenant's primary
+        // site, or (for the link) nothing at all while SPARX_SITE_BASE was unset,
+        // which was always (issue 064).
+        propertyId: true,
         service: { select: { name: true } },
         resources: { select: { resource: { select: { name: true, kind: true } } } },
       },
@@ -112,11 +110,12 @@ export async function loadBookingIcs(
   );
   if (!b) return null;
 
-  const [siteName, tenant, place] = await Promise.all([
-    resolveActivePropertyName(tenantId, null),
+  const [siteName, tenant, origin, place] = await Promise.all([
+    resolveActivePropertyName(tenantId, b.propertyId),
     withTenant({ tenantId }, (tx) =>
-      tx.tenant.findUnique({ where: { id: tenantId }, select: { slug: true, email: true } })
+      tx.tenant.findUnique({ where: { id: tenantId }, select: { email: true } })
     ),
+    resolveSiteOrigin(tenantId, b.propertyId),
     // The NAME of a place is not a place. LOCATION is the field a phone shows on
     // the day and the field a maps app routes on, so it carries the address
     // (issue 107) — and it resolves through the service and the business's only
@@ -143,7 +142,7 @@ export async function loadBookingIcs(
     location: place?.line ?? undefined,
     // The event's own link is the customer's manage page, not an account portal
     // she may never have made an account for (issue 153).
-    url: siteLink(tenant?.slug ?? '', bookingManagePath(tenantId, bookingId)) || undefined,
+    url: siteUrl(origin, bookingManagePath(tenantId, bookingId)),
     status: toIcsStatus(b.status),
     organizerName: siteName || undefined,
     organizerEmail: tenant?.email ?? undefined,

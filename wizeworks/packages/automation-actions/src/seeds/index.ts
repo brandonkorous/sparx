@@ -2,13 +2,15 @@
 //
 // The Locked / Managed behaviors that ship turned on for every tenant. Each is a
 // real row in `automations` (origin='system'), installed through the service's
-// idempotent `upsertSystemAutomation` (matched on origin + name). They are NOT a
-// parallel runtime — the engine runs them like any tenant automation; this module
-// just declares the defaults.
+// idempotent `upsertSystemAutomation` (matched on each spec's permanent `key`).
+// They are NOT a parallel runtime: the engine runs them like any tenant
+// automation; this module just declares the defaults.
 //
 // Wiring: `seedSystemAutomations(ctx)` runs on tenant provisioning and on module
 // activation, so a tenant that enables a module later still gets its defaults. It
-// is safe to re-run.
+// is safe to re-run, and a re-run never overrides the business: an edited rule
+// keeps its edit, a paused one stays paused, a renamed one stays one row (the
+// rules are in @wizeworks/automation `system-seed-sync.ts`).
 
 import type { Automation } from '@prisma/client';
 import {
@@ -24,6 +26,9 @@ import {
   B2B_ORDER_APPROVED_EMAIL,
   B2B_ORDER_REJECTED_EMAIL,
   B2B_OVERDUE_ESCALATION,
+  B2B_INVOICE_ISSUED_EMAIL,
+  B2B_ORDER_HELD_TASK,
+  B2B_ORDER_ASK_ACCOUNT_APPROVERS,
   B2B_QUOTE_EXPIRING,
   B2B_QUOTE_RECEIVED,
 } from './b2b.js';
@@ -102,9 +107,12 @@ export interface SystemAutomationSeed {
  * subscription lifecycle emails, the three returns/RMA emails, and the two B2B
  * order-approval outcomes). An email seed
  * installs on its OWNING module's activation (a commerce tenant gets abandoned-cart
- * the moment commerce is on); its send is then gated by the `email.send_campaign`
- * action's `module: 'email'` gate until the email module is active (docs/90 §4 —
- * the gated step in run history is the conversion nudge). Append here as behaviors
+ * the moment commerce is on). What its send then needs follows the step's declared
+ * `emailType` (sparx persona issue 087): a transactional email (an order
+ * confirmation, a receipt, an invoice) sends whether or not the email module is
+ * on; a marketing one (abandoned cart, win-back, the review request, the welcome,
+ * the chat survey) is gated until the email module is active (docs/90 §4: the
+ * gated step in run history is the conversion nudge). Append here as behaviors
  * land; keep this list and the per-module seed files the single source of truth.
  */
 export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
@@ -152,6 +160,11 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'b2b', spec: B2B_NEW_ACCOUNT_TASK },
   { module: 'b2b', spec: B2B_ACCOUNT_APPROVED },
   { module: 'b2b', spec: B2B_QUOTE_RECEIVED },
+  { module: 'b2b', spec: B2B_INVOICE_ISSUED_EMAIL },
+  { module: 'b2b', spec: B2B_ORDER_HELD_TASK },
+  // The account's own approvers, when a limit they sign off holds the order
+  // (sparx persona issue 087).
+  { module: 'b2b', spec: B2B_ORDER_ASK_ACCOUNT_APPROVERS },
   { module: 'b2b', spec: B2B_INVOICE_DUE_NUDGE },
   { module: 'b2b', spec: B2B_QUOTE_EXPIRING },
   // B2B order approval outcomes (docs/impl transactional-email §4 P3)
@@ -188,8 +201,9 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
 
 /**
  * Idempotently install system automations for one tenant. Each spec upserts by
- * (origin='system', name), so re-running updates in place — safe on every
- * provisioning + `module.activated` event.
+ * its `key`, so re-running updates in place (only where the business has not
+ * changed the rule) and never duplicates: safe on every provisioning +
+ * `module.activated` event.
  *
  * Pass `opts.module` (the just-activated slug) to install ONLY that module's
  * seeds — a tenant that enables B2B shouldn't get a clutter of other modules'

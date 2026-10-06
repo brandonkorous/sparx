@@ -64,6 +64,7 @@ import {
   faBoxCheck,
   faCircleCheck,
   faClipboardList,
+  faEnvelope,
   faFloppyDisk,
   faPaperPlane,
   faPencil,
@@ -106,6 +107,7 @@ import {
   useCancelPurchaseOrder,
   useClosePurchaseOrder,
   useDeletePurchaseOrder,
+  useEmailPurchaseOrder,
   usePlacePurchaseOrder,
   usePurchaseOrder,
   useSavePurchaseOrder,
@@ -117,6 +119,8 @@ import {
 import { resolveApprovalRule } from '@wizeworks/commerce-schemas';
 import { usePoApprovalRules } from './po-approvals-data';
 import { placingWords } from './po-approvals-words';
+import { EmailOrderDialog, PlaceOrderDialog } from './purchase-order-email';
+import { emailedLine, emailedToast } from './purchase-order-email-words';
 import {
   ALLOCATION_BASES,
   CHARGE_KINDS,
@@ -153,10 +157,11 @@ interface Draft {
   lines: PurchaseOrderLineDraft[];
 }
 
-function emptyDraft(): Draft {
+/** A new order. `supplierId` when it was started from that supplier's page. */
+function emptyDraft(supplierId = ''): Draft {
   return {
     header: {
-      supplierId: '',
+      supplierId,
       warehouseId: '',
       currency: 'USD',
       paymentTerms: null,
@@ -982,6 +987,10 @@ function chargeAmountCents(raw: string): number | null {
 export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
+  // Started from a supplier's page: that supplier is already chosen, and the
+  // untouched form is not "unsaved" because of it.
+  const presetSupplier =
+    isNew && typeof ctx.params.supplier === 'string' ? ctx.params.supplier : '';
 
   const toast = useToast();
   const confirm = useConfirm();
@@ -994,10 +1003,15 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const cancel = useCancelPurchaseOrder(id);
   const close = useClosePurchaseOrder(id);
   const remove = useDeletePurchaseOrder(id);
+  const emailOrder = useEmailPurchaseOrder(id);
+  const [placing, setPlacing] = useState(false);
+  const [emailing, setEmailing] = useState(false);
 
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const [draft, setDraft] = useState<Draft>(() => emptyDraft(presetSupplier));
   const [original, setOriginal] = useState<PurchaseOrderLine[]>([]);
-  const [baseline, setBaseline] = useState<string>(JSON.stringify(emptyDraft()));
+  const [baseline, setBaseline] = useState<string>(() =>
+    JSON.stringify(emptyDraft(presetSupplier))
+  );
   const [loaded, setLoaded] = useState(false);
   const [editing, setEditing] = useState<EditingLine | null>(null);
 
@@ -1193,15 +1207,20 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     // the same thing either way: "This sends the order and locks it", followed
     // by a toast reading "placed", over an order that had gone nowhere and a
     // pane one line below saying so. [[feedback_a_promise_in_copy_is_a_contract]]
+    // An order that places straight away gets the place-and-email dialog. One
+    // held for sign-off cannot go to the supplier yet, so it keeps the plain
+    // confirm, which says so.
+    if (!heldBy) {
+      setPlacing(true);
+      return;
+    }
     const words = placingWords(
       { number: detail.number, supplierName: supplierName ?? null },
       heldBy,
       (cents) => formatCents(cents, currency)
     );
     const ok = await confirm({
-      title: heldBy
-        ? `Send ${detail.number} for sign-off?`
-        : `Place ${detail.number} with ${supplierName ?? 'the supplier'}?`,
+      title: `Send ${detail.number} for sign-off?`,
       description: words.description,
       confirmLabel: words.confirmLabel,
       cancelLabel: 'Keep it a draft',
@@ -1214,7 +1233,80 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           toast.add({
             title: words.toastTitle,
             description: words.toastDescription,
-            type: heldBy ? 'info' : 'success',
+            type: 'info',
+          });
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not place that order',
+          description: buyingErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  // Email a placed order. `to` is for this one send; absent, the supplier's own.
+  const sendEmail = (number: string, to?: string) => {
+    emailOrder.mutate(to, {
+      onSuccess: (sent) => {
+        setEmailing(false);
+        afterPaneChange(() => {
+          toast.add({ ...emailedToast({ number }, sent.to), type: 'success' });
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: `${number} was not emailed`,
+          description: buyingErrorMessage(error, 'Nothing was sent. Try again in a moment.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const placeNow = (emailIt: boolean) => {
+    if (!detail) return;
+    const words = placingWords(
+      { number: detail.number, supplierName: supplierName ?? null },
+      null,
+      (cents) => formatCents(cents, currency)
+    );
+    place.mutate(undefined, {
+      onSuccess: () => {
+        setPlacing(false);
+        if (emailIt) {
+          // Placed first, then emailed: an order the supplier is told about
+          // must already be the placed one. If the email fails the order is
+          // still placed, and the toast says so rather than "could not place".
+          emailOrder.mutate(undefined, {
+            onSuccess: (sent) => {
+              afterPaneChange(() => {
+                toast.add({
+                  title: `${detail.number} placed and emailed to ${sent.to}`,
+                  description: emailedToast(detail, sent.to).description,
+                  type: 'success',
+                });
+              });
+            },
+            onError: (error) => {
+              afterPaneChange(() => {
+                toast.add({
+                  title: `${detail.number} is placed, but the email did not go`,
+                  description: `${buyingErrorMessage(error, 'Try again in a moment.')} Use "Email to the supplier" to send it.`,
+                  type: 'warning',
+                });
+              });
+            },
+          });
+          return;
+        }
+        afterPaneChange(() => {
+          toast.add({
+            title: words.toastTitle,
+            description: words.toastDescription,
+            type: 'success',
           });
         });
       },
@@ -1350,6 +1442,8 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const state = detail ? purchaseOrderState(detail) : null;
   const outstanding = detail ? outstandingUnits(detail) : 0;
   const canReceive = detail !== null && isReceivable(status);
+  const emailable =
+    status === 'submitted' || status === 'partial' || status === 'received' || status === 'closed';
   const saving = save.isPending;
 
   return (
@@ -1437,7 +1531,6 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <Button
                 size="sm"
                 variant="outline"
-                color="neutral"
                 className="shrink-0"
                 loading={close.isPending}
                 onClick={() => {
@@ -1473,10 +1566,24 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
            this" - three rows with words and one without.
            scripts/check-toolbar-glyph.mjs holds the line. */
         actions={[
+          // Email a placed order to the supplier (issue 071): after a sign-off
+          // came through, a resend, or a second address. Not a draft or one
+          // waiting for sign-off: the server refuses those, and so does this.
+          ...(detail && emailable
+            ? [
+                {
+                  label: 'Email to the supplier',
+                  title: `Email ${detail.number} to ${supplierName ?? 'the supplier'}`,
+                  icon: faEnvelope,
+                  loading: emailOrder.isPending,
+                  onClick: () => {
+                    setEmailing(true);
+                  },
+                },
+              ]
+            : []),
           // The order itself, on the business's letterhead, to hand or send to
-          // the supplier. Placing an order sends nothing, and its words say
-          // "print it or pass it on", so this is the half of that promise the
-          // screen has to keep. Drafts too: people print one to check it.
+          // the supplier. Drafts too: people print one to check it.
           ...(detail
             ? [
                 {
@@ -1578,7 +1685,10 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     ? `${String(outstanding)} of ${String(detail.quantityOrdered)} units still to come`
                     : 'Everything ordered has been received'}
                 </AlertTitle>
-                <AlertDescription>{state?.detail}</AlertDescription>
+                <AlertDescription>
+                  {state?.detail}
+                  {emailable ? ` ${emailedLine(detail, formatMoment)}` : ''}
+                </AlertDescription>
               </AlertContent>
             </Alert>
           ) : null}
@@ -2025,6 +2135,40 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
           onSave={upsertLine}
         />
+      ) : null}
+
+      {detail ? (
+        <>
+          <PlaceOrderDialog
+            open={placing}
+            order={{ ...detail, supplierName: supplierName ?? null }}
+            title={`Place ${detail.number} with ${supplierName ?? 'the supplier'}?`}
+            description={
+              placingWords(
+                { number: detail.number, supplierName: supplierName ?? null },
+                null,
+                (cents) => formatCents(cents, currency)
+              ).description
+            }
+            pending={place.isPending || emailOrder.isPending}
+            onClose={() => {
+              setPlacing(false);
+            }}
+            onPlace={placeNow}
+          />
+          <EmailOrderDialog
+            open={emailing}
+            order={{ ...detail, supplierName: supplierName ?? null }}
+            pending={emailOrder.isPending}
+            formatMoment={formatMoment}
+            onClose={() => {
+              setEmailing(false);
+            }}
+            onSend={(to) => {
+              sendEmail(detail.number, to);
+            }}
+          />
+        </>
       ) : null}
     </div>
   );

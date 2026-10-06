@@ -25,6 +25,9 @@ import {
   type PublicQuestion,
   type PublicReviewList,
 } from '@/lib/commerce';
+import { applyAccountBuying } from '@/lib/buying-rules-tree';
+import { withFleetNotice } from '@/lib/fleet-fit-tree';
+import { withQuoteRequest } from '@/lib/quote-request-tree';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
@@ -127,7 +130,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // collection / legacy section paths unchanged. Sample-data previews keep the
   // legacy path (they design against fixtures before a real product exists).
   if (!sample) {
-    const silicaTemplate = await getPublishedSilicaCollection(
+    const publishedTemplate = await getPublishedSilicaCollection(
       site.slug,
       'commerce.product',
       product.id,
@@ -142,6 +145,23 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
         ...(product.productTypeKey ? { recordSubtype: product.productTypeKey } : {}),
       }
     );
+    // The signed-in trade buyer's buying rules and role, applied to this one
+    // render (sparx persona issue 086): the quantity box starts at their minimum
+    // and steps by their case, the rule is said beside it, and a view-only
+    // contact sees who can order in place of the button. Everybody else gets the
+    // template exactly as published.
+    const silicaTemplate = publishedTemplate
+      ? // Which of the buyer's vehicles it fits, or that it fits none of them, said
+        // before the button (sparx persona issue 086). Placed first, so it still
+        // stands when a view-only role has the form taken away below.
+        // "Add to quote request" after the add-to-cart form, for a contact who
+        // can order on a trade account (sparx persona issue 086). After the
+        // buying rules, which take the form away from a contact who cannot.
+        withQuoteRequest(
+          applyAccountBuying(withFleetNotice(publishedTemplate, product.fleetFit), product),
+          product
+        )
+      : null;
     if (silicaTemplate) {
       // No `searchParams`: a product detail page is one record, so nothing paginates.
       const { resolver } = await buildSilicaHost(site.slug, silicaTemplate.root, {

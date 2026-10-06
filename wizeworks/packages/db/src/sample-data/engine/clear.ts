@@ -13,6 +13,7 @@ import {
   SAMPLE_PO_PREFIX,
   SAMPLE_SLUG_PREFIX,
   SAMPLE_SUPPLIER_PREFIX,
+  SAMPLE_TIER_DESCRIPTION,
 } from '../markers';
 
 const sampleMeta = { path: ['sample'], equals: true };
@@ -77,6 +78,12 @@ export async function clearSampleDataOnTx(
   // The demo B2B account behind the net-terms AR documents above (tagged `sample`);
   // its documents are already gone, so this removes only the account row.
   await tx.company.deleteMany({ where: { tenantId, tags: { has: 'sample' } } });
+  // The sample price tier that account bought on, if the load had to make one.
+  // Only while nothing else is on it: an owner who has since put a real account
+  // on that tier is using it, and removing it would move them to list price.
+  await tx.b2bPricingTier.deleteMany({
+    where: { tenantId, description: SAMPLE_TIER_DESCRIPTION, accounts: { none: {} } },
+  });
 
   // Scheduling — bookings (via sample services) then the services/resources.
   const sampleServices = await tx.schedulingService.findMany({

@@ -38,6 +38,28 @@ export class CommerceConflictError extends Error {
 }
 
 /**
+ * A basket that has already been bought, asked to change.
+ *
+ * Renée's cart became order O-000014 at checkout, and minutes later the same
+ * cart took an edit through the public cart routes: nothing refused it (sparx
+ * persona issue 087). A bought basket is a record of what was bought, so every
+ * write to it is refused here, with its own code, so a site can tell this apart
+ * from a real problem and quietly start the buyer a fresh basket instead of
+ * showing an error. "Bought" is `NOT_BOUGHT_YET` in cart-service.ts: the cart
+ * has a completed checkout session.
+ */
+export class CommerceCartBoughtError extends Error {
+  readonly code = 'CART_ALREADY_BOUGHT' as const;
+  readonly cartId: string;
+  constructor(cartId: string) {
+    super(
+      'This basket has already been ordered, so it cannot be changed. Anything you add now starts a new basket.'
+    );
+    this.cartId = cartId;
+  }
+}
+
+/**
  * The commerce-side twin of `InventoryOutOfStockError`, kept in step with it
  * deliberately: the two packages raise the same refusal and api-rest maps both
  * to one 409, so a shopper must never get two different sentences for one fact.
@@ -108,6 +130,7 @@ export class CommerceProviderError extends Error {
 export type NotFoundError = CommerceNotFoundError;
 export type ValidationError = CommerceValidationError;
 export type ConflictError = CommerceConflictError;
+export type CartBoughtError = CommerceCartBoughtError;
 export type OutOfStockError = CommerceOutOfStockError;
 export type PricingError = CommercePricingError;
 export type ProviderError = CommerceProviderError;

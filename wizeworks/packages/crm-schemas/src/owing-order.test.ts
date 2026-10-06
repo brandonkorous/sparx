@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  HELD_FOR_SIGN_OFF_STATUS,
   isOwingOrder,
   OWING_PAYMENT_STATUSES,
   NOT_COLLECTABLE_ORDER_STATUSES,
@@ -87,5 +88,24 @@ describe('an order that still owes money', () => {
       expect(owing(status, 'paid')).toBe(false);
       expect(owing(status, 'refunded')).toBe(false);
     }
+  });
+});
+
+describe('an order held for sign-off', () => {
+  // O-000016 on Gillett, $4,758.30 on Salt Lake County's account and waiting for
+  // Doty's team, read "still owed" and sat under the "Still owed" chip. Nothing
+  // is owed until it is approved: checkout told the buyer nothing is charged
+  // until then (sparx persona issue 091).
+  it('owes nothing until it is approved, whatever its payment word says', () => {
+    expect(owing(HELD_FOR_SIGN_OFF_STATUS, 'unpaid')).toBe(false);
+    expect(owing(HELD_FOR_SIGN_OFF_STATUS, 'partially_paid')).toBe(false);
+  });
+
+  it('owes again the moment it is placed', () => {
+    expect(owing('placed', 'unpaid')).toBe(true);
+  });
+
+  it('is the status the approval gate stores', () => {
+    expect(HELD_FOR_SIGN_OFF_STATUS).toBe('pending_approval');
   });
 });

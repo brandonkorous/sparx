@@ -534,7 +534,7 @@ export async function fillRateReport(
         JOIN orders o ON o.id = oi.order_id AND o.tenant_id = oi.tenant_id
         WHERE oi.tenant_id = ${ctx.tenantId}::uuid
           AND o.placed_at >= ${range.from} AND o.placed_at < ${range.to}
-          AND o.status <> 'canceled'
+          AND o.status <> 'cancelled'
       ), backordered AS (
         SELECT b.order_item_id, b.holder_id, b.variant_id,
                SUM(b.quantity)::int AS units_short

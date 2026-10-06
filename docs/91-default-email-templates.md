@@ -1,8 +1,8 @@
 # Default Email Templates & Per-Site Email
 
-**Version:** 1.5 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked. v1.4: the tenant identity source is now keyed **`site`** — the canonical tokens are `{{site.name}}` / `{{site.url}}`; `resolveEmailData` + the sample emit the identity under both `site` and `tenant` roots and keep `siteUrl`/`storeUrl` as URL aliases, so every pre-rename `{{tenant.*}}` still resolves. Shipped defaults migrated to `site.*`. Merge tags are now discoverable: inline `{{` autocomplete + a "Merge tags" panel + the MCP `list_merge_tags` tool — see [docs/52](archive/52-email-builder.md) §7.1)
+**Version:** 1.6 (v1.6: `welcome-customer` and `chat-satisfaction` are now **marketing**, not transactional (Brandon, 2026-10-03), so 5 of the 13 are marketing; see §4 #1 and #13. v1.5: 13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked. v1.4: the tenant identity source is now keyed **`site`** — the canonical tokens are `{{site.name}}` / `{{site.url}}`; `resolveEmailData` + the sample emit the identity under both `site` and `tenant` roots and keep `siteUrl`/`storeUrl` as URL aliases, so every pre-rename `{{tenant.*}}` still resolves. Shipped defaults migrated to `site.*`. Merge tags are now discoverable: inline `{{` autocomplete + a "Merge tags" panel + the MCP `list_merge_tags` tool — see [docs/52](archive/52-email-builder.md) §7.1)
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-10-03
 
 > **Reconciled 2026-07-22 (docs-vs-built audit):** the shipped
 > `DEFAULT_EMAIL_TEMPLATES` (`wizeworks/packages/builder-schemas/src/default-emails.ts`) now
@@ -147,13 +147,19 @@ copy** (tenant-editable). `[line_item_table]` and `[conditional_block]` referenc
 automation agent's new nodes; `[unsubscribe + address]` is the compliance pair (§8).
 Subjects/preheaders carry merge tokens.
 
-### 1. `welcome-customer` · transactional · _welcome_
+### 1. `welcome-customer` · marketing · _welcome_
 
 - **Sources:** `customer`, `tenant` · **refs:** `customerId`
 - **Subject:** `Welcome to {{site.name}}` · **Preheader:** `Thanks for joining — here's what's next.`
 - heading: "Welcome to {{site.name}}"
 - paragraph: "Hi {{customer.firstName ?? "there"}} — thanks for creating an account. You're all set: browse the latest, track your orders, and check out faster every time."
 - button: "Start shopping" → `{{site.url}}`
+- [unsubscribe + address]
+
+Marketing since 2026-10-03 (it was transactional). A welcome is not something the
+customer needs because of something they did, and most new contacts are typed in by
+the business, so it follows the email module and honors a marketing unsubscribe. The
+`Welcome new customers` automation sends it as `marketing` to match.
 
 ### 2. `win-back` · marketing · _win-back_
 
@@ -261,13 +267,18 @@ Subjects/preheaders carry merge tokens.
 - [conditional_block] consequences-if-unpaid → text: "If payment isn't received, your account may be placed on credit hold and outstanding orders paused."
 - button: "Pay now" → `{{invoice.payUrl}}`
 
-### 13. `chat-satisfaction` · transactional · _survey_
+### 13. `chat-satisfaction` · marketing · _survey_
 
 - **Sources:** `customer`, `tenant` · **refs:** `customerId`
 - **Subject:** `How was your experience?` · **Preheader:** `Tell us how we did.`
 - heading: "How did we do?"
 - paragraph: "Thanks for chatting with {{site.name}}, {{customer.firstName ?? "there"}}. We'd love a quick word on how the conversation went."
 - button: "Rate your chat" → `{{site.url}}` _(or a dedicated survey URL when one exists)_
+- [unsubscribe + address]
+
+Marketing since 2026-10-03 (it was transactional). A survey asks the customer for
+something, so it follows the email module and honors a marketing unsubscribe. The
+`Chat satisfaction survey` automation sends it as `marketing` to match.
 
 ---
 
@@ -399,10 +410,11 @@ node it defines). Recorded here for the template side. Three pieces:
 3. **`List-Unsubscribe` header** for marketing sends, pairing with the existing
    Mailgun `unsubscribed` → `EmailSuppression` webhook path.
 
-**The template side (mine) is satisfied by construction:** the 3 marketing templates
-(`win-back`, `abandoned-cart`, `post-purchase-review`) each place an `unsubscribe_link`
+**The template side (mine) is satisfied by construction:** the 5 marketing templates
+(`welcome-customer`, `win-back`, `abandoned-cart`, `post-purchase-review`,
+`chat-satisfaction`) each place an `unsubscribe_link`
 
-- `physical_address` node; the 10 transactional ones carry neither. The
+- `physical_address` node; the 8 transactional ones carry neither. The
   `default-emails.test.ts` asserts exactly this, so the trees pass the gate the moment
   it lands.
 

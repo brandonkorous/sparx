@@ -57,12 +57,13 @@ import {
   getCustomerBookingStats,
   listBookings,
   getCalendar,
+  type BookingDetail,
   type BookingWithRelations,
 } from '@wizeworks/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { reachableSiteIds, resolveListScopeIds } from '../../../lib/property.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
-import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
+import { settleBookingMoney } from '../../../lib/scheduling-payments.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -222,9 +223,10 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = CancelBookingInput.parse({ ...(request.body as object), id });
-    await cancelBooking(tenantId, input, userId);
-    // Settle the deposit/hold per policy (release, refund, or capture a late fee).
-    await settleBookingPayment(request.log, tenantId, id, 'cancel');
+    const ended = await cancelBooking(tenantId, input, userId);
+    // Settle the deposit/hold per policy (release, refund, or capture a late fee),
+    // now the cancel has committed.
+    await settleBookingMoney(request.log, { tenantId, userId }, [ended.money]);
     await publishBookingEvent('booking.cancelled', tenantId, userId, {
       bookingId: id,
       reason: input.reason ?? null,
@@ -261,9 +263,9 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    await completeBooking(tenantId, id, userId);
+    const ended = await completeBooking(tenantId, id, userId);
     // Service happened: release a card hold (the deposit/prepay charge is kept).
-    await settleBookingPayment(request.log, tenantId, id, 'complete');
+    await settleBookingMoney(request.log, { tenantId, userId }, [ended.money]);
     await publishBookingEvent('booking.completed', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
@@ -274,15 +276,15 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = NoShowBookingInput.parse({ ...(request.body as object), id });
-    await noShowBooking(tenantId, input, userId);
-    // No-show: capture the policy's no-show fee from the hold (or forfeit a deposit).
-    await settleBookingPayment(request.log, tenantId, id, 'no_show');
+    const ended = await noShowBooking(tenantId, input, userId);
+    // No-show: capture the policy's no-show fee from the hold (or keep a deposit).
+    await settleBookingMoney(request.log, { tenantId, userId }, [ended.money]);
     await publishBookingEvent('booking.no_show', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 };
 
-function bookingView(b: BookingWithRelations) {
+function bookingView(b: BookingWithRelations & { payment?: BookingDetail['payment'] }) {
   return {
     id: b.id,
     serviceId: b.serviceId,
@@ -332,6 +334,10 @@ function bookingView(b: BookingWithRelations) {
     // the phone number to ring when they are late (issue 111). Null is a walk-in
     // with no account, which is a real answer and never the same as "not loaded".
     customer: b.customer,
+    // What happened to the card when the booking ended, on the record only (the
+    // list does not read it). Absent from a list row rather than null, so a row
+    // never claims nothing happened (sparx persona issue 087).
+    ...(b.payment !== undefined ? { payment: b.payment } : {}),
   };
 }
 

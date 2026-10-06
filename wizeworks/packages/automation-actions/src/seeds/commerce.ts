@@ -11,6 +11,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
  *  `highValueThreshold ?? 500`; the alert goes to the tenant's notify address (the
  *  owner) by default. Edit the threshold or add a `to`/`toField` on the action. */
 export const COMMERCE_HIGH_VALUE_ORDER_ALERT: SystemAutomationSpec = {
+  key: 'commerce.high-value-order-alert',
   name: 'High-value order alert',
   description: 'Emails staff when an order of $500 or more is paid.',
   trigger: { kind: 'event', eventType: 'order.paid' },
@@ -31,6 +32,7 @@ export const COMMERCE_HIGH_VALUE_ORDER_ALERT: SystemAutomationSpec = {
 /** Alert staff when a variant drops to/under its low-stock threshold (the
  *  `inventory.low` event already carries the on-hand level). */
 export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
+  key: 'commerce.low-inventory-alert',
   name: 'Low inventory alert',
   description: 'Emails staff when a product variant runs low on stock.',
   trigger: { kind: 'event', eventType: 'inventory.low' },
@@ -58,6 +60,7 @@ export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
  *  subscribed to it. `email.send_internal` is PLATFORM-level, so a commerce-only
  *  tenant with no email module still gets it. */
 export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
+  key: 'commerce.return-requested-alert',
   name: 'Return requested: staff alert',
   previousNames: ['Return requested — staff alert'],
   description: 'Emails staff when a customer asks to send something back.',
@@ -78,6 +81,7 @@ export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
 /** Log a CRM note on the customer when a refund is issued, so the account timeline
  *  reflects it without a human re-entering it. */
 export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
+  key: 'commerce.refund-crm-note',
   name: 'Refund issued: CRM note',
   previousNames: ['Refund issued — CRM note'],
   description: 'Adds a note to the customer’s CRM timeline when an order is refunded.',
@@ -99,6 +103,7 @@ export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
  *  nudge per cart. The 2-hour delay lets a distracted shopper return on their own
  *  first (docs/90 — `wait(2h)`). Marketing. */
 export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
+  key: 'commerce.abandoned-cart-nudge',
   name: 'Abandoned cart nudge',
   description:
     'Emails a shopper once their cart has been sitting long enough to count as abandoned: the wait is the one you set in Selling settings.',
@@ -147,8 +152,19 @@ export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
  *  receipt, no confirmation that the money or the order had registered — and on a
  *  pay-later shop, which is what a shop with no payment provider is, that silence
  *  is the entire handover. Later mails told her the order was delivered, cancelled
- *  or refunded; none told her it had been placed. */
+ *  or refunded; none told her it had been placed.
+ *
+ *  THIS IS THE ONE CONFIRMATION. A card order was the exception to the silence:
+ *  the payment webhook in api-rest had sent `order-confirmation` directly since
+ *  the first card payments, on every captured payment. With this seed beside it a
+ *  card order got two, and a held order a second one when its card was charged at
+ *  approval (sparx persona issue 087). That send is gone. This one is
+ *  transactional, so it sends whether or not the business has the email module
+ *  (the email module gates campaigns, not a buyer being told their order went
+ *  through), and `order.placed` fires once per order: at checkout, or at
+ *  sign-off for a held one. */
 export const COMMERCE_ORDER_CONFIRMATION_EMAIL: SystemAutomationSpec = {
+  key: 'commerce.order-confirmation-email',
   name: 'Order confirmation: email',
   previousNames: ['Order confirmation — email'],
   description: 'Emails the customer their order confirmation as soon as the order is placed.',
@@ -184,6 +200,7 @@ export const COMMERCE_ORDER_CONFIRMATION_EMAIL: SystemAutomationSpec = {
  *  carrier is checked. `order.delivered` fires for a collection too, and the
  *  delivered notice is the one that belongs there. */
 export const COMMERCE_SHIPPING_CONFIRMATION_EMAIL: SystemAutomationSpec = {
+  key: 'commerce.shipping-confirmation-email',
   name: 'Shipping confirmation: email',
   previousNames: ['Shipping confirmation — email'],
   description: 'Emails the customer their tracking details as soon as an order ships.',
@@ -206,6 +223,7 @@ export const COMMERCE_SHIPPING_CONFIRMATION_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_DELIVERED_EMAIL: SystemAutomationSpec = {
+  key: 'commerce.order-delivered-email',
   name: 'Order delivered: email',
   previousNames: ['Order delivered — email'],
   description: 'Emails the customer when their order is marked delivered.',
@@ -225,6 +243,7 @@ export const COMMERCE_ORDER_DELIVERED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
+  key: 'commerce.order-canceled-email',
   name: 'Order canceled: email',
   previousNames: ['Order cancelled: email', 'Order cancelled — email'],
   description: 'Emails the customer when their order is canceled.',
@@ -244,6 +263,7 @@ export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_REFUNDED_EMAIL: SystemAutomationSpec = {
+  key: 'commerce.order-refunded-email',
   name: 'Order refunded: email',
   previousNames: ['Order refunded — email'],
   description: 'Emails the customer when a refund is issued for their order.',
@@ -263,6 +283,7 @@ export const COMMERCE_ORDER_REFUNDED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
+  key: 'commerce.payment-failed-email',
   name: 'Payment failed: email',
   previousNames: ['Payment failed — email'],
   description: 'Emails the customer when their order payment fails, so they can retry.',
@@ -285,6 +306,7 @@ export const COMMERCE_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
  *  `order.fulfilled`; the 3-day delay gives the order time to arrive before the
  *  ask (docs/90 — `wait(3d)`). Marketing. */
 export const COMMERCE_POST_PURCHASE_REVIEW: SystemAutomationSpec = {
+  key: 'commerce.post-purchase-review',
   name: 'Post-purchase review request',
   description: 'Emails the customer three days after their order ships, asking for a review.',
   trigger: { kind: 'event', eventType: 'order.fulfilled' },

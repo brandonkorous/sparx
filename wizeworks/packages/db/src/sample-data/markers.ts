@@ -42,6 +42,13 @@ export const SAMPLE_META = { sample: true } as const;
 /** The `source` value on sample inventory movements. */
 export const SAMPLE_MOVEMENT_SOURCE = 'sample';
 
+/** The description on the price tier the sample wholesale account is put on, when
+ *  the business has no "Wholesale" tier of its own to use. A tier has no metadata
+ *  column, so this is Clear's handle on it; an owner who edits the description has
+ *  made the tier theirs, and Clear then leaves it alone. */
+export const SAMPLE_TIER_DESCRIPTION =
+  'Sample data: the price tier the sample wholesale account buys on. Clearing sample data removes it.';
+
 /** The `settings.sample` marker on scheduling services/resources. */
 export const SAMPLE_SETTINGS = { sample: true } as const;
 

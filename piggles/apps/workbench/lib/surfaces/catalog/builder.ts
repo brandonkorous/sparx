@@ -99,6 +99,9 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
       'home page',
       'about',
       'landing',
+      // "product page" found nothing in the sparx console (sparx persona issue 036).
+      'product page',
+      'contact page',
       // Inherited from the retired whole-site editor, so the words people already
       // search with still land somewhere real.
       'design',

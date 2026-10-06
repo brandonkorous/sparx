@@ -483,7 +483,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'inventory.gl.description':
     'As at {asOf}. Each line either raises what your books should show, or lowers it, to match what we make it.',
   'inventory.import.newCodes':
-    '{rows} we have never seen before. Add them as new items, or leave them out. Either way, what you decide is recorded with the import.',
+    '{rows} we have never seen before. Add them as new items, point them at items you already have, or leave them out. Either way, what you decide is recorded with the import.',
   'migration.helpSubject': 'I cannot connect Piggles to {vendor}',
   'sampleData.loadConfirm':
     'This fills {scope} with a full, realistic {pack} set (products, customers, orders and more) so you can see how everything works with records that look real. It is all clearly marked as samples and can be removed in one go.',

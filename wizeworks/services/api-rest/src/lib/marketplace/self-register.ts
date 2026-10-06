@@ -338,6 +338,14 @@ export async function selfRegisterFirstPartyCatalog(): Promise<SelfRegisterRepor
   // `bootstrapIntegrations()` during boot, so an import-time constant would capture it
   // empty and publish nothing.
   const integrations = firstPartyIntegrations();
+  // An EMPTY read is a registry nobody filled, not a platform that ships no
+  // integrations, and retract-by-absence would turn it into deleting the whole
+  // shelf. The CLI did exactly that once (issue 035). Refuse rather than prune.
+  if (integrations.length === 0) {
+    throw new Error(
+      'No first-party integrations are registered, so nothing can be published and every integration listing would be retracted. Call bootstrapProviders() before selfRegisterFirstPartyCatalog().'
+    );
+  }
 
   return withSystem(async (tx) => {
     const publisherId = await sparxPublisherId(tx);

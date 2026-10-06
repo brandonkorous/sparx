@@ -9,7 +9,7 @@
 // what was typed.
 
 import { Badge, Button, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Plus, UserRound, X } from 'lucide-react';
+import { Plus, UserRound, X, type LucideIcon } from 'lucide-react';
 
 /** A one-letter query matches half the book and is not a search anyone means. */
 export const MIN_QUERY = 2;
@@ -34,6 +34,13 @@ export interface PickerRow {
   secondary: string | null;
   /** Optional. Left out on the rows where nothing about this one is notable. */
   mark?: PickerMark | null;
+  /**
+   * Why this row cannot be chosen here, e.g. "Already on this account". The row
+   * is still drawn, with this under it, and cannot be clicked. Leaving the row
+   * out instead would read as "nobody by that name" and offer to add them as a
+   * new customer, which makes a duplicate (sparx persona issue 086).
+   */
+  unavailable?: string | null;
 }
 
 export interface SearchPickerProps {
@@ -66,10 +73,18 @@ export interface SearchPickerProps {
    * a picker over records a person genuinely cannot create from here leaves it
    * out and keeps the plain sentence.
    */
-  nothingFoundAction?: { label: (typed: string) => string; onAct: (typed: string) => void };
+  nothingFoundAction?: {
+    label: (typed: string) => string;
+    onAct: (typed: string) => void;
+    /** A plus by default, for "make one"; a retry passes its own. */
+    icon?: LucideIcon;
+  };
   /** Prompt before the query is long enough to ask with. */
   tooShort: string;
   clearLabel: string;
+  /** The mark beside the chosen row. A person by default; a product picker
+   *  passes a box, so a part does not read as somebody. */
+  icon?: LucideIcon;
   onSelect: (id: string) => void;
   onClear: () => void;
 }
@@ -79,10 +94,12 @@ function Chosen({
   disabled,
   clearLabel,
   onClear,
-}: Pick<SearchPickerProps, 'disabled' | 'clearLabel' | 'onClear'> & { row: PickerRow }) {
+  icon,
+}: Pick<SearchPickerProps, 'disabled' | 'clearLabel' | 'onClear' | 'icon'> & { row: PickerRow }) {
+  const Mark = icon ?? UserRound;
   return (
     <div className="border-base-300 bg-base-100 flex items-center gap-2 rounded-md border p-2">
-      <UserRound className="size-4 shrink-0" aria-hidden />
+      <Mark className="size-4 shrink-0" aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="font-medium">{row.primary}</span>
@@ -118,22 +135,34 @@ function Results({ rows, onSelect }: { rows: PickerRow[]; onSelect: (id: string)
         <button
           key={row.id}
           type="button"
-          className="hover:bg-base-200 flex w-full items-center gap-2 rounded px-2 py-2 text-left"
+          disabled={Boolean(row.unavailable)}
+          className="enabled:hover:bg-base-200 flex w-full flex-col items-start gap-0.5 rounded px-2 py-2 text-left disabled:cursor-not-allowed"
           onClick={() => {
             onSelect(row.id);
           }}
         >
-          <span className="flex min-w-0 flex-1 items-center gap-1.5">
+          {/* The name first, then what it belongs to on its own line, the way
+              the chosen row reads. Side by side, the second line was set never
+              to shrink, so a long one ("Salt Lake County Public Works
+              Department, Fleet Management Division") squeezed the person's
+              NAME to nothing and slid the badge on top of its own text (sparx
+              persona issue 085). It wraps instead. */}
+          <span className="flex max-w-full min-w-0 items-center gap-1.5">
             <span className="truncate font-medium">{row.primary}</span>
             {row.mark ? (
-              <Badge color={row.mark.color} variant="soft" size="sm">
+              <Badge color={row.mark.color} variant="soft" size="sm" className="shrink-0">
                 {row.mark.label}
               </Badge>
             ) : null}
           </span>
           {row.secondary ? (
-            <Text as="span" className="shrink-0 text-sm">
+            <Text as="span" className="block max-w-full text-sm break-words">
               {row.secondary}
+            </Text>
+          ) : null}
+          {row.unavailable ? (
+            <Text as="span" className="block max-w-full text-sm font-medium break-words">
+              {row.unavailable}
             </Text>
           ) : null}
         </button>
@@ -160,6 +189,7 @@ function Hint({
       </Text>
     );
   if (!nothingFoundAction) return <Text className="text-sm">{nothingFound}</Text>;
+  const ActIcon = nothingFoundAction.icon ?? Plus;
   return (
     <div className="flex flex-col items-start gap-2">
       <Text className="text-sm">{nothingFound}</Text>
@@ -170,7 +200,7 @@ function Hint({
           nothingFoundAction.onAct(typed);
         }}
       >
-        <Plus className="size-4" aria-hidden />
+        <ActIcon className="size-4" aria-hidden />
         {nothingFoundAction.label(typed)}
       </Button>
     </div>
@@ -187,6 +217,7 @@ export function SearchPicker(props: SearchPickerProps) {
         disabled={disabled}
         clearLabel={props.clearLabel}
         onClear={props.onClear}
+        {...(props.icon ? { icon: props.icon } : {})}
       />
     );
 

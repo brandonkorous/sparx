@@ -138,7 +138,7 @@ export async function glReconciliationReport(
         WHERE sbl.tenant_id = ${ctx.tenantId}::uuid
           AND sbl.purchase_order_line_id IS NOT NULL
           AND sb.billed_at <= ${asOf}
-          AND sb.status <> 'canceled'
+          AND sb.status <> 'cancelled'
         GROUP BY sbl.purchase_order_line_id
       ), paired AS (
         SELECT COALESCE(r.pol_id, b.pol_id) AS pol_id,

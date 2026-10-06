@@ -38,9 +38,11 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@wizeworks/silicaui-react';
 import {
+  moneyFieldText,
   optionalMoneyText,
   readCents,
   readMoney,
+  readMoneyField,
   settleMoney,
   type CentsReading,
 } from '@/lib/read-money';
@@ -50,34 +52,60 @@ import {
 // a .tsx file, and the guard on this rule is a .ts test.
 export { moneyText } from '@/lib/read-money';
 
-interface MoneyInputProps {
-  value: number;
+interface MoneyInputBaseProps {
   disabled?: boolean;
   'aria-label': string;
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg';
   /** Accent for the border + focus ring — matches the surrounding module. */
   color?: 'neutral' | 'primary' | 'module';
-  onValueChange: (value: number) => void;
 }
 
-export function MoneyInput({
-  value,
-  disabled,
-  className,
-  size = 'sm',
-  color,
-  onValueChange,
-  ...rest
-}: MoneyInputProps) {
-  const [text, setText] = useState(() => value.toFixed(2));
+/**
+ * Two kinds of amount, and the type keeps them apart.
+ *
+ * An amount every record HAS (a price) is a plain number, and an emptied box
+ * reports 0 so a running total can follow it. An amount that can be MISSING (a
+ * cost nobody has entered, a was-price on something not on offer) passes
+ * `optional`: null shows an empty box, an emptied box reports null, and a typed
+ * 0 reports 0. Feeding the second kind through the first as `value={x ?? 0}` is
+ * how 777 versions with no cost on record each read 0.00 (sparx persona issue
+ * 086). `money-blank.test.ts` holds the surfaces to it.
+ */
+type MoneyInputProps = MoneyInputBaseProps &
+  (
+    | { optional?: false; value: number; onValueChange: (value: number) => void }
+    | { optional: true; value: number | null; onValueChange: (value: number | null) => void }
+  );
+
+export function MoneyInput(props: MoneyInputProps) {
+  const {
+    value,
+    disabled,
+    className,
+    size = 'sm',
+    color,
+    optional,
+    onValueChange,
+    ...rest
+  } = props;
+  const [text, setText] = useState(() => moneyFieldText(value));
   const [editing, setEditing] = useState(false);
 
   // Track external changes (a document loading, a reset) — but never while the
   // field has focus, or reformatting would yank the caret mid-word.
   useEffect(() => {
-    if (!editing) setText(value.toFixed(2));
+    if (!editing) setText(moneyFieldText(value));
   }, [value, editing]);
+
+  const report = (typed: string) => {
+    const reading = readMoneyField(typed, { blank: optional ? null : 0 });
+    if (reading === null) return;
+    // Narrowed on `props`, not the destructured names: TypeScript keeps the
+    // pairing of `optional` with its callback only on the object itself.
+    if (props.optional) props.onValueChange(reading.value);
+    else onValueChange(reading.value ?? 0);
+  };
 
   return (
     <Input
@@ -98,13 +126,12 @@ export function MoneyInput({
       }}
       onChange={(event) => {
         setText(event.target.value);
-        // An empty field means zero for the running total, but the field itself
-        // stays empty — replacing it with "0" as they type would be hostile.
-        // Half-typed text ("8," on the way to "8,50") keeps the last amount
-        // that COULD be read rather than dropping the total to zero mid-word.
-        const { amount } = readMoney(event.target.value, { allowZero: true });
-        if (amount !== null) onValueChange(amount);
-        else if (event.target.value.trim() === '') onValueChange(0);
+        // An empty field means zero for the running total (or nothing entered,
+        // on an optional one), but the field itself stays empty — replacing it
+        // with "0" as they type would be hostile. Half-typed text ("8," on the
+        // way to "8,50") keeps the last amount that COULD be read rather than
+        // dropping the total to zero mid-word.
+        report(event.target.value);
       }}
       onBlur={() => {
         setEditing(false);

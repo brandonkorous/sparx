@@ -523,9 +523,11 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // and the thing the shopper does is save something for later.
     label: 'Save for later',
     category: 'Your shop',
-    // The heart it draws. Registered in the curated icon set; an unregistered name
-    // renders an empty square, so the name is taken from there and not invented.
-    icon: 'heart',
+    // The PALETTE icon, which comes from the builder's own icon set, not from the
+    // heart this draws on the page. That set has no heart: 'heart' fell back to the
+    // builder's default plug and warned on every Editor load (sparx persona issue
+    // 060). 'saved' is its bookmark, which is what saving for later is.
+    icon: 'saved',
     hint: 'A heart a signed-in customer presses to save this product for later. What they save shows up in Sell, under Wishlists. Put it on your product page.',
     // Unpinned, for the sentence reviews and questions already use: saving is a
     // CHOICE. Nothing about the shop stops working without it, and a business that

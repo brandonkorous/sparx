@@ -32,6 +32,7 @@ export {
 } from './availability';
 export {
   type CreatedBooking,
+  type EndedBooking,
   createBooking,
   updateBooking,
   confirmBooking,
@@ -43,6 +44,7 @@ export {
 } from './booking-service';
 export {
   type BookingWithRelations,
+  type BookingDetail,
   type ListBookingsOptions,
   type BookedCustomer,
   type CalendarEvent,
@@ -52,13 +54,27 @@ export {
 } from './booking-queries';
 export {
   type BookingAuditAction,
+  type BookingPaymentRecord,
   type BookingTimelineEntry,
+  BOOKING_PAYMENT_SETTLED,
+  BOOKING_PAYMENT_NOT_SETTLED,
   type CustomerBookingStats,
   recordBookingEvent,
   getBookingTimeline,
   getCustomerBookingStats,
 } from './booking-history';
 export { type BookingNotice, getBookingNotices } from './booking-notices';
+// What a booking's card needs when it ends; @wizeworks/commerce's
+// `bookingPayments.settle` does it (sparx persona issue 087).
+export {
+  type BookingEnding,
+  type BookingMoney,
+  type BookingMoneyFacts,
+  type BookingMoneyMove,
+  type BookingMoneyOptions,
+  bookingMoneyFor,
+  decideBookingMoney,
+} from './booking-money';
 export {
   type LocationRow,
   listLocations,
@@ -163,6 +179,8 @@ export {
 export { bootstrapSchedulingDefaults } from './provisioning';
 export {
   type BookingNotificationType,
+  type BookingNoticeStatus,
+  smsNoticeStatus,
   type NotificationChannel,
   type NotifiableBooking,
   BOOKING_EMAIL_KEY,
@@ -194,6 +212,7 @@ export {
   parseRRule,
   parseIcsInstant,
   expandRecurrence,
+  expandRecurrenceInZone,
 } from './rrule';
 export { type BusyParseOptions, parseBusyIntervals, parseIcsDuration } from './ical-parse';
 export {

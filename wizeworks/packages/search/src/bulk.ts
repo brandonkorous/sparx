@@ -5,6 +5,7 @@
 import type { Client } from 'typesense';
 
 import {
+  assertTestCollection,
   CUSTOMERS_COLLECTION,
   type CustomerSearchDocument,
   ENTITIES_COLLECTION,
@@ -85,11 +86,16 @@ export function bulkUpsertEntities(
 }
 
 /** Delete every document for a tenant from a collection. Used when a
- *  tenant offboards (GDPR / contract end). */
+ *  tenant offboards (GDPR / contract end), and by a full reindex.
+ *
+ *  Under a test runner (vitest sets `VITEST`) it refuses any collection without
+ *  a test prefix, so a test that reaches it unmocked cannot empty a real
+ *  tenant's documents on the developer's Typesense. See ./schemas/naming.ts. */
 export async function dropTenantFromCollection(
   collection: string,
   tenantId: string
 ): Promise<{ deleted: number }> {
+  if (process.env.VITEST) assertTestCollection(collection, 'delete documents from');
   const client = getClient();
   const res = await client
     .collections(collection)

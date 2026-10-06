@@ -29,16 +29,23 @@ import { ok, paged } from '@wizeworks/api-core/envelope';
 import { notFound } from '@wizeworks/api-core/errors';
 import { prisma, withTenant } from '@wizeworks/db';
 import { isModuleEnabled } from '@wizeworks/auth';
-import { computeAvailability } from '@wizeworks/inventory';
+import {
+  AVAILABILITY_LEVEL_SELECT,
+  availabilityLevelOf,
+  computeAvailability,
+} from '@wizeworks/inventory';
 import {
   bundlePartsTotalCents,
   bundleSetPriceCents,
   plainTextOrNull,
   preorderState,
+  readRepeatOptions,
 } from '@wizeworks/commerce-schemas';
 import {
+  accountBuyingRules,
   depositFromColumns,
   madeToOrderService,
+  paymentMethodService,
   pricingService,
   productTypeService,
   projectProductAttributes,
@@ -57,6 +64,17 @@ import { mergeOptionAxes } from '../../../lib/option-axes.js';
 import { tryVerifyProductPreview } from '../../../lib/preview.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { optionalCustomer } from '../../../lib/customer-session.js';
+import {
+  cardYourPrice,
+  viewerUnitPrices,
+  viewerVariantPrices,
+} from '../../../lib/viewer-variant-prices.js';
+import {
+  fittedFirstPage,
+  vehicleRestriction,
+  viewerFittedIds,
+  withFleetFit,
+} from '../../../lib/fleet-fit.js';
 import { applyTranslation, LocaleParam, translationSelect } from './product-locale.js';
 
 // `property` (a stable site slug) scopes catalog reads to one web PROPERTY
@@ -95,6 +113,9 @@ const ProductListQuery = PagingQuery.extend({
   // grid — the scope is resolved to ids inside the tenant transaction below.
   collection: z.string().optional(),
   category: z.string().optional(),
+  // "Parts that fit Unit 12": one vehicle on the signed-in buyer's own fleet. Checked
+  // against the account the session belongs to, never trusted (sparx persona issue 086).
+  fleetVehicle: z.string().uuid().optional(),
   sort: z
     .enum(['relevance', 'price-asc', 'price-desc', 'title-asc', 'title-desc', 'newest'])
     .default('relevance'),
@@ -137,6 +158,8 @@ const SearchQuery = PagingQuery.extend({
   // Product-option facet selections as "Name:Value" tokens (repeatable param, e.g.
   // ?options=Color:Black&options=Size:M). AND-ed across selections.
   options: z.union([z.string(), z.array(z.string())]).optional(),
+  // "Parts that fit Unit 12", as on the listing above (sparx persona issue 086).
+  fleetVehicle: z.string().uuid().optional(),
   sort: z
     .enum(['relevance', 'price-asc', 'price-desc', 'title-asc', 'title-desc', 'newest'])
     .default('relevance'),
@@ -245,59 +268,161 @@ async function resolveViewerB2bAccountId(
 }
 
 /**
- * Card-list "your price" fast path: the DEFAULT variant's contract price
- * only (not the full price-list/bulk-tier waterfall `resolve()` runs for the
- * PDP/cart) — one batched query regardless of page size, so a 24-product grid
- * costs the same as a single product. Anonymous/non-B2B viewers (the common
- * case) skip this entirely and the response is unchanged from today.
+ * What the signed-in trade buyer pays for each version, by the same rule the
+ * product page and the cart use (`pricingService.resolve`, one unit, this
+ * site). Only a signed-in trade buyer pays for this; every other visitor never
+ * reaches it, so their pages stay viewer-independent and cacheable. The rule
+ * and why lists needed it: `viewerUnitPrices` (issue 086).
  */
-async function resolveDefaultVariantContractPrices(
+async function resolveViewerUnitPrices(
   tenantId: string,
   companyId: string,
-  variantIds: string[]
+  variantIds: string[],
+  propertyId: string | undefined
 ): Promise<Map<string, number>> {
   if (variantIds.length === 0) return new Map();
-  const now = new Date();
-  const rows = await withTenant({ tenantId }, (tx) =>
-    tx.contractPrice.findMany({
-      where: {
-        companyId,
-        variantId: { in: variantIds },
-        validFrom: { lte: now },
-        OR: [{ validTo: null }, { validTo: { gte: now } }],
-      },
-      orderBy: { validFrom: 'desc' },
-      select: { variantId: true, priceCents: true },
+  const versions = await withTenant({ tenantId }, (tx) =>
+    tx.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      select: { id: true, currency: true, priceCents: true },
     })
   );
-  const map = new Map<string, number>();
-  for (const r of rows) {
-    if (!map.has(r.variantId)) map.set(r.variantId, r.priceCents); // first hit = most recent
-  }
-  return map;
+  return viewerUnitPrices(versions, async (v) => {
+    const priced = await pricingService.resolve(
+      { tenantId },
+      {
+        variantId: v.id,
+        quantity: 1,
+        channel: 'storefront',
+        currency: v.currency,
+        companyId,
+        customerSegmentIds: [],
+        ...(propertyId ? { propertyId } : {}),
+      }
+    );
+    return priced.unitPriceCents;
+  });
 }
 
 /** Attaches `yourPriceCents` to a page of `publicProduct()`-mapped cards for the
- *  signed-in viewer — null for every card when there's no B2B viewer or no
- *  matching contract price, which is the common case and costs one extra query. */
+ *  signed-in viewer. Null for every card when there is no trade buyer, and for
+ *  a card whose price is the same for them as for everyone. */
 async function withYourPrices(
   tenantId: string,
   products: ReturnType<typeof publicProduct>[],
-  viewerB2bAccountId: string | undefined
+  viewerB2bAccountId: string | undefined,
+  propertyId: string | undefined
 ): Promise<(ReturnType<typeof publicProduct> & { yourPriceCents: number | null })[]> {
   if (!viewerB2bAccountId) {
     return products.map((p) => ({ ...p, yourPriceCents: null }));
   }
   const variantIds = products.flatMap((p) => (p.defaultVariantId ? [p.defaultVariantId] : []));
-  const contractPrices = await resolveDefaultVariantContractPrices(
+  const theirs = await resolveViewerUnitPrices(
     tenantId,
     viewerB2bAccountId,
-    variantIds
+    variantIds,
+    propertyId
   );
   return products.map((p) => ({
     ...p,
-    yourPriceCents: p.defaultVariantId ? (contractPrices.get(p.defaultVariantId) ?? null) : null,
+    yourPriceCents: cardYourPrice(
+      p.defaultVariantId ? theirs.get(p.defaultVariantId) : undefined,
+      p.priceMinCents
+    ),
   }));
+}
+
+/** One version's buying rule for the signed-in trade buyer's account (sparx
+ *  persona issue 086): what the quantity box starts at, how far it steps, and
+ *  the words beside it. */
+interface ViewerBuyingRule {
+  minimum: number | null;
+  maximum: number | null;
+  caseOf: number | null;
+  start: number;
+  step: number;
+  words: string[];
+}
+
+/**
+ * The product page's half of the account rules (sparx persona issue 086): each
+ * version's minimum, maximum and case pack for the signed-in trade buyer, and
+ * whether their role lets them order at all.
+ *
+ * Every product gets both keys, null for everyone but a signed-in trade contact.
+ * Like "your price", this is an enhancement on a catalog read and is not allowed
+ * to fail one: if it cannot be worked out the page shows no rules and the cart
+ * and checkout, which check for themselves, still refuse what breaks them.
+ */
+async function withAccountBuying<P extends { variants: { id: string }[] }>(
+  request: FastifyRequest,
+  tenantId: string,
+  product: P,
+  viewerB2bAccountId: string | undefined
+): Promise<
+  P & {
+    accountOrdering: {
+      accountId: string;
+      accountName: string;
+      canOrder: boolean;
+      refusal: string | null;
+    } | null;
+    variants: (P['variants'][number] & { buyingRules: ViewerBuyingRule | null })[];
+  }
+> {
+  let ordering: Awaited<ReturnType<typeof accountBuyingRules.resolveAccountOrdering>> = null;
+  let rules = new Map<string, accountBuyingRules.QuantityRule>();
+  if (viewerB2bAccountId) {
+    try {
+      const viewer = await optionalCustomer(request, { tenantId });
+      if (viewer) {
+        await withTenant({ tenantId }, async (tx) => {
+          ordering = await accountBuyingRules.resolveAccountOrdering(
+            tx,
+            viewer.customerId,
+            viewerB2bAccountId
+          );
+          rules = await accountBuyingRules.loadQuantityRules(
+            tx,
+            viewerB2bAccountId,
+            product.variants.map((v) => v.id)
+          );
+        });
+      }
+    } catch (err) {
+      request.log.warn({ err }, 'could not read account buying rules: showing none');
+    }
+  }
+  const resolved = ordering as Awaited<
+    ReturnType<typeof accountBuyingRules.resolveAccountOrdering>
+  >;
+  return {
+    ...product,
+    accountOrdering: resolved
+      ? {
+          // Which account, so the page can put "Add to quote request" on it
+          // (sparx persona issue 086).
+          accountId: resolved.accountId,
+          accountName: resolved.accountName,
+          canOrder: resolved.canOrder,
+          refusal: resolved.refusal,
+        }
+      : null,
+    variants: product.variants.map((v) => {
+      const rule = rules.get(v.id);
+      return {
+        ...v,
+        buyingRules: rule
+          ? {
+              ...rule,
+              start: accountBuyingRules.startingQuantity(rule),
+              step: accountBuyingRules.quantityStep(rule),
+              words: accountBuyingRules.quantityRuleWords(rule),
+            }
+          : null,
+      };
+    }),
+  };
 }
 
 // Combine a product's per-site rollup buckets ([site] + the null legacy/shared
@@ -513,6 +638,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = PagingQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    // A signed-in trade buyer's fitted parts come first (sparx persona issue 086).
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    const fittedIds = await viewerFittedIds(tenantId, viewerB2bAccountId, request.log);
     const result = await withTenant({ tenantId }, async (tx) => {
       const collection = await tx.productCollection.findFirst({
         // A collection hidden on the active site yields no product list (404),
@@ -528,32 +656,41 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         deletedAt: null,
         ...productSiteVisibilityWhere(propertyId),
       };
-      const [rows, total] = await Promise.all([
+      const page = (ids: { in?: string[]; notIn?: string[] } | null, skip: number, take: number) =>
         tx.product.findMany({
-          where,
+          where: ids ? { AND: [where, { id: ids }] } : where,
           orderBy: { updatedAt: 'desc' },
-          take: q.perPage,
-          skip: (q.page - 1) * q.perPage,
+          take,
+          skip,
           select: productSelect(propertyId, q.locale),
-        }),
+        });
+      const skip = (q.page - 1) * q.perPage;
+      const [rows, total] = await Promise.all([
+        fittedIds
+          ? fittedFirstPage({
+              fittedIds,
+              skip,
+              take: q.perPage,
+              count: (id) => tx.product.count({ where: { AND: [where, { id }] } }),
+              find: page,
+            })
+          : page(null, skip, q.perPage),
         tx.product.count({ where }),
       ]);
       return { rows, total };
     });
     if (!result) throw notFound('Collection', handle);
-    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
-    return paged(
-      await withYourPrices(
-        tenantId,
-        result.rows.map((r) => publicProduct(applyTranslation(r, q.locale))),
-        viewerB2bAccountId
-      ),
-      {
-        page: q.page,
-        per_page: q.perPage,
-        total: result.total,
-      }
+    const cards = await withYourPrices(
+      tenantId,
+      result.rows.map((r) => publicProduct(applyTranslation(r, q.locale))),
+      viewerB2bAccountId,
+      propertyId
     );
+    return paged(await withFleetFit(tenantId, cards, viewerB2bAccountId, request.log), {
+      page: q.page,
+      per_page: q.perPage,
+      total: result.total,
+    });
   });
 
   // ─── Products ──────────────────────────────────────────────────────
@@ -562,6 +699,17 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = ProductListQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    // A signed-in trade buyer with a fleet: "parts that fit Unit 12" narrows to one of
+    // their vehicles, and the default order puts the parts that fit any of them first.
+    // A chosen sort is honored as chosen (sparx persona issue 086).
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    const restriction = q.fleetVehicle
+      ? await vehicleRestriction(tenantId, viewerB2bAccountId, q.fleetVehicle)
+      : null;
+    const fittedIds =
+      !restriction && q.sort === 'relevance'
+        ? await viewerFittedIds(tenantId, viewerB2bAccountId, request.log)
+        : null;
     const result = await withTenant({ tenantId }, async (tx) => {
       // Optional scope: narrow the whole listing to a collection (flat membership) or a
       // category (browse-node rollup — self + descendants off the materialized dot-path,
@@ -644,34 +792,53 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
               },
             }
           : {}),
+        ...(restriction?.applied ? { id: { in: restriction.productIds } } : {}),
       };
+      const orderBy = PLP_ORDER_BY[q.sort] ?? PLP_ORDER_BY.relevance;
+      const skip = (q.page - 1) * q.perPage;
       const [rows, total] = await Promise.all([
-        tx.product.findMany({
-          where,
-          orderBy: PLP_ORDER_BY[q.sort] ?? PLP_ORDER_BY.relevance,
-          take: q.perPage,
-          skip: (q.page - 1) * q.perPage,
-          select: productSelect(propertyId, q.locale),
-        }),
+        fittedIds
+          ? fittedFirstPage({
+              fittedIds,
+              skip,
+              take: q.perPage,
+              count: (id) => tx.product.count({ where: { AND: [where, { id }] } }),
+              find: (id, s, t) =>
+                tx.product.findMany({
+                  where: { AND: [where, { id }] },
+                  orderBy,
+                  skip: s,
+                  take: t,
+                  select: productSelect(propertyId, q.locale),
+                }),
+            })
+          : tx.product.findMany({
+              where,
+              orderBy,
+              take: q.perPage,
+              skip,
+              select: productSelect(propertyId, q.locale),
+            }),
         tx.product.count({ where }),
       ]);
       return { rows, total };
     });
     // A scope handle that didn't resolve — surface it as a 404 like the detail routes.
     if (!result) throw notFound('Collection or category', q.collection ?? q.category ?? '');
-    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
-    return paged(
-      await withYourPrices(
-        tenantId,
-        result.rows.map((r) => publicProduct(applyTranslation(r, q.locale))),
-        viewerB2bAccountId
-      ),
-      {
-        page: q.page,
-        per_page: q.perPage,
-        total: result.total,
-      }
+    const cards = await withYourPrices(
+      tenantId,
+      result.rows.map((r) => publicProduct(applyTranslation(r, q.locale))),
+      viewerB2bAccountId,
+      propertyId
     );
+    return paged(await withFleetFit(tenantId, cards, viewerB2bAccountId, request.log), {
+      page: q.page,
+      per_page: q.perPage,
+      total: result.total,
+      // Whether "parts that fit" was applied, and to which vehicle, so the page can
+      // say so, or say it could not find that vehicle rather than showing everything.
+      ...(restriction ? { fleetVehicle: restriction.applied ? restriction.vehicle : null } : {}),
+    });
   });
 
   // ─── Search (Typesense) ────────────────────────────────────────────
@@ -743,6 +910,18 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       ...priceParts,
     ].filter((p): p is string => p !== null);
 
+    // A signed-in trade buyer with a fleet: "parts that fit Unit 12" narrows to one of
+    // their vehicles, and the default order ranks the parts that fit any of them first
+    // without hiding the rest. A chosen sort is honored as chosen (sparx persona issue 086).
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    const restriction = q.fleetVehicle
+      ? await vehicleRestriction(tenantId, viewerB2bAccountId, q.fleetVehicle)
+      : null;
+    const fittedIds =
+      !restriction && q.sort === 'relevance'
+        ? await viewerFittedIds(tenantId, viewerB2bAccountId, request.log)
+        : null;
+
     const result = await searchProducts({
       tenantId,
       // Model B (docs/49 §3): scope the Typesense query to the active site so the
@@ -757,6 +936,8 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       fitmentModels: splitCsv(q.fitmentModels),
       fitmentEngines: splitCsv(q.fitmentEngines),
       fitmentYear: q.fitmentYear,
+      ...(fittedIds ? { boostProductIds: fittedIds } : {}),
+      ...(restriction?.applied ? { onlyProductIds: restriction.productIds } : {}),
     });
 
     // Hydrate the canonical display rows in Typesense's relevance order.
@@ -785,11 +966,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       });
     }
 
-    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
-    return paged(await withYourPrices(tenantId, ordered, viewerB2bAccountId), {
+    const cards = await withYourPrices(tenantId, ordered, viewerB2bAccountId, propertyId);
+    return paged(await withFleetFit(tenantId, cards, viewerB2bAccountId, request.log), {
       page: result.page,
       per_page: result.perPage,
       total: result.found,
+      ...(restriction ? { fleetVehicle: restriction.applied ? restriction.vehicle : null } : {}),
       // Facet counts for the storefront sidebar. Shape: { field: [{value,count}] }.
       facets: Object.fromEntries(
         result.facetCounts.map((f) => [
@@ -831,7 +1013,10 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       const row = byId.get(id);
       return row ? [publicProduct(applyTranslation(row, q.locale))] : [];
     });
-    return ok(ordered);
+    // A hand-picked rail keeps its order; a trade buyer's fitting parts still wear
+    // the badge (sparx persona issue 086).
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    return ok(await withFleetFit(tenantId, ordered, viewerB2bAccountId, request.log));
   });
 
   // FULL products for the Builder data spine (docs/98 Pillar 7). Returns the same
@@ -895,7 +1080,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
               : q.sort === 'title-desc'
                 ? [{ title: 'desc' }]
                 : [{ inStock: 'desc' }, { updatedAt: 'desc' }];
-    const [rows, inventoryActive] = await Promise.all([
+    const [rows, inventoryActive, viewerB2bAccountId] = await Promise.all([
       withTenant({ tenantId }, (tx) =>
         tx.product.findMany({
           where,
@@ -906,16 +1091,47 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         })
       ),
       isModuleEnabled(tenantId, 'inventory'),
+      // The builder's product grids print the signed-in trade buyer's own price and
+      // fleet fit, like every other shop page (sparx persona issue 086). The site
+      // sends the session only for a signed-in visitor and never caches that read.
+      resolveViewerB2bAccountId(request, tenantId),
     ]);
+    // Their own price on every version on the page, by the product page's rule.
+    const variants = rows.flatMap((r) => r.variants);
+    const yourPrices = viewerB2bAccountId
+      ? viewerVariantPrices(
+          variants,
+          await resolveViewerUnitPrices(
+            tenantId,
+            viewerB2bAccountId,
+            variants.map((v) => v.id),
+            propertyId
+          )
+        )
+      : undefined;
     // Batch-resolve every distinct product type in one query so each looped/pinned
     // product projects its typed attributes (docs/143) without N round-trips.
     const schemasByKey = await productTypeService.resolveSchemasByKey(
       tenantId,
       rows.map((r) => r.productTypeKey).filter((k): k is string => !!k)
     );
-    let list = rows.map((r) =>
-      mapFullProduct(applyTranslation(r, q.locale), inventoryActive, undefined, schemasByKey)
-    );
+    const canKeepCards = await paymentMethodService.canSaveMethods({ tenantId });
+    const mapped = rows.map((r) => {
+      const full = mapFullProduct(
+        applyTranslation(r, q.locale),
+        inventoryActive,
+        yourPrices,
+        schemasByKey,
+        undefined,
+        canKeepCards
+      );
+      // The card's price is the default version's, so is the buyer's.
+      const yourPriceCents = full.defaultVariantId
+        ? (yourPrices?.get(full.defaultVariantId) ?? null)
+        : null;
+      return { ...full, yourPriceCents };
+    });
+    let list = await withFleetFit(tenantId, mapped, viewerB2bAccountId, request.log);
     // Preserve the requested id order (Prisma's `in` does not guarantee it).
     if (ids) {
       const byId = new Map(list.map((p) => [p.id, p]));
@@ -1015,15 +1231,20 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           })
         : undefined;
 
-    return ok(
-      mapFullProduct(
-        applyTranslation(result, q.locale),
-        inventoryActive,
-        yourPrices,
-        schemasByKey,
-        madeToOrder
-      )
+    // Which of a trade buyer's vehicles this fits, or that it fits none of them.
+    // Null when there is nothing to say, including a product with no fitment data
+    // (sparx persona issue 086).
+    const full = mapFullProduct(
+      applyTranslation(result, q.locale),
+      inventoryActive,
+      yourPrices,
+      schemasByKey,
+      madeToOrder,
+      await paymentMethodService.canSaveMethods({ tenantId })
     );
+    const [fit] = await withFleetFit(tenantId, [full], viewerB2bAccountId, request.log);
+    const withFit = { ...full, fleetFit: fit?.fleetFit ?? null };
+    return ok(await withAccountBuying(request, tenantId, withFit, viewerB2bAccountId));
   });
 
   // ─── Categories ────────────────────────────────────────────────────
@@ -1139,6 +1360,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = PagingQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    // A signed-in trade buyer's fitted parts come first (sparx persona issue 086).
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    const fittedIds = await viewerFittedIds(tenantId, viewerB2bAccountId, request.log);
     const result = await withTenant({ tenantId }, async (tx) => {
       const category = await tx.productCategory.findFirst({
         // A category hidden on the active site yields no rollup (its node 404s),
@@ -1160,32 +1384,41 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         deletedAt: null,
         ...productSiteVisibilityWhere(propertyId),
       };
-      const [rows, total] = await Promise.all([
+      const page = (ids: { in?: string[]; notIn?: string[] } | null, skip: number, take: number) =>
         tx.product.findMany({
-          where,
+          where: ids ? { AND: [where, { id: ids }] } : where,
           orderBy: { updatedAt: 'desc' },
-          take: q.perPage,
-          skip: (q.page - 1) * q.perPage,
+          take,
+          skip,
           select: productSelect(propertyId, q.locale),
-        }),
+        });
+      const skip = (q.page - 1) * q.perPage;
+      const [rows, total] = await Promise.all([
+        fittedIds
+          ? fittedFirstPage({
+              fittedIds,
+              skip,
+              take: q.perPage,
+              count: (id) => tx.product.count({ where: { AND: [where, { id }] } }),
+              find: page,
+            })
+          : page(null, skip, q.perPage),
         tx.product.count({ where }),
       ]);
       return { rows, total };
     });
     if (!result) throw notFound('Category', handle);
-    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
-    return paged(
-      await withYourPrices(
-        tenantId,
-        result.rows.map((r) => publicProduct(applyTranslation(r, q.locale))),
-        viewerB2bAccountId
-      ),
-      {
-        page: q.page,
-        per_page: q.perPage,
-        total: result.total,
-      }
+    const cards = await withYourPrices(
+      tenantId,
+      result.rows.map((r) => publicProduct(applyTranslation(r, q.locale))),
+      viewerB2bAccountId,
+      propertyId
     );
+    return paged(await withFleetFit(tenantId, cards, viewerB2bAccountId, request.log), {
+      page: q.page,
+      per_page: q.perPage,
+      total: result.total,
+    });
   });
 
   // ─── Option axes ───────────────────────────────────────────────────
@@ -1435,6 +1668,7 @@ function fullProductSelect(propertyId: string, locale?: string) {
     updatedAt: true,
     reviewRollups: reviewRollupsSelect(propertyId),
     fulfillmentType: true,
+    repeatOptions: true,
     weightGrams: true,
     lengthMm: true,
     widthMm: true,
@@ -1473,20 +1707,16 @@ function fullProductSelect(propertyId: string, locale?: string) {
         title: true,
         priceCents: true,
         compareAtPriceCents: true,
+        coreChargeCents: true,
+        coreFirstOffered: true,
         currency: true,
         isDefault: true,
         inventoryPolicy: true,
         optionAssignments: { select: { optionValueId: true } },
-        inventoryLevels: {
-          select: {
-            onHand: true,
-            allocated: true,
-            safetyBuffer: true,
-            // Quarantined / damaged / awaiting-repair units are on the
-            // shelf and not for sale (docs/146 Phase 9.7).
-            unsellableOnHand: true,
-          },
-        },
+        // Every term the availability rule reads, the location's own state
+        // included: Add to cart only ever reserves at an active location, so
+        // the page must not count a switched-off or archived one's shelf.
+        inventoryLevels: { select: AVAILABILITY_LEVEL_SELECT },
         // What a shopper is allowed to be told about stock that is not here yet
         // (docs/146 Phase 9.3/9.4).
         //
@@ -1566,7 +1796,10 @@ function mapFullProduct(
   /** Made to order (issue 026). `remainingToday` is COUNTED, never assumed —
    *  undefined means nobody counted, which the buy box says nothing about
    *  rather than printing a number it does not have. */
-  madeToOrder?: { readyOn: string | null; remainingToday: number | null }
+  madeToOrder?: { readyOn: string | null; remainingToday: number | null },
+  /** Whether this shop can keep a card (issue 739). A schedule is only offered
+   *  where a repeat charge could actually be taken. */
+  canKeepCards = false
 ) {
   // Typed attributes (docs/143): resolve the product's type schema (batched by the
   // caller) and project its stored bag into BOTH shapes the PDP binds — the keyed
@@ -1587,6 +1820,9 @@ function mapFullProduct(
     attributeSections: projection.attributeSections,
     lowStock: result.lowStock,
     fulfillmentType: result.fulfillmentType,
+    // How often a shopper may ask for this again (issue 739). Empty = buy once,
+    // which is also what a shop that cannot keep a card shows for every product.
+    repeatOptions: canKeepCards ? readRepeatOptions(result.repeatOptions) : [],
     weightGrams: result.weightGrams,
     dimensions:
       result.lengthMm || result.widthMm || result.heightMm
@@ -1608,9 +1844,11 @@ function mapFullProduct(
       // Sum available across every warehouse via the shared availability rule; the
       // cart engine picks the real one at reserve time — here we just want one
       // number the buy-box can render. Untracked (module off) → always available.
-      const { available, inStock } = computeAvailability(v.inventoryLevels, v.inventoryPolicy, {
-        inventoryActive,
-      });
+      const { available, inStock } = computeAvailability(
+        v.inventoryLevels.map(availabilityLevelOf),
+        v.inventoryPolicy,
+        { inventoryActive }
+      );
 
       // The preorder offer, resolved through the SAME function the workbench and
       // the checkout guard use, so the date on the product page and the date in
@@ -1656,6 +1894,12 @@ function mapFullProduct(
         // is not the price charged is worse than either number alone.
         priceCents: setPrice ?? v.priceCents,
         compareAtPriceCents: v.compareAtPriceCents,
+        // A refundable core deposit on a rebuilt part, charged on top of the price
+        // and paid back when the old part comes back (issue 051). Null = no core.
+        coreChargeCents: v.coreChargeCents,
+        // Or the buyer sends the old part first, pays no deposit, and the part
+        // ships when it arrives (issue 057).
+        coreFirstOffered: v.coreFirstOffered,
         // Present only for a signed-in customer whose active B2B membership
         // resolves a different price than the flat retail one above — null for
         // every anonymous/retail viewer (the storefront falls back to priceCents).

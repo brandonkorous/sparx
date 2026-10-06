@@ -42,6 +42,7 @@ import {
   mintGatedDeliveryToken,
 } from '../../../lib/gated-delivery-token.js';
 import { captureFunnelStage, findFormCaptureTarget } from '../../../lib/funnel-entry.js';
+import { tenantSenderHeaders } from '../../../lib/tenant-email.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -417,9 +418,15 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
         // `publish` never throws — a Pub/Sub hiccup is logged, not surfaced. The
         // right trade here: the submission is already stored, so a mail glitch
         // must not turn into a red error for somebody who did everything right.
+        // From the site the visitor filled the form on, with replies to it,
+        // not from the platform's no-reply box (sparx persona issue 071).
+        const sender = await tenantSenderHeaders(tenantId, property.id);
         await publish(request.log, 'email.send', tenantId, null, {
           template: 'gated-delivery',
           to: email,
+          from: sender.from,
+          ...(sender.replyTo ? { replyTo: sender.replyTo } : {}),
+          propertyId: property.id,
           props: {
             siteName: property.name,
             name,

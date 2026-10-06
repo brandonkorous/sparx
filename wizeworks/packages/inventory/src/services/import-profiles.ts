@@ -268,7 +268,17 @@ export async function previewImport(
   const recipeKey = input.recipeKey ?? profile?.recipeKey ?? null;
   const recipe = recipeKey ? migrationRecipe(recipeKey) : null;
 
-  const guessed = matchColumns(parsed.rawHeaders, targetsForRecipe(recipeKey));
+  // A heading with nothing under it in any row cannot be the column a person
+  // meant, however well its name matches.
+  const emptyHeaders = new Set(
+    parsed.rawHeaders.filter((header) => {
+      const key = header.trim().toLowerCase();
+      return parsed.records.every((record) => (record[key] ?? '').trim() === '');
+    })
+  );
+  const guessed = matchColumns(parsed.rawHeaders, targetsForRecipe(recipeKey), {
+    emptyHeaders,
+  });
   const matches = profile
     ? applySavedMapping(guessed, profile.mapping, parsed.rawHeaders)
     : guessed;

@@ -39,6 +39,8 @@
 // nothing to translate against.
 
 import { useEffect, useMemo, useState } from 'react';
+import { useViewParamHandle } from '../../lib/workbench/view-param';
+import type { ViewParamHandle } from '../../lib/workbench/view-param';
 import {
   Badge,
   Button,
@@ -131,11 +133,13 @@ function TranslationEditor({
   product,
   rows,
   productId,
+  language,
   registerSave,
 }: {
   product: Product;
   rows: ProductTranslation[];
   productId: string;
+  language: ViewParamHandle;
   registerSave: (state: {
     dirty: boolean;
     saving: boolean;
@@ -150,7 +154,6 @@ function TranslationEditor({
 
   const [pending, setPending] = useState<Pending[]>([]);
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
-  const [active, setActive] = useState<string>(rows[0]?.locale ?? '');
 
   const saved = useMemo(() => {
     const map: Record<string, Draft> = {};
@@ -172,9 +175,17 @@ function TranslationEditor({
   useEffect(() => {
     setPending((current) => current.filter((p) => !rows.some((row) => row.locale === p.locale)));
   }, [rows]);
-  useEffect(() => {
-    if (active === '' || !locales.includes(active)) setActive(locales[0] ?? '');
-  }, [locales, active]);
+  // The language is the pane's address (issue 374), so a reload or a link
+  // keeps it. One the record does not have (an old link, a language since
+  // removed) shows the first. The first needs no param, so it is the plain
+  // address.
+  const active =
+    language.value !== undefined && locales.includes(language.value)
+      ? language.value
+      : (locales[0] ?? '');
+  const setActive = (locale: string) => {
+    language.set(locale === locales[0] ? null : locale);
+  };
 
   const currentSaved = saved[active] ?? pending.find((p) => p.locale === active)?.draft ?? BLANK;
   const current = drafts[active] ?? currentSaved;
@@ -462,6 +473,8 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
   const scope = useProductScope(ctx, { noun: NOUN });
   const productId = scope.productId ?? 'new';
   const translations = useProductTranslations(productId);
+  // The language tab, held in the pane's address (issue 374).
+  const language = useViewParamHandle(ctx, 'lang');
 
   // The toolbar's Save is owned by the editor below it, which is where the draft
   // lives. Held here so the button can sit in the bar with the pane's other
@@ -544,6 +557,7 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
               product={scope.product}
               rows={translations.data}
               productId={scope.productId}
+              language={language}
               registerSave={setSaveState}
             />
           )}

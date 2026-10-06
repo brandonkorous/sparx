@@ -84,7 +84,8 @@ export function billingName(customer: CustomerSummary): string {
  */
 export function customerPickerRow(
   customer: CustomerSummary,
-  businessName?: string | null
+  businessName?: string | null,
+  unavailable?: string | null
 ): PickerRow {
   const primary = customerName(customer);
   const meta = customerTypeMeta(customer.type);
@@ -95,7 +96,7 @@ export function customerPickerRow(
   const email = customer.email?.trim() ?? '';
   const secondary = [where, email === primary ? '' : email].filter(Boolean).join(' · ') || null;
 
-  return { id: customer.id, primary, secondary, mark };
+  return { id: customer.id, primary, secondary, mark, ...(unavailable ? { unavailable } : {}) };
 }
 
 /** The address book, searched where it lives. Two letters before it asks. */

@@ -20,7 +20,7 @@ import { randomUUID } from 'node:crypto';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 import { inventoryService, type CommittedSale } from '@wizeworks/inventory';
-import { publishPlatformEvent, recomputeCustomerCommerce } from '@wizeworks/crm';
+import { customerService, publishPlatformEvent, recomputeCustomerCommerce } from '@wizeworks/crm';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -118,7 +118,7 @@ function aggregateLines(lines: ChannelOrderIngestLine[]): AggregatedLine[] {
  *  same membership a later site registration would resolve to). A buyer with no
  *  email (some channels mask it) gets a per-order synthetic so orders never
  *  collapse onto one shared customer. */
-async function ensureChannelCustomer(
+export async function ensureChannelCustomer(
   tx: TxClient,
   tenantId: string,
   customer: { email: string | null; name: string | null },
@@ -151,8 +151,12 @@ async function ensureChannelCustomer(
       firstName: firstName ?? null,
       lastName: rest.length ? rest.join(' ') : null,
     },
-    select: { id: true },
+    select: { id: true, type: true, email: true },
   });
+  // A marketplace buyer the business did not have, handed over by the channel.
+  // Announced once this order commits, so search and groups hear of them
+  // (sparx persona issue 086); `captured`, because they joined nothing.
+  await customerService.announceCustomer(tenantId, 'crm.customer.captured', created);
   return created.id;
 }
 

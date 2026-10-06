@@ -204,10 +204,20 @@ export async function reserveOnTx(
       // precisely the incident an operator most wants to see. Detached, and
       // best-effort: observability must never be able to fail a checkout.
       await recordOversellIncidentDetached(ctx, { ...incident, kind: 'blocked' });
+      // What the buyer COULD have: the richest one location, which is not
+      // necessarily the one this tried. A line the allocator could not fill
+      // anywhere falls back to the channel's own location, and reporting that
+      // location's figure told a buyer asking for 7 that "0 are available"
+      // while another location had one on the shelf, which the shop then
+      // printed as "sold out". A caller that named the location gets that
+      // location's figure, because it is the only one it asked about.
+      const couldHave = input.warehouseId
+        ? Math.max(0, available)
+        : await mostOneLineCanHold(tx, input.variantId);
       throw new InventoryOutOfStockError(
         input.variantId,
         input.quantity,
-        Math.max(0, available),
+        couldHave,
         await variantLabel(tx, input.variantId)
       );
     }
@@ -501,71 +511,140 @@ export async function expireDueReservations(ctx: ServiceContext): Promise<{ rele
       });
       released += 1;
     }
+    // The units are on sale again, so the product's in-stock flag has to say
+    // so. `releaseOnTx` always did this; the reaper did not, so a product whose
+    // last units sat in an abandoned basket stayed "sold out" in the shop's grid
+    // after the reaper had freed them, until something unrelated moved.
+    for (const variantId of new Set(due.map((r) => r.variantId))) {
+      await syncProductInStock(tx, variantId);
+    }
   });
   return { released };
 }
 
-/**
- * Stock-aware single-source allocator. Resolves the channel from the holder, then
- * prefers an active warehouse that (a) defaults for the channel AND can fulfill
- * the quantity, else (b) any warehouse that can fulfill, else (c) the channel
- * default (a backorder under a continue/preorder policy), else (d) the first
- * active warehouse. Multi-warehouse split + proximity/cost routing layer on top
- * of this once the location geo/cost model lands (docs/100 P5) — this is the
- * deterministic single-source floor the sell path needs today.
- */
-export async function pickWarehouseFor(
-  tx: TxClient,
-  input: { variantId: string; quantity: number; holderType: string }
-): Promise<string> {
-  const channel = channelForHolder(input.holderType);
+/** An active location the allocator may route to. */
+export interface WarehouseCandidate {
+  id: string;
+  defaultForChannel: unknown;
+}
 
-  const candidates = await tx.warehouse.findMany({
-    where: { isActive: true, deletedAt: null },
-    select: { id: true, defaultForChannel: true },
-  });
-  if (candidates.length === 0) {
+/**
+ * Where one line's units come from, decided over facts already read. Pure, so
+ * the routing order can be tested without a database.
+ *
+ * `sellableBy` holds a location ONLY when it has a level row for the variant,
+ * i.e. only where somebody has counted it. In order:
+ *
+ *   (a) a location that defaults for the channel AND can fill the line, richest
+ *       first;
+ *   (b) any location that can fill it, richest first;
+ *   (c) a channel-default location that STOCKS the item, as the place the
+ *       shortfall is owed from;
+ *   (d) any location that stocks it, richest first;
+ *   (e) the channel default, then (f) the first active location, for an item
+ *       no location has ever counted.
+ *
+ * (c) and (d) are new. The old fallback went straight to (e)/(f) when no single
+ * location could fill the line, and both the reserve and the ledger then
+ * INSERT a level row for whatever they were handed. So a short order could be
+ * booked against a location that had never held the item, creating a row of
+ * negative stock there, while the shelves that did hold it were untouched. A
+ * level row has to keep meaning "somebody counted this here"
+ * (availability.ts's header); routing a shortfall to a location that has never
+ * stocked the item invents one.
+ */
+export function chooseWarehouse(input: {
+  candidates: readonly WarehouseCandidate[];
+  sellableBy: ReadonlyMap<string, number>;
+  quantity: number;
+  channel: string;
+}): string {
+  const { candidates, sellableBy, quantity, channel } = input;
+  const first = candidates[0];
+  if (!first) {
     throw new InventoryValidationError(
       'No active warehouses exist: create one before reserving stock'
     );
   }
+  const isChannelDefault = (w: WarehouseCandidate): boolean =>
+    Array.isArray(w.defaultForChannel) && (w.defaultForChannel as unknown[]).includes(channel);
+  const sellable = (w: WarehouseCandidate): number => sellableBy.get(w.id) ?? 0;
+  const richestFirst = (list: WarehouseCandidate[]): WarehouseCandidate[] =>
+    [...list].sort((a, b) => sellable(b) - sellable(a));
+  const stocks = (w: WarehouseCandidate): boolean => sellableBy.has(w.id);
+  const canFill = (w: WarehouseCandidate): boolean => stocks(w) && sellable(w) >= quantity;
 
-  const channelMatches = candidates.filter((w) => {
-    const list = Array.isArray(w.defaultForChannel) ? (w.defaultForChannel as string[]) : [];
-    return list.includes(channel);
+  const channelMatches = candidates.filter(isChannelDefault);
+  return (
+    richestFirst(channelMatches.filter(canFill))[0] ?? // (a)
+    richestFirst(candidates.filter(canFill))[0] ?? // (b)
+    richestFirst(channelMatches.filter(stocks))[0] ?? // (c)
+    richestFirst(candidates.filter(stocks))[0] ?? // (d)
+    channelMatches[0] ?? // (e)
+    first
+  ).id; // (f)
+}
+
+/** The active locations and what each one that stocks the variant can sell. */
+async function routingFacts(
+  tx: TxClient,
+  variantId: string
+): Promise<{ candidates: WarehouseCandidate[]; sellableBy: Map<string, number> }> {
+  const candidates = await tx.warehouse.findMany({
+    where: { isActive: true, deletedAt: null },
+    select: { id: true, defaultForChannel: true },
   });
-
   // Free stock for this variant across the candidate warehouses. The allocator
   // won't pick a warehouse it can only fill by dipping into the withheld buffer,
   // and it must not pick one it can only fill off the quarantine shelf either:
   // that warehouse cannot ship, so the order is routed somewhere it will sit.
   // The fourth term was missing here and the sentence above only named the
   // third. [[feedback_a_fix_leaves_its_neighbour_behind]]
-  const levels = await tx.inventoryLevel.findMany({
-    where: { variantId: input.variantId, warehouseId: { in: candidates.map((w) => w.id) } },
-    select: {
-      warehouseId: true,
-      onHand: true,
-      allocated: true,
-      safetyBuffer: true,
-      unsellableOnHand: true,
-    },
+  const levels =
+    candidates.length === 0
+      ? []
+      : await tx.inventoryLevel.findMany({
+          where: { variantId, warehouseId: { in: candidates.map((w) => w.id) } },
+          select: {
+            warehouseId: true,
+            onHand: true,
+            allocated: true,
+            safetyBuffer: true,
+            unsellableOnHand: true,
+          },
+        });
+  return {
+    candidates,
+    sellableBy: new Map(levels.map((l) => [l.warehouseId, sellableUnits(l)])),
+  };
+}
+
+/**
+ * Stock-aware single-source allocator: resolves the channel from the holder and
+ * routes by `chooseWarehouse`. Multi-warehouse split + proximity/cost routing
+ * layer on top of this once the location geo/cost model lands (docs/100 P5);
+ * this is the deterministic single-source floor the sell path needs today.
+ */
+export async function pickWarehouseFor(
+  tx: TxClient,
+  input: { variantId: string; quantity: number; holderType: string }
+): Promise<string> {
+  const facts = await routingFacts(tx, input.variantId);
+  return chooseWarehouse({
+    ...facts,
+    quantity: input.quantity,
+    channel: channelForHolder(input.holderType),
   });
-  const availableBy = new Map(levels.map((l) => [l.warehouseId, sellableUnits(l)]));
-  const canFulfill = (id: string): boolean => (availableBy.get(id) ?? 0) >= input.quantity;
+}
 
-  // (a) channel-default warehouse that can fulfill, richest first.
-  const channelFulfilling = channelMatches
-    .filter((w) => canFulfill(w.id))
-    .sort((a, b) => (availableBy.get(b.id) ?? 0) - (availableBy.get(a.id) ?? 0));
-  if (channelFulfilling[0]) return channelFulfilling[0].id;
-
-  // (b) any warehouse that can fulfill, richest first.
-  const anyFulfilling = candidates
-    .filter((w) => canFulfill(w.id))
-    .sort((a, b) => (availableBy.get(b.id) ?? 0) - (availableBy.get(a.id) ?? 0));
-  if (anyFulfilling[0]) return anyFulfilling[0].id;
-
-  // (c) channel default (backorder), then (d) first active.
-  return (channelMatches[0] ?? candidates[0])!.id;
+/**
+ * The most one line can hold right now: the richest single active location's
+ * sellable units. The allocator is single-source, so this, and not the sum
+ * across locations, is what Add to cart can actually give somebody. Reported on
+ * a refusal so the shop can say "only 1 left" instead of "sold out" to a buyer
+ * who asked for more than one location holds.
+ */
+export async function mostOneLineCanHold(tx: TxClient, variantId: string): Promise<number> {
+  const { sellableBy } = await routingFacts(tx, variantId);
+  return Math.max(0, ...sellableBy.values());
 }

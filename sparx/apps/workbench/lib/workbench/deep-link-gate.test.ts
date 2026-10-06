@@ -83,4 +83,16 @@ describe('a module the server has never mentioned', () => {
       resolveDeepLink(link(GATED), SITE, { states: [{ slug: 'commerce', enabled: true }] }).kind
     ).toBe('open');
   });
+
+  it('says the address back, never the screen key, for a screen this console lacks', () => {
+    const missing: DeepLink = {
+      targets: [{ surface: 'nowhere.in.this.console' }],
+      href: '/partner/bootcamps/abc?site=primary',
+    };
+    expect(resolveDeepLink(missing, SITE, { states: null })).toEqual({
+      kind: 'unresolved',
+      reason: 'unknown-path',
+      detail: '/partner/bootcamps/abc',
+    });
+  });
 });

@@ -16,6 +16,8 @@
 // reasons live in ./save.ts.
 
 import { useEffect, useRef, useState } from 'react';
+import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
   Alert,
@@ -51,6 +53,12 @@ import type { LineTypeOption } from './line-editor-modal';
 import type { MarkupRuleSummary } from './line-markup';
 import { documentNoun, isPriceOffer, newDocumentTitle } from './document-words';
 import { normalizeDocument, type BillingDocument } from './types';
+import { poNumberOf } from '@wizeworks/crm-schemas';
+import { useModuleStates } from '../../lib/api/shell-data';
+import { useCustomerOnRecord } from './customer-picker-data';
+import { useAccountName } from './bill-to-party';
+import { priceNoteOf, productLabelOf } from './line-price-note';
+import type { TradeAccount } from './trade-price';
 
 interface LineTypeApi extends LineTypeOption {
   isActive: boolean;
@@ -78,6 +86,12 @@ function toDraftLines(doc: BillingDocument | undefined): DraftLine[] {
     variantId: line.variantId ?? null,
     costCents: line.costCents ?? null,
     appliedMarkup: line.appliedMarkup ?? null,
+    coreCharge: line.coreCharge == null ? null : Number(line.coreCharge),
+    // Where its price came from, and the bag it lives in so a save merges.
+    priceNote: priceNoteOf(line.metadata),
+    // Which product it draws from, by name, so the badge survives a reopen.
+    productLabel: productLabelOf(line.metadata),
+    metadata: line.metadata ?? null,
   }));
 }
 
@@ -95,17 +109,13 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const key = draftKey('invoice', id);
   const queryClient = useQueryClient();
 
-  const {
-    data: doc,
-    refetch,
-    isFetching,
-    dataUpdatedAt,
-  } = useQuery({
+  const docQuery = useQuery({
     queryKey: ['invoicing', 'document', id],
     queryFn: () =>
       api.get<BillingDocument>(`/v1/invoicing/documents/${id}`).then(normalizeDocument),
     enabled: !isNew,
   });
+  const { data: doc, refetch, isFetching, dataUpdatedAt } = docQuery;
 
   // Only a brand-new invoice needs a workflow resolved; an existing one already
   // belongs to whichever workflow created it.
@@ -177,6 +187,11 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     const lines = toDraftLines(doc);
     const seeded: DraftShape = {
       customerId: doc.customerId ?? null,
+      // As stored, or left unsaid so the server's own rule still applies to a
+      // document that has never had one (see `InvoiceHeader.companyId`).
+      ...(doc.companyId ? { companyId: doc.companyId } : {}),
+      // The buyer's PO number, kept in the document's metadata (issue 077).
+      poNumber: poNumberOf(doc.metadata) ?? '',
       billTo: {
         name: doc.billTo?.name ?? '',
         email: doc.billTo?.email ?? '',
@@ -221,6 +236,24 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const priceOffer = isPriceOffer(activeWorkflowSlug);
 
   const currency = doc?.currency ?? 'USD';
+
+  // The wholesale account this document bills, when trade prices apply to it:
+  // the one picked here, else the one stored, else the one the customer buys
+  // for. Only on a tenant with wholesale switched on; anyone else gets list
+  // prices exactly as before (issue 077).
+  const { data: modules } = useModuleStates();
+  const wholesaleOn = modules?.some((m) => m.slug === 'b2b' && m.enabled) ?? false;
+  // Markup rules belong to commerce; without it the link would open a screen
+  // that cannot load (sparx persona issue 086).
+  const commerceOn = modules?.some((m) => m.slug === 'commerce' && m.enabled) ?? false;
+  const customerOnRecord = useCustomerOnRecord(draft.customerId);
+  const accountId =
+    draft.companyId !== undefined
+      ? draft.companyId
+      : (doc?.companyId ?? customerOnRecord.data?.companyId ?? null);
+  const accountName = useAccountName(wholesaleOn ? accountId : null);
+  const tradeAccount: TradeAccount | null =
+    wholesaleOn && accountId && accountName ? { id: accountId, name: accountName } : null;
   // Locked is a STAGE fact, not a status fact: a finalized invoice is locked
   // long before it is void. Status stays as the fallback for the moment between
   // the document arriving and its workflow arriving.
@@ -295,6 +328,32 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
       ? save.error.message
       : `This ${noun} could not be saved. It may be a temporary problem. Try again in a moment.`
     : null;
+
+  // A invoice that is not there (removed, or another business's id) says so,
+  // rather than opening as a blank one that would save as something new
+  // (persona issue 226).
+  if (!isNew && docQuery.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={docQuery.error}
+          noun="invoice"
+          title="Could not load this invoice"
+          description="This is a problem reaching the server. The invoice itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void docQuery.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+  if (!isNew && docQuery.isPending) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneWaiting />
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>
@@ -407,6 +466,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                   <BillTo
                     customerId={draft.customerId}
                     value={draft.billTo}
+                    poNumber={draft.poNumber}
                     dueAt={draft.dueAt}
                     noun={noun}
                     priceOffer={priceOffer}
@@ -432,10 +492,19 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                     currency={currency}
                     lineTypes={activeLineTypes}
                     markupRules={documentMarkupRules}
+                    tradeAccount={tradeAccount}
                     readOnly={readOnly}
                     onChange={(lines) => {
                       update({ lines });
                     }}
+                    // Beside, so the quote and the line being priced stay put.
+                    onManageMarkupRules={
+                      commerceOn
+                        ? () => {
+                            ctx.open('commerce.markup-rules.list', {}, { target: 'beside' });
+                          }
+                        : undefined
+                    }
                   />
                 </FormSection>
 

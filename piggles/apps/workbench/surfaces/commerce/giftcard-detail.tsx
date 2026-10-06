@@ -11,12 +11,9 @@
 
 import { shownInPlace } from '@wizeworks/query';
 import { useEffect, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Badge,
   Button,
   Field,
@@ -327,7 +324,15 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
 /* ── Manage (existing) ──────────────────────────────────────────────────── */
 
 function ManageGiftCard({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: card, isPending, isError, isFetching, dataUpdatedAt, refetch } = useGiftCard(id);
+  const {
+    data: card,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useGiftCard(id);
 
   useEffect(() => {
     ctx.setTitle(card ? `Gift card ${card.code}` : 'Gift card');
@@ -358,24 +363,17 @@ function ManageGiftCard({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {isError ? (
-            <Alert color="error">
-              <AlertContent>
-                <AlertTitle>Could not load this gift card</AlertTitle>
-                <AlertDescription>
-                  This is a problem reaching the server. The card itself is unaffected.
-                </AlertDescription>
-              </AlertContent>
-              <Button
-                size="sm"
-                color="error"
-                variant="soft"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            </Alert>
+            // A 404 (removed, or another business's id) is "not here", not a
+            // connection fault; the shared screen reads which (persona issue 226).
+            <PaneLoadError
+              error={error}
+              noun="gift card"
+              title="Could not load this gift card"
+              description="This is a problem reaching the server. The card itself is unaffected."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
           ) : isPending || !card ? (
             <PaneWaiting />
           ) : (

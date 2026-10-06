@@ -8,6 +8,7 @@ import {
   Field,
   FieldControl,
   FieldDescription,
+  FieldError,
   FieldLabel,
   Input,
   Textarea,
@@ -16,17 +17,21 @@ import { Icon } from '@piggles/ui';
 import { faCalendarClock, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 
 import { FormSection } from '../../components/form-section';
-import { MOVE_EXPLAINER } from './booking-move-copy';
+import type { WallClockBox } from '../../lib/wall-clock';
+import { moveExplainer } from './booking-move-copy';
 
 export function BookingMove({
   rescheduleLocal,
   setRescheduleLocal,
+  clock,
   moved,
   isPending,
   onMove,
 }: {
   rescheduleLocal: string;
   setRescheduleLocal: (value: string) => void;
+  /** Whose clock the box is on: the booking's own (sparx persona issue 086). */
+  clock: WallClockBox;
   moved: boolean;
   isPending: boolean;
   onMove: () => void;
@@ -34,14 +39,14 @@ export function BookingMove({
   // The caller hides this once the booking is over — a completed or cancelled
   // booking does not move.
   return (
-    <FormSection title="Move it" description={MOVE_EXPLAINER}>
+    <FormSection title="Move it" description={moveExplainer(clock.hint)}>
       <div className="flex flex-wrap items-end gap-3">
-        <Field className="min-w-0">
+        <Field className="min-w-0" invalid={clock.problem !== null}>
           <FieldLabel>New start</FieldLabel>
           <FieldControl
             render={
               <Input
-                color="module"
+                color={clock.problem ? 'error' : 'module'}
                 type="datetime-local"
                 className="max-w-xs"
                 value={rescheduleLocal}
@@ -51,6 +56,7 @@ export function BookingMove({
               />
             }
           />
+          {clock.problem ? <FieldError match>{clock.problem}</FieldError> : null}
         </Field>
         <Button
           size="sm"
@@ -110,7 +116,6 @@ export function BookingNotes({
               color="module"
               rows={3}
               value={notes}
-              placeholder="Please arrive five minutes early."
               onChange={(event) => {
                 setNotes(event.target.value);
               }}
@@ -126,7 +131,6 @@ export function BookingNotes({
               color="module"
               rows={3}
               value={staffNotes}
-              placeholder="Regular: prefers the bay by the window."
               onChange={(event) => {
                 setStaffNotes(event.target.value);
               }}

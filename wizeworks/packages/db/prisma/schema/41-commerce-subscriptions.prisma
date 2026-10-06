@@ -64,6 +64,12 @@ model Subscription {
   shippingAddress Json  @map("shipping_address")
   billingAddress  Json? @map("billing_address")
 
+  // The delivery option the shopper chose at checkout, so each renewal prices
+  // the same one again at the day's rates (issue 916):
+  // { providerSlug, rateRef, description }. Null = nobody chose (an owner
+  // started it by hand, or it predates this); priced at the cheapest delivery.
+  shippingChoice Json? @map("shipping_choice")
+
   // Lifecycle timestamps.
   startedAt          DateTime? @map("started_at") @db.Timestamptz
   trialEndsAt        DateTime? @map("trial_ends_at") @db.Timestamptz

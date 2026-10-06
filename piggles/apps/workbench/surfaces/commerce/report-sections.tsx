@@ -1,7 +1,7 @@
 'use client';
 
-// The three list-shaped report sections, lifted out of reports.tsx so that file
-// stays under the file-length rule.
+// The report sections and notes, lifted out of reports.tsx so that file stays
+// under the file-length rule.
 
 import { Badge, Text } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
@@ -10,11 +10,33 @@ import {
   channelLabel,
   formatCents,
   type ChannelBreakdown,
+  type RevenueSummary,
   type RevenueTimeseries,
   type TopProduct,
 } from './reports-data';
 
 const NUMBER = new Intl.NumberFormat();
+
+/** Money near the revenue figure that is NOT in it, said in plain words. */
+export function RevenueNotes({ data, currency }: { data: RevenueSummary; currency: string }) {
+  const held = data.coreDepositsHeldCents ?? 0;
+  return (
+    <>
+      {held > 0 ? (
+        <Text className="text-sm">
+          {formatCents(held, currency)} in core deposits is still waiting on old parts to come back.
+          It is the customers&rsquo; money until then, so it is not counted in the revenue above.
+        </Text>
+      ) : null}
+      {data.refundedCents > 0 ? (
+        <Text className="text-sm">
+          {formatCents(data.refundedCents, currency)} was refunded in this period, already taken off
+          the revenue above.
+        </Text>
+      ) : null}
+    </>
+  );
+}
 
 /** One line of a report list — a name, then figures that stay on one line. */
 function Row({ name, children }: { name: string; children: React.ReactNode }) {

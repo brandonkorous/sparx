@@ -12,12 +12,19 @@
 // Idempotent: upsert by slug, retract by absence. Running it twice changes nothing
 // the second time.
 
+import { bootstrapProviders } from '../lib/providers-bootstrap.js';
 import {
   selfRegisterFirstPartyCatalog,
   type SelfRegisterReport,
 } from '../lib/marketplace/self-register.js';
 
 async function main(): Promise<void> {
+  // The integration listings are DERIVED from the registry the API fills at boot
+  // (`createApp` calls this first). Run without it, the registry is empty, the
+  // catalog read "no integrations", and retract-by-absence deleted every
+  // integration on the shelf: run once in dev on 2026-10-01, it removed five
+  // (sparx persona run P01, issue 035).
+  bootstrapProviders();
   const report = await selfRegisterFirstPartyCatalog();
   const categories: (keyof SelfRegisterReport)[] = [
     'themes',

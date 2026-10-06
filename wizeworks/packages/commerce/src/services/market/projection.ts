@@ -16,11 +16,10 @@
 
 import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
+import { resolveSiteOrigin, siteShowingRow, siteUrl } from '@wizeworks/db/site-origin';
 
 import { mediaPublicUrl } from '../../media-url';
 import type { ServiceContext } from '../../errors';
-
-const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 
 // A listing is flagged `low_stock` when it is still buyable but its total sellable
 // quantity across variants is at/under this floor — the "Only a few left" urgency
@@ -28,16 +27,40 @@ const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 // exact remaining count cross-tenant, only the boolean signal.
 const MARKET_LOW_STOCK_THRESHOLD = 5;
 
-/** The seller's own storefront product URL (the "Visit their store" link). */
-function storefrontProductUrl(slug: string | null, handle: string): string | null {
-  if (!SITE_BASE || !slug) return null;
-  const base = SITE_BASE.replace('{slug}', slug).replace(/\/$/, '');
-  return `${base}/products/${encodeURIComponent(handle)}`;
+// ── THE SELLER'S OWN SITE ───────────────────────────────────────────────────
+//
+// Both "Visit their store" links (the merchant page's and every product card's) used
+// to be `SPARX_SITE_BASE` with the tenant slug substituted, and null when it was
+// unset. Nothing sets it, so on every listing the marketplace ever projected the
+// link was absent (sparx persona issue 064). They are now the site's real address,
+// from the one resolver every customer-facing link uses: its own domain once it
+// works, else the subdomain it was minted on, in the zone its brand lives in.
+
+/** The marketed site's home page: the merchant directory's store link. */
+function merchantSiteUrl(
+  tx: TxClient,
+  tenantId: string,
+  marketPropertyId: string | null
+): Promise<string> {
+  return resolveSiteOrigin(tx, tenantId, marketPropertyId).then((origin) => siteUrl(origin, ''));
 }
 
-function storefrontBaseUrl(slug: string | null): string | null {
-  if (!SITE_BASE || !slug) return null;
-  return SITE_BASE.replace('{slug}', slug).replace(/\/$/, '');
+/** The product's page on the seller's own site. The marketed site when the product
+ *  is shown there (every product is, unless it was scoped to particular sites); a
+ *  product scoped only to a sibling business links to THAT site, because the
+ *  marketed one answers its address with a 404. */
+async function productPageUrl(
+  tx: TxClient,
+  tenantId: string,
+  marketPropertyId: string | null,
+  product: { handle: string; propertyLinks: { propertyId: string }[] }
+): Promise<string> {
+  const siteId = siteShowingRow(
+    product.propertyLinks.map((l) => l.propertyId),
+    marketPropertyId
+  );
+  const origin = await resolveSiteOrigin(tx, tenantId, siteId);
+  return siteUrl(origin, `/products/${encodeURIComponent(product.handle)}`);
 }
 
 interface BrandOverride {
@@ -73,10 +96,10 @@ async function resolveMediaUrl(
 
 /** The merchant's public identity (docs/131 §7): a site-chosen global `handle` for the
  *  `/merchants/{handle}` page, and the name/logo of the MARKETED SITE (`marketPropertyId`)
- *  — never "Korous Family Inc." the tenant. `storefrontSlug` (the tenant slug) is kept
- *  SEPARATELY for the "visit their store" link, which points at the real storefront and
- *  is a different URL from the marketplace merchant page. Falls back to the primary site
- *  + tenant slug only during the migration backfill window. */
+ *  — never "Korous Family Inc." the tenant. The "visit their store" link is a different
+ *  URL from the marketplace merchant page and is resolved separately, from the site's
+ *  own address (`merchantSiteUrl`). Falls back to the primary site + tenant slug only
+ *  during the migration backfill window. */
 async function resolveMerchantIdentity(
   tx: TxClient,
   tenantId: string,
@@ -116,8 +139,6 @@ async function resolveMerchantIdentity(
   return {
     // The marketplace handle → /merchants/{handle}. Never the tenant slug (post-backfill).
     slug: merchant.handle ?? tenant?.slug ?? null,
-    // The storefront subdomain for the "visit their store" link — a separate URL.
-    storefrontSlug: tenant?.slug ?? null,
     name,
     logoUrl,
     socials: tenant?.socials ?? [],
@@ -180,7 +201,7 @@ async function refreshMerchantOnTx(tx: TxClient, tenantId: string): Promise<void
     bio: profile.bio,
     location: profile.location,
     headline: profile.headline,
-    siteUrl: storefrontBaseUrl(identity.storefrontSlug),
+    siteUrl: await merchantSiteUrl(tx, tenantId, profile.marketPropertyId),
     socials: identity.socials as object,
     listingCount,
     rating,
@@ -223,6 +244,8 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
         reviewCount: true,
         bestSellerRank: true,
         publishedAt: true,
+        // Which sites show it (none = every site): picks the site its link opens on.
+        propertyLinks: { select: { propertyId: true } },
         images: {
           where: { variantId: null },
           orderBy: [{ isPrimary: 'desc' }, { position: 'asc' }],
@@ -320,7 +343,12 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
       bestSellerRank: product.bestSellerRank,
       lowStock,
       featured: product.marketFeatured,
-      productUrl: storefrontProductUrl(identity.storefrontSlug, product.handle),
+      productUrl: await productPageUrl(
+        tx,
+        ctx.tenantId,
+        profile?.marketPropertyId ?? null,
+        product
+      ),
       searchText,
       publishedAt: product.publishedAt,
     };

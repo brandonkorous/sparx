@@ -1,8 +1,8 @@
 # Transactional email — coverage + build tracker
 
-Version: 1.7
+Version: 1.13
 Author: Brandon Korous
-Last Updated: 2026-07-28
+Last Updated: 2026-10-03
 
 > The **living** status + decision log for sparx's transactional & lifecycle email.
 > It answers three questions the design docs don't: what the platform actually
@@ -57,11 +57,101 @@ A provisioned body **does nothing on its own** — something must fire it. Two p
   a row installed on module activation whose action is `email.send_campaign` with a
   `builderEmailKey`. This is how abandoned-cart, post-purchase-review, the invoicing
   dunning ladder, B2B nudges, chat-satisfaction, win-back all send. Event- or
-  schedule-triggered; the `module:'email'` gate holds the send until email is on.
+  schedule-triggered. Whether the email module must be on follows the step's
+  declared `emailType` (see **The email module rule** below).
 - **Direct send** (`sendTenantEmailByKey`, [`wizeworks/services/api-rest/src/lib/tenant-email.ts`](../../services/api-rest/src/lib/tenant-email.ts)):
-  a hard-coded call at the moment of the action. Used by order-confirmation
-  (on payment, [`payment-webhook-reconcile.ts`](../../services/api-rest/src/lib/payment-webhook-reconcile.ts))
-  and all of scheduling (bookings, waitlist, owner-notify).
+  a hard-coded call at the moment of the action. Used by all of scheduling (bookings,
+  waitlist, owner-notify). The order confirmation is the `order.placed` seed, one per
+  order on every path: at checkout (card or pay later), or at sign-off for a held
+  order. The payment webhook ([`payment-webhook-reconcile.ts`](../../services/api-rest/src/lib/payment-webhook-reconcile.ts))
+  sends no confirmation. It used to send one on every captured payment, so a card
+  order got two; then, for a while, only when the email module was off, which left
+  pay-later and held orders on those shops with none (sparx persona issue 087).
+
+### The email module rule (2026-10-03)
+
+**Transactional email always sends. The email module gates marketing.** A buyer
+must always be told their order went through, whether or not the business has the
+email module on.
+
+- **Transactional** is an email a customer gets because of something they did, or
+  that the business owes them: order confirmation, shipping, delivered, cancelled,
+  refunded, payment problems, receipts and invoices, the dunning ladder, quotes,
+  B2B approvals and outcomes, subscriptions, returns, bookings, and the account
+  emails. These send with the email module on or off.
+- **Marketing** is campaigns, broadcasts, sequences, abandoned cart, win-back, the
+  review request, the welcome email and the chat satisfaction survey. These wait for
+  the email module, and a blocked step shows as `gated` in run history (the
+  conversion nudge, docs/90 §4). They are also withheld by a marketing unsubscribe
+  and by the CRM do-not-contact flag.
+
+**The single point of change** is the automation engine's module-active gate
+([`gates/builtins.ts`](../../packages/automation/src/gates/builtins.ts)). It asks the
+action which module THIS step needs (`moduleFor` on the action descriptor,
+`moduleForEffect` in the registry) instead of reading one flat `module` for every
+step. `email.send_campaign` ([`email.ts`](../../packages/automation-actions/src/email.ts))
+answers from the step's declared `emailType`: none for `transactional`, `email` for
+anything else. A designed broadcast or a coded template is marketing, as it always
+was. The same declared type already chose the suppression scope, and both now read
+it through one function (`campaignEmailType`), so the gate and suppression cannot
+disagree about a step.
+
+Unchanged by this: who is suppressed (a transactional send still ignores a
+marketing-only unsubscribe and the CRM do-not-contact flag, and still stops for an
+`all` suppression), and the delivery side. The dispatch tick, the
+`find_due_scheduled_sends` scan, the email-worker and `sendTenantEmailByKey` never
+looked at the email module, and a keyed default with no provisioned row renders the
+code-shipped body (`getPublishedByKey` → `defaultPublished`), so a shop that never
+turned email on still has every transactional body to send.
+
+Every seeded system automation follows from its declared type. Two were declared
+`transactional` long before the gate read that type, and under this rule would have
+sent with the email module off: **Welcome new customers** (CRM, on
+`crm.customer.created`) and **Chat satisfaction survey** (chat). **Both are now
+`marketing`** (Brandon, 2026-10-03). Neither is something the customer needs because
+of something they did. Most new CRM contacts are typed in by the business, so a
+transactional welcome meant a CRM-only business with email off would mail every
+contact it entered; a transactional survey ignored a marketing unsubscribe. As
+marketing, both follow the email module and honor a marketing unsubscribe and the
+do-not-contact flag. The built-in emails they send are marked `marketing` too
+(`welcome-customer` and `chat-satisfaction` in `default-emails.ts`, docs/91 v1.6),
+and a test holds every seed's step type equal to the type of the email it sends.
+
+How existing tenants get the change: seeds re-sync on every module activation, on
+the daily seed reconcile and at release (`upsertSystemAutomation`). Each seed is
+matched by its permanent `system_key` (`crm.welcome-new-customers`,
+`chat.satisfaction-survey`), not its name, and the re-sync respects the tenant's
+choices (docs/90 §6, 2026-10-03):
+
+- A copy the tenant never changed takes the new version, so it flips to `marketing`
+  on the next pass. That is every copy whose live rule still equals what sparx last
+  installed, including one the tenant only renamed (the name is not compared).
+- A copy the tenant changed and published keeps their version, including its old
+  `transactional` step. The row records `platform_update_at`, and the console marks
+  it "Newer version from sparx" in the list and says so in the editor. Nothing
+  changes for that tenant until they act on it: the editor's "Use sparx's version"
+  shows what differs and switches the rule (name and on/off kept, their version kept
+  in its history; docs/90 §6).
+- `status` is never written on an existing copy: a paused rule stays paused.
+- A renamed copy is the same row (found by its key), so no second copy is installed.
+
+Before this (measured against the local database, 2026-10-03), the re-sync matched
+by name and rewrote description, trigger, conditions, actions and status every pass:
+it discarded a tenant's published edits, switched a paused rule back on, and missed a
+renamed copy, installing a second one beside it so both ran. A row installed before
+`system_key` existed is found by name once and keyed then; one the tenant published
+an edit to counts as theirs only if that edit is still what runs (the old daily
+re-sync had already put the stock rule back over most of them).
+
+Guarded by `transactional-email-gate.test.ts` (automation-actions: the confirmation
+sends with the module off, marketing stays blocked, the welcome and the chat survey
+are held with the module off and send in marketing scope with it on, every seed
+follows its type and declares the same type as its email, one confirmation per order on the card, pay-later and
+held-then-approved paths), `held-card-webhook.test.ts` (api-rest: the webhook sends
+none, module on or off), and `seeds-email.test.ts` (integration, real engine and
+database: on a CRM-only tenant a transactional send goes out and the welcome is
+`gated`; with email on, a marketing unsubscribe withholds the welcome but not a
+transactional send).
 
 ---
 
@@ -179,12 +269,12 @@ typecheck + lint + prettier clean. Files touched:
 
 **Design as built** (matches the table below):
 
-| Key               | Subject direction                         | Trigger                | Card hero + status                                                                    |
-| ----------------- | ----------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
-| `order-cancelled` | Your order {{order.number}} was cancelled | `order.cancelled`      | Order total · status `Cancelled`/error · reason (optional row)                        |
-| `order-refunded`  | Your refund is on the way                 | `order.refunded`       | **Refund amount** emphasize · status `Refunded`/success · method (optional)           |
-| `order-delivered` | Your order was delivered                  | `order.delivered`      | Order · status `Delivered`/success · centered "Leave a review"                        |
-| `payment-failed`  | There was a problem with your payment     | `order.payment_failed` | **Amount due** emphasize · status `Action needed`/warning · centered "Update payment" |
+| Key               | Subject direction                            | Trigger                | Card hero + status                                                                                                    |
+| ----------------- | -------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `order-cancelled` | Your order {{order.number}} was cancelled    | `order.cancelled`      | Order total · status `Cancelled`/error · reason (optional row)                                                        |
+| `order-refunded`  | Your refund is on the way                    | `order.refunded`       | **Refund amount** emphasize · status `Refunded`/success · method (optional)                                           |
+| `order-delivered` | Your order {{order.number}} is in your hands | `order.delivered`      | Order · status `Delivered`/success, or `Picked up`/success for a pickup order (issue 064) · centered "Leave a review" |
+| `payment-failed`  | There was a problem with your payment        | `order.payment_failed` | **Amount due** emphasize · status `Action needed`/warning · centered "Update payment"                                 |
 
 - Seeds live in `seeds/commerce.ts` (`COMMERCE_ORDER_{DELIVERED,CANCELLED,REFUNDED}_EMAIL`
   - `COMMERCE_PAYMENT_FAILED_EMAIL`), all `module:'commerce'`, transactional, each guarded
@@ -876,9 +966,11 @@ configuration for the owner.
   `utm_source` are never touched. Wired into `renderSilicaEmail` (last step), so **every** send path
   tags: transactional/automation (`tenant-email.ts`), broadcasts (`broadcast-service`), preview +
   test-send. Tracked hosts + campaign resolve once via `emailTrackingService.resolveEmailTracking`
-  (email-platform): the tenant's verified custom domains + the `SPARX_SITE_BASE` host; campaign =
-  the author override (`BuilderEmail.trackingCampaign`) else the email's name; `undefined` (no-op)
-  when there's no site host (dev).
+  (email-platform): the tenant's verified custom domains + the site's own address
+  (`@wizeworks/db/site-origin`, the same resolver the links are built on) + the origin the email's
+  links were actually built on; campaign = the author override (`BuilderEmail.trackingCampaign`)
+  else the email's name. (It used the `SPARX_SITE_BASE` host until sparx persona issue 064; nothing
+  set it, so a tenant without a custom domain shipped every email untagged.)
 - **Analytics reads it.** The storefront beacon (`wizeworks/apps/site`) forwards the landing URL's
   `utm_medium`/`utm_campaign` on the **first** pageview only; the collect route accepts them; the
   classifier (`site-analytics.ts`) returns `source='email'` on `utm_medium=email` (ahead of the

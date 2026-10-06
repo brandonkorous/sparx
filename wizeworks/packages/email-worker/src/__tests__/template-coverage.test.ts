@@ -82,5 +82,20 @@ describe('email-worker accepts every template', () => {
         : result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`);
       expect(issues, `the worker would DROP a valid ${id}`).toEqual([]);
     });
+
+    // Accepting a payload is not the same as DELIVERING it. Zod strips every key
+    // its object does not name, and the handler renders what the parse RETURNS,
+    // so a prop the template reads but the gate forgot arrives as undefined.
+    // That is how every quote email went out as a bill: `priceOffer` and
+    // `validUntil` were read by the template and stripped here (issue 077).
+    it('passes on every prop the renderer is proven against', () => {
+      const result = TemplateSendSchema.safeParse({
+        template: id,
+        to: 'someone@example.test',
+        props: TEMPLATE_PROPS[id],
+      });
+      const props = result.success ? (result.data as { props: unknown }).props : null;
+      expect(props, `the worker would STRIP props from ${id}`).toEqual(TEMPLATE_PROPS[id]);
+    });
   });
 });

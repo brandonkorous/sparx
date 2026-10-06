@@ -121,7 +121,7 @@ function ModuleRow({
             lock === 'included' ? 'text-success font-medium' : ''
           }`}
         >
-          {lock === 'included' ? 'Included' : `+ $${m.price}`}
+          {lock === 'included' ? 'Included' : m.price === 0 ? 'Free' : `+ $${m.price}`}
         </span>
 
         {/* A bundled capability has nothing to toggle — hold the switch's width so

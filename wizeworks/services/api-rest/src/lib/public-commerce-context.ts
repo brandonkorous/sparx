@@ -70,7 +70,11 @@ export async function assertCartToken(
   );
   if (!cart) throw notFound('Cart', cartId);
   if (!token || typeof token !== 'string' || cart.guestToken !== token) {
-    throw forbidden('Cart token does not match.');
+    // A shopper reads this: the checkout prints it as it is. It happens when the
+    // basket was changed in another tab, so the words say what to do about that.
+    throw forbidden(
+      'Your basket was changed in another window. Go back to your basket and check out again.'
+    );
   }
 }
 

@@ -24,11 +24,12 @@ import {
   CONTACT_FORM_SECRET_PROPS,
   type BuilderNode,
   type SilicaFormConfig,
+  type SilicaNode,
 } from '@wizeworks/builder-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 
-import type { PropertyContext } from '../errors';
+import { BuilderNotFoundError, type PropertyContext } from '../errors';
 import * as siteService from './site-service';
 
 /** Extract recipients → FormDefinition and strip them from the tree. Returns the
@@ -103,7 +104,15 @@ export async function getSilicaForm(
   // A form nobody has configured yet has no row, and therefore no page either —
   // and the panel would then SAVE that null, permanently losing which page the
   // form is on. The site knows; ask it.
-  const pageSlug = row?.pageSlug ?? (await formsOnSite(ctx)).get(formNodeId) ?? null;
+  const live = row ? null : await formsOnSite(ctx);
+  // No settings AND on no page, published or draft: there is no such form. This
+  // used to answer with defaults for any id at all, so a link to another
+  // business's form opened a settings panel saying "On your home page" with a
+  // Save button that would have filed settings for nothing (persona issue 226).
+  if (!row && !live?.has(formNodeId) && !(await formInDrafts(ctx, formNodeId))) {
+    throw new BuilderNotFoundError('Form', formNodeId);
+  }
+  const pageSlug = row?.pageSlug ?? live?.get(formNodeId) ?? null;
 
   return {
     formNodeId,
@@ -111,6 +120,26 @@ export async function getSilicaForm(
     recipients: row?.recipients ?? [],
     config: readSilicaFormConfig(row?.config),
   };
+}
+
+/** Whether a form sits in any unpublished page or frame of this site: one an
+ *  author has just added, whose settings they can open before publishing. */
+async function formInDrafts(ctx: PropertyContext, formNodeId: string): Promise<boolean> {
+  const trees = await withTenant(ctx, async (tx) => [
+    ...(await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { silicaDraftTree: true },
+    })),
+    ...(await tx.builderLayout.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { silicaDraftTree: true },
+    })),
+  ]);
+  return trees.some(
+    (tree) =>
+      tree.silicaDraftTree != null &&
+      collectSilicaFormIds(tree.silicaDraftTree as unknown as SilicaNode).includes(formNodeId)
+  );
 }
 
 /**

@@ -187,9 +187,10 @@ reason** — that is the gap written down and waved past.
   three on `ProductPatch`; `VariantChoice.deposit`, `VariantChoice.orderAheadDays`;
   `Order.readyOn` (issue 026) — Piggles sells deposits and order-ahead notice.
   Sparx does not sell that capability.
-- `ContentEntry.legal_kind`, `ContentEntry.legal_reviewed`,
-  `ChecklistItem.stillGuessing`, `LegalChecklist.shipping` — the Piggles legal
-  pages checklist.
+- `ChecklistItem.stillGuessing`, `LegalChecklist.shipping` — the Piggles legal
+  pages checklist. (`ContentEntry.legal_kind` and `legal_reviewed` were here;
+  sparx now carries them for the starter-wording notice in its editor, sparx
+  persona issue 033.)
 
 ## List D: do NOT carry. Two designs, both correct.
 

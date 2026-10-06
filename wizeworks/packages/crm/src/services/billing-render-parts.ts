@@ -133,7 +133,23 @@ export async function lineTypeLabels(
   if (unique.length === 0) return new Map();
   const rows = await tx.billingDocumentLineType.findMany({
     where: { id: { in: unique } },
-    select: { id: true, label: true },
+    select: { id: true, label: true, pricingMode: true },
   });
-  return new Map(rows.map((r) => [r.id, r.label]));
+  return printedTypeLabels(rows);
+}
+
+/**
+ * The line-type word printed under each line, for the types that have one.
+ *
+ * A `catalog` type says how the PRICE was found (straight from what the
+ * business sells), not what the line IS, and its description is already the
+ * product's own name. Printed, it read "Catalog item" under every part on a
+ * quote to a fleet customer, a word from the editor that means nothing to the
+ * person paying (sparx persona issue 083). Every other type names the kind of
+ * work ("Service", "Shipping", "Fee") and keeps its word.
+ */
+export function printedTypeLabels(
+  rows: readonly { id: string; label: string; pricingMode: string }[]
+): Map<string, string> {
+  return new Map(rows.filter((r) => r.pricingMode !== 'catalog').map((r) => [r.id, r.label]));
 }

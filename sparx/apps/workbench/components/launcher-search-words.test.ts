@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { blindSpot, recordSearchLine } from './launcher-search-words';
+import { blindSpot, recordSearchLine, SEARCH_MOST_CHARS } from './launcher-search-words';
 
 const NOTHING_MISSING = { productsMissing: 0, customersMissing: 0, ordersMissing: 0 };
 const NOT_MEASURED = { productsMissing: null, customersMissing: null, ordersMissing: null };
@@ -228,4 +228,101 @@ describe('the group a record hit sits under', () => {
       expect(body).toContain('resolveTitle(surface, {})');
     }
   );
+});
+
+// Both search backends cap what they send. The count used to be of the rows the
+// box was handed, so a name matching forty records said "12 records matched"
+// and offered nothing more.
+describe('records that matched and were not sent', () => {
+  const base = { searching: false, screens: 0, query: 'Wasatch', gaps: NOTHING_MISSING };
+
+  it('says how many more there are when the box can fetch them', () => {
+    expect(recordSearchLine({ ...base, found: 12, more: 30, canShowMore: true })).toBe(
+      '12 records matched. 30 more match and are not shown yet.'
+    );
+  });
+
+  it('says one more in the singular', () => {
+    expect(recordSearchLine({ ...base, found: 32, more: 1, canShowMore: true })).toBe(
+      '32 records matched. 1 more matches and is not shown yet.'
+    );
+  });
+
+  it('asks for another word once nothing more can be fetched', () => {
+    expect(recordSearchLine({ ...base, found: 250, more: 9, canShowMore: false })).toBe(
+      '250 records matched. 9 more match. Add another word to narrow it down.'
+    );
+  });
+
+  it('keeps the screens ending after it', () => {
+    expect(recordSearchLine({ ...base, screens: 2, found: 12, more: 3, canShowMore: true })).toBe(
+      '12 records matched. 3 more match and are not shown yet. The rest are screens.'
+    );
+  });
+
+  it('says nothing extra when everything that matched is on screen', () => {
+    expect(recordSearchLine({ ...base, found: 12, more: 0, canShowMore: false })).toBe(
+      '12 records matched.'
+    );
+  });
+
+  it('says nothing extra when the server did not say', () => {
+    // null is "not measured", which is silence, never a claim either way.
+    expect(recordSearchLine({ ...base, found: 12, more: null })).toBe('12 records matched.');
+  });
+});
+
+describe('a search that did not answer', () => {
+  // MEASURED 2026-10-06 on Gillett Diesel Service, with the API restarting:
+  // "O-0000" said "Nothing in your records matches" over fifteen orders that do.
+  const base = { searching: false, screens: 0, query: 'O-0000', gaps: NOTHING_MISSING };
+
+  it('does not say nothing matched', () => {
+    expect(recordSearchLine({ ...base, found: 0, failed: true })).toBe(
+      'The search could not reach your records just now, so this is not an answer. Try again in a moment.'
+    );
+  });
+
+  it('does not say nothing matched even when it knows of a blind spot', () => {
+    expect(
+      recordSearchLine({
+        ...base,
+        found: 0,
+        failed: true,
+        gaps: { ...NOTHING_MISSING, ordersMissing: 3 },
+      })
+    ).toBe(
+      'The search could not reach your records just now, so this is not an answer. Try again in a moment.'
+    );
+  });
+
+  it('shows what did come back without promising it is all', () => {
+    expect(recordSearchLine({ ...base, found: 5, failed: true, more: 0 })).toBe(
+      '5 records came back, but part of the search did not answer, so there may be more. Try again in a moment.'
+    );
+  });
+
+  it('still says it is looking while it asks again', () => {
+    expect(recordSearchLine({ ...base, found: 0, failed: true, searching: true })).toBe(
+      'Looking through your records…'
+    );
+  });
+});
+
+describe('a search too long to send', () => {
+  // A 24,000-character paste made a request the server refused every time, so
+  // "try again in a moment" could never work. Past the most, the box says so.
+  const base = { searching: false, screens: 0, found: 0, gaps: NOTHING_MISSING };
+
+  it('says it is too long instead of asking to try again', () => {
+    expect(recordSearchLine({ ...base, query: 'Wasatch '.repeat(200), failed: true })).toBe(
+      'That is too long to search. Try a few words from it.'
+    );
+  });
+
+  it('still searches right up to the most', () => {
+    expect(recordSearchLine({ ...base, query: 'a'.repeat(SEARCH_MOST_CHARS) })).toBe(
+      `Nothing in your records matches “${'a'.repeat(SEARCH_MOST_CHARS)}”.`
+    );
+  });
 });

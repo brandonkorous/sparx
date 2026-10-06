@@ -1,9 +1,8 @@
 'use client';
 
 // The order pane's scrolling body, in the order it reads: what it is, what was
-// bought, who bought it, where it goes, anything anybody wrote down about it,
-// what happened to the money, and only then the two moves that cannot be taken
-// back.
+// bought, who bought it, where it goes, any notes, what happened to the money,
+// and only then the two moves that cannot be taken back.
 
 import { COLUMN, OrderIdentity } from './order-detail-blocks';
 import { DueDaySection } from './order-detail-due-day';
@@ -16,6 +15,7 @@ import { HandoverSection } from './order-detail-handover';
 import { ReturnsSection } from './order-detail-returns';
 import { CancelRow, RefundRow } from './order-detail-risk';
 import { OrderNotes } from './order-notes';
+import { HeldOrderSignOff } from '../b2b/held-order-sign-off';
 import type { OrderFacts } from './order-detail-facts';
 import type { useOrderRisk } from './order-detail-actions';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -43,6 +43,9 @@ export function OrderBody(props: OrderBodyProps) {
     <div className="min-h-0 flex-1 overflow-y-auto p-4">
       <div className={COLUMN}>
         <OrderIdentity order={order} siteName={props.siteName} />
+        {/* Who a held order waits on: your team, the customer's own approvers,
+            or both (sparx persona issue 087). Nothing for any other order. */}
+        <HeldOrderSignOff ctx={props.ctx} orderNumber={order.orderNumber} status={order.status} />
         {/* Above the money, because the day it is due is the thing a shop that
             makes things needs off this pane first (issue 026). */}
         <DueDaySection order={order} />
@@ -55,14 +58,11 @@ export function OrderBody(props: OrderBodyProps) {
         <SoldBySection type="order" sourceId={order.id} canSeePay={props.canSeeCommission} />
 
         <DestinationSection order={order} facts={facts} />
-        {/* Reads with what was bought and where it goes, because that is what it
-            is about, and because a box she TYPES in cannot sit directly above
-            Refund and Cancel. It used to be the last block before both (issue
-            874), which was harmless only while it could never render. */}
+        {/* Reads with what was bought and where it goes: a box she TYPES in
+            cannot sit directly above Refund and Cancel (issue 874). */}
         <OrderNotes order={order} />
-        {/* The ask comes before the money, because that is the order the two
-            happen in on a shop that takes no payment at checkout: you send the
-            bill, then it gets paid. */}
+        {/* The ask comes before the money: on a shop that takes no payment at
+            checkout you send the bill, then it gets paid. */}
         <InvoicesSection order={order} ctx={props.ctx} />
         <PaymentsSection order={order} payments={props.payments} risk={props.risk} />
         <HandoverSection

@@ -166,7 +166,6 @@ export function useModuleStates() {
 }
 
 /** Same cookie the dashboard uses; the token route reads it server-side. */
-const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
 
 /**
  * Switches the active site — the per-site-workspaces model.
@@ -220,22 +219,16 @@ export async function switchSite(
   // found no cookie, and fell back to the primary, so the switcher never moved.
   // api-rest still re-resolves the value under RLS and fails closed, so it stays
   // a preference, not a control. See app/api/active-site/route.ts.
-  const persisted = await fetch('/api/active-site', {
+  await fetch('/api/active-site', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     credentials: 'same-origin',
     body: JSON.stringify({ siteId: nextSiteId }),
-  })
-    .then((response) => response.ok)
-    .catch(() => false);
+  }).catch(() => undefined);
 
-  // Belt-and-braces: if our own origin was unreachable, fall back to a client
-  // write so a switch still has a chance rather than silently doing nothing. In
-  // a browser that blocks JS cookies this no-ops — but then the server write
-  // above already succeeded, so the fallback only runs where document.cookie works.
-  if (!persisted) {
-    document.cookie = `${ACTIVE_PROPERTY_COOKIE}=${nextSiteId}; path=/; max-age=31536000; SameSite=Lax`;
-  }
+  // No browser-side fallback write: the value must carry the tenant, which only
+  // the server knows (sparx persona issue 011). If our own origin is unreachable,
+  // the reload below cannot load either, so the old fallback bought nothing.
 
   // This reload IS the switch — the server re-reads the cookie on boot. Tell the
   // controller the teardown is deliberate so the dock/stack `beforeunload` guard

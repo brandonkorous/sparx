@@ -84,13 +84,14 @@ export function placingWords(
 ): HeldWarning {
   if (!rule) {
     return {
+      // Whether it goes to the supplier is the dialog's own choice, below this
+      // sentence (purchase-order-email.tsx), so this says only what placing does.
       description:
         'This places the order and locks it. You will not be able to change the items or ' +
-        'quantities afterwards. Nothing is sent to the supplier for you: print the order ' +
-        'or pass it on yourself. As the goods arrive you book them in under Receiving.',
+        'quantities afterwards. As the goods arrive you book them in under Receiving.',
       confirmLabel: 'Place the order',
       toastTitle: `${order.number} placed`,
-      toastDescription: `Print it or pass it on to ${order.supplierName ?? 'the supplier'}.`,
+      toastDescription: `Nothing went to ${order.supplierName ?? 'the supplier'}. Print it, or use "Email to the supplier".`,
     };
   }
   return {

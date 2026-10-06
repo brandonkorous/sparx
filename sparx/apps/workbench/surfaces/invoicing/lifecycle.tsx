@@ -229,7 +229,8 @@ export function SendButton({
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
       toast.add({
         title: `Sent to ${result.to}`,
-        description: `The ${noun} is in their inbox, with the lines and the total on it.`,
+        // "On its way": the send is queued, and nothing here knows it arrived.
+        description: `The ${noun} is on its way to their inbox, with the lines and the total on it.`,
         type: 'success',
       });
     },
@@ -370,10 +371,11 @@ export function DocumentActions({ doc, stage, ctx, noun, priceOffer }: DocumentA
 
   const convert = useMutation({
     mutationFn: () =>
-      api.post<{ document: BillingDocument; order: { id: string; orderNumber: string } }>(
-        `/v1/invoicing/documents/${doc.id}/convert-to-order`,
-        {}
-      ),
+      api.post<{
+        document: BillingDocument;
+        order: { id: string; orderNumber: string };
+        held: unknown[];
+      }>(`/v1/invoicing/documents/${doc.id}/convert-to-order`, {}),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
       // Take the operator to it. Converting is the moment the quote stops being
@@ -381,14 +383,35 @@ export function DocumentActions({ doc, stage, ctx, noun, priceOffer }: DocumentA
       // an order number to go and find is a dead end dressed as good news.
       // Issue 766.
       ctx.open('commerce.order.detail', { id: result.order.id }, { target: 'tab' });
-      toast.add({
-        title: `Order ${result.order.orderNumber} created`,
-        description: `${result.order.orderNumber} is open in a new tab, ready to fulfill.`,
-        type: 'success',
-      });
+      // A trade order over a spending limit or the account's credit waits for
+      // sign-off, the same as one placed at checkout (sparx persona issue 085).
+      // Saying "ready to fulfill" about it would send somebody to pack an order
+      // that has not been approved.
+      toast.add(
+        result.held.length > 0
+          ? {
+              title: `Order ${result.order.orderNumber} is waiting for sign-off`,
+              description:
+                'It is over a spending limit or the account’s credit limit. Approve it under Approvals before it is packed.',
+              type: 'warning',
+            }
+          : {
+              title: `Order ${result.order.orderNumber} created`,
+              description: `${result.order.orderNumber} is open in a new tab, ready to fulfill.`,
+              type: 'success',
+            }
+      );
     },
-    onError: () => {
-      toast.add({ title: `Could not turn this ${noun} into an order`, type: 'error' });
+    onError: (error) => {
+      // The reason, when there is one a person can act on: an account on credit
+      // hold, suspended or not trading is refused, and the refusal says which.
+      toast.add({
+        title: `Could not turn this ${noun} into an order`,
+        ...(error instanceof Error && error.message.length < 200
+          ? { description: error.message }
+          : {}),
+        type: 'error',
+      });
     },
   });
 
@@ -413,112 +436,112 @@ export function DocumentActions({ doc, stage, ctx, noun, priceOffer }: DocumentA
   const canPaymentLink = doc.balance > 0 && !priceOffer;
 
   return (
-    <DropdownMenu>
-      <Tooltip content="More actions">
-        <DropdownMenuTrigger>
-          <Button
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            shape="square"
-            aria-label="More actions"
-          >
-            <MoreHorizontal className="size-4" aria-hidden />
-          </Button>
-        </DropdownMenuTrigger>
-      </Tooltip>
-      <DropdownMenuContent align="end">
-        {/* Always available on a saved document, so the menu is never empty.
+    <>
+      {/* The one thing an accepted quote is waiting for, so it is the solid
+          button in the header and not the third row of a menu (sparx
+          persona issue 084). */}
+      {canConvert ? (
+        <Button
+          color="primary"
+          size="sm"
+          disabled={convert.isPending}
+          onClick={() => {
+            convert.mutate();
+          }}
+        >
+          <PackageCheck className="size-4" aria-hidden />
+          {convert.isPending ? 'Making the order…' : 'Turn it into an order'}
+        </Button>
+      ) : null}
+      <DropdownMenu>
+        <Tooltip content="More actions">
+          <DropdownMenuTrigger>
+            <Button variant="ghost" size="sm" shape="square" aria-label="More actions">
+              <MoreHorizontal className="size-4" aria-hidden />
+            </Button>
+          </DropdownMenuTrigger>
+        </Tooltip>
+        <DropdownMenuContent align="end">
+          {/* Always available on a saved document, so the menu is never empty.
             The print routes need the Authorization header, hence the fetch →
             blob → tab helper rather than a plain link. NOT window.print(): that
             would print the editor chrome, not the branded document. */}
-        <DropdownMenuItem
-          onClick={() => {
-            openServerHtml(`/v1/invoicing/documents/${doc.id}/pdf`).catch((error: unknown) => {
-              toast.add({
-                title: 'Could not open the print view',
-                description: error instanceof Error ? error.message : 'Try again in a moment.',
-                type: 'error',
+          <DropdownMenuItem
+            onClick={() => {
+              openServerHtml(`/v1/invoicing/documents/${doc.id}/pdf`).catch((error: unknown) => {
+                toast.add({
+                  title: 'Could not open the print view',
+                  description: error instanceof Error ? error.message : 'Try again in a moment.',
+                  type: 'error',
+                });
               });
-            });
-          }}
-        >
-          <Printer className="size-4" aria-hidden />
-          Print or save as PDF
-        </DropdownMenuItem>
-
-        {canPaymentLink || canConvert || doc.convertedOrder ? <DropdownMenuSeparator /> : null}
-
-        {canPaymentLink ? (
-          <DropdownMenuItem
-            disabled={paymentLink.isPending}
-            onClick={() => {
-              paymentLink.mutate();
             }}
           >
-            <Copy className="size-4" aria-hidden />
-            Copy payment link
+            <Printer className="size-4" aria-hidden />
+            Print or save as PDF
           </DropdownMenuItem>
-        ) : null}
 
-        {canConvert ? (
-          <DropdownMenuItem
-            disabled={convert.isPending}
-            onClick={() => {
-              convert.mutate();
-            }}
-          >
-            <PackageCheck className="size-4" aria-hidden />
-            Turn it into an order
-          </DropdownMenuItem>
-        ) : null}
+          {canPaymentLink || doc.convertedOrder ? <DropdownMenuSeparator /> : null}
 
-        {/* A DOOR, not a notice. This row wore an open-in-a-new-window icon and
-            was disabled: it said the order existed and refused to go to it, at
-            the one moment anyone wanted to. Issue 766. */}
-        {doc.convertedOrder ? (
-          <DropdownMenuItem
-            onClick={() => {
-              const order = doc.convertedOrder;
-              if (order) ctx.open('commerce.order.detail', { id: order.id }, { target: 'tab' });
-            }}
-          >
-            <ExternalLink className="size-4" aria-hidden />
-            Open order {doc.convertedOrder.orderNumber}
-          </DropdownMenuItem>
-        ) : null}
-
-        {canDelete ? (
-          <>
-            <DropdownMenuSeparator />
+          {canPaymentLink ? (
             <DropdownMenuItem
-              disabled={remove.isPending}
+              disabled={paymentLink.isPending}
               onClick={() => {
-                // Destructive: the confirm names exactly what is being lost.
-                // Deferred so the menu's close doesn't collide with the
-                // dialog's open (both flushSync) — lib/defer.ts.
-                void deferTick()
-                  .then(() =>
-                    confirm({
-                      title: 'Delete this draft?',
-                      description:
-                        'Its line items go with it, and there is no undo. Nothing has been sent to the customer.',
-                      confirmLabel: 'Delete it',
-                      cancelLabel: 'Keep it',
-                      color: 'danger',
-                    })
-                  )
-                  .then((ok) => {
-                    if (ok) remove.mutate();
-                  });
+                paymentLink.mutate();
               }}
             >
-              <Trash2 className="size-4" aria-hidden />
-              Delete draft
+              <Copy className="size-4" aria-hidden />
+              Copy payment link
             </DropdownMenuItem>
-          </>
-        ) : null}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          ) : null}
+
+          {/* A DOOR, not a notice. This row wore an open-in-a-new-window icon and
+            was disabled: it said the order existed and refused to go to it, at
+            the one moment anyone wanted to. Issue 766. */}
+          {doc.convertedOrder ? (
+            <DropdownMenuItem
+              onClick={() => {
+                const order = doc.convertedOrder;
+                if (order) ctx.open('commerce.order.detail', { id: order.id }, { target: 'tab' });
+              }}
+            >
+              <ExternalLink className="size-4" aria-hidden />
+              Open order {doc.convertedOrder.orderNumber}
+            </DropdownMenuItem>
+          ) : null}
+
+          {canDelete ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                disabled={remove.isPending}
+                onClick={() => {
+                  // Destructive: the confirm names exactly what is being lost.
+                  // Deferred so the menu's close doesn't collide with the
+                  // dialog's open (both flushSync) — lib/defer.ts.
+                  void deferTick()
+                    .then(() =>
+                      confirm({
+                        title: 'Delete this draft?',
+                        description:
+                          'Its line items go with it, and there is no undo. Nothing has been sent to the customer.',
+                        confirmLabel: 'Delete it',
+                        cancelLabel: 'Keep it',
+                        color: 'danger',
+                      })
+                    )
+                    .then((ok) => {
+                      if (ok) remove.mutate();
+                    });
+                }}
+              >
+                <Trash2 className="size-4" aria-hidden />
+                Delete draft
+              </DropdownMenuItem>
+            </>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }

@@ -39,12 +39,17 @@ export function productToBuilderRecord(
   tenantSlug: string,
   currency: string
 ): BuilderProduct {
+  // A signed-in trade buyer's own price wins over the list price, which stays
+  // beside it struck through: the same sale-price pattern the silica cards use
+  // (sparx persona issue 086). Null for everyone else, so nothing changes for them.
+  const price = p.yourPriceCents ?? p.priceMinCents;
+  const compareAt = p.yourPriceCents != null ? p.priceMinCents : p.compareAtCents;
   return {
     id: p.id,
     handle: p.handle,
     title: p.title,
-    price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
-    compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
+    price: price != null ? price / 100 : null,
+    compareAtPrice: compareAt != null ? compareAt / 100 : null,
     description: plainText(p.description),
     images: p.images
       .map((img) => ({
@@ -66,8 +71,15 @@ export function productToBuilderRecord(
       id: v.id,
       sku: v.sku,
       title: v.title,
-      priceCents: v.priceCents,
-      compareAtPriceCents: v.compareAtPriceCents,
+      // The buy box prints the chosen version's price: the buyer's own when they
+      // have one, with the list price as the struck-through one.
+      priceCents: v.yourPriceCents ?? v.priceCents,
+      compareAtPriceCents: v.yourPriceCents != null ? v.priceCents : v.compareAtPriceCents,
+      // The core deposit and the send-first way to skip it (sparx issues 051,
+      // 057). The buy box has drawn the deposit line since 051, but nothing here
+      // carried the figure, so it never showed on a builder page.
+      coreChargeCents: v.coreChargeCents,
+      coreFirstOffered: v.coreFirstOffered,
       isDefault: v.isDefault,
       inStock: v.inStock,
       available: v.available,

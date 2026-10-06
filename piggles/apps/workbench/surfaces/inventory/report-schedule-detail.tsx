@@ -21,6 +21,8 @@
 // the question the form raises — did it actually go? — is answered by it.
 
 import { useEffect, useState } from 'react';
+import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -226,6 +228,32 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
   const saving = create.isPending || update.isPending;
+
+  // A report schedule that is not there (removed, or another business's id) says so,
+  // rather than opening as a blank one that would save as something new
+  // (persona issue 226).
+  if (!isNew && existing.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={existing.error}
+          noun="report schedule"
+          title="Could not load this report schedule"
+          description="This is a problem reaching the server. The report schedule itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void existing.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+  if (!isNew && existing.isPending) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneWaiting />
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>

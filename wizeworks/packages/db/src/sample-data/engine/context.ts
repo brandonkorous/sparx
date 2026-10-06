@@ -76,6 +76,8 @@ export function emptyCounts(): SampleDataCounts {
     reviews: 0,
     questions: 0,
     bookings: 0,
+    services: 0,
+    resources: 0,
     deals: 0,
     tickets: 0,
     billingDocuments: 0,

@@ -38,16 +38,19 @@ import type { ReactNode } from 'react';
 
 function ChosenBar({
   summary,
+  beside,
   onClear,
   children,
 }: {
   summary: string;
+  beside?: ReactNode;
   onClear: () => void;
   children: ReactNode;
 }) {
   return (
     <div className="bg-module bg-soft flex min-h-[calc(2rem+1rem+2px)] w-full flex-wrap items-center gap-2 rounded-lg p-2">
       <Text className="text-base font-medium">{summary}</Text>
+      {beside}
       {/* Colorless on purpose: dismissing a selection is not a typed action, and
           it must not compete with the actions beside it. */}
       <Button className="ml-auto" size="sm" variant="ghost" onClick={onClear}>
@@ -62,6 +65,7 @@ export function BulkBar({
   count,
   /** "3 products chosen" — the caller words it, because only it knows the noun. */
   summary,
+  beside,
   onClear,
   /** The pane's own toolbar. It keeps its space while hidden, which is what
    *  makes choosing a row move nothing. */
@@ -70,6 +74,9 @@ export function BulkBar({
 }: {
   count: number;
   summary: string;
+  /** Next to the count: a way to WIDEN what is chosen, like "Choose all 126
+   *  that match". Not an action on the rows, so it does not sit with them. */
+  beside?: ReactNode;
   onClear: () => void;
   toolbar: ReactNode;
   /** The actions. Destructive last, and every one of them `color="danger"` if
@@ -84,7 +91,7 @@ export function BulkBar({
         {toolbar}
       </div>
       {chosen ? (
-        <ChosenBar summary={summary} onClear={onClear}>
+        <ChosenBar summary={summary} beside={beside} onClear={onClear}>
           {children}
         </ChosenBar>
       ) : null}

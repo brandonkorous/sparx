@@ -373,7 +373,32 @@ function DiscountEditor({
     });
   };
 
+  // Switch on turns on the STORED discount, so edits still on screen are saved
+  // first. Pressed without that, the old amount went live under a "switched on"
+  // toast (persona issue 033).
   const onActivate = () => {
+    if (!dirty) {
+      switchOn();
+      return;
+    }
+    const input = blocked ? null : buildInput();
+    if (!input) {
+      toast.add({
+        title: 'Could not switch it on',
+        description: 'Fix the boxes marked in red first. Nothing was changed.',
+        type: 'error',
+      });
+      return;
+    }
+    update.mutate(input, {
+      onSuccess: () => {
+        setTouched(false);
+        switchOn();
+      },
+    });
+  };
+
+  const switchOn = () => {
     activate.mutate(undefined, {
       onSuccess: () => {
         toast.add({ title: 'Discount switched on', type: 'success' });
@@ -857,7 +882,7 @@ function DiscountEditor({
                   <Button
                     size="sm"
                     color="module"
-                    loading={activate.isPending}
+                    loading={activate.isPending || update.isPending}
                     onClick={onActivate}
                   >
                     <Power className="size-4" aria-hidden />

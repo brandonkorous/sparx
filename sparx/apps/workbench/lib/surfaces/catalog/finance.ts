@@ -101,7 +101,17 @@ export const FINANCE_SURFACES: SurfaceDefinition[] = [
     component: ReceivablesSurface,
     section: 'Money coming in',
     order: 11,
-    keywords: ['receivables', 'unpaid', 'overdue', 'chasing', 'debtors'],
+    // "A/R aging" is what the /b2b page calls this screen (issue 086).
+    keywords: [
+      'receivables',
+      'accounts receivable',
+      'aging',
+      'ar aging',
+      'unpaid',
+      'overdue',
+      'chasing',
+      'debtors',
+    ],
   },
   {
     key: 'finance.channels',

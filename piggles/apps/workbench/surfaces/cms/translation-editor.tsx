@@ -18,6 +18,7 @@ import { ModuleScope } from '../../components/module-scope';
 import { LanguageForm } from './translation-form';
 import { AddLanguage } from '../../components/add-language';
 import { useTranslationDraft } from './use-translation-draft';
+import type { ViewParamHandle } from '../../lib/workbench/view-param';
 import {
   localeName,
   productStatusState,
@@ -36,16 +37,18 @@ export function Editor({
   isFetching,
   dataUpdatedAt,
   onRefresh,
+  language,
 }: {
   productId: string;
   product: ProductSource;
   rows: ProductTranslation[];
+  language: ViewParamHandle;
   isFetching: boolean;
   dataUpdatedAt: number;
   onRefresh: () => void;
 }) {
   const status = productStatusState(product.status);
-  const draft = useTranslationDraft(productId, product, rows);
+  const draft = useTranslationDraft(productId, product, rows, language);
   const {
     locales,
     active,

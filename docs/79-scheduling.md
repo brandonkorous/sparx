@@ -1,8 +1,8 @@
 # 79 — sparx Scheduling Module Spec
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-24
+**Last Updated:** 2026-10-03
 
 ---
 
@@ -522,6 +522,21 @@ holds and `capturePayment(amount)` for partial no-show fees.
 the held amount and assembles **chargeback evidence automatically**: policy text the
 customer accepted at booking (timestamp), the reminder log (what we sent and when), and the
 booking timeline. This directly addresses the "no-show fee dispute" pain.
+
+**Settling the card is part of ending the booking, on every transport** (sparx persona
+issue 087). `cancelBooking`, `noShowBooking`, `completeBooking` and
+`cancelBookingSeries` decide what the card needs inside their own transaction
+(`bookingMoneyFor`, [booking-money.ts](../wizeworks/packages/scheduling/src/booking-money.ts))
+and return it as `money`; every caller hands that to `bookingPayments.settle` in
+`@wizeworks/commerce` once the transaction has committed. The console's routes, the
+customer's own cancel link, the MCP tools (which live in api-mcp's
+`scheduling-ending-tools.ts`, because scheduling carries no payment gateway) and a
+canceled series all go through it. The deposit status moves only when the gateway says
+yes; when it says no, the deposit keeps the state the money is really in, the customer's
+timeline gets a note, the business gets a task where somebody has to act, and the
+outcome is written on the booking's history (`booking.payment_settled` /
+`booking.payment_not_settled`), which the booking record reads back as `payment` so
+the console can say what happened.
 
 ### 9.4 Memberships, credit packs, tips
 

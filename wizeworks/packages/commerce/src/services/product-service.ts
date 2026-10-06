@@ -19,6 +19,8 @@ import {
   CreateProductInput,
   type ProductDeposit,
   type ProductStatus,
+  readRepeatOptions,
+  type RepeatCadence,
   UpdateProductInput,
 } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
@@ -27,6 +29,7 @@ import type { Prisma, Product } from '@wizeworks/db';
 import { writeAuditLog } from '../audit';
 import { depositFromColumns, depositToColumns } from '../made-to-order';
 import { productSiteVisibility } from './site-visibility';
+import { productListWhere } from './product-selection';
 import { resolveAndValidateAttributes } from './product-types-service';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
@@ -79,32 +82,9 @@ export async function list(
   filter: ListProductsFilter = {}
 ): Promise<{ items: ProductListItem[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const status: Prisma.ProductWhereInput['status'] =
-      filter.status ?? (filter.includeArchived ? undefined : { not: 'archived' });
-
-    const where: Prisma.ProductWhereInput = {
-      ...(filter.includeDeleted ? {} : { deletedAt: null }),
-      ...(status !== undefined ? { status } : {}),
-      ...(filter.vendor ? { vendor: filter.vendor } : {}),
-      ...(filter.productType ? { productType: filter.productType } : {}),
-      ...(filter.tag ? { tags: { has: filter.tag } } : {}),
-      ...(filter.categoryId ? { categoryLinks: { some: { categoryId: filter.categoryId } } } : {}),
-      ...(filter.collectionId
-        ? { collectionLinks: { some: { collectionId: filter.collectionId } } }
-        : {}),
-      ...(filter.hasFitment ? { fitments: { some: {} } } : {}),
-      ...(filter.q
-        ? {
-            OR: [
-              { title: { contains: filter.q, mode: 'insensitive' } },
-              { handle: { contains: filter.q, mode: 'insensitive' } },
-              { vendor: { contains: filter.q, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-      // Model B: restrict to products visible on the active site (none = global).
-      ...(filter.propertyId ? productSiteVisibility(filter.propertyId) : {}),
-    };
+    // The one narrowing rule, shared with every "all that match" bulk write so
+    // the count on screen is the count that acts.
+    const where = productListWhere(filter);
 
     const sortField = filter.sortBy ?? 'updatedAt';
     const sortDirection = filter.order ?? 'desc';
@@ -125,7 +105,11 @@ export async function list(
           priceMinCents: true,
           priceMaxCents: true,
           updatedAt: true,
-          _count: { select: { variants: true } },
+          // Live versions only. A retired one still holds its code, and counting
+          // it told every picker that Gillett's Bosch injector came in two
+          // versions after its old "defer the core" version was retired, so the
+          // quote editor asked which one (sparx persona issue 077).
+          _count: { select: { variants: { where: { deletedAt: null } } } },
           // The hero image's asset id: explicit primary first, else the first
           // product-level image by position. URL resolved in one batched lookup
           // below to avoid an N+1 over the page.
@@ -192,6 +176,8 @@ export interface ProductDetail {
   vendor: string | null;
   tags: string[];
   fulfillmentType: string;
+  /** How often a shopper may ask for this again (issue 739). Empty = once only. */
+  repeatOptions: RepeatCadence[];
   weightGrams: number | null;
   lengthMm: number | null;
   widthMm: number | null;
@@ -265,7 +251,7 @@ export async function get(ctx: ServiceContext, productId: string): Promise<Produ
         collectionLinks: { select: { collectionId: true, addedBy: true } },
         shippingProfileLinks: { select: { profileId: true } },
         propertyLinks: { select: { propertyId: true } },
-        _count: { select: { variants: true, options: true } },
+        _count: { select: { variants: { where: { deletedAt: null } }, options: true } },
       },
     })
   );
@@ -292,7 +278,7 @@ export async function getByHandle(
         collectionLinks: { select: { collectionId: true, addedBy: true } },
         shippingProfileLinks: { select: { profileId: true } },
         propertyLinks: { select: { propertyId: true } },
-        _count: { select: { variants: true, options: true } },
+        _count: { select: { variants: { where: { deletedAt: null } }, options: true } },
       },
     })
   );
@@ -460,6 +446,7 @@ export async function create(
         vendor: input.vendor ?? null,
         tags: input.tags,
         fulfillmentType: input.fulfillmentType,
+        repeatOptions: input.repeatOptions,
         weightGrams: input.weight ?? null,
         lengthMm: input.dimensions?.lengthMm ?? null,
         widthMm: input.dimensions?.widthMm ?? null,
@@ -552,7 +539,7 @@ export async function update(
         collectionLinks: { select: { collectionId: true, addedBy: true } },
         shippingProfileLinks: { select: { profileId: true } },
         propertyLinks: { select: { propertyId: true } },
-        _count: { select: { variants: true, options: true } },
+        _count: { select: { variants: { where: { deletedAt: null } }, options: true } },
       },
     });
     if (!before) throw new CommerceNotFoundError('Product', productId);
@@ -607,6 +594,7 @@ export async function update(
         ...(input.vendor !== undefined ? { vendor: input.vendor } : {}),
         ...(input.tags !== undefined ? { tags: input.tags } : {}),
         ...(input.fulfillmentType !== undefined ? { fulfillmentType: input.fulfillmentType } : {}),
+        ...(input.repeatOptions !== undefined ? { repeatOptions: input.repeatOptions } : {}),
         ...(input.weight !== undefined ? { weightGrams: input.weight } : {}),
         ...(input.dimensions !== undefined
           ? {
@@ -641,7 +629,7 @@ export async function update(
         collectionLinks: { select: { collectionId: true, addedBy: true } },
         shippingProfileLinks: { select: { profileId: true } },
         propertyLinks: { select: { propertyId: true } },
-        _count: { select: { variants: true, options: true } },
+        _count: { select: { variants: { where: { deletedAt: null } }, options: true } },
       },
     });
 
@@ -1069,6 +1057,7 @@ function toProductDetail(p: ProductWithIncludes): ProductDetail {
     vendor: p.vendor,
     tags: p.tags,
     fulfillmentType: p.fulfillmentType,
+    repeatOptions: readRepeatOptions(p.repeatOptions),
     weightGrams: p.weightGrams,
     lengthMm: p.lengthMm,
     widthMm: p.widthMm,
@@ -1228,6 +1217,7 @@ function serializeProduct(p: Product): Record<string, unknown> {
     attributes: p.attributes ?? {},
     vendor: p.vendor,
     fulfillmentType: p.fulfillmentType,
+    repeatOptions: readRepeatOptions(p.repeatOptions),
     hazmatClass: p.hazmatClass,
     requiresShipping: p.requiresShipping,
     tags: p.tags,

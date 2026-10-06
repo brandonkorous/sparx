@@ -22,6 +22,7 @@
 // is worth nothing if it is a grey row somebody scrolls past.
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Alert,
@@ -32,7 +33,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Input,
   Text,
   Timestamp,
@@ -47,7 +47,6 @@ import {
   faClipboardCheck,
   faExclamationTriangle,
   faPrint,
-  faRoute,
   faUser,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -99,7 +98,15 @@ function groupByShelf(lines: PickLine[]): { key: string; label: string; lines: P
 
 export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: walk, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickList(id);
+  const {
+    data: walk,
+    isLoading,
+    isFetching,
+    dataUpdatedAt,
+    isError,
+    error: loadError,
+    refetch,
+  } = usePickList(id);
 
   // The tab's name, once the record is here. Sixty-one of this console's
   // seventy-five detail panes do this; the ones that did not put identical
@@ -131,12 +138,18 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
 
   if (isError) {
+    // Gone (a 404) and unreachable say different things; the shared screen reads
+    // which from the error instead of one sentence hedging both (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
+        <PaneLoadError
+          error={loadError}
+          noun="walk"
           title="Could not open that walk"
-          description="It may have been abandoned, or the server could not be reached."
+          description="This is a problem reaching the server. The walk itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </div>
     );

@@ -516,7 +516,8 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
                   ? 'Checking every page…'
                   : 'This looks over every page, your header and footer, and everything inside ' +
                     'your saved pieces, for links that go nowhere, words that cannot be read, ' +
-                    'and pictures with nothing in them. Nothing it finds can stop you publishing.'}
+                    'pictures with nothing in them, and words your design came with that are ' +
+                    'still not yours. Nothing it finds can stop you publishing.'}
               </p>
             ) : (
               <div className="flex flex-col gap-5">

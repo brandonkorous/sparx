@@ -10,6 +10,7 @@
 // tab stays Content-teal, its content reads commerce-orange.
 
 import { useEffect } from 'react';
+import { useViewParamHandle } from '../../lib/workbench/view-param';
 import { Card } from '@wizeworks/silicaui-react';
 import { faLanguage } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -37,6 +38,8 @@ const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
 export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const productId = typeof ctx.params.id === 'string' ? ctx.params.id : '';
+  // The language tab, held in the pane's address (issue 374).
+  const language = useViewParamHandle(ctx, 'lang');
   const source = useProductSource(productId);
   const translations = useProductTranslations(productId);
 
@@ -115,6 +118,7 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       isFetching={translations.isFetching}
       dataUpdatedAt={translations.dataUpdatedAt}
       onRefresh={refresh}
+      language={language}
     />
   );
 }

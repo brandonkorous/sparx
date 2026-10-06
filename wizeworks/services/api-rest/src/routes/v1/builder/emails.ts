@@ -106,7 +106,15 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(toBuilderTenantContext(request), id);
-    return ok(email);
+    // The editor draws what the inbox gets: the colors that follow the brand are
+    // painted in the active site's brand, as the send paints them (issue 129).
+    const ctx = await toBuilderContext(request);
+    const silicaDoc = await builderEmailService.brandForCanvas(
+      ctx,
+      email.silicaDoc,
+      ctx.propertyId
+    );
+    return ok({ ...email, silicaDoc });
   });
 
   app.patch('/v1/builder/emails/:id', async (request) => {

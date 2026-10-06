@@ -84,14 +84,18 @@ export async function listInstallations(
   });
 }
 
+/** One connection. Not there (removed, or another business's id) is a 404,
+ *  never an empty 200: the console waited for ever on a null it could not tell
+ *  from "still loading" (persona issue 226). */
 export async function getInstallation(
   ctx: ServiceContext,
   installationId: string
-): Promise<InstallationRow | null> {
-  return withTenant(ctx, async (tx) => {
-    const row = await tx.providerInstallation.findFirst({ where: { id: installationId } });
-    return row ? serializeInstallation(row) : null;
-  });
+): Promise<InstallationRow> {
+  const row = await withTenant(ctx, (tx) =>
+    tx.providerInstallation.findFirst({ where: { id: installationId } })
+  );
+  if (!row) throw new CommerceNotFoundError('ProviderInstallation', installationId);
+  return serializeInstallation(row);
 }
 
 /**
@@ -334,9 +338,6 @@ export async function test(
 ): Promise<{ ok: boolean; details: string }> {
   const input = TestProviderInput.parse(rawInput);
   const installation = await getInstallation(ctx, input.installationId);
-  if (!installation) {
-    throw new CommerceNotFoundError('ProviderInstallation', input.installationId);
-  }
   const bundle = getProvider(installation.providerSlug);
   if (!bundle) {
     return {

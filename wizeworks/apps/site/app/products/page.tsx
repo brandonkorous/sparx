@@ -49,6 +49,7 @@ export default async function ProductsPage({
     site,
     propertySlug: propertySlug ?? undefined,
     searchParams: sp,
+    listingHeadingIsPageTitle: true,
   });
 
   return (

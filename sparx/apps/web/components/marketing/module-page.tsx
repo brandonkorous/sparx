@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref, SALES_HREF } from './cta';
 import { Button } from '@wizeworks/silicaui-react';
 import { Display, Dot, getModuleColor, Section, Spark } from './primitives';
 import { type ModuleMeta } from '@/lib/modules';
@@ -52,12 +54,15 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
 
           <div className="flex flex-col items-start gap-3.5 lg:items-end">
             <div className="flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref(`${meta.module}-hero`)}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Start free
-              </Button>
-              <Button size="lg" variant="outline">
+              </a>
+              <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
                 See pricing
-              </Button>
+              </a>
             </div>
             <span className="font-mono text-sm">
               {meta.marketingDomain ? `${meta.marketingDomain} · ` : ''}
@@ -133,9 +138,12 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref(`${meta.module}-pricing`)}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate {shortLabel(meta.label)}
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -157,12 +165,15 @@ function ModuleCta({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
           Turn it back off any time. Your data stays.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <Button size="xl" variant="solid">
+          <a
+            href={signupHref(`${meta.module}-final`)}
+            className={buttonClasses({ size: 'xl', variant: 'solid' })}
+          >
             Start your site →
-          </Button>
-          <Button size="xl" variant="outline">
+          </a>
+          <a href={SALES_HREF} className={buttonClasses({ size: 'xl', variant: 'outline' })}>
             Talk to sales
-          </Button>
+          </a>
         </div>
       </div>
     </Section>

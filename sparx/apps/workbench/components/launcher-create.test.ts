@@ -31,6 +31,26 @@ describe('createActions', () => {
     });
   });
 
+  it("answers to the screen's own search words too", () => {
+    // sparx persona issue 036: "new social post" put Posts above "New post",
+    // because only the list carried the word "social".
+    const [action] = createActions(
+      [
+        {
+          key: 'social.queue',
+          module: 'social',
+          title: 'Posts',
+          keywords: ['social', 'posts'],
+          createSurface: 'social.composer',
+          createLabel: 'New post',
+        },
+      ],
+      label,
+      title
+    );
+    expect(action?.keywords).toEqual(['Posts', 'social', 'posts']);
+  });
+
   it('keeps the door a shared create surface was opened from', () => {
     const [action] = createActions(
       [

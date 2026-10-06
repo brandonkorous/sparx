@@ -111,7 +111,11 @@ export async function runDueOccurrence(
    *  that selected this row. */
   asOf?: string
 ): Promise<CollectionResult> {
-  const { orderId } = await subscriptionService.processOccurrence(ctx, subscriptionId, asOf);
+  const { orderId, held } = await subscriptionService.processOccurrence(ctx, subscriptionId, asOf);
+  // The shop can no longer deliver it, so nothing was sent or charged and the
+  // repeat order is paused. Only the shop can fix that, which is what
+  // `unbillable` counts (issue 916).
+  if (held) return { subscriptionId, orderId: null, outcome: 'unbillable', detail: held };
   // Not due, paused, or already advanced by a concurrent tick.
   if (!orderId) return { subscriptionId, orderId: null, outcome: 'skipped' };
 

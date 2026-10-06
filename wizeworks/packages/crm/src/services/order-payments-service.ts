@@ -63,7 +63,18 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
     identity.customerId = order.customerId;
     identity.orderNumber = order.orderNumber;
 
-    const becamePaid = await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
+    const paidInFull = await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
+    // A wholesale order still waiting for sign-off is paid but not placed
+    // (sparx persona issue 087): a gift card or account credit covering it at
+    // checkout lands here while it is held. It is not announced as paid until
+    // the sign-off places it, which announces it then (`placedEvents` in
+    // @wizeworks/b2b). Read after the rollup's write to the order row, so an
+    // approval writing the same row at the same moment is seen.
+    const current = await tx.order.findUnique({
+      where: { id: input.orderId },
+      select: { status: true },
+    });
+    const becamePaid = paidInFull && current?.status !== 'pending_approval';
 
     await writeAuditLog({
       tx,
@@ -102,8 +113,15 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
   // listens for. Fires once (the unpaid→paid edge); `order.paid` tees to the
   // automation fan-in via the platform-bus PLATFORM_TEE_TOPICS allow-list.
   if (becamePaid) {
-    await afterCommit('publish order.paid', () =>
-      publishPlatformEvent({
+    await afterCommit('publish order.paid', async () => {
+      // Asked again once everything has committed. Checkout redeems a gift card
+      // inside its own transaction BEFORE it holds the order for sign-off, so
+      // the read above saw an order not yet held (sparx persona issue 087).
+      const settled = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+        tx.order.findUnique({ where: { id: payment.orderId }, select: { status: true } })
+      );
+      if (settled?.status === 'pending_approval') return;
+      await publishPlatformEvent({
         id: crypto.randomUUID(),
         topic: 'order.paid',
         tenantId: ctx.tenantId,
@@ -113,8 +131,8 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
           orderNumber: identity.orderNumber,
           customerId: identity.customerId,
         },
-      })
-    );
+      });
+    });
   }
 
   return payment;
@@ -201,9 +219,15 @@ export async function recomputeOrderPaymentRollup(
   const amountPaid = Math.max(0, captured - refunded);
   const total = Number(order.total);
 
+  // "Paid" asks whether the money that came IN covered the order, not what is
+  // left after refunds. Measured against the net, an order paid in full and then
+  // part refunded was stored as `partially_paid`, which every reader takes to mean
+  // money is still owed: the console said "some is still owed", and the list of
+  // orders to chase put it there. Every core deposit refunded on a rebuilt part
+  // (issue 051) would have done the same to a fully paid order.
   let paymentStatus: 'unpaid' | 'partially_paid' | 'paid' | 'refunded' = 'unpaid';
   if (refunded > 0 && amountPaid === 0) paymentStatus = 'refunded';
-  else if (amountPaid >= total && total > 0) paymentStatus = 'paid';
+  else if (captured >= total && total > 0) paymentStatus = 'paid';
   else if (amountPaid > 0) paymentStatus = 'partially_paid';
 
   // The unpaid→paid edge: the order had no paidAt and is now fully paid.

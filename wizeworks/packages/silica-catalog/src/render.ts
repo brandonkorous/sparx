@@ -9,9 +9,10 @@
 //      its master (symbols are an authoring concept; output is plain markup).
 //   2. composeFrame  — drop the page body into the shared frame's single Outlet
 //      (the header/nav/footer chrome wrapping every page). No frame → bare body.
-//   3. resolveTree   — substitute `data:value` nodes with resolved values and
+//   3. resolveForVisitors — substitute `data:value` nodes with resolved values and
 //      expand `data:collection` nodes one-clone-per-item, via the host's
-//      SYNCHRONOUS resolver (sparx's `createSilicaResolver` over pre-loaded data).
+//      SYNCHRONOUS resolver (sparx's `createSilicaResolver` over pre-loaded data),
+//      with every empty list dropped rather than drawn as a placeholder item.
 //      Absent a host → the tree passes through unchanged (a static page).
 //   4. dropEmptyUrlAttrs — remove `href=""` / `src=""` left by a binding that
 //      resolved to nothing. A product with no URL must degrade to a plain card,
@@ -42,6 +43,7 @@ import {
   flattenSymbols,
   resolveTree,
   toHtml,
+  type Child,
   type DataScope,
   type Node,
   type ResolveHost,
@@ -60,6 +62,39 @@ export interface RenderSilicaPageOptions {
   scope?: DataScope;
   /** Passed through to `toHtml` (e.g. `ids` for the preview canvas). */
   html?: ToHtmlOptions;
+}
+
+/** `omitWhenEmpty` on every list in the tree. */
+function omitEmptyLists(child: Child): Child {
+  if (typeof child === 'string' || child.kind === 'outlet') return child;
+  const data =
+    child.data?.kind === 'collection' && !child.data.omitWhenEmpty
+      ? { ...child.data, omitWhenEmpty: true }
+      : child.data;
+  const children = child.children?.map(omitEmptyLists);
+  return {
+    ...child,
+    ...(data ? { data } : {}),
+    ...(children ? { children } : {}),
+  };
+}
+
+/**
+ * Resolve a tree a VISITOR will see: an empty list renders nothing.
+ *
+ * `repeat` draws its template once against an empty list (silica's placeholder-item
+ * convention, for the canvas). `repeatOrEmpty` (conditional.ts) opted single sections
+ * out, but captured designs and every tenant's saved pages still carry a plain
+ * `repeat`, so Gillett Diesel's homepage went live reading "Product name · $0.00" and
+ * "Post title" over a catalog of zero (sparx persona issue 022). A placeholder item is
+ * never a fact, so every visitor render marks every list `omitWhenEmpty` first. The
+ * builder canvas does not render through here, so authors keep their placeholder.
+ *
+ * Every visitor path calls THIS, never `resolveTree` directly: the HTML projection
+ * below and `wizeworks/apps/site`'s React chrome and functional body.
+ */
+export function resolveForVisitors(tree: Node, host: ResolveHost, scope?: DataScope): Node {
+  return resolveTree(omitEmptyLists(tree) as Node, host, scope);
 }
 
 /**
@@ -109,7 +144,7 @@ function renderComposedTree(
 ): string {
   const body = flattenSymbols(pageRoot, symbols);
   const composed = frameRoot ? composeFrame(flattenSymbols(frameRoot, symbols), body) : body;
-  const resolved = opts.host ? resolveTree(composed, opts.host, opts.scope) : composed;
+  const resolved = opts.host ? resolveForVisitors(composed, opts.host, opts.scope) : composed;
   return toHtml(finalizeTree(resolved, imageAltsOf(opts.host)), opts.html);
 }
 

@@ -77,12 +77,20 @@ export function groupEntries(entries: Entry[]): EntryGroup[] {
 export function RecordSearchNote({
   searching,
   found,
+  more,
+  onShowMore,
   screens,
   query,
   gaps,
+  failed,
+  onRetry,
 }: {
   searching: boolean;
   found: number;
+  /** Records that matched and were not sent. See recordSearchLine. */
+  more: number | null;
+  /** Fetches the next step of them. Absent when nothing more can come back. */
+  onShowMore?: () => void;
   /** How many SCREENS matched, so the sentence may only describe rows that are
    *  actually under it. See recordSearchLine. */
   screens: number;
@@ -90,6 +98,10 @@ export function RecordSearchNote({
   /** What `/v1/search/status` says this box cannot reach. Undefined until it
    *  arrives, which is silence rather than "all clear". */
   gaps: SearchGaps | undefined;
+  /** The record search did not answer. See recordSearchLine. */
+  failed: boolean;
+  /** Asks it again. */
+  onRetry: () => void;
 }) {
   const toast = useToast();
   const reindex = useReindexSearch();
@@ -101,8 +113,31 @@ export function RecordSearchNote({
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-2 border-t px-3 py-2">
       <p className="min-w-0 flex-1 text-sm" role="status">
-        {recordSearchLine({ searching, found, screens, query, gaps })}
+        {recordSearchLine({
+          searching,
+          found,
+          screens,
+          query,
+          gaps,
+          more,
+          canShowMore: onShowMore !== undefined,
+          failed,
+        })}
       </p>
+      {/* The sentence says to try again; this is how, without retyping. */}
+      {failed && !searching ? (
+        <Button size="sm" color="module" onClick={onRetry}>
+          Try again
+        </Button>
+      ) : null}
+      {/* The other half of the sentence's "not shown yet": the box used to stop
+          at its first page and count only that, so a name matching more than a
+          page said a smaller number and offered nothing. */}
+      {onShowMore && (more ?? 0) > 0 && !searching ? (
+        <Button size="sm" color="module" onClick={onShowMore}>
+          Show more
+        </Button>
+      ) : null}
       {/* The only remedy, on the screen that is wrong. It existed on the
           products list, which is not where anybody is standing when the box
           says it has never heard of their best seller. */}
@@ -144,14 +179,31 @@ export function RecordSearchNote({
   );
 }
 
-export function LauncherEmpty({ searching, typed }: { searching: boolean; typed: boolean }) {
+export function LauncherEmpty({
+  searching,
+  typed,
+  failed,
+  tooLong,
+}: {
+  searching: boolean;
+  typed: boolean;
+  /** The record search did not answer, so only the screens were looked at. */
+  failed: boolean;
+  /** Past the most the box searches, so the records were not asked. The note
+   *  under the list says so; this line speaks only for the screens. */
+  tooLong: boolean;
+}) {
   return (
     <p className="px-3 py-8 text-center text-sm" role="status">
-      {searching
-        ? 'Searching…'
-        : typed
-          ? 'Nothing matches that. Try a different word.'
-          : 'Type to search across every module, or pick a screen to open.'}
+      {tooLong
+        ? 'No screen matches that.'
+        : searching
+          ? 'Searching…'
+          : typed && failed
+            ? 'No screen matches that, and your records could not be searched just now.'
+            : typed
+              ? 'Nothing matches that. Try a different word.'
+              : 'Type to search across every module, or pick a screen to open.'}
     </p>
   );
 }

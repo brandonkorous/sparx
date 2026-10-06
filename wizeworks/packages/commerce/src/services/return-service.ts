@@ -5,6 +5,7 @@
 // lifecycle state machine + audit + events.
 
 import {
+  coresOwed,
   ApproveReturnInput,
   CreateReturnRequestInput,
   DenyReturnInput,
@@ -33,6 +34,7 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 import { attemptReturnLabel } from './return-label-purchase';
+import * as discountService from './discount-service';
 import { replacementStockNote } from './return-notes';
 import { canRecordInspection, inspectionAdvancesStatus, isSettledReturn } from './return-status';
 
@@ -924,37 +926,58 @@ export async function issueRefund(
   // refund settles through the gateway first, so a gateway failure leaves the return in
   // its prior state (staff can retry) instead of marking it refunded without the money
   // moving. Store-credit refunds never touch a gateway.
-  const chargeRef = await withTenant(ctx, async (tx) => {
-    const ret = await assertReturnWritable(tx, input.returnId);
-    if (ret.status !== 'inspected' && ret.status !== 'received') {
-      throw new CommerceConflictError(
-        `Cannot issue refund from status "${ret.status}"; expected "inspected" or "received"`
-      );
+  const { chargeRef, paymentId, coreBackCents, customerId, currency } = await withTenant(
+    ctx,
+    async (tx) => {
+      const ret = await assertReturnWritable(tx, input.returnId);
+      if (ret.status !== 'inspected' && ret.status !== 'received') {
+        throw new CommerceConflictError(
+          `Cannot issue refund from status "${ret.status}"; expected "inspected" or "received"`
+        );
+      }
+      const order = await tx.order.findUnique({
+        where: { id: ret.orderId },
+        select: { customerId: true, currency: true },
+      });
+      // A rebuilt part that comes back brings its own core with it, so the core
+      // deposit paid on it goes back too (issue 051). Worked out here, never typed:
+      // it is the customer's money, held only until the core came back.
+      const base = {
+        coreBackCents: await coreDepositsBack(tx, ret.id),
+        customerId: order?.customerId ?? null,
+        currency: order?.currency ?? 'USD',
+      };
+      if (input.asAccountCredit) return { ...base, chargeRef: null, paymentId: null };
+      const payment = await tx.orderPayment.findFirst({
+        where: { orderId: ret.orderId, status: 'captured' },
+        orderBy: { capturedAt: 'desc' },
+        select: { id: true, processor: true, processorRef: true },
+      });
+      // A reference alone is NOT proof there is a charge to reverse. Money taken
+      // by hand — cash, a cheque, a bank transfer — never passed through a
+      // gateway, whatever got written in the reference box, and asking a gateway
+      // to reverse it fails with "no payment gateway is configured" on a shop
+      // that never had one (persona issue 223). The PROCESSOR is what decides.
+      return {
+        ...base,
+        paymentId: payment?.id ?? null,
+        chargeRef:
+          payment && takenByGateway(payment.processor) ? (payment.processorRef ?? null) : null,
+      };
     }
-    if (input.asAccountCredit) return null;
-    const payment = await tx.orderPayment.findFirst({
-      where: { orderId: ret.orderId, status: 'captured' },
-      orderBy: { capturedAt: 'desc' },
-      select: { processor: true, processorRef: true },
-    });
-    // A reference alone is NOT proof there is a charge to reverse. Money taken
-    // by hand — cash, a cheque, a bank transfer — never passed through a
-    // gateway, whatever got written in the reference box, and asking a gateway
-    // to reverse it fails with "no payment gateway is configured" on a shop
-    // that never had one (persona issue 223). The PROCESSOR is what decides.
-    if (!payment || !takenByGateway(payment.processor)) return null;
-    return payment.processorRef ?? null;
-  });
+  );
+  const totalCents = input.refundAmountCents + coreBackCents;
 
   // Settle through the tenant's gateway (sparx Pay / Stripe Direct). The charge.refunded
   // webhook later reconciles the order's payment status; this just triggers the refund.
-  if (chargeRef) {
+  let gatewayRefundId: string | undefined;
+  if (chargeRef && totalCents > 0) {
     let result;
     try {
       result = await paymentService.refund({
         tenantId: ctx.tenantId,
         chargeId: chargeRef,
-        amount: input.refundAmountCents,
+        amount: totalCents,
       });
     } catch (err) {
       if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
@@ -969,6 +992,29 @@ export async function issueRefund(
         `Refund failed at the payment gateway: ${result.errorMessage ?? 'unknown error'}`
       );
     }
+    // Kept: the charge.refunded webhook finds the order's refund row by this id.
+    // It used to be thrown away, so the webhook could never match a return's refund.
+    gatewayRefundId = result.refundId;
+  }
+
+  // Account credit is MONEY ON THE ACCOUNT, so it has to land there. The return
+  // used to say "issued as account credit" while no balance was ever written: the
+  // customer was told they had credit and the checkout had none to spend.
+  if (input.asAccountCredit && totalCents > 0) {
+    if (!customerId) {
+      throw new CommerceValidationError(
+        'This order has no customer on it, so there is no account to put credit on. Refund the payment instead.'
+      );
+    }
+    await discountService.grantAccountCredit(ctx, {
+      customerId,
+      amountCents: totalCents,
+      currency,
+      reason: 'refund',
+      note: 'Refund for a return',
+      referenceType: 'ReturnRequest',
+      referenceId: input.returnId,
+    });
   }
 
   let refundId = '';
@@ -987,7 +1033,7 @@ export async function issueRefund(
       data: {
         status: 'refunded',
         refundedAt: new Date(),
-        refundedAmountCents: input.refundAmountCents,
+        refundedAmountCents: totalCents,
         restockingFeeCents: input.restockingFeeCents ?? null,
         refundIssuedAs: issuedAs,
       },
@@ -1008,6 +1054,7 @@ export async function issueRefund(
       diff: {
         after: {
           refundAmountCents: input.refundAmountCents,
+          coreDepositCents: coreBackCents,
           issuedAs,
         },
       },
@@ -1052,30 +1099,51 @@ export async function issueRefund(
   // Post-commit, and swallowed: the return IS settled and the customer has
   // their money. A bookkeeping write that fails must not unwind that, exactly
   // as the restock above must not.
-  if (refundedOrderId !== '' && input.refundAmountCents > 0) {
+  if (refundedOrderId !== '' && totalCents > 0) {
+    const issuedAs = input.asAccountCredit ? 'account_credit' : 'original_payment';
     try {
       // The reason is READ on the order pane by a shop owner, so it names what
       // came back rather than the return's id. An id there is a sentence for a
       // developer sitting on a screen about money.
       const sentBack = refundedLines.map((line) => line.name).join(', ');
-      await orderRefundsService.recordRefund(ctx, {
-        orderId: refundedOrderId,
-        amount: input.refundAmountCents / 100,
-        reason: sentBack === '' ? 'Sent back by the customer' : `Sent back: ${sentBack}`,
-        ...(refundedLines.length > 0
-          ? {
-              lines: refundedLines.map(({ orderItemId, quantity, amount }) => ({
-                orderItemId,
-                quantity,
-                amount,
-              })),
-            }
-          : {}),
-        metadata: {
-          returnId: input.returnId,
-          issuedAs: input.asAccountCredit ? 'account_credit' : 'original_payment',
-        },
-      });
+      if (input.refundAmountCents > 0) {
+        await orderRefundsService.recordRefund(ctx, {
+          orderId: refundedOrderId,
+          ...(paymentId ? { paymentId } : {}),
+          // The gateway's own refund id: the charge.refunded webhook finds this
+          // row by it. It was never passed, so the webhook could not match.
+          ...(gatewayRefundId ? { processorRef: gatewayRefundId } : {}),
+          amount: input.refundAmountCents / 100,
+          reason: sentBack === '' ? 'Sent back by the customer' : `Sent back: ${sentBack}`,
+          ...(refundedLines.length > 0
+            ? {
+                lines: refundedLines.map(({ orderItemId, quantity, amount }) => ({
+                  orderItemId,
+                  quantity,
+                  amount,
+                })),
+              }
+            : {}),
+          metadata: { returnId: input.returnId, issuedAs },
+        });
+      }
+      // The core deposits that came back with the parts, as their own row: a
+      // deposit is not part of any line's price, so it is never split across them.
+      if (coreBackCents > 0) {
+        await orderRefundsService.recordRefund(ctx, {
+          orderId: refundedOrderId,
+          ...(paymentId ? { paymentId } : {}),
+          ...(gatewayRefundId && input.refundAmountCents === 0
+            ? { processorRef: gatewayRefundId }
+            : {}),
+          amount: coreBackCents / 100,
+          reason:
+            sentBack === ''
+              ? 'Core deposit, back with the part'
+              : `Core deposit, back with: ${sentBack}`,
+          metadata: { returnId: input.returnId, issuedAs, kind: 'core' },
+        });
+      }
     } catch (err) {
       console.error('[returns] refund settled but not recorded against the order', {
         err,
@@ -1091,7 +1159,7 @@ export async function issueRefund(
     topic: 'return.refunded',
     data: {
       returnId: input.returnId,
-      refundAmountCents: input.refundAmountCents,
+      refundAmountCents: totalCents,
       asAccountCredit: input.asAccountCredit,
     },
   });
@@ -1164,6 +1232,42 @@ async function refundShareByLine(
       name: line.name,
     };
   });
+}
+
+/**
+ * The core deposits that go back with the parts on a return (issue 051).
+ *
+ * A rebuilt part sold with a core charge, coming back itself, IS its core: the
+ * customer owes no old part for it. So every unit coming back that still had a
+ * core owed brings its deposit back. A unit whose old part was already returned
+ * or kept has had its deposit settled, and brings nothing more.
+ */
+async function coreDepositsBack(tx: TxClient, returnId: string): Promise<number> {
+  const lines = await tx.returnLineItem.findMany({
+    where: { returnId },
+    select: { orderItemId: true, approvedQuantity: true, quantity: true },
+  });
+  if (lines.length === 0) return 0;
+  const items = await tx.orderItem.findMany({
+    where: { id: { in: lines.map((line) => line.orderItemId) }, coreCharge: { not: null } },
+    select: {
+      id: true,
+      quantity: true,
+      quantityRefunded: true,
+      coreCharge: true,
+      coresReturned: true,
+      coresKept: true,
+    },
+  });
+  const byId = new Map(items.map((item) => [item.id, item]));
+  let cents = 0;
+  for (const line of lines) {
+    const item = byId.get(line.orderItemId);
+    if (item?.coreCharge == null) continue;
+    const asked = line.approvedQuantity > 0 ? line.approvedQuantity : line.quantity;
+    cents += Math.min(asked, coresOwed(item)) * Math.round(Number(item.coreCharge) * 100);
+  }
+  return cents;
 }
 
 /**

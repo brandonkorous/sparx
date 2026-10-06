@@ -146,11 +146,11 @@ export function B2bRfq() {
     },
     {
       title: 'Sent back',
-      body: 'The buyer gets a branded quote PDF, valid until the expiry. The lifecycle is tracked: submitted, under review, quoted. Nothing lost in email.',
+      body: 'The buyer gets your quote by email and a branded copy in their account to print or save as a PDF, valid until the expiry. The lifecycle is tracked: submitted, quoted, accepted. Nothing lost in email.',
     },
     {
       title: 'Accepted → converted',
-      body: 'On accept, the quote converts straight to an order at the quoted prices: through the same checkout, inventory, and fulfillment as every other order.',
+      body: 'On accept, the quote converts straight to an order at the quoted prices, invoiced on their terms: through the same credit checks, approval rules, inventory, and fulfillment as every other order.',
     },
   ];
   return (

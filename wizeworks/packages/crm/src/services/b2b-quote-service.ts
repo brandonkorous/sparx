@@ -104,6 +104,25 @@ export async function b2bQuoteStageByName(
   return stage;
 }
 
+/**
+ * Where a wholesale quote moves when the business SENDS it, or null to stay.
+ *
+ * Sending a quote is making the offer, which is what "Quoted" means. Nothing
+ * moved it there: Doty sent Wasatch Front its quote, the email arrived, and
+ * Renée's account showed it as "Draft" with no way to accept it, because the
+ * buyer can only accept a quote that is Quoted (sparx persona issue 084).
+ *
+ * Only forward, and only from a stage still being worked on: a quote already
+ * Quoted, Accepted, Declined or Expired is sent again exactly where it stands.
+ */
+export function stageAfterQuoteSent(
+  current: { sortOrder: number; stageType: string },
+  quoted: { id: string; sortOrder: number }
+): string | null {
+  if (current.stageType !== 'draft') return null;
+  return current.sortOrder < quoted.sortOrder ? quoted.id : null;
+}
+
 function isUniqueViolation(err: unknown): boolean {
   return (
     typeof err === 'object' &&

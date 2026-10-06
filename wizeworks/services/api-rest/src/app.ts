@@ -28,6 +28,7 @@ import {
   BuilderValidationError,
 } from '@wizeworks/builder';
 import {
+  CommerceCartBoughtError,
   CommerceConflictError,
   CommerceNotFoundError,
   CommerceOutOfStockError,
@@ -52,6 +53,7 @@ import {
   AutomationVersionNotFoundError,
   LockedAutomationError,
   NoDraftError,
+  PlatformVersionUnavailableError,
 } from '@wizeworks/automation';
 import {
   BookingNotFoundError,
@@ -154,6 +156,11 @@ import partnerBootcampRoutes from './routes/v1/partner/bootcamps.js';
 import tenantPartnerRoutes from './routes/v1/tenant-partner.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import publicB2bPortalRoutes from './routes/v1/public/b2b-portal.js';
+import publicB2bPortalStatementRoutes from './routes/v1/public/b2b-portal-statement.js';
+import publicB2bPortalFleetRoutes from './routes/v1/public/b2b-portal-fleet.js';
+import publicB2bPortalBuyingRoutes from './routes/v1/public/b2b-portal-buying.js';
+import publicB2bPortalApprovalRoutes from './routes/v1/public/b2b-portal-approvals.js';
+import publicB2bPortalServiceRoutes from './routes/v1/public/b2b-portal-service.js';
 import publicEstimateRoutes from './routes/v1/public/estimates.js';
 import publicSchedulingRoutes from './routes/v1/public/scheduling.js';
 import publicDocumentRoutes from './routes/v1/public/documents.js';
@@ -460,6 +467,22 @@ function commerceErrorMapper(
     };
     return reply.code(409).send(body);
   }
+  // 410 Gone: the basket is still on record, but it was bought and is no longer
+  // a basket. Its own code, so the site can tell it from a real refusal and
+  // start the buyer a fresh basket instead of showing an error (sparx persona
+  // issue 087).
+  if (err instanceof CommerceCartBoughtError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'CART_ALREADY_BOUGHT',
+        message: err.message,
+        details: { cartId: err.cartId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(410).send(body);
+  }
   if (err instanceof CommercePricingError) {
     const body: ErrorEnvelope = {
       success: false,
@@ -672,6 +695,20 @@ function automationErrorMapper(
         code: 'AUTOMATION_NO_DRAFT',
         message: err.message,
         details: { automationId: err.automationId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(409).send(body);
+  }
+  if (err instanceof PlatformVersionUnavailableError) {
+    // The message is the sentence the console shows as-is; `reason` lets a
+    // client tell "nothing waiting" from "publish your draft first".
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'AUTOMATION_PLATFORM_VERSION_UNAVAILABLE',
+        message: err.message,
+        details: { automationId: err.automationId, reason: err.reason },
         request_id: requestId,
       },
     };
@@ -989,6 +1026,14 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicReturnsAccountRoutes);
   await app.register(publicAuthRoutes);
   await app.register(publicB2bPortalRoutes);
+  await app.register(publicB2bPortalStatementRoutes);
+  // The account's fleet, read by every contact, changed by the main one (sparx persona issue 086).
+  await app.register(publicB2bPortalFleetRoutes);
+  // Quote requests built from the catalog, saved carts, Order again (sparx persona issue 086).
+  await app.register(publicB2bPortalBuyingRoutes);
+  // The account's own approver signs off its held orders (sparx persona issue 087).
+  await app.register(publicB2bPortalApprovalRoutes);
+  await app.register(publicB2bPortalServiceRoutes);
   await app.register(publicEstimateRoutes);
   await app.register(publicSchedulingRoutes);
   // E-sign + meeting links (docs/144 §12) — unauthenticated, tenant by site slug.

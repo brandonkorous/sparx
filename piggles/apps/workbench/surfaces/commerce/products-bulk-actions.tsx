@@ -1,194 +1,137 @@
 'use client';
 
-// What you can do to several products at once.
-//
-// ── The confirm has to say the same things the single one does ──────────────
-//
-// Deleting one product warns that its price, codes and versions go with it, that
-// it leaves the website immediately, that past orders keep their record, and
-// that retiring is the reversible alternative. All four are still true of
-// fifteen, and a bulk dialog that drops them because it is talking about a
-// number rather than a name is how a bulk action becomes the dangerous one.
-//
-// So: same warnings, plus the count, plus the alternative offered as an actual
-// button rather than as advice.
-//
-// ── The bar has to offer the direction that makes money ─────────────────────
-//
-// It shipped with Retire and Delete only, so choosing rows meant getting rid of
-// them. Putting a set of products ON sale is the commonest bulk act there is and
-// the endpoint already did it — see issue 207.
+// What you can do to several products at once. Once the page is ticked, the bar
+// offers every product the list matches (issue 065). Delete never takes "every
+// match": it acts only on rows somebody ticked, because it cannot be undone.
 
-import type { ReactNode } from 'react';
-import { Button, useToast } from '@wizeworks/silicaui-react';
-import { faBoxArchive, faStore, faTrash } from '@fortawesome/pro-solid-svg-icons';
+import { useState, type ReactNode } from 'react';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Text,
+} from '@wizeworks/silicaui-react';
+import {
+  faBoxArchive,
+  faChevronDown,
+  faFolderPlus,
+  faPuzzlePiece,
+  faStore,
+  faTrash,
+} from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { BulkBar } from '../../components/bulk-bar';
-import { useConfirm } from '../../lib/confirm';
+import { afterMenuClose } from '../../lib/defer';
 import type { ListSelection } from '../../lib/workbench/selection';
-import { productErrorMessage, type ProductRow } from './products-data';
-import { useBulkDeleteProducts, useBulkProductStatus } from './products-bulk';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
+import type { ProductRow } from './products-data';
+import { useDeleteChosen, useStatusChosen } from './products-bulk-status';
+import {
+  chosenSummary,
+  targetCount,
+  wholeResultOffer,
+  type BulkTarget,
+  type ProductMatchQuery,
+} from './products-bulk-words';
+import { BulkCategoryDialog } from './products-bulk-category';
+import { BulkFitmentDialog } from './products-bulk-fitment';
 
-/** "3 products" / "1 product" — the count is the thing a person checks before
- *  pressing something irreversible, so it leads every sentence here. */
-function count(n: number): string {
-  return n === 1 ? '1 product' : `${n} products`;
-}
+type Open = { kind: 'category' | 'fitment'; direction: 'add' | 'remove' } | null;
 
-type Chosen = ListSelection<ProductRow>;
-
-function useDeleteChosen(selection: Chosen) {
-  const toast = useToast();
-  const confirm = useConfirm();
-  const remove = useBulkDeleteProducts();
-
-  const run = async (ids: string[]) => {
-    const ok = await confirm({
-      title: `Delete ${count(ids.length)}?`,
-      description: `Their prices, codes, descriptions and every version of them go too, and they disappear from your website immediately. Orders that already contain them keep their record of what was bought. This cannot be undone: retire them instead if you might sell them again.`,
-      confirmLabel: `Delete ${count(ids.length)}`,
-      cancelLabel: 'Keep them',
-      color: 'danger',
-    });
-    if (!ok) return;
-    remove.mutate(ids, {
-      onSuccess: (result) => {
-        selection.clear();
-        toast.add({
-          title: `${count(result.deleted)} deleted`,
-          // A skip means somebody else got there first. Said plainly rather than
-          // folded into the total, because "15 deleted" when 14 went is the kind
-          // of thing found weeks later.
-          description:
-            result.skipped > 0
-              ? `${count(result.skipped)} had already gone, so nothing there was changed.`
-              : undefined,
-          type: 'success',
-        });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not delete those',
-          description: productErrorMessage(error, 'Nothing was removed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
-
-  return { run, isPending: remove.isPending };
-}
-
-function usePutOnSaleChosen(selection: Chosen) {
-  const toast = useToast();
-  const confirm = useConfirm();
-  const setStatus = useBulkProductStatus();
-
-  const run = async (ids: string[]) => {
-    const ok = await confirm({
-      title: `Put ${count(ids.length)} on sale?`,
-      description:
-        'They go onto your website and people can buy them straight away. You can take any of them back off at any time.',
-      confirmLabel: `Put ${count(ids.length)} on sale`,
-      cancelLabel: 'Not yet',
-      color: 'success',
-    });
-    if (!ok) return;
-    setStatus.mutate(
-      { productIds: ids, status: 'active' },
-      {
-        onSuccess: (result) => {
-          selection.clear();
-          toast.add({ title: `${count(result.updated)} put on sale`, type: 'success' });
-        },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not put those on sale',
-            description: productErrorMessage(error, 'Nothing was changed.'),
-            type: 'error',
-          });
-        },
-      }
-    );
-  };
-
-  return { run, isPending: setStatus.isPending };
-}
-
-function useRetireChosen(selection: Chosen) {
-  const toast = useToast();
-  const confirm = useConfirm();
-  const setStatus = useBulkProductStatus();
-
-  const run = async (ids: string[]) => {
-    const ok = await confirm({
-      title: `Retire ${count(ids.length)}?`,
-      description:
-        'They come off your website and stop being sellable, and everything about them is kept. You can put them back on sale whenever you want.',
-      confirmLabel: `Retire ${count(ids.length)}`,
-      cancelLabel: 'Leave them',
-      color: 'module',
-    });
-    if (!ok) return;
-    setStatus.mutate(
-      { productIds: ids, status: 'archived' },
-      {
-        onSuccess: (result) => {
-          selection.clear();
-          toast.add({ title: `${count(result.updated)} retired`, type: 'success' });
-        },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not retire those',
-            description: productErrorMessage(error, 'Nothing was changed.'),
-            type: 'error',
-          });
-        },
-      }
-    );
-  };
-
-  return { run, isPending: setStatus.isPending };
-}
-
-export function ProductsBulkActions({
-  selection,
-  toolbar,
-}: {
-  selection: Chosen;
-  toolbar: ReactNode;
+function TwoWayMenu(props: {
+  glyph: typeof faFolderPlus;
+  label: string;
+  disabled: boolean;
+  items: { label: string; onPick: () => void }[];
 }) {
-  const remove = useDeleteChosen(selection);
-  const retire = useRetireChosen(selection);
-  const publish = usePutOnSaleChosen(selection);
-
-  const ids = [...selection.chosen.keys()];
-  // Only the ones this would actually move. "7 products put on sale" when four
-  // moved is how a number stops being believed, so the three already out are not
-  // counted and the button goes away when there is nothing off sale.
-  const offSale = [...selection.chosen.values()].filter((row) => row.status !== 'active');
-  const busy = remove.isPending || retire.isPending || publish.isPending;
-
   return (
-    <BulkBar
-      count={selection.count}
-      summary={`${count(selection.count)} chosen`}
-      onClear={selection.clear}
-      toolbar={toolbar}
-    >
-      {/* Constructive first, reversible next, irreversible last, and only the
-          last one is red. Two danger buttons side by side make neither mean
-          anything, and a bar that offers only harm teaches that choosing rows is
-          for getting rid of them. */}
-      {offSale.length > 0 ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button size="sm" color="module" disabled={props.disabled}>
+          <Icon glyph={props.glyph} className="size-4" aria-hidden />
+          {props.label}
+          <Icon glyph={faChevronDown} className="size-3" aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {props.items.map((item) => (
+          // Wait for the menu to close before a dialog opens, or they fight over focus.
+          <DropdownMenuItem key={item.label} onClick={() => afterMenuClose(item.onPick)}>
+            {item.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function Organize({ busy, onOpen }: { busy: boolean; onOpen: (next: Open) => void }) {
+  return (
+    <>
+      <TwoWayMenu
+        glyph={faFolderPlus}
+        label="Category"
+        disabled={busy}
+        items={[
+          {
+            label: 'Put in a category…',
+            onPick: () => onOpen({ kind: 'category', direction: 'add' }),
+          },
+          {
+            label: 'Take out of a category…',
+            onPick: () => onOpen({ kind: 'category', direction: 'remove' }),
+          },
+        ]}
+      />
+      <TwoWayMenu
+        glyph={faPuzzlePiece}
+        label="What they fit"
+        disabled={busy}
+        items={[
+          {
+            label: 'Add what they fit…',
+            onPick: () => onOpen({ kind: 'fitment', direction: 'add' }),
+          },
+          {
+            label: 'Remove what they fit…',
+            onPick: () => onOpen({ kind: 'fitment', direction: 'remove' }),
+          },
+        ]}
+      />
+    </>
+  );
+}
+
+/** Constructive first, reversible next, irreversible last; only the last is red. */
+function StatusAndDelete({
+  target,
+  rows,
+  done,
+}: {
+  target: BulkTarget;
+  rows: ProductRow[];
+  done: () => void;
+}) {
+  const remove = useDeleteChosen(done);
+  const retire = useStatusChosen('archived', done);
+  const publish = useStatusChosen('active', done);
+  const busy = remove.isPending || retire.isPending || publish.isPending;
+  // Ticked rows: only the ones off sale, so the count is the count that moves.
+  const offSale: BulkTarget =
+    target.kind === 'ids'
+      ? { kind: 'ids', productIds: rows.filter((r) => r.status !== 'active').map((r) => r.id) }
+      : target;
+  return (
+    <>
+      {targetCount(offSale) > 0 ? (
         <Button
           size="sm"
           color="success"
           disabled={busy}
           loading={publish.isPending}
-          onClick={() => {
-            void publish.run(offSale.map((row) => row.id));
-          }}
+          onClick={() => void publish.run(offSale)}
         >
           <Icon glyph={faStore} className="size-4" aria-hidden />
           Put on sale
@@ -200,25 +143,100 @@ export function ProductsBulkActions({
         color="module"
         disabled={busy}
         loading={retire.isPending}
-        onClick={() => {
-          void retire.run(ids);
-        }}
+        onClick={() => void retire.run(target)}
       >
         <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
         Retire
       </Button>
-      <Button
-        size="sm"
-        color="danger"
-        disabled={busy}
-        loading={remove.isPending}
-        onClick={() => {
-          void remove.run(ids);
-        }}
+      {target.kind === 'ids' ? (
+        <Button
+          size="sm"
+          color="danger"
+          disabled={busy}
+          loading={remove.isPending}
+          onClick={() => void remove.run(target.productIds)}
+        >
+          <Icon glyph={faTrash} className="size-4" aria-hidden />
+          Delete
+        </Button>
+      ) : null}
+    </>
+  );
+}
+
+function Widen(props: {
+  selection: ListSelection<ProductRow>;
+  total: number | undefined;
+  narrowed: boolean;
+  everyMatch: boolean;
+  onEveryMatch: (on: boolean) => void;
+}) {
+  if (props.everyMatch) return null;
+  const offer = wholeResultOffer({
+    allOnPageChosen: props.selection.allOnPageChosen,
+    chosen: props.selection.count,
+    total: props.total,
+    narrowed: props.narrowed,
+  });
+  if (offer?.kind === 'too-many') return <Text className="text-base">{offer.text}</Text>;
+  if (offer?.kind !== 'offer') return null;
+  return (
+    <Button size="sm" variant="link" color="module" onClick={() => props.onEveryMatch(true)}>
+      {offer.label}
+    </Button>
+  );
+}
+
+export function ProductsBulkActions(props: {
+  ctx: SurfaceContext;
+  selection: ListSelection<ProductRow>;
+  match: ProductMatchQuery;
+  total: number | undefined;
+  narrowed: boolean;
+  everyMatch: boolean;
+  onEveryMatch: (on: boolean) => void;
+  toolbar: ReactNode;
+}) {
+  const { selection, total, everyMatch, onEveryMatch } = props;
+  const [open, setOpen] = useState<Open>(null);
+  const clear = () => {
+    selection.clear();
+    onEveryMatch(false);
+  };
+  const target: BulkTarget =
+    everyMatch && total !== undefined
+      ? { kind: 'match', match: props.match, total }
+      : { kind: 'ids', productIds: [...selection.chosen.keys()] };
+  const close = () => setOpen(null);
+  return (
+    <>
+      <BulkBar
+        count={targetCount(target)}
+        summary={chosenSummary(target, props.narrowed)}
+        beside={<Widen {...props} />}
+        onClear={clear}
+        toolbar={props.toolbar}
       >
-        <Icon glyph={faTrash} className="size-4" aria-hidden />
-        Delete
-      </Button>
-    </BulkBar>
+        <Organize busy={false} onOpen={setOpen} />
+        <StatusAndDelete target={target} rows={[...selection.chosen.values()]} done={clear} />
+      </BulkBar>
+      {open?.kind === 'category' ? (
+        <BulkCategoryDialog
+          direction={open.direction}
+          target={target}
+          onClose={close}
+          onDone={clear}
+        />
+      ) : null}
+      {open?.kind === 'fitment' ? (
+        <BulkFitmentDialog
+          ctx={props.ctx}
+          direction={open.direction}
+          target={target}
+          onClose={close}
+          onDone={clear}
+        />
+      ) : null}
+    </>
   );
 }

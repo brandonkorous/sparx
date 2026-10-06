@@ -15,6 +15,8 @@ import type {
   CompleteVaultParams,
   CreatePaymentIntentParams,
   CreateSetupSessionParams,
+  LookedUpPayment,
+  LookupPaymentParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
@@ -23,10 +25,11 @@ import type {
   RefundResult,
   SetupSession,
   StoredChargeResult,
+  VaultFromPaymentParams,
   VaultedMethod,
   WebhookEvent,
 } from '../gateway';
-import { loadCredentials, orderReference, postJson } from './adapter-util';
+import { loadCredentials, paymentReference, postJson } from './adapter-util';
 
 export const AUTHORIZE_NET_ID = 'authorize_net';
 
@@ -101,6 +104,44 @@ function dollars(cents: number): string {
   return (cents / 100).toFixed(2);
 }
 
+/** How many days of settled batches a payment lookup reads (see `lookupPayment`). */
+const LOOKUP_DAYS = 4;
+/** How far back a refund looks for a payment that kept no transaction id: the
+ *  most Authorize.net lists in one ask. */
+const REFUND_SEARCH_DAYS = 31;
+
+/** Authorize.net `transactionStatus` values, from its Transaction Details API. */
+const ANET_PAID = new Set(['capturedPendingSettlement', 'settledSuccessfully']);
+const ANET_FAILED = new Set([
+  'declined',
+  'voided',
+  'expired',
+  'failedReview',
+  'generalError',
+  'settlementError',
+  'communicationError',
+  'couldNotVoid',
+]);
+
+/** One row of a transaction list. A refund carries the same invoice number as
+ *  the payment it gives back, so refunds are not the payment being asked about. */
+interface AnetListedTransaction {
+  transId: string;
+  invoiceNumber?: string;
+  transactionStatus?: string;
+  settleAmount?: number | string;
+}
+
+function paymentFor(
+  transactions: AnetListedTransaction[] | undefined,
+  invoiceNumber: string
+): AnetListedTransaction | undefined {
+  return transactions?.find(
+    (row) =>
+      row.invoiceNumber === invoiceNumber && !(row.transactionStatus ?? '').startsWith('refund')
+  );
+}
+
 interface AnetMessages {
   messages: { resultCode: string; message: { code: string; text: string }[] };
 }
@@ -115,7 +156,7 @@ export class AuthorizeNetGateway implements PaymentGateway {
 
   async createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent> {
     const creds = await loadCredentials(params.tenantId, AUTHORIZE_NET_ID);
-    const ref = orderReference(params);
+    const ref = paymentReference();
 
     const body = {
       getHostedPaymentPageRequest: {
@@ -123,7 +164,7 @@ export class AuthorizeNetGateway implements PaymentGateway {
         transactionRequest: {
           transactionType: 'authCaptureTransaction',
           amount: dollars(params.amount),
-          order: { invoiceNumber: ref.slice(0, 20), description: `sparx order ${ref}` },
+          order: { invoiceNumber: ref, description: `Order ${ref}` },
         },
         hostedPaymentSettings: {
           setting: [
@@ -186,45 +227,98 @@ export class AuthorizeNetGateway implements PaymentGateway {
     });
   }
 
+  /**
+   * Give money back.
+   *
+   * Authorize.net refunds a TRANSACTION, against the card's last 4 digits.
+   * Every caller passed our invoice number where the transaction id belongs,
+   * and none passed the last 4, so every refund was refused before it was sent
+   * (issue 917). The transaction is the one the order's payment kept, or the
+   * one carrying our invoice number in the last month; its details give the
+   * card's last 4 and whether it has settled.
+   *
+   * A payment that has not settled yet cannot be refunded at Authorize.net,
+   * only cancelled whole (a void), so a full refund before settlement is a
+   * void, and a part refund says to wait for settlement.
+   */
   async refund(params: RefundParams): Promise<RefundResult> {
-    // Authorize.net refunds require the original transaction id + the card's last 4 +
-    // expiration; the caller passes last4 in metadata (stored at capture). Without it,
-    // a refund cannot be issued via the API — surfaced honestly, not silently swallowed.
-    const last4 = params.metadata?.last4;
-    if (!last4) {
-      return {
-        success: false,
-        amount: params.amount ?? 0,
-        errorMessage: 'authorize_net refund requires the card last4 (metadata.last4)',
-      };
-    }
+    const failed = (errorMessage: string): RefundResult => ({
+      success: false,
+      amount: params.amount ?? 0,
+      errorMessage,
+    });
     try {
       const creds = await loadCredentials(params.tenantId, AUTHORIZE_NET_ID);
-      const body = {
-        createTransactionRequest: {
-          merchantAuthentication: this.auth(creds),
-          transactionRequest: {
-            transactionType: 'refundTransaction',
-            ...(params.amount !== undefined ? { amount: dollars(params.amount) } : {}),
-            payment: { creditCard: { cardNumber: last4, expirationDate: 'XXXX' } },
-            refTransId: params.chargeId,
+      const url = apiUrl(creds.environment);
+      const merchantAuthentication = this.auth(creds);
+      const transId =
+        params.transactionRef ??
+        (await this.findPayment(creds, params.chargeId, REFUND_SEARCH_DAYS))?.transId;
+      if (!transId) {
+        return failed(
+          'Authorize.net has no record of this payment in the last month. Give the money back from your Authorize.net account instead.'
+        );
+      }
+
+      const details = await postJson<
+        AnetMessages & {
+          transaction?: {
+            transactionStatus?: string;
+            settleAmount?: number | string;
+            payment?: { creditCard?: { cardNumber?: string } };
+          };
+        }
+      >(url, { getTransactionDetailsRequest: { merchantAuthentication, transId } });
+      assertAnetOk(details, 'find this payment');
+      const txn = details.transaction;
+      const paidCents = Math.round(Number(txn?.settleAmount ?? 0) * 100);
+      const amountCents = params.amount ?? paidCents;
+
+      if (txn?.transactionStatus === 'capturedPendingSettlement') {
+        if (amountCents !== paidCents) {
+          return failed(
+            'This payment has not settled at Authorize.net yet, so today only the whole amount can be given back. Part of it can be given back once it settles, usually overnight.'
+          );
+        }
+        const voided = await postJson<
+          { transactionResponse?: { transId?: string } } & AnetMessages
+        >(url, {
+          createTransactionRequest: {
+            merchantAuthentication,
+            transactionRequest: { transactionType: 'voidTransaction', refTransId: transId },
           },
-        },
-      };
+        });
+        assertAnetOk(voided, 'cancel this payment');
+        return {
+          success: true,
+          refundId: voided.transactionResponse?.transId ?? transId,
+          amount: paidCents,
+        };
+      }
+
+      const last4 = (txn?.payment?.creditCard?.cardNumber ?? params.metadata?.last4 ?? '').slice(
+        -4
+      );
       const res = await postJson<
         { transactionResponse?: { transId?: string; responseCode?: string } } & AnetMessages
-      >(apiUrl(creds.environment), body);
-      const txn = res.transactionResponse;
-      if (res.messages.resultCode !== 'Ok' || !txn?.transId) {
+      >(url, {
+        createTransactionRequest: {
+          merchantAuthentication,
+          transactionRequest: {
+            transactionType: 'refundTransaction',
+            amount: dollars(amountCents),
+            payment: { creditCard: { cardNumber: last4, expirationDate: 'XXXX' } },
+            refTransId: transId,
+          },
+        },
+      });
+      const refund = res.transactionResponse;
+      if (res.messages.resultCode !== 'Ok' || !refund?.transId) {
         throw new Error(res.messages.message?.[0]?.text ?? 'refund declined');
       }
-      return { success: true, refundId: txn.transId, amount: params.amount ?? 0 };
+      return { success: true, refundId: refund.transId, amount: amountCents };
     } catch (err) {
-      return {
-        success: false,
-        amount: params.amount ?? 0,
-        errorMessage: err instanceof Error ? err.message : 'authorize_net refund failed',
-      };
+      return failed(err instanceof Error ? err.message : 'authorize_net refund failed');
     }
   }
 
@@ -314,6 +408,37 @@ export class AuthorizeNetGateway implements PaymentGateway {
     assertAnetOk(res, 'save this card');
 
     const profileId = res.customerProfileId;
+    const paymentProfileId = res.customerPaymentProfileIdList?.[0];
+    if (!profileId || !paymentProfileId) return null;
+    return this.readProfile(creds, profileId, paymentProfileId);
+  }
+
+  /**
+   * Keep the card a hosted-page payment was made with (issue 739).
+   *
+   * Authorize.net makes a stored profile FROM a finished transaction with
+   * `createCustomerProfileFromTransactionRequest`: a new customer profile for a
+   * first card, or one more payment profile inside an existing one. The hosted
+   * page needs no change, and the card is the one the shopper actually paid
+   * with. It needs the transaction id, which the webhook reports separately
+   * from our invoice reference and the reconciler keeps as `transactionRef`.
+   */
+  async vaultFromPayment(params: VaultFromPaymentParams): Promise<VaultedMethod | null> {
+    if (!params.chargeRef) return null;
+    const creds = await loadCredentials(params.tenantId, AUTHORIZE_NET_ID);
+    const res = await postJson<
+      AnetMessages & { customerProfileId?: string; customerPaymentProfileIdList?: string[] }
+    >(apiUrl(creds.environment), {
+      createCustomerProfileFromTransactionRequest: {
+        merchantAuthentication: this.auth(creds),
+        transId: params.chargeRef,
+        ...(params.customerRef
+          ? { customerProfileId: params.customerRef }
+          : { customer: { merchantCustomerId: params.customerId.slice(0, 20) } }),
+      },
+    });
+    assertAnetOk(res, 'keep the card from this payment');
+    const profileId = res.customerProfileId ?? params.customerRef;
     const paymentProfileId = res.customerPaymentProfileIdList?.[0];
     if (!profileId || !paymentProfileId) return null;
     return this.readProfile(creds, profileId, paymentProfileId);
@@ -430,6 +555,93 @@ export class AuthorizeNetGateway implements PaymentGateway {
     }
   }
 
+  /**
+   * Where a payment stands at Authorize.net, in the words its webhook would use.
+   *
+   * The reference is our own invoice number, which is what the webhook reports
+   * as the charge. Authorize.net cannot be asked for a transaction by invoice
+   * number, so this reads the transactions not yet settled, then the batches
+   * settled in the last few days, and takes the one carrying it. The stranded
+   * payment sweep only asks about the last 3 days, so 4 days of batches covers
+   * every question it can put. Without this, a shop that never set up the
+   * webhook left every order unpaid (issue 739).
+   *
+   * It needs the Transaction Details API, which a merchant can switch off in
+   * their Authorize.net account; then this throws with Authorize.net's own
+   * words and the caller logs it.
+   */
+  async lookupPayment(params: LookupPaymentParams): Promise<LookedUpPayment | null> {
+    const creds = await loadCredentials(params.tenantId, AUTHORIZE_NET_ID);
+    const found = await this.findPayment(creds, params.paymentRef, LOOKUP_DAYS);
+    if (!found) return null;
+
+    // The same fields `normalizeAuthorizeNetEvent` reports for a capture.
+    const data = {
+      chargeId: params.paymentRef,
+      transactionRef: found.transId,
+      amountCents: Math.round(Number(found.settleAmount ?? 0) * 100),
+      currency: 'USD',
+    };
+    const status = found.transactionStatus ?? '';
+    if (ANET_PAID.has(status)) return { status: 'succeeded', data };
+    if (ANET_FAILED.has(status)) return { status: 'failed', data };
+    // Held for fraud review, or waiting on its capture: not settled either way.
+    return { status: 'pending', data };
+  }
+
+  /**
+   * The payment carrying our invoice number: the transactions not yet settled,
+   * then the batches settled in the last `days` (Authorize.net lists at most
+   * 31 days of batches at once). Refunds are skipped: one carries the same
+   * invoice number as the payment it gives back.
+   */
+  private async findPayment(
+    creds: Awaited<ReturnType<typeof loadCredentials>>,
+    invoiceNumber: string,
+    days: number
+  ): Promise<AnetListedTransaction | undefined> {
+    const url = apiUrl(creds.environment);
+    const merchantAuthentication = this.auth(creds);
+    // Newest first, so a retried attempt's latest try is the one read.
+    const listing = { sorting: { orderBy: 'submitTimeUTC', orderDescending: true } };
+    const page = { paging: { limit: 1000, offset: 1 } };
+
+    const unsettled = await postJson<AnetMessages & { transactions?: AnetListedTransaction[] }>(
+      url,
+      { getUnsettledTransactionListRequest: { merchantAuthentication, ...listing, ...page } }
+    );
+    assertAnetOk(unsettled, 'look up this payment');
+    const pending = paymentFor(unsettled.transactions, invoiceNumber);
+    if (pending) return pending;
+
+    const now = Date.now();
+    const batches = await postJson<AnetMessages & { batchList?: { batchId: string }[] }>(url, {
+      getSettledBatchListRequest: {
+        merchantAuthentication,
+        firstSettlementDate: new Date(now - days * 86_400_000).toISOString(),
+        lastSettlementDate: new Date(now).toISOString(),
+      },
+    });
+    assertAnetOk(batches, 'look up this payment');
+    for (const batch of batches.batchList ?? []) {
+      const settled = await postJson<AnetMessages & { transactions?: AnetListedTransaction[] }>(
+        url,
+        {
+          getTransactionListRequest: {
+            merchantAuthentication,
+            batchId: batch.batchId,
+            ...listing,
+            ...page,
+          },
+        }
+      );
+      assertAnetOk(settled, 'look up this payment');
+      const found = paymentFor(settled.transactions, invoiceNumber);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
   /** Read a saved profile back for its display metadata. Authorize.net masks the
    *  number to `XXXX1111`, which is all that is wanted anyway. */
   private async readProfile(
@@ -494,17 +706,20 @@ export class AuthorizeNetGateway implements PaymentGateway {
   // body with the Signature Key). The route resolves the tenant from its path.
   async parseWebhookForTenant(tenantId: string, event: WebhookEvent): Promise<ParsedWebhookEvent> {
     const creds = await loadCredentials(tenantId, AUTHORIZE_NET_ID);
+    // An unsigned message is refused, never trusted. Without a key there is
+    // nothing to check it against, and anyone who knew this address could
+    // otherwise mark an order paid or refunded. Paid status does not depend on
+    // it: checkout and the stranded-payment sweep ask Authorize.net directly.
     const sigKey = creds.secrets.signature_key;
-    if (sigKey) {
-      const expected = createHmac('sha512', Buffer.from(sigKey, 'hex'))
-        .update(event.rawBody)
-        .digest('hex')
-        .toUpperCase();
-      const got = event.signature.replace(/^sha512=/i, '').toUpperCase();
-      const ok =
-        expected.length === got.length && timingSafeEqual(Buffer.from(expected), Buffer.from(got));
-      if (!ok) throw new Error('authorize_net webhook signature mismatch');
-    }
+    if (!sigKey) throw new Error('authorize_net webhook refused: no signature key is set');
+    const expected = createHmac('sha512', Buffer.from(sigKey, 'hex'))
+      .update(event.rawBody)
+      .digest('hex')
+      .toUpperCase();
+    const got = event.signature.replace(/^sha512=/i, '').toUpperCase();
+    const ok =
+      expected.length === got.length && timingSafeEqual(Buffer.from(expected), Buffer.from(got));
+    if (!ok) throw new Error('authorize_net webhook signature mismatch');
     return normalizeAuthorizeNetEvent(
       JSON.parse(event.rawBody.toString('utf8')) as AnetWebhook,
       tenantId
@@ -537,7 +752,12 @@ export function normalizeAuthorizeNetEvent(evt: AnetWebhook, tenantId: string): 
       return {
         ...base,
         type: 'payment.succeeded',
-        data: { chargeId: id, amountCents, currency: 'USD' },
+        data: {
+          chargeId: id,
+          ...(evt.payload?.id ? { transactionRef: evt.payload.id } : {}),
+          amountCents,
+          currency: 'USD',
+        },
       };
     case 'net.authorize.payment.refund.created':
       return {

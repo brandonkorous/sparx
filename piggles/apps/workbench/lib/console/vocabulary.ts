@@ -332,15 +332,28 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
  * Each of these had a twin two clicks away. The rail said "Add a price list";
  * the pane's own button said "Add a special price". One action, two names, and
  * which one you read depended on which one you pressed. Issue 729.
+ *
+ * The pane's own button now reads these too, through `createLabelFor`, so the
+ * words live here once. Ten lists still wrote their own until issue 743: "New
+ * process" on a pane whose `+` said "New pipeline". `create-label-agrees.test.ts`
+ * fails a list that drifts again.
  */
 export const PIGGLES_CREATE_LABELS: Readonly<Record<string, string>> = {
   'b2b.accounts.list': 'Add a wholesale customer',
   'b2b.pricing-tiers.list': 'Add a wholesale group',
+  'cms.types.list': 'New kind of content',
   'commerce.pricing.list': 'Add a special price',
+  'commerce.product-types.list': 'New kind of product',
   'commerce.subscriptions.list': 'Start a repeat order',
+  'crm.object-types.list': 'New thing to track',
+  'crm.pipelines.list': 'New process',
   'crm.segments.list': 'New customer group',
+  'crm.tasks.list': 'Add something to do',
   'email.broadcasts.list': 'New email campaign',
+  'email.sequences.list': 'New automatic email',
   'inventory.purchase-orders.list': 'New order',
+  'inventory.transfers.list': 'Start a move',
+  'invoicing.workflows': 'Set up a path',
 };
 
 /**

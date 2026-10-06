@@ -36,7 +36,7 @@
 // erased is one nobody could audit.
 
 import { countClass } from '../../lib/count-ink';
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -60,6 +60,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { DownloadButton } from '../../components/download-button';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
+import { VariantPicker } from '../commerce/variant-picker';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage, useStockLocations } from './data';
@@ -322,15 +323,24 @@ function MappingStep({
   );
 }
 
+/** What a person can do about a row that could not be used. `match` says the
+ *  file's code is one of theirs under another name, which is the honest answer
+ *  for an item another system gave a different code (sparx persona issue 068). */
+type RowAction = { action: 'skip' } | { action: 'create' } | { action: 'match'; variantId: string };
+
 function PlanTable({
   batch,
   onResolve,
   busy,
 }: {
   batch: ImportBatchDetail;
-  onResolve: (row: ImportRowPlan, action: 'skip' | 'create') => void;
+  onResolve: (row: ImportRowPlan, action: RowAction) => void;
   busy: boolean;
 }) {
+  // The one problem row being pointed at an item that already exists. One at a
+  // time: the picker is a search box, and two open at once would be two answers
+  // in flight for rows the person is reading side by side.
+  const [pickingLine, setPickingLine] = useState<number | null>(null);
   const errors = batch.plan.filter((row) => row.outcome === 'error');
   const changes = batch.plan.filter((row) => row.outcome === 'apply');
   const skipped = batch.plan.filter((row) => row.outcome === 'skipped');
@@ -347,7 +357,7 @@ function PlanTable({
             <AlertTitle>{plural(errors.length, 'row', 'rows')} could not be used</AlertTitle>
             <AlertDescription>
               {newItems.length > 0
-                ? `${plural(newItems.length, 'row carries a code', 'rows carry codes')} sparx has never seen. ${newItems.length === 1 ? 'Create it as a new item, or leave it out.' : 'Create them as new items, or leave them out.'} Either way the decision is recorded with the import.`
+                ? `${plural(newItems.length, 'row carries a code', 'rows carry codes')} sparx has never seen. ${newItems.length === 1 ? 'Create it as a new item, point it at one you already have, or leave it out.' : 'Create them as new items, point them at ones you already have, or leave them out.'} Either way the decision is recorded with the import.`
                 : 'Sort these out below, or fix them in the file and upload it again. A missing code usually means a whole column is off by one.'}
             </AlertDescription>
           </AlertContent>
@@ -366,42 +376,85 @@ function PlanTable({
           </thead>
           <tbody>
             {errors.slice(0, 50).map((row) => (
-              <tr key={`error-${row.line}`}>
-                <td className="tabular-nums">{row.line}</td>
-                <td className="font-mono text-sm">{row.sku ?? '—'}</td>
-                <td>
-                  <Text className="text-danger text-sm">{row.error}</Text>
-                  {row.name ? <Text className="text-sm">{row.name}</Text> : null}
-                </td>
-                <td className="text-right whitespace-nowrap">
-                  <span className="flex justify-end gap-2">
-                    {row.sku && !row.variantId ? (
+              <Fragment key={`error-${row.line}`}>
+                <tr>
+                  <td className="tabular-nums">{row.line}</td>
+                  <td className="font-mono text-sm">{row.sku ?? '—'}</td>
+                  <td>
+                    <Text className="text-danger text-sm">{row.error}</Text>
+                    {row.name ? <Text className="text-sm">{row.name}</Text> : null}
+                  </td>
+                  <td className="text-right whitespace-nowrap">
+                    <span className="flex justify-end gap-2">
+                      {!row.variantId ? (
+                        <Button
+                          color="module"
+                          variant="outline"
+                          size="sm"
+                          disabled={busy}
+                          aria-expanded={pickingLine === row.line}
+                          onClick={() => {
+                            setPickingLine(pickingLine === row.line ? null : row.line);
+                          }}
+                        >
+                          It is one I have
+                        </Button>
+                      ) : null}
+                      {row.sku && !row.variantId ? (
+                        <Button
+                          color="success"
+                          variant="outline"
+                          size="sm"
+                          disabled={busy}
+                          onClick={() => {
+                            onResolve(row, { action: 'create' });
+                          }}
+                        >
+                          Create it
+                        </Button>
+                      ) : null}
                       <Button
-                        color="success"
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         disabled={busy}
                         onClick={() => {
-                          onResolve(row, 'create');
+                          onResolve(row, { action: 'skip' });
                         }}
                       >
-                        Create it
+                        Leave it out
                       </Button>
-                    ) : null}
-                    <Button
-                      color="neutral"
-                      variant="ghost"
-                      size="sm"
-                      disabled={busy}
-                      onClick={() => {
-                        onResolve(row, 'skip');
-                      }}
-                    >
-                      Leave it out
-                    </Button>
-                  </span>
-                </td>
-              </tr>
+                    </span>
+                  </td>
+                </tr>
+                {pickingLine === row.line ? (
+                  <tr>
+                    <td colSpan={4}>
+                      <div className="flex flex-col gap-2 py-2">
+                        <Text className="text-sm">
+                          {`Which of your items is ${row.name ?? row.sku ?? `row ${String(row.line)}`}? Its count goes there, and the file's code is left as it is.`}
+                        </Text>
+                        <VariantPicker
+                          onPick={(variant) => {
+                            setPickingLine(null);
+                            onResolve(row, { action: 'match', variantId: variant.id });
+                          }}
+                        />
+                        <div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setPickingLine(null);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
+              </Fragment>
             ))}
           </tbody>
         </Table>
@@ -597,21 +650,23 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
     );
   };
 
-  const resolveRow = (row: ImportRowPlan, action: 'skip' | 'create'): void => {
+  const resolveRow = (row: ImportRowPlan, choice: RowAction): void => {
     if (!current) return;
     resolveRows.mutate(
       {
         id: current.id,
         resolutions: [
-          action === 'skip'
+          choice.action === 'skip'
             ? { line: row.line, action: 'skip' }
-            : {
-                line: row.line,
-                action: 'create',
-                sku: row.sku ?? '',
-                title: nameOrCode(row.name, row.sku),
-                unitCostCents: row.unitCostCents ?? null,
-              },
+            : choice.action === 'match'
+              ? { line: row.line, action: 'match', variantId: choice.variantId }
+              : {
+                  line: row.line,
+                  action: 'create',
+                  sku: row.sku ?? '',
+                  title: nameOrCode(row.name, row.sku),
+                  unitCostCents: row.unitCostCents ?? null,
+                },
         ],
       },
       {
@@ -1096,7 +1151,11 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                           ? formatCount(batch.rowsApplied)
                           : formatCount(batch.rowsTotal)}
                       </td>
-                      <td className="text-right tabular-nums">{formatCount(batch.unitsChanged)}</td>
+                      <td className="text-right tabular-nums">
+                        {/* A thrown-away file moved nothing; its plan's count beside
+                            "Thrown away" read as stock that had moved (issue 068). */}
+                        {formatCount(batch.status === 'discarded' ? 0 : batch.unitsChanged)}
+                      </td>
                       <td className="text-right whitespace-nowrap">
                         <Timestamp value={batch.appliedAt ?? batch.createdAt} format="relative" />
                       </td>

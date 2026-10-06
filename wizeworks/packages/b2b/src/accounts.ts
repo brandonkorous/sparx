@@ -4,19 +4,42 @@
 // fleet-filtered compatible-products read. Extracted from the api-rest routes.
 //
 // Boundary with CRM: @wizeworks/crm's companyService owns the account RECORD
-// (companyName, taxId, assigned rep, the free-text `pricingTier` label). These
-// functions own the B2B MODULE's enrichments — chiefly the validated `pricingTierId`
-// FK (CRM only sets the label string) and the override / fleet tables.
+// (companyName, taxId, assigned rep). Both write the validated `pricingTierId`
+// FK; the legacy free-text `pricing_tier` column is read and written by nothing.
+// These functions own the B2B MODULE's enrichments and the override / fleet tables.
 
 import { z } from 'zod';
 import { withTenant } from '@wizeworks/db';
-import { notFound } from '@wizeworks/api-core/errors';
+import { conflict, notFound, validationError } from '@wizeworks/api-core/errors';
 // A trade account IS the CRM's company row, so its tenant-declared properties go
 // through the CRM's single write path rather than a second one here (docs/144
 // §3). `@wizeworks/b2b` already depends on `@wizeworks/crm`, and crm does not depend
 // back, so this adds no cycle.
-import { asBag, objectDefService, resolvePropertyBag, toJsonInput } from '@wizeworks/crm';
+import {
+  PaymentTerms,
+  asBag,
+  companyService,
+  objectDefService,
+  resolvePropertyBag,
+  taskService,
+  toJsonInput,
+} from '@wizeworks/crm';
 import type { B2bContext } from './context.js';
+// The fleet lives in its own file; these names stay reachable as
+// `accountService.*` for the routes and MCP tools that already use them (sparx
+// persona issue 086).
+import { readFleet, resolveFleetVehicles } from './fleet.js';
+export {
+  CompatibleProductsQuery,
+  FleetVehicleEntry,
+  FleetVehiclesBody,
+  addFleetVehicle,
+  listCompatibleProducts,
+  removeFleetVehicle,
+  setFleet,
+  updateFleetVehicle,
+  type FleetVehiclesInput,
+} from './fleet.js';
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -32,7 +55,10 @@ export const AccountListQuery = z.object({
 export const AccountPatchBody = z.object({
   pricingTierId: z.string().uuid().nullable().optional(),
   creditLimitCents: z.number().int().min(0).optional(),
-  paymentTerms: z.enum(['prepay', 'net30', 'net60', 'net90']).nullable().optional(),
+  // The CRM's shape, not a list of four. An account created on 15 days to pay
+  // (the add screen offers it) could never be saved again: every edit came back
+  // "The problem is with Payment terms" (sparx persona issue 076).
+  paymentTerms: PaymentTerms.nullable().optional(),
   discountPercent: z.number().min(0).max(100).optional(),
   status: z.enum(['active', 'credit_hold', 'suspended', 'inactive']).optional(),
   internalNotes: z.string().max(5000).nullable().optional(),
@@ -46,68 +72,102 @@ export const AccountPatchBody = z.object({
   customProperties: z.record(z.string(), z.unknown()).optional(),
 });
 
+// The account's buying rules for one version (sparx persona issue 086): the
+// least and most it may order at once, and the case pack it buys in. Null clears
+// a rule; absent leaves it alone.
+const QuantityRuleFields = {
+  minOrderQty: z.number().int().min(1).nullable().optional(),
+  maxOrderQty: z.number().int().min(1).nullable().optional(),
+  orderMultiple: z.number().int().min(1).nullable().optional(),
+};
+
+// A row may now carry buying rules and no price of its own (the account keeps
+// its group's price), so the price is AT MOST one of the two rather than exactly
+// one. `resolve_b2b_price()` already falls through a row with neither.
 export const AccountOverrideBody = z
   .object({
     variantId: z.string().uuid().optional(),
     collectionId: z.string().uuid().optional(),
     priceCents: z.number().int().min(0).optional(),
     discountPercentage: z.number().min(0).max(100).optional(),
+    ...QuantityRuleFields,
     notes: z.string().max(1000).optional(),
   })
   .refine((d) => Boolean(d.variantId) !== Boolean(d.collectionId), {
     message: 'Provide exactly one of variantId or collectionId',
   })
-  .refine(
-    (d) => Boolean(d.priceCents !== undefined) !== Boolean(d.discountPercentage !== undefined),
-    { message: 'Provide exactly one of priceCents or discountPercentage' }
-  );
+  .refine((d) => !(d.priceCents !== undefined && d.discountPercentage !== undefined), {
+    message: 'Provide a fixed price or a percentage off, not both',
+  });
 
 export const AccountOverridePatchBody = z
   .object({
     variantId: z.string().uuid().optional(),
     collectionId: z.string().uuid().optional(),
-    priceCents: z.number().int().min(0).optional(),
-    discountPercentage: z.number().min(0).max(100).optional(),
+    // Nullable so switching a fixed price to a percentage (or to no price of
+    // its own) can clear the other half in the same request.
+    priceCents: z.number().int().min(0).nullable().optional(),
+    discountPercentage: z.number().min(0).max(100).nullable().optional(),
+    ...QuantityRuleFields,
     notes: z.string().max(1000).optional(),
   })
   .partial();
 
-// A fleet vehicle entry. Generalized fitment: a vehicle identifies a node in the
-// domain's tree (`nodeId`, the deepest level the account operates) plus a numeric
-// value per `range` dimension (`rangeValues`). `nodeId` null = the whole domain.
-export const FleetVehicleEntry = z.object({
-  label: z.string().min(1).max(127),
-  vin: z
-    .string()
-    .length(17)
-    .regex(/^[A-HJ-NPR-Z0-9]{17}$/, 'VIN excludes I, O, Q and is 17 chars')
-    .optional(),
-  domainId: z.string().uuid(),
-  nodeId: z.string().uuid().nullish(),
-  rangeValues: z
-    .array(z.object({ dimensionKey: z.string().min(1), value: z.number() }))
-    .max(16)
-    .optional(),
-  mileage: z.number().int().nonnegative().optional(),
-  notes: z.string().max(2000).optional(),
-  count: z.number().int().min(1).default(1),
-});
+/** What a row would hold once written, for the checks below. */
+export interface OverrideShape {
+  variantId: string | null;
+  collectionId: string | null;
+  priceCents: number | null;
+  discountPercentage: unknown;
+  minOrderQty: number | null;
+  maxOrderQty: number | null;
+  orderMultiple: number | null;
+}
 
-export const FleetVehiclesBody = z.object({
-  vehicles: z.array(FleetVehicleEntry).max(100),
-  fleetSize: z.number().int().min(0).optional(),
-});
+/** "24 or 36", the whole cases either side of `n`. */
+function casesNear(n: number, each: number): string {
+  const down = Math.floor(n / each) * each;
+  const up = Math.ceil(n / each) * each;
+  return down >= each ? `${String(down)} or ${String(up)}` : String(up);
+}
 
-export const CompatibleProductsQuery = z.object({
-  take: z.coerce.number().int().min(1).max(250).default(50),
-  skip: z.coerce.number().int().min(0).default(0),
-});
+/**
+ * Why these settings cannot be saved, in a sentence staff can act on, or null.
+ *
+ * A minimum or maximum that is not a whole number of cases is refused rather
+ * than quietly rounded: "at least 30, in cases of 12" can never be met as
+ * written, and a buyer would be told to choose an amount staff never chose.
+ */
+export function overrideSettingProblem(row: OverrideShape): string | null {
+  const { minOrderQty: min, maxOrderQty: max, orderMultiple: each } = row;
+  const hasRule = min !== null || max !== null || each !== null;
+  if (hasRule && row.collectionId) {
+    return 'Buying rules are set for one version of a product, not for a whole collection.';
+  }
+  if (row.priceCents !== null && row.discountPercentage !== null) {
+    return 'Give this business a fixed price or a percentage off, not both.';
+  }
+  if (!hasRule && row.priceCents === null && row.discountPercentage === null) {
+    return 'Set a price, a percentage off, or a buying rule. As it stands this would change nothing.';
+  }
+  if (min !== null && max !== null && min > max) {
+    return `The minimum (${String(min)}) is more than the maximum (${String(max)}). Make the minimum smaller or the maximum larger.`;
+  }
+  if (each !== null && each > 1) {
+    if (min !== null && min % each !== 0) {
+      return `A minimum of ${String(min)} cannot be bought in cases of ${String(each)}. Use ${casesNear(min, each)}.`;
+    }
+    if (max !== null && max % each !== 0) {
+      return `A maximum of ${String(max)} cannot be bought in cases of ${String(each)}. Use ${casesNear(max, each)}.`;
+    }
+  }
+  return null;
+}
 
 export type AccountListInput = z.infer<typeof AccountListQuery>;
 export type AccountPatchInput = z.infer<typeof AccountPatchBody>;
 export type AccountOverrideInput = z.infer<typeof AccountOverrideBody>;
 export type AccountOverridePatchInput = z.infer<typeof AccountOverridePatchBody>;
-export type FleetVehiclesInput = z.infer<typeof FleetVehiclesBody>;
 
 // ── View mappers ──────────────────────────────────────────────────────────────
 
@@ -116,7 +176,6 @@ function toAccountView(a: {
   companyName: string;
   taxId: string | null;
   website: string | null;
-  pricingTier: string | null;
   pricingTierId: string | null;
   creditLimit: unknown;
   creditUsed: unknown;
@@ -129,8 +188,17 @@ function toAccountView(a: {
   customProperties?: unknown;
   createdAt: Date;
   updatedAt: Date;
-  pricingTierFk?: { id: string; name: string; discountType: string; discountValue: unknown } | null;
+  pricingTierFk?: {
+    id: string;
+    name: string;
+    discountType: string;
+    discountValue: unknown;
+    deletedAt: Date | null;
+  } | null;
 }) {
+  // A removed tier prices nothing, so every field saying what they pay treats it
+  // as no tier; `removedTierName` is for the account screen to say it was removed.
+  const tier = companyService.tierInEffect(a.pricingTierFk);
   const limit = Number(a.creditLimit ?? 0);
   const used = Number(a.creditUsed ?? 0);
   return {
@@ -139,13 +207,18 @@ function toAccountView(a: {
     taxId: a.taxId,
     website: a.website,
     pricingTierId: a.pricingTierId,
-    pricingTierName: a.pricingTierFk?.name ?? a.pricingTier,
-    pricingTier: a.pricingTierFk
+    // The tier that prices their orders, or null for normal prices. Never the
+    // legacy free-text column: text naming no tier of this business priced
+    // nothing, so showing it claimed a discount the account did not get (sparx
+    // persona issue 086).
+    pricingTierName: tier?.name ?? null,
+    removedTierName: companyService.removedTier(a.pricingTierFk)?.name ?? null,
+    pricingTier: tier
       ? {
-          id: a.pricingTierFk.id,
-          name: a.pricingTierFk.name,
-          discountType: a.pricingTierFk.discountType,
-          discountValue: Number(a.pricingTierFk.discountValue),
+          id: tier.id,
+          name: tier.name,
+          discountType: tier.discountType,
+          discountValue: Number(tier.discountValue),
         }
       : null,
     creditLimitCents: Math.round(limit * 100),
@@ -167,99 +240,15 @@ function toAccountView(a: {
 export type AccountView = ReturnType<typeof toAccountView>;
 
 const PRICING_TIER_FK_SELECT = {
-  pricingTierFk: { select: { id: true, name: true, discountType: true, discountValue: true } },
+  pricingTierFk: {
+    select: { id: true, name: true, discountType: true, discountValue: true, deletedAt: true },
+  },
 } as const;
 
 const ACCOUNT_OVERRIDE_INCLUDE = {
   variant: { select: { id: true, sku: true, title: true } },
   collection: { select: { id: true, name: true } },
 } as const;
-
-// ── Fleet (JSONB on engine_profiles) helpers ──────────────────────────────────
-
-interface StoredFleetVehicle {
-  label?: string;
-  vin?: string;
-  domainId?: string;
-  nodeId?: string | null;
-  rangeValues?: { dimensionKey: string; value: number }[];
-  mileage?: number;
-  notes?: string;
-  count?: number;
-}
-
-function readFleet(value: unknown): StoredFleetVehicle[] {
-  return Array.isArray(value) ? (value as StoredFleetVehicle[]) : [];
-}
-
-interface StoredDimension {
-  key: string;
-  label: string;
-  kind: 'level' | 'range';
-  unit?: string;
-}
-
-interface FleetVehicleView extends StoredFleetVehicle {
-  domainName: string | null;
-  nodeName: string | null;
-  nodePath: string[];
-  ranges: { dimensionKey: string; label: string; unit: string | null; value: number }[];
-}
-
-/** Enrich stored fleet vehicles with display data (domain name, node path, and a
- *  labelled range list) by reading the referenced domains' `dimensions` and the
- *  referenced nodes' names — generic over any domain's dimensions. */
-async function resolveFleetVehicles(
-  ctx: { tenantId: string },
-  vehicles: StoredFleetVehicle[]
-): Promise<FleetVehicleView[]> {
-  const domainIds = [...new Set(vehicles.map((v) => v.domainId).filter(Boolean) as string[])];
-  const nodeIds = [...new Set(vehicles.map((v) => v.nodeId).filter(Boolean) as string[])];
-
-  const [domains, nodes] = await withTenant(ctx, (tx) =>
-    Promise.all([
-      domainIds.length > 0
-        ? tx.fitmentDomain.findMany({
-            where: { id: { in: domainIds }, deletedAt: null },
-            select: { id: true, displayName: true, dimensions: true },
-          })
-        : Promise.resolve([]),
-      nodeIds.length > 0
-        ? tx.fitmentNode.findMany({
-            where: { id: { in: nodeIds }, deletedAt: null },
-            select: { id: true, name: true, pathNames: true },
-          })
-        : Promise.resolve([]),
-    ])
-  );
-
-  const domainById = new Map(domains.map((d) => [d.id, d]));
-  const nodeById = new Map(nodes.map((n) => [n.id, n]));
-
-  return vehicles.map((v) => {
-    const domain = v.domainId ? domainById.get(v.domainId) : undefined;
-    const dims: StoredDimension[] = Array.isArray(domain?.dimensions)
-      ? (domain.dimensions as unknown as StoredDimension[])
-      : [];
-    const dimByKey = new Map(dims.map((d) => [d.key, d]));
-    const node = v.nodeId ? nodeById.get(v.nodeId) : undefined;
-    return {
-      ...v,
-      domainName: domain?.displayName ?? null,
-      nodeName: node?.name ?? null,
-      nodePath: node?.pathNames ?? [],
-      ranges: (v.rangeValues ?? []).map((rv) => {
-        const dim = dimByKey.get(rv.dimensionKey);
-        return {
-          dimensionKey: rv.dimensionKey,
-          label: dim?.label ?? rv.dimensionKey,
-          unit: dim?.unit ?? null,
-          value: rv.value,
-        };
-      }),
-    };
-  });
-}
 
 // ── Accounts ────────────────────────────────────────────────────────────────
 
@@ -304,7 +293,10 @@ export async function getAccount(ctx: B2bContext, id: string) {
     })
   );
   if (!account) throw notFound('b2b account');
-  const fleetVehicles = await resolveFleetVehicles(ctx, readFleet(account.engineProfiles));
+  const fleetVehicles = await resolveFleetVehicles(
+    ctx,
+    readFleet(account.id, account.engineProfiles)
+  );
   return {
     ...toAccountView(account),
     fleetVehicles,
@@ -312,8 +304,8 @@ export async function getAccount(ctx: B2bContext, id: string) {
   };
 }
 
-/** Update the B2B-module trade config on an account: the validated pricing-tier FK
- *  (CRM only sets the free-text label), credit limit, terms, discount, status,
+/** Update the B2B-module trade config on an account: the validated pricing-tier FK,
+ *  credit limit, terms, discount, status,
  *  internal notes, fleet size. */
 export async function updateTradeConfig(
   ctx: B2bContext,
@@ -328,8 +320,10 @@ export async function updateTradeConfig(
   if (!existing) throw notFound('b2b account');
 
   // A new tier must belong to this tenant (RLS is the backstop; this is the
-  // friendly 404).
-  if (body.pricingTierId) {
+  // friendly 404). Checked only when it CHANGES: the account pane sends the tier
+  // it loaded on every save, and an account still linked to a removed tier could
+  // otherwise never be saved again, not even to move it to normal prices.
+  if (body.pricingTierId && body.pricingTierId !== existing.pricingTierId) {
     const tier = await withTenant(ctx, (tx) =>
       tx.b2bPricingTier.findFirst({
         where: { id: body.pricingTierId!, tenantId: ctx.tenantId, deletedAt: null },
@@ -349,7 +343,7 @@ export async function updateTradeConfig(
       incoming: body.customProperties,
     });
 
-    return tx.company.update({
+    const saved = await tx.company.update({
       where: { id },
       data: {
         pricingTierId: body.pricingTierId,
@@ -369,150 +363,13 @@ export async function updateTradeConfig(
       },
       include: PRICING_TIER_FK_SELECT,
     });
+    // The console's account save and the MCP tool both land here. A "Set up
+    // prices and terms" task on this account is false the moment they are set:
+    // Wasatch Front's stayed open on Net 30 with a $25,000 limit.
+    await taskService.closeWhenAccountSetUp(tx, ctx, { companyId: id, byUserId: ctx.userId });
+    return saved;
   });
   return toAccountView(updated);
-}
-
-/** Replace the account's fleet. Each vehicle is validated to reference a fitment
- *  domain (and, if given, a node under that domain) belonging to this tenant. */
-export async function setFleet(ctx: B2bContext, id: string, rawInput: unknown) {
-  const body = FleetVehiclesBody.parse(rawInput);
-
-  const account = await withTenant(ctx, (tx) =>
-    tx.company.findFirst({ where: { id, tenantId: ctx.tenantId, deletedAt: null } })
-  );
-  if (!account) throw notFound('b2b account');
-
-  const domainIds = [...new Set(body.vehicles.map((v) => v.domainId))];
-  const nodeIds = [...new Set(body.vehicles.map((v) => v.nodeId).filter(Boolean) as string[])];
-  const [domains, nodes] = await withTenant(ctx, (tx) =>
-    Promise.all([
-      tx.fitmentDomain.findMany({
-        where: { id: { in: domainIds }, deletedAt: null },
-        select: { id: true },
-      }),
-      nodeIds.length > 0
-        ? tx.fitmentNode.findMany({
-            where: { id: { in: nodeIds }, deletedAt: null },
-            select: { id: true, domainId: true },
-          })
-        : Promise.resolve([]),
-    ])
-  );
-  const knownDomains = new Set(domains.map((d) => d.id));
-  const nodeDomain = new Map(nodes.map((n) => [n.id, n.domainId]));
-  for (const v of body.vehicles) {
-    if (!knownDomains.has(v.domainId)) throw notFound('fitment domain');
-    if (v.nodeId && nodeDomain.get(v.nodeId) !== v.domainId) throw notFound('fitment node');
-  }
-
-  const updated = await withTenant(ctx, (tx) =>
-    tx.company.update({
-      where: { id },
-      data: {
-        engineProfiles: body.vehicles,
-        ...(body.fleetSize !== undefined ? { fleetSize: body.fleetSize } : {}),
-        updatedAt: new Date(),
-      },
-      select: { id: true, engineProfiles: true, fleetSize: true },
-    })
-  );
-
-  const fleetVehicles = await resolveFleetVehicles(ctx, readFleet(updated.engineProfiles));
-  return { id: updated.id, fleetSize: updated.fleetSize, fleetVehicles };
-}
-
-/** Catalog filtered to what the account's fleet is compatible with (node-ancestry
- *  + range-window match, mirroring fitmentService.lookup). */
-export async function listCompatibleProducts(
-  ctx: B2bContext,
-  id: string,
-  input: z.infer<typeof CompatibleProductsQuery>
-) {
-  const account = await withTenant(ctx, (tx) =>
-    tx.company.findFirst({
-      where: { id, tenantId: ctx.tenantId, deletedAt: null },
-      select: { id: true, engineProfiles: true },
-    })
-  );
-  if (!account) throw notFound('b2b account');
-
-  const vehicles = readFleet(account.engineProfiles);
-  if (vehicles.length === 0) return { data: [], meta: { total: 0 } };
-
-  const fleetNodeIds = [...new Set(vehicles.map((v) => v.nodeId).filter(Boolean) as string[])];
-  const fleetNodes =
-    fleetNodeIds.length > 0
-      ? await withTenant(ctx, (tx) =>
-          tx.fitmentNode.findMany({
-            where: { id: { in: fleetNodeIds }, deletedAt: null },
-            select: { id: true, path: true },
-          })
-        )
-      : [];
-  const pathByNodeId = new Map(fleetNodes.map((n) => [n.id, n.path]));
-
-  const vehicleClauses = vehicles
-    .filter((v) => v.domainId)
-    .map((v) => {
-      const ancestorIds = v.nodeId ? (pathByNodeId.get(v.nodeId) ?? [v.nodeId]) : null;
-      const rangeMatches = (v.rangeValues ?? []).map((rv) => ({
-        OR: [
-          { ranges: { none: { dimensionKey: rv.dimensionKey } } },
-          {
-            ranges: {
-              some: {
-                dimensionKey: rv.dimensionKey,
-                AND: [
-                  { OR: [{ min: { lte: rv.value } }, { min: null }] },
-                  { OR: [{ max: { gte: rv.value } }, { max: null }] },
-                ],
-              },
-            },
-          },
-        ],
-      }));
-      return {
-        domainId: v.domainId,
-        ...(ancestorIds ? { OR: [{ nodeId: { in: ancestorIds } }, { nodeId: null }] } : {}),
-        ...(rangeMatches.length > 0 ? { AND: rangeMatches } : {}),
-      };
-    });
-
-  if (vehicleClauses.length === 0) return { data: [], meta: { total: 0 } };
-
-  const fitmentRows = await withTenant(ctx, (tx) =>
-    tx.productFitment.findMany({
-      where: { OR: vehicleClauses, product: { deletedAt: null } },
-      select: { productId: true },
-      distinct: ['productId'],
-    })
-  );
-  const productIds = fitmentRows.map((r) => r.productId);
-  if (productIds.length === 0) return { data: [], meta: { total: 0 } };
-
-  const [products, total] = await withTenant(ctx, (tx) =>
-    Promise.all([
-      tx.product.findMany({
-        where: { id: { in: productIds }, tenantId: ctx.tenantId, deletedAt: null },
-        include: {
-          variants: {
-            where: { deletedAt: null },
-            select: { id: true, sku: true, priceCents: true, title: true },
-            take: 1,
-          },
-        },
-        orderBy: { title: 'asc' },
-        take: input.take,
-        skip: input.skip,
-      }),
-      tx.product.count({
-        where: { id: { in: productIds }, tenantId: ctx.tenantId, deletedAt: null },
-      }),
-    ])
-  );
-
-  return { data: products, meta: { total, take: input.take, skip: input.skip } };
 }
 
 // ── Account-level product overrides ──────────────────────────────────────────
@@ -538,9 +395,34 @@ export async function listAccountOverrides(ctx: B2bContext, accountId: string) {
 export async function addAccountOverride(ctx: B2bContext, accountId: string, rawInput: unknown) {
   const body = AccountOverrideBody.parse(rawInput);
   await requireAccount(ctx, accountId);
+  const problem = overrideSettingProblem({
+    variantId: body.variantId ?? null,
+    collectionId: body.collectionId ?? null,
+    priceCents: body.priceCents ?? null,
+    discountPercentage: body.discountPercentage ?? null,
+    minOrderQty: body.minOrderQty ?? null,
+    maxOrderQty: body.maxOrderQty ?? null,
+    orderMultiple: body.orderMultiple ?? null,
+  });
+  if (problem) throw validationError(problem);
 
-  return withTenant(ctx, (tx) =>
-    tx.b2bAccountProductOverride.create({
+  return withTenant(ctx, async (tx) => {
+    // One row per business and version. Two rows made both the price and the
+    // buying rules a coin toss: the price function reads `LIMIT 1` with no
+    // order (sparx persona issue 086).
+    if (body.variantId) {
+      const already = await tx.b2bAccountProductOverride.findFirst({
+        where: { accountId, variantId: body.variantId, tenantId: ctx.tenantId },
+        select: { id: true },
+      });
+      if (already) {
+        throw conflict(
+          'This business already has a price or buying rule for this version. Change that one instead of adding a second.',
+          { overrideId: already.id }
+        );
+      }
+    }
+    return tx.b2bAccountProductOverride.create({
       data: {
         tenantId: ctx.tenantId,
         accountId,
@@ -548,11 +430,14 @@ export async function addAccountOverride(ctx: B2bContext, accountId: string, raw
         collectionId: body.collectionId,
         priceCents: body.priceCents,
         discountPercentage: body.discountPercentage,
+        minOrderQty: body.minOrderQty ?? null,
+        maxOrderQty: body.maxOrderQty ?? null,
+        orderMultiple: body.orderMultiple ?? null,
         notes: body.notes,
       },
       include: ACCOUNT_OVERRIDE_INCLUDE,
-    })
-  );
+    });
+  });
 }
 
 export async function updateAccountOverride(
@@ -568,6 +453,19 @@ export async function updateAccountOverride(
     })
   );
   if (!existing) throw notFound('override');
+  // Checked on the row as it WOULD be, so a patch that only changes the case
+  // pack is held to the minimum already saved (sparx persona issue 086).
+  const problem = overrideSettingProblem({
+    variantId: body.variantId ?? existing.variantId,
+    collectionId: body.collectionId ?? existing.collectionId,
+    priceCents: body.priceCents === undefined ? existing.priceCents : body.priceCents,
+    discountPercentage:
+      body.discountPercentage === undefined ? existing.discountPercentage : body.discountPercentage,
+    minOrderQty: body.minOrderQty === undefined ? existing.minOrderQty : body.minOrderQty,
+    maxOrderQty: body.maxOrderQty === undefined ? existing.maxOrderQty : body.maxOrderQty,
+    orderMultiple: body.orderMultiple === undefined ? existing.orderMultiple : body.orderMultiple,
+  });
+  if (problem) throw validationError(problem);
 
   return withTenant(ctx, (tx) =>
     tx.b2bAccountProductOverride.update({

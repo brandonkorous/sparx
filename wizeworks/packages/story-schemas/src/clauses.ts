@@ -54,6 +54,12 @@ export const CLAUSE: Record<string, Clause> = {
   invoicing: { mod: 'invoicing', place: 'owner', owner: 'send an invoice and get paid' },
   ai: { mod: 'ai', place: 'owner', owner: 'let an AI assistant help me run it' },
   wholesale: { mod: 'b2b', place: 'owner', owner: 'supply other businesses' },
+  // The four modules setup could not reach until sparx persona issue 007: a story
+  // had no way to say it, and the step-by-step board had no row for it.
+  social: { mod: 'social', place: 'owner', owner: 'post to my social pages' },
+  promos: { mod: 'funnels', place: 'owner', owner: 'run promotions and see what works' },
+  finance: { mod: 'finance', place: 'owner', owner: 'know whether I’m making money' },
+  staff: { mod: 'staff', place: 'owner', owner: 'keep my team’s schedules and hours' },
   dropship: {
     mod: 'dropship',
     place: 'owner',
@@ -67,11 +73,11 @@ export const CLAUSE: Record<string, Clause> = {
 export const MOVEMENTS: { label: string; ids: string[] }[] = [
   { label: 'Serve & book', ids: ['book', 'classes'] },
   { label: 'Sell', ids: ['shop', 'ship', 'pickup', 'delivery', 'dropship', 'inventory'] },
-  { label: 'Publish & share', ids: ['blog'] },
+  { label: 'Publish & share', ids: ['blog', 'social'] },
   { label: 'Know my customers', ids: ['crm', 'chat'] },
-  { label: 'Reach out', ids: ['email'] },
+  { label: 'Reach out', ids: ['email', 'promos'] },
   { label: 'Sell to businesses', ids: ['wholesale'] },
-  { label: 'Run the back office', ids: ['invoicing', 'ai'] },
+  { label: 'Run the back office', ids: ['invoicing', 'finance', 'staff', 'ai'] },
 ];
 
 export const ALL_CLAUSE_IDS: string[] = MOVEMENTS.flatMap((m) => m.ids);
@@ -114,6 +120,16 @@ export interface Industry {
   suggest: string[];
   /** Preferred blueprint vertical for the starting-point match. */
   vertical: BlueprintVertical | null;
+  /**
+   * Fragments of a blueprint key that make it THIS industry's template, so the
+   * starting point is a fitness template for a fitness studio rather than the
+   * least-content template in the same broad vertical. The vertical is four
+   * buckets (`services` holds accounting, dentistry and yoga alike), which is how
+   * a fitness story was offered "Accounting (Advisory)". Empty means "no
+   * industry-specific template exists": the match then stays generic.
+   * See pickBlueprint in ./blueprints.
+   */
+  blueprintKeys: string[];
   /** Default audience hint when the industry is chosen. */
   audience?: AudienceKey;
 }
@@ -126,6 +142,7 @@ export const GENERIC_INDUSTRY: Industry = {
   icon: 'sparkles',
   suggest: ['blog', 'shop'],
   vertical: null,
+  blueprintKeys: [],
 };
 
 // The 8 real industry starters (slugs MATCH wizeworks/services/api-rest industry-starters.ts)
@@ -139,6 +156,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'shirt',
     suggest: ['shop', 'ship', 'email', 'crm'],
     vertical: 'retail',
+    blueprintKeys: ['apparel', 'boutique', 'fashion', 'couture'],
   },
   {
     slug: 'food',
@@ -147,6 +165,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'utensils',
     suggest: ['shop', 'pickup', 'ship', 'blog'],
     vertical: 'retail',
+    blueprintKeys: ['coffee', 'chocolate', 'cellar', 'kitchen'],
   },
   {
     slug: 'electronics',
@@ -155,6 +174,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'cpu',
     suggest: ['shop', 'ship', 'chat'],
     vertical: 'retail',
+    blueprintKeys: ['catalog-dense'],
   },
   {
     slug: 'auto-parts',
@@ -163,6 +183,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'car',
     suggest: ['shop', 'ship', 'invoicing', 'wholesale'],
     vertical: 'retail',
+    blueprintKeys: ['auto', 'garage'],
   },
   {
     slug: 'salon',
@@ -171,6 +192,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'scissors',
     suggest: ['book', 'shop', 'blog', 'crm'],
     vertical: 'services',
+    blueprintKeys: ['salon', 'barber', 'nail', 'esthetics', 'dayspa', 'beauty'],
     audience: 'people',
   },
   {
@@ -180,6 +202,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'dumbbell',
     suggest: ['classes', 'email', 'crm'],
     vertical: 'services',
+    blueprintKeys: ['fitness', 'yoga', 'athletic'],
     audience: 'people',
   },
   {
@@ -189,6 +212,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'briefcase',
     suggest: ['book', 'invoicing', 'blog', 'crm'],
     vertical: 'services',
+    blueprintKeys: ['accounting', 'law-', 'lifecoach', 'consult'],
   },
   {
     slug: 'wholesale',
@@ -197,6 +221,7 @@ export const INDUSTRIES: Industry[] = [
     icon: 'warehouse',
     suggest: ['wholesale', 'shop', 'invoicing', 'crm'],
     vertical: 'b2b',
+    blueprintKeys: ['b2b-'],
     audience: 'businesses',
   },
   GENERIC_INDUSTRY,
@@ -209,4 +234,40 @@ export const INDUSTRY_BY_SLUG: Record<string, Industry> = Object.fromEntries(
 /** Resolve a slug to a definite Industry (the generic fallback when unknown/null). */
 export function industryOf(slug: string | null): Industry {
   return (slug ? INDUSTRY_BY_SLUG[slug] : undefined) ?? GENERIC_INDUSTRY;
+}
+
+// Words too common to say anything about which starter fits.
+const MATCH_NOISE = new Set([
+  'and',
+  'the',
+  'for',
+  'with',
+  'our',
+  'shop',
+  'store',
+  'business',
+  'company',
+]);
+
+/**
+ * The starters a typed description points at, best first. Word by word, so
+ * "diesel parts and repair" finds Auto parts on "parts"; the old match needed the
+ * WHOLE phrase inside one starter's name and found nothing. An empty query lists
+ * every starter. Never returns the generic fallback for a non-empty query: the
+ * menu offers the owner's own words for that.
+ */
+export function matchIndustries(query: string): Industry[] {
+  const words = query
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 3 && !MATCH_NOISE.has(w));
+  if (!query.trim()) return INDUSTRIES;
+  return INDUSTRIES.filter((i) => i.slug !== GENERIC_INDUSTRY.slug)
+    .map((i) => {
+      const hay = `${i.name} ${i.noun} ${i.slug}`.toLowerCase();
+      return { i, hits: words.filter((w) => hay.includes(w)).length };
+    })
+    .filter((x) => x.hits > 0)
+    .sort((a, b) => b.hits - a.hits)
+    .map((x) => x.i);
 }

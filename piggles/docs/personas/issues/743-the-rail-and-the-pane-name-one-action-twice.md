@@ -1,10 +1,12 @@
 # 743 — The rail's + and the pane's own button name the same action differently
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P03 · Juniper Row · act 265
 **Surface:** mypiggles workbench — the nav rail's `+` against each list pane's own create button
 **Filed:** 2026-09-19
+**Fixed:** 2026-10-01
+**Confirmed by:** walked on screen as Devi
 **Blocked on:** —
 
 ## What is wrong
@@ -105,3 +107,52 @@ this bug. [[feedback_absent_behaves_like_fine]]
 - `piggles/apps/workbench/components/panel/nav-row.tsx` — its only reader
 - `piggles/apps/workbench/components/app-panel.tsx`, `sparx/…/components/module-panel.tsx` — the `+`'s params
 - the eleven list panes above
+
+## The fix (act 323)
+
+Re-measured first: **11** lists opened their own create form under words that
+were not their `+`'s, not the 11 in the table above (two had come right, two
+more had drifted). Products and Locations had looked wrong to a file-by-file
+grep and were not: their buttons live in a child file and already matched.
+
+One place for the words. `createLabelFor(listKey)` in each console's registry
+returns exactly what the rail's `+` says, and each of those lists now reads it
+for its button, its tooltip and any sentence that names the button. Where the
+pane's own words were the Piggles ones, they moved into
+`PIGGLES_CREATE_LABELS`, so the rail took them too:
+
+| list              | both now say        |
+| ----------------- | ------------------- |
+| Kinds of content  | New kind of content |
+| Kinds of product  | New kind of product |
+| Things you track  | New thing to track  |
+| How things move   | New process         |
+| Things to do      | Add something to do |
+| Automatic emails  | New automatic email |
+| Moving stock      | Start a move        |
+| What happens when | Set up a path       |
+
+Tags and topics ("New"), What fits what ("Add a list") and Postage and
+delivery ("Add a region") said less than the rail and now say the rail's words.
+The sparx console had 5 of the same and got the same treatment.
+
+**The guard** is `lib/surfaces/create-label-agrees.test.ts`, in both consoles.
+It reads the catalog with the TypeScript parser, follows each list to its file
+and the files beside it that it imports, and only judges a list that opens its
+create form with `'new'`, so a list with no button of its own is skipped, not
+failed. It asserts its roots exist and that it judged more than 30 lists.
+Proved red by putting the old Kinds of content list back: it names that list.
+
+**A check this went blind on, and the fix.** `check:toolbars` keeps a create
+button out of the slot that folds on a phone, and it finds one by the words
+Save / Create / Add. The sparx What fits what list had "Add a list" in that
+slot and was on the check's debt list. Reading `{createLabel}` hid it, and the
+check reported it as fixed. The button is moved to the slot that never folds,
+and the check now counts `{createLabel}` and `label: createLabel` as a create
+action. Proved red by moving it back.
+
+## Confirmed by
+
+> As Devi: the `+` beside How things move reads "New process", and the
+> list's own button reads "New process". Searched "Kinds of content": the box
+> offers "New kind of content", and the list's button says the same.

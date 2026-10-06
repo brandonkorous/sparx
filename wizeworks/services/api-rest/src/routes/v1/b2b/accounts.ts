@@ -6,6 +6,10 @@
 //   GET    /v1/b2b/accounts/:id                      → fetch one (enriched)
 //   PATCH  /v1/b2b/accounts/:id                      → update trade config
 //   PUT    /v1/b2b/accounts/:id/fleet                  → replace fleet vehicle array
+//   GET    /v1/b2b/accounts/:id/fleet                  → the fleet, each vehicle with its id
+//   POST   /v1/b2b/accounts/:id/fleet/vehicles         → add one vehicle
+//   PUT    /v1/b2b/accounts/:id/fleet/vehicles/:vid    → change one vehicle (id kept)
+//   DELETE /v1/b2b/accounts/:id/fleet/vehicles/:vid    → remove one vehicle
 //   GET    /v1/b2b/accounts/:id/compatible-products   → products compatible with fleet
 //   GET    /v1/b2b/accounts/:id/overrides             → list per-account overrides
 //   POST   /v1/b2b/accounts/:id/overrides             → add override
@@ -14,7 +18,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { accountService } from '@wizeworks/b2b';
+import { accountService, fleetService } from '@wizeworks/b2b';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { queryBool } from '@wizeworks/api-core/query';
@@ -22,6 +26,7 @@ import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdOid = z.object({ id: z.string().uuid(), oid: z.string().uuid() });
+const PathIdVid = z.object({ id: z.string().uuid(), vid: z.string().uuid() });
 
 // `overdue` re-declared for the query string. The service schema spells it
 // `z.coerce.boolean()`, which is `Boolean(value)` — so `?overdue=false` arrives
@@ -74,6 +79,42 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     return ok(await accountService.setFleet(ctx, id, request.body));
+  });
+
+  // One vehicle at a time, so two people editing the same fleet never undo each
+  // other's vehicles, and a vehicle keeps its id (and with it its service history)
+  // through every edit (sparx persona issue 086).
+  app.get('/v1/b2b/accounts/:id/fleet', async (request) => {
+    requireRole(request, 'viewer');
+    await requireB2bModule(request);
+    const ctx = toB2bContext(request);
+    const { id } = PathId.parse(request.params);
+    return ok({ vehicles: await fleetService.getAccountFleet(ctx, id) });
+  });
+
+  app.post('/v1/b2b/accounts/:id/fleet/vehicles', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireB2bModule(request);
+    const ctx = toB2bContext(request);
+    const { id } = PathId.parse(request.params);
+    const result = await fleetService.addFleetVehicle(ctx, id, request.body);
+    return reply.code(201).send(ok(result));
+  });
+
+  app.put('/v1/b2b/accounts/:id/fleet/vehicles/:vid', async (request) => {
+    requireRole(request, 'editor');
+    await requireB2bModule(request);
+    const ctx = toB2bContext(request);
+    const { id, vid } = PathIdVid.parse(request.params);
+    return ok(await fleetService.updateFleetVehicle(ctx, id, vid, request.body));
+  });
+
+  app.delete('/v1/b2b/accounts/:id/fleet/vehicles/:vid', async (request) => {
+    requireRole(request, 'editor');
+    await requireB2bModule(request);
+    const ctx = toB2bContext(request);
+    const { id, vid } = PathIdVid.parse(request.params);
+    return ok(await fleetService.removeFleetVehicle(ctx, id, vid));
   });
 
   // ─── Compatible products (fleet-filtered catalog) ─────────────────────────

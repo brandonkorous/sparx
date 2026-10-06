@@ -13,10 +13,12 @@ import Link from 'next/link';
 import { useCustomer } from '@/components/customer-provider';
 import type { Customer } from '@/lib/customer-client';
 
-/** While the session is still resolving we do not yet know which of the two labels is
- *  true, so neither is shown. "Account" is correct either way — `/account` sends a
- *  visitor to the sign-in form and a customer to her account — which avoids both a
- *  flash of the wrong word and a control that pops into existence. */
+/** While the session is still resolving, or the shop could not be reached to ask
+ *  (persona issue 086), we do not yet know which of the two labels is true, so
+ *  neither is shown: a blip must not tell a signed-in buyer to sign in. "Account" is
+ *  correct either way — `/account` sends a visitor to the sign-in form and a customer
+ *  to her account — which avoids both a flash of the wrong word and a control that
+ *  pops into existence. */
 const RESOLVING = 'Account';
 
 /** Her name if she gave one, otherwise her email. Written as early returns rather than
@@ -42,8 +44,10 @@ export function AccountLink({ className }: { className?: string }) {
     );
   }
 
-  const label = status === 'loading' ? RESOLVING : 'Sign in';
-  const href = status === 'loading' ? '/account' : '/account/login';
+  // Only a real "nobody is signed in" says Sign in.
+  const known = status === 'anonymous';
+  const label = known ? 'Sign in' : RESOLVING;
+  const href = known ? '/account/login' : '/account';
   return (
     <Link href={href} className={className}>
       {label}

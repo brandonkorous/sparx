@@ -58,7 +58,13 @@ export function StoryModelProvider({ children }: { children: ReactNode }) {
     };
     const dispatch: StoryDispatch = {
       setTense: (t) => edit((s) => ({ ...s, tense: t }))(),
-      setIndustry: (slug) => edit((s) => ({ ...s, industry: slug }))(),
+      // Picking a starter drops any typed words; typing keeps them verbatim.
+      setIndustry: (slug, label) =>
+        edit(({ industryLabel: _dropped, ...s }) =>
+          label?.trim()
+            ? { ...s, industry: slug, industryLabel: label.trim() }
+            : { ...s, industry: slug }
+        )(),
       setAudience: (a: AudienceKey) => edit((s) => ({ ...s, audience: a }))(),
       addCust: (id) => edit((s) => addCust(s, id))(),
       addToLine: (li, id) => edit((s) => addToLine(s, li, id))(),

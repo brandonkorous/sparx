@@ -1,10 +1,14 @@
 'use client';
 
 // Step 2 — Blueprint (the work pane). A gallery of complete, themed starting points,
-// FILTERED to the modules the tenant turned on (only blueprints whose every required
-// module is on). Clicking one SELECTS it into the setup card (select-then-confirm);
+// the story's match first. Clicking one SELECTS it into the setup card (select-then-confirm);
 // the card's "Use this blueprint" installs it. "Start from scratch" is the blank
 // path. The install itself is the orchestrator's commit — this body only chooses.
+//
+// The starting point the story matched (`recommendedKey`) is drawn FIRST and says
+// so. It used to sit in catalog order, 121st of 190 and 22,000px down, so the
+// gallery's own selection was invisible (sparx persona issue 008). The order keys
+// on the recommendation, never on the click, so a card never jumps when picked.
 
 import { useState } from 'react';
 import {
@@ -48,6 +52,7 @@ function contentsLine(bp: WizardBlueprint): string {
 export function StepBlueprint({
   blueprints,
   selectedKey,
+  recommendedKey,
   onSelect,
   sampleData,
   onSampleData,
@@ -56,6 +61,8 @@ export function StepBlueprint({
   blueprints: WizardBlueprint[];
   /** The selected blueprint key, the SCRATCH sentinel, or null. */
   selectedKey: string | null;
+  /** The starting point the owner's story matched, drawn first; null when none. */
+  recommendedKey: string | null;
   onSelect: (key: string) => void;
   /** Whether the chosen starting point brings its examples (issue 098). */
   sampleData: boolean;
@@ -74,7 +81,13 @@ export function StepBlueprint({
     bp.summary.toLowerCase().includes(q) ||
     VERTICAL_LABEL[bp.vertical].toLowerCase().includes(q);
 
-  const shown = blueprints.filter(matchesQ);
+  const matched = blueprints.filter(matchesQ);
+  const shown = recommendedKey
+    ? [
+        ...matched.filter((bp) => bp.key === recommendedKey),
+        ...matched.filter((bp) => bp.key !== recommendedKey),
+      ]
+    : matched;
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
@@ -92,39 +105,10 @@ export function StepBlueprint({
         </Text>
       </div>
 
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="border-base-300 bg-base-100 h-64 animate-pulse rounded-xl border"
-            />
-          ))}
-        </div>
-      ) : shown.length === 0 ? (
-        <div className="border-base-300 bg-base-100 flex flex-col items-center gap-2 rounded-xl border px-6 py-12 text-center">
-          <Text className="font-medium">No starting points match</Text>
-          <Text className="max-w-md text-sm">
-            {q
-              ? `Nothing matches “${search}”. Clear the search to see every starting point.`
-              : 'No starting points are available yet. Start from a blank canvas below.'}
-          </Text>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {shown.map((bp) => (
-            <BlueprintCard
-              key={bp.key}
-              blueprint={bp}
-              selected={bp.key === selectedKey}
-              onSelect={() => onSelect(bp.key)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* The examples choice (issue 098). Only when a blueprint is actually
-          chosen: it means nothing on the blank path, which brings nothing. */}
+      {/* The examples choice (issue 098) and the blank path sit ABOVE the gallery.
+          Below 190 cards they were 22,000px down, where nobody would find either
+          (sparx persona issue 015). The examples choice shows only when a
+          blueprint is chosen: it means nothing on the blank path. */}
       {selectedKey && selectedKey !== SCRATCH ? (
         <div className="border-base-300 bg-base-100 rounded-xl border px-5 py-4">
           <Field>
@@ -161,19 +145,51 @@ export function StepBlueprint({
           <div className="min-w-0">
             <p className="font-medium">Start from a blank canvas</p>
             <p className="text-sm">
-              Design every page yourself, or build headless against our API.
+              Design every page yourself, or have a developer build on top of it.
             </p>
           </div>
         </div>
         <Button
           variant={selectedKey === SCRATCH ? 'solid' : 'outline'}
-          color={selectedKey === SCRATCH ? 'module' : 'neutral'}
+          color={selectedKey === SCRATCH ? 'module' : undefined}
           size="sm"
           onClick={() => onSelect(SCRATCH)}
         >
           {selectedKey === SCRATCH ? 'Selected' : 'Start blank'}
         </Button>
       </div>
+
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="border-base-300 bg-base-100 h-64 animate-pulse rounded-xl border"
+            />
+          ))}
+        </div>
+      ) : shown.length === 0 ? (
+        <div className="border-base-300 bg-base-100 flex flex-col items-center gap-2 rounded-xl border px-6 py-12 text-center">
+          <Text className="font-medium">No starting points match</Text>
+          <Text className="max-w-md text-sm">
+            {q
+              ? `Nothing matches “${search}”. Clear the search to see every starting point.`
+              : 'No starting points are available yet. Start from a blank canvas above.'}
+          </Text>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {shown.map((bp) => (
+            <BlueprintCard
+              key={bp.key}
+              blueprint={bp}
+              selected={bp.key === selectedKey}
+              recommended={bp.key === recommendedKey}
+              onSelect={() => onSelect(bp.key)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -181,10 +197,12 @@ export function StepBlueprint({
 function BlueprintCard({
   blueprint: bp,
   selected,
+  recommended,
   onSelect,
 }: {
   blueprint: WizardBlueprint;
   selected: boolean;
+  recommended: boolean;
   onSelect: () => void;
 }) {
   return (
@@ -204,6 +222,13 @@ function BlueprintCard({
             className="size-full object-cover object-top"
             loading="lazy"
           />
+        ) : null}
+        {recommended ? (
+          <span className="absolute top-2.5 left-2.5">
+            <Badge color="primary" variant="solid" size="sm">
+              Fits your story
+            </Badge>
+          </span>
         ) : null}
         <span className="absolute top-2.5 right-2.5">
           {selected ? (

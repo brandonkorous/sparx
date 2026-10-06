@@ -61,6 +61,7 @@ import { localDayKey, zoned } from './calendar-zone';
 import { useExceptions, useResourceWindows, useResourcesWindows } from './setup-data';
 import { TimeGrid, targetFor, type GridColumn } from './calendar-timegrid';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { resourceKindGlyph } from './resource-kind-icon';
 
 type View = 'week' | 'day';
 
@@ -104,17 +105,17 @@ function weekColumns(
  */
 function dayColumns(
   events: CalendarEvent[],
-  resources: { id: string; name: string }[],
+  resources: { id: string; name: string; kind?: string }[],
   chosenResourceId: string,
   anchor: Date,
   shut: ShutHours
 ): GridColumn[] {
   if (chosenResourceId) {
-    const name = resources.find((resource) => resource.id === chosenResourceId)?.name ?? 'Booked';
+    const chosen = resources.find((resource) => resource.id === chosenResourceId);
     return [
       {
         key: chosenResourceId,
-        header: headerText(name),
+        header: headerText(chosen?.name ?? 'Booked', chosen?.kind),
         closed: shut.bands(anchor, chosenResourceId),
         events,
       },
@@ -127,7 +128,7 @@ function dayColumns(
   // "who is on, and where the gaps are" is the question the day view exists for.
   const columns: GridColumn[] = resources.map((resource) => ({
     key: resource.id,
-    header: headerText(resource.name),
+    header: headerText(resource.name, resource.kind),
     closed: shut.bands(anchor, resource.id),
     events: events.filter((event) => event.resourceIds.includes(resource.id)),
   }));
@@ -138,8 +139,16 @@ function dayColumns(
   return columns;
 }
 
-function headerText(label: string) {
-  return <span className="truncate text-sm font-semibold">{label}</span>;
+/** A column's heading. A resource's carries the picture for its kind, so a bay
+ *  and the person working it are told apart at a glance (sparx persona issue 086). */
+function headerText(label: string, kind?: string) {
+  if (kind === undefined) return <span className="truncate text-sm font-semibold">{label}</span>;
+  return (
+    <span className="flex min-w-0 items-center gap-1.5">
+      {resourceKindGlyph(kind, 'size-4 shrink-0')}
+      <span className="truncate text-sm font-semibold">{label}</span>
+    </span>
+  );
 }
 
 /** What the diary knows about when people are shut. */

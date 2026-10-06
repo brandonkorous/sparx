@@ -26,6 +26,7 @@
 // the shopper's own order page said "Drop-ship", and the customer's email said
 // "usps". One list, so a new carrier is named once.
 import { carrierLabel } from '@wizeworks/commerce-schemas';
+import { HELD_FOR_SIGN_OFF_STATUS } from '@wizeworks/crm-schemas';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { TAKE_OFF_REASON } from './payment-undo';
@@ -33,6 +34,7 @@ import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
 import { paymentMethodLabels } from '../../lib/payment-methods';
 import { apiErrorMessage } from '../../lib/api-error';
 import { formatAmount } from '../../lib/money-format';
+import { localityLine } from '../../lib/address-format';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -94,6 +96,17 @@ export interface OrderItem {
   lineTotal: number;
   quantityFulfilled: number;
   quantityRefunded: number;
+  /** Refundable core deposit per unit on a rebuilt part, or null (issue 051). */
+  coreCharge: number | null;
+  /** Old parts that came back, their deposits refunded. */
+  coresReturned: number;
+  /** Deposits the business kept: the core never came back, or could not be used. */
+  coresKept: number;
+  /** Bought by sending the old part first: no deposit, and the line ships only as
+   *  its old parts arrive (issue 057). */
+  coreFirst: boolean;
+  /** When the business chose to ship a send-first line without waiting. */
+  coreHoldReleasedAt: string | null;
 }
 
 export interface Order {
@@ -113,9 +126,14 @@ export interface Order {
   shippingTotal: number;
   discountTotal: number;
   surchargeTotal: number;
+  /** Refundable core deposits on the lines; in `total`, never in `subtotal`. */
+  coreChargeTotal: number;
   total: number;
   amountPaid: number;
   refundTotal: number;
+  /** Of `refundTotal`, how much went back as returned core deposits: the happy
+   *  end of a rebuilt-part sale, not a refund anybody asked for. */
+  depositsReturned: number;
   currency: string;
 
   shippingAddress: OrderAddress | null;
@@ -203,6 +221,11 @@ function normalizeItem(raw: OrderItem): OrderItem {
     lineTotal: num(raw.lineTotal),
     quantityFulfilled: num(raw.quantityFulfilled),
     quantityRefunded: num(raw.quantityRefunded),
+    coreCharge: raw.coreCharge == null ? null : num(raw.coreCharge),
+    coresReturned: num(raw.coresReturned ?? 0),
+    coresKept: num(raw.coresKept ?? 0),
+    coreFirst: raw.coreFirst === true,
+    coreHoldReleasedAt: raw.coreHoldReleasedAt ?? null,
   };
 }
 
@@ -214,9 +237,11 @@ export function normalizeOrder(raw: Order): Order {
     shippingTotal: num(raw.shippingTotal),
     discountTotal: num(raw.discountTotal),
     surchargeTotal: num(raw.surchargeTotal),
+    coreChargeTotal: num(raw.coreChargeTotal ?? 0),
     total: num(raw.total),
     amountPaid: num(raw.amountPaid),
     refundTotal: num(raw.refundTotal),
+    depositsReturned: num(raw.depositsReturned ?? 0),
     ...(raw.items ? { items: raw.items.map(normalizeItem) } : {}),
   };
 }
@@ -653,6 +678,17 @@ export function shippingState(order: Order): { label: string; tone: Tone; detail
           : 'This went out before the money went back, so it is with the customer.',
       };
     }
+    // Held for sign-off: over a spending limit or the account's credit limit.
+    // "To send" asked somebody to pack an order that has not been approved
+    // (sparx persona issue 085). Nothing goes until it is. Not "approved under
+    // Approvals": the account's own approvers may be the ones to say yes, on
+    // the site (sparx persona issue 087), so Approvals is where to SEE who.
+    case 'pending_approval':
+      return {
+        label: 'Not to send yet',
+        tone: 'info',
+        detail: 'Nothing goes out until this order is approved. Approvals shows who it waits on.',
+      };
     default:
       return {
         label: collected ? 'To collect' : 'To send',
@@ -688,6 +724,21 @@ export function shippingState(order: Order): { label: string; tone: Tone; detail
  * the amounts. The console kept reading the word (persona issue 543).
  */
 export function paymentState(order: Order): { label: string; tone: Tone; detail: string } {
+  // Every penny that went back was a core deposit, returned because the old part
+  // came in. That is how a rebuilt-part sale is meant to end, and an amber "Part
+  // refunded" on each one read as a problem (sparx persona issue 057).
+  if (
+    order.refundTotal > 0 &&
+    order.depositsReturned >= order.refundTotal - 0.005 &&
+    order.amountPaid + order.refundTotal >= order.total - 0.005
+  ) {
+    return {
+      label: 'Paid, deposit back',
+      tone: 'success',
+      detail:
+        'Paid in full. The core deposit went back when the old part came in. Nothing is owed.',
+    };
+  }
   // Money that came back outranks the stored word, because the word cannot know.
   if (order.paymentStatus === 'partially_paid' && order.refundTotal > 0) {
     const settled = order.amountPaid + order.refundTotal >= order.total;
@@ -702,6 +753,16 @@ export function paymentState(order: Order): { label: string; tone: Tone; detail:
           tone: 'warning',
           detail: 'Some was paid and some of that has gone back. There is still an amount owed.',
         };
+  }
+  // Paid in full is stored as `paid` even after part of it goes back (a core
+  // deposit refunded, a returned line): the word says the money came in, the
+  // refund says some has left again.
+  if (order.paymentStatus === 'paid' && order.refundTotal > 0) {
+    return {
+      label: 'Part refunded',
+      tone: 'warning',
+      detail: 'Paid in full, and some of it has since gone back. Nothing is owed.',
+    };
   }
   switch (order.paymentStatus) {
     case 'paid':
@@ -876,8 +937,35 @@ export function customerName(customer: OrderCustomer | null): string {
  */
 export function amountDue(order: Order): number {
   if (order.status === 'cancelled' || order.status === 'refunded') return 0;
+  // Held for sign-off: nothing is owed until it is approved. See
+  // HELD_FOR_SIGN_OFF_STATUS in @wizeworks/crm-schemas.
+  if (order.status === HELD_FOR_SIGN_OFF_STATUS) return 0;
   if (order.paymentStatus === 'refunded') return 0;
   return Math.max(0, order.total - order.amountPaid - order.refundTotal);
+}
+
+/**
+ * The Collection card's line once nothing is left to hand over. It used to be
+ * "They picked this up." whatever the reason, so a canceled order nobody came
+ * for read "They picked this up." above "This order has not been collected
+ * yet." (sparx persona issue 091, O-000016).
+ */
+export function collectedWords(order: Order): string {
+  if ((order.items ?? []).some((item) => item.quantityFulfilled > 0)) {
+    return 'They picked this up.';
+  }
+  if (order.status === 'refunded') return 'This order was refunded before anyone collected it.';
+  return 'This order was canceled, so there is nothing to collect.';
+}
+
+/**
+ * The empty Collection or Deliveries card. "Not collected yet" promises it will
+ * be; on a canceled or refunded order it never will (sparx persona issue 091).
+ */
+export function nothingHandedOverWords(order: Order, collected: boolean): string {
+  const over = order.status === 'cancelled' || order.status === 'refunded';
+  if (collected) return over ? 'Nothing was collected.' : 'This order has not been collected yet.';
+  return over ? 'Nothing was sent.' : 'Nothing has been sent for this order yet.';
 }
 
 export function formatMoney(amount: number, currency = 'USD'): string {
@@ -898,7 +986,7 @@ export function formatDateTime(value: string | null | undefined): string {
  *  individually leaves gaps where an optional one is missing. */
 export function addressLines(address: OrderAddress | null): string[] {
   if (!address) return [];
-  const region = [address.city, address.region, address.postalCode].filter(Boolean).join(', ');
+  const region = localityLine(address);
   return [
     address.recipientName,
     address.company,

@@ -23,6 +23,45 @@ export type BookingNotificationType = 'confirmation' | 'reminder' | 'change' | '
 
 export type NotificationChannel = 'email' | 'sms';
 
+/**
+ * Where a notice ended up. ONE status per outcome, because each has a different
+ * fix and a count of "failed" has to mean something went wrong (sparx persona
+ * issue 086, where a text the shop never switched on was recorded as `failed`):
+ *
+ *   pending     not due yet
+ *   sent        handed to the email or text provider
+ *   failed      a real attempt that did not go: the provider refused it, the
+ *               email had no template, the business hit its daily text limit
+ *   cancelled   called off because the booking moved or ended
+ *   not_set_up  texting is not switched on for the business
+ *   opted_out   this number replied STOP, or never agreed to be texted
+ *   no_address  nothing on the record to reach them at: no number we can text,
+ *               or no email or phone left on the customer
+ *
+ * Only `failed` is a failure. Nothing retries any of them: a notice is sent at
+ * most once, and the dispatch tick only ever picks up `pending`.
+ */
+export type BookingNoticeStatus =
+  'pending' | 'sent' | 'failed' | 'cancelled' | 'not_set_up' | 'opted_out' | 'no_address';
+
+/** The ledger status for a guarded text send's outcome (`SmsOutcome` in
+ *  @wizeworks/sms). Taken as a string so this package needs no SMS dependency. */
+export function smsNoticeStatus(outcome: string): BookingNoticeStatus {
+  switch (outcome) {
+    case 'sent':
+      return 'sent';
+    case 'disabled':
+      return 'not_set_up';
+    case 'suppressed':
+    case 'no_consent':
+      return 'opted_out';
+    case 'invalid':
+      return 'no_address';
+    default:
+      return 'failed';
+  }
+}
+
 /** Notification type → the keyed Builder email tree it renders (docs/91). The
  *  dispatch tick resolves the per-site override → tenant default → code fallback. */
 export const BOOKING_EMAIL_KEY: Record<BookingNotificationType, string> = {
@@ -43,11 +82,28 @@ export interface NotifiableBooking {
   policyId: string | null;
 }
 
+/** Whether the business has switched texting on. No settings row is "never set
+ *  up", which is off: texting ships switched off. */
+async function textingOn(tx: TxClient, tenantId: string): Promise<boolean> {
+  const settings = await tx.smsSettings.findUnique({
+    where: { tenantId },
+    select: { enabled: true },
+  });
+  return settings?.enabled === true;
+}
+
 /** Which channels can reach this booking's customer right now: email when an
- *  address is on file, SMS when a phone is. A booking with no customer — or no
- *  contact details — schedules nothing (no one to notify). */
+ *  address is on file, SMS when a phone is AND the business has texting switched
+ *  on. A booking with no customer, or no contact details, schedules nothing.
+ *
+ *  The texting switch is asked here, not only at send time (sparx persona issue
+ *  086): a text queued for a shop that never turned texting on is a promise on
+ *  the booking's history that nothing will keep, and the send side then had to
+ *  record it as something. If the shop switches texting off AFTER a text was
+ *  queued, the send side records `not_set_up` for it. */
 async function reachableChannels(
   tx: TxClient,
+  tenantId: string,
   customerId: string | null
 ): Promise<NotificationChannel[]> {
   if (!customerId) return [];
@@ -58,7 +114,7 @@ async function reachableChannels(
   if (!customer) return [];
   const channels: NotificationChannel[] = [];
   if (customer.email) channels.push('email');
-  if (customer.phone) channels.push('sms');
+  if (customer.phone && (await textingOn(tx, tenantId))) channels.push('sms');
   return channels;
 }
 
@@ -146,7 +202,7 @@ export async function scheduleBookingNotifications(
   now: Date = new Date(),
   opts: ScheduleNotificationsOptions = {}
 ): Promise<void> {
-  const channels = await reachableChannels(tx, booking.customerId);
+  const channels = await reachableChannels(tx, tenantId, booking.customerId);
   if (channels.length === 0) return;
 
   if (!opts.skipConfirmation) {
@@ -169,7 +225,7 @@ export async function rescheduleBookingNotifications(
   now: Date = new Date()
 ): Promise<void> {
   await cancelPending(tx, booking.id, ['reminder', 'change']);
-  const channels = await reachableChannels(tx, booking.customerId);
+  const channels = await reachableChannels(tx, tenantId, booking.customerId);
   if (channels.length === 0) return;
   await enqueueRows(tx, tenantId, booking.id, 'change', channels, now);
   await layReminders(tx, tenantId, booking, channels, now);
@@ -183,7 +239,7 @@ export async function cancelBookingNotifications(
   now: Date = new Date()
 ): Promise<void> {
   await cancelPending(tx, booking.id, ['reminder', 'change']);
-  const channels = await reachableChannels(tx, booking.customerId);
+  const channels = await reachableChannels(tx, tenantId, booking.customerId);
   if (channels.length === 0) return;
   await enqueueRows(tx, tenantId, booking.id, 'cancellation', channels, now);
 }

@@ -25,6 +25,8 @@ function variant(over: Partial<Variant>): Variant {
     priceCents: 4200,
     compareAtPriceCents: null,
     costCents: null,
+    coreChargeCents: null,
+    coreFirstOffered: false,
     currency: 'USD',
     weightGrams: null,
     lengthMm: null,

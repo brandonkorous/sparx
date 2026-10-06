@@ -21,10 +21,11 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant, type TxClient } from '@wizeworks/db';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
-import { OWED_DOCUMENT_WHERE } from '@wizeworks/crm';
+import { OWED_DOCUMENT_WHERE, companyService } from '@wizeworks/crm';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
+import { tierBreakdown, tierIdsIn } from '../../../lib/b2b-tier-breakdown.js';
 
 const TimeseriesQuery = z.object({
   from: z.string().datetime().optional(),
@@ -115,7 +116,7 @@ async function aggregateB2bOrdersByDay(
     FROM orders o
     JOIN customers c ON c.id = o.customer_id
     WHERE c.company_id IS NOT NULL
-      AND o.status NOT IN ('canceled', 'pending_approval')
+      AND o.status NOT IN ('cancelled', 'pending_approval')
       AND o.placed_at >= ${from}
       AND o.placed_at < ${toExclusive}
     GROUP BY 1
@@ -179,12 +180,20 @@ const reportRoutes: FastifyPluginAsync = (app) => {
           where: { deletedAt: null, status: { not: 'inactive' } },
           _sum: { creditLimit: true, creditUsed: true },
         }),
+        // By the tier each account points at, accounts on normal prices
+        // included (see `tierBreakdown`).
         tx.company.groupBy({
-          by: ['pricingTier'],
-          where: { deletedAt: null, pricingTier: { not: null } },
+          by: ['pricingTierId'],
+          where: { deletedAt: null },
           _count: { _all: true },
         }),
       ]);
+      // Names for those groups, removed tiers included, so every id has a row to
+      // judge it by: an account on a removed tier counts as normal prices.
+      const tierNames = await tx.b2bPricingTier.findMany({
+        where: { id: { in: tierIdsIn(tierGroups) } },
+        select: { id: true, name: true, deletedAt: true },
+      });
 
       // A/R aging from open documents' balance + dueAt vs now (cents). The open set
       // is small, so bucketing in JS is cheaper than four GROUP BY range queries. A
@@ -210,9 +219,7 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         }
       }
 
-      const byTier = tierGroups
-        .map((g) => ({ tier: g.pricingTier ?? '—', count: g._count._all }))
-        .sort((a, b) => b.count - a.count);
+      const byTier = tierBreakdown(tierGroups, tierNames);
 
       return ok({
         accounts: {
@@ -371,7 +378,13 @@ const reportRoutes: FastifyPluginAsync = (app) => {
       const ids = groups.map((g) => g.companyId).filter((id): id is string => id !== null);
       const accounts = await tx.company.findMany({
         where: { id: { in: ids } },
-        select: { id: true, companyName: true, pricingTier: true, paymentTerms: true },
+        select: {
+          id: true,
+          companyName: true,
+          paymentTerms: true,
+          // The tier that prices them, not the legacy free-text column.
+          pricingTierFk: { select: { id: true, name: true, deletedAt: true } },
+        },
       });
       const byId = new Map(accounts.map((a) => [a.id, a]));
 
@@ -381,7 +394,9 @@ const reportRoutes: FastifyPluginAsync = (app) => {
           return {
             accountId: g.companyId!,
             name: a?.companyName ?? '—',
-            tier: a?.pricingTier ?? null,
+            // The tier that prices them: a removed one prices nothing.
+            tierId: companyService.tierInEffect(a?.pricingTierFk)?.id ?? null,
+            tier: companyService.tierInEffect(a?.pricingTierFk)?.name ?? null,
             paymentTerms: a?.paymentTerms ?? null,
             invoiceCount: g._count._all,
             invoicedCents: decimalToCents(g._sum.total),

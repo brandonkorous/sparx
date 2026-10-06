@@ -61,6 +61,8 @@ import {
   startSparxPayOnboarding,
 } from '../../lib/payments-onboarding.js';
 import { env } from '../../env.js';
+import { nameIsChosen } from '../../lib/onboarding-name.js';
+import { publishSiteUpdated } from '../../lib/site-events.js';
 
 // Human labels for the module-toggle confirmation email — acronyms stay uppercase.
 // A slug not listed falls back to itself; keep in step with the module registry.
@@ -360,6 +362,10 @@ const StoryNarrative = z
     text: z.string().max(8000),
     tense: z.string().max(32).nullable().optional(),
     industry: z.string().max(64).nullable().optional(),
+    // The owner's own words for the business when they typed it instead of picking
+    // a starter ("diesel parts and repair"). Kept verbatim; `industry` still picks
+    // the kit.
+    industryLabel: z.string().max(80).optional(),
     audience: z.string().max(32).nullable().optional(),
     name: z.string().max(200).optional(),
     cust: z.array(z.string().max(40)).max(64).optional(),
@@ -592,6 +598,13 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
         },
       })
     );
+    // The banner config rides in the site's cached business payload. Without
+    // this, a saved banner reached visitors only when that cache expired (68s
+    // measured, up to 300s; sparx persona issue 040).
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId,
+      changed: ['consent'],
+    });
     return ok(serializeConsent(row));
   });
 
@@ -934,7 +947,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireAuth(request);
     const tenant = await prisma.tenant.findUnique({
       where: { id: auth.tenantId },
-      select: { name: true, settings: true },
+      select: { name: true, slug: true, settings: true },
     });
     if (!tenant) throw notFound('Tenant', auth.tenantId);
 
@@ -989,6 +1002,15 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       tx.tenantBlueprintInstall.count({ where: { status: { in: ['installed', 'live'] } } })
     );
 
+    // "Set your site address" says "purchase a domain or connect one you already own",
+    // so it is done when one exists: a domain row that is not the free subdomain. It
+    // read the wizard's `completed.domain`, which Continue sets when the owner SKIPS
+    // the step, so Gillett Diesel was told its own-domain step was done with no
+    // domain at all (sparx persona issue 025).
+    const ownDomains = await withRequestTenant(request, (tx) =>
+      tx.domain.count({ where: { tenantId: auth.tenantId, type: { not: 'subdomain' } } })
+    );
+
     const steps = [
       {
         id: 'account' as const,
@@ -999,8 +1021,8 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       {
         id: 'tenant' as const,
         title: 'Confirm your site details',
-        description: 'Make sure the contact email and site name look right.',
-        done: Boolean(tenant.name),
+        description: 'Give your business and your site the names your customers know.',
+        done: nameIsChosen(tenant.name, tenant.slug),
         cta: { label: 'Open settings', href: '/settings/general' },
       },
       {
@@ -1021,7 +1043,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
         id: 'domain' as const,
         title: 'Set your site address',
         description: 'Purchase a domain or connect one you already own.',
-        done: state.completed.domain,
+        done: ownDomains > 0,
         cta: { label: 'Manage domains', href: '/settings/domains' },
       },
       {

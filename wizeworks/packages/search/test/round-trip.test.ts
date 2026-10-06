@@ -1,24 +1,25 @@
 // Round-trip integration test against a real Typesense.
 //
-// ── THIS SUITE WIPES THE SEARCH INSTANCE IT TALKS TO ───────────────────────
+// ── IT ONLY EVER TOUCHES ITS OWN COLLECTIONS ──────────────────────────
 //
-// `beforeAll` calls `dropAllSchemas()`. Collection names are fixed constants,
-// so there is no per-run namespace to hide in: the drop takes EVERY tenant's
-// documents on that instance, not just the two this file seeds. Afterwards the
-// whole dev environment's search reads empty until somebody reindexes each
-// tenant by hand, and nothing anywhere says that is what happened.
+// This package's vitest.config.ts gives every run its own collection prefix,
+// `test_<random>_`, through TYPESENSE_COLLECTION_PREFIX, the one mechanism
+// every collection name in this package is resolved through (see
+// src/schemas/naming.ts). So `ensureSchemas` below creates
+// `test_<run>_products` and friends, the fixtures land there, and the teardown
+// drops exactly those. A developer's real `products`, `customers`, `orders` and
+// `entities` are never named, so they keep every document they had.
 //
-// Found the hard way on 2026-09-18: a persona walk had just rebuilt Juniper
-// Row's index (34 products, 36 customers, 16 orders, 314 other records), a
-// `vitest run` in this package followed, and the console's search box went back
-// to answering "nothing matches" about all of it. The collections' `created_at`
-// was the second the test started.
+// It used to drop the bare collection names before it started. On 2026-09-18
+// that emptied a persona walk's freshly rebuilt index, and on 2026-10-04 a run
+// emptied every tenant's search on a developer's local Typesense until it was
+// rebuilt by hand. Two guards stop that now: `beforeAll` refuses to start unless
+// every collection it would write carries the test prefix, and the drop helpers
+// refuse any collection without one, loudly, before anything is gone.
 //
-// So it now refuses to run under `CI=true`, which is what the pre-push hook
-// sets — otherwise every `git push` from a machine with `pnpm db:up` running
-// silently emptied that machine's search. It costs no coverage: CI has no
-// Typesense, so the suite already skipped there. Run it deliberately with
-// `pnpm --filter @wizeworks/search test`, and expect to reindex afterwards.
+// It self-skips when Typesense is unreachable and under `CI=true` (the pre-push
+// hook sets it), because CI has no Typesense and the hook must never be stricter
+// than CI. Run it with `pnpm --filter @wizeworks/search test`.
 //
 // ── What it covers ────────────────────────────────────────────────
 //
@@ -27,10 +28,15 @@
 // counts are tenant-scoped, and — critically — every query is isolated to its
 // tenant.
 
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { _resetClientForTest, getClient } from '../src/client';
-import { collectionStats, dropAllSchemas, ensureSchemas } from '../src/admin';
+import {
+  collectionStats,
+  dropAllSchemas,
+  dropStaleTestCollections,
+  ensureSchemas,
+} from '../src/admin';
 import {
   bulkUpsertCustomers,
   bulkUpsertEntities,
@@ -38,7 +44,14 @@ import {
   bulkUpsertProducts,
 } from '../src/bulk';
 import { palette, searchAll, searchCustomers, searchOrders, searchProducts } from '../src/search';
-import { GLOBAL_SITE_SCOPE } from '../src/schemas';
+import {
+  allSchemas,
+  assertTestCollection,
+  CUSTOMERS_COLLECTION,
+  GLOBAL_SITE_SCOPE,
+  ORDERS_COLLECTION,
+  PRODUCTS_COLLECTION,
+} from '../src/schemas';
 import { ensureSynonyms, GLOBAL_PRODUCT_SYNONYMS } from '../src/synonyms';
 import { generateScopedSearchKeyWithExpiry } from '../src/keys';
 import type {
@@ -48,8 +61,10 @@ import type {
   UniversalSearchDocument,
 } from '../src/schemas';
 
-// Default to the docker-compose Typesense; allow env override.
-process.env.TYPESENSE_HOST ??= 'localhost';
+// Default to the docker-compose Typesense over IPv4 (`localhost` can resolve to
+// ::1 first, which hangs when the container only publishes on IPv4); allow env
+// override.
+process.env.TYPESENSE_HOST ??= '127.0.0.1';
 process.env.TYPESENSE_PORT ??= '8108';
 process.env.TYPESENSE_PROTOCOL ??= 'http';
 process.env.TYPESENSE_API_KEY ??= 'dev-typesense-key';
@@ -67,8 +82,8 @@ async function typesenseUp(): Promise<boolean> {
   }
 }
 
-// `CI=true` is set by the pre-push hook as well as by CI itself. Skipping on it
-// keeps a push from wiping the pusher's own search index; see the header.
+// `CI=true` is set by the pre-push hook as well as by CI itself. CI has no
+// Typesense, and the hook must never be stricter than CI; see the header.
 const AVAILABLE = process.env.CI === 'true' ? false : await typesenseUp();
 
 function product(
@@ -162,14 +177,12 @@ function entity(
 describe.skipIf(!AVAILABLE)('@wizeworks/search round-trip', () => {
   beforeAll(async () => {
     _resetClientForTest();
-    // Loud on purpose. This is the line that empties the machine's search, and
-    // it used to happen in silence.
-    const dropped = await dropAllSchemas();
-    console.warn(
-      `[@wizeworks/search] dropped ${String(dropped.length)} collection(s) on ` +
-        `${process.env.TYPESENSE_HOST ?? 'localhost'}: ${dropped.join(', ')}. ` +
-        `EVERY tenant's documents went with them — reindex before using the console.`
-    );
+    // Refuse to start, before a single write, unless every collection this suite
+    // creates, fills and drops carries the run's test prefix.
+    for (const { name } of allSchemas()) assertTestCollection(name, 'write fixtures into');
+    // A run that crashed before its teardown leaves its test collections behind.
+    // Sweep those (test-prefixed only, older than an hour, never this run's).
+    await dropStaleTestCollections(new Date(Date.now() - 60 * 60 * 1000));
     await ensureSchemas();
     await bulkUpsertProducts([
       product(TENANT_A, 'p1'),
@@ -191,6 +204,12 @@ describe.skipIf(!AVAILABLE)('@wizeworks/search round-trip', () => {
     ]);
     // Typesense indexes are near-real-time; bulk import is synchronous on
     // return, so no sleep is needed.
+  });
+
+  afterAll(async () => {
+    // Drops this run's `test_<run>_*` collections and nothing else. The helper
+    // refuses any name without a test prefix.
+    await dropAllSchemas();
   });
 
   it('finds products with typo tolerance, tenant-isolated', async () => {
@@ -303,9 +322,9 @@ describe.skipIf(!AVAILABLE)('@wizeworks/search round-trip', () => {
   it('reports tenant-scoped collection counts', async () => {
     const stats = await collectionStats(TENANT_A);
     const byName = Object.fromEntries(stats.map((s) => [s.collection, s.documents]));
-    expect(byName.products).toBe(2); // not 3 — tenant B's product is excluded
-    expect(byName.customers).toBe(1);
-    expect(byName.orders).toBe(1);
+    expect(byName[PRODUCTS_COLLECTION]).toBe(2); // not 3 — tenant B's product is excluded
+    expect(byName[CUSTOMERS_COLLECTION]).toBe(1);
+    expect(byName[ORDERS_COLLECTION]).toBe(1);
   });
 
   it('applies global synonyms (turbo → turbocharger)', async () => {

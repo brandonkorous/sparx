@@ -21,6 +21,8 @@ import {
   shipmentHeadline,
   shipmentStatusLabel,
   useUpdateTracking,
+  collectedWords,
+  nothingHandedOverWords,
   type Order,
 } from './data';
 import type { DeliveryPlan } from './order-types';
@@ -180,11 +182,11 @@ function ShipmentRow({ orderId, shipment }: { orderId: string; shipment: Shipmen
 
 /** Past tense once there is nothing left to hand over. "Mark it off when they
  *  do" on an order they already collected reads as the screen not noticing. */
-function describe(plan: DeliveryPlan, stillToFulfil: boolean): string {
+function describe(plan: DeliveryPlan, stillToFulfil: boolean, order: Order): string {
   if (!plan.collected) return 'Each shipment sent for this order, and how to follow it.';
   return stillToFulfil
     ? 'The customer is coming to fetch this one. Mark it off when they do.'
-    : 'They picked this up.';
+    : collectedWords(order);
 }
 
 export function HandoverSection({
@@ -201,15 +203,11 @@ export function HandoverSection({
   return (
     <SubSection
       title={plan.collected ? 'Collection' : 'Deliveries'}
-      description={describe(plan, stillToFulfil)}
+      description={describe(plan, stillToFulfil, order)}
       isPending={fulfillments.isPending}
       isError={fulfillments.isError}
       errorText="We could not load the deliveries just now. Anything already shipped is unaffected. Try reopening this order in a moment."
-      emptyText={
-        plan.collected
-          ? 'This order has not been collected yet.'
-          : 'Nothing has been sent for this order yet.'
-      }
+      emptyText={nothingHandedOverWords(order, plan.collected)}
       count={fulfillments.data?.length ?? 0}
       footer={
         /* Only while something is still owed — the server refuses a handover on

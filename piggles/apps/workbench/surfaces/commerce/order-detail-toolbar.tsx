@@ -13,6 +13,7 @@ import { useGeneratePickList, pickErrorMessage } from '../inventory/picking-data
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatMoney, type Order } from './data';
 import type { Tone } from './order-tone';
+import { shipHoldLabel, whatCanShipNow } from './order-ship-gate';
 
 export interface OrderToolbarProps {
   ctx: SurfaceContext;
@@ -34,7 +35,8 @@ function OrderStatus({
   order,
   paid,
   shipped,
-}: Pick<OrderToolbarProps, 'order' | 'paid' | 'shipped'>) {
+  holdLabel,
+}: Pick<OrderToolbarProps, 'order' | 'paid' | 'shipped'> & { holdLabel: string | null }) {
   return (
     <>
       <Badge color={paid.tone} variant="soft" size="sm">
@@ -45,19 +47,19 @@ function OrderStatus({
           {shipped.label}
         </Badge>
       )}
+      {holdLabel ? (
+        <Badge color="warning" variant="soft" size="sm">
+          {holdLabel}
+        </Badge>
+      ) : null}
       <div className="flex-1" />
       <Text className="text-sm tabular-nums">{formatMoney(order.total, order.currency)}</Text>
     </>
   );
 }
 
-/**
- * Send it to the warehouse (docs/146 Phase 4).
- *
- * Wears the INVENTORY hue on a commerce pane deliberately — it is a warehouse
- * action surfacing here, and color follows functionality rather than the page
- * it happens to be on.
- */
+/** Send it to the warehouse (docs/146 Phase 4). Wears the INVENTORY hue on a
+ *  commerce pane: color follows functionality, not the page it is on. */
 function SendToWarehouse({ ctx, order }: { ctx: SurfaceContext; order: Order }) {
   const toast = useToast();
   const generateWalk = useGeneratePickList();
@@ -101,13 +103,26 @@ function SendToWarehouse({ ctx, order }: { ctx: SurfaceContext; order: Order }) 
 
 export function OrderToolbar(props: OrderToolbarProps) {
   const { ctx, order, paid, shipped } = props;
+  // A held B2B order or a send-first part before its old part cannot go yet.
+  const shipNow = whatCanShipNow(order);
   return (
     <PaneToolbar
       label="Order actions"
-      status={<OrderStatus order={order} paid={paid} shipped={shipped} />}
+      status={
+        <OrderStatus
+          order={order}
+          paid={paid}
+          shipped={shipped}
+          holdLabel={shipHoldLabel(order, shipNow)}
+        />
+      }
       // A commit action is always `primary`: `controls` relocates into the
       // overflow popover under 672px. Enforced by scripts/check-toolbar-primary.mjs.
-      primary={props.canSendToWarehouse ? <SendToWarehouse ctx={ctx} order={order} /> : null}
+      primary={
+        props.canSendToWarehouse && shipNow.lines.length > 0 ? (
+          <SendToWarehouse ctx={ctx} order={order} />
+        ) : null
+      }
       refresh={
         /* Four queries feed this pane — the order and its money, shipments and
            refunds — so one refresh reloads all of them. */

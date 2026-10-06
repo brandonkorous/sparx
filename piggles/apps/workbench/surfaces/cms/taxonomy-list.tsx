@@ -30,7 +30,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { taxonomyKind, useTaxonomies, type Taxonomy } from './taxonomy-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 
@@ -46,6 +46,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('cms.taxonomy.list');
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTaxonomies();
   const [search, setSearch] = useState('');
 
@@ -117,10 +118,10 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
         statusReady={!isPending}
         statusFailed={isError}
         primaryAction={{
-          label: 'New',
+          label: createLabel,
           icon: faPlus,
           onClick: create,
-          title: 'Add a way to file content. Hold Shift to open alongside, Alt for a new window',
+          title: `${createLabel}: hold Shift to open alongside, Alt for a new window`,
         }}
         views={{
           target: '/cms/taxonomy',

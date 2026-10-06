@@ -95,6 +95,14 @@ export interface UploadImageBytesInput {
   alt?: string;
   width?: number;
   height?: number;
+  /**
+   * The largest image this caller may write. Defaults to `MAX_UPLOAD_IMAGE_BYTES`,
+   * which exists because MCP bytes ride a size-limited JSON envelope. A server-side
+   * copy (the move-in importer fetching a product photo) has no envelope and passes
+   * `MAX_PROXIED_UPLOAD_BYTES`: at 320 KiB, 101 of Gillett Diesel's product photos
+   * were left on Shopify's servers (sparx persona issue 056).
+   */
+  maxBytes?: number;
 }
 
 // Non-image document types — INTERNAL server-side writes only (shipping
@@ -145,9 +153,10 @@ export async function createImageAssetFromBytes(
     );
   }
   if (input.data.length === 0) throw new MediaValidationError('Image is empty (0 bytes).');
-  if (input.data.length > MAX_UPLOAD_IMAGE_BYTES) {
+  const cap = input.maxBytes ?? MAX_UPLOAD_IMAGE_BYTES;
+  if (input.data.length > cap) {
     throw new MediaValidationError(
-      `Image is ${(input.data.length / 1024).toFixed(0)} KiB; the upload cap is ${MAX_UPLOAD_IMAGE_BYTES / 1024} KiB. ` +
+      `Image is ${(input.data.length / 1024).toFixed(0)} KiB; the upload cap is ${cap / 1024} KiB. ` +
         'Optimize/downscale it (web images should be well under this), or host it and use set_image_from_url.'
     );
   }

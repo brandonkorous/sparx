@@ -5,6 +5,7 @@ export * from './products';
 export * from './customers';
 export * from './orders';
 export * from './entities';
+export * from './naming';
 
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 

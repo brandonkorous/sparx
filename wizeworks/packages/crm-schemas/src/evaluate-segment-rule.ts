@@ -23,10 +23,14 @@ export interface RuleProjection {
    * here. Optional: a projection built before this feature existed, or for a
    * tenant that has declared nothing, simply omits it and every custom
    * predicate reads null (and so matches only `is_null`).
+   *
+   * Keyed by the object key a rule names (`custom.company.industry`), which is
+   * what `CustomPropertyField` accepts and what the projection writes. This
+   * read `b2bAccount` once, a key no rule can name.
    */
   custom?: {
     contact?: Record<string, unknown>;
-    b2bAccount?: Record<string, unknown>;
+    company?: Record<string, unknown>;
     deal?: Record<string, unknown>;
   };
 }

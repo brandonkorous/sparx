@@ -37,6 +37,8 @@ export interface StripeConnect {
   connecting: boolean;
   /** A human-readable failure, or null. */
   error: string | null;
+  /** Give up on the open Stripe window (closes it) so the owner can start again. */
+  cancel: () => void;
 }
 
 export function useStripeConnect(
@@ -108,5 +110,11 @@ export function useStripeConnect(
       });
   }, [actions]);
 
-  return { connect, connecting, error };
+  const cancel = useCallback(() => {
+    popupRef.current?.close();
+    popupRef.current = null;
+    setConnecting(false);
+  }, []);
+
+  return { connect, connecting, error, cancel };
 }

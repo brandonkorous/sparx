@@ -17,6 +17,7 @@ import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeOrderPaymentRollup } from './order-payments-service';
+import { closeWhenOrderMovesOn } from './task-service';
 
 export async function listForOrder(ctx: ServiceContext, orderId: string): Promise<OrderRefund[]> {
   return withTenant(ctx, (tx) =>
@@ -46,9 +47,12 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
     orderCustomerId = order.customerId;
     orderNumber = order.orderNumber;
-    if (order.status === 'cancelled') {
-      throw new CrmValidationError('Cannot refund a canceled order');
-    }
+    // A canceled order is refundable when money was taken for it. A wholesale
+    // order paid by card and then turned down at sign-off is exactly that, and
+    // refusing it here meant the buyer's money could only be kept (sparx persona
+    // issue 087). A canceled order nobody paid has nothing to refund, and the
+    // gateway path refuses that before it gets here.
+    const cancelled = order.status === 'cancelled';
 
     // Surcharge proration (docs/48 §6.3) — the card-fee pass-through reverses in
     // proportion to the refunded share of the order total. Recorded on the refund
@@ -126,12 +130,23 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
 
     // Flip the order's status to refunded if the refund covers the full
     // total; otherwise leave it alone (paymentStatus will reflect partial
-    // refund via the rollup below).
+    // refund via the rollup below). A canceled order stays canceled: that is
+    // what happened to it, and the rollup says the money went back.
     const fullyRefunded = Number(input.amount) >= Number(order.total) - Number(order.refundTotal);
-    if (fullyRefunded) {
+    if (fullyRefunded && !cancelled) {
       await tx.order.update({
         where: { id: input.orderId },
         data: { status: 'refunded', refundedAt: new Date() },
+      });
+      // A task waiting on the order to leave the status it was in (a held
+      // wholesale order's "waiting for your sign-off") has nothing left to wait
+      // for once every penny has gone back. Closed, not done: nobody did it.
+      await closeWhenOrderMovesOn(tx, ctx, {
+        orderId: input.orderId,
+        left: order.status,
+        as: 'cancelled',
+        because: `Order ${order.orderNumber} was refunded in full, so there is nothing left to do here.`,
+        byUserId: ctx.userId ?? null,
       });
     }
 

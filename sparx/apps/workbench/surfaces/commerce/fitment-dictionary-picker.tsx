@@ -96,8 +96,10 @@ export function FitmentDictionaryPicker({
 
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
             <Text className="text-sm">
-              Each of these is a full list you can use as-is or change afterwards: install one and
-              its entries are yours to add to, rename, or trim.
+              Each of these is a starting list, not a complete one: the vehicle list, for one, has a
+              handful of common makes and models rather than every vehicle on the road. Install one,
+              then add the makes, models and engines you actually sell for. Everything in it is
+              yours to add to, rename, or trim.
             </Text>
 
             <div className="max-w-xs">

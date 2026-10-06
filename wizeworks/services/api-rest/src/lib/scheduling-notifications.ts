@@ -9,7 +9,11 @@
 //     use, so booking email is one authoring system, editable in /builder/email).
 //   · sms   → sendTenantSms (the guarded path: STOP suppression, the tenant
 //             ceiling, and the enabled switch) → Twilio in prod, console in dev.
-// and marks the row sent / failed / cancelled.
+// and marks the row with what actually happened (`BookingNoticeStatus`): sent,
+// failed, cancelled, or one of the three ways a notice is NOT a failure
+// (not_set_up, opted_out, no_address). A text the shop never switched on was
+// recorded as `failed` (sparx persona issue 086), which made every count and
+// report of failed messages wrong; only a real attempt that went wrong is.
 //
 // The rows are SCHEDULED by the Scheduling engine inside the booking lifecycle
 // transaction (the ledger gives dedupe + a dispatch audit trail); this tick is the
@@ -24,6 +28,8 @@ import { prisma, withTenant } from '@wizeworks/db';
 import {
   BOOKING_EMAIL_KEY,
   renderBookingSms,
+  smsNoticeStatus,
+  type BookingNoticeStatus,
   type BookingNotificationType,
 } from '@wizeworks/scheduling';
 import { sendTenantSms } from '@wizeworks/sms/delivery';
@@ -87,10 +93,19 @@ function whenLabel(d: Date, tz: string): string {
   })}`;
 }
 
-/** Set a notification's terminal status (failed), RLS-scoped. */
-async function markFailed(tenantId: string, id: string): Promise<void> {
+/** Set a notification's final status, RLS-scoped. Anything but `sent` also
+ *  clears the optimistic `sentAt` claim() stamped, so "when it went" is never
+ *  shown for a notice that did not go. */
+async function markOutcome(
+  tenantId: string,
+  id: string,
+  status: BookingNoticeStatus
+): Promise<void> {
   await withTenant({ tenantId }, (tx) =>
-    tx.bookingNotification.update({ where: { id }, data: { status: 'failed' } })
+    tx.bookingNotification.update({
+      where: { id },
+      data: status === 'sent' ? { status } : { status, sentAt: null },
+    })
   );
 }
 
@@ -148,7 +163,12 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
       recipient = (row.channel === 'sms' ? c?.phone : c?.email) ?? '';
     }
     if (!recipient) {
-      await tx.bookingNotification.update({ where: { id: row.id }, data: { status: 'failed' } });
+      // Nothing to reach them at any more: the email or phone was taken off the
+      // customer after the notice was queued. Not a delivery that failed.
+      await tx.bookingNotification.update({
+        where: { id: row.id },
+        data: { status: 'no_address' },
+      });
       return null;
     }
 
@@ -171,13 +191,13 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
   });
 }
 
-/** Send the claimed notification on its channel. Returns whether it was accepted
- *  (false → the caller flips the row back to `failed`). */
+/** Send the claimed notification on its channel. Returns what became of it; the
+ *  caller records anything but `sent` over the optimistic claim. */
 async function dispatch(
   tenantId: string,
   d: Dispatchable,
   logger: FastifyBaseLogger
-): Promise<boolean> {
+): Promise<BookingNoticeStatus> {
   if (d.channel === 'email') {
     const res = await sendTenantEmailByKey(logger, tenantId, {
       key: BOOKING_EMAIL_KEY[d.type],
@@ -187,7 +207,7 @@ async function dispatch(
       emailType: 'transactional',
       variables: { source: 'scheduling' },
     });
-    return res.sent;
+    return res.sent ? 'sent' : 'failed';
   }
 
   const siteName = await resolveActivePropertyName(tenantId, null);
@@ -215,7 +235,9 @@ async function dispatch(
     },
     env
   );
-  if (result.outcome !== 'sent') {
+  const status = smsNoticeStatus(result.outcome);
+  // A refusal by design (texting off, a STOP) is information, not a warning.
+  if (status === 'failed') {
     logger.warn(
       {
         tenantId,
@@ -226,8 +248,13 @@ async function dispatch(
       },
       'scheduling-notifications: sms not sent'
     );
+  } else if (status !== 'sent') {
+    logger.info(
+      { tenantId, bookingId: d.bookingId, type: d.type, outcome: result.outcome },
+      'scheduling-notifications: sms not sent, by design'
+    );
   }
-  return result.outcome === 'sent';
+  return status;
 }
 
 export async function runBookingNotificationTick(
@@ -249,8 +276,8 @@ export async function runBookingNotificationTick(
       try {
         const claimed = await claim(row);
         if (!claimed) continue;
-        const ok = await dispatch(row.tenant_id, claimed, logger);
-        if (!ok) await markFailed(row.tenant_id, row.id);
+        const status = await dispatch(row.tenant_id, claimed, logger);
+        if (status !== 'sent') await markOutcome(row.tenant_id, row.id, status);
         processed += 1;
       } catch (err) {
         errors += 1;
@@ -261,7 +288,7 @@ export async function runBookingNotificationTick(
         // It was marked `sent` optimistically in claim(); a thrown dispatch means it
         // didn't go out, so flip it to `failed` (best-effort — don't let this throw).
         try {
-          await markFailed(row.tenant_id, row.id);
+          await markOutcome(row.tenant_id, row.id, 'failed');
         } catch (markErr) {
           logger.error({ err: markErr, id: row.id }, 'scheduling-notifications: markFailed failed');
         }

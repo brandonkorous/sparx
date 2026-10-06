@@ -12,6 +12,17 @@ export const CreateTaskInput = z.object({
   assignedToUserId: Uuid,
   customerId: Uuid.nullable().optional(),
   dealId: Uuid.nullable().optional(),
+  // The order the work is about. A task opened to move an order out of a status
+  // also carries that status, which closes it when the order moves on; that is
+  // `taskService.createWhileOrderIs`, not this input, because only the code that
+  // knows what the order is waiting for may say so.
+  orderId: Uuid.nullable().optional(),
+  // The company (wholesale account) and the billing document the work is about.
+  // Same rule as the order: what a task waits on is set by the service function
+  // that knows (`createWhileAccountNeedsSetUp`, `createWhileDocumentIsAt`), not
+  // by this input.
+  companyId: Uuid.nullable().optional(),
+  billingDocumentId: Uuid.nullable().optional(),
 });
 export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
 

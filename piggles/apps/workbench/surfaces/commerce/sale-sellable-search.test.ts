@@ -60,6 +60,14 @@ describe('sellableMatches', () => {
     // Every word has to land. Otherwise "Marlow cushion" returns the jumper.
     expect(sellableMatches(MARLOW, 'Marlow cushion')).toBe(false);
   });
+
+  it('keeps a row the server found by a name the row does not draw', () => {
+    // The server searches a version's own name too (issue 069). A row it found
+    // for "winter" must not then be dropped here because only the options show.
+    const named = { ...MARLOW, keywords: 'Winter edition' };
+    expect(sellableMatches(named, 'marlow winter')).toBe(true);
+    expect(sellableMatches(MARLOW, 'marlow winter')).toBe(false);
+  });
 });
 
 describe('matchingSellables', () => {

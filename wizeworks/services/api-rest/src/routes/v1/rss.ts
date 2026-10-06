@@ -16,6 +16,8 @@ import { z } from 'zod';
 import { prisma, withTenant } from '@wizeworks/db';
 import { badRequest, notFound } from '@wizeworks/api-core/errors';
 
+import { canonicalSiteHost } from '../../lib/site-origin.js';
+
 const Query = z.object({
   tenant: z.string().min(1).max(63),
   type: z.string().min(1).max(63).optional(),
@@ -58,11 +60,23 @@ const rssRoutes: FastifyPluginAsync = (app) => {
     if (!tenant) throw notFound('Tenant', q.tenant);
     if (!tenant.settings) throw badRequest('Tenant has no published configuration.');
 
-    const settings = tenant.settings as Record<string, unknown>;
-    const baseUrl =
-      typeof settings.primaryDomain === 'string'
-        ? `https://${settings.primaryDomain}`
-        : `https://${q.tenant}.sparx.works`;
+    // The primary site's real address, by the helper the sitemap and every customer
+    // email use (lib/site-origin.ts). The fallback here was `<slug>.sparx.works`,
+    // the platform's own marketing domain, which serves no tenant's site at all, so
+    // every item link in the feed of a tenant without `primaryDomain` set went
+    // nowhere (found beside issue 064).
+    const primary = await withTenant({ tenantId: tenant.id }, (tx) =>
+      tx.property.findFirst({
+        where: { isPrimary: true },
+        select: { id: true, slug: true, isPrimary: true },
+      })
+    );
+    const baseUrl = `https://${await canonicalSiteHost({
+      tenantId: tenant.id,
+      tenantSlug: q.tenant,
+      tenantSettings: tenant.settings,
+      property: primary,
+    })}`;
 
     const type = await withTenant({ tenantId: tenant.id }, (tx) =>
       tx.contentType.findFirst({

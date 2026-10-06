@@ -1,12 +1,12 @@
 # 110 — Her diary follows the laptop's clock, so a Thursday appointment can land on Friday
 
-**Status:** open
+**Status:** fixed (2026-09-30), confirmed on screen under a second clock in act 324
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 7
 **Surface:** mypiggles › Bookings › Calendar
 **Filed:** 2026-08-22
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-09-30, `calendar-zone.ts`
+**Confirmed by:** P03's run, act 324: Halo & Hem's calendar on a Lisbon clock
 
 ## What happened
 
@@ -101,6 +101,23 @@ two-premises business, and that is a product decision rather than a repair.
 **Recommended, and not yet done.** Everything above is settled apart from the
 multi-zone case; this is next after act 7's remaining steps rather than an open
 question.
+
+## Act 324: it was fixed, and this file was never told
+
+`surfaces/scheduling/calendar-zone.ts` landed on 2026-09-30 in the persona pass
+(`7b90e2324`): a booking is placed by the day and minute on its own place's
+clock, columns are plain calendar dates, and closures are read on the
+business's clock. Its tests say the cases this file names, in so many words:
+"puts a 10:00 booking at 10:00 whatever the viewer clock says", "files it under
+its own day", "reads a closure on the business's clock, not the viewer's". 11
+tests pass.
+
+Then looked at under a second clock. A separate Playwright browser set to
+Europe/Lisbon, signed in as Halo & Hem, its clock set to Thursday, August 27,
+2026, on the calendar: the week of August 24 – 30, the salon's own hours down
+the side, and the booking at the bottom of the table above, **4:00 PM · Cut and
+finish · Colette Mbeki**, on **Thursday at 4:00 PM**, not at midnight on Friday.
+Every block sits at the salon's time.
 
 ## What it does NOT affect
 

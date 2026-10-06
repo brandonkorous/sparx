@@ -1,40 +1,20 @@
 'use client';
 
-// ══════════════════════════════════════════════════════════════════════════
-// THE TRADE-ACCOUNT DATA LAYER
-//
-// A wholesale customer is a business you supply — a garage, a builder, a reseller —
-// that buys from you on agreed prices and terms rather than paying card at
-// checkout. It carries its own credit limit, its own payment terms, a price
-// tier, and its own PEOPLE (contacts) who are allowed to place orders on its
-// behalf.
-//
-// The record lives in the CRM spine (`/v1/crm/b2b-accounts`) but the B2B module
-// enriches it with the trade facts — the price tier, the credit picture, the
-// per-account overrides (`/v1/b2b/accounts`). So a save touches BOTH: the plain
-// identity (name, tax id, website) is a CRM write, and the trade terms (tier,
-// credit, payment terms, discount, status, notes) are a B2B write.
-//
-//   ['b2b','accounts']                      the root every read nests under
-//   ['b2b','accounts','list',{…}]           the list surface's window
-//   ['b2b','accounts', id]                  one account, enriched, in full
-//   ['b2b','accounts', id, 'contacts']      its ordering contacts
-// ══════════════════════════════════════════════════════════════════════════
+// THE TRADE-ACCOUNT DATA LAYER: a business you supply on agreed prices and terms.
+// Identity is a CRM write (/v1/crm/b2b-accounts), trade terms a B2B write
+// (/v1/b2b/accounts). Keys: ['b2b','accounts'], +'list', +id, +id 'contacts'.
 
-import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { formatCentsAmount } from '../../lib/money-format';
-import { customerKeys } from '../crm/customers-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
 export type AccountStatus = 'active' | 'credit_hold' | 'suspended' | 'inactive';
-/** `prepay`, or `netN` for any agreed number of days. NOT a fixed set: a
- *  supplier on Net 14 is ordinary, and this used to omit it (and net15, which
- *  the Companies pane could write) so such an account read back as having no
- *  terms at all. See lib/payment-terms.ts. */
+/** `prepay`, or `netN` for any agreed number of days. NOT a fixed set, or Net 14
+ *  reads back as no terms at all. See lib/payment-terms.ts. */
 export type PaymentTerms = string;
 export type ContactRole = 'primary_contact' | 'buyer' | 'approver' | 'viewer';
 
@@ -46,7 +26,10 @@ export interface AccountRow {
   taxId: string | null;
   website: string | null;
   pricingTierId: string | null;
+  /** The group that prices them; null for normal prices, a removed group included. */
   pricingTierName: string | null;
+  /** The group they are still in after it was removed; it prices nothing. */
+  removedTierName: string | null;
   creditLimitCents: number;
   creditUsedCents: number;
   creditRemainingCents: number;
@@ -99,6 +82,11 @@ export interface AccountContact {
 export interface TierChoice {
   id: string;
   name: string;
+  /** Read so the picker can say what the tier gives ("Fleet · 12% off"):
+   *  names alone made the owner remember which group was which (sparx
+   *  persona issue 074). */
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
 }
 
 export const accountKeys = {
@@ -126,10 +114,8 @@ export function accountState(status: AccountStatus): { label: string; tone: Tone
   }
 }
 
-/** How the account pays, in plain words — DERIVED, so any agreed number of days
- *  reads as itself. The `switch` this replaced fell through to "No terms set"
- *  for every value it did not list, which reported that no agreement existed
- *  about money somebody is owed. One source now: lib/payment-terms.ts. */
+/** How the account pays, in plain words, DERIVED so any agreed number of days
+ *  reads as itself. One source: lib/payment-terms.ts. */
 export { paymentTermsLabel } from '../../lib/payment-terms';
 
 export const CONTACT_ROLE_LABELS: Record<ContactRole, string> = {
@@ -138,6 +124,20 @@ export const CONTACT_ROLE_LABELS: Record<ContactRole, string> = {
   approver: 'Can approve orders',
   viewer: 'Can view only',
 };
+
+// The people already on an account, by customer id, with the words the Add someone
+// picker shows instead of offering them again (sparx persona issue 086). Active only:
+// re-adding someone switched off turns them back on.
+export function alreadyOnAccount(contacts: readonly AccountContact[]): Map<string, string> {
+  return new Map(
+    contacts
+      .filter((contact) => contact.isActive)
+      .map((contact) => [
+        contact.customer.id,
+        `Already on this account (${CONTACT_ROLE_LABELS[contact.role].toLowerCase()})`,
+      ])
+  );
+}
 
 export function formatCents(cents: number, currency = 'USD'): string {
   return formatCentsAmount(cents, currency);
@@ -201,140 +201,11 @@ export function useInvalidateAccounts() {
   const queryClient = useQueryClient();
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: accountKeys.all });
+    // The same row is the Customers pane's company: that pane, open beside this
+    // one, shows the same group and terms and has to hear about a change here.
+    void queryClient.invalidateQueries({ queryKey: ['crm', 'accounts'] });
     if (id) void queryClient.invalidateQueries({ queryKey: accountKeys.detail(id) });
   };
-}
-
-/**
- * Adding or removing a member writes on the CUSTOMER as well, so the customer's
- * own pane has to hear about it.
- *
- * The membership and `Customer.companyId` are kept in step by
- * `trade-membership.ts` in one transaction (issue 744), which fixed the DATA.
- * It does not fix the SCREEN: a customer pane open beside this one went on
- * naming a business it had just been taken off, until somebody pressed refresh.
- * A pane showing a fact that another pane just changed is the workbench's own
- * version of the same disagreement.
- */
-export function useInvalidateMembership() {
-  const queryClient = useQueryClient();
-  const invalidateAccounts = useInvalidateAccounts();
-  return (accountId: string) => {
-    invalidateAccounts(accountId);
-    // The whole root: the pointer shows on the customer's rail, in the list's
-    // company column, and in every filtered window of it.
-    void queryClient.invalidateQueries({ queryKey: customerKeys.all });
-  };
-}
-
-/* ── Mutations ──────────────────────────────────────────────────────────── */
-
-/** The plain identity fields — created and edited through the CRM spine. */
-export interface IdentityInput {
-  companyName: string;
-  taxId: string | null;
-  website: string | null;
-  creditLimit: number; // dollars, as the CRM schema takes them
-  paymentTerms: PaymentTerms | null;
-  discountPercent: number;
-  status: AccountStatus;
-  notes: string | null;
-}
-
-/** The trade fields the B2B module owns — written to /v1/b2b/accounts. */
-export interface TradeInput {
-  pricingTierId: string | null;
-  creditLimitCents: number;
-  paymentTerms: PaymentTerms | null;
-  discountPercent: number;
-  status: AccountStatus;
-  internalNotes: string | null;
-  fleetSize: number | null;
-  customProperties?: Record<string, unknown>;
-}
-
-export function useCreateAccount() {
-  const invalidate = useInvalidateAccounts();
-  return useMutation({
-    mutationFn: (input: IdentityInput) =>
-      api.post<{ id: string }>('/v1/crm/b2b-accounts', {
-        companyName: input.companyName,
-        taxId: input.taxId,
-        website: input.website,
-        creditLimit: input.creditLimit,
-        paymentTerms: input.paymentTerms,
-        discountPercent: input.discountPercent,
-        status: input.status,
-        notes: input.notes,
-      }),
-    onSuccess: (created) => {
-      invalidate(created.id);
-    },
-  });
-}
-
-/** Save an existing account: the identity fields go to CRM, the trade fields to
- *  B2B. Two writes, run in order, so a name change and a tier change on the same
- *  Save both land. */
-export function useSaveAccount(id: string) {
-  const invalidate = useInvalidateAccounts();
-  return useMutation({
-    mutationFn: async (input: { identity: Partial<IdentityInput>; trade: TradeInput }) => {
-      await api.patch(`/v1/crm/b2b-accounts/${id}`, input.identity);
-      await api.patch(`/v1/b2b/accounts/${id}`, input.trade);
-    },
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
-}
-
-/** Set the price tier on a freshly-created account — CRM create doesn't take a
- *  tier id, so a new account with a tier chosen needs this follow-up write. */
-export function useSetAccountTier() {
-  const invalidate = useInvalidateAccounts();
-  return useMutation({
-    mutationFn: (input: { id: string; pricingTierId: string }) =>
-      api.patch(`/v1/b2b/accounts/${input.id}`, { pricingTierId: input.pricingTierId }),
-    onSuccess: (_data, input) => {
-      invalidate(input.id);
-    },
-  });
-}
-
-export function useDeleteAccount(id: string) {
-  const invalidate = useInvalidateAccounts();
-  return useMutation({
-    mutationFn: () => api.delete(`/v1/crm/b2b-accounts/${id}`),
-    onSuccess: () => {
-      invalidate();
-    },
-  });
-}
-
-export function useAddContact(id: string) {
-  const invalidate = useInvalidateMembership();
-  return useMutation({
-    mutationFn: (input: { customerId: string; role: ContactRole }) =>
-      api.post(`/v1/crm/b2b-accounts/${id}/contacts`, input),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
-}
-
-export function useUpdateContact(id: string) {
-  const invalidate = useInvalidateMembership();
-  return useMutation({
-    mutationFn: (input: { contactId: string; role?: ContactRole; isActive?: boolean }) =>
-      api.patch(`/v1/crm/b2b-accounts/${id}/contacts/${input.contactId}`, {
-        ...(input.role !== undefined ? { role: input.role } : {}),
-        ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
-      }),
-    onSuccess: () => {
-      invalidate(id);
-    },
-  });
 }
 
 /* ── Errors ─────────────────────────────────────────────────────────────── */

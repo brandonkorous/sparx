@@ -52,6 +52,8 @@ export interface Task {
   dealId: string | null;
   customer: TaskCustomerLink | null;
   deal: { title: string } | null;
+  /** The wholesale account it is about ("Set up prices and terms"), if any. */
+  company: { companyName: string } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -105,7 +107,8 @@ export function taskStatusMeta(
 }
 
 /** The subject a task is about, in words: the customer's name, else the deal's
- *  title, else null (a general to-do). */
+ *  title, else the account's name, else null (a general to-do). An account's
+ *  set-up task opened before anybody worked there names only the account. */
 export function taskSubject(task: Task): string | null {
   if (task.customer) {
     const name = [task.customer.firstName, task.customer.lastName].filter(Boolean).join(' ').trim();
@@ -115,6 +118,7 @@ export function taskSubject(task: Task): string | null {
     return 'A customer';
   }
   if (task.deal) return task.deal.title;
+  if (task.company?.companyName.trim()) return task.company.companyName.trim();
   return null;
 }
 

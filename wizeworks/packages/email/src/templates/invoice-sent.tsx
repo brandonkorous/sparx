@@ -2,6 +2,7 @@ import * as React from 'react';
 import { EmailLayout } from './_layout';
 import {
   EmailAmountHero,
+  EmailButton,
   EmailDisplayHeading,
   EmailFinePrint,
   EmailLineItems,
@@ -35,11 +36,19 @@ export interface InvoiceSentEmailProps {
    *  only one it has; absent means the price holds until the business says
    *  otherwise, which the email states rather than leaving blank. */
   validUntil?: string | null;
+  /** The BUYER's own purchase order number, when they gave one. A business on
+   *  account matches every invoice to a purchase order before it pays, and this
+   *  number is how its accounts department finds the match (sparx issue 077). */
+  poNumber?: string | null;
   /** The lines, as they appear on the document. */
   lines: LineItem[];
   summary: SummaryRow[];
   /** The note the business wrote on the document, if any. */
   note?: string | null;
+  /** Where a trade buyer opens this document to print it or save it as a PDF,
+   *  on their account page. Absent for a customer with no account page: the
+   *  document still travels whole in the body (sparx persona issue 085). */
+  viewUrl?: string | null;
 }
 
 function formatMoney(amount: number, currency: string): string {
@@ -68,12 +77,17 @@ function formatDate(iso: string): string | null {
 //
 // ── WHY THE INVOICE IS IN THE EMAIL ─────────────────────────────────────────
 //
-// There is no public invoice page and no attachment on the event path, so a
-// mail that only announced an invoice would be an announcement of something the
-// recipient cannot see. Everything they need to check it — who it is from, the
-// number, the lines, the total, what is still owed and when — is in the body,
-// which is also what a café's bookkeeper actually wants: a thing they can read
-// on a phone and forward, not a link behind a login.
+// There is no attachment on the event path, and only a trade buyer has an
+// account page to open it on, so a mail that only announced an invoice would be
+// an announcement of something most recipients cannot see. Everything they need
+// to check it (who it is from, the number, the lines, the total, what is still
+// owed and when) is in the body, which is also what a café's bookkeeper
+// actually wants: a thing they can read on a phone and forward.
+//
+// A trade buyer ALSO gets a button to the same branded page the business
+// prints, to print or keep as a PDF: the /b2b page promises "a branded quote
+// PDF", and a body they can read is not a document they can file (sparx persona
+// issue 085).
 //
 // ── WHY IT NAMES THE BUSINESS AND NOT US ────────────────────────────────────
 //
@@ -91,9 +105,11 @@ export function InvoiceSentEmail({
   dueAt,
   priceOffer = false,
   validUntil,
+  poNumber,
   lines,
   summary,
   note,
+  viewUrl,
 }: InvoiceSentEmailProps) {
   const label = documentLabel || 'Invoice';
   const due = dueAt ? formatDate(dueAt) : null;
@@ -131,8 +147,10 @@ export function InvoiceSentEmail({
         {label} from {fromName}
       </EmailDisplayHeading>
       <EmailParagraph>
-        Hi {billToName ?? 'there'}, here is {label.toLowerCase()} <strong>{documentNumber}</strong>{' '}
-        from {fromName}.
+        {/* Ends on the number, not the business: a name ending "Inc." would
+            otherwise print two full stops. */}
+        Hi {billToName ?? 'there'}, {fromName} sent you {label.toLowerCase()}{' '}
+        <strong>{documentNumber}</strong>.
         {/* A bill says when the money is wanted. An offer says how long the
             price stands, and says so plainly when it stands until further
             notice rather than leaving the question hanging. */}
@@ -144,6 +162,19 @@ export function InvoiceSentEmail({
             ? ` It is due by ${due}.`
             : ''}
       </EmailParagraph>
+
+      {/* Their own reference, where their accounts department looks first. */}
+      {poNumber ? (
+        <EmailParagraph>
+          PO number: <strong>{poNumber}</strong>
+        </EmailParagraph>
+      ) : null}
+
+      {poNumber ? (
+        <EmailParagraph>
+          PO number: <strong>{poNumber}</strong>
+        </EmailParagraph>
+      ) : null}
 
       <EmailAmountHero
         amount={formatMoney(headline, currency)}
@@ -175,9 +206,21 @@ export function InvoiceSentEmail({
 
       {note ? <EmailParagraph>{note}</EmailParagraph> : null}
 
+      {viewUrl ? (
+        <>
+          <EmailParagraph>
+            Open it to print it, or to save it as a PDF for your records.
+          </EmailParagraph>
+          <EmailButton href={viewUrl}>
+            Open {label.toLowerCase()} {documentNumber}
+          </EmailButton>
+        </>
+      ) : null}
+
       <EmailFinePrint>
-        Questions about this {label.toLowerCase()}? Reply to this email and it goes straight to{' '}
-        {fromName}.
+        {/* Never ends on the business's name: a name ending "Inc." plus a full
+            stop printed two of them. */}
+        Questions about this {label.toLowerCase()}? {fromName} reads every reply to this email.
       </EmailFinePrint>
     </EmailLayout>
   );

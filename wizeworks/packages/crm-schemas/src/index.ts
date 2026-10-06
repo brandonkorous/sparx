@@ -8,6 +8,8 @@
 
 export * from './customers';
 export * from './companies';
+// When a wholesale account still needs its prices and terms set up (issue 080).
+export * from './account-set-up';
 export * from './object-defs';
 export * from './associations';
 export * from './engagement';
@@ -26,6 +28,8 @@ export * from './evaluate-segment-rule';
 export * from './orders';
 export * from './order-payments';
 export * from './order-fulfillments';
+// Can this order, and this line, leave the building yet (persona issues 057, 058).
+export * from './ship-gate';
 export * from './invoicing';
 export * from './common-commerce';
 export * from './common';

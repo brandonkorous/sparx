@@ -13,7 +13,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { partyFromJson } from '../../src/services/billing-render-parts';
+import { partyFromJson, printedTypeLabels } from '../../src/services/billing-render-parts';
 
 describe('partyFromJson', () => {
   it('prints a typed address on the lines it was typed on', () => {
@@ -126,5 +126,20 @@ describe('partyFromJson', () => {
     expect(partyFromJson({}, 'Bill to')).toBeNull();
     expect(partyFromJson(null, 'Bill to')).toBeNull();
     expect(partyFromJson({ address: '   \n  ' }, 'Bill to')).toBeNull();
+  });
+});
+
+// Issue 083: "Catalog item" printed under every part on Wasatch Front's quote.
+describe('printedTypeLabels', () => {
+  it('prints no type word on a line priced from the catalog', () => {
+    const labels = printedTypeLabels([
+      { id: 'catalog', label: 'Catalog item', pricingMode: 'catalog' },
+      { id: 'labor', label: 'Service', pricingMode: 'labor' },
+      { id: 'freight', label: 'Shipping', pricingMode: 'pass_through' },
+    ]);
+    expect(labels.has('catalog')).toBe(false);
+    // The words that name the kind of work stay.
+    expect(labels.get('labor')).toBe('Service');
+    expect(labels.get('freight')).toBe('Shipping');
   });
 });

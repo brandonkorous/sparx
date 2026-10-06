@@ -18,14 +18,15 @@ import { requireAuth } from '@wizeworks/api-core/auth';
 
 import { publish } from '@wizeworks/api-core/pubsub';
 
-/** Same substitution `email-data.ts` uses, so a signing link and the links
- *  inside the email that carries it point at the same place. */
-const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
+import { resolveSiteOrigin, siteUrl } from './site-origin.js';
+import { tenantSenderHeaders } from './tenant-email.js';
 
-function signingUrl(slug: string, token: string): string {
-  const path = `/sign/${encodeURIComponent(token)}`;
-  if (!SITE_BASE) return path;
-  return `${SITE_BASE.replace('{slug}', slug)}${path}`;
+/** The signing page on the site the document belongs to, the same origin every
+ *  other customer email links into (`site-origin.ts`). It used to be a bare
+ *  `/sign/…` path whenever `SPARX_SITE_BASE` was unset, which was always: a
+ *  signing request whose one button opened nothing (issue 064). */
+function signingUrl(origin: string, token: string): string {
+  return siteUrl(origin, `/sign/${encodeURIComponent(token)}`);
 }
 
 export interface SendSignatureArgs {
@@ -50,11 +51,8 @@ export async function sendSignatureRequest(
   const auth = requireAuth(request);
   const tenant = await prisma.tenant.findUnique({
     where: { id: auth.tenantId },
-    select: { slug: true, name: true },
+    select: { name: true },
   });
-  const url = signingUrl(tenant?.slug ?? '', args.token);
-  if (!args.notify) return url;
-
   const document = await withTenant({ tenantId: auth.tenantId }, (tx) =>
     tx.billingDocument.findUnique({
       where: { id: args.documentId },
@@ -72,14 +70,26 @@ export async function sendSignatureRequest(
       },
     })
   );
+  // Read before the early return: the link a rep pastes into a chat must open the
+  // same page the emailed one does.
+  const url = signingUrl(
+    await resolveSiteOrigin(auth.tenantId, document?.propertyId ?? null),
+    args.token
+  );
+  if (!args.notify) return url;
 
   // The bus, not a direct send — the platform email rule (root CLAUDE.md). One
   // path means one place where suppression, bounce handling and per-site
   // branding are correct. A signing link is not an OTP; nothing about it needs
   // to be synchronous.
+  // The shop's own sender and reply address, not the platform's (sparx persona
+  // issue 071): a signer with a question replies to the business asking.
+  const sender = await tenantSenderHeaders(auth.tenantId, document?.propertyId ?? null);
   await publish(request.log, 'email.send', auth.tenantId, auth.actorId, {
     to: args.signature.signerEmail,
     template: 'document-signature-request',
+    from: sender.from,
+    ...(sender.replyTo ? { replyTo: sender.replyTo } : {}),
     propertyId: document?.propertyId ?? null,
     props: {
       signerName: args.signature.signerName,

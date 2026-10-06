@@ -14,7 +14,13 @@
 // item. Consecutive lines on one shelf are GROUPED for display and confirmed
 // together — that is a screen concern, and it is where the saving actually is.
 
-import { GeneratePickListInput, ListPickListsQuery } from '@wizeworks/commerce-schemas';
+import {
+  GeneratePickListInput,
+  ListPickListsQuery,
+  orderShipRefusal,
+  shippableUnits,
+  unitsWaitingForCore,
+} from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
@@ -136,7 +142,11 @@ export async function generatePickList(
   const input = GeneratePickListInput.parse(rawInput);
 
   const created = await withTenant(ctx, async (tx) => {
-    const orders = await loadPickableOrders(tx, ctx.tenantId, input.orderIds);
+    const { lines: orders, waitingForCore } = await loadPickableOrders(
+      tx,
+      ctx.tenantId,
+      input.orderIds
+    );
     const warehouseId = await resolveWarehouse(tx, ctx.tenantId, input.orderIds, input.warehouseId);
 
     const warehouse = await tx.warehouse.findFirst({
@@ -240,6 +250,14 @@ export async function generatePickList(
       throw new InventoryValidationError(unstockedRefusal(unstocked.length, staged.length));
     }
     if (staged.length === 0) {
+      // Waiting for an old part is its own cause with its own remedy, so it gets
+      // its own sentence rather than joining the list below (issue 057).
+      if (waitingForCore.length > 0) {
+        const names = waitingForCore.join(', ');
+        throw new InventoryValidationError(
+          `${names} ${waitingForCore.length === 1 ? 'is' : 'are'} held until the customer's old part arrives, and nothing else on ${input.orderIds.length === 1 ? 'this order' : 'these orders'} is left to pick. Record the old part on the order when it arrives, or choose not to wait for it.`
+        );
+      }
       throw new InventoryValidationError(
         'Every line on these orders is already picked, already on another walk, or has nothing left to fulfill.'
       );
@@ -351,14 +369,17 @@ export async function generatePickList(
 /**
  * The order lines a walk could cover.
  *
- * Cancelled and refunded orders are excluded — walking to fetch something nobody
- * is going to be sent is pure waste, and the picker has no way to know.
+ * Cancelled, refunded and held orders are refused — walking to fetch something
+ * nobody is going to be sent is pure waste, and the picker has no way to know. A
+ * B2B order waiting for approval is held (issue 058). A rebuilt part the buyer is
+ * sending the old part back for FIRST counts only the units whose old part has
+ * arrived (issue 057); the rest are named back so the refusal can say why.
  */
 async function loadPickableOrders(
   tx: TxClient,
   tenantId: string,
   orderIds: string[]
-): Promise<PickableLine[]> {
+): Promise<{ lines: PickableLine[]; waitingForCore: string[] }> {
   const orders = await tx.order.findMany({
     where: { id: { in: orderIds }, tenantId },
     select: {
@@ -373,6 +394,9 @@ async function loadPickableOrders(
           name: true,
           quantity: true,
           quantityFulfilled: true,
+          coreFirst: true,
+          coreHoldReleasedAt: true,
+          coresReturned: true,
         },
       },
     },
@@ -384,17 +408,17 @@ async function loadPickableOrders(
     throw new InventoryNotFoundError('Order', missing[0]!);
   }
 
-  const unpickable = orders.filter((o) => o.status === 'cancelled' || o.status === 'refunded');
-  if (unpickable.length > 0) {
-    throw new InventoryValidationError(
-      `Order ${unpickable[0]?.orderNumber} is ${unpickable[0]?.status} and must not be picked.`
-    );
+  for (const order of orders) {
+    const held = orderShipRefusal(order);
+    if (held) throw new InventoryValidationError(held);
   }
 
   const lines: PickableLine[] = [];
+  const waitingForCore: string[] = [];
   for (const order of orders) {
     for (const item of order.items) {
-      const outstanding = item.quantity - item.quantityFulfilled;
+      if (unitsWaitingForCore(item) > 0) waitingForCore.push(item.name);
+      const outstanding = shippableUnits(item);
       if (outstanding <= 0) continue;
       lines.push({
         orderId: order.id,
@@ -407,7 +431,7 @@ async function loadPickableOrders(
       });
     }
   }
-  return lines;
+  return { lines, waitingForCore };
 }
 
 /**
@@ -479,7 +503,7 @@ async function claimedUnits(
       JOIN inventory_pick_lists pl ON pl.id = l.pick_list_id
      WHERE l.tenant_id = ${tenantId}::uuid
        AND l.order_item_id = ANY(${orderItemIds}::uuid[])
-       AND pl.status <> 'canceled'
+       AND pl.status <> 'cancelled'
        AND l.status <> 'short'
      GROUP BY l.order_item_id
   `;

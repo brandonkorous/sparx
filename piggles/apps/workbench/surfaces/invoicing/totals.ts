@@ -1,18 +1,6 @@
-// Line + document totals, mirrored from the server.
-//
-// The authority is wizeworks/packages/crm/src/services/billing-totals.ts — the server
-// recomputes every figure on write and its answer is what gets persisted. This
-// exists ONLY so the editor can show a running total while typing, before
-// anything is saved.
-//
-// It is deliberately a mirror rather than an import: @wizeworks/crm pulls in
-// @wizeworks/db (Prisma), so it cannot be bundled into a browser app. If the two
-// ever disagree the server wins by construction — the moment a save lands, the
-// document's real totals replace whatever was on screen.
-//
-// Rules being mirrored (docs/87 §7): tax is PER LINE against one document-level
-// rate, charged on the post-discount amount; resolution order is
-// lines → subtotal → discount → tax → shipping → surcharge → total.
+// Line + document totals, a browser mirror of @wizeworks/crm's billing-totals.ts
+// (which drags Prisma, so it cannot be imported). The server wins on save. Order:
+// lines, subtotal, discount, per-line tax, shipping, surcharge, core deposits.
 
 import type { LineMarkupInput } from '@wizeworks/commerce-schemas';
 
@@ -61,6 +49,18 @@ export interface DraftLine {
   appliedMarkup?: LineMarkupSnapshot | null;
   /** Cost basis the server resolved, in cents (for margin display). */
   costCents?: number | null;
+  /** Refundable core deposit per unit, in dollars (sparx issue 051). `undefined`
+   *  leaves it to the server (the part's own deposit); `null` takes it off. */
+  coreCharge?: number | null;
+  /**
+   * Where the price came from, in words: "Fleet price: 12% off $600.00" (issue
+   * 077). Null when it is the list price or was typed. Stored in the line's
+   * metadata as `priceNote`; `undefined` means "not said", and the save leaves
+   * the stored bag alone.
+   */
+  priceNote?: string | null;
+  /** The line's stored metadata bag, so a save MERGES the note into it. */
+  metadata?: Record<string, unknown> | null;
 }
 
 /** True when a line prices off a cost basis rather than a typed unit price — its
@@ -81,6 +81,8 @@ export interface DocumentTotals {
   taxTotal: number;
   shippingTotal: number;
   surchargeTotal: number;
+  /** Refundable core deposits: never taxed, outside the subtotal, in the total. */
+  coreChargeTotal: number;
   total: number;
 }
 
@@ -99,21 +101,9 @@ export function computeLine(line: DraftLine, taxRate: number): LineTotals {
   };
 }
 
-/**
- * SHIPPING AND SURCHARGE ARE PART OF THE TOTAL, and were named in this file's
- * header long before they were added here. The mirror stopped at tax, so an
- * invoice carrying a delivery charge showed a Total short by exactly that
- * charge -- sitting beside an "Amount due" read straight off the server, which
- * was right. Two figures on one card that could not both be true.
- *
- * It also made the "Not saved yet" warning fire on documents nobody had edited,
- * because that warning is this number compared with the saved one. A warning
- * that goes off when nothing is wrong is one she learns to ignore, and it is
- * the only thing between her and emailing a stale invoice.
- *
- * Both are document-level and pass through untouched: they are not taxed, not
- * discounted, and added last, exactly as `billing-totals.ts` does it.
- */
+/** The document's totals, exactly as `billing-totals.ts` works them out. Shipping,
+ *  surcharge and core deposits are never taxed or discounted and are added last;
+ *  leaving one out puts the Total beside a server "Amount due" it disagrees with. */
 export function computeTotals(
   lines: DraftLine[],
   taxRate: number,
@@ -123,12 +113,14 @@ export function computeTotals(
   let subtotal = 0;
   let discountTotal = 0;
   let taxTotal = 0;
+  let coreChargeTotal = 0;
 
   for (const line of lines) {
     const computed = computeLine(line, taxRate);
     subtotal += computed.lineSubtotal;
     discountTotal += line.discountAmount;
     taxTotal += computed.taxAmount;
+    coreChargeTotal += line.coreCharge == null ? 0 : round2(line.coreCharge * line.quantity);
   }
 
   subtotal = round2(subtotal);
@@ -136,6 +128,7 @@ export function computeTotals(
   taxTotal = round2(taxTotal);
   const shipping = round2(shippingTotal);
   const surcharge = round2(surchargeTotal);
+  const cores = round2(coreChargeTotal);
 
   return {
     subtotal,
@@ -143,7 +136,8 @@ export function computeTotals(
     taxTotal,
     shippingTotal: shipping,
     surchargeTotal: surcharge,
-    total: round2(subtotal - discountTotal + taxTotal + shipping + surcharge),
+    coreChargeTotal: cores,
+    total: round2(subtotal - discountTotal + taxTotal + shipping + surcharge + cores),
   };
 }
 

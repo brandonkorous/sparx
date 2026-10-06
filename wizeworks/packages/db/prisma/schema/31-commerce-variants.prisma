@@ -62,6 +62,14 @@ model ProductVariant {
   costCents           Int?   @map("cost_cents")
   currency            String @db.VarChar(3)
 
+  // Core charge: a refundable deposit per unit on a rebuilt part, paid on top of
+  // the price and refunded when the old part (the "core") comes back. Never
+  // taxed, never discounted. Null = this item takes no core.
+  coreChargeCents  Int?    @map("core_charge_cents")
+  // The buyer may send the old part first instead of paying the deposit; the part
+  // then ships when the old one arrives (issue 057). Only with a core charge.
+  coreFirstOffered Boolean @default(false) @map("core_first_offered")
+
   // Per-variant override of the tenant's costing method (docs/146 Phase 5.5):
   // moving_average | fifo | standard. Null = follow the tenant policy, which is
   // what almost every variant will do. It exists because a business that
@@ -149,6 +157,8 @@ model ProductVariant {
   recomputeReviews      MarkupRecomputeReview[]
   billingDocumentLines  BillingDocumentLine[]
   fleetHolds            B2bFleetHold[]
+  savedCartItems        B2bSavedCartItem[]
+  quoteRequestLines     B2bQuoteRequestLine[]
   channelMappings       ChannelProductMapping[]
   reconciliationDrifts  InventoryReconciliationDrift[]
   oversellIncidents     InventoryOversellIncident[]

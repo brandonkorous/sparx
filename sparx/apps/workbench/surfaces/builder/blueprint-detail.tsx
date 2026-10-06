@@ -45,7 +45,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ArrowUpCircle, LayoutTemplate, Plus, Rocket, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
-import { useActiveSiteId, useModuleStates } from '../../lib/api/shell-data';
+import { useActivePropertyId, useModuleStates } from '../../lib/api/shell-data';
 import { useSites } from '../sites/data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -144,7 +144,7 @@ function BlueprintBody({
   const confirm = useConfirm();
 
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const { data: modules } = useModuleStates();
   const {
     data: installs,
@@ -160,7 +160,7 @@ function BlueprintBody({
   // Default the target to the site being worked in — nearly always the one meant
   // — but keep it a visible, changeable choice, because adding a whole design to
   // the wrong site is a real mistake to make.
-  const fallbackSite = active?.propertyId ?? sites?.find((site) => site.isPrimary)?.id ?? '';
+  const fallbackSite = currentSiteId ?? '';
   const [chosen, setChosen] = useState('');
   const targetSite = chosen || fallbackSite;
 

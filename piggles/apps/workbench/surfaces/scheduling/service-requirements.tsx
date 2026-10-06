@@ -99,7 +99,6 @@ export function ServiceRequirements({
                     <Input
                       color="module"
                       value={requirement.role}
-                      placeholder="Stylist"
                       onChange={(event) => {
                         update(index, { role: event.target.value });
                       }}
@@ -170,7 +169,6 @@ export function ServiceRequirements({
                   <Input
                     color="module"
                     value={requirement.skillTags.join(', ')}
-                    placeholder="barbering, color"
                     aria-label="Skills this needs"
                     onChange={(event) => {
                       update(index, { skillTags: parseSkills(event.target.value) });

@@ -55,6 +55,8 @@ export function registerSegmentEvaluatorConsumers(ctx: ConsumerContext): (() => 
     'crm.customer.created',
     'crm.customer.updated',
     'crm.customer.subscribed',
+    // A person who arrived through a form, a booking or a checkout (issue 086).
+    'crm.customer.captured',
     'crm.b2b.account_updated',
   ];
 

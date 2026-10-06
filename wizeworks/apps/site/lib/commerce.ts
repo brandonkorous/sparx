@@ -4,7 +4,9 @@
 // way.
 
 import { cookies } from 'next/headers';
+import type { FleetFit, RepeatCadence } from '@wizeworks/commerce-schemas';
 
+import type { AccountOrdering, BuyingRule } from './account-buying-rules';
 import { resolveReaderLocale } from './locale';
 import { resolveActivePropertySlug } from './site-context';
 
@@ -28,6 +30,12 @@ async function forwardedSessionCookie(): Promise<string | undefined> {
   return hasSession ? store.toString() : undefined;
 }
 
+/** A fleet vehicle a listing was narrowed to. */
+export interface FleetVehicleRef {
+  id: string;
+  label: string;
+}
+
 interface SuccessEnvelope<T> {
   success: true;
   data: T;
@@ -38,6 +46,10 @@ interface SuccessEnvelope<T> {
     total_pages?: number;
     // Search responses carry Typesense facet counts here.
     facets?: Record<string, { value: string; count: number }[]>;
+    /** Present only when a listing was asked for "parts that fit" one vehicle: the
+     *  vehicle it was applied to, or null when the signed-in buyer has no such
+     *  vehicle (sparx persona issue 086). */
+    fleetVehicle?: FleetVehicleRef | null;
   };
 }
 
@@ -128,6 +140,10 @@ export interface PublicProductListItem {
    *  only for an active B2B customer whose price differs from retail; null
    *  for every anonymous/retail visitor (the common case). */
   yourPriceCents: number | null;
+  /** For a signed-in trade buyer with a fleet: which of their vehicles this fits,
+   *  or that it fits none. Null (or absent) when there is nothing to say, which
+   *  includes a product with no fitment data (sparx persona issue 086). */
+  fleetFit?: FleetFit | null;
   inStock: boolean;
   averageRating: number | null;
   reviewCount: number;
@@ -166,6 +182,12 @@ export interface PublicProductVariant {
   title: string | null;
   priceCents: number;
   compareAtPriceCents: number | null;
+  /** Refundable core deposit on a rebuilt part, charged on top of the price and
+   *  paid back when the old part comes back (issue 051). Null = no core. */
+  coreChargeCents: number | null;
+  /** The buyer may instead send the old part FIRST: no deposit, and the part ships
+   *  when the old one arrives (issue 057). Only ever true beside a core charge. */
+  coreFirstOffered: boolean;
   /** The signed-in viewer's price on THIS variant, resolved through the same
    *  priority chain checkout uses (contract price → price list → bulk tier) —
    *  present only when it differs from `priceCents`; null otherwise. */
@@ -188,6 +210,10 @@ export interface PublicProductVariant {
    *  the silica one, which is the page tenants actually get, drew nothing for
    *  it at all before that. */
   expectedBackAt: string | null;
+  /** The signed-in trade buyer's minimum, maximum and case pack on this version
+   *  (sparx persona issue 086). Null for everyone else, and for a version their
+   *  account has no rule on. Optional for an api-rest that predates it. */
+  buyingRules?: BuyingRule | null;
 }
 
 export interface PublicPreorderOffer {
@@ -260,6 +286,10 @@ export interface PublicProductAttributeSection {
 
 export interface PublicProduct extends PublicProductListItem {
   fulfillmentType: string;
+  /** How often a shopper may ask for this again (issue 739). Empty = buy once,
+   *  including at a shop that cannot keep a card. Optional for an api-rest that
+   *  predates it. */
+  repeatOptions?: RepeatCadence[];
   weightGrams: number | null;
   dimensions: { lengthMm: number | null; widthMm: number | null; heightMm: number | null } | null;
   options: PublicProductOption[];
@@ -279,6 +309,9 @@ export interface PublicProduct extends PublicProductListItem {
   /** Made to order (issue 026) — everything a buyer has to be told BEFORE they
    *  commit, when the thing has to be made before it can be handed over. */
   madeToOrder: PublicMadeToOrder;
+  /** Whether the signed-in trade contact's role lets them order (sparx persona
+   *  issue 086). Null for anybody who is not a trade contact. */
+  accountOrdering?: AccountOrdering | null;
 }
 
 /** How much of the price is taken at checkout. Three shapes; `none` is what
@@ -462,6 +495,8 @@ export interface ProductListFilters {
   /** Scope the listing to ONE category by handle — a browse-node rollup (self +
    *  descendants). Backs the category detail page's faceted grid. */
   category?: string;
+  /** Only the parts that fit this vehicle on the signed-in buyer's own fleet. */
+  fleetVehicle?: string;
   page?: number;
   perPage?: number;
 }
@@ -469,7 +504,13 @@ export interface ProductListFilters {
 export async function listProducts(
   tenantSlug: string,
   filters: ProductListFilters = {}
-): Promise<{ items: PublicProductListItem[]; total: number; page: number; perPage: number }> {
+): Promise<{
+  items: PublicProductListItem[];
+  total: number;
+  page: number;
+  perPage: number;
+  fleetVehicle?: FleetVehicleRef | null;
+}> {
   const query: Record<string, string | number | undefined> = {
     tenant: tenantSlug,
     q: filters.q,
@@ -487,6 +528,7 @@ export async function listProducts(
     sort: filters.sort,
     collection: filters.collection,
     category: filters.category,
+    fleetVehicle: filters.fleetVehicle,
     page: filters.page,
     perPage: filters.perPage,
   };
@@ -500,6 +542,7 @@ export async function listProducts(
     total: meta?.total ?? data.length,
     page: meta?.page ?? filters.page ?? 1,
     perPage: meta?.per_page ?? filters.perPage ?? 24,
+    ...(meta && 'fleetVehicle' in meta ? { fleetVehicle: meta.fleetVehicle ?? null } : {}),
   };
 }
 
@@ -531,6 +574,9 @@ export interface ProductSearchFilters {
   category?: string;
   /** Product-option facet selections as "Name:Value" tokens (e.g. ["Color:Black","Size:M"]). */
   options?: string[];
+  /** Only the parts that fit this vehicle on the signed-in buyer's own fleet
+   *  (sparx persona issue 086). */
+  fleetVehicle?: string;
   sort?: ProductSort;
   page?: number;
   perPage?: number;
@@ -542,6 +588,9 @@ export interface ProductSearchResult {
   page: number;
   perPage: number;
   facets: SearchFacets;
+  /** Set only when `fleetVehicle` was asked for: the vehicle applied, or null
+   *  when the signed-in buyer has no such vehicle. */
+  fleetVehicle?: FleetVehicleRef | null;
 }
 
 /** Typo-tolerant faceted product search (Typesense, via api-rest). Returns the
@@ -567,6 +616,7 @@ export async function searchProducts(
     collection: filters.collection,
     category: filters.category,
     options: filters.options,
+    fleetVehicle: filters.fleetVehicle,
     sort: filters.sort,
     page: filters.page,
     perPage: filters.perPage,
@@ -584,6 +634,7 @@ export async function searchProducts(
         page: meta?.page ?? filters.page ?? 1,
         perPage: meta?.per_page ?? filters.perPage ?? 24,
         facets: meta?.facets ?? {},
+        ...(meta && 'fleetVehicle' in meta ? { fleetVehicle: meta.fleetVehicle ?? null } : {}),
       };
     } catch {
       // Typesense unreachable. Not an answer, and specifically not an answer of zero.
@@ -685,6 +736,7 @@ async function catalogFallback(
       fitmentRangeValue: filters.fitmentYear,
       collection: filters.collection,
       category: filters.category,
+      fleetVehicle: filters.fleetVehicle,
       sort: filters.sort,
       page: filters.page,
       perPage: filters.perPage,

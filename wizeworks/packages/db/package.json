@@ -12,6 +12,10 @@
     "./client": {
       "types": "./src/client.ts",
       "default": "./src/client.ts"
+    },
+    "./site-origin": {
+      "types": "./src/site-origin.ts",
+      "default": "./src/site-origin.ts"
     }
   },
   "files": [

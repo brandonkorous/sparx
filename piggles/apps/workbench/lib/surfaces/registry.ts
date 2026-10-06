@@ -9,7 +9,7 @@
 import type { ComponentType } from 'react';
 import type { PigglesIcon } from '@piggles/ui';
 import type { WorkbenchModule } from '../../components/module-scope';
-import type { PaneDescriptor, SurfaceParams } from './descriptor';
+import { descriptorKey, type PaneDescriptor, type SurfaceParams } from './descriptor';
 import {
   productCreateLabel,
   productHidesSurface,
@@ -71,6 +71,13 @@ export interface SurfaceContext {
    * cycle. Both feed the same per-pane set — a pane is dirty if ANY source is.
    */
   guard: (isDirty: () => boolean, message?: string) => () => void;
+  /**
+   * Change this pane's VIEW params (a tab), which the surface declared in
+   * `viewParams`. Null or '' removes one, so the default tab keeps a clean
+   * address. The address bar follows. Changing any other param throws: those
+   * are what the pane IS, and a pane does not turn itself into another record.
+   */
+  setViewParams: (patch: Readonly<Record<string, string | null>>) => void;
 }
 
 export interface SurfaceDefinition {
@@ -102,7 +109,27 @@ export interface SurfaceDefinition {
    */
   readonly requiresModules?: readonly string[];
   readonly icon: PigglesIcon;
+  /**
+   * The icon for ONE pane's tab, when the record it shows says more than the
+   * surface does: a resource detail tab for a bay draws a door, not a person
+   * (sparx persona issue 086). A React hook, called from a dedicated child of
+   * the tab (`lib/dock/tab-glyph`), so it runs for a tab restored into the dock
+   * whose pane has never rendered. Read through the record's own query so the
+   * pane and the tab share one request and a saved change reaches both.
+   * Return undefined while unknown; the surface's `icon` stands in.
+   */
+  readonly useTabIcon?: (params: SurfaceParams) => PigglesIcon | undefined;
   readonly component: ComponentType<{ ctx: SurfaceContext }>;
+  /**
+   * Params that say how a pane is VIEWED, not what it shows: which tab is open
+   * (persona issue 374). They ride in the address and the saved layout, so a
+   * reload, a copied link and a restored workspace all come back to the same
+   * tab. They are left out of the pane's identity (`paneIdentityKey`), so a
+   * tab change re-addresses the pane rather than making it a different one, and
+   * opening the same record again focuses it and moves it to the tab asked for.
+   * A surface changes them with `ctx.setViewParams`; nothing else may.
+   */
+  readonly viewParams?: readonly string[];
   /**
    * At most one instance may be open across ALL windows. For surfaces where a
    * second copy is meaningless rather than useful (settings, the activity feed).
@@ -224,6 +251,27 @@ export function getSurface(key: string): SurfaceDefinition | undefined {
   return registry.get(key);
 }
 
+/** The params a surface declared as view state. Empty for an unknown surface. */
+export function viewParamsOf(surfaceKey: string): readonly string[] {
+  return registry.get(surfaceKey)?.viewParams ?? [];
+}
+
+/**
+ * What a pane IS, for "is this already open?": its surface and params, less
+ * the view params. Product X on Pricing and product X on SEO are one pane.
+ * `descriptorKey` stays the full address, which is what feedback and the
+ * history trail want to record.
+ */
+export function paneIdentityKey(descriptor: PaneDescriptor): string {
+  const view = viewParamsOf(descriptor.surface);
+  if (view.length === 0 || !descriptor.params) return descriptorKey(descriptor);
+  const params: Record<string, string> = {};
+  for (const [key, value] of Object.entries(descriptor.params)) {
+    if (!view.includes(key)) params[key] = value;
+  }
+  return descriptorKey({ ...descriptor, params });
+}
+
 export function listSurfaces(): SurfaceDefinition[] {
   return [...registry.values()];
 }
@@ -280,6 +328,28 @@ export function resolveTitle(definition: SurfaceDefinition, params: SurfaceParam
  */
 export function resolveCreateLabel(definition: SurfaceDefinition): string | undefined {
   return productCreateLabel(definition.key) ?? definition.createLabel;
+}
+
+/**
+ * What a list pane's own create button says: the same words as the `+` beside
+ * its nav row, read from the same place.
+ *
+ * Issue 729 brought the rail into the brand's words and stopped there. Every
+ * list pane wrote its own button text, so a screen could offer one action under
+ * two names: "New pipeline" on the rail and "New process" on the pane, "New
+ * transfer" and "Start a move" (issue 743). A pane that reads this cannot drift,
+ * and `create-label-agrees.test.ts` fails any pane that opens its create form
+ * under other words.
+ *
+ * Throws on a list with no create label, because a button reading a fallback
+ * would look exactly like one that was given words. The test holds every caller
+ * to a real key. [[feedback_absent_behaves_like_fine]]
+ */
+export function createLabelFor(listKey: string): string {
+  const definition = getSurface(listKey);
+  const label = definition && resolveCreateLabel(definition);
+  if (!label) throw new Error(`${listKey} has no create label to put on its button.`);
+  return label;
 }
 
 /**

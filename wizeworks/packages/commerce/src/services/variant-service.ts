@@ -85,6 +85,10 @@ export interface VariantRow {
   priceCents: number;
   compareAtPriceCents: number | null;
   costCents: number | null;
+  /** Refundable core deposit per unit on a rebuilt part; null = no core. */
+  coreChargeCents: number | null;
+  /** The buyer may send the old part first instead of paying the deposit. */
+  coreFirstOffered: boolean;
   currency: string;
   weightGrams: number | null;
   lengthMm: number | null;
@@ -518,6 +522,12 @@ export async function create(
         priceCents: input.priceCents,
         compareAtPriceCents: input.compareAtPriceCents ?? null,
         costCents: input.costCents ?? null,
+        coreChargeCents: input.coreChargeCents ?? null,
+        coreFirstOffered: coreFirstAllowed({
+          coreChargeCents: input.coreChargeCents ?? null,
+          coreFirstOffered: input.coreFirstOffered,
+          dropshipSourceId: input.dropshipSourceId ?? null,
+        }),
         currency: input.currency,
         weightGrams: input.weight ?? null,
         lengthMm: input.dimensions?.lengthMm ?? null,
@@ -569,6 +579,37 @@ export async function create(
   return { id: result.id, sku: result.sku };
 }
 
+/**
+ * Whether this part may be bought by sending the old part first (issue 057).
+ *
+ * It is the other way to buy a part that carries a core deposit, so it needs one,
+ * and the old part has to come HERE first, so a part the supplier ships straight to
+ * the buyer cannot offer it. Asking for it in either case is refused in words; a
+ * deposit cleared under an existing offer quietly takes the offer with it.
+ */
+function coreFirstAllowed(state: {
+  coreChargeCents: number | null;
+  coreFirstOffered: boolean;
+  dropshipSourceId: string | null;
+  asked?: boolean;
+}): boolean {
+  if (!state.coreFirstOffered) return false;
+  const asked = state.asked ?? true;
+  if (state.coreChargeCents === null) {
+    if (!asked) return false;
+    throw new CommerceValidationError(
+      'Sending the old part first is the other way to buy a part with a core deposit. Give this part a core deposit first.'
+    );
+  }
+  if (state.dropshipSourceId !== null) {
+    if (!asked) return false;
+    throw new CommerceValidationError(
+      'Your supplier ships this part straight to the buyer, so the old part cannot come to you first.'
+    );
+  }
+  return true;
+}
+
 export async function update(
   ctx: ServiceContext,
   variantId: string,
@@ -607,6 +648,28 @@ export async function update(
           ? { compareAtPriceCents: input.compareAtPriceCents }
           : {}),
         ...(input.costCents !== undefined ? { costCents: input.costCents } : {}),
+        ...(input.coreChargeCents !== undefined ? { coreChargeCents: input.coreChargeCents } : {}),
+        ...(input.coreFirstOffered !== undefined ||
+        input.coreChargeCents !== undefined ||
+        input.dropshipSourceId !== undefined
+          ? {
+              coreFirstOffered: coreFirstAllowed({
+                coreChargeCents:
+                  input.coreChargeCents !== undefined
+                    ? input.coreChargeCents
+                    : before.coreChargeCents,
+                coreFirstOffered: input.coreFirstOffered ?? before.coreFirstOffered,
+                dropshipSourceId:
+                  input.dropshipSourceId !== undefined
+                    ? input.dropshipSourceId
+                    : before.dropshipSourceId,
+                // Clearing the deposit takes the send-first choice with it: with no
+                // deposit there is nothing to choose between. Only an explicit ask
+                // for send-first on a part with no deposit is refused.
+                asked: input.coreFirstOffered === true,
+              }),
+            }
+          : {}),
         ...(input.currency !== undefined ? { currency: input.currency } : {}),
         ...(input.weight !== undefined ? { weightGrams: input.weight } : {}),
         ...(input.dimensions !== undefined
@@ -1154,6 +1217,8 @@ function toVariantRow(v: VariantWithIncludes): VariantRow {
     priceCents: v.priceCents,
     compareAtPriceCents: v.compareAtPriceCents,
     costCents: v.costCents,
+    coreChargeCents: v.coreChargeCents,
+    coreFirstOffered: v.coreFirstOffered,
     currency: v.currency,
     weightGrams: v.weightGrams,
     lengthMm: v.lengthMm,
@@ -1196,6 +1261,8 @@ function serializeVariant(v: ProductVariant): Record<string, unknown> {
     priceCents: v.priceCents,
     compareAtPriceCents: v.compareAtPriceCents,
     costCents: v.costCents,
+    coreChargeCents: v.coreChargeCents,
+    coreFirstOffered: v.coreFirstOffered,
     currency: v.currency,
     inventoryPolicy: v.inventoryPolicy,
     requiresShipping: v.requiresShipping,

@@ -71,6 +71,7 @@ export const PRODUCT_PANEL_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'commerce.product.configurator',
+    viewParams: ['build'],
     title: 'Product configurator',
     module: 'commerce',
     icon: faSliders,
@@ -87,13 +88,25 @@ export const PRODUCT_PANEL_SURFACES: SurfaceDefinition[] = [
     icon: faBuilding,
     section: 'Product panels',
     order: 18,
-    keywords: ['b2b', 'wholesale', 'contract', 'tiers', 'accounts'],
+    // An owner asks for the price, not the panel (sparx persona issue 074).
+    keywords: [
+      'b2b',
+      'wholesale',
+      'contract',
+      'tiers',
+      'accounts',
+      'contract price',
+      'agreed price',
+      'special price for one customer',
+      'customer price',
+    ],
     besideWidth: 0.4,
     component: ProductTradePricingSurface,
   },
   {
     key: 'commerce.product.reviews',
     title: 'Product reviews & questions',
+    viewParams: ['tab'],
     module: 'commerce',
     icon: faMessage,
     section: 'Product panels',
@@ -141,6 +154,7 @@ export const PRODUCT_PANEL_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'commerce.product.translations',
+    viewParams: ['lang'],
     title: 'Product translations',
     module: 'cms',
     icon: faSparkles,

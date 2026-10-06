@@ -43,7 +43,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { plainText } from '@wizeworks/commerce-schemas';
 import { ImageOff } from 'lucide-react';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains } from '../domains/data';
@@ -114,7 +114,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
   const update = useUpdateProduct(product.id);
 
   const { data: domains } = useDomains();
-  const { data: activeSite } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
 
   const media = useProductMedia(product.id);
   const images = useMemo(() => media.data ?? [], [media.data]);
@@ -156,7 +156,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
   };
 
   // The address this product actually sits at, on the site being worked in.
-  const propertyId = activeSite?.propertyId ?? null;
+  const propertyId = currentSiteId ?? null;
   const mine = (domains ?? []).filter(
     (domain) =>
       domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)

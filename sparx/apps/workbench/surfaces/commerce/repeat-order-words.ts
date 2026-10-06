@@ -13,6 +13,7 @@
 // the platform keeps drift apart, and hers is the one she would never doubt.
 
 import { nextOccurrenceAfter, repeatOrderMonthlyCents } from '@wizeworks/commerce-schemas';
+import { oneLineAddress } from '../../lib/address-format';
 
 export type RepeatUnit = 'day' | 'week' | 'month' | 'year';
 
@@ -62,7 +63,9 @@ export function eachTimeNote(
   );
   const things = lines.reduce((sum, line) => sum + Math.max(0, line.quantity), 0);
   const noun = things === 1 ? 'One thing goes out' : `${String(things)} things go out`;
-  return `${noun} each time, coming to ${money(each)}.`;
+  // The items alone. Postage and tax are priced on each delivery, the way
+  // checkout prices them (issue 916), so they cannot be added up here.
+  return `${noun} each time, coming to ${money(each)} plus postage and tax.`;
 }
 
 /* -- What it is worth ---------------------------------------------------- */
@@ -201,10 +204,7 @@ export interface AddressFacts {
 
 /** "12 Juniper Row, Flat 2, Bristol, BS1 4TR" - enough to tell two apart. */
 export function addressLine(address: AddressFacts): string {
-  return [address.line1, address.line2, address.city, address.region, address.postalCode]
-    .map((part) => (part ?? '').trim())
-    .filter((part) => part !== '')
-    .join(', ');
+  return oneLineAddress(address);
 }
 
 /* -- The order behind a history line ------------------------------------- */

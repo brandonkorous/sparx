@@ -84,6 +84,15 @@ export const ActionType = z.enum([
   // thresholds live in the action config so the Locked seed's definition shows
   // them (docs/81 §3.1, docs/84 Slice F2).
   'b2b.escalate_overdue',
+  // Email the invoice on the trigger to whoever it bills: the same email the
+  // business's Send button sends. An invoice issued on an account's terms when
+  // an order is placed was never sent by anybody, so the buyer never got it
+  // (sparx persona issue 085).
+  'b2b.send_invoice',
+  // Ask the account's own approvers to sign off a held order: one email each,
+  // with the order and a button to it on the site. A contact with the role "Can
+  // approve orders" was never asked anything (sparx persona issue 087).
+  'b2b.ask_account_approvers',
   // Social posting (docs/133 §9) — draft a native social post from the triggering
   // entity (a published product/article, a schedule) into the approval inbox, or
   // straight to scheduled when the automation is set to auto-approve. Calls no

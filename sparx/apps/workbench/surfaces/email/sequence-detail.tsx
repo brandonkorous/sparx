@@ -44,7 +44,7 @@ import {
   turnOnWords,
   type Enrollers,
 } from './sequence-words';
-import { useActiveSiteId, useSites } from '../../lib/api/shell-data';
+import { useActivePropertyId, useSites } from '../../lib/api/shell-data';
 import { hasMailingAddress } from './broadcast-ready';
 import { useEmailSettings } from './broadcasts-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -196,9 +196,9 @@ function SequenceEditor({ ctx, sequence }: { ctx: SurfaceContext; sequence?: Seq
   const confirm = useConfirm();
 
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const builderEmails = useBuilderEmails();
-  const defaultSite = active?.propertyId ?? sites?.find((s) => s.isPrimary)?.id ?? null;
+  const defaultSite = currentSiteId;
 
   const create = useCreateSequence();
   const update = useUpdateSequence(sequence?.id ?? 'new');

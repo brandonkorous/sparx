@@ -29,6 +29,9 @@ export const FILTERS = [
 
 export type FilterValue = (typeof FILTERS)[number]['value'];
 
+/** The kind-of-product select's "not narrowing" value; a select cannot hold ''. */
+export const EVERY_KIND = 'every-kind';
+
 export interface Modifiers {
   shiftKey: boolean;
   altKey: boolean;
@@ -46,11 +49,20 @@ export function targetFor(event: Modifiers): OpenTarget {
  * list. Telling someone to clear a filter they never set sends them hunting for a
  * control that is already off.
  */
-export function emptyAdvice(search: string, filterLabel: string | null): string {
+export function emptyAdvice(
+  search: string,
+  filterLabel: string | null,
+  kind: string | null = null
+): string {
   const parts: string[] = [];
-  if (search) parts.push('Try part of the product name, its web address, or the brand.');
+  // Search reads name, web address, brand, kind, any version's code and what
+  // it fits (sparx persona issue 070), so the hint names the ones people type.
+  if (search) parts.push('Try part of the name, a product code, the brand, or what it fits.');
   if (filterLabel) {
     parts.push(`You are only seeing products marked “${filterLabel}”. Switch to All for the rest.`);
+  }
+  if (kind) {
+    parts.push(`You are only seeing “${kind}” products. Switch to every kind for the rest.`);
   }
   return parts.join(' ');
 }

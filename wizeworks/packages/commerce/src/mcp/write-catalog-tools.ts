@@ -12,7 +12,10 @@ import { z } from 'zod';
 
 import {
   AssignVariantOptionValuesInput,
+  BulkAddFitmentInput,
   BulkAssignFitmentInput,
+  BulkProductCategoryInput,
+  BulkRemoveFitmentInput,
   CreateBundleInput,
   CreateCategoryInput,
   CreateCollectionInput,
@@ -102,6 +105,26 @@ const setProductCategories: McpToolDefinition = {
     const { productId, categoryIds } = input as { productId: string; categoryIds: string[] };
     return categoryService.setProductCategories(ctx, productId, categoryIds);
   },
+};
+
+const addProductsToCategory: McpToolDefinition = {
+  name: 'add_products_to_category',
+  description:
+    'Put many products into one category without touching their other categories. `selection` is either `{ productIds: [...] }` or `{ match: { q?, status?, includeArchived?, productType?, propertyId? } }`, the same narrowing the product list uses (up to 2000 products). A product already in the category is counted, not added twice; one with no category gets this as its main one.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: BulkProductCategoryInput,
+  run: (ctx, input) => categoryService.addProductsToCategory(ctx, input),
+};
+
+const removeProductsFromCategory: McpToolDefinition = {
+  name: 'remove_products_from_category',
+  description:
+    'Take many products out of one category, keeping every other category they are in. `selection` works as in add_products_to_category. A product whose main category this was gets its next category as the main one.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: BulkProductCategoryInput,
+  run: (ctx, input) => categoryService.removeProductsFromCategory(ctx, input),
 };
 
 // ─── Collections (merchandising lists) ────────────────────────────────────
@@ -246,7 +269,7 @@ const deleteConfiguratorTemplate: McpToolDefinition = {
 const createVariant: McpToolDefinition = {
   name: 'create_variant',
   description:
-    'Add a variant (a sellable SKU) to an existing product. Its own price, SKU, and stock policy, mapped onto the product’s option lattice via optionValueIds. For a single-variant product, create_product already made the default variant; use this to add sizes/colors.',
+    'Add a variant (a sellable SKU) to an existing product. Its own price, SKU, stock policy and optional core charge (`coreChargeCents`, a refundable deposit on a rebuilt part; with `coreFirstOffered` the buyer may instead send the old part first, pay no deposit, and the part is held until it arrives), mapped onto the product’s option lattice via optionValueIds. For a single-variant product, create_product already made the default variant; use this to add sizes/colors.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateVariantInput.extend({ productId: uuid() }),
@@ -401,11 +424,31 @@ const reorderFitmentNodes: McpToolDefinition = {
 const bulkAssignFitment: McpToolDefinition = {
   name: 'bulk_assign_fitment',
   description:
-    'Assign a fitment rule (a domain node + optional numeric ranges) to many products at once: "these 40 brake pads all fit this vehicle range".',
+    'REPLACE the fitment of many products with one set of rules: every listed product loses ALL of its existing fitment rules first, then gets exactly these. Meant for importers that own a product’s whole fitment. To add rules and keep what each product already fits, use add_fitment_to_products.',
   scope: 'write:commerce',
   confirmation: true,
   input: BulkAssignFitmentInput,
   run: (ctx, input) => fitmentService.bulkAssign(ctx, input),
+};
+
+const addFitmentToProducts: McpToolDefinition = {
+  name: 'add_fitment_to_products',
+  description:
+    'Add fitment rules (a domain node + optional numeric ranges such as years) to many products, keeping every rule each product already has: "these 34 injectors also fit the 6.6L L5P, 2017-2023". A rule a product already has (same domain, node and ranges) is skipped. `selection` is `{ productIds: [...] }` or `{ match: { q?, status?, includeArchived?, productType?, propertyId? } }` (up to 2000 products).',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: BulkAddFitmentInput,
+  run: (ctx, input) => fitmentService.addToProducts(ctx, input),
+};
+
+const removeFitmentFromProducts: McpToolDefinition = {
+  name: 'remove_fitment_from_products',
+  description:
+    'Remove, from many products, the fitment rules that target exactly these nodes of one domain, whatever ranges they carry. `null` in nodeIds removes the "fits the whole domain" rule. Rules at other nodes, including more specific nodes underneath, are kept. `selection` works as in add_fitment_to_products.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: BulkRemoveFitmentInput,
+  run: (ctx, input) => fitmentService.removeFromProducts(ctx, input),
 };
 
 const deleteFitment: McpToolDefinition = {
@@ -452,6 +495,8 @@ export const catalogWriteTools: AnyMcpTool[] = [
   reparentCategory,
   deleteCategory,
   setProductCategories,
+  addProductsToCategory,
+  removeProductsFromCategory,
   createCollection,
   updateCollection,
   setCollectionProducts,
@@ -479,6 +524,8 @@ export const catalogWriteTools: AnyMcpTool[] = [
   deleteFitmentNode,
   reorderFitmentNodes,
   bulkAssignFitment,
+  addFitmentToProducts,
+  removeFitmentFromProducts,
   deleteFitment,
   upsertProductTranslation,
   deleteProductTranslation,

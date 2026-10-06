@@ -17,13 +17,16 @@
 //   · per-send      — tenant / commerce.product / promotion / cms.<type>: resolved
 //     once.
 // Every `*Url` token (site.url / recoveryUrl / reviewUrl / payUrl / portalUrl)
-// resolves to a real storefront route so the CTAs work (docs/91 §1).
+// resolves to a real storefront route so the CTAs work (docs/91 §1), as an ABSOLUTE
+// address on the site the email is about (`lib/site-origin.ts`): a bare path
+// opens nothing from an inbox, and every link here was one until issue 064.
 
 import { withTenant } from '@wizeworks/db';
-import { discountService, productService } from '@wizeworks/commerce';
+import { COLLECTION_RATE_REF, discountService, productService } from '@wizeworks/commerce';
 import { carrierLabel } from '@wizeworks/commerce-schemas';
 import { ALL_MODULES, listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
 import {
+  addressMergeValue,
   collectSilicaEmailSourceKeys,
   type DataSources,
   type SilicaEmailDocument,
@@ -31,10 +34,12 @@ import {
 import { findBookingPlace, joinNames } from '@wizeworks/scheduling';
 import type { ServiceContext } from '@wizeworks/email-platform';
 
+import { resolveCoreReturnAddress } from './business-identity.js';
 import { resolveActivePropertyName, resolvePrimaryPropertyId } from './property.js';
 import { loadSenderIdentity } from './tenant-email.js';
 import { bookingIcsUrl } from './scheduling-ical.js';
 import { bookingManagePath } from './scheduling-token.js';
+import { resolveSiteOrigin, siteUrl } from './site-origin.js';
 
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
  *  `entityRefs`, or just `{ customerId }` for a customer-addressed broadcast.
@@ -66,25 +71,116 @@ const API_BASE =
   process.env.SPARX_PUBLIC_API_REST_URL ??
   process.env.SPARX_API_REST_URL ??
   'http://localhost:3100';
-// Storefront base for clickable links. `{slug}` is substituted per tenant; unset
-// → path-only links (still valid, refined once tenant domain resolution is wired).
-const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
-
 function mediaUrl(mediaId: string | null | undefined, slug: string): string {
   if (!mediaId) return '';
   return `${API_BASE}/v1/public/media/${encodeURIComponent(mediaId)}?tenant=${encodeURIComponent(slug)}`;
 }
 
-function siteLink(slug: string, path: string): string {
-  if (!SITE_BASE) return path;
-  return `${SITE_BASE.replace('{slug}', slug)}${path}`;
+/**
+ * The site one email links into: its public origin, resolved ONCE per email and
+ * handed to every source that builds a link, plus the tenant slug the media URLs
+ * still carry. `link('/account')` is always absolute; there is no path-only mode
+ * any more, because a path is a link to nowhere once it is in somebody's inbox.
+ */
+export interface EmailSite {
+  slug: string;
+  origin: string;
+  link: (path: string) => string;
+  home: string;
 }
 
-/** The store root as an absolute-or-`/` URL — `siteLink(slug, '')` is `''`
- *  when the base is unset, so fall back to `/` for a still-valid link. */
-function homeUrl(slug: string): string {
-  const url = siteLink(slug, '');
-  return url === '' ? '/' : url;
+export function emailSite(slug: string, origin: string): EmailSite {
+  return { slug, origin, link: (path) => siteUrl(origin, path), home: siteUrl(origin, '') };
+}
+
+/**
+ * Which site an email is ABOUT. The record it names knows where it was placed (an
+ * order's, booking's, basket's, subscription's or document's own site), and that
+ * is the site whose address the customer knows, so it wins over the site the send
+ * was made on behalf of; that one is the fallback, then the tenant's primary
+ * (`resolveSiteOrigin` treats a null as the primary). A record with no site of its
+ * own (an order placed before sites existed) falls through the same way.
+ */
+async function emailAboutPropertyId(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined
+): Promise<string | null> {
+  if (!ref) return null;
+  return withTenant(ctx, async (tx) => {
+    if (ref.orderId) {
+      const row = await tx.order.findUnique({
+        where: { id: ref.orderId },
+        select: { propertyId: true },
+      });
+      if (row?.propertyId) return row.propertyId;
+    }
+    if (ref.fulfillmentId) {
+      const row = await tx.orderFulfillment.findUnique({
+        where: { id: ref.fulfillmentId },
+        select: { order: { select: { propertyId: true } } },
+      });
+      if (row?.order.propertyId) return row.order.propertyId;
+    }
+    if (ref.returnId) {
+      const row = await tx.returnRequest.findUnique({
+        where: { id: ref.returnId },
+        select: { order: { select: { propertyId: true } } },
+      });
+      if (row?.order.propertyId) return row.order.propertyId;
+    }
+    if (ref.bookingId) {
+      const row = await tx.booking.findUnique({
+        where: { id: ref.bookingId },
+        select: { propertyId: true },
+      });
+      if (row?.propertyId) return row.propertyId;
+    }
+    if (ref.waitlistEntryId) {
+      const row = await tx.waitlistEntry.findUnique({
+        where: { id: ref.waitlistEntryId },
+        select: { service: { select: { propertyId: true } } },
+      });
+      if (row?.service.propertyId) return row.service.propertyId;
+    }
+    if (ref.subscriptionId) {
+      const row = await tx.subscription.findUnique({
+        where: { id: ref.subscriptionId },
+        select: { propertyId: true },
+      });
+      if (row?.propertyId) return row.propertyId;
+    }
+    if (ref.cartId) {
+      const row = await tx.cart.findUnique({
+        where: { id: ref.cartId },
+        select: { propertyId: true },
+      });
+      if (row?.propertyId) return row.propertyId;
+    }
+    const documentId = ref.quoteId ?? ref.billingDocumentId;
+    if (documentId) {
+      const row = await tx.billingDocument.findUnique({
+        where: { id: documentId },
+        select: { propertyId: true },
+      });
+      if (row?.propertyId) return row.propertyId;
+    }
+    return null;
+  });
+}
+
+/**
+ * The public origin every link in one email is built on: the site the email is
+ * about (see `emailAboutPropertyId`), else the site it is sent for, else the
+ * tenant's primary. Exported so the send path resolves it once and hands the same
+ * answer to the body AND the footer, which must not point at two addresses.
+ */
+export async function resolveEmailSiteOrigin(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  propertyId: string | null | undefined
+): Promise<string> {
+  const about = await emailAboutPropertyId(ctx, ref);
+  return resolveSiteOrigin(ctx.tenantId, about ?? propertyId ?? null);
 }
 
 /** A CMS slug → a human label (`privacy-policy` → `Privacy Policy`) — the fallback
@@ -116,17 +212,19 @@ export interface EmailFooterLink {
  */
 export async function resolveEmailFooterLinks(
   ctx: ServiceContext,
-  propertyId: string | null
+  propertyId: string | null,
+  /** The email's own site origin when the caller already resolved it, so the
+   *  footer and the body agree; resolved from `propertyId` otherwise. */
+  origin?: string
 ): Promise<EmailFooterLink[]> {
-  const [tenant, identity, siteId] = await Promise.all([
-    withTenant(ctx, (tx) =>
-      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { slug: true } })
-    ),
+  const [siteOrigin, identity, siteId] = await Promise.all([
+    origin ?? resolveSiteOrigin(ctx.tenantId, propertyId),
     loadSenderIdentity(ctx.tenantId, propertyId),
     propertyId ?? resolvePrimaryPropertyId(ctx.tenantId),
   ]);
-  const slug = tenant?.slug ?? '';
-  const links: EmailFooterLink[] = [{ label: 'Your account', href: siteLink(slug, '/account') }];
+  const links: EmailFooterLink[] = [
+    { label: 'Your account', href: siteUrl(siteOrigin, '/account') },
+  ];
   // Only a deliberately-public reply-to becomes a Contact link; we never expose the
   // owner's private account email in a customer-facing footer.
   if (identity.replyTo) links.push({ label: 'Contact', href: `mailto:${identity.replyTo}` });
@@ -147,7 +245,7 @@ export async function resolveEmailFooterLinks(
     if (!e?.slug || e.status !== 'published' || e.deletedAt) continue;
     links.push({
       label: r.label ?? prettifyLegalSlug(e.slug),
-      href: siteLink(slug, `/${e.slug}`),
+      href: siteUrl(siteOrigin, `/${e.slug}`),
     });
   }
   return links;
@@ -247,6 +345,42 @@ function formatAddress(json: unknown): Record<string, string> {
   };
 }
 
+/** An order's frozen shipping address as the email reads it: the parts, on a value
+ *  that also reads whole as its one line (`addressMergeValue`, which says why both
+ *  spellings are in tenants' stored receipts). '' when there is nowhere to send it. */
+export function shippingAddressValue(json: unknown): Record<string, string> | '' {
+  const parts = formatAddress(json);
+  return addressMergeValue({ ...parts, oneLine: parts.oneLine ?? '' });
+}
+
+/**
+ * How an order reaches its customer: they come and PICK it UP, or it is DELIVERED
+ * to them (posted, couriered, sent electronically).
+ *
+ * Picked up when the order was placed for collection: checkout's "Collect in
+ * person" and a counter sale both record the collection rate (`shippingRateRef`),
+ * which is the same test the shopper's own order page and the console make. A
+ * record placed some other way that was then handed over the counter (every
+ * fulfillment is a `pickup` one) is picked up too.
+ *
+ * The receipt said "We'll email you tracking the moment it ships" and "Shipping to"
+ * to somebody collecting from the counter, and the hand-over email told them their
+ * order "has been delivered" when they had carried it out of the shop themselves
+ * (issue 064). Every one of those sentences now switches on this.
+ */
+export function orderHandover(
+  metadata: unknown,
+  fulfillmentCarriers: readonly (string | null)[]
+): 'pickup' | 'delivery' {
+  const meta =
+    metadata && typeof metadata === 'object' ? (metadata as Record<string, unknown>) : {};
+  if (meta.shippingRateRef === COLLECTION_RATE_REF) return 'pickup';
+  if (fulfillmentCarriers.length > 0 && fulfillmentCarriers.every((c) => c === 'pickup')) {
+    return 'pickup';
+  }
+  return 'delivery';
+}
+
 const MS_PER_DAY = 86_400_000;
 
 async function tenantRow(
@@ -333,6 +467,7 @@ async function resolveCustomer(
 async function resolveTenant(
   ctx: ServiceContext,
   tenant: { slug: string; name: string; email: string },
+  site: EmailSite,
   propertyId?: string | null
 ): Promise<Record<string, string>> {
   const [settings, propertyName] = await Promise.all([
@@ -355,7 +490,7 @@ async function resolveTenant(
   // back-compat aliases (the store→site, then `tenant.*`→`site.*` renames) so an
   // email authored before either rename (an existing `{{tenant.siteUrl}}` /
   // `{{tenant.storeUrl}}` button) still resolves to the same URL.
-  const home = homeUrl(tenant.slug);
+  const home = site.home;
   return {
     name: siteName,
     url: home,
@@ -370,7 +505,7 @@ async function resolveTenant(
 async function resolveOrder(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   const where = ref?.orderId
     ? { id: ref.orderId }
@@ -391,12 +526,17 @@ async function resolveOrder(
         taxTotal: true,
         discountTotal: true,
         refundTotal: true,
+        coreChargeTotal: true,
         amountPaid: true,
         readyOn: true,
         placedAt: true,
         deliveredAt: true,
         cancelledReason: true,
         shippingAddress: true,
+        // How it reaches the customer (`orderHandover`): the collection rate
+        // checkout and the counter record, and the carriers it actually left by.
+        metadata: true,
+        fulfillments: { select: { carrier: true } },
         items: {
           orderBy: { createdAt: 'asc' },
           select: {
@@ -405,6 +545,8 @@ async function resolveOrder(
             quantity: true,
             unitPrice: true,
             lineTotal: true,
+            coreCharge: true,
+            coreFirst: true,
             product: { select: { handle: true } },
           },
         },
@@ -412,12 +554,25 @@ async function resolveOrder(
     })
   );
   if (!order) return {};
+  const handover = orderHandover(
+    order.metadata,
+    order.fulfillments.map((f) => f.carrier)
+  );
+  const pickup = handover === 'pickup';
+  // The business's own address: where an old part goes (issue 057) and where a
+  // pickup order is collected from (issue 064). Read only when one of them needs it.
+  const businessAddress =
+    pickup || order.items.some((i) => i.coreFirst) ? await resolveCoreReturnAddress(ctx) : null;
+  const returnTo = order.items.some((i) => i.coreFirst) ? businessAddress : null;
+  const sendTo = returnTo
+    ? ` Bring or send it to ${[returnTo.name, ...returnTo.lines].filter(Boolean).join(', ')}.`
+    : ' Contact us for where to send it.';
   // reviewUrl → the first purchased product's PDP (where the review UI lives),
   // falling back to the store root when no item resolves a product (docs/91 §3).
   const firstHandle = order.items.find((i) => i.product?.handle)?.product?.handle ?? '';
-  const reviewUrl = firstHandle ? siteLink(slug, `/products/${firstHandle}`) : homeUrl(slug);
+  const reviewUrl = firstHandle ? site.link(`/products/${firstHandle}`) : site.home;
   // statusUrl → the customer's order detail (order-confirmation CTA, docs/93 §4).
-  const statusUrl = siteLink(slug, '/account/orders');
+  const statusUrl = site.link('/account/orders');
   return {
     number: order.orderNumber,
     status: order.status,
@@ -432,6 +587,9 @@ async function resolveOrder(
     // delivered / cancelled emails read. Empty-string when absent so an optional
     // card row self-drops (a cancelled order with no reason shows no "Reason" line).
     refundTotal: money(order.refundTotal),
+    // Refundable core deposits on rebuilt parts (sparx issue 051). Empty when none,
+    // so an ordinary receipt shows no row.
+    coreChargeTotal: moneyPositive(order.coreChargeTotal),
     // Made to order (issue 026). Both empty-string when they do not apply, so
     // an ordinary receipt drops both rows rather than printing "Ready: —" or a
     // balance of nothing. The balance is what is genuinely left to pay, so a
@@ -443,13 +601,57 @@ async function resolveOrder(
     placedAt: dateLabel(order.placedAt),
     reviewUrl,
     statusUrl,
-    shippingAddress: formatAddress(order.shippingAddress),
-    items: order.items.map((i) => ({
-      name: firstText(i.name, i.description),
-      quantity: qty(i.quantity),
-      unitPrice: money(i.unitPrice),
-      lineTotal: money(i.lineTotal),
-    })),
+    // Never on a pickup order, whatever the row holds: nothing is being sent there,
+    // and a till order stores the JSON `null` rather than no value at all.
+    shippingAddress: pickup ? '' : shippingAddressValue(order.shippingAddress),
+    // Exactly one of these is 'yes'; the other is '' so a block gated on it drops.
+    // A template says the pickup sentence or the delivery one with them, rather
+    // than telling somebody at the counter that their parcel is on its way.
+    pickup: pickup ? 'yes' : '',
+    delivery: pickup ? '' : 'yes',
+    // A pickup order is either still to collect or already gone. A counter sale is
+    // handed over before its receipt is built, and "We'll let you know when it's
+    // ready to pick up" arrived beside "You picked up order …" (issue 064).
+    pickupLater: pickup && !order.deliveredAt ? 'yes' : '',
+    pickedUp: pickup && order.deliveredAt ? 'yes' : '',
+    // Where to collect it, when the business has a street address on file and it
+    // has not already been collected.
+    pickupFrom:
+      pickup && !order.deliveredAt && businessAddress ? businessAddress.lines.join(', ') : '',
+    // A rebuilt part's core deposit gets its own row under the part, so every
+    // stored receipt (whatever its summary rows) shows what the extra money was
+    // for and that it comes back (sparx issue 051).
+    items: order.items.flatMap((i) => {
+      const part = {
+        name: firstText(i.name, i.description),
+        quantity: qty(i.quantity),
+        unitPrice: money(i.unitPrice),
+        lineTotal: money(i.lineTotal),
+      };
+      // Bought by sending the old part first (issue 057): no money row, but the
+      // promise and the address, under the part it is about.
+      if (i.coreFirst) {
+        return [
+          part,
+          {
+            name: `${part.name} is ready once your old part arrives.${sendTo}`,
+            quantity: qty(i.quantity),
+            unitPrice: '',
+            lineTotal: '',
+          },
+        ];
+      }
+      if (i.coreCharge === null) return [part];
+      return [
+        part,
+        {
+          name: `Refundable core deposit: ${part.name}. Paid back when you return your old part.`,
+          quantity: qty(i.quantity),
+          unitPrice: money(i.coreCharge),
+          lineTotal: money(Number(i.coreCharge) * i.quantity),
+        },
+      ];
+    }),
   };
 }
 
@@ -458,7 +660,7 @@ async function resolveOrder(
 async function resolveShipping(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   const where = ref?.fulfillmentId
     ? { id: ref.fulfillmentId }
@@ -491,7 +693,7 @@ async function resolveShipping(
     trackingNumber: f.trackingNumber ?? '',
     // The carrier's tracking page when known; else the customer's order detail so
     // the CTA always resolves to something useful (docs/93 §3).
-    trackingUrl: f.trackingUrl ?? siteLink(slug, '/account/orders'),
+    trackingUrl: f.trackingUrl ?? site.link('/account/orders'),
     shippedAt: dateLabel(f.shippedAt),
   };
 }
@@ -513,7 +715,7 @@ function inZone(d: Date, tz: string, opts: Intl.DateTimeFormatOptions): string {
 async function resolveBooking(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.bookingId) return {};
   const b = await withTenant(ctx, (tx) =>
@@ -573,8 +775,8 @@ async function resolveBooking(
     // the person reading it booked as a guest and has no account to sign in to
     // (issue 153); it used to point at the account portal, which meant the
     // "Change or cancel" button opened a login wall.
-    manageUrl: siteLink(slug, bookingManagePath(ctx.tenantId, ref.bookingId)),
-    bookUrl: siteLink(slug, '/book'),
+    manageUrl: site.link(bookingManagePath(ctx.tenantId, ref.bookingId)),
+    bookUrl: site.link('/book'),
     // The per-booking `.ics` download (docs/79 §8.1) — an "Add to calendar" link in
     // the confirmation/reminder. Absolute api-rest URL (reachable by mail clients).
     addToCalendarUrl: bookingIcsUrl(ctx.tenantId, ref.bookingId),
@@ -591,7 +793,7 @@ async function resolveBooking(
 async function resolveWaitlist(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.waitlistEntryId) return {};
   const w = await withTenant(ctx, (tx) =>
@@ -617,8 +819,8 @@ async function resolveWaitlist(
     window: from && to ? `${from} – ${to}` : from || to,
     offerExpires: expires,
     // Book-now goes straight to the service's public booking page.
-    bookUrl: siteLink(slug, `/book/${w.serviceId}`),
-    manageUrl: siteLink(slug, '/account/bookings'),
+    bookUrl: site.link(`/book/${w.serviceId}`),
+    manageUrl: site.link('/account/bookings'),
   };
 }
 
@@ -627,7 +829,7 @@ async function resolveWaitlist(
 async function resolveSubscription(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.subscriptionId) return {};
   const s = await withTenant(ctx, (tx) =>
@@ -661,7 +863,7 @@ async function resolveSubscription(
     // `/account/subscriptions` storefront page does not exist yet — until it does,
     // "Manage subscription" lands on the account home rather than a dead 404.
     // Repoint here once that page ships (docs/impl transactional-email §4 P2 follow-up).
-    manageUrl: siteLink(slug, '/account'),
+    manageUrl: site.link('/account'),
   };
 }
 
@@ -684,7 +886,7 @@ function refundMethodLabel(code: string | null): string {
 async function resolveReturn(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.returnId) return {};
   const r = await withTenant(ctx, (tx) =>
@@ -731,8 +933,8 @@ async function resolveReturn(
   // label media (the PDF), else the customer's returns page. Built imperatively so
   // precedence is explicit and an empty string never sticks.
   const hasLabel = Boolean(label?.trackingUrl) || Boolean(label?.labelMediaId);
-  let labelUrl = siteLink(slug, '/account/orders');
-  if (label?.labelMediaId) labelUrl = mediaUrl(label.labelMediaId, slug);
+  let labelUrl = site.link('/account/orders');
+  if (label?.labelMediaId) labelUrl = mediaUrl(label.labelMediaId, site.slug);
   if (label?.trackingUrl) labelUrl = label.trackingUrl;
   return {
     status: r.status,
@@ -743,7 +945,7 @@ async function resolveReturn(
     refundMethod: refundMethodLabel(r.refundIssuedAs),
     labelUrl,
     hasLabel: hasLabel ? 'yes' : '',
-    manageUrl: siteLink(slug, '/account/orders'),
+    manageUrl: site.link('/account/orders'),
     // The two ENDING facts are not on the row and cannot be: a return has no
     // column for the replacement that went out, and a denial reason is written to
     // the same `staffNote` an approval uses, so reading it back could not tell a
@@ -771,7 +973,7 @@ async function resolveReturn(
 async function resolveCart(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   const where = ref?.cartId
     ? { id: ref.cartId }
@@ -819,13 +1021,13 @@ async function resolveCart(
   return {
     total: moneyCents(cart.totalCents),
     itemCount: String(cart.items.reduce((n, it) => n + it.quantity, 0)),
-    recoveryUrl: siteLink(slug, '/cart'),
+    recoveryUrl: site.link('/cart'),
     items: cart.items.map((it) => ({
       name: it.variant.product.title,
       quantity: qty(it.quantity),
       unitPrice: moneyCents(it.unitPriceCents),
       lineTotal: moneyCents(it.subtotalCents),
-      imageUrl: mediaUrl(it.variant.product.images[0]?.mediaAssetId, slug),
+      imageUrl: mediaUrl(it.variant.product.images[0]?.mediaAssetId, site.slug),
     })),
   };
 }
@@ -838,7 +1040,7 @@ async function resolveCart(
 async function resolveQuote(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.quoteId) return {};
   const doc = await withTenant(ctx, (tx) =>
@@ -864,8 +1066,8 @@ async function resolveQuote(
     total: money(doc.total),
     validUntil: dateLabel(doc.validUntil),
     reviewUrl: doc.companyId
-      ? siteLink(slug, `/account/b2b/${doc.companyId}/quotes`)
-      : siteLink(slug, '/account'),
+      ? site.link(`/account/b2b/${doc.companyId}/quotes`)
+      : site.link('/account'),
     items: doc.lines.map((l) => ({
       name: l.description,
       quantity: qty(l.quantity),
@@ -880,7 +1082,7 @@ async function resolveQuote(
 async function resolveInvoice(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.billingDocumentId) return {};
   const doc = await withTenant(ctx, (tx) =>
@@ -912,8 +1114,8 @@ async function resolveInvoice(
     daysUntilDue: String(daysUntilDue),
     overdueDays: String(overdueDays),
     payUrl: doc.companyId
-      ? siteLink(slug, `/account/b2b/${doc.companyId}/invoices`)
-      : siteLink(slug, '/account'),
+      ? site.link(`/account/b2b/${doc.companyId}/invoices`)
+      : site.link('/account'),
     items: doc.lines.map((l) => ({
       description: l.description,
       quantity: qty(l.quantity),
@@ -928,7 +1130,7 @@ async function resolveInvoice(
 async function resolveB2bAccount(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, string>> {
   if (!ref?.companyId) return {};
   const account = await withTenant(ctx, (tx) =>
@@ -943,7 +1145,7 @@ async function resolveB2bAccount(
     status: account.status,
     paymentTerms: account.paymentTerms ?? '',
     creditLimit: account.creditLimit != null ? money(account.creditLimit) : '',
-    portalUrl: siteLink(slug, `/account/b2b/${ref.companyId}`),
+    portalUrl: site.link(`/account/b2b/${ref.companyId}`),
   };
 }
 
@@ -975,7 +1177,7 @@ async function resolveLoyalty(
 
 async function resolveProducts(
   ctx: ServiceContext,
-  slug: string
+  site: EmailSite
 ): Promise<Record<string, string>[]> {
   const { items } = await productService.list(ctx, {
     status: 'active',
@@ -986,7 +1188,7 @@ async function resolveProducts(
     title: p.title,
     priceLabel: moneyCents(p.priceMinCents),
     imageUrl: p.imageUrl ?? '',
-    url: siteLink(slug, `/products/${p.handle}`),
+    url: site.link(`/products/${p.handle}`),
   }));
 }
 
@@ -1025,7 +1227,7 @@ async function resolveModules(ctx: ServiceContext): Promise<Record<string, strin
 
 async function resolveCmsCollection(
   ctx: ServiceContext,
-  slug: string,
+  site: EmailSite,
   typeKey: string
 ): Promise<Record<string, unknown>[]> {
   const rows = await withTenant(ctx, (tx) =>
@@ -1042,8 +1244,8 @@ async function resolveCmsCollection(
     return {
       ...body,
       slug: r.slug ?? '',
-      url: siteLink(slug, `/${typeKey === 'blog_post' ? 'blog' : typeKey}/${r.slug ?? ''}`),
-      imageUrl: featured ? mediaUrl(featured, slug) : '',
+      url: site.link(`/${typeKey === 'blog_post' ? 'blog' : typeKey}/${r.slug ?? ''}`),
+      imageUrl: featured ? mediaUrl(featured, site.slug) : '',
       dateLabel: dateLabel(r.publishedAt),
     };
   });
@@ -1059,13 +1261,23 @@ async function loadEmailSources(
   ctx: ServiceContext,
   keys: Set<string>,
   ref?: EmailRecipientRef,
-  propertyId?: string | null
+  propertyId?: string | null,
+  origin?: string
 ): Promise<DataSources> {
   if (keys.size === 0) return {};
 
   // Any URL-bearing or per-tenant source needs the slug + tenant identity.
   const tenant = await tenantRow(ctx);
   const slug = tenant.slug;
+  // The site every link in this email is built on, resolved at most ONCE however
+  // many sources build links from it, and not at all for an email that has none.
+  let sitePromise: Promise<EmailSite> | null = null;
+  const site = (): Promise<EmailSite> => {
+    sitePromise ??= (
+      origin !== undefined ? Promise.resolve(origin) : resolveEmailSiteOrigin(ctx, ref, propertyId)
+    ).then((o) => emailSite(slug, o));
+    return sitePromise;
+  };
 
   const out: DataSources = {};
   const tasks: Promise<void>[] = [];
@@ -1081,52 +1293,96 @@ async function loadEmailSources(
   // both resolve regardless of which namespace a given tree was authored against.
   if (keys.has('site') || keys.has('tenant')) {
     tasks.push(
-      resolveTenant(ctx, tenant, propertyId).then((v) => {
-        out.site = v;
-        out.tenant = v;
-      })
+      site()
+        .then((s) => resolveTenant(ctx, tenant, s, propertyId))
+        .then((v) => {
+          out.site = v;
+          out.tenant = v;
+        })
     );
   }
   if (keys.has('order')) {
-    tasks.push(resolveOrder(ctx, ref, slug).then((v) => void (out.order = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveOrder(ctx, ref, s))
+        .then((v) => void (out.order = v))
+    );
   }
   if (keys.has('shipping')) {
-    tasks.push(resolveShipping(ctx, ref, slug).then((v) => void (out.shipping = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveShipping(ctx, ref, s))
+        .then((v) => void (out.shipping = v))
+    );
   }
   if (keys.has('booking')) {
-    tasks.push(resolveBooking(ctx, ref, slug).then((v) => void (out.booking = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveBooking(ctx, ref, s))
+        .then((v) => void (out.booking = v))
+    );
   }
   if (keys.has('waitlist')) {
-    tasks.push(resolveWaitlist(ctx, ref, slug).then((v) => void (out.waitlist = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveWaitlist(ctx, ref, s))
+        .then((v) => void (out.waitlist = v))
+    );
   }
   if (keys.has('subscription')) {
-    tasks.push(resolveSubscription(ctx, ref, slug).then((v) => void (out.subscription = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveSubscription(ctx, ref, s))
+        .then((v) => void (out.subscription = v))
+    );
   }
   if (keys.has('return')) {
-    tasks.push(resolveReturn(ctx, ref, slug).then((v) => void (out.return = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveReturn(ctx, ref, s))
+        .then((v) => void (out.return = v))
+    );
   }
   if (keys.has('cart')) {
-    tasks.push(resolveCart(ctx, ref, slug).then((v) => void (out.cart = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveCart(ctx, ref, s))
+        .then((v) => void (out.cart = v))
+    );
   }
   if (keys.has('quote')) {
-    tasks.push(resolveQuote(ctx, ref, slug).then((v) => void (out.quote = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveQuote(ctx, ref, s))
+        .then((v) => void (out.quote = v))
+    );
   }
   if (keys.has('invoice')) {
-    tasks.push(resolveInvoice(ctx, ref, slug).then((v) => void (out.invoice = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveInvoice(ctx, ref, s))
+        .then((v) => void (out.invoice = v))
+    );
   }
   if (keys.has('b2bAccount')) {
-    tasks.push(resolveB2bAccount(ctx, ref, slug).then((v) => void (out.b2bAccount = v)));
+    tasks.push(
+      site()
+        .then((s) => resolveB2bAccount(ctx, ref, s))
+        .then((v) => void (out.b2bAccount = v))
+    );
   }
   if (keys.has('loyalty')) {
     tasks.push(resolveLoyalty(ctx, ref).then((v) => void (out.loyalty = v)));
   }
   if (keys.has('commerce.product')) {
     tasks.push(
-      resolveProducts(ctx, slug).then((v) => {
-        const commerce = (out.commerce as Record<string, unknown>) ?? {};
-        commerce.product = v;
-        out.commerce = commerce;
-      })
+      site()
+        .then((s) => resolveProducts(ctx, s))
+        .then((v) => {
+          const commerce = (out.commerce as Record<string, unknown>) ?? {};
+          commerce.product = v;
+          out.commerce = commerce;
+        })
     );
   }
   if (keys.has('promotion')) {
@@ -1139,11 +1395,13 @@ async function loadEmailSources(
     if (!key.startsWith('cms.')) continue;
     const typeKey = key.slice('cms.'.length);
     tasks.push(
-      resolveCmsCollection(ctx, slug, typeKey).then((v) => {
-        const cms = (out.cms as Record<string, unknown>) ?? {};
-        cms[typeKey] = v;
-        out.cms = cms;
-      })
+      site()
+        .then((s) => resolveCmsCollection(ctx, s, typeKey))
+        .then((v) => {
+          const cms = (out.cms as Record<string, unknown>) ?? {};
+          cms[typeKey] = v;
+          out.cms = cms;
+        })
     );
   }
 
@@ -1161,9 +1419,18 @@ export async function resolveSilicaEmailData(
   doc: SilicaEmailDocument,
   ref?: EmailRecipientRef,
   extraStrings: string[] = [],
-  propertyId?: string | null
+  propertyId?: string | null,
+  /** The email's site origin when the caller resolved it already (the send path
+   *  does, so the footer shares it); resolved here otherwise. */
+  origin?: string
 ): Promise<DataSources> {
-  return loadEmailSources(ctx, collectSilicaEmailSourceKeys(doc, extraStrings), ref, propertyId);
+  return loadEmailSources(
+    ctx,
+    collectSilicaEmailSourceKeys(doc, extraStrings),
+    ref,
+    propertyId,
+    origin
+  );
 }
 
 /** Overlay an automation's flat trigger-time snapshot (`{ "invoice.number": … }`)

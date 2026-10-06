@@ -144,16 +144,20 @@ export type ReorderFitmentNodesInput = z.infer<typeof ReorderFitmentNodesInput>;
 // deepest level the rule targets (a make-level node = "fits any Ford"; null =
 // "fits the whole domain"); `ranges` carry a numeric window per range dimension.
 
+// `null` is accepted for an open end as well as omission: the server READS a
+// rule back with `min: null` for "2019 and earlier", and the product pane's add
+// sends the rules it already has back with the new one, so refusing null made
+// every add on a product with an open-ended window fail (issue 065).
 export const FitmentRangeValue = z
   .object({
     dimensionKey: DimensionKey,
-    min: z.number().optional(),
-    max: z.number().optional(),
+    min: z.number().nullish(),
+    max: z.number().nullish(),
   })
-  .refine((r) => r.min !== undefined || r.max !== undefined, {
+  .refine((r) => r.min != null || r.max != null, {
     message: 'a range needs a min or a max',
   })
-  .refine((r) => r.min === undefined || r.max === undefined || r.min <= r.max, {
+  .refine((r) => r.min == null || r.max == null || r.min <= r.max, {
     message: 'range min must be ≤ max',
   });
 export type FitmentRangeValue = z.infer<typeof FitmentRangeValue>;

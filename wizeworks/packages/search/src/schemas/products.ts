@@ -4,7 +4,10 @@
 
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const PRODUCTS_COLLECTION = 'products';
+import { resolveCollectionName } from './naming';
+
+// Prefixed in tests only; see ./naming.ts.
+export const PRODUCTS_COLLECTION = resolveCollectionName('products');
 
 // Multi-site scope sentinel (docs/49 §3 Model B). A GLOBAL product (visible on
 // every site) carries this single value in `property_ids`; a site-scoped product

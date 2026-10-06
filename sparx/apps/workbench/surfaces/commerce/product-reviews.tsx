@@ -30,6 +30,7 @@
 // reason to open this.
 
 import { useMemo, useState } from 'react';
+import { useViewParam } from '../../lib/workbench/view-param';
 import {
   Badge,
   Button,
@@ -474,7 +475,8 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
   const productId = scope.productId ?? 'new';
   const reviews = useProductReviews(productId);
   const questions = useProductQuestions(productId);
-  const [tab, setTab] = useState('reviews');
+  // In the pane's address (issue 374): a reload or a link keeps the tab.
+  const [tab, setTab] = useViewParam(ctx, 'tab', ['reviews', 'questions'], 'reviews');
   const [filter, setFilter] = useState<StatusFilter>('all');
 
   const allReviews = useMemo(() => reviews.data?.items ?? [], [reviews.data]);

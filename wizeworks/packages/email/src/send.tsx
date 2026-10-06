@@ -142,6 +142,21 @@ import {
   type InvoiceSentEmailProps,
 } from './templates/invoice-sent';
 import {
+  AccountStatementEmail,
+  accountStatementSubject,
+  type AccountStatementEmailProps,
+} from './templates/account-statement';
+import {
+  PurchaseOrderSentEmail,
+  purchaseOrderSentSubject,
+  type PurchaseOrderSentEmailProps,
+} from './templates/purchase-order-sent';
+import {
+  OrderApprovalRequestEmail,
+  orderApprovalRequestSubject,
+  type OrderApprovalRequestEmailProps,
+} from './templates/order-approval-request';
+import {
   InvitationAcceptedEmail,
   invitationAcceptedSubject,
   type InvitationAcceptedEmailProps,
@@ -248,6 +263,12 @@ export type TemplateId =
   // A tenant→customer document signing request (published from signature-mail.ts).
   | 'document-signature-request'
   | 'invoice-sent'
+  // A trade account's statement, to the people who pay its bills.
+  | 'account-statement'
+  | 'purchase-order-sent'
+  // A trade account's own approver, asked to sign off a colleague's order
+  // (sparx persona issue 087).
+  | 'order-approval-request'
   // Team / org membership.
   | 'invitation-accepted'
   | 'team-member-removed'
@@ -455,6 +476,27 @@ export type TemplateSend =
       template: 'invoice-sent';
       to: string;
       props: InvoiceSentEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'account-statement';
+      to: string;
+      props: AccountStatementEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'purchase-order-sent';
+      to: string;
+      props: PurchaseOrderSentEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'order-approval-request';
+      to: string;
+      props: OrderApprovalRequestEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -1012,6 +1054,58 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'invoice-sent',
+      };
+    }
+    case 'account-statement': {
+      const element = wrap(<AccountStatementEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: accountStatementSubject(
+          input.props.fromName,
+          input.props.accountName,
+          input.props.periodText
+        ),
+        html,
+        text,
+        templateId: 'account-statement',
+      };
+    }
+    case 'purchase-order-sent': {
+      const element = wrap(<PurchaseOrderSentEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: purchaseOrderSentSubject(input.props.documentNumber, input.props.fromName),
+        html,
+        text,
+        templateId: 'purchase-order-sent',
+      };
+    }
+    case 'order-approval-request': {
+      const element = wrap(<OrderApprovalRequestEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: orderApprovalRequestSubject(input.props.orderNumber, input.props.placedBy),
+        html,
+        text,
+        templateId: 'order-approval-request',
       };
     }
     case 'invitation-accepted': {

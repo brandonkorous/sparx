@@ -46,6 +46,7 @@ import {
   button,
   contentRail,
   copyBlock,
+  copyWhen,
   costSummary,
   detailPanel,
   emailDoc,
@@ -368,10 +369,24 @@ const orderConfirmation = (): SectionNode[] => [
   copyBlock([
     text('✓ Order confirmed', { size: 14, weight: 'semibold', colorRole: 'success' }),
     heading('Thanks, {{customer.greeting}}. Your order’s in.'),
+  ]),
+  // What happens next depends on how it reaches them, and exactly one of these two
+  // shows (`order.delivery` / `order.pickup`). The receipt used to promise tracking
+  // to everybody, including a customer collecting from the counter (issue 064).
+  copyWhen('order.delivery', [
     para(
       'We’re getting order {{order.number}} ready. We’ll email you tracking the moment it ships.'
     ),
   ]),
+  // A pickup order still to collect gets the promise; one already handed over at the
+  // counter (its receipt is built after the handover) gets a thank-you instead,
+  // because the promise would arrive beside "You picked up order …".
+  copyWhen('order.pickupLater', [
+    para(
+      'We’re getting order {{order.number}} ready. We’ll let you know when it’s ready to pick up.'
+    ),
+  ]),
+  copyWhen('order.pickedUp', [para('Order {{order.number}} is yours. Thanks for coming in.')]),
   // The receipt — product thumbnails so the customer recognises what they bought, then
   // the money math (subtotal · shipping · total) set off with the total in the brand
   // color. This is the core-tier receipt system, and commerce earns the rich thumbnails.
@@ -381,6 +396,13 @@ const orderConfirmation = (): SectionNode[] => [
     { label: 'Discount', value: '−{{order.discountTotal}}', ref: 'order.discountTotal' },
     { label: 'Shipping', value: '{{order.shippingTotal}}', ref: 'order.shippingTotal' },
     { label: 'Tax', value: '{{order.taxTotal}}', ref: 'order.taxTotal' },
+    // Rebuilt parts' refundable core deposits (sparx issue 051). Self-drops on an
+    // order with none.
+    {
+      label: 'Refundable core deposits',
+      value: '{{order.coreChargeTotal}}',
+      ref: 'order.coreChargeTotal',
+    },
     { label: 'Total', value: '{{order.total}}', strong: true },
     // Made to order (issue 026) — what is genuinely still owing. Self-drops on
     // an order paid in full, which is nearly all of them.
@@ -389,13 +411,19 @@ const orderConfirmation = (): SectionNode[] => [
   // When it can be collected. The whole panel drops for an order with nothing
   // made to order, so an ordinary receipt is exactly as it was (issue 026).
   detailPanel([{ label: 'Ready from', value: '{{order.readyOn}}' }], { ref: 'order.readyOn' }),
-  // Ship-to as its own scannable panel. The resolver supplies `order.shippingAddress`
-  // as an already-formatted one-line string; the WHOLE card drops for a digital order
-  // with no shipping address (the `ref` on the panel), so no empty box is left behind.
-  detailPanel([{ label: 'Shipping to', value: '{{order.shippingAddress}}' }], {
-    ref: 'order.shippingAddress',
+  // Ship-to as its own scannable panel, bound to the address's ONE-LINE form. The
+  // resolver hands back the address as an object of parts, and binding the object
+  // itself printed "Shipping to [object Object]" (issue 064). The WHOLE card drops
+  // when there is nowhere to send it (a pickup or a digital order), via the `ref`.
+  detailPanel([{ label: 'Shipping to', value: '{{order.shippingAddress.oneLine}}' }], {
+    ref: 'order.shippingAddress.oneLine',
   }),
-  copyBlock([button('Track your order', '{{order.statusUrl}}', 'center')]),
+  // A pickup order says where instead, when the business has its address on file.
+  detailPanel([{ label: 'Pick up from', value: '{{order.pickupFrom}}' }], {
+    ref: 'order.pickupFrom',
+  }),
+  copyWhen('order.delivery', [button('Track your order', '{{order.statusUrl}}', 'center')]),
+  copyWhen('order.pickup', [button('View your order', '{{order.statusUrl}}', 'center')]),
   // A single incidental product rail under fully transactional content (the order is the
   // email's primary purpose — CAN-SPAM primary-purpose test). Positive moment, so a
   // gentle cross-sell rail fits.
@@ -437,11 +465,21 @@ const shippingConfirmation = (): SectionNode[] => [
 // `order` data source, so it reads the same tokens as order-confirmation plus the
 // three the resolver was extended with (refundTotal · cancelReason · deliveredAt).
 
+// Sent when an order is handed over, which is a DELIVERY for one that was sent and a
+// PICKUP for one collected at the counter. It said "has been delivered" to both, so a
+// customer who carried her order out of the shop was told it had arrived (issue 064).
+// Exactly one of each pair shows (`order.delivery` / `order.pickup`).
 const orderDelivered = (): SectionNode[] => [
-  copyBlock([
+  copyWhen('order.delivery', [
     heading('Your order was delivered'),
     para(
       'Hi {{customer.greeting}}. Your order {{order.number}} has been delivered. We hope it’s everything you expected.'
+    ),
+  ]),
+  copyWhen('order.pickup', [
+    heading('You picked up order {{order.number}}'),
+    para(
+      'Hi {{customer.greeting}}. Thanks for coming in for order {{order.number}}. We hope it’s everything you expected.'
     ),
   ]),
   detailPanel(
@@ -450,7 +488,15 @@ const orderDelivered = (): SectionNode[] => [
       { label: 'Order total', value: '{{order.total}}', emphasize: true },
       { label: 'Delivered', value: '{{order.deliveredAt}}', ref: 'order.deliveredAt' },
     ],
-    { status: { label: '✓ Delivered', role: 'success' } }
+    { status: { label: '✓ Delivered', role: 'success' }, ref: 'order.delivery' }
+  ),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Order total', value: '{{order.total}}', emphasize: true },
+      { label: 'Picked up', value: '{{order.deliveredAt}}', ref: 'order.deliveredAt' },
+    ],
+    { status: { label: '✓ Picked up', role: 'success' }, ref: 'order.pickup' }
   ),
   copyBlock([
     button('Leave a review', '{{order.reviewUrl}}', 'center'),
@@ -919,6 +965,12 @@ const b2bOrderApproved = (): SectionNode[] => [
   copyBlock([button('View your order', '{{order.statusUrl}}', 'center')]),
 ];
 
+// Who said no, and why. The person turning an order down types a reason, and
+// until sparx persona issue 087 nothing showed it to the buyer: the email said
+// only "it wasn't approved" and sent everyone to their account manager, even
+// when the no came from their own colleague, the approver on their account.
+// Both rows drop when empty (an old turn-down names nobody, a quick one gives no
+// reason), and exactly one of the two closing lines shows.
 const b2bOrderRejected = (): SectionNode[] => [
   copyBlock([
     heading('Your order wasn’t approved'),
@@ -930,11 +982,18 @@ const b2bOrderRejected = (): SectionNode[] => [
     [
       { label: 'Order', value: '{{order.number}}' },
       { label: 'Order total', value: '{{order.total}}' },
+      { label: 'Turned down by', value: '{{approval.decidedBy}}', ref: 'approval.decidedBy' },
+      { label: 'Why', value: '{{approval.reason}}', ref: 'approval.reason' },
     ],
     { status: { label: 'Not approved', role: 'error' } }
   ),
-  copyBlock([
-    button('View your order', '{{order.statusUrl}}', 'center'),
+  copyBlock([button('View your order', '{{order.statusUrl}}', 'center')]),
+  copyWhen('approval.byAccount', [
+    para(
+      'Someone who approves orders at your company turned this one down. If you still need these items, talk it over with them, then place the order again.'
+    ),
+  ]),
+  copyWhen('approval.byBusiness', [
     para('Have a question about this decision? Reach out to your account manager any time.'),
   ]),
 ];

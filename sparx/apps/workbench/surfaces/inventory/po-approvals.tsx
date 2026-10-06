@@ -95,7 +95,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
           afterCommit(() => {
             toast.add({
               title: `${row.purchaseOrderNumber ?? 'Order'} approved`,
-              description: `It is placed. Print it or pass it on to ${row.supplierName ?? 'the supplier'}.`,
+              description: `It is placed. Open it to email it to ${row.supplierName ?? 'the supplier'}, or print it.`,
               type: 'success',
             });
           });

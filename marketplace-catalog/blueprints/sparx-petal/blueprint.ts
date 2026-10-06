@@ -16,10 +16,10 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-petal',
-  version: '1.5.1',
+  version: '1.5.2',
   name: 'Petal',
   summary:
-    'The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Petal look, tuned for florists, weddings, and events. Install it, make it yours, and launch a polished working site in minutes.',
+    'A complete starter in the Petal look, tuned for florists, weddings, and events: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

@@ -126,10 +126,12 @@ describe('email-dispatch — send by key + compliance gate', () => {
     });
   }
 
-  it('delivers a transactional key send, refuses marketing without unsubscribe, and fails an unknown key', async () => {
+  it('delivers a transactional key send and a marketing one, with or without an authored unsubscribe, and fails an unknown key', async () => {
     const { tenantId, customerId } = await setup();
     try {
-      // welcome-customer is a TRANSACTIONAL default (no unsubscribe node).
+      // A key send declared TRANSACTIONAL. The body is welcome-customer's, which
+      // the welcome seed now sends as marketing (2026-10-03); the dispatch reads
+      // the declared type, not the email, so the body is only something to render.
       const transactional = await enqueue(tenantId, {
         key: 'welcome-customer',
         emailType: 'transactional',
@@ -141,8 +143,8 @@ describe('email-dispatch — send by key + compliance gate', () => {
         emailType: 'marketing',
         customerId,
       });
-      // welcome-customer declared as MARKETING — its tree has no unsubscribe node,
-      // so the compliance gate must refuse it.
+      // welcome-customer declared MARKETING, as the welcome seed sends it. Its
+      // silica body authors no unsubscribe node; the send composes one (below).
       const marketingBad = await enqueue(tenantId, {
         key: 'welcome-customer',
         emailType: 'marketing',

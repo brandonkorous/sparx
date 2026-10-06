@@ -6,9 +6,12 @@ import type { Client } from 'typesense';
 import { getClient } from './client';
 import {
   allSchemas,
+  assertTestCollection,
+  COLLECTION_PREFIX,
   CUSTOMERS_COLLECTION,
   ENTITIES_COLLECTION,
   GLOBAL_SITE_SCOPE,
+  isTestCollection,
   ORDERS_COLLECTION,
   PRODUCTS_COLLECTION,
 } from './schemas';
@@ -54,9 +57,19 @@ export async function ensureSchemas(client: Client = getClient()): Promise<{
   return { created, existing, altered };
 }
 
-export async function dropAllSchemas(client: Client = getClient()): Promise<string[]> {
+/**
+ * Drop named collections, for TESTS ONLY. Every name must carry a test prefix
+ * (`test_<run>_`, see ./schemas/naming.ts); one that does not is refused, loudly,
+ * before ANY collection is dropped. Nothing in production drops collections, so
+ * nothing outside a test suite can need a name this refuses.
+ */
+export async function dropTestCollections(
+  names: readonly string[],
+  client: Client = getClient()
+): Promise<string[]> {
+  for (const name of names) assertTestCollection(name, 'drop');
   const dropped: string[] = [];
-  for (const { name } of allSchemas()) {
+  for (const name of names) {
     try {
       await client.collections(name).delete();
       dropped.push(name);
@@ -66,6 +79,44 @@ export async function dropAllSchemas(client: Client = getClient()): Promise<stri
     }
   }
   return dropped;
+}
+
+/**
+ * Drop the collections `ensureSchemas` creates, for TESTS ONLY. It refuses
+ * unless every name carries a test prefix, so it can only ever drop the
+ * collections a suite made for itself under `TYPESENSE_COLLECTION_PREFIX`.
+ *
+ * It used to drop the bare names on whatever instance it reached. On 2026-10-04
+ * a test run did exactly that to a developer's local Typesense, and every
+ * tenant's search read empty until it was rebuilt by hand.
+ */
+export async function dropAllSchemas(client: Client = getClient()): Promise<string[]> {
+  return dropTestCollections(
+    allSchemas().map(({ name }) => name),
+    client
+  );
+}
+
+/**
+ * Drop test collections an earlier run left behind (one that crashed before its
+ * teardown), for TESTS ONLY. Only names carrying a test prefix are even
+ * considered, only ones created before `olderThan`, and never this run's own.
+ */
+export async function dropStaleTestCollections(
+  olderThan: Date,
+  client: Client = getClient()
+): Promise<string[]> {
+  const cutoff = Math.floor(olderThan.getTime() / 1000);
+  const live = (await client.collections().retrieve()) as {
+    name: string;
+    created_at?: number;
+  }[];
+  const stale = live
+    .filter((c) => isTestCollection(c.name))
+    .filter((c) => COLLECTION_PREFIX === '' || !c.name.startsWith(COLLECTION_PREFIX))
+    .filter((c) => (c.created_at ?? 0) < cutoff)
+    .map((c) => c.name);
+  return dropTestCollections(stale, client);
 }
 
 export async function aliasCollection(input: {
@@ -148,13 +199,29 @@ export async function collectionStats(
  * `collectionStats` reports a missing collection as zero, which is the one
  * reading that must never drive a warning. This returns null for it instead:
  * "we could not look", never "you have nothing".
+ *
+ * `settledBefore` narrows the count to records that CAME INTO BEING by then: a
+ * customer's `created_at`, an order's `placed_at`. The caller counts the database
+ * side over the same moment (see `indexedSecondBoundary`), so both halves count
+ * the same people. They used to differ: the database side dropped anything
+ * EDITED in the last few minutes and this side counted every document, so each
+ * customer somebody had just edited hid one who was genuinely missing. A buyer
+ * who signed up and was never indexed read as "nothing missing", and the box
+ * offered no way to put him back (sparx persona issue 086). An edit never moves
+ * either field, so editing somebody can no longer cover for anybody else.
  */
 export async function findableRecordCount(
   collection: 'customers' | 'orders',
   tenantId: string,
+  settledBefore: Date | null = null,
   client: Client = getClient()
 ): Promise<number | null> {
   const name = collection === 'customers' ? CUSTOMERS_COLLECTION : ORDERS_COLLECTION;
+  const bornField = collection === 'customers' ? 'created_at' : 'placed_at';
+  const settled =
+    settledBefore === null
+      ? ''
+      : ` && ${bornField}:<=${String(Math.floor(settledBefore.getTime() / 1000))}`;
   try {
     const res = (await client
       .collections(name)
@@ -162,7 +229,7 @@ export async function findableRecordCount(
       .search({
         q: '*',
         query_by: STAT_QUERY_BY[name] ?? 'id',
-        filter_by: `tenant_id:=${tenantId}`,
+        filter_by: `tenant_id:=${tenantId}${settled}`,
         per_page: 0,
       })) as { found?: number };
     return res.found ?? 0;
@@ -170,6 +237,19 @@ export async function findableRecordCount(
     if ((err as { httpStatus?: number }).httpStatus === 404) return null;
     throw err;
   }
+}
+
+/**
+ * The first instant a `findableRecordCount(…, settledBefore)` does NOT cover.
+ *
+ * The index holds whole seconds (`Math.floor(ms / 1000)`), so a document is
+ * counted when its second is at or before `settledBefore`'s. The database side
+ * has to stop at the same place: `createdAt < indexedSecondBoundary(settled)`
+ * counts exactly the rows whose second the index side counts. Stopping at
+ * `settledBefore` itself would leave up to a second of rows on one side only.
+ */
+export function indexedSecondBoundary(settledBefore: Date): Date {
+  return new Date((Math.floor(settledBefore.getTime() / 1000) + 1) * 1000);
 }
 
 /**

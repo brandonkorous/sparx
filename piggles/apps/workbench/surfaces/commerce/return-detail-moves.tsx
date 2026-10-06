@@ -33,11 +33,14 @@ export function ReturnMoves({
   detail,
   currency,
   suggestedCents,
+  coreBackCents,
 }: {
   detail: ReturnDetail;
   currency: string;
   /** A starting refund figure worked out from the accepted lines. */
   suggestedCents: number;
+  /** Core deposits that go back with the parts (issue 051). */
+  coreBackCents: number;
 }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -270,6 +273,7 @@ export function ReturnMoves({
         detail={detail}
         currency={currency}
         suggestedCents={suggestedCents}
+        coreBackCents={coreBackCents}
         open={refundOpen}
         onClose={() => {
           setRefundOpen(false);

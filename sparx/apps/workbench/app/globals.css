@@ -401,3 +401,93 @@ h6 {
     var(--color-base-content)
   );
 }
+
+/* ── Overlays have to clear the floating panes, and the canvas tools ─────────
+ *
+ * Base UI portals every overlay (popover, select listbox, menu, tooltip, dialog,
+ * toast) and silica stacks them from its own z-scale, which tops out at 90.
+ * dockview's floating windows sit at 1001 and climb as they are raised, and the
+ * canvas tools (lib/dock/window-canvas.tsx) sit at 9000. So in this console a
+ * toast rendered UNDER the round buttons in the bottom-right corner: "Changed 83
+ * products" read as "Changed 83 product" with the rest of its sentence hidden
+ * (sparx persona issue 060, measured 2026-10-01: viewport z 90, tools z 9000).
+ *
+ * Piggles shifted the whole scale above dockview long ago, with silica's own
+ * tokens rather than a blanket rule (its globals.css says why a blanket rule
+ * made every Select unclickable). This console never got that block. Same block,
+ * same values, so the two consoles stack the same way. */
+:root {
+  --z-drawer: 10040;
+  --z-dialog: 10050;
+  --z-lightbox: 10060;
+  --z-popover: 10070;
+  --z-tooltip: 10080;
+  --z-toast: 10090;
+}
+
+/* Base UI's internal backdrop, which blocks the page while an overlay is open.
+ * It has no z-index of its own, so it needs one to clear dockview, but BELOW
+ * every silica overlay above, or it covers the popup it exists to serve. */
+[data-base-ui-portal] > [data-base-ui-inert] {
+  z-index: 10030;
+}
+
+/* ── WORKSPACE ZOOM: THE PANE-CONTENTS HALF ─────────────────────────────────
+ *
+ * lib/window-zoom.ts scales each window's BOX and says the CONTENTS are scaled
+ * "by the data-zoom rules in app/globals.css". Those rules lived only in the
+ * Piggles console, so here a zoomed-out window was a smaller box around
+ * full-size contents, clipped. These are those rules.
+ *
+ * `transform`, not `zoom`: it does not take part in layout, so the part is laid
+ * out at `100% / scale` and painted down to fit. `!important` because dockview
+ * writes width and height as inline styles on this element. Scoped to the
+ * content container so a window's title bar stays a size you can hit. */
+[data-zoom='50'] .dv-content-container > .dv-react-part {
+  transform: scale(0.5);
+  transform-origin: 0 0;
+  width: calc(100% / 0.5) !important;
+  height: calc(100% / 0.5) !important;
+}
+
+[data-zoom='67'] .dv-content-container > .dv-react-part {
+  transform: scale(0.67);
+  transform-origin: 0 0;
+  width: calc(100% / 0.67) !important;
+  height: calc(100% / 0.67) !important;
+}
+
+[data-zoom='80'] .dv-content-container > .dv-react-part {
+  transform: scale(0.8);
+  transform-origin: 0 0;
+  width: calc(100% / 0.8) !important;
+  height: calc(100% / 0.8) !important;
+}
+
+[data-zoom='90'] .dv-content-container > .dv-react-part {
+  transform: scale(0.9);
+  transform-origin: 0 0;
+  width: calc(100% / 0.9) !important;
+  height: calc(100% / 0.9) !important;
+}
+
+[data-zoom='110'] .dv-content-container > .dv-react-part {
+  transform: scale(1.1);
+  transform-origin: 0 0;
+  width: calc(100% / 1.1) !important;
+  height: calc(100% / 1.1) !important;
+}
+
+[data-zoom='125'] .dv-content-container > .dv-react-part {
+  transform: scale(1.25);
+  transform-origin: 0 0;
+  width: calc(100% / 1.25) !important;
+  height: calc(100% / 1.25) !important;
+}
+
+[data-zoom='150'] .dv-content-container > .dv-react-part {
+  transform: scale(1.5);
+  transform-origin: 0 0;
+  width: calc(100% / 1.5) !important;
+  height: calc(100% / 1.5) !important;
+}

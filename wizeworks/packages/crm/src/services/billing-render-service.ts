@@ -23,6 +23,7 @@
 // customer / B2B account record.
 
 import { withTenant } from '@wizeworks/db';
+import { poNumberOf } from '@wizeworks/crm-schemas';
 import { billingDocumentNoun, isPriceOfferWorkflow } from '@wizeworks/crm-schemas/builtins';
 
 import type { ServiceContext } from '../errors';
@@ -33,6 +34,7 @@ import type {
   BillingRenderPaymentRow,
   BillingRenderTotals,
 } from './billing-document-html';
+import { withCoreRows } from './billing-document-html';
 import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
 import type { BillingSnapshotPayload } from './billing-snapshot';
 
@@ -51,6 +53,7 @@ function totalsFrom(t: {
   taxRate: number;
   shippingTotal: number;
   surchargeTotal: number;
+  coreChargeTotal?: number;
   total: number;
   depositTotal: number;
   amountPaid: number;
@@ -88,14 +91,17 @@ export async function buildRenderData(
       doc.lines.map((l) => l.lineTypeId)
     );
 
-    const lines: BillingRenderLine[] = doc.lines.map((l) => ({
-      typeLabel: l.lineTypeId ? (typeLabels.get(l.lineTypeId) ?? null) : null,
-      description: l.description,
-      quantity: Number(l.quantity),
-      unitPrice: Number(l.unitPrice),
-      lineTotal: Number(l.lineTotal),
-      taxable: l.taxable,
-    }));
+    const lines: BillingRenderLine[] = withCoreRows(
+      doc.lines.map((l) => ({
+        typeLabel: l.lineTypeId ? (typeLabels.get(l.lineTypeId) ?? null) : null,
+        description: l.description,
+        quantity: Number(l.quantity),
+        unitPrice: Number(l.unitPrice),
+        lineTotal: Number(l.lineTotal),
+        taxable: l.taxable,
+        coreCharge: l.coreCharge === null ? null : Number(l.coreCharge),
+      }))
+    );
 
     const payments: BillingRenderPaymentRow[] = doc.payments.map((p) => ({
       label: PAYMENT_KIND_LABEL[p.kind] ?? p.kind,
@@ -122,6 +128,7 @@ export async function buildRenderData(
       issuedAt: (doc.finalizedAt ?? doc.createdAt).toISOString(),
       dueAt: doc.dueAt ? doc.dueAt.toISOString() : null,
       validUntil: doc.validUntil ? doc.validUntil.toISOString() : null,
+      poNumber: poNumberOf(doc.metadata),
       billTo,
       shipTo,
       lines,
@@ -132,6 +139,7 @@ export async function buildRenderData(
         taxRate: Number(doc.taxRate),
         shippingTotal: Number(doc.shippingTotal),
         surchargeTotal: Number(doc.surchargeTotal),
+        coreChargeTotal: Number(doc.coreChargeTotal),
         total: Number(doc.total),
         depositTotal: Number(doc.depositTotal),
         amountPaid: Number(doc.amountPaid),
@@ -179,14 +187,17 @@ export async function buildRenderDataFromSnapshot(
       payload.lines.map((l) => l.lineTypeId)
     );
 
-    const lines: BillingRenderLine[] = payload.lines.map((l) => ({
-      typeLabel: l.lineTypeId ? (typeLabels.get(l.lineTypeId) ?? null) : null,
-      description: l.description,
-      quantity: l.quantity,
-      unitPrice: l.unitPrice,
-      lineTotal: l.lineTotal,
-      taxable: l.taxable,
-    }));
+    const lines: BillingRenderLine[] = withCoreRows(
+      payload.lines.map((l) => ({
+        typeLabel: l.lineTypeId ? (typeLabels.get(l.lineTypeId) ?? null) : null,
+        description: l.description,
+        quantity: l.quantity,
+        unitPrice: l.unitPrice,
+        lineTotal: l.lineTotal,
+        taxable: l.taxable,
+        coreCharge: l.coreCharge ?? null,
+      }))
+    );
 
     const billTo = await resolveBillTo(
       tx,
@@ -207,6 +218,7 @@ export async function buildRenderDataFromSnapshot(
       issuedAt: snap.createdAt.toISOString(),
       dueAt: null,
       validUntil: payload.document.validUntil,
+      poNumber: payload.document.poNumber ?? null,
       billTo,
       shipTo,
       lines,

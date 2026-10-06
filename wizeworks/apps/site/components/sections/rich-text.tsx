@@ -25,7 +25,9 @@ export function RichTextSection({ config }: { config: RichTextConfig }) {
         {/* config.html is sanitized at publish time (docs/29 §5). */}
         {config.html ? (
           <div
-            className="text-base-content [&_a]:text-primary [&_img]:rounded-field leading-[1.7] [&_img]:h-auto [&_img]:max-w-full"
+            // Lists get their markers back: the reset strips them, and a bulleted
+            // list read as indented paragraphs (sparx persona issue 038).
+            className="text-base-content [&_a]:text-primary [&_img]:rounded-field leading-[1.7] [&_img]:h-auto [&_img]:max-w-full [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6"
             dangerouslySetInnerHTML={{ __html: config.html }}
           />
         ) : null}

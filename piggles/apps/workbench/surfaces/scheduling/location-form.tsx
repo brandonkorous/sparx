@@ -117,7 +117,6 @@ export function LocationNameSection({
             <Input
               color="module"
               value={draft.name}
-              placeholder="Main Street shop"
               onChange={(event) => {
                 set('name', event.target.value);
               }}

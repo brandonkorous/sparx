@@ -107,20 +107,27 @@ export function useOnboardingProgress() {
   });
 }
 
-/** Map a dashboard onboarding-CTA href onto the workbench surface that does the same
- *  job. Unknown hrefs fall back to the closest platform surface rather than 404. */
-function surfaceForHref(href: string): {
+/** Map an onboarding-checklist href (the server still speaks dashboard paths) onto
+ *  the workbench screen that does that job.
+ *
+ *  The first version matched loosely and fell back to Business details, so four of
+ *  the six checklist buttons opened the wrong screen: "Connect Stripe"
+ *  (`/onboarding?step=payments`), "Open CMS" (`/cms`) and "Browse templates"
+ *  (`/marketplace/blueprints`) all landed on Business details, and `/builder` named
+ *  a screen that does not exist, `builder.pages.list` (sparx persona issue 025). */
+export function surfaceForHref(href: string): {
   surface: string;
   params?: Readonly<Record<string, string>>;
 } {
-  if (href.includes('/builder')) return { surface: 'builder.pages.list' };
+  if (href.includes('step=payments') || href.includes('/settings/payments'))
+    return { surface: 'commerce.providers' };
+  if (href.includes('/marketplace/blueprints')) return { surface: 'builder.blueprints' };
+  if (href.startsWith('/cms')) return { surface: 'cms.content.list' };
+  if (href.includes('/builder')) return { surface: 'builder.pages' };
   if (href.includes('/settings/domains') || href.includes('/domain'))
     return { surface: 'platform.settings.domains' };
-  if (href.includes('/settings/payments') || href.includes('/payments'))
-    return { surface: 'platform.settings.integrations' };
   if (href.includes('/settings/theme') || href.includes('/theme'))
     return { surface: 'platform.settings.sites' };
-  if (href.includes('/settings')) return { surface: 'platform.settings.general' };
   return { surface: 'platform.settings.general' };
 }
 

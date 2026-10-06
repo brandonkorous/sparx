@@ -103,3 +103,27 @@ describe('it never falls over on a thin order', () => {
     }
   });
 });
+
+describe('a returned core deposit', () => {
+  it('says the money was the deposit, not a whole-order refund', () => {
+    const note = refundNote({
+      total: 750,
+      refundTotal: 150,
+      depositsReturned: 150,
+      items: [{ quantity: 1, quantityRefunded: 0, coresReturned: 1 }],
+    });
+    expect(note).toBe('That was the core deposit, given back when the old part came in.');
+  });
+
+  it('names the deposit share when other money went back too', () => {
+    const note = refundNote({
+      total: 750,
+      refundTotal: 200,
+      depositsReturned: 150,
+      items: [{ quantity: 1, quantityRefunded: 0, coresReturned: 1 }],
+    });
+    expect(note).toBe(
+      '$150.00 of it was the core deposit, given back when the old part came in. The rest was given back against the order as a whole rather than item by item.'
+    );
+  });
+});

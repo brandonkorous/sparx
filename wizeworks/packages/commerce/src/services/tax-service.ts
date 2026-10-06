@@ -19,6 +19,7 @@ import { writeAuditLog } from '../audit';
 import { CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { coveringExemption } from './tax-exemption';
+import { buyingAccountId } from './tax-exemption-holders';
 
 // ─── Row shapes ──────────────────────────────────────────────────────
 
@@ -307,6 +308,11 @@ export async function createExemption(
   if (!input.customerId && !input.companyId) {
     throw new CommerceValidationError('Either customerId or companyId is required');
   }
+  if (input.validTo && new Date(input.validTo) < new Date(input.validFrom)) {
+    throw new CommerceValidationError(
+      'The certificate ends before it starts. Check the two dates and try again.'
+    );
+  }
   return withTenant(ctx, async (tx) => {
     const created = await tx.taxExemption.create({
       data: {
@@ -362,6 +368,61 @@ export async function listExemptionsForCompany(
     });
     return rows.map(serializeExemption);
   });
+}
+
+/** The wholesale account a customer buys for, and the certificates it holds. */
+export interface AccountExemptions {
+  accountId: string;
+  accountName: string;
+  exemptions: TaxExemptionRow[];
+}
+
+/** What is on file for one customer or one account. `account` is set only for a
+ *  customer, and only while they buy for that account. */
+export interface ExemptionsOnFile {
+  items: TaxExemptionRow[];
+  account: AccountExemptions | null;
+}
+
+/**
+ * A customer's own certificates, plus the account's they buy for.
+ *
+ * The account half is resolved by `buyingAccountId`, the same rule checkout
+ * applies, so a screen that says "their account's certificate covers them" is
+ * saying exactly what the till will do. Without it the owner sees an empty list
+ * on the customer, files a duplicate, and ends up with two certificates to keep
+ * in date for one business.
+ */
+export async function exemptionsForCustomer(
+  ctx: ServiceContext,
+  customerId: string
+): Promise<ExemptionsOnFile> {
+  const items = await listExemptionsForCustomer(ctx, customerId);
+  const account = await withTenant(ctx, async (tx) => {
+    const accountId = await buyingAccountId(tx, customerId);
+    if (!accountId) return null;
+    const [company, rows] = await Promise.all([
+      tx.company.findFirst({ where: { id: accountId }, select: { companyName: true } }),
+      tx.taxExemption.findMany({
+        where: { companyId: accountId },
+        orderBy: { validFrom: 'desc' },
+        take: 100,
+      }),
+    ]);
+    return {
+      accountId,
+      accountName: company?.companyName ?? '',
+      exemptions: rows.map(serializeExemption),
+    };
+  });
+  return { items, account };
+}
+
+export async function exemptionsForCompany(
+  ctx: ServiceContext,
+  companyId: string
+): Promise<ExemptionsOnFile> {
+  return { items: await listExemptionsForCompany(ctx, companyId), account: null };
 }
 
 export async function deleteExemption(ctx: ServiceContext, id: string): Promise<void> {

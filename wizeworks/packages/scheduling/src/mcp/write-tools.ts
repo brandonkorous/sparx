@@ -6,7 +6,6 @@
 import { z } from 'zod';
 
 import {
-  CancelBookingInput,
   CreateBookingInput,
   CreateLocation,
   CreateResourceInput,
@@ -19,7 +18,7 @@ import {
 } from '@wizeworks/scheduling-schemas';
 
 import { setAvailabilityWindows } from '../availability-rules';
-import { cancelBooking, createBooking, rescheduleBooking } from '../booking-service';
+import { createBooking, rescheduleBooking } from '../booking-service';
 import { createLocation, deleteLocation, updateLocation } from '../locations';
 import { createResource, deleteResource, updateResource } from '../resources';
 import { createService, deleteService, updateService } from '../services';
@@ -46,15 +45,10 @@ export const rescheduleBookingTool: McpToolDefinition = {
   run: (ctx, input) => rescheduleBooking(ctx.tenantId, input as RescheduleBookingInput),
 };
 
-export const cancelBookingTool: McpToolDefinition = {
-  name: 'cancel_booking',
-  description:
-    'Cancel a booking, releasing its slot immediately. Any deposit/hold is settled per the service policy by the booking surface; this tool performs the cancellation + notifies the customer.',
-  scope: 'write:scheduling',
-  confirmation: true,
-  input: CancelBookingInput,
-  run: (ctx, input) => cancelBooking(ctx.tenantId, input as CancelBookingInput),
-};
+// `cancel_booking` lives in api-mcp (scheduling-ending-tools.ts), with the other
+// tools that end a booking: ending one settles the card on it, which needs the
+// payment gateways this package does not carry. The version that lived here
+// cancelled and never touched the card (sparx persona issue 087).
 
 // ── Service setup (what can be booked) ───────────────────────────────────────
 // The booking lifecycle above operates on services that must already exist. These
@@ -193,7 +187,6 @@ export const setResourceHoursTool: McpToolDefinition = {
 export const writeTools = [
   createBookingTool,
   rescheduleBookingTool,
-  cancelBookingTool,
   createServiceTool,
   updateServiceTool,
   deleteServiceTool,

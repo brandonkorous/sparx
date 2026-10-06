@@ -11,6 +11,8 @@ import type {
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
   CreateSetupSessionParams,
+  LookedUpPayment,
+  LookupPaymentParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
@@ -19,19 +21,37 @@ import type {
   RefundResult,
   SetupSession,
   StoredChargeResult,
+  VaultFromPaymentParams,
   VaultedMethod,
   WebhookEvent,
 } from '../gateway';
 import { getGatewayCredentialReader } from '../credentials';
 import { credentialRef, getPaymentSecretReader } from '../secrets';
-import { normalizeStripeEvent, toPaymentIntent } from '../stripe-util';
+import {
+  lookupStripePayment,
+  normalizeStripeEvent,
+  toCancelResult,
+  toPaymentIntent,
+  toPaymentResult,
+} from '../stripe-util';
 import {
   chargeStripeStoredMethod,
   completeStripeVault,
   createStripeSetupSession,
+  stripeSaveForLater,
+  vaultStripePayment,
 } from '../stripe-vault';
 
 export const STRIPE_DIRECT_ID = 'stripe_direct';
+
+/** Capture and cancel reach the merchant's own account, so they need to know
+ *  whose. `paymentService` always passes it. */
+function noTenant(action: 'capture' | 'cancel'): Promise<PaymentResult> {
+  return Promise.resolve({
+    success: false,
+    errorMessage: `stripe_direct ${action} needs the tenant to reach the merchant's account`,
+  });
+}
 
 export class StripeDirectGateway implements PaymentGateway {
   readonly id = STRIPE_DIRECT_ID;
@@ -68,12 +88,17 @@ export class StripeDirectGateway implements PaymentGateway {
 
   async createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent> {
     const stripe = await this.stripeFor(params.tenantId);
+    // Keep the card for a repeat order (issue 739), on the merchant's own account
+    // where `createSetupSession` vaults too.
+    const save = params.saveForLater
+      ? await stripeSaveForLater(stripe, params.tenantId, params.saveForLater)
+      : null;
     const intent = await stripe.paymentIntents.create({
       amount: params.amount,
       currency: params.currency,
       // No on_behalf_of, no application_fee — this IS the merchant's account.
       ...(params.captureMethod === 'manual' ? { capture_method: 'manual' as const } : {}),
-      automatic_payment_methods: { enabled: true },
+      ...(save ? save.params : { automatic_payment_methods: { enabled: true } }),
       metadata: {
         tenantId: params.tenantId,
         orderId: params.orderId ?? '',
@@ -92,33 +117,52 @@ export class StripeDirectGateway implements PaymentGateway {
     return {
       ...toPaymentIntent(intent),
       ...(publishableKey ? { publishableKey } : {}),
+      ...(save ? { customerRef: save.customerRef } : {}),
     };
   }
 
-  // Confirm / capture / cancel for Stripe Direct are driven client-side (Stripe.js
-  // against the merchant's own publishable key) — the intent id alone doesn't carry
-  // the tenant needed to build the server client, and the storefront confirms in the
-  // browser. These return a clear unsupported result rather than guessing.
+  // Confirming is driven client-side (Stripe.js against the merchant's own
+  // publishable key); the intent id alone does not carry the tenant needed to
+  // build the server client, so this returns a clear unsupported result.
   confirmPayment(intentId: string): Promise<PaymentResult> {
     void intentId;
     return Promise.resolve({ success: false, errorMessage: 'stripe_direct confirms client-side' });
   }
 
-  capturePayment(intentId: string, amount?: number): Promise<PaymentResult> {
-    void intentId;
-    void amount;
-    return Promise.resolve({
-      success: false,
-      errorMessage: 'stripe_direct capture is not supported server-side',
-    });
+  // Capture and cancel are the server's, and take the tenant so the call reaches
+  // the merchant's own account. They answered "not supported" for every caller,
+  // so a card held on this gateway could be neither charged nor released: a
+  // booking's no-show fee was never taken, and a held wholesale order could not
+  // be paid for when it was approved (sparx persona issue 087).
+  async capturePayment(
+    intentId: string,
+    amount?: number,
+    tenantId?: string
+  ): Promise<PaymentResult> {
+    if (!tenantId) return noTenant('capture');
+    try {
+      const stripe = await this.stripeFor(tenantId);
+      const intent = await stripe.paymentIntents.capture(
+        intentId,
+        amount !== undefined ? { amount_to_capture: amount } : {}
+      );
+      return toPaymentResult(intent);
+    } catch (err) {
+      return {
+        success: false,
+        errorMessage: err instanceof Error ? err.message : 'capture failed',
+      };
+    }
   }
 
-  cancelPayment(intentId: string): Promise<PaymentResult> {
-    void intentId;
-    return Promise.resolve({
-      success: false,
-      errorMessage: 'stripe_direct cancel is not supported server-side',
-    });
+  async cancelPayment(intentId: string, tenantId?: string): Promise<PaymentResult> {
+    if (!tenantId) return noTenant('cancel');
+    try {
+      const stripe = await this.stripeFor(tenantId);
+      return toCancelResult(await stripe.paymentIntents.cancel(intentId));
+    } catch (err) {
+      return { success: false, errorMessage: err instanceof Error ? err.message : 'cancel failed' };
+    }
   }
 
   async refund(params: RefundParams): Promise<RefundResult> {
@@ -181,6 +225,15 @@ export class StripeDirectGateway implements PaymentGateway {
 
   async completeVault(params: CompleteVaultParams): Promise<VaultedMethod | null> {
     return completeStripeVault(await this.stripeFor(params.tenantId), params.setupRef);
+  }
+
+  async vaultFromPayment(params: VaultFromPaymentParams): Promise<VaultedMethod | null> {
+    return vaultStripePayment(await this.stripeFor(params.tenantId), params.paymentRef);
+  }
+
+  /** On the merchant's own account, which is where the intent was made. */
+  async lookupPayment(params: LookupPaymentParams): Promise<LookedUpPayment | null> {
+    return lookupStripePayment(await this.stripeFor(params.tenantId), params.paymentRef);
   }
 
   async chargeStoredMethod(params: ChargeStoredMethodParams): Promise<StoredChargeResult> {

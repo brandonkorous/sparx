@@ -1,13 +1,13 @@
 # 083 — A link to an order this salon cannot see spun for ever
 
-**Status:** open
+**Status:** fixed (confirmed act 324)
 **Severity:** minor
 **Found by:** P02 · Halo & Hem · standing checks (someone else's business)
 **Surface:** mypiggles › Sell › Order
 **Filed:** 2026-08-21
-**Fixed:** —
-**Confirmed by:** —
-**Blocked on:** scope — the retry policy is `@wizeworks/query`, shared with sparx
+**Fixed:** the spinner by issue 226's sweep; the sub-lists 2026-10-06
+**Confirmed by:** P03 · Juniper Row · act 324
+**Blocked on:** —
 
 ## The security half passed, and that is the headline
 
@@ -50,6 +50,19 @@ What the People and equipment panel does with the same situation:
 
 The order panel already has that branch. It renders "Could not load this order"
 on `isError`. `isError` never arrives.
+
+## Confirmed fixed (act 324)
+
+The scope this waited on was never the blocker: [226](226-a-link-to-somebody-elses-record-spins-for-ever.md)
+fixed it in the pane, where `PaneLoadError` reads a 404 as gone. Opened from
+Juniper Row, the same Thistle & Rye order id now reads **That order is no longer
+here**, with no spinner and no retry.
+
+The second note is fixed too. `/payments`, `/fulfillments` and `/refunds` under
+an order now ask for the order first, so another business's order is a 404 on
+all four, not a 404 on one and a 200 on three. A route test: three 404s and no
+list read for a foreign order, a 200 for her own; on the old route the three
+fail.
 
 ## How to reproduce
 

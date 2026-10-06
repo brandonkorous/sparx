@@ -12,6 +12,7 @@ import {
   Field,
   FieldControl,
   FieldDescription,
+  FieldError,
   FieldLabel,
   Input,
   NativeSelect,
@@ -23,6 +24,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingResourcePicker } from './booking-resource-picker';
 import { BookingCreateWho } from './booking-create-who';
 import { SaveFailure } from '@/components/save-failure';
+import type { WallClockBox } from '../../lib/wall-clock';
 import {
   bookingTypeLabel,
   formatMoney,
@@ -38,6 +40,8 @@ export interface BookingDraft {
   setServiceId: (value: string) => void;
   startLocal: string;
   setStartLocal: (value: string) => void;
+  /** Whose clock the start box is on, said under it (sparx persona issue 086). */
+  startClock: WallClockBox;
   customer: CustomerLite | null;
   setCustomer: (value: CustomerLite | null) => void;
   guestName: string;
@@ -78,6 +82,7 @@ export function BookingCreateFields({
     setServiceId,
     startLocal,
     setStartLocal,
+    startClock,
     customer,
     setCustomer,
     guestName,
@@ -155,22 +160,27 @@ export function BookingCreateFields({
           )}
         </Field>
 
-        <Field>
+        <Field invalid={startClock.problem !== null}>
           <FieldLabel>Starts</FieldLabel>
           <FieldControl
             render={
               <Input
-                color="module"
+                color={startClock.problem ? 'error' : 'module'}
                 type="datetime-local"
                 className="max-w-xs"
                 value={startLocal}
+                disabled={startClock.zone === undefined}
                 onChange={(event) => {
                   setStartLocal(event.target.value);
                 }}
               />
             }
           />
-          <FieldDescription>The day and time it begins, in your own time zone.</FieldDescription>
+          {startClock.problem ? (
+            <FieldError match>{startClock.problem}</FieldError>
+          ) : (
+            <FieldDescription>The day and time it begins. {startClock.hint}</FieldDescription>
+          )}
         </Field>
       </FormSection>
       <BookingCreateWho
@@ -196,7 +206,6 @@ export function BookingCreateFields({
           color="module"
           rows={3}
           value={notes}
-          placeholder="Please arrive five minutes early."
           onChange={(event) => {
             setNotes(event.target.value);
           }}

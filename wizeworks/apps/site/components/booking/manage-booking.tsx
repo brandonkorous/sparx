@@ -30,7 +30,7 @@ const STATE: Record<string, { label: string; tone: 'success' | 'warning' | 'dang
   confirmed: { label: 'Confirmed', tone: 'success' },
   in_progress: { label: 'Happening now', tone: 'info' },
   completed: { label: 'Done', tone: 'success' },
-  cancelled: { label: 'Cancelled', tone: 'danger' },
+  cancelled: { label: 'Canceled', tone: 'danger' },
   no_show: { label: 'Missed', tone: 'danger' },
 };
 

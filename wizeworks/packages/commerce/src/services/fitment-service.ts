@@ -724,10 +724,23 @@ export async function setForProduct(
   });
 }
 
+// Additive bulk writes (add / remove rules across many products) for the
+// Products list and MCP. Their own file; exported here so callers keep writing
+// `fitmentService.addToProducts`.
+export {
+  addToProducts,
+  removeFromProducts,
+  planFitmentAdds,
+  ruleKey,
+  type FitmentBulkResult,
+} from './fitment-bulk';
+
 /**
- * Bulk-apply the same fitment set to a batch of products. Used by catalog
- * importers (AAIA, supplier feed, merchant CSV) that slice the feed into "this
- * set of products fits these things" buckets and fan out one call per bucket.
+ * REPLACE every chosen product's fitment with the same set: each product's
+ * existing rules are deleted first. For catalog importers (supplier feed,
+ * merchant CSV) that own a product's whole fitment. As of 2026-10-01 nothing in
+ * the platform calls it but the MCP tool `bulk_assign_fitment` and the REST
+ * route; an owner adding to what products fit wants `addToProducts`.
  */
 export async function bulkAssign(
   ctx: ServiceContext,

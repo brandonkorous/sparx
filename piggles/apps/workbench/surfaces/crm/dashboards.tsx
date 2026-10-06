@@ -147,7 +147,8 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
     }
   }, [activeId, landing.data, boardIds]);
 
-  const { data: board } = useDashboard(activeId ?? 'new');
+  const boardQuery = useDashboard(activeId ?? 'new');
+  const { data: board } = boardQuery;
   const setWidgets = useSetWidgets(activeId ?? 'new');
   const createDashboard = useCreateDashboard();
   const updateDashboard = useUpdateDashboard(activeId ?? 'new');
@@ -486,6 +487,35 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const renaming = widgetDraft?.mode === 'rename' ? widgetDraft : null;
   const adding = widgetDraft?.mode === 'add' ? widgetDraft : null;
+
+  // A board that is not there (removed, or another business's id) says so,
+  // rather than drawing an empty board that looks like yours (persona issue 226).
+  if (activeId !== null && boardQuery.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={boardQuery.error}
+          noun="dashboard"
+          title="Could not load this dashboard"
+          description="This is a problem reaching the server. The dashboard itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void boardQuery.refetch();
+          }}
+          actions={
+            <Button
+              variant="outline"
+              color="module"
+              onClick={() => {
+                setActiveId(null);
+              }}
+            >
+              Show my dashboards
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>

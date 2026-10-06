@@ -20,7 +20,7 @@ import type {
   RefundResult,
   WebhookEvent,
 } from '../gateway';
-import { loadCredentials, orderReference, postJson } from './adapter-util';
+import { loadCredentials, paymentReference, postJson } from './adapter-util';
 
 export const FIRST_PAY_ID = 'first_pay';
 
@@ -39,7 +39,7 @@ export class FirstPayGateway implements PaymentGateway {
     const creds = await loadCredentials(params.tenantId, FIRST_PAY_ID);
     const gatewayId = creds.publicMeta.gateway_id;
     if (!gatewayId) throw new Error('1stPay gateway has no Transaction Center ID configured');
-    const reference = orderReference(params);
+    const reference = paymentReference();
 
     const u = new URL(HOSTED_BASE);
     u.searchParams.set('gateway', gatewayId);

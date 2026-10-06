@@ -34,6 +34,8 @@ export interface SampleDataCounts {
   reviews: number;
   questions: number;
   bookings: number;
+  services: number;
+  resources: number;
   deals: number;
   tickets: number;
   billingDocuments: number;

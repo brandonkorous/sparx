@@ -17,7 +17,7 @@
 
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import { Storage as GcsClient } from '@google-cloud/storage';
-import { promises as fs } from 'node:fs';
+import { existsSync, promises as fs } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { storageEnv } from './env.js';
 
@@ -172,9 +172,33 @@ export function getStorage(): MediaStorage {
       env.MEDIA_PUBLIC_URL
     );
   } else {
-    cached = new LocalStorage(env.MEDIA_LOCAL_DIR, env.MEDIA_PUBLIC_URL);
+    cached = new LocalStorage(env.MEDIA_LOCAL_DIR ?? localMediaRoot(), env.MEDIA_PUBLIC_URL);
   }
   return cached;
+}
+
+/**
+ * Where local-disk media lives in dev: the folder api-rest SERVES from
+ * (`MEDIA_LOCAL_DIR`, default `.media-tmp`, in api-rest's own directory).
+ *
+ * This used to default to `.media-local` relative to whichever process wrote it.
+ * The import worker runs from its own directory, so every picture a Shopify move
+ * copied in landed in `import-worker/.media-local`, was marked ready, and 404ed
+ * on every product page: Gillett Diesel's 653 products had no photos (sparx
+ * persona issue 056). Found from the workspace root so it is the same folder
+ * whichever service asks. Outside a checkout (a container) there is no root, and
+ * local disk is never the backend there anyway.
+ */
+export function localMediaRoot(): string {
+  let dir = process.cwd();
+  for (;;) {
+    if (existsSync(join(dir, 'pnpm-workspace.yaml'))) {
+      return join(dir, 'wizeworks', 'services', 'api-rest', '.media-tmp');
+    }
+    const parent = dirname(dir);
+    if (parent === dir) return '.media-local';
+    dir = parent;
+  }
 }
 
 // Test hook — swap in a mock or reset between suites.

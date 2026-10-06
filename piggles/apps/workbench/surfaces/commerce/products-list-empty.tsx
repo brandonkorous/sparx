@@ -13,11 +13,14 @@ export function ProductsListEmpty({
   narrowed,
   search,
   filterLabel,
+  kind = null,
   onCreate,
 }: {
   narrowed: boolean;
   search: string;
   filterLabel: string | null;
+  /** The kind of product the list is narrowed to, if any. */
+  kind?: string | null;
   onCreate: (event: Modifiers) => void;
 }) {
   return (
@@ -27,7 +30,7 @@ export function ProductsListEmpty({
       noResults={{
         icon: <Icon glyph={faBox} className="size-6" aria-hidden />,
         title: 'No products match that',
-        description: emptyAdvice(search, filterLabel),
+        description: emptyAdvice(search, filterLabel, kind),
       }}
       firstRun={{
         // "Catalog" is a third word for a thing this console already calls

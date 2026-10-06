@@ -386,6 +386,10 @@ export async function deleteEntryTx(
 
   // Soft-delete — the row survives for audit/history; reads filter deletedAt.
   const entry = await tx.contentEntry.update({ where: { id }, data: { deletedAt: new Date() } });
+  // Its footer links go with it: a link is to a page, and this page is gone. Left
+  // behind, the console listed a deleted policy as a "Draft" link (sparx persona
+  // issue 041).
+  await tx.siteDocPlacement.deleteMany({ where: { entryId: id } });
 
   return {
     entry,

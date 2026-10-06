@@ -37,6 +37,8 @@ export async function summarizeSampleDataOnTx(
     reviews,
     questions,
     bookings,
+    services,
+    resources,
     deals,
     bundles,
     movements,
@@ -53,6 +55,9 @@ export async function summarizeSampleDataOnTx(
     tx.productReview.count({ where: { tenantId, product: { handle: samplePrefix } } }),
     tx.productQuestion.count({ where: { tenantId, product: { handle: samplePrefix } } }),
     tx.booking.count({ where: { tenantId, service: { settings: sampleMeta } } }),
+    // The same marker Clear deletes them by (`settings.sample`).
+    tx.schedulingService.count({ where: { tenantId, settings: sampleMeta } }),
+    tx.schedulingResource.count({ where: { tenantId, settings: sampleMeta } }),
     tx.deal.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.bundle.count({ where: { tenantId, bundleProduct: { handle: samplePrefix } } }),
     tx.inventoryMovement.count({ where: { tenantId, source: SAMPLE_MOVEMENT_SOURCE } }),
@@ -88,6 +93,8 @@ export async function summarizeSampleDataOnTx(
     reviews,
     questions,
     bookings,
+    services,
+    resources,
     deals,
     tickets,
     billingDocuments,
@@ -118,6 +125,8 @@ export function countsTotal(c: SampleDataCounts): number {
     c.reviews +
     c.questions +
     c.bookings +
+    c.services +
+    c.resources +
     c.deals +
     c.tickets +
     c.billingDocuments +

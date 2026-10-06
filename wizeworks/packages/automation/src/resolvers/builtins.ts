@@ -47,6 +47,8 @@ function maybeStr(v: unknown): string {
 
 interface CustomerLike {
   id: string;
+  firstName: string | null;
+  lastName: string | null;
   type: string;
   lifecycleStage: string;
   leadStatus: string | null;
@@ -62,13 +64,23 @@ interface CustomerLike {
   propertyId: string | null;
 }
 
-function customerFields(c: CustomerLike, now: Date): ResolvedFields {
+/** Exported for its test. */
+export function customerFields(c: CustomerLike, now: Date): ResolvedFields {
+  // The customer's NAME. Every event resolved through this function (orders,
+  // fulfillments, subscriptions, returns, a held wholesale order) had no name
+  // field at all, so a task reading "Order O-000012 from {{customer.fullName}}"
+  // printed "from  is waiting" (sparx persona issue 085). The richer resolver
+  // in automation-actions always carried these three; this one now matches.
+  const fullName = [c.firstName, c.lastName].filter(Boolean).join(' ');
   return {
     // WHICH BUSINESS this record belongs to (docs/131 §3.1) — the engine filters
     // site-scoped automations on it. Reserved key, not part of the condition
     // vocabulary. Null for a tenant-level CRM contact tied to no site.
     [PROPERTY_FIELD]: c.propertyId,
     'customer.id': c.id,
+    'customer.firstName': c.firstName,
+    'customer.lastName': c.lastName,
+    'customer.fullName': fullName.length > 0 ? fullName : null,
     'customer.type': c.type,
     'customer.lifecycleStage': c.lifecycleStage,
     'customer.leadStatus': c.leadStatus,
@@ -87,6 +99,8 @@ function customerFields(c: CustomerLike, now: Date): ResolvedFields {
 
 const CUSTOMER_SELECT = {
   id: true,
+  firstName: true,
+  lastName: true,
   type: true,
   lifecycleStage: true,
   leadStatus: true,
@@ -268,6 +282,7 @@ const CUSTOMER_EVENTS = [
   'crm.customer.created',
   'crm.customer.updated',
   'crm.customer.subscribed',
+  'crm.customer.captured',
   'crm.segment.entered',
 ];
 const DEAL_EVENTS = ['crm.deal.created', 'crm.deal.updated', 'crm.deal.stage_changed'];
@@ -336,7 +351,59 @@ const REPLACEMENT_SHIPPED_EVENTS = ['return.replacement_shipped'];
 // B2B order approval outcomes (docs/impl transactional-email §4 P3) — the buyer's
 // pending order was approved (→ placed) or rejected (→ cancelled). Both carry
 // `orderId`, so they resolve through the order hydrator like any other order event.
-const B2B_ORDER_EVENTS = ['b2b.order.approved', 'b2b.order.rejected'];
+//
+// `b2b.order.pending_approval` too: the order is waiting for somebody to sign it
+// off, and nothing told anybody (sparx persona issue 085). Same payload.
+const B2B_ORDER_EVENTS = ['b2b.order.approved', 'b2b.order.rejected', 'b2b.order.pending_approval'];
+
+/**
+ * The sign-off facts a wholesale order event carries, which the order row does
+ * not (sparx persona issue 087).
+ *
+ * A held order can be the account's own approver's to sign, the business's, or
+ * both, and `asks` on `b2b.order.pending_approval` says which. Without it as a
+ * field, the business's "sign it off" task opened for an order only the
+ * account could sign, and nothing could tell the account's approvers apart from
+ * the business at all. An old event with no `asks` predates the account
+ * signing anything, so it means the business.
+ *
+ * `asksBusiness` / `asksAccount` are real booleans because conditions compare
+ * them (`eq true`), and the evaluator matches `true === true` exactly.
+ *
+ * The decision's own facts (who said no, why, and which side they were on)
+ * ride on `b2b.order.rejected` and are merged on top for the "turned down"
+ * email, the way a return's denial reason is. `byAccount` / `byBusiness` are
+ * the `'yes'`-or-empty pair the email gates its closing line on: exactly one
+ * reads "yes" on a turned-down order, so the buyer is told to ask their own
+ * colleague, or the business, and never both. A turn-down with no `side`
+ * predates the account deciding anything, so the business made it.
+ *
+ * Exported for its test.
+ */
+export function approvalFields(eventType: string, p: Record<string, unknown>): ResolvedFields {
+  const asks = Array.isArray(p.asks)
+    ? p.asks.filter((side): side is string => typeof side === 'string')
+    : eventType === 'b2b.order.pending_approval'
+      ? ['business']
+      : [];
+  const side =
+    p.side === 'account' || p.side === 'business'
+      ? p.side
+      : eventType === 'b2b.order.rejected'
+        ? 'business'
+        : '';
+  return {
+    'approval.asksBusiness': asks.includes('business'),
+    'approval.asksAccount': asks.includes('account'),
+    // Empty rather than absent: a bound row with an empty value self-drops,
+    // where a missing key renders the raw `{{…}}` token.
+    'approval.reason': maybeStr(p.reason),
+    'approval.decidedBy': maybeStr(p.decidedBy),
+    'approval.side': side,
+    'approval.byAccount': side === 'account' ? 'yes' : '',
+    'approval.byBusiness': side === 'business' ? 'yes' : '',
+  };
+}
 
 let installed = false;
 
@@ -433,7 +500,10 @@ export function installBuiltinResolvers(): void {
     });
   }
   for (const ev of B2B_ORDER_EVENTS) {
-    registerResolver(ev, (ctx, p) => hydrateOrder(ctx, str(p.orderId ?? p.id)));
+    registerResolver(ev, async (ctx, p) => ({
+      ...(await hydrateOrder(ctx, str(p.orderId ?? p.id))),
+      ...approvalFields(ev, p),
+    }));
   }
 
   // Scheduled (predicate) trigger over customers — the substrate for the

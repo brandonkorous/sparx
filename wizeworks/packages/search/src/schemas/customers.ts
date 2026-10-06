@@ -4,7 +4,10 @@
 
 import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const CUSTOMERS_COLLECTION = 'customers';
+import { resolveCollectionName } from './naming';
+
+// Prefixed in tests only; see ./naming.ts.
+export const CUSTOMERS_COLLECTION = resolveCollectionName('customers');
 
 export function customersSchema(
   collectionName: string = CUSTOMERS_COLLECTION

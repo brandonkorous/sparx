@@ -19,6 +19,38 @@ model Task {
   completedByUserId String? @map("completed_by_user_id") @db.Uuid
   customerId        String? @map("customer_id") @db.Uuid
   dealId            String? @map("deal_id") @db.Uuid
+  // The order this work is about, when it is about one. SetNull, like the
+  // customer and the deal: a task is a work record and outlives its order.
+  orderId           String? @map("order_id") @db.Uuid
+  // The order status this task exists to move the order OUT of. When set, the
+  // task closes itself the moment the order leaves that status, whoever moved
+  // it and wherever they did it. Null = a task that only a person closes.
+  //
+  // The "sign it off" task opened for a held wholesale order stayed open after
+  // the account's own approver had approved the order on the site and it was
+  // placed (O-000014): a task telling the business to do something already done.
+  // `pending_approval` here is what closes it.
+  closesWhenOrderLeaves String? @map("closes_when_order_leaves") @db.VarChar(20)
+
+  // The company (wholesale account) this work is about, when it is about one.
+  // SetNull, like the others.
+  companyId               String? @map("company_id") @db.Uuid
+  // True when the task exists to get the account's prices and terms set up. It
+  // closes itself, done, the moment the account is set up by the same rule the
+  // set-up automation opens it on (`ACCOUNT_SET_UP_TO_DO`, @wizeworks/crm-schemas).
+  // Wasatch Front was put on Net 30 with a $25,000 limit and its "Set up prices
+  // and terms" task stayed open: nothing that saved the account looked at it.
+  closesWhenAccountSetUp  Boolean @default(false) @map("closes_when_account_set_up")
+  // The deal stage TYPE (open | won | lost) this task exists for. The task is
+  // closed when the deal leaves it: "Follow up" on a deal already won or lost,
+  // or "Create invoice" on a deal moved back out of won, asks for nothing.
+  closesWhenDealLeaves    String? @map("closes_when_deal_leaves") @db.VarChar(20)
+  // The billing document this work is about, when it is about one.
+  billingDocumentId       String? @map("billing_document_id") @db.Uuid
+  // The document STAGE (id) this task exists to move the document out of: "was
+  // approved: take it to the next step" is done once it is taken there, turned
+  // into an invoice, voided or removed.
+  closesWhenDocumentLeaves String? @map("closes_when_document_leaves") @db.Uuid
 
   title       String    @db.VarChar(255)
   description String?   @db.Text
@@ -37,11 +69,17 @@ model Task {
   completedBy User?     @relation("TaskCompletedBy", fields: [completedByUserId], references: [id], onDelete: SetNull)
   customer    Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   deal        Deal?     @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  order       Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  company     Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  billingDocument BillingDocument? @relation(fields: [billingDocumentId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, assignedToUserId, status, dueAt])
   @@index([tenantId, propertyId, status, dueAt])
   @@index([tenantId, dueAt])
   @@index([tenantId, customerId])
   @@index([tenantId, dealId])
+  @@index([tenantId, orderId])
+  @@index([tenantId, companyId])
+  @@index([tenantId, billingDocumentId])
   @@map("tasks")
 }

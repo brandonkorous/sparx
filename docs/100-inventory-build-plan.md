@@ -1,8 +1,8 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.21
+**Version:** 1.22
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-10-03
 
 ---
 
@@ -294,6 +294,16 @@ enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
    `order-service` stays inventory-agnostic by design (checkout owns the seam). ✅ **DONE.** The B2B
    **approval route** (`/v1/b2b/approval-queue/:orderId/approve`) commits the decrement when it places a
    held order — the other placement path. ✅ **DONE.**
+   **A held order keeps its stock while it waits** (2026-10-03, after Gillett Diesel's O-000014 was
+   counted out twice). Checkout moves the basket's holds to the order (`holderType 'order'`, no expiry,
+   so the reaper never lets them go) and clears the basket lines' pointers; a quote held over a limit
+   is held by the commerce consumer on `b2b.order.pending_approval`. Approving commits FROM those holds
+   (`commitSaleOnTx` reads the order's own holds when a line passes none); turning it down releases
+   them in the same transaction; cancelling releases them through `reverseOrderSale`. Units with no
+   hold at approval are booked at a location that stocks the item (never one that never held it),
+   owed as a backorder when the shelf is short, recorded as an `allowed` oversell incident when they
+   were held for somebody else, and reported to the approver as `order.stock` on the approve result.
+   A `deny` item nobody has counted takes no sale at all (no level row is invented).
 3. **Release on cancel / payment-fail** — new commerce **event consumer** (`@wizeworks/commerce/consumers`,
    installed at api-rest/api-mcp boot on the in-process platform bus, gated per-tenant on the inventory
    module): on `order.cancelled`, `inventoryService.reverseOrderSale({orderId})` reverses each `sale`

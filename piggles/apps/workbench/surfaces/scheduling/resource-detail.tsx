@@ -44,6 +44,7 @@ import { useBusinessTimezone } from '../../lib/business-timezone';
 import { timezoneOptions } from '../../lib/timezones';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { resourceKindIcon } from './resource-kind-icon';
 import { SaveFailure } from '@/components/save-failure';
 import {
   RESOURCE_KINDS,
@@ -312,7 +313,16 @@ function ResourceEditor({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {existing ? <Text className="text-sm">{resourceKindLabel(existing.kind)}</Text> : null}
+          {existing ? (
+            <Text className="flex items-center gap-2 text-sm">
+              <Icon
+                glyph={resourceKindIcon(existing.kind)}
+                className="size-4 shrink-0"
+                aria-hidden
+              />
+              {resourceKindLabel(existing.kind)}
+            </Text>
+          ) : null}
 
           <SaveFailure title="Could not save this" message={saveError} />
 
@@ -353,7 +363,6 @@ function ResourceEditor({
                   <Input
                     color="module"
                     value={draft.name}
-                    placeholder={draft.kind === 'staff' ? 'Alex Rivera' : 'Treatment room 1'}
                     onChange={(event) => {
                       set('name', event.target.value);
                     }}
@@ -421,7 +430,6 @@ function ResourceEditor({
                         min={1}
                         className="max-w-28 tabular-nums"
                         value={draft.capacityMin}
-                        placeholder="2"
                         onChange={(event) => {
                           set('capacityMin', event.target.value);
                         }}
@@ -440,7 +448,6 @@ function ResourceEditor({
                         min={1}
                         className="max-w-28 tabular-nums"
                         value={draft.capacityMax}
-                        placeholder="4"
                         onChange={(event) => {
                           set('capacityMax', event.target.value);
                         }}
@@ -504,7 +511,7 @@ function ResourceEditor({
 
           <FormSection
             title="Skills & matching"
-            description="Words a service can look for when it needs a particular skill or feature: “color”, “senior”, “wheelchair access”. A service that asks for a skill is only offered the people or things that carry it."
+            description="Words a service can look for when it needs a particular skill or feature: “certified”, “bilingual”, “wheelchair access”. A service that asks for a skill is only offered the people or things that carry it."
           >
             <Field>
               <FieldLabel>Skills or features (optional)</FieldLabel>
@@ -513,7 +520,6 @@ function ResourceEditor({
                   <Input
                     color="module"
                     value={draft.skills}
-                    placeholder="color, senior, treatment"
                     onChange={(event) => {
                       set('skills', event.target.value);
                     }}

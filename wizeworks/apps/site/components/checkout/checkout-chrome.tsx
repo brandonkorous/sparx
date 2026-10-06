@@ -9,9 +9,16 @@ import { Button, Step, Steps } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import { readyDayLabel, type StorefrontPaymentMode } from '@/lib/made-to-order-copy';
-import type { Address, CheckoutMadeToOrder, ShippingRate } from '@/lib/checkout-client';
+import { heldOrderSentence, type HeldCard } from '@/lib/sign-off-words';
+import type {
+  Address,
+  CheckoutApproval,
+  CheckoutMadeToOrder,
+  ShippingRate,
+} from '@/lib/checkout-client';
 import type { CartLine, CartTotals } from '../cart-provider';
 import { OrderSummary } from './order-summary';
+import { RepeatConfirmed } from './repeat-checkout';
 
 // Named CheckoutStep, not Step: silica's <Step> is the stepper node component.
 export type CheckoutStep = 'contact' | 'shipping' | 'payment' | 'done';
@@ -95,6 +102,10 @@ export function EmptyCart() {
 export function Confirmation({
   orderId,
   orderNumber,
+  held = false,
+  approval = null,
+  card = 'none',
+  shopName = null,
   paymentMode = 'card',
   /** Nothing is being posted, so "we'll send it" would be the wrong promise. */
   collecting,
@@ -110,6 +121,22 @@ export function Confirmation({
    *  one; checkout used to drop it on the floor one line later. */
   orderId: string;
   orderNumber: string;
+  /** A trade order waiting to be signed off: over a spending
+   *  limit, or past the account's credit limit. Not placed, not charged and
+   *  not sent until it is (sparx persona issue 085). "Order confirmed" and
+   *  "has been placed" were both untrue of it. */
+  held?: boolean;
+  /** Who a held order is waiting on: the account's own approvers, the
+   *  business, or both. "Waiting for us to approve it" was said of every held
+   *  order, including one only the buyer's own colleague could release (sparx
+   *  persona issue 087). */
+  approval?: CheckoutApproval | null;
+  /** What happened to the card on a held order: held until it is approved,
+   *  charged now (a card processor that cannot hold one), or none. "Nothing is
+   *  charged" is said only where no card was (sparx persona issue 087). */
+  card?: HeldCard;
+  /** The business's own name, for "waiting for Gillett Diesel Service". */
+  shopName?: string | null;
   paymentMode?: StorefrontPaymentMode;
   collecting: boolean;
   /** Made to order (issue 026) — the day it can be collected and what is still
@@ -134,7 +161,10 @@ export function Confirmation({
   // they need is the line they already get: keep this number, you pay on
   // collection. The whole amount is settled with the shop, so nothing is lost by
   // not splitting it, and a number nobody collected is never printed as money.
-  const owing = paymentMode === 'card' && (madeToOrder?.balanceCents ?? 0) > 0;
+  //
+  // A card HELD for a sign-off has not been charged either, so it is not money
+  // paid today until the order is approved (sparx persona issue 087).
+  const owing = paymentMode === 'card' && card !== 'held' && (madeToOrder?.balanceCents ?? 0) > 0;
   return (
     // No px-6. The checkout page already sets a 24px gutter, and adding a
     // second one here inset this screen twice as far as the four steps before
@@ -143,15 +173,24 @@ export function Confirmation({
       <span className="text-[2.5rem] opacity-50" aria-hidden="true">
         🎉
       </span>
-      <h1 className="text-base-content text-4xl font-semibold tracking-tight">Order confirmed</h1>
-      <p className="text-base-content m-0">
-        Thank you! Your order <strong>{orderNumber}</strong> has been placed.{' '}
-        {paymentMode === 'in_person'
-          ? collecting
-            ? 'Keep this order number. You pay when you collect.'
-            : 'Keep this order number: we’ll be in touch about paying.'
-          : 'A confirmation email is on its way.'}
-      </p>
+      <h1 className="text-base-content text-4xl font-semibold tracking-tight">
+        {held ? 'Order received' : 'Order confirmed'}
+      </h1>
+      {held ? (
+        <p className="text-base-content m-0">
+          Thank you! Your order <strong>{orderNumber}</strong>{' '}
+          {heldOrderSentence({ approval, shopName, card })}
+        </p>
+      ) : (
+        <p className="text-base-content m-0">
+          Thank you! Your order <strong>{orderNumber}</strong> has been placed.{' '}
+          {paymentMode === 'in_person'
+            ? collecting
+              ? 'Keep this order number. You pay when you collect.'
+              : 'Keep this order number: we’ll be in touch about paying.'
+            : 'A confirmation email is on its way.'}
+        </p>
+      )}
       {ready ? (
         <p className="text-base-content m-0 font-semibold">Ready from {ready}.</p>
       ) : collecting ? (
@@ -170,6 +209,32 @@ export function Confirmation({
           so the number was the entire record of the sale. The same summary that
           stood beside every step stands under it now, so the last screen agrees
           with the four before it. */}
+      {lines.some((line) => line.repeat !== null) ? <RepeatConfirmed lines={lines} /> : null}
+
+      {/* Bought by sending the old part first (sparx issue 057). Nothing ships
+          until it arrives, so this is the moment to say so and where to look for
+          the address: the order page has it, and so does the confirmation email. */}
+      {lines.some((line) => line.coreFirst) ? (
+        <div className="text-base-content flex w-full max-w-[420px] flex-col gap-2 text-left">
+          <strong>Bring or send your old part</strong>
+          <ul className="m-0 list-disc ps-5">
+            {lines
+              .filter((line) => line.coreFirst)
+              .map((line) => (
+                <li key={line.id}>We hold {line.title} until your old part arrives.</li>
+              ))}
+          </ul>
+          <p className="m-0">
+            Bring or send it to us with your order number, {orderNumber}.{' '}
+            {signedIn
+              ? 'Your order page says where to send it.'
+              : paymentMode === 'in_person'
+                ? 'Ask us where to send it.'
+                : 'Your confirmation email says where to send it.'}
+          </p>
+        </div>
+      ) : null}
+
       <div className="mt-4 w-full max-w-[420px] text-left">
         <OrderSummary
           lines={lines}

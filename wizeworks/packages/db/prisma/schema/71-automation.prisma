@@ -74,6 +74,33 @@ model Automation {
   locked     Boolean @default(false)
   clonedFrom String? @map("cloned_from") @db.Uuid
 
+  // SEEDED-RULE IDENTITY + PROVENANCE. System rows only; null on a tenant's own.
+  //
+  // `systemKey` is the seed's permanent identity (`crm.welcome-new-customers`).
+  // The display name used to be the identity, so a business renaming its copy made
+  // the re-sync install a second copy beside it, and both ran. Unique per tenant
+  // among system rows (`automations_system_key_key`, a partial index in the
+  // migration, not expressible here). Rows installed before it existed are keyed
+  // by the re-sync, which finds them by name once.
+  //
+  // `seededFingerprint` is the sha256 of the rule document the platform last wrote
+  // (`seedDocumentFingerprint` in @wizeworks/automation). A live document that
+  // still hashes to it is untouched and takes the platform's newer version; any
+  // other is the business's and is left alone.
+  //
+  // `platformUpdateAt` is when the platform first had a newer version that was NOT
+  // applied because the business had changed the rule. Null = nothing pending.
+  //
+  // `platformDocument` is that newer version itself (the seed's description,
+  // trigger, conditions, actions, goal and maxDepth), written by the re-sync beside
+  // the flag and cleared with it. The API cannot load the seed catalog, so this is
+  // how the console shows what differs and how `takePlatformVersion` switches the
+  // rule to it. Null whenever `platformUpdateAt` is (a CHECK in the migration).
+  systemKey         String?   @map("system_key") @db.VarChar(100)
+  seededFingerprint String?   @map("seeded_fingerprint") @db.VarChar(64)
+  platformUpdateAt  DateTime? @map("platform_update_at") @db.Timestamptz
+  platformDocument  Json?     @map("platform_document")
+
   // Loop-guard ceiling for rule -> event -> rule cascades (docs/81 §7).
   maxDepth Int @default(3) @map("max_depth") @db.SmallInt
 

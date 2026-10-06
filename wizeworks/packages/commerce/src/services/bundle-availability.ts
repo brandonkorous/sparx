@@ -31,7 +31,12 @@
 // the wrong question and would produce a number nobody should act on, so they
 // are returned as "not derived" rather than as a guess.
 
-import { computeAvailability } from '@wizeworks/inventory';
+import {
+  AVAILABILITY_LEVEL_SELECT,
+  availabilityLevelOf,
+  computeAvailability,
+  type AvailabilityLevel,
+} from '@wizeworks/inventory';
 import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
@@ -142,13 +147,9 @@ async function loadBundleAvailability(
       ? []
       : await tx.inventoryLevel.findMany({
           where: { tenantId, variantId: { in: variantIds } },
-          select: {
-            variantId: true,
-            onHand: true,
-            allocated: true,
-            safetyBuffer: true,
-            unsellableOnHand: true,
-          },
+          // The same terms the product page reads, the location's state
+          // included, so a component's stock means the same thing here.
+          select: { variantId: true, ...AVAILABILITY_LEVEL_SELECT },
         });
   const policies = await tx.productVariant.findMany({
     where: { id: { in: variantIds } },
@@ -156,13 +157,10 @@ async function loadBundleAvailability(
   });
   const policyByVariant = new Map(policies.map((p) => [p.id, p.inventoryPolicy]));
 
-  const levelsByVariant = new Map<
-    string,
-    { onHand: number; allocated: number; safetyBuffer: number; unsellableOnHand: number }[]
-  >();
+  const levelsByVariant = new Map<string, AvailabilityLevel[]>();
   for (const l of levels) {
     const list = levelsByVariant.get(l.variantId) ?? [];
-    list.push(l);
+    list.push(availabilityLevelOf(l));
     levelsByVariant.set(l.variantId, list);
   }
 

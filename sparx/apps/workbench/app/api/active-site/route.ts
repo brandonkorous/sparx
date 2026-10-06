@@ -18,10 +18,10 @@
 
 import { NextResponse } from 'next/server';
 import { getSession } from '@wizeworks/auth';
+import { ACTIVE_PROPERTY_COOKIE, encodeActiveSite } from '../../../lib/active-site-cookie';
 
 export const dynamic = 'force-dynamic';
 
-const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
 /** One year — matches the layout/preference lifetime the client wrote before. */
 const COOKIE_MAX_AGE_SECONDS = 31_536_000;
 
@@ -40,7 +40,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   const response = NextResponse.json({ ok: true });
   response.cookies.set({
     name: ACTIVE_PROPERTY_COOKIE,
-    value: siteId,
+    // Carries the tenant, so the next person to sign in on this computer does
+    // not inherit it (sparx persona issue 011).
+    value: encodeActiveSite(session.user.tenantId, siteId),
     path: '/',
     maxAge: COOKIE_MAX_AGE_SECONDS,
     // httpOnly because nothing client-side reads this cookie — only the server

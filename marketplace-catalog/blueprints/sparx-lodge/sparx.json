@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-lodge",
   "name": "Lodge",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "tagline": "A complete multi-module starter in the Lodge look, for hotels, cabins, and short-stay rentals.",
-  "description": "The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Lodge look, tuned for hotels, cabins, and short-stay rentals. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "A complete starter in the Lodge look, tuned for hotels, cabins, and short-stay rentals: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",

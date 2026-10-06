@@ -54,6 +54,23 @@ spec:
               value: '0.0.0.0'
             - name: SPARX_API_REST_URL
               value: 'http://api-rest.sparx-prod.svc.cluster.local:3000'
+            # The one secret this pod needs, so it is mapped by name rather than
+            # pulling the whole of `sparx-app-secrets` into a public-facing
+            # renderer. POST /api/revalidate refuses without it, and the event
+            # worker's cache-revalidation handler (which reads the same Secret)
+            # sends it on every purge. It was unset here, so no purge was ever
+            # accepted and every owner change waited out the cache (sparx persona
+            # issue 040). The release mints it when it is not supplied.
+            #
+            # `optional: true` so a missing key costs stale pages, not every
+            # tenant's website failing to start. The worker logs the missing
+            # secret loudly on its side.
+            - name: SPARX_REVALIDATE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: SPARX_REVALIDATE_SECRET
+                  optional: true
             # SPARX_ZONE_DOMAIN is deliberately NOT set here.
             #
             # It used to be, pinned to 'sparx.zone', and a pod-spec `env` entry

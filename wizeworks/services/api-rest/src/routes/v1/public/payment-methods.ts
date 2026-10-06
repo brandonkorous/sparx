@@ -7,6 +7,14 @@
 //   DELETE /v1/public/commerce/account/payment-methods/:id
 //   GET    /v1/public/commerce/account/subscriptions             ?tenant=
 //   POST   /v1/public/commerce/account/subscriptions/:id/payment-method
+//   POST   /v1/public/commerce/account/subscriptions/:id/pause
+//   POST   /v1/public/commerce/account/subscriptions/:id/resume
+//   POST   /v1/public/commerce/account/subscriptions/:id/skip
+//   POST   /v1/public/commerce/account/subscriptions/:id/cancel
+//
+// The last four are what make "pause, skip or cancel any time" true for a
+// shopper who started a repeat order at checkout (issue 739). Before them the
+// only way out of one was asking the shop.
 //
 // These exist because the vault is useless without them. A subscription that
 // charges a saved card leaves the customer with a standing obligation they can
@@ -158,6 +166,77 @@ const paymentMethodRoutes: FastifyPluginAsync = (app) => {
       ...(body.paymentMethodId ? { paymentMethodId: body.paymentMethodId } : {}),
     });
     return ok({ id, updated: true });
+  });
+
+  // ── Changing a repeat order from the account (issue 739) ─────────────────
+  //
+  // Each checks ownership against the SUBSCRIPTION's customer, for the same
+  // reason as the card switch above. A refusal the service raises (resuming
+  // one that is not paused, say) reaches the shopper as its own sentence.
+
+  const owned = async (
+    request: Parameters<typeof resolveTenantId>[0],
+    id: string
+  ): Promise<{ tenantId: string; status: string }> => {
+    const ctx = await context(request);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
+    const detail = await subscriptionService.get(ctx, id);
+    if (detail.customerId !== customerId) throw notFound('Subscription', id);
+    return { tenantId: ctx.tenantId, status: detail.status };
+  };
+
+  app.post('/v1/public/commerce/account/subscriptions/:id/pause', async (request) => {
+    const { id } = SubscriptionParam.parse(request.params);
+    const { tenantId } = await owned(request, id);
+    await subscriptionService.pause(
+      { tenantId },
+      {
+        subscriptionId: id,
+        reason: 'Paused by the customer from their account.',
+      }
+    );
+    return ok({ id, status: 'paused' });
+  });
+
+  app.post('/v1/public/commerce/account/subscriptions/:id/resume', async (request) => {
+    const { id } = SubscriptionParam.parse(request.params);
+    const { tenantId } = await owned(request, id);
+    await subscriptionService.resume({ tenantId }, { subscriptionId: id });
+    return ok({ id, status: 'active' });
+  });
+
+  app.post('/v1/public/commerce/account/subscriptions/:id/skip', async (request) => {
+    const { id } = SubscriptionParam.parse(request.params);
+    const { tenantId, status } = await owned(request, id);
+    // Skipping only means something on one that is going to deliver. On a paused
+    // or canceled one it would quietly move a date nobody is waiting for.
+    if (status !== 'active' && status !== 'trialing') {
+      throw validationError('Only a repeat order that is running can skip a delivery.');
+    }
+    await subscriptionService.skipNextOccurrence(
+      { tenantId },
+      {
+        subscriptionId: id,
+        reason: 'Skipped by the customer from their account.',
+      }
+    );
+    return ok({ id, skipped: true });
+  });
+
+  app.post('/v1/public/commerce/account/subscriptions/:id/cancel', async (request) => {
+    const { id } = SubscriptionParam.parse(request.params);
+    const { tenantId } = await owned(request, id);
+    // Now, not at the end of a period: a shopper who cancels a monthly delivery
+    // expects nothing more to arrive and nothing more to be charged.
+    await subscriptionService.cancel(
+      { tenantId },
+      {
+        subscriptionId: id,
+        atPeriodEnd: false,
+        reason: 'Canceled by the customer from their account.',
+      }
+    );
+    return ok({ id, status: 'cancelled' });
   });
 
   return Promise.resolve();

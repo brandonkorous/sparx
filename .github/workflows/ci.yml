@@ -186,8 +186,9 @@ jobs:
 
       # TypeScript CANNOT catch this one, so a check is the only thing that can.
       # A generated `<Model>Select` is a mapped type over a type parameter, and
-      # excess-property checking does not run on those — so `where` is checked
-      # and `select` is not. Six shipped past typecheck, lint and the whole test
+      # excess-property checking does not run on those — so `select` is not
+      # checked, and neither is a `where` THROUGH a relation (a union): `Order`
+      # has no `deletedAt`, and the Cores owed list failed on every load. Six shipped past typecheck, lint and the whole test
       # suite: `Booking.customer` (no such relation, deliberately) answered 500
       # on every request the By-job screen makes in its DEFAULT filter, and
       # `resolveDueAt` threw on every ticket automation before it read a field.
@@ -197,6 +198,18 @@ jobs:
       # died with ERR_MODULE_NOT_FOUND before it read a file.
       - name: Check no Prisma select names a field that does not exist
         run: node scripts/check-prisma-selects.mjs
+      # The other half of the same blind spot: a select that names a REAL
+      # relation the client extension has shadowed with a computed field.
+      # `Customer.company` is the trade account in the schema and the typed
+      # employer string on the client, and the string wins, so a join or a
+      # `customer.company.creditLimit` read compiles and is always undefined.
+      # It shipped four times before this ran anywhere but the pre-push guard.
+      - name: Check no query joins or reads a shadowed relation
+        run: node scripts/check-shadowed-relations.mjs
+      # A raw SQL status compared to 'canceled' matches no row: sparx stores
+      # 'cancelled', so the filter silently does nothing (persona issue 059).
+      - name: Check no SQL compares a status to 'canceled'
+        run: node scripts/check-cancelled-in-sql.mjs
 
   event-topics:
     name: Event ↔ topic parity
@@ -244,6 +257,9 @@ jobs:
 
       - name: Check surface/address parity
         run: node scripts/check-surface-routes.mjs
+
+      - name: Check the workbench prices modules as the server bills them
+        run: node scripts/check-module-graph.mjs
 
   dockerfile-deps:
     name: Dockerfile ↔ workspace deps

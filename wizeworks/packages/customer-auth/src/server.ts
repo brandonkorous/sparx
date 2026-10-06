@@ -15,7 +15,7 @@ import { APIError, createAuthMiddleware, getSessionFromCtx } from 'better-auth/a
 import { hashPassword, verifyPassword } from './hash';
 import { publishCustomerAuthEmail } from './email';
 import { resolveStoreBaseUrl } from './store-url';
-import { SESSION_COOKIE_NAME } from './session';
+import { CUSTOMER_COOKIE_PREFIX, SESSION_COOKIE_NAME } from './session';
 import { tenantScopedClient } from './tenant-adapter';
 import { CUSTOMER_MCP_SCOPES, verifyCustomerConsentGrant } from './mcp-scopes';
 
@@ -194,6 +194,8 @@ function createCustomerAuth() {
       database: { generateId: false },
       // First-party cookie name expected by the site + the /account routes.
       cookies: { session_token: { name: SESSION_COOKIE_NAME } },
+      // Never the staff instance's prefix: see CUSTOMER_COOKIE_PREFIX.
+      cookiePrefix: CUSTOMER_COOKIE_PREFIX,
     },
 
     // Throttle the public MCP OAuth surface (mirrors staff, docs/07 §5). DCR is

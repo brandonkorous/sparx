@@ -8,10 +8,13 @@
 // service is connected it works tax out for you and these settings become a
 // backup; otherwise the rates you set here are what shoppers are charged.
 //
-// Exemptions (a customer who does not pay tax) are deliberately not listed here —
-// they belong to a customer or a wholesale account, and are managed from that
-// record, so inventing a list of them here would be a place you could never
-// actually add one.
+// Exemptions (a buyer who does not pay tax) are deliberately not listed here.
+// Each certificate belongs to one buyer, so it is added and removed in the "Tax
+// exemption" section of that buyer's own page: the wholesale account page
+// (surfaces/b2b/account-detail.tsx) for a trade business, whose certificate
+// checkout applies to everyone ordering for it, or the customer page's Details
+// tab (surfaces/crm/customer-detail.tsx) for someone buying as themselves. The
+// section is surfaces/commerce/tax-exemptions-section.tsx (issue 075).
 
 import {
   Alert,
@@ -24,7 +27,8 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { Banknote, Plus, ServerCrash } from 'lucide-react';
+import { Banknote, Building2, Plus, ServerCrash, Users } from 'lucide-react';
+import { useModuleStates } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -105,6 +109,8 @@ function ZoneRow({
 export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
   const zones = useTaxZones();
   const auto = useAutomaticTaxProvider();
+  const { data: moduleStates } = useModuleStates();
+  const b2bOn = (moduleStates ?? []).some((m) => m.slug === 'b2b' && m.enabled);
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.tax.zone.detail', { id }, { target: targetFor(event) });
@@ -243,11 +249,37 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                 )}
               </FormSection>
 
-              <Text className="px-1 text-sm">
-                Customers who don&apos;t pay tax (resellers, charities, wholesale accounts) are
-                handled on their own customer record, not here, so their certificate stays with
-                them.
-              </Text>
+              <FormSection
+                title="Customers who don't pay tax"
+                description="Resellers, farms, charities and others can give you a tax exemption certificate. Add it on the page of the business or person it belongs to, in its Tax exemption section, and checkout stops adding sales tax for them where it covers."
+              >
+                <div className="flex flex-wrap gap-2">
+                  {b2bOn ? (
+                    <Button
+                      size="sm"
+                      variant="soft"
+                      color="module-b2b"
+                      onClick={(event) => {
+                        ctx.open('b2b.accounts.list', {}, { target: targetFor(event) });
+                      }}
+                    >
+                      <Building2 className="size-4" aria-hidden />
+                      Wholesale accounts
+                    </Button>
+                  ) : null}
+                  <Button
+                    size="sm"
+                    variant="soft"
+                    color="module-crm"
+                    onClick={(event) => {
+                      ctx.open('crm.customers.list', {}, { target: targetFor(event) });
+                    }}
+                  >
+                    <Users className="size-4" aria-hidden />
+                    Customers
+                  </Button>
+                </div>
+              </FormSection>
 
               {rows.length > 0 ? <RowOpenHint /> : null}
             </>

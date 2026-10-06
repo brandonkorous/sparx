@@ -21,6 +21,8 @@ import {
 } from '@wizeworks/automation';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { orderService } from '@wizeworks/crm/services';
+
 import { installCrmActions } from '../../src/index.js';
 
 const ownerDb = new PrismaClient({
@@ -299,5 +301,97 @@ describe('crm action executors', () => {
     });
     expect(run?.status).toBe('failed');
     expect(run?.steps[0]?.status).toBe('failed');
+  });
+});
+
+// The "waiting for your sign-off" task stayed open after the account's approver
+// approved O-000014 on the site and the order was placed. A task can now wait on
+// its order: opened only while the order still waits, and closed by whatever
+// moves the order on. Through the real engine, service and database.
+describe('a task that waits on its order', () => {
+  async function heldOrder(tenantId: string, customerId: string, status: string): Promise<string> {
+    const order = await ownerDb.order.create({
+      data: {
+        tenantId,
+        customerId,
+        orderNumber: `O-${crypto.randomBytes(3).toString('hex')}`,
+        status,
+        placedAt: new Date(),
+      },
+      select: { id: true },
+    });
+    return order.id;
+  }
+
+  function heldEvt(tenantId: string, orderId: string): TriggerEnvelope {
+    return {
+      type: 'b2b.order.pending_approval',
+      tenantId,
+      actorId: null,
+      occurredAt: new Date().toISOString(),
+      data: { orderId, asks: ['business'] },
+    };
+  }
+
+  const signOffTask = {
+    name: 'sign it off',
+    trigger: { kind: 'event' as const, eventType: 'b2b.order.pending_approval' },
+    actions: [
+      {
+        type: 'crm.create_task' as const,
+        config: {
+          title: 'Order {{order.number}} is waiting for your sign-off',
+          dueInDays: 0,
+          closeWhenOrderLeaves: 'pending_approval',
+        },
+      },
+    ],
+  };
+
+  it('is opened on the order, and closed when the order is cancelled', async () => {
+    const t = await seedTenant();
+    const customerId = await seedCustomer(t);
+    const userId = await seedUser(t);
+    const orderId = await heldOrder(t, customerId, 'pending_approval');
+    await activeAutomation(t, signOffTask);
+
+    await handleTrigger(heldEvt(t, orderId), deps);
+    await runAutomationTick(deps, appDb);
+
+    const opened = await ownerDb.task.findFirst({ where: { tenantId: t, orderId } });
+    expect(opened).toMatchObject({
+      status: 'open',
+      customerId,
+      closesWhenOrderLeaves: 'pending_approval',
+    });
+
+    await orderService.cancel({ tenantId: t, userId }, { orderId, reason: 'Ordered twice' });
+
+    const closed = await ownerDb.task.findUnique({ where: { id: opened!.id } });
+    expect(closed?.status).toBe('cancelled');
+    expect(closed?.description).toMatch(
+      /was canceled by Rep, so there is nothing left to do here\.$/
+    );
+  });
+
+  it('is not opened for an order already decided by the time the rule runs', async () => {
+    const t = await seedTenant();
+    const customerId = await seedCustomer(t);
+    await seedUser(t);
+    const orderId = await heldOrder(t, customerId, 'pending_approval');
+    const autoId = await activeAutomation(t, signOffTask);
+
+    await handleTrigger(heldEvt(t, orderId), deps);
+    // Approved on the site between the event and the run.
+    await ownerDb.order.update({ where: { id: orderId }, data: { status: 'placed' } });
+    await runAutomationTick(deps, appDb);
+
+    expect(await ownerDb.task.count({ where: { tenantId: t, orderId } })).toBe(0);
+    const run = await ownerDb.automationRun.findFirst({
+      where: { automationId: autoId },
+      include: { steps: true },
+    });
+    expect(run?.status).toBe('completed');
+    expect(run?.steps[0]?.output).toMatchObject({ taskId: null });
   });
 });

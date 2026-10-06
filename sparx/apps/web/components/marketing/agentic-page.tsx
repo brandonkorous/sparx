@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Button, Heading } from '@wizeworks/silicaui-react';
 import {
   Container,
@@ -92,9 +94,12 @@ function AiHero() {
 
           <div className="flex flex-col items-start gap-3.5">
             <div className="flex flex-wrap items-center gap-4">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('agentic-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Connect your AI →
-              </Button>
+              </a>
               <a href="#how">
                 {/* On the band, `variant="outline"` draws from the ambient ink —
                     the same near-black the band already carries. */}
@@ -702,9 +707,12 @@ function AiPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('agentic-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate AI
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -725,9 +733,12 @@ function AiCta() {
           ask your own AI anything about your business. Turn it off any time. Your data stays.
         </p>
         <div className="flex flex-wrap items-center gap-4">
-          <Button size="xl" variant="solid">
+          <a
+            href={signupHref('agentic-final')}
+            className={buttonClasses({ size: 'xl', variant: 'solid' })}
+          >
             Connect your AI →
-          </Button>
+          </a>
           <a href="/docs">
             <Button size="xl" variant="outline">
               Read the connection guide

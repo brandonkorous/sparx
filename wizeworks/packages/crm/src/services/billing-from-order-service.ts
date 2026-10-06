@@ -27,6 +27,7 @@
 // `recordPayment` mirrors a payment back onto the linked order, and this money is
 // already ON the order. Routing the seed through it would count it twice.
 
+import { poNumberOf, withPoNumber } from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
@@ -37,6 +38,7 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
 import { deriveDocumentStatus } from './billing-ar';
 import { businessTimeZone } from './business-clock';
+import { quoteCostsForItems } from './ar-invoice-lines';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { invoicePaymentMethod, invoicePaymentNote } from './invoice-payment-method';
 
@@ -89,6 +91,56 @@ function partyFromOrder(
     email: email ?? '',
     address: lines.join('\n'),
   };
+}
+
+/**
+ * Who the invoice is addressed to: the order's frozen address when it has one,
+ * else the quote the order was made from.
+ *
+ * An order made from an accepted quote carries no address of its own (the quote
+ * holds a printed bill-to, not commerce's structured address), so its invoice
+ * fell back to the PERSON with no address at all. For a business buying on
+ * account that is the wrong addressee: the quote was made out to "Wasatch Front
+ * Utility Contractors, LLC" at their accounts payable address, and the invoice
+ * has to be too (sparx persona issue 077).
+ */
+export function invoiceParty(
+  orderAddress: FrozenAddress | null,
+  quoteBillTo: unknown,
+  fallbackName: string,
+  email: string | null
+): { name: string; email: string; address: string } {
+  const quote =
+    quoteBillTo && typeof quoteBillTo === 'object' && !Array.isArray(quoteBillTo)
+      ? (quoteBillTo as Record<string, unknown>)
+      : null;
+  const text = (key: string) => {
+    const value = quote?.[key];
+    return typeof value === 'string' ? value.trim() : '';
+  };
+  if (orderAddress === null && quote && (text('name') !== '' || text('address') !== '')) {
+    return {
+      name: text('name') || fallbackName,
+      email: text('email') || (email ?? ''),
+      address: text('address'),
+    };
+  }
+  return partyFromOrder(orderAddress, fallbackName, email);
+}
+
+/**
+ * An order item's name on the invoice, with its part code when the name does
+ * not already carry it.
+ *
+ * Gillett names a part "Bosch Remanufactured Fuel Injector (0986435621)", code
+ * and all, so appending the code unconditionally printed it twice on every
+ * invoice raised from an order (sparx persona issue 077, the same defect as the
+ * quote editor's line description).
+ */
+export function invoiceLineName(name: string, sku: string | null | undefined): string {
+  const code = sku?.trim() ?? '';
+  if (code === '' || name.toLowerCase().includes(code.toLowerCase())) return name;
+  return `${name} (${code})`;
 }
 
 /** Money on an order, in the two numbers this decision needs. */
@@ -258,6 +310,26 @@ export async function createInvoiceForOrder(
           where: { status: 'captured' },
           select: { processor: true },
         },
+        // The quote this order was made from, when it was: its addressee, the
+        // wholesale account it billed, and the buyer's PO number (issue 077).
+        // And its lines' costs, which order items do not keep (issue 086).
+        convertedFromDocument: {
+          select: {
+            billTo: true,
+            companyId: true,
+            metadata: true,
+            lines: {
+              select: {
+                description: true,
+                variantId: true,
+                quantity: true,
+                unitPrice: true,
+                costCents: true,
+              },
+              orderBy: { sortOrder: 'asc' },
+            },
+          },
+        },
       },
     });
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
@@ -310,6 +382,7 @@ export async function createInvoiceForOrder(
     const customerName =
       [order.customer?.firstName, order.customer?.lastName].filter(Boolean).join(' ').trim() ||
       'Customer';
+    const quote = order.convertedFromDocument;
 
     const items = order.items.map((it) => ({
       name: it.name,
@@ -319,9 +392,13 @@ export async function createInvoiceForOrder(
       lineSubtotal: Number(it.lineSubtotal),
       taxAmount: Number(it.taxAmount),
       discountAmount: Number(it.discountAmount),
+      coreCharge: it.coreCharge === null ? null : Number(it.coreCharge),
       productId: it.productId,
       variantId: it.variantId,
     }));
+    // Each line's cost, from the quote line it was made from, so the invoice
+    // shows the margin the quote did. None from any other order (issue 086).
+    const costs = quoteCostsForItems(items, quote?.lines ?? []);
 
     const created = await tx.billingDocument.create({
       data: {
@@ -334,13 +411,18 @@ export async function createInvoiceForOrder(
         stageId: stage.id,
         orderId: order.id,
         customerId: order.customerId,
+        // The wholesale account the quote billed, so the invoice is that
+        // business's debt and its payment terms apply (issue 077).
+        companyId: quote?.companyId ?? null,
         currency: order.currency,
         taxRate: taxRateFrom(items),
         // Frozen on the order at checkout, so this is where the goods actually
         // went — not wherever the customer record points today. Translated into
         // the invoice's own party shape on the way across; see `partyFromOrder`.
-        billTo: partyFromOrder(
+        // An order made from a quote has no address and takes the quote's.
+        billTo: invoiceParty(
           (order.billingAddress ?? order.shippingAddress ?? null) as FrozenAddress | null,
+          quote?.billTo ?? null,
           customerName,
           order.customer?.email ?? null
         ) as never,
@@ -353,6 +435,14 @@ export async function createInvoiceForOrder(
         surchargeTotal: Number(order.surchargeTotal),
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
         notes: `For order ${order.orderNumber}.`,
+        // The buyer's PO number, from checkout or from the quote the order was
+        // made from. Without it an accounts department has nothing to match the
+        // invoice against, and a business on account does not pay what it
+        // cannot match (issue 077).
+        metadata: withPoNumber(
+          {},
+          poNumberOf(order.metadata) ?? poNumberOf(quote?.metadata)
+        ) as never,
       },
     });
 
@@ -370,7 +460,7 @@ export async function createInvoiceForOrder(
         data: {
           tenantId: ctx.tenantId,
           documentId: created.id,
-          description: it.sku ? `${it.name} (${it.sku})` : it.name,
+          description: invoiceLineName(it.name, it.sku),
           quantity: it.quantity,
           unitPrice: it.unitPrice,
           discountAmount: it.discountAmount,
@@ -380,8 +470,11 @@ export async function createInvoiceForOrder(
           lineSubtotal: it.lineSubtotal,
           taxAmount: it.taxAmount,
           lineTotal: it.lineSubtotal + it.taxAmount,
+          // The deposit the order took, billed as the order billed it (sparx 051).
+          coreCharge: it.coreCharge,
           productId: it.productId,
           variantId: it.variantId,
+          costCents: costs[index] ?? null,
           sortOrder: index,
         },
       });

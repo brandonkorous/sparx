@@ -84,10 +84,15 @@ export const SubmitPaymentInput = z.object({
   paymentProviderSlug: z.string().min(1).max(63).optional(),
   // The provider's payment intent / setup intent reference.
   paymentRef: z.string().min(1).max(255).optional(),
-  // B2B: PO number + requested net terms — a "bill to account" submission
-  // requests one of these instead of a card.
+  // B2B: PO number + "bill to my account" — a "bill to account" submission
+  // requests one of these instead of a card. The terms value is only the
+  // signal: the order is written on the ACCOUNT's own terms, whatever is sent
+  // here (issue 082), so any terms the account itself may hold are accepted.
   poNumber: z.string().max(63).nullish(),
-  paymentTermsRequested: z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']).nullish(),
+  paymentTermsRequested: z
+    .string()
+    .regex(/^(prepay|net\d{1,3})$/)
+    .nullish(),
 });
 export type SubmitPaymentInput = z.infer<typeof SubmitPaymentInput>;
 
@@ -127,6 +132,18 @@ export const CheckoutSessionSnapshot = z.object({
   // 'net30') — lets the storefront hide "bill to account" for a prepay
   // account instead of offering net terms it isn't entitled to.
   b2bAccountPaymentTerms: z.string().optional(),
+  // Who will be asked to sign this order off if it is placed as it stands, so
+  // the buyer is told BEFORE they place it rather than after (sparx persona
+  // issue 087). Absent when no spending limit covers it. The credit limit is
+  // not foreseen here: it depends on how they pay.
+  approvalPreview: z
+    .object({
+      waitingOn: z.array(z.enum(['account', 'business'])),
+      /** Names, oldest first. Empty unless the account is asked. */
+      accountApprovers: z.array(z.string()),
+      limitCents: z.number().int(),
+    })
+    .optional(),
   shippingAddress: AddressSnapshot.optional(),
   billingAddress: AddressSnapshot.optional(),
   shippingProviderSlug: z.string().optional(),
@@ -171,6 +188,9 @@ export const CheckoutSessionSnapshot = z.object({
     surchargeTotalCents: MoneyCents,
     giftCardAppliedCents: MoneyCents,
     accountCreditAppliedCents: MoneyCents,
+    // Refundable core deposits on rebuilt parts. Included in totalCents; never
+    // discounted, taxed or surcharged.
+    coreChargeTotalCents: MoneyCents,
     totalCents: MoneyCents,
   }),
   /**

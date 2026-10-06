@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { faDiagramProject, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -33,6 +33,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('crm.pipelines.list');
   const [search, setSearch] = useState('');
   const [scope, setScope] = useState<'active' | 'all'>('active');
 
@@ -56,7 +57,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'New process',
+    label: createLabel,
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -83,7 +84,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New process: hold Shift to open alongside, Alt for a new window"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />

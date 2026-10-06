@@ -478,7 +478,14 @@ function TierEditor({
                 }
               />
               <FieldDescription>
-                The smallest order this group&apos;s prices apply to. Leave at zero for no minimum.
+                {/* What the minimum DOES: checkout refuses a smaller order from these
+                    businesses, and their cart says how much more they need (sparx
+                    persona issue 086). It used to say the group's prices applied only
+                    above it, which nothing ever did. */}
+                The smallest order a business in this group can place on your website, counted on
+                the goods after any savings, before delivery and tax. Below it, their cart says how
+                much more they need and checkout will not take the order. Leave at zero for no
+                minimum.
               </FieldDescription>
             </Field>
           </FormSection>

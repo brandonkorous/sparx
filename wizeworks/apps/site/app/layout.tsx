@@ -503,6 +503,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={pageLanguage}
       data-theme={initialTheme}
+      // globals.css scrolls the page smoothly for in-page links. This tells Next
+      // to turn that off while it changes page, so a new page starts at the top
+      // at once instead of gliding there (Next's own dev warning, seen during
+      // sparx persona issue 086).
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >

@@ -45,6 +45,7 @@ import {
   DialogTitle,
   Field,
   FieldControl,
+  FieldError,
   FieldLabel,
   Heading,
   Input,
@@ -67,6 +68,8 @@ import { PaneScope } from '../../lib/dock/window-boundary';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingTimeline } from './booking-timeline';
 import { SaveFailure } from '@/components/save-failure';
+import { thisComputersTimezone } from '../../lib/business-timezone';
+import { instantFromWall, wallClockHint, wallProblem, wallValue } from '../../lib/wall-clock';
 import {
   bookingResourceLabel,
   bookingStateMeta,
@@ -74,9 +77,7 @@ import {
   bookingWhoLabel,
   formatClock,
   formatWhen,
-  fromLocalInputValue,
   isTerminalBooking,
-  toLocalInputValue,
   useBooking,
   useCustomer,
   type Booking,
@@ -240,12 +241,16 @@ function LoadedModal({
   const cancel = useCancel(id);
   const reschedule = useReschedule(id);
 
-  // The pending new time. Re-seeds from the booking whenever its start moves, so
-  // after a successful reschedule the field shows the time it now sits at.
-  const [when, setWhen] = useState(() => toLocalInputValue(booking.startAt));
+  // The pending new time, on the booking's OWN clock, the one its block, its
+  // header and the customer's emails use (sparx persona issue 086). Re-seeds from
+  // the booking whenever its start moves, so after a successful reschedule the
+  // field shows the time it now sits at.
+  const zone = booking.timezone;
+  const startWall = wallValue(booking.startAt, zone);
+  const [when, setWhen] = useState(startWall);
   useEffect(() => {
-    setWhen(toLocalInputValue(booking.startAt));
-  }, [booking.startAt]);
+    setWhen(startWall);
+  }, [startWall]);
 
   const state = bookingStateMeta(booking.status);
   const terminal = isTerminalBooking(booking.status);
@@ -257,8 +262,9 @@ function LoadedModal({
   const canReschedule = booking.status === 'requested' || booking.status === 'confirmed';
   const duration = durationLabel(booking);
 
-  const movedTo = fromLocalInputValue(when);
-  const canMove = movedTo !== null && movedTo !== booking.startAt && !reschedule.isPending;
+  const movedTo = instantFromWall(when, zone);
+  const whenProblem = wallProblem(when, zone);
+  const canMove = movedTo !== null && when !== startWall && !reschedule.isPending;
 
   const anyPending =
     confirm.isPending ||
@@ -432,16 +438,16 @@ function LoadedModal({
         {canReschedule ? (
           <Section
             title="Move it"
-            description="Shown in your own time zone. A time that clashes or falls outside opening hours is refused, and nothing changes."
+            description={`${wallClockHint(zone, thisComputersTimezone())} A time that clashes or falls outside opening hours is refused, and nothing changes.`}
           >
             <div className="flex flex-wrap items-end gap-3">
-              <Field className="min-w-0">
+              <Field className="min-w-0" invalid={whenProblem !== null}>
                 <FieldLabel>New start</FieldLabel>
                 <FieldControl
                   render={
                     <Input
                       type="datetime-local"
-                      color="module"
+                      color={whenProblem ? 'error' : 'module'}
                       className="max-w-xs"
                       value={when}
                       onChange={(domEvent) => {
@@ -450,6 +456,7 @@ function LoadedModal({
                     />
                   }
                 />
+                {whenProblem ? <FieldError match>{whenProblem}</FieldError> : null}
               </Field>
               <Button
                 size="sm"

@@ -42,6 +42,7 @@ import { ModuleScope } from '../../components/module-scope';
 import { getSurface } from '../surfaces/registry';
 import { useWorkbench } from '../workbench/context';
 import { usePaneDirty } from '../workbench/dirty';
+import { TabGlyph } from './tab-glyph';
 import { useOwnerWindowBody } from './window-boundary';
 import { useCopyLink, usePaneLink } from '../../components/copy-pane-link';
 
@@ -120,7 +121,6 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
   const canSplit = hasOthers && controller.capabilities().split;
   const inPopout = location === 'popout';
 
-  const Icon = definition?.icon;
   const dirty = usePaneDirty(paneId);
 
   // Shared with the toolbar control so the two can never hand out different
@@ -171,17 +171,16 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
           {/* On the active tab the fill IS the module hue, so a module-colored glyph
               would be invisible on it — the icon switches to the on-fill ink, the
               same pair the label uses. */}
-          {Icon ? (
-            <Icon
-              className={`size-3.5 shrink-0 ${active ? 'text-module-content' : 'text-module'}`}
-              aria-hidden
-            />
-          ) : (
-            <span
-              className={`rounded-selector size-1.5 shrink-0 ${active ? 'bg-module-content' : 'bg-module'}`}
-              aria-hidden
-            />
-          )}
+          <TabGlyph
+            descriptor={descriptor}
+            className={`size-3.5 shrink-0 ${active ? 'text-module-content' : 'text-module'}`}
+            fallback={
+              <span
+                className={`rounded-selector size-1.5 shrink-0 ${active ? 'bg-module-content' : 'bg-module'}`}
+                aria-hidden
+              />
+            }
+          />
 
           {/* `title` gives the full name back when the tab is too narrow to show it,
               which in a dock is most of the time. */}

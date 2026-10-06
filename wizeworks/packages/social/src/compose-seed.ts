@@ -17,6 +17,7 @@
 // drag executors into every transport that wants to seed a draft.
 
 import { withTenant } from '@wizeworks/db';
+import { resolveSiteOrigin, siteShowingRow, siteUrl } from '@wizeworks/db/site-origin';
 
 import type { SocialContext } from './context.js';
 
@@ -53,33 +54,27 @@ function summarize(html: string, max = 200): string {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** The site's public base URL — the canonical host on record, whichever zone the
- *  tenant's brand mints in. Best-effort: without one the seed simply carries no
- *  link and the person adds it. */
+/** The public base URL of the site a seeded link opens on, and that site's id.
+ *
+ *  The address comes from the one resolver every customer-facing link uses
+ *  (`@wizeworks/db/site-origin`): the site's own domain once it works, else the
+ *  subdomain it was minted on, in the zone the tenant was provisioned in. This used
+ *  to be a second copy of that question with its own order and no answer for a site
+ *  whose domain row was missing (sparx persona issue 064: two answers to one
+ *  question). The site is one that SHOWS the thing: the one it is pinned to, else
+ *  the primary for something shown everywhere, else the first site it is scoped to. */
 async function siteBaseUrl(
   tx: Parameters<Parameters<typeof withTenant>[1]>[0],
-  propertyId: string | null
-): Promise<{ base: string | null; propertyId: string | null }> {
-  const property = propertyId
-    ? await tx.property.findUnique({ where: { id: propertyId }, select: { id: true, slug: true } })
-    : await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true, slug: true } });
-  if (!property) return { base: null, propertyId: null };
-
-  const domain = await tx.domain.findFirst({
-    where: { propertyId: property.id, status: { in: ['active', 'verified'] } },
-    // Canonical first, then a real custom/purchased domain before the subdomain
-    // ('custom' < 'purchased' < 'subdomain' alphabetically).
-    orderBy: [{ isCanonical: 'desc' }, { type: 'asc' }],
-    select: { host: true },
-  });
-  // No constructed fallback. Every property has a Domain row from the moment it
-  // is provisioned, so `null` here means the row is genuinely missing — and
-  // `${slug}.sparx.zone` was not a recovery from that, it was a guess that named
-  // one brand's zone for tenants of every brand. Returning null lets the caller
-  // skip the link; inventing a host mails somebody a dead one on the wrong
-  // platform.
-  if (!domain?.host) return { base: null, propertyId: property.id };
-  return { base: `https://${domain.host}`, propertyId: property.id };
+  tenantId: string,
+  linkedSiteIds: string[],
+  pinned: string | null
+): Promise<{ base: string; propertyId: string | null }> {
+  const siteId = siteShowingRow(linkedSiteIds, pinned);
+  const property = siteId
+    ? await tx.property.findUnique({ where: { id: siteId }, select: { id: true } })
+    : await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } });
+  const base = await resolveSiteOrigin(tx, tenantId, property?.id ?? null);
+  return { base, propertyId: property?.id ?? null };
 }
 
 /**
@@ -118,14 +113,19 @@ export async function buildComposeSeed(
       // a product visible everywhere shouldn't silently claim a site.
       const pinned =
         product.propertyLinks.length === 1 ? (product.propertyLinks[0]?.propertyId ?? null) : null;
-      const { base, propertyId } = await siteBaseUrl(tx, pinned);
+      const { base, propertyId } = await siteBaseUrl(
+        tx,
+        ctx.tenantId,
+        product.propertyLinks.map((l) => l.propertyId),
+        pinned
+      );
       const hero = product.ogImageId ?? product.images[0]?.mediaAssetId ?? null;
       const summary = summarize(product.description ?? '');
 
       return {
         title: product.title,
         body: summary ? `${product.title}\n\n${summary}` : product.title,
-        link: base ? `${base}/products/${encodeURIComponent(product.handle)}` : null,
+        link: siteUrl(base, `/products/${encodeURIComponent(product.handle)}`),
         mediaAssetIds: hero && UUID_RE.test(hero) ? [hero] : [],
         source: 'product',
         sourceRef: product.id,
@@ -152,14 +152,19 @@ export async function buildComposeSeed(
         collection.propertyLinks.length === 1
           ? (collection.propertyLinks[0]?.propertyId ?? null)
           : null;
-      const { base, propertyId } = await siteBaseUrl(tx, pinned);
+      const { base, propertyId } = await siteBaseUrl(
+        tx,
+        ctx.tenantId,
+        collection.propertyLinks.map((l) => l.propertyId),
+        pinned
+      );
       const summary = summarize(collection.description ?? '');
       const hero = collection.ogImageId ?? collection.heroMediaId ?? null;
 
       return {
         title: collection.name,
         body: summary ? `${collection.name}\n\n${summary}` : collection.name,
-        link: base ? `${base}/collections/${encodeURIComponent(collection.handle)}` : null,
+        link: siteUrl(base, `/collections/${encodeURIComponent(collection.handle)}`),
         mediaAssetIds: hero ? [hero] : [],
         source: 'collection',
         sourceRef: collection.id,
@@ -197,7 +202,12 @@ export async function buildComposeSeed(
 
     const pinned =
       entry.propertyLinks.length === 1 ? (entry.propertyLinks[0]?.propertyId ?? null) : null;
-    const { base, propertyId } = await siteBaseUrl(tx, pinned);
+    const { base, propertyId } = await siteBaseUrl(
+      tx,
+      ctx.tenantId,
+      entry.propertyLinks.map((l) => l.propertyId),
+      pinned
+    );
     // Without a pattern fall back to `<base>/<slug>`, which is what the storefront
     // serves anyway.
     const path = contentType?.urlPattern
@@ -207,7 +217,7 @@ export async function buildComposeSeed(
     return {
       title,
       body: summary ? `${title}\n\n${summary}` : title,
-      link: base && entry.slug ? `${base}${path.startsWith('/') ? path : `/${path}`}` : null,
+      link: entry.slug ? siteUrl(base, path) : null,
       mediaAssetIds: hero && UUID_RE.test(hero) ? [hero] : [],
       source: 'content',
       sourceRef: entry.id,

@@ -97,6 +97,13 @@ function clamp(value: number, limit: number): number {
   return Math.max(0, Math.min(value, limit));
 }
 
+/** The whole VISIBLE frame, in canvas coordinates: "fill the workspace" for one
+ *  window. Not zoomed: a filled window is as big as what you can see, whatever the
+ *  zoom, which is the point of filling it. */
+export function fillBox(view: FloatViewport): FloatBox {
+  return { x: view.scrollLeft, y: view.scrollTop, width: view.width, height: view.height };
+}
+
 /** Where the `index`-th window of a cascade goes, in canvas coordinates. */
 export function cascadeBox(view: FloatViewport, index: number): FloatBox {
   const area = frame(view);

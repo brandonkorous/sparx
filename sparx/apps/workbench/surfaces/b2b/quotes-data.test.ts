@@ -12,6 +12,7 @@ import {
   quoteBusiness,
   quoteEmptyAdvice,
   quoteParty,
+  quoteRequestRows,
   quoteTone,
   type QuoteRow,
 } from './quotes-data';
@@ -28,6 +29,8 @@ function quote(over: Partial<QuoteRow> = {}): QuoteRow {
     currency: 'USD',
     validUntil: null,
     customerNote: null,
+    poNumber: null,
+    delivery: null,
     stage: { id: 's-1', name: 'Draft', customerLabel: 'Draft', stageType: 'draft' },
     lines: [],
     createdAt: '2026-09-20T10:00:00Z',
@@ -121,5 +124,39 @@ describe('what to try when nothing matched', () => {
     // A chip gathers several stages at once, so "no quotes marked Not answered"
     // would send her down a table looking for words it does not print.
     expect(quoteEmptyAdvice('', 'Not answered')).not.toMatch(/marked/i);
+  });
+});
+
+// What a trade buyer said when they sent the request: their PO number, and when
+// and where they need it (sparx persona issue 086). The business prices a job
+// differently for a truck yard next Tuesday than for a counter pickup.
+describe('what the buyer asked for besides the items', () => {
+  it('lists the PO number and the delivery needs, in the order the buyer reads them', () => {
+    const rows = quoteRequestRows(
+      quote({
+        poNumber: 'WFUC-24-0901',
+        delivery: { neededBy: '2026-10-20', deliverTo: 'Yard 2', notes: 'Forklift on site' },
+      })
+    );
+    expect(rows.map((r) => r.label)).toEqual([
+      'Their PO number',
+      'Needed by',
+      'Deliver to',
+      'Delivery notes',
+    ]);
+    expect(rows[0]?.value).toBe('WFUC-24-0901');
+    expect(rows[2]?.value).toBe('Yard 2');
+  });
+
+  it('reads the needed-by day as that calendar day wherever the reader is', () => {
+    const rows = quoteRequestRows(
+      quote({ delivery: { neededBy: '2026-10-20', deliverTo: null, notes: null } })
+    );
+    expect(rows).toEqual([{ label: 'Needed by', value: expect.stringContaining('20') }]);
+    expect(rows[0]?.value).toMatch(/Oct/);
+  });
+
+  it('shows nothing it was not told', () => {
+    expect(quoteRequestRows(quote())).toEqual([]);
   });
 });

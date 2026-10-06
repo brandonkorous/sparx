@@ -30,13 +30,15 @@ const FOOTER_LABEL: Partial<Record<MarketingModule, string>> = {
  * vertical/stacking variant, which broke two ways and scrolled the page
  * sideways:
  *
- *   • `grid-flow-row` (→ `xl:grid-flow-col`) makes it actually stack. Left
- *     alone the link columns stay in ONE row at every width and run off narrow
- *     screens. The breakpoint is `xl` because the six columns plus the brand
- *     aside measure ~1085px — `lg` (1024) is measurably too narrow for them.
- *     Below that the explicit 1 → 2 → 3 column tracks keep a tablet from
- *     reading one endless ~60-link ribbon.
- *   • `grid-cols-1` (→ `xl:grid-cols-none`, back to auto) is the one that fixes
+ *   • `grid-flow-row` makes it actually stack, at EVERY width. Left alone the
+ *     link columns stay in ONE row and run off the screen. This used to flip to
+ *     a single row at `xl`, sized for six columns plus the brand aside
+ *     (~1085px). A seventh column made that row ~1620px, so every desktop
+ *     between 1280px and ~1620px scrolled sideways (sparx persona issue 001).
+ *     Explicit 1 → 2 → 3 → 4 column tracks hold any number of columns: the
+ *     aside and seven columns lay out as two rows of four at `xl`, and a new
+ *     column adds a row instead of a scrollbar.
+ *   • `grid-cols-1` (and the explicit tracks after it) is the one that fixes
  *     the legal bar. The flow direction was never the bar's problem —
  *     `grid-auto-columns: max-content` sizes its implicit column to the
  *     UNWRAPPED domain list (~1330px) no matter which way the grid flows, so
@@ -178,7 +180,7 @@ export function Footer() {
     <div className="relative">
       <SparkFooterPeek />
 
-      <SilicaFooter className="bg-base-100 border-base-300 relative z-10 grid-flow-row grid-cols-1 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-flow-col xl:grid-cols-none">
+      <SilicaFooter className="bg-base-100 border-base-300 relative z-10 grid-flow-row grid-cols-1 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-cols-4">
         <aside className="flex w-full max-w-[340px] min-w-60 flex-col gap-5">
           <Wordmark size={48} />
           <Text className="text-sm">

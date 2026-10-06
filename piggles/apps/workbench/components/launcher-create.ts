@@ -29,6 +29,8 @@ export interface CreatableSurface {
   module: string;
   createSurface?: string;
   createParams?: SurfaceParams;
+  /** The screen's own search words, which its `+` answers to as well. */
+  keywords?: readonly string[];
 }
 
 export interface CreateAction<S extends CreatableSurface = CreatableSurface> {
@@ -41,7 +43,9 @@ export interface CreateAction<S extends CreatableSurface = CreatableSurface> {
   /** What to open, and with what. */
   createSurface: string;
   params: SurfaceParams;
-  /** The screen's own name, so "special prices" finds "Add a special price". */
+  /** The screen's own name and search words, so "special prices" finds "Add a
+   *  special price", and "new social post" finds "New post" on a screen whose
+   *  words include "social" (sparx persona issue 036). */
   keywords: string[];
 }
 
@@ -71,7 +75,7 @@ export function createActions<S extends CreatableSurface>(
       label,
       createSurface,
       params,
-      keywords: [titleFor(surface)],
+      keywords: [titleFor(surface), ...(surface.keywords ?? [])],
     });
   }
   return out;

@@ -46,6 +46,10 @@ export interface HoldRule {
   /** The one account this limit is for, or null when it covers
    *  everybody. A limit on one account holds nothing of anybody else's. */
   accountName: string | null;
+  /** Who signs what this limit holds: the business's team, or the account's
+   *  own approvers on the site (sparx persona issue 087). Absent reads as the
+   *  team, which is what every limit did before. */
+  signOffBy?: 'business' | 'account';
 }
 
 /** "every order" rather than "over $0.00" — a zero limit holds everything, and
@@ -73,15 +77,38 @@ function lowestLive(rules: HoldRule[]): HoldRule | null {
 
 /** The second sentence for a set of limits that covers nobody in general. It is
  *  the fact she is most likely to get wrong, so it is said rather than implied. */
-const NOBODY_ELSE = ' No other account’s order is held, however large.';
+const NOBODY_ELSE = ' No other account’s order is held for its size, however large.';
+
+// ── THE CREDIT LIMIT HOLDS TOO (sparx persona issue 085) ────────────────────
+//
+// An order that would take an account past its credit limit waits here for a
+// yes, whatever the limits below say: the /b2b page promises it, and the
+// checkout and an accepted quote both do it now. So every one of these
+// sentences ends by saying so. "No order is being held, however large" was
+// true of the spending limits and false of the queue, and the queue is what
+// the sentence is about.
+const CREDIT_TOO =
+  ' An order that would take an account past its credit limit still waits here for your yes.';
+
+// ── NOT EVERY HELD ORDER IS YOURS TO SIGN (sparx persona issue 087) ─────────
+//
+// A limit can be signed off by the account's own approvers instead of your
+// team. Those orders still land here, so you can follow them and turn one
+// down, but the yes is theirs. "Waits here for your yes" would be wrong about
+// exactly the orders those limits hold, so the sentence says whose it is.
+const THEIRS_TOO =
+  ' Where a limit is signed off by the account’s own approvers, the order waits here for ' +
+  'them instead, so you can follow it.';
 
 export function holdQueueNotice(rules: HoldRule[]): HoldNotice {
   if (rules.length === 0) {
     return {
       title: 'Nothing waiting, and nothing set to wait',
       detail:
-        'No order will be held for sign-off, because you have not set a limit yet. ' +
-        'Add one below and any order over it waits here for your yes.',
+        'No order is held for its size, because you have not set a limit yet. ' +
+        'Add one below and any order over it waits here for a yes, from your team or from ' +
+        'the account’s own approvers.' +
+        CREDIT_TOO,
     };
   }
 
@@ -93,17 +120,20 @@ export function holdQueueNotice(rules: HoldRule[]): HoldNotice {
         title: 'Your limit is switched off',
         detail:
           'You have one limit set below and it is switched off, so no order is being held for ' +
-          'sign-off, however large. Use the switch beside it to turn it on.',
+          'its size, however large. Use the switch beside it to turn it on.' +
+          CREDIT_TOO,
       };
     }
     return {
       title: 'Your limits are switched off',
       detail:
         `All ${String(rules.length)} of the limits set below are switched off, so no order is ` +
-        'being held for sign-off, however large. Use the switch beside a limit to turn it on.',
+        'being held for its size, however large. Use the switch beside a limit to turn it on.' +
+        CREDIT_TOO,
     };
   }
 
+  const theirs = live.some((rule) => rule.signOffBy === 'account') ? THEIRS_TOO : '';
   const opening = 'No orders are held for sign-off right now. You are holding ';
   const closing = ', so the next one lands here.';
 
@@ -119,16 +149,57 @@ export function holdQueueNotice(rules: HoldRule[]): HoldNotice {
         ? `${opening}${overWhatFrom(onlyNamed)}${closing}${NOBODY_ELSE}`
         : `${opening}orders from ${String(named.length)} accounts, each over a limit ` +
           `of its own${closing}${NOBODY_ELSE}`;
-    return { title: 'Nothing waiting', detail };
+    return { title: 'Nothing waiting', detail: `${detail}${theirs}${CREDIT_TOO}` };
   }
 
   if (named.length === 0) {
-    return { title: 'Nothing waiting', detail: `${opening}${overWhat(blanket)}${closing}` };
+    return {
+      title: 'Nothing waiting',
+      detail: `${opening}${overWhat(blanket)}${closing}${theirs}${CREDIT_TOO}`,
+    };
   }
 
   const extra =
     onlyNamed !== null
       ? `, and ${overWhatFrom(onlyNamed)}`
       : `, and ${String(named.length)} accounts have a limit of their own`;
-  return { title: 'Nothing waiting', detail: `${opening}${overWhat(blanket)}${extra}${closing}` };
+  return {
+    title: 'Nothing waiting',
+    detail: `${opening}${overWhat(blanket)}${extra}${closing}${theirs}${CREDIT_TOO}`,
+  };
+}
+
+// ── WHY ONE ORDER IS WAITING ────────────────────────────────────────────────
+//
+// A held order used to say nothing about why. Now it can be held for two
+// reasons, and they ask different things of the person signing: a spending
+// limit asks "is an order this big right for them?", the credit limit asks
+// "are we happy to be owed this much more?". The order carries both when both
+// apply (account-order-gate.ts, sparx persona issue 085).
+
+/** One reason a queued order is waiting, as the API sends it. An order held
+ *  before reasons were recorded has none, and says nothing rather than guess. */
+export type QueueHoldReason =
+  | { kind: 'approval_rule'; limitCents: number | null }
+  | { kind: 'over_credit_limit'; orderTotal: number; creditLeft: number; currency: string };
+
+/** The sentence for one reason. `money` formats cents in the order's currency. */
+export function holdReasonWords(
+  reason: QueueHoldReason,
+  money: (cents: number, currency: string) => string,
+  currency: string
+): string {
+  if (reason.kind === 'over_credit_limit') {
+    const left =
+      reason.creditLeft > 0
+        ? `has ${money(Math.round(reason.creditLeft * 100), reason.currency)} of credit left`
+        : 'has no credit left';
+    return `Over the credit limit: it comes to ${money(
+      Math.round(reason.orderTotal * 100),
+      reason.currency
+    )} and the account ${left}.`;
+  }
+  if (reason.limitCents === null) return 'Over a spending limit you set.';
+  if (reason.limitCents <= 0) return 'You hold every order from them for sign-off.';
+  return `Over your ${money(reason.limitCents, currency)} spending limit.`;
 }

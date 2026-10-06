@@ -11,7 +11,7 @@
 // the lifecycle transaction, where the prior time is still known.
 
 import type { Prisma } from '@wizeworks/db';
-import { withTenant } from '@wizeworks/db';
+import { withTenant, type TxClient } from '@wizeworks/db';
 
 export type BookingAuditAction =
   | 'booking.created'
@@ -21,7 +21,23 @@ export type BookingAuditAction =
   | 'booking.cancelled'
   | 'booking.checked_in'
   | 'booking.completed'
-  | 'booking.no_show';
+  | 'booking.no_show'
+  | typeof BOOKING_PAYMENT_SETTLED
+  | typeof BOOKING_PAYMENT_NOT_SETTLED;
+
+/**
+ * What happened to the card when the booking ended (sparx persona issue 087).
+ * Written by the gateway half (`bookingPayments` in @wizeworks/commerce), which
+ * cannot import this package, so the two names are pinned against its copies by
+ * a test in api-rest, the one place that carries both.
+ *
+ * The deposit status alone cannot say it. A fee the card refused leaves the
+ * deposit `held`, which is where the money really is, and the console printed
+ * "$40.00 is held on their card" over a hold that might have lapsed and a fee
+ * nobody collected.
+ */
+export const BOOKING_PAYMENT_SETTLED = 'booking.payment_settled';
+export const BOOKING_PAYMENT_NOT_SETTLED = 'booking.payment_not_settled';
 
 export interface BookingTimelineEntry {
   id: string;
@@ -60,6 +76,55 @@ export async function recordBookingEvent(
   } catch (err) {
     console.error('[scheduling] booking history write failed', err);
   }
+}
+
+/** The last word on a booking's card, read off its history. `done` is whether
+ *  the gateway did what was asked; `reason` is its words when it did not. */
+export interface BookingPaymentRecord {
+  done: boolean;
+  /** capture_fee | release_hold | call_off | refund_deposit | keep_deposit */
+  move: string;
+  /** no_show | cancel | complete */
+  ending: string;
+  amountCents: number;
+  currency: string;
+  reason: string | null;
+  at: string;
+}
+
+/** The latest settlement of one booking's card, or null when it has none (not
+ *  ended yet, nothing to settle, or ended before settlements were written). */
+export async function latestBookingPayment(
+  tx: TxClient,
+  bookingId: string
+): Promise<BookingPaymentRecord | null> {
+  const row = await tx.auditLog.findFirst({
+    where: {
+      entityType: BOOKING_ENTITY,
+      entityId: bookingId,
+      action: { in: [BOOKING_PAYMENT_SETTLED, BOOKING_PAYMENT_NOT_SETTLED] },
+    },
+    orderBy: { createdAt: 'desc' },
+    select: { action: true, diff: true, createdAt: true },
+  });
+  if (!row) return null;
+  const diff = (row.diff ?? {}) as Record<string, unknown>;
+  const text = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v : null);
+  const move = text(diff.move);
+  const ending = text(diff.ending);
+  const currency = text(diff.currency);
+  const amountCents = typeof diff.amountCents === 'number' ? diff.amountCents : null;
+  // A record missing what it is about is not one: better none than a guess.
+  if (!move || !ending || !currency || amountCents == null) return null;
+  return {
+    done: row.action === BOOKING_PAYMENT_SETTLED,
+    move,
+    ending,
+    amountCents,
+    currency,
+    reason: text(diff.reason),
+    at: row.createdAt.toISOString(),
+  };
 }
 
 /** Per-customer booking reliability — the "is this a problematic client?" signal.

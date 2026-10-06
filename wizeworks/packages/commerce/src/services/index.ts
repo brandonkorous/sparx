@@ -19,6 +19,8 @@ export * as productTranslationService from './product-translation-service';
 export * as categoryService from './category-service';
 export * as collectionService from './collection-service';
 export * as fitmentService from './fitment-service';
+// Which products a bulk write acts on: ids, or the Products list's own narrowing.
+export * as productSelectionService from './product-selection';
 
 // Phase 2 — inventory. Extracted into its own first-class module/product
 // (@wizeworks/inventory, docs/100). Re-exported here so existing consumers
@@ -47,7 +49,26 @@ export type { BundleAvailability, BundleComponentAvailability } from './bundle-a
 // Phase 5 — cart, checkout, subscriptions, shipping, tax, providers
 export * as cartService from './cart-service';
 export type { CartSnapshot } from './cart-service';
+// What a trade account may order and who on it may order (sparx persona issue 086).
+export * as accountBuyingRules from './account-buying-rules';
+export type {
+  AccountOrdering,
+  CartAccountRules,
+  CartLineRule,
+  QuantityRule,
+} from './account-buying-rules';
+// Order again and saved carts for trade accounts (sparx persona issue 086).
+export * as cartRefillService from './cart-refill-service';
+export type { RefillLine, RefillResult, RefillSkipReason } from './cart-refill-service';
+export * as savedCartService from './saved-cart-service';
+export type { SavedCartView } from './saved-cart-service';
 export * as checkoutService from './checkout-service';
+// The gateway half of deciding a held wholesale order: charge the held card on
+// approval, let it go or refund it when it is turned down (sparx persona issue 087).
+export * as heldOrderPayments from './held-order-payments';
+// The gateway half of ending a booking: charge a no-show or late-cancellation fee
+// from the card hold, let it go, refund or keep a deposit (sparx persona issue 087).
+export * as bookingPayments from './booking-payments';
 export * as madeToOrderService from './made-to-order-service';
 
 // Channels (docs/106) — inbound marketplace order ingest (order + inventory).
@@ -66,6 +87,8 @@ export * as marketService from './market';
 export * as subscriptionService from './subscription-service';
 // The vault behind recurring charges — a shopper's saved cards (docs/142 §4).
 export * as paymentMethodService from './payment-method-service';
+// A paid checkout that asked for repeat delivery becomes a repeat order (issue 739).
+export * as repeatStartService from './repeat-start-service';
 // Collection: the off-session charge, the dunning ladder, invoice mode.
 export * as subscriptionBilling from './subscription-billing';
 export * as shippingService from './shipping-service';
@@ -93,6 +116,9 @@ export * as providerService from './provider-service';
 
 // Phase 5/7 — returns / RMA
 export * as returnService from './return-service';
+// Core charges on rebuilt parts: cores owed, returned, kept (persona issue 051).
+export * as coreService from './core-service';
+export * as coreChoiceService from './core-choice-service';
 // What actually happens to returned goods — restock / quarantine / repair /
 // scrap, each routed to its own shelf (docs/146 Phase 9.7).
 export * as returnDispositionService from './return-disposition';

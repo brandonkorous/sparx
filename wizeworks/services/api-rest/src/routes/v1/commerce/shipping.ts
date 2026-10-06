@@ -15,6 +15,16 @@ const ListQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
+/** Whose certificates: one customer, or one wholesale account. Never both, never neither. */
+const ExemptionHolderQuery = z
+  .object({
+    customer_id: z.string().uuid().optional(),
+    company_id: z.string().uuid().optional(),
+  })
+  .refine((q) => (q.customer_id ? 1 : 0) + (q.company_id ? 1 : 0) === 1, {
+    message: 'Pass exactly one of customer_id or company_id.',
+  });
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const shippingRoutes: FastifyPluginAsync = async (app) => {
   // Live-rate readiness — whether a connected carrier can actually produce live
@@ -197,6 +207,21 @@ const shippingRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await taxService.deleteRate(toCommerceContext(request), id);
     reply.code(204);
+  });
+
+  // The certificates on file for ONE customer or ONE wholesale account (the
+  // account id is its CRM company id). Exactly one of the two is required: a
+  // tenant-wide list would be a place nobody can add one, since a certificate
+  // only means anything against the buyer it belongs to. For a customer, the
+  // response also carries the account they buy for and ITS certificates, which
+  // checkout applies to them as well (issue 075).
+  app.get('/v1/commerce/tax/exemptions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = ExemptionHolderQuery.parse(request.query);
+    const ctx = toCommerceContext(request);
+    if (q.customer_id) return ok(await taxService.exemptionsForCustomer(ctx, q.customer_id));
+    return ok(await taxService.exemptionsForCompany(ctx, q.company_id ?? ''));
   });
 
   app.post('/v1/commerce/tax/exemptions', async (request, reply) => {

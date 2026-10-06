@@ -10,6 +10,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
  *  The alert prefers the assigned agent's email (`conversation.assignedToEmail`),
  *  falling back to the tenant notify address. Platform-level internal send. */
 export const CHAT_NO_RESPONSE_ALERT: SystemAutomationSpec = {
+  key: 'chat.no-response-alert',
   name: 'Unresponded chat alert',
   description: 'Emails staff when an open chat goes 10 minutes without a reply.',
   trigger: {
@@ -46,8 +47,16 @@ export const CHAT_NO_RESPONSE_ALERT: SystemAutomationSpec = {
  *  returns recently-resolved conversations; the predicate keeps only those with an
  *  emailable contact (an anonymous visitor with no captured email is skipped), and
  *  the 10-minute send delay lets the conversation settle first (docs/90 —
- *  `wait(10m)`). Transactional — a post-support survey, not marketing. */
+ *  `wait(10m)`).
+ *
+ *  Marketing, not transactional (Brandon, 2026-10-03). A survey asks the customer
+ *  for something; it is not something they need because of something they did.
+ *  So it follows the email module and honors a marketing unsubscribe and the
+ *  do-not-contact flag: a person who said "no more email from you" is not asked
+ *  how their chat went. It was declared transactional before the email module
+ *  gate read this type. */
 export const CHAT_SATISFACTION_SURVEY: SystemAutomationSpec = {
+  key: 'chat.satisfaction-survey',
   name: 'Chat satisfaction survey',
   description: 'Emails the customer a short survey ten minutes after a chat is resolved.',
   trigger: {
@@ -70,7 +79,7 @@ export const CHAT_SATISFACTION_SURVEY: SystemAutomationSpec = {
       type: 'email.send_campaign',
       config: {
         builderEmailKey: 'chat-satisfaction',
-        emailType: 'transactional',
+        emailType: 'marketing',
         delaySeconds: 600,
       },
     },

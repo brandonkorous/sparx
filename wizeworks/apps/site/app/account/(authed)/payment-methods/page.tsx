@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
+import { REPEAT_AMOUNT_EXTRA } from '@/lib/repeat-copy';
 import {
   getMySubscriptions,
   getSavedCards,
@@ -238,7 +239,7 @@ export default function PaymentMethodsPage() {
               <div className="flex flex-col gap-1">
                 <span className="font-medium">
                   {money(sub.cycleAmountCents, sub.currency)}{' '}
-                  {cadence(sub.intervalUnit, sub.intervalCount)} ·{' '}
+                  {cadence(sub.intervalUnit, sub.intervalCount)} {REPEAT_AMOUNT_EXTRA} ·{' '}
                   {sub.itemCount === 1 ? '1 item' : `${String(sub.itemCount)} items`}
                 </span>
                 <span className="text-sm">

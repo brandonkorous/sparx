@@ -675,3 +675,96 @@ describe('upgradeFrameChrome — social links', () => {
     expect(JSON.stringify(frame)).toBe(before);
   });
 });
+
+describe('upgradeFrameChrome — the footer line under the business name', () => {
+  const PITCH = 'Everything you publish and sell, in one place.';
+
+  /** Gillett Diesel's stored footer, read off `builder_layouts` (sparx persona issue
+   *  046): the identity column holds the name and a `p.max-w-xs` with the platform's
+   *  pitch, cloned from the golden design. */
+  const footerWith = (blurb: Node, outside: Node | null = null): Node =>
+    el('div', 'min-h-screen flex flex-col bg-base-100', {
+      children: [
+        el('header', '', { children: [el('nav', 'navbar', { children: [] })] }),
+        el('main', 'flex-1', { children: [{ kind: 'outlet' }, ...(outside ? [outside] : [])] }),
+        el('footer', 'bg-base-200', {
+          children: [
+            el('div', 'grid gap-10', {
+              children: [
+                el('div', 'flex flex-col gap-3', {
+                  children: [
+                    el('span', 'font-semibold', { text: 'Gillett Diesel Service' }),
+                    blurb,
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+  const findBlurb = (node: Node): Extract<Node, { kind: 'element' }> | null => {
+    if (node.kind !== 'element') return null;
+    if (node.tag === 'p' && node.class?.includes('max-w-xs')) return node;
+    for (const c of node.children ?? []) {
+      if (typeof c === 'string') continue;
+      const hit = findBlurb(c);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  const footerBlurb = (root: Node) => {
+    const footer = (root.kind === 'element' ? (root.children ?? []) : []).find(
+      (c): c is Extract<Node, { kind: 'element' }> =>
+        typeof c !== 'string' && c.kind === 'element' && c.tag === 'footer'
+    );
+    return footer ? findBlurb(footer) : null;
+  };
+
+  it('binds the platform’s pitch to the owner’s tagline, with a plain fallback', () => {
+    const { root, changed } = upgradeFrameChrome(
+      footerWith(el('p', 'max-w-xs text-sm text-base-content', { text: PITCH }))
+    );
+    expect(changed).toBe(true);
+    const blurb = footerBlurb(root);
+    expect(blurb?.data).toEqual({ kind: 'value', ref: 'site.identity.tagline' });
+    expect(blurb?.children).toEqual(['Glad you found us. Get in touch any time.']);
+    // The author's styling stays.
+    expect(blurb?.class).toBe('max-w-xs text-sm text-base-content');
+  });
+
+  it('leaves a line the owner wrote alone', () => {
+    const own = footerWith(el('p', 'max-w-xs', { text: 'Diesel Done Right Since 1986!' }));
+    const { root } = upgradeFrameChrome(own);
+    expect(footerBlurb(root)?.data).toBeUndefined();
+    expect(footerBlurb(root)?.children).toEqual(['Diesel Done Right Since 1986!']);
+  });
+
+  it('leaves a line the owner already bound to something else alone', () => {
+    const bound = bind(el('p', 'max-w-xs', { text: PITCH }), 'site.identity.name');
+    const { root } = upgradeFrameChrome(footerWith(bound));
+    expect(footerBlurb(root)?.data).toEqual({ kind: 'value', ref: 'site.identity.name' });
+  });
+
+  it('does not touch the same sentence outside the footer', () => {
+    const page = el('p', 'max-w-xs', { text: PITCH });
+    const { root } = upgradeFrameChrome(footerWith(el('p', 'max-w-xs', { text: 'Ours.' }), page));
+    const main = root.kind === 'element' ? root.children?.[1] : undefined;
+    expect(JSON.stringify(main)).toContain(PITCH);
+    expect(JSON.stringify(main)).not.toContain('site.identity.tagline');
+  });
+
+  it('is idempotent', () => {
+    const once = upgradeFrameChrome(footerWith(el('p', 'max-w-xs', { text: PITCH })));
+    const twice = upgradeFrameChrome(once.root);
+    expect(twice.changed).toBe(false);
+  });
+
+  it('ships bound in the starter, so a new site never needs the repair', () => {
+    expect(JSON.stringify(starterFrame({ commerceEnabled: true }).root)).toContain(
+      '"ref":"site.identity.tagline"'
+    );
+  });
+});

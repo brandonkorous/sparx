@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { failingRows, importableRows, summarize, validateRows } from './validate';
+import { bringInLabel, failingRows, importableRows, summarize, validateRows } from './validate';
 
 describe('validateRows — file-level', () => {
   it('blocks a file whose required column is absent everywhere', () => {
@@ -142,6 +142,22 @@ describe('report helpers', () => {
       { email: 'alex@example.com' },
     ]);
     expect(summarize(many)).toBe('2 customers ready to import.');
+    // A product spans its versions: Gillett Diesel's file is 653 products in 787
+    // rows, and was called "787 products" (sparx persona issue 053).
+    const products = validateRows('products', [
+      { handle: 'injector', title: 'Injector', sku: '0986435621', price: '730.15' },
+      { handle: 'injector', title: 'Injector', sku: '0986435621-D', price: '600.00' },
+      { handle: 'o-ring', title: 'O-Ring', sku: '4062328', price: '4.32' },
+    ]);
+    expect(products.recordCount).toBe(2);
+    expect(summarize(products)).toBe('2 products in 3 versions ready to import.');
+    expect(bringInLabel([{ entity: 'products', report: products }])).toBe('Bring in 2 products');
+    expect(
+      bringInLabel([
+        { entity: 'products', report: products },
+        { entity: 'customers', report: many },
+      ])
+    ).toBe('Bring it all in');
 
     const blocked = validateRows('customers', [{ first_name: 'Sam' }]);
     expect(summarize(blocked)).toContain('cannot be imported yet');

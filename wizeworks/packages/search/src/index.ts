@@ -7,6 +7,7 @@ export * from './schemas';
 export * from './indexer';
 export * from './bulk';
 export * from './search';
+export * from './live-fields';
 export * from './admin';
 export * from './synonyms';
 export * from './keys';

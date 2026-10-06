@@ -13,7 +13,7 @@
 // today does not care which quarter-hour it is billed in — so the cadence is set
 // by how stale a "next charge" date is allowed to look, not by latency.
 
-import { subscriptionBilling, subscriptionService } from '../services';
+import { repeatStartService, subscriptionBilling, subscriptionService } from '../services';
 import type { CollectionResult } from '../services/subscription-billing';
 import { withTenant } from '@wizeworks/db';
 
@@ -49,6 +49,10 @@ export interface SubscriptionTickResult {
    * `due`.
    */
   skipped: number;
+  /** Paid checkouts whose repeat orders were started this pass (issue 739). */
+  repeatsStarted: number;
+  /** Paid checkouts still waiting for their card to be read; tried again next pass. */
+  repeatsWaiting: number;
   /** Anything that threw. The tick continues; the subscription is picked up
    *  again next pass because its date is still in the past. */
   errors: { subscriptionId: string; message: string }[];
@@ -81,8 +85,41 @@ export async function runSubscriptionTick(input: {
     actionRequired: 0,
     unbillable: 0,
     skipped: 0,
+    repeatsStarted: 0,
+    repeatsWaiting: 0,
     errors: [],
   };
+
+  // Start the repeat orders paid checkouts asked for, BEFORE billing what is due:
+  // a repeat order is never due on the pass that creates it (its first delivery
+  // was the order itself), so the order does not matter for correctness, and
+  // starting first means a shopper's repeat order is visible a pass sooner.
+  //
+  // A failure to FIND them is recorded and the pass goes on. It used to throw
+  // out of the tick, which stopped every renewal for the tenant behind it: a
+  // shop's existing repeat orders went unbilled because of a query about new
+  // ones.
+  let awaiting: string[] = [];
+  try {
+    awaiting = await repeatStartService.findOrdersAwaitingRepeat(ctx, limit);
+  } catch (err) {
+    result.errors.push({
+      subscriptionId: 'repeat-start',
+      message: err instanceof Error ? err.message : String(err),
+    });
+  }
+  for (const orderId of awaiting) {
+    try {
+      const started = await repeatStartService.startForOrder(ctx, orderId);
+      if (started.result === 'started') result.repeatsStarted += 1;
+      if (started.result === 'waiting') result.repeatsWaiting += 1;
+    } catch (err) {
+      result.errors.push({
+        subscriptionId: `order:${orderId}`,
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
 
   const dueIds = await subscriptionService.findDueOccurrences(ctx, asOf, limit);
   result.due = dueIds.length;

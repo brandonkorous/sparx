@@ -243,6 +243,27 @@ export function legalKindBlurb(legalKind: string): string {
   }
 }
 
+/** What the document is CALLED, for a sentence that names it — "your Privacy
+ *  Policy is live". Lower-cased at the call site where the grammar wants it. */
+export function legalKindTitle(legalKind: string): string {
+  switch (legalKind) {
+    case 'privacy':
+      return 'Privacy Policy';
+    case 'terms':
+      return 'Terms of Service';
+    case 'cookie-policy':
+      return 'Cookie Policy';
+    case 'returns':
+      return 'Return Policy';
+    case 'shipping':
+      return 'Shipping Policy';
+    case 'refund':
+      return 'Refund Policy';
+    default:
+      return 'policy page';
+  }
+}
+
 export interface LegalStatus {
   label: string;
   tone: Tone;
@@ -298,7 +319,7 @@ export function legalItemStatus(
           // current by any means. The action beside this row is what makes the
           // sentence keepable.
           `The starter wording has been updated since this page was made.${live ? ' Your live page still shows the older version.' : ''} You can take the new wording: what is on the page now is kept in its history.`
-        : 'This still uses the sparx starter wording. Read it through, make it fit your business, then mark it reviewed.',
+        : 'Not marked reviewed yet. It began as the sparx starter wording: read it through, make it fit your business, then mark it reviewed.',
       needsReview: true,
       stale,
     };

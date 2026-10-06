@@ -644,3 +644,11 @@ function spaced(children: ContentNode[], gap = 16): LayoutChild[] {
 export function copyBlock(children: ContentNode[]): SectionNode {
   return section(spaced(children));
 }
+
+/** A `copyBlock` shown only when `ref` resolves to something: the same spaced copy,
+ *  gated the way `when()` gates a block. It is how one email says the right thing
+ *  for each case of a record (a pickup order's heading, or a delivered one's),
+ *  with the copy still in the email where the owner can edit it. */
+export function copyWhen(ref: string, children: ContentNode[]): SectionNode {
+  return { ...copyBlock(children), data: { kind: 'value', ref } };
+}

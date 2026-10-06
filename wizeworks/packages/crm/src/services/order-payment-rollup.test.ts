@@ -112,4 +112,34 @@ describe('recomputeOrderPaymentRollup', () => {
     expect(f.orderUpdate).not.toHaveBeenCalled();
     expect(f.customerUpdate).not.toHaveBeenCalled();
   });
+
+  it('keeps an order paid in full as paid after part of it goes back', async () => {
+    // A $730.15 rebuilt injector with a $150.00 core deposit, paid in full; the old
+    // part comes back and the $150.00 is refunded (issue 051). Nothing is owed, so
+    // the order must not read as part paid, which every list takes as a debt.
+    const f = fakeTx({ total: 880.15, paidAt: new Date('2026-10-01'), customerId: CUSTOMER });
+    f.tx.orderPayment.findMany = vi.fn().mockResolvedValue([{ amount: 880.15 }]);
+    f.tx.orderRefund.findMany = vi.fn().mockResolvedValue([{ amount: 150 }]);
+    await recomputeOrderPaymentRollup(
+      f.tx as unknown as Parameters<typeof recomputeOrderPaymentRollup>[0],
+      TENANT,
+      ORDER
+    );
+    const data = f.orderUpdate.mock.calls[0]?.[0] as { data: Record<string, unknown> };
+    expect(data.data.paymentStatus).toBe('paid');
+    expect(data.data.amountPaid).toBeCloseTo(730.15, 2);
+    expect(data.data.refundTotal).toBe(150);
+  });
+
+  it('still calls an order part paid when not all the money came in', async () => {
+    const f = fakeTx({ total: 880.15, paidAt: null, customerId: CUSTOMER });
+    f.tx.orderPayment.findMany = vi.fn().mockResolvedValue([{ amount: 400 }]);
+    await recomputeOrderPaymentRollup(
+      f.tx as unknown as Parameters<typeof recomputeOrderPaymentRollup>[0],
+      TENANT,
+      ORDER
+    );
+    const data = f.orderUpdate.mock.calls[0]?.[0] as { data: Record<string, unknown> };
+    expect(data.data.paymentStatus).toBe('partially_paid');
+  });
 });

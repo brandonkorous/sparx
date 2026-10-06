@@ -103,7 +103,11 @@ const datasourceUrl = connectionUrl();
  * its own — see `accountsFor` in @wizeworks/crm's order-service.
  *
  * `pnpm check:shadowed` reads the pairs below and fails the build on any
- * select of a shadowed name. Adding a computed field here therefore adds a
+ * select of a shadowed name, at any depth and under any relation that leads to
+ * the model, and on any read of one as if it were the relation
+ * (`customer.company.creditLimit`). The client is cast back to `PrismaClient`
+ * below, so TypeScript still types `customer.company` as the account and will
+ * not catch either. Adding a computed field here therefore adds a
  * name that platform queries may no longer join on, which is a real cost and
  * is why this list is one entry long.
  */

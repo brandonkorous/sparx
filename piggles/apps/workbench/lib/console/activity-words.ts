@@ -40,6 +40,8 @@ const ACTIVITY_WORDS: Readonly<Record<string, string>> = {
   // "Fitment" is the industry's word for which product suits which thing. The
   // screen is called What fits what and the product panel What it fits.
   'commerce.fitment.bulk_assigned': 'What fits what set on several products',
+  'commerce.fitment.bulk_added': 'More added to what a product fits',
+  'commerce.fitment.bulk_removed': 'Some of what a product fits taken off',
   'commerce.fitment.category_created': 'A group added to what fits what',
   'commerce.fitment.dictionary_installed': 'A ready-made fitting list added',
   'commerce.fitment.domain_created': 'Fitting list created',

@@ -47,7 +47,7 @@ import {
 import { plainText } from '@wizeworks/commerce-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { Package, Trash2 } from 'lucide-react';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { afterPaneChange } from '../../lib/defer';
 import { useTabSave } from './product-tab-save';
 import { ProductFilingSections } from './product-filing';
@@ -157,7 +157,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
   const confirm = useConfirm();
   const { data: facets } = useProductFacets();
   const { data: sites } = useSites();
-  const { data: activeSite } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
 
   const update = useUpdateProduct(product.id);
   const archive = useArchiveProduct(product.id);
@@ -422,11 +422,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
                     // so it seeds the site being worked in.
                     set(
                       'propertyIds',
-                      next
-                        ? []
-                        : activeSite?.propertyId
-                          ? [activeSite.propertyId]
-                          : [(sites ?? [])[0]?.id ?? '']
+                      next ? [] : currentSiteId ? [currentSiteId] : [(sites ?? [])[0]?.id ?? '']
                     );
                   }}
                 />

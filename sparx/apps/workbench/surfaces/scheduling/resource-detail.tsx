@@ -30,13 +30,14 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Save, Trash2, Users } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { resourceKindGlyph } from './resource-kind-icon';
 import { useBusinessTimezone } from '../../lib/business-timezone';
 import { SaveFailure } from '@/components/save-failure';
 import {
@@ -307,7 +308,7 @@ function ResourceEditor({
           {existing ? (
             <div className="flex flex-col gap-1">
               <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Users className="size-5 shrink-0" aria-hidden />
+                {resourceKindGlyph(existing.kind, 'size-5 shrink-0')}
                 <span className="min-w-0 break-words">{existing.name}</span>
               </Heading>
               <Text className="text-sm">{resourceKindLabel(existing.kind)}</Text>
@@ -353,7 +354,6 @@ function ResourceEditor({
                   <Input
                     color="module"
                     value={draft.name}
-                    placeholder={draft.kind === 'staff' ? 'Alex Rivera' : 'Treatment room 1'}
                     onChange={(event) => {
                       set('name', event.target.value);
                     }}
@@ -421,7 +421,6 @@ function ResourceEditor({
                         min={1}
                         className="max-w-28 tabular-nums"
                         value={draft.capacityMin}
-                        placeholder="2"
                         onChange={(event) => {
                           set('capacityMin', event.target.value);
                         }}
@@ -440,7 +439,6 @@ function ResourceEditor({
                         min={1}
                         className="max-w-28 tabular-nums"
                         value={draft.capacityMax}
-                        placeholder="4"
                         onChange={(event) => {
                           set('capacityMax', event.target.value);
                         }}
@@ -504,7 +502,7 @@ function ResourceEditor({
 
           <FormSection
             title="Skills & matching"
-            description="Words a service can look for when it needs a particular skill or feature: “color”, “senior”, “wheelchair access”. A service that asks for a skill is only offered the people or things that carry it."
+            description="Words a service can look for when it needs a particular skill or feature: “certified”, “bilingual”, “wheelchair access”. A service that asks for a skill is only offered the people or things that carry it."
           >
             <Field>
               <FieldLabel>Skills or features (optional)</FieldLabel>
@@ -513,7 +511,6 @@ function ResourceEditor({
                   <Input
                     color="module"
                     value={draft.skills}
-                    placeholder="color, senior, treatment"
                     onChange={(event) => {
                       set('skills', event.target.value);
                     }}

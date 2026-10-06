@@ -1,12 +1,12 @@
 # 180 — Her console keeps telling her about another company's products
 
-**Status:** open — guarded, removals to sequence
+**Status:** fixed, confirmed act 324
 **Severity:** major (a customer is reading a competitor-shaped product name in her own console)
 **Found by:** P03 · Juniper Row · while confirming [120](120-her-two-stylists-are-staff-in-bookings-and-nobody-in-my-team.md)
 **Surface:** mypiggles — 49 sentences across ~30 screens
 **Filed:** 2026-08-24
-**Fixed:** the guard, 2026-08-24. The 49 sentences: not yet.
-**Blocked on:** a product decision on the excluded surfaces — see below
+**Fixed:** the guard, 2026-08-24; the screens, since; confirmed 2026-10-06.
+**Blocked on:** —
 
 ## What happened
 
@@ -102,6 +102,31 @@ identifier family) · `surfaces/crm/companies-list.tsx` (280) ·
 
 Wider count across `piggles/`, including comments and identifiers: ~180 British
 spellings (`behaviour` 35, `recognise` 66, `licence` 25, `favourite` 43).
+
+## Act 324: where it stands
+
+The decision this waited on was already made: piggles/CLAUDE.md says sparx's
+products are excluded from Piggles, never renamed, and not asked about. They are
+excluded now, in `lib/console/product.tsx`:
+
+- screens: `commerce.market`, `finance.subscription`,
+  `platform.settings.modules`, and sparx's reseller programme;
+- parts of screens: `commerce.channels.market` (the marketplace card on a
+  product's Channels tab) and `commerce.payments.sparx_pay` (sparx Pay in the
+  list of ways to take payment).
+
+The guard's count has fallen from 49 to **11**, and all 11 are in those
+excluded paths: sparx Pay's setup, the market screen, the marketplace card, and
+the heading over "What you pay us". Checked by address as well as through the
+menus, since a hidden option can still sit behind a link:
+`/commerce/payment-providers/sparx_pay` answers "We do not know this way of
+taking payment", and nothing of sparx Pay is drawn. The ratchet keeps the 11
+from growing; nothing in Piggles shows them.
+
+The spellings: none left on screen. What remains is in comments, code names, a
+search keyword that lets "organisations" find Companies on purpose, and the
+spreadsheet-column matcher that has to recognize an "organisation" heading in a
+file someone else made.
 
 ## How to reproduce
 

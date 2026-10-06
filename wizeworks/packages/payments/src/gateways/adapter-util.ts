@@ -3,6 +3,8 @@
 // webhook can resolve the order/invoice, and speak REST over `fetch` (no vendor SDKs —
 // keeps @wizeworks/payments dependency-free and the api-rest image unchanged).
 
+import { randomBytes } from 'node:crypto';
+
 import { requireGatewayCredentials, type GatewayCredentials } from '../credentials';
 import type { CreatePaymentIntentParams } from '../gateway';
 
@@ -86,11 +88,27 @@ export function paymentMetadata(params: CreatePaymentIntentParams): Record<strin
   };
 }
 
-/** A short, vendor-safe order reference for a payment (≤ vendor field limits). Derived
- *  from the order/invoice id when present, else a time-stamped fallback the caller
- *  passes in (we avoid Date.now() in pure code; callers stamp). */
-export function orderReference(params: CreatePaymentIntentParams): string {
-  return (params.orderId ?? params.invoiceId ?? params.bookingId ?? 'sparx').slice(0, 40);
+/**
+ * The reference for ONE payment attempt: what the vendor echoes back in its
+ * webhook, so it is also what the payment is found by when the money lands.
+ *
+ * It used to be derived from the order, invoice or booking id, falling back to
+ * the word `sparx`. Checkout passes none of the three (the order is written
+ * after the payment), so EVERY shop checkout on Square, PayPal, Authorize.net,
+ * 1stPay and a custom gateway carried the same reference. Authorize.net and the
+ * two hosted-link gateways stored it as the payment's id, so a "paid" webhook
+ * found whichever order it met first; Square and PayPal used it as their
+ * duplicate guard, and answer a repeated guard with the FIRST request's result,
+ * so a second shopper could be sent the first shopper's payment page. And where
+ * an id did arrive, Authorize.net's 20-character invoice field cut a 36-character
+ * id short, so its webhook could never match it.
+ *
+ * So: new on every call, and 20 characters, which fits every field it is
+ * written to. A retried attempt is a new attempt; the vendor's own ids are what
+ * tie a payment to its order from then on.
+ */
+export function paymentReference(): string {
+  return `px${randomBytes(9).toString('hex')}`;
 }
 
 /** POST JSON and parse the JSON response, throwing a `GatewayApiError` on non-2xx. */

@@ -91,6 +91,9 @@ export function useSurfaceContext(descriptor: PaneDescriptor): SurfaceContext {
       // editor adds its own via useDirtySource. Prefer that hook in a component.
       guard: (isDirty: () => boolean, message?: string) =>
         controller.registerGuard(descriptor.id, SURFACE_DIRTY_SOURCE, isDirty, message),
+      setViewParams: (patch: Readonly<Record<string, string | null>>) => {
+        controller.setViewParams(descriptor.id, patch);
+      },
     }),
     [controller, descriptor]
   );

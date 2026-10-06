@@ -74,10 +74,16 @@ function whenWords(iso: string, timezone: string | null | undefined): string {
   }
 }
 
+// One word per outcome, and only a real failure in the failure color (sparx
+// persona issue 086). A text the shop never switched on used to come back as
+// "Did not send" in red beside every booking, which reads as something broken.
+// It is a choice the shop made, so it says what the choice was.
 function statusTone(status: string): 'success' | 'warning' | 'danger' | 'info' {
   if (status === 'sent') return 'success';
   if (status === 'failed') return 'danger';
-  if (status === 'cancelled') return 'warning';
+  if (status === 'cancelled' || status === 'opted_out' || status === 'no_address') {
+    return 'warning';
+  }
   return 'info';
 }
 
@@ -85,6 +91,9 @@ function statusWords(status: string): string {
   if (status === 'sent') return 'Sent';
   if (status === 'failed') return 'Did not send';
   if (status === 'cancelled') return 'Called off';
+  if (status === 'not_set_up') return 'Texting is off';
+  if (status === 'opted_out') return 'They opted out';
+  if (status === 'no_address') return 'Nothing to send to';
   return 'To go';
 }
 

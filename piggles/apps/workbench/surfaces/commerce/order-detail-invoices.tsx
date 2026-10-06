@@ -14,6 +14,7 @@
 
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { useToast } from '@wizeworks/silicaui-react';
+import { HELD_FOR_SIGN_OFF_STATUS } from '@wizeworks/crm-schemas';
 
 import { SubSection } from './order-detail-blocks';
 import {
@@ -101,6 +102,9 @@ function reasonNotToAsk(order: Order): string | null {
   }
   if (order.status === 'refunded') {
     return 'This order was refunded, so there is nothing to ask for.';
+  }
+  if (order.status === HELD_FOR_SIGN_OFF_STATUS) {
+    return 'This order is waiting for sign-off, so there is nothing to ask for yet.';
   }
   if (order.total - order.amountPaid <= 0) return 'This order is paid in full.';
   return null;

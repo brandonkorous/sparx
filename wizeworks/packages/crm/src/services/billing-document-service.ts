@@ -10,6 +10,7 @@ import {
   CreateBillingDocumentInput,
   ListBillingDocumentsInput,
   UpdateBillingDocumentInput,
+  withPoNumber,
 } from '@wizeworks/crm-schemas';
 import { NOT_OWED_STAGE_TYPES, PRICE_OFFER_WORKFLOW_SLUGS } from '@wizeworks/crm-schemas/builtins';
 // `Prisma` as a VALUE, not a type-only import: `Prisma.DbNull` is a runtime
@@ -31,6 +32,7 @@ import {
 } from './billing-ar';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
+import { closeWhenDocumentMovesOn } from './task-service';
 import { businessTimeZone } from './business-clock';
 
 /** The tenant's primary site — the issuer for a document created without one
@@ -78,6 +80,13 @@ export interface DocumentWithLines extends BillingDocument {
 /** A list row: the document plus the billed party resolved for display. */
 export interface BillingDocumentListItem extends BillingDocument {
   billedToName: string | null;
+  /** A quote or estimate: a price offered, not money owed (issue 764). The list
+   *  holds both, and a row has to know which it is to say the right thing. */
+  priceOffer: boolean;
+  /** Where the document stands on its workflow ("Accepted", "Invoice"), for a
+   *  row whose payment status means nothing, which is every price offer. */
+  stageName: string;
+  stageType: string;
   /** When the customer was actually emailed this, or null. Read off the metadata
    *  bag, which is where the send route records it — there is no column. Lifted
    *  onto the row because "unpaid" and "never sent" look identical otherwise. */
@@ -109,7 +118,15 @@ export async function list(
       ...(filter.workflowId ? { workflowId: filter.workflowId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
-      ...(filter.status ? { status: filter.status } : {}),
+      // A PAYMENT STATUS IS ASKED OF A BILL. A quote carries `unpaid` from the
+      // moment it exists, so "Owed" listed Wasatch Front's accepted quote beside
+      // its invoices, $4,075.60 "owed" twice over (sparx persona issue 085).
+      // Through the shared rule, so the filter and the Outstanding figure above
+      // it cannot disagree. Not for "Written off": a void document is the one
+      // that rule leaves out on purpose.
+      ...(filter.status
+        ? { status: filter.status, ...(filter.status === 'void' ? {} : ISSUED_BILL_WHERE) }
+        : {}),
       // IS IT LATE? Asked of the due date, never of the status column.
       //
       // `status` is written by `recomputeTotals`, which runs when something is
@@ -215,15 +232,20 @@ export async function list(
         include: {
           customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
           company: { select: { companyName: true } },
+          workflow: { select: { slug: true } },
+          stage: { select: { name: true, stageType: true } },
         },
       }),
       tx.billingDocument.count({ where }),
     ]);
 
-    const items = rows.map(({ customer, company, ...document }) => ({
+    const items = rows.map(({ customer, company, workflow, stage, ...document }) => ({
       ...document,
       billedToName: billedToName(document.billTo, customer, company),
       sentAt: sentAtOf(document.metadata),
+      priceOffer: PRICE_OFFER_WORKFLOW_SLUGS.includes(workflow.slug),
+      stageName: stage.name,
+      stageType: stage.stageType,
     }));
     return { items, total };
   });
@@ -360,6 +382,19 @@ export interface AgingReport {
 }
 
 /**
+ * A bill the business has actually issued, paid or not: not an offer (a quote
+ * or an estimate) and not a draft or void document. The half of
+ * `OWED_DOCUMENT_WHERE` that is about WHAT the document is rather than whether
+ * it has been paid, for a list that shows paid bills too. A trade buyer's
+ * invoice list counted an unaccepted quote as an unpaid invoice (sparx persona
+ * issue 084).
+ */
+export const ISSUED_BILL_WHERE: Prisma.BillingDocumentWhereInput = {
+  workflow: { slug: { notIn: [...PRICE_OFFER_WORKFLOW_SLUGS] } },
+  stage: { stageType: { notIn: [...NOT_OWED_STAGE_TYPES] } },
+};
+
+/**
  * WHAT COUNTS AS MONEY SOMEBODY OWES — as a query, in one place.
  *
  * Eight queries across four packages asked this and every one of them asked it
@@ -379,8 +414,7 @@ export interface AgingReport {
  */
 export const OWED_DOCUMENT_WHERE: Prisma.BillingDocumentWhereInput = {
   status: { in: ['unpaid', 'partial', 'overdue'] },
-  workflow: { slug: { notIn: [...PRICE_OFFER_WORKFLOW_SLUGS] } },
-  stage: { stageType: { notIn: [...NOT_OWED_STAGE_TYPES] } },
+  ...ISSUED_BILL_WHERE,
 };
 
 /** AR aging report (docs/87 §8): open billing documents bucketed by days past
@@ -513,7 +547,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         customerNote: input.customerNote ?? null,
         validUntil: input.validUntil ? new Date(input.validUntil) : null,
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
-        metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        // The buyer's PO number rides in the bag, where checkout puts an
+        // order's (issue 077).
+        metadata: withPoNumber(input.metadata ?? {}, input.poNumber) as Prisma.InputJsonValue,
       },
     });
     // Run the starting stage's entry effects — the default single-stage Invoice
@@ -621,8 +657,14 @@ export async function update(
           ? { validUntil: input.validUntil ? new Date(input.validUntil) : null }
           : {}),
         ...(input.dueAt !== undefined ? { dueAt: input.dueAt ? new Date(input.dueAt) : null } : {}),
-        ...(input.metadata !== undefined
-          ? { metadata: input.metadata as Prisma.InputJsonValue }
+        // The PO number is MERGED into whatever bag the document ends up with,
+        // so a header save never wipes the send record that lives beside it.
+        ...(input.metadata !== undefined || input.poNumber !== undefined
+          ? {
+              metadata: (input.poNumber !== undefined
+                ? withPoNumber(input.metadata ?? before.metadata, input.poNumber)
+                : input.metadata) as Prisma.InputJsonValue,
+            }
           : {}),
       },
     });
@@ -662,6 +704,8 @@ export async function remove(ctx: ServiceContext, documentId: string): Promise<{
       entityId: documentId,
       diff: { before: { number: before.number } },
     });
+    // A task waiting on a removed document has nothing left to wait for.
+    await closeWhenDocumentMovesOn(tx, ctx, { documentId, byUserId: ctx.userId ?? null });
     return { id: documentId };
   });
 }
@@ -692,6 +736,7 @@ export async function recomputeTotals(
       unitPrice: Number(l.unitPrice),
       discountAmount: Number(l.discountAmount),
       taxable: l.taxable,
+      coreCharge: l.coreCharge === null ? null : Number(l.coreCharge),
     })),
     Number(doc.taxRate),
     Number(doc.shippingTotal),
@@ -719,6 +764,7 @@ export async function recomputeTotals(
       subtotal: totals.subtotal,
       discountTotal: totals.discountTotal,
       taxTotal: totals.taxTotal,
+      coreChargeTotal: totals.coreChargeTotal,
       total: totals.total,
       amountPaid,
       depositTotal,

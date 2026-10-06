@@ -16,13 +16,15 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Loading, Text } from '@wizeworks/silicaui-react';
-import type { StoryState } from '@wizeworks/story-schemas';
+import { industryOf, type StoryState } from '@wizeworks/story-schemas';
 import { OnboardingLayout, type StepMark } from '../onboarding-layout';
 import { SummaryCard } from '../../../lib/onboarding/summary-card';
 import { useBlueprints, useOnboarding, useOnboardingActions } from '../../../lib/onboarding/api';
 import { useStoryModel } from '../../../lib/onboarding/use-story-model';
+import { useStoryDraftSave } from '../../../lib/onboarding/use-story-draft';
 import { useSites, useTenant } from '../../../lib/api/shell-data';
 import {
+  pickBlueprint,
   resolveModules,
   starterStory,
   storyFromPersisted,
@@ -44,6 +46,7 @@ import { StepWorkspace, type SlugCheck } from './step-workspace';
 import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
 import { StepLaunch } from './step-launch';
+import { apiErrorMessage } from '../../../lib/api-error';
 
 const FULL_ORDER: OnboardingStepKey[] = [
   'modules',
@@ -67,17 +70,17 @@ const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting: strin
   modules: {
     title: 'Switch on what you use',
     supporting:
-      'Every module is one toggle: flip it and your plan updates the instant you do. You are free for 14 days with no card; this is just what you would pay after. Your picks narrow the starting points next.',
+      'Every module is one toggle: flip it and your plan updates the instant you do. You are free for 14 days with no card; this is just what you would pay after. Next, you pick a starting design for your site.',
   },
   template: {
     title: 'Pick a starting point',
     supporting:
-      'Complete, themed sites: pages, design, products, and copy in place from the first second. Filtered to the modules you chose; pick one to load it into your setup.',
+      'Complete, themed sites: pages, design, products, and copy in place from the first second. The one that fits your story is first. Pick any one to load it into your setup.',
   },
   workspace: {
     title: 'Name your workspace',
     supporting:
-      'Your company and its first site. We pre-filled what you told us at signup. Change anything. Your free web address goes live the moment you launch.',
+      'Your company and its first site, named the way your customers know you. Your free web address already works, and shows your site the moment you launch.',
   },
   domain: {
     title: 'Make it yours',
@@ -149,6 +152,11 @@ export function ClassicWizard({
   const sites = sitesQ.data;
   const primarySite = sites.find((s) => s.isPrimary) ?? sites[0];
 
+  // Until the owner saves the Workspace step, the tenant and site names are the
+  // placeholder sign-up made up ("Doty's workspace", provision-tenant.ts), not
+  // anything they told us. Start those fields empty, so the placeholder can never
+  // reach an invoice or a public site unread (sparx persona issue 016).
+  const workspaceDone = Boolean(state.completed?.workspace);
   const initial: Initial = {
     step: state.currentStep ?? 'modules',
     blueprintKey: state.blueprintKey ?? null,
@@ -156,9 +164,9 @@ export function ClassicWizard({
     sampleData: state.sampleData ?? true,
     templateDone: Boolean(state.completed?.template),
     paymentsDone: Boolean(state.completed?.payments),
-    companyName: tenantQ.data.name ?? '',
+    companyName: workspaceDone ? (tenantQ.data.name ?? '') : '',
     slug: tenantQ.data.slug ?? '',
-    siteName: primarySite?.name ?? '',
+    siteName: workspaceDone ? (primarySite?.name ?? '') : '',
   };
 
   return (
@@ -207,16 +215,23 @@ function WizardInner({
   }, []);
   const story = model.story ?? fallback;
   const modules = resolveModules(story);
+  // A switch flipped here changes the story, so save it here too: on a reload the
+  // plan is rebuilt from the saved story (sparx persona issue 009).
+  useStoryDraftSave(model, actions.saveStoryDraft, { initialStory: initialStory ?? null });
 
   const [step, setStep] = useState<OnboardingStepKey>(initial.step);
 
-  // choice = the SELECTED starting point (a key, the SCRATCH sentinel, or null);
-  // installedKey + installId are what is actually provisioned. A fresh tenant defaults
-  // to the golden template — a new site IS the golden template unless the user picks
-  // another blueprint or starts blank. Anyone resuming keeps their prior choice.
+  // choice = the starting point the owner EXPLICITLY picked (a key, the SCRATCH
+  // sentinel), or null when they have not picked. installedKey + installId are what
+  // is actually provisioned. Anyone resuming keeps their prior choice.
   const [choice, setChoice] = useState<string | null>(
-    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : GOLDEN_BLUEPRINT_KEY)
+    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : null)
   );
+  const autoPick = useMemo(
+    () => pickBlueprint(story.industry ? industryOf(story.industry) : null, modules, blueprints),
+    [story.industry, modules, blueprints]
+  );
+  const selected = choice ?? autoPick?.key ?? GOLDEN_BLUEPRINT_KEY;
   const [installedKey, setInstalledKey] = useState<string | null>(initial.blueprintKey);
   const [installId, setInstallId] = useState<string | null>(initial.installId);
   // Whether the chosen starting point brings its examples (issue 098). Fixed at
@@ -295,13 +310,13 @@ function WizardInner({
         setStep('template');
         return;
       case 'template':
-        if (choice === SCRATCH) {
+        if (selected === SCRATCH) {
           await actions.startFromScratch();
           setInstalledKey(null);
           setInstallId(null);
-        } else if (choice) {
-          const res = await actions.selectTemplate({ key: choice, sampleData });
-          setInstalledKey(choice);
+        } else {
+          const res = await actions.selectTemplate({ key: selected, sampleData });
+          setInstalledKey(selected);
           setInstallId(res.installId);
         }
         setStep('workspace');
@@ -340,7 +355,12 @@ function WizardInner({
     setBusy(true);
     commit()
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+        setError(
+          apiErrorMessage(
+            e,
+            'We could not save this step just now. Nothing you chose is lost. Press Continue again in a moment.'
+          )
+        )
       )
       .finally(() => setBusy(false));
   }
@@ -351,7 +371,7 @@ function WizardInner({
       case 'modules':
         return activeModules.length > 0;
       case 'template':
-        return choice !== null;
+        return true;
       case 'workspace':
         return companyName.trim().length > 0 && siteName.trim().length > 0 && slugOk;
       default:
@@ -362,7 +382,7 @@ function WizardInner({
   const ctaLabel = (() => {
     switch (step) {
       case 'template':
-        return choice === SCRATCH ? 'Start from scratch' : 'Use this starting point';
+        return selected === SCRATCH ? 'Start from scratch' : 'Use this starting point';
       case 'payments':
         return paymentsConnected ? 'Continue' : 'Skip for now';
       case 'launch':
@@ -373,15 +393,17 @@ function WizardInner({
     }
   })();
 
-  // ── Starting-point the summary shows ──────────────────────────────────────────
-  // Before the owner reaches the Template step the summary auto-picks (undefined →
-  // StoryExtras chooses), exactly as the story flow does — so the two match. Once they
-  // pick, their explicit choice (a blueprint, or scratch → a blank Builder site) wins.
+  // ── The ONE starting point: what the gallery marks, the summary names and
+  // Continue installs ─────────────────────────────────────────────────────────────
+  // Their explicit pick; else the match for their story (the same `pickBlueprint` the
+  // story flow installs); else the golden template. These used to be three answers:
+  // the gallery defaulted to the golden template while the summary named the story's
+  // match, and Continue installed the gallery's (sparx persona issue 008).
   const startingPoint: WizardBlueprint | null | undefined = installedKey
     ? (blueprints.find((b) => b.key === installedKey) ?? null)
-    : choice === SCRATCH
+    : selected === SCRATCH
       ? null
-      : undefined;
+      : (blueprints.find((b) => b.key === selected) ?? undefined);
 
   // ── Work body ──────────────────────────────────────────────────────────────────
   const effectiveSlug = normalizedSlug || initial.slug;
@@ -394,7 +416,8 @@ function WizardInner({
       body = (
         <StepBlueprint
           blueprints={blueprints}
-          selectedKey={choice}
+          selectedKey={selected}
+          recommendedKey={autoPick?.key ?? null}
           onSelect={setChoice}
           sampleData={sampleData}
           onSampleData={setSampleData}
@@ -450,6 +473,7 @@ function WizardInner({
           monthlyTotal={total}
           monthlyElsewhere={elsewhere}
           pendingDomain={pendingDomain}
+          sampleData={sampleData}
           actions={actions}
         />
       );

@@ -58,6 +58,7 @@ describe('computeBillingTotals', () => {
       taxTotal: 8,
       shippingTotal: 15,
       surchargeTotal: 5,
+      coreChargeTotal: 0,
       total: 308,
     });
   });
@@ -82,7 +83,21 @@ describe('computeBillingTotals', () => {
       taxTotal: 0,
       shippingTotal: 0,
       surchargeTotal: 0,
+      coreChargeTotal: 0,
       total: 0,
     });
+  });
+
+  it('adds a rebuilt part’s core deposit to the total, untaxed and outside the subtotal', () => {
+    // Two Bosch injectors at $580.15 with a $150.00 core deposit each, at 7.25% tax
+    // (sparx issue 051). Tax is on the parts only: 1160.30 × 0.0725 = 84.12.
+    const totals = computeBillingTotals(
+      [{ quantity: 2, unitPrice: 580.15, discountAmount: 0, taxable: true, coreCharge: 150 }],
+      0.0725
+    );
+    expect(totals.subtotal).toBe(1160.3);
+    expect(totals.taxTotal).toBe(84.12);
+    expect(totals.coreChargeTotal).toBe(300);
+    expect(totals.total).toBe(1544.42);
   });
 });

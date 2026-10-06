@@ -11,7 +11,7 @@
 // you re-price it in the modal, not by typing over it.
 //
 // The row collapses to a stacked card only when its CONTAINER is genuinely
-// narrow (a split pane, a phone) — via Tailwind's named container scale (@lg),
+// narrow (a split pane, a phone), via Tailwind's named container scale (@xl),
 // written as literal classes so the CSS is actually generated. Adding is the
 // modal, blank. Money is a live preview of the server's answer.
 
@@ -22,9 +22,11 @@ import { Icon } from '@piggles/ui';
 import { MoneyInput } from '../../components/money-input';
 import { LineEditorModal, type LineTypeOption } from './line-editor-modal';
 import { type MarkupRuleSummary } from './line-markup';
-import { HEADER, LineMeta, ROW, StackedLabel } from './line-row-parts';
+import { LineHeader, LineMeta, ROW, StackedLabel } from './line-row-parts';
+import { lineCostCents } from './line-margin';
 import { computeLine, isMarkupPriced, type DraftLine } from './totals';
 import { formatMoney } from './types';
+import type { TradeAccount } from './trade-price';
 
 interface LineItemsProps {
   lines: DraftLine[];
@@ -32,9 +34,13 @@ interface LineItemsProps {
   currency: string;
   lineTypes: LineTypeOption[];
   markupRules: MarkupRuleSummary[];
+  /** The wholesale account whose own prices a picked part takes, or null. */
+  tradeAccount: TradeAccount | null;
   /** Disabled once the document is locked — a finalized invoice's lines are frozen. */
   readOnly?: boolean;
   onChange: (lines: DraftLine[]) => void;
+  /** Opens the markup rules screen; offered from the line editor (issue 086). */
+  onManageMarkupRules?: (() => void) | undefined;
 }
 
 export function LineItems({
@@ -43,8 +49,10 @@ export function LineItems({
   currency,
   lineTypes,
   markupRules,
+  tradeAccount,
   readOnly,
   onChange,
+  onManageMarkupRules,
 }: LineItemsProps) {
   // The line being edited in the modal: an existing DraftLine, 'new', or closed.
   const [editing, setEditing] = useState<DraftLine | 'new' | null>(null);
@@ -66,6 +74,8 @@ export function LineItems({
     setEditing(null);
   };
 
+  const costsTracked = lines.some((line) => lineCostCents(line) !== null);
+
   const typeLabelFor = (line: DraftLine): string | null => {
     if (lineTypes.length <= 1) return null;
     return lineTypes.find((t) => t.id === line.lineTypeId)?.label ?? null;
@@ -77,16 +87,9 @@ export function LineItems({
         <Text className="text-sm">No lines yet. Add the first charge below.</Text>
       ) : (
         <>
-          <div className={HEADER} aria-hidden>
-            <span>Description</span>
-            <span className="text-right">Qty</span>
-            <span className="text-right">Price each</span>
-            <span className="text-right">Amount</span>
-            <span />
-            <span />
-          </div>
+          <LineHeader />
 
-          <ul className="divide-base-300 flex flex-col divide-y @lg:divide-y-0">
+          <ul className="divide-base-300 flex flex-col divide-y @xl:divide-y-0">
             {lines.map((line, index) => {
               const computed = computeLine(line, taxRate);
               const position = index + 1;
@@ -94,7 +97,7 @@ export function LineItems({
               return (
                 <li
                   key={line.key}
-                  className={`${ROW} @lg:border-base-300 py-3 @lg:border-b @lg:py-2`}
+                  className={`${ROW} @xl:border-base-300 py-3 @xl:border-b @xl:py-2`}
                 >
                   <div className="flex flex-col gap-1">
                     <StackedLabel>Description</StackedLabel>
@@ -135,7 +138,7 @@ export function LineItems({
                     {markupPriced ? (
                       <Text
                         as="span"
-                        className="tabular-nums @lg:pr-1 @lg:text-right"
+                        className="tabular-nums @xl:pr-1 @xl:text-right"
                         title="Priced from cost + markup: edit to re-price"
                       >
                         {formatMoney(line.unitPrice, currency)}
@@ -147,13 +150,20 @@ export function LineItems({
                         disabled={readOnly}
                         aria-label={`Line ${String(position)} unit price`}
                         onValueChange={(unitPrice) => {
-                          update(line.key, { unitPrice });
+                          // A price typed over a trade price is no longer the
+                          // trade price, so the line stops saying it is.
+                          update(line.key, {
+                            unitPrice,
+                            ...(line.priceNote && unitPrice !== line.unitPrice
+                              ? { priceNote: null }
+                              : {}),
+                          });
                         }}
                       />
                     )}
                   </div>
 
-                  <div className="flex items-baseline justify-between gap-2 @lg:justify-end">
+                  <div className="flex items-baseline justify-between gap-2 @xl:justify-end">
                     <StackedLabel>Amount</StackedLabel>
                     <Text as="span" className="tabular-nums">
                       {formatMoney(computed.lineSubtotal, currency)}
@@ -161,10 +171,9 @@ export function LineItems({
                   </div>
 
                   {readOnly ? null : (
-                    <div className="flex justify-end gap-1 @lg:contents">
+                    <div className="flex justify-end gap-1 @xl:contents">
                       <Tooltip content="Edit this line">
                         <Button
-                          color="neutral"
                           variant="ghost"
                           size="sm"
                           shape="square"
@@ -195,7 +204,12 @@ export function LineItems({
                     </div>
                   )}
 
-                  <LineMeta line={line} currency={currency} typeLabel={typeLabelFor(line)} />
+                  <LineMeta
+                    line={line}
+                    currency={currency}
+                    typeLabel={typeLabelFor(line)}
+                    costsTracked={costsTracked}
+                  />
                 </li>
               );
             })}
@@ -224,10 +238,12 @@ export function LineItems({
         lineTypes={lineTypes}
         markupRules={markupRules}
         currency={currency}
+        tradeAccount={tradeAccount}
         onClose={() => {
           setEditing(null);
         }}
         onSave={saveFromModal}
+        onManageMarkupRules={onManageMarkupRules}
       />
     </section>
   );

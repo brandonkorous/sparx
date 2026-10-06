@@ -105,6 +105,25 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const filtering = status !== 'all';
 
+  // A sequence that is not there (removed, or another business's id) says so,
+  // rather than listing nobody under an "Enroll someone" button (persona issue
+  // 226).
+  if (sequenceId !== '' && sequence.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={sequence.error}
+          noun="sequence"
+          title="Could not load this sequence"
+          description="This is a problem reaching the server. The sequence itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void sequence.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar

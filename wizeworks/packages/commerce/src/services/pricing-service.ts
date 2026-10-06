@@ -31,12 +31,19 @@ import {
   type PriceTraceStep,
   UpdatePriceListInput,
 } from '@wizeworks/commerce-schemas';
+import { companyService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
 import type { Prisma, PriceList, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
+import {
+  explainAccountStep,
+  tradePriceWords,
+  type AccountPriceFacts,
+  type AccountPriceRule,
+} from './trade-price-words';
 
 // ─── Price lists ──────────────────────────────────────────────────────
 
@@ -992,6 +999,179 @@ export async function resolveForCustomer(
     ...(input.propertyId ? { propertyId: input.propertyId } : {}),
     lines: input.lines,
   });
+}
+
+/** What one business on account pays for one version, and the sentence saying
+ *  why. See `resolveForAccount`. */
+export interface AccountPrice {
+  variantId: string;
+  accountId: string;
+  currency: string;
+  quantity: number;
+  /** The figure it started from: the version's own price (a set's parts total). */
+  listPriceCents: number;
+  /** What checkout would charge this account, per unit. */
+  effectivePriceCents: number;
+  /** Which kind of rule set it; `list` when none did. */
+  rule: AccountPriceRule['kind'];
+  /** "Fleet price: 12% off $600.00", or null when the list price applies. */
+  words: string | null;
+}
+
+/** Trace steps that state a starting figure rather than move it. */
+const STARTING_FIGURES = new Set(['variant_base', 'bundle_price']);
+
+/**
+ * What a business on account pays for one version, exactly as checkout would
+ * charge it, with a plain sentence naming the rule that set it.
+ *
+ * This is `resolve`, not a second waterfall. The trade price endpoint used to
+ * answer from `resolve_b2b_price()` alone, which never reads a signed agreement
+ * (`commerce_contract_prices`), so a business with an agreed price was quoted its
+ * group discount instead while the website charged it the agreement. A quote
+ * that disagrees with checkout is a price the shop has to take back (sparx
+ * persona issue 077).
+ */
+export async function resolveForAccount(
+  ctx: ServiceContext,
+  input: { variantId: string; accountId: string; quantity?: number; propertyId?: string }
+): Promise<AccountPrice> {
+  const quantity = input.quantity ?? 1;
+  const { currency } = await withTenant(ctx, async (tx) => {
+    const variant = await tx.productVariant.findFirst({
+      where: { id: input.variantId, deletedAt: null },
+      select: { currency: true },
+    });
+    if (!variant) throw new CommerceNotFoundError('Variant', input.variantId);
+    const account = await tx.company.findFirst({
+      where: { id: input.accountId },
+      select: { id: true },
+    });
+    if (!account) throw new CommerceNotFoundError('Account', input.accountId);
+    return variant;
+  });
+
+  const priced = await resolve(ctx, {
+    variantId: input.variantId,
+    quantity,
+    channel: 'b2b_portal',
+    currency,
+    companyId: input.accountId,
+    ...(input.propertyId ? { propertyId: input.propertyId } : {}),
+  });
+
+  const starts = priced.trace.filter((step) => STARTING_FIGURES.has(step.source));
+  const listPriceCents = starts.at(-1)?.resultingUnitPriceCents ?? priced.unitPriceCents;
+  const decided = [...priced.trace].reverse().find((step) => !STARTING_FIGURES.has(step.source));
+  const rule = await withTenant(ctx, (tx) =>
+    ruleFor(tx, decided, input, listPriceCents, priced.unitPriceCents)
+  );
+
+  return {
+    variantId: input.variantId,
+    accountId: input.accountId,
+    currency,
+    quantity,
+    listPriceCents,
+    effectivePriceCents: priced.unitPriceCents,
+    rule: rule.kind,
+    words: tradePriceWords(rule, listPriceCents, currency),
+  };
+}
+
+/** The rule behind the step that set the price, read from its own row. */
+async function ruleFor(
+  tx: TxClient,
+  step: PriceTraceStep | undefined,
+  input: { variantId: string; accountId: string },
+  listCents: number,
+  effectiveCents: number
+): Promise<AccountPriceRule> {
+  if (!step) return { kind: 'list' };
+  switch (step.source) {
+    case 'contract_price': {
+      const contract = step.sourceId
+        ? await tx.contractPrice.findFirst({
+            where: { id: step.sourceId },
+            select: { validTo: true },
+          })
+        : null;
+      return { kind: 'contract', validTo: contract?.validTo?.toISOString() ?? null };
+    }
+    case 'b2b_pricing_tier': {
+      const facts = await accountPriceFacts(tx, input);
+      // The step's own result, not the final price: a price list or bulk price
+      // may move it again afterwards, and then THAT step is the one explained.
+      return explainAccountStep(facts, listCents, step.resultingUnitPriceCents);
+    }
+    case 'price_list':
+      return { kind: 'price_list', listName: step.note ?? null };
+    case 'bulk_tier': {
+      const tier = step.sourceId
+        ? await tx.bulkPriceTier.findFirst({
+            where: { id: step.sourceId },
+            select: { minQuantity: true },
+          })
+        : null;
+      return { kind: 'bulk', minQuantity: tier?.minQuantity ?? null };
+    }
+    default:
+      return effectiveCents === listCents ? { kind: 'list' } : { kind: 'wholesale' };
+  }
+}
+
+/** The rows `resolve_b2b_price()` reads, for its sentence. */
+async function accountPriceFacts(
+  tx: TxClient,
+  input: { variantId: string; accountId: string }
+): Promise<AccountPriceFacts> {
+  const account = await tx.company.findFirst({
+    where: { id: input.accountId },
+    select: {
+      discountPercent: true,
+      pricingTierId: true,
+      pricingTierFk: {
+        select: { name: true, discountType: true, discountValue: true, deletedAt: true },
+      },
+    },
+  });
+  // A removed tier prices nothing (`resolve_b2b_price` skips it), so its name,
+  // discount and product prices are not part of the sentence either.
+  const tier = companyService.tierInEffect(account?.pricingTierFk);
+  const [own, group] = await Promise.all([
+    tx.b2bAccountProductOverride.findFirst({
+      where: { accountId: input.accountId, variantId: input.variantId },
+      select: { priceCents: true, discountPercentage: true },
+    }),
+    tier && account?.pricingTierId
+      ? tx.b2bTierProductOverride.findFirst({
+          where: { tierId: account.pricingTierId, variantId: input.variantId },
+          select: { priceCents: true, discountPercentage: true },
+        })
+      : Promise.resolve(null),
+  ]);
+  return {
+    accountOverride: own
+      ? {
+          priceCents: own.priceCents,
+          percentOff: own.discountPercentage === null ? null : Number(own.discountPercentage),
+        }
+      : null,
+    tier: tier
+      ? {
+          name: tier.name,
+          discountType: tier.discountType,
+          discountValue: Number(tier.discountValue),
+        }
+      : null,
+    tierOverride: group
+      ? {
+          priceCents: group.priceCents,
+          percentOff: group.discountPercentage === null ? null : Number(group.discountPercentage),
+        }
+      : null,
+    accountPercent: Number(account?.discountPercent ?? 0),
+  };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────

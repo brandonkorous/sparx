@@ -18,9 +18,13 @@ sources:
 - **api-mcp** — first-class staff/tenant MCP ([[mcp-server]]). 3000.
 - **mcp-site** — shopper-facing MCP over `/v1/public/*`. 3200.
 
-**Workers (event consumers, port 8080)** — **mid-migration** from GKE pull-subscribers to **Cloud Run push** ([[topology]]); only `email-worker` + `media-worker` remain in `k8s/workers/`, the rest run on Cloud Run:
+**Workers: THREE Deployments** (`k8s/self-hosted/workers.yaml`), pull consumers on the in-cluster NATS JetStream broker. The Cloud Run push era is over; see `wizeworks/services/CLAUDE.md`.
 
-email-worker · media-worker · commerce-indexer (→ Typesense) · channel-sync-worker · markup-recompute-worker · legal-seed-worker · domain-worker · push-worker · automation-worker · dropship-worker · inventory-worker · import-worker · cache-revalidation-worker · **inventory-bridge** (a CLI runner, not an HTTP server).
+- **event-worker**: one process running every handler that needs no runtime of its own. Each handler is a LIBRARY in `wizeworks/packages/<name>-worker` exporting `createSubscription(logger)` and a permanent JetStream `DURABLE`, registered in `wizeworks/services/event-worker/src/index.ts`: automation · cache-revalidation (purges the website's cached reads on an owner's save, via the site's `/api/revalidate`; issue 040) · channel-sync · commerce-indexer (→ Typesense) · domain · dropship · email · finance · inventory · legal-seed · markup-recompute · platform-crm · push · social · staff.
+- **media-worker**: sharp over image buffers plus the media volume; kept out so a leak cannot take the fleet with it.
+- **import-worker**: bulk file parsing; same reason.
+
+Plus **inventory-bridge** (a CLI runner, not an HTTP server). A new handler is a package, never a new service.
 
 ## Media serving (the variant-URL footgun)
 

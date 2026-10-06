@@ -28,7 +28,7 @@ import {
 } from '@wizeworks/silicaui-react';
 
 import { FormSection } from './form-section';
-import { useActiveSiteId } from '../lib/api/shell-data';
+import { useActivePropertyId } from '../lib/api/shell-data';
 import { useSites } from '../surfaces/sites/data';
 
 interface SiteScopeFieldProps {
@@ -52,7 +52,7 @@ export function SiteScopeField({
   everyLabel = 'Show it on every site',
 }: SiteScopeFieldProps) {
   const { data: sites } = useSites();
-  const { data: activeSite } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
 
   // One site (or the list hasn't loaded) — there is no scoping decision to make.
   if ((sites ?? []).length <= 1) return null;
@@ -72,11 +72,7 @@ export function SiteScopeField({
                 // Turning it OFF has to land on a real site, or the empty list would
                 // silently still mean "everywhere". Prefer the site being worked in.
                 onChange(
-                  next
-                    ? []
-                    : activeSite?.propertyId
-                      ? [activeSite.propertyId]
-                      : [(sites ?? [])[0]?.id ?? '']
+                  next ? [] : currentSiteId ? [currentSiteId] : [(sites ?? [])[0]?.id ?? '']
                 );
               }}
             />

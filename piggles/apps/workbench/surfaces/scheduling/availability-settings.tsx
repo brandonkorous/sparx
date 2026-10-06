@@ -36,7 +36,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { dayEndLocal, dayStartLocal, todayIso } from '../../lib/today';
+import { thisComputersTimezone, useBusinessTimezone } from '../../lib/business-timezone';
+import { dayEndIn, dayIn, dayStartIn, wallClockHint } from '../../lib/wall-clock';
 import {
   faCalendarXmark,
   faClock,
@@ -76,18 +77,13 @@ import {
   seasonToWire,
   seasonValid,
   withoutSeason,
-  type SeasonBounds,
 } from './season-window';
+import { FALLBACK_BLOCK, hoursForNewDay, type HoursBlock, type WeekDraft } from './weekly-hours';
+import { HoursCopy } from './availability-copy';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
-interface TimeWindow extends SeasonBounds {
-  start: string;
-  end: string;
-}
-type WeekDraft = Record<number, TimeWindow[]>;
-
-const DEFAULT_WINDOW: TimeWindow = { start: '09:00', end: '17:00', validFrom: '', validTo: '' };
+type TimeWindow = HoursBlock;
 
 /** Every block in the week, flat. For the questions that are about the week
  *  rather than about one day. */
@@ -162,12 +158,12 @@ function weekToWindows(week: WeekDraft): AvailabilityWindowInput[] {
   return out;
 }
 
-const DATE_FMT = new Intl.DateTimeFormat(undefined, {
+const DATE_PARTS: Intl.DateTimeFormatOptions = {
   weekday: 'short',
   day: 'numeric',
   month: 'short',
   year: 'numeric',
-});
+};
 
 /** An exception's own words, or a fallback when it was left unnamed. Empty text
  *  should reach the fallback, which is why this is a ternary, not `??`. */
@@ -177,12 +173,21 @@ function exceptionReason(exception: AvailabilityException, fallback: string): st
   return fallback;
 }
 
-/** An exception's date range in plain words — a single day when it is one. */
-function exceptionRange(exception: AvailabilityException): string {
-  const start = new Date(exception.startAt);
-  const end = new Date(exception.endAt);
-  const startDay = DATE_FMT.format(start);
-  const endDay = DATE_FMT.format(end);
+/** An exception's date range in plain words, a single day when it is one. Read
+ *  on the clock it was set on: a closure is whole days where the business is, and
+ *  on this computer's clock a Christmas closure read "Dec 24 – Dec 25". */
+function exceptionRange(exception: AvailabilityException, zone: string): string {
+  const format = (iso: string): string => {
+    try {
+      return new Intl.DateTimeFormat(undefined, { ...DATE_PARTS, timeZone: zone }).format(
+        new Date(iso)
+      );
+    } catch {
+      return new Intl.DateTimeFormat(undefined, DATE_PARTS).format(new Date(iso));
+    }
+  };
+  const startDay = format(exception.startAt);
+  const endDay = format(exception.endAt);
   return startDay === endDay ? startDay : `${startDay} – ${endDay}`;
 }
 
@@ -217,7 +222,9 @@ function WeeklyHours({
                 checked={open}
                 aria-label={`${day.label}: open for bookings`}
                 onCheckedChange={(next: boolean) => {
-                  setDay(day.value, next ? [{ ...DEFAULT_WINDOW }] : []);
+                  // A day switched on starts with the hours of the nearest open
+                  // day, not a fixed 9 to 5 (issue 086).
+                  setDay(day.value, next ? hoursForNewDay(week, day.value) : []);
                 }}
               />
               <Text as="span" className="font-medium">
@@ -333,7 +340,7 @@ function WeeklyHours({
                       variant="ghost"
                       color="module"
                       onClick={() => {
-                        setDay(day.value, [...windows, { ...DEFAULT_WINDOW }]);
+                        setDay(day.value, [...windows, { ...FALLBACK_BLOCK }]);
                       }}
                     >
                       <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -354,15 +361,22 @@ function WeeklyHours({
 
 /* ── Closures & time off ────────────────────────────────────────────────── */
 
-// `todayIso` comes from lib/today — the reader's calendar day, not UTC's.
+// A closure's days are the business's days, read with `lib/wall-clock`, not this
+// computer's and not UTC's.
 
 function Closures({
   resourceId,
   resourceName,
+  resourceZone,
+  businessZone,
   exceptions,
 }: {
   resourceId: string;
   resourceName: string;
+  /** The resource's own zone: a day off for just this one is its days. */
+  resourceZone: string;
+  /** The business's zone: a closure for everyone is the business's days. */
+  businessZone: string;
   exceptions: AvailabilityException[];
 }) {
   const toast = useToast();
@@ -370,10 +384,17 @@ function Closures({
   const create = useCreateException();
   const remove = useDeleteException();
 
-  const [reason, setReason] = useState('');
-  const [from, setFrom] = useState(todayIso());
-  const [to, setTo] = useState(todayIso());
   const [scope, setScope] = useState<'everyone' | 'resource'>('everyone');
+  // Whole days on the clock of whoever it affects (sparx persona issue 086). These
+  // were local midnight on THIS computer, so a closure set from a laptop an hour
+  // west of the shop started at 1 AM and ran an hour into the next day.
+  const zone = scope === 'resource' ? resourceZone : businessZone;
+  const zoneOf = (exception: AvailabilityException): string =>
+    exception.resourceId === null ? businessZone : resourceZone;
+  const todayThere = (): string => dayIn(new Date().toISOString(), businessZone);
+  const [reason, setReason] = useState('');
+  const [from, setFrom] = useState(todayThere);
+  const [to, setTo] = useState(todayThere);
   // What happens on these dates: shut all day, or open with special hours.
   const [kind, setKind] = useState<'closed' | 'custom_hours'>('closed');
   const [openTime, setOpenTime] = useState('09:00');
@@ -391,8 +412,8 @@ function Closures({
   );
 
   // A date box can hold something that is not a date; see `lib/today`.
-  const startAt = from === '' ? null : dayStartLocal(from);
-  const endAt = to === '' ? null : dayEndLocal(to);
+  const startAt = from === '' ? null : dayStartIn(from, zone);
+  const endAt = to === '' ? null : dayEndIn(to, zone);
   const rangeValid = startAt !== null && endAt !== null && to >= from;
   const openMin = timeToMinutes(openTime);
   const closeMin = timeToMinutes(closeTime);
@@ -418,8 +439,8 @@ function Closures({
       {
         onSuccess: () => {
           setReason('');
-          setFrom(todayIso());
-          setTo(todayIso());
+          setFrom(todayThere());
+          setTo(todayThere());
           toast.add({
             title: kind === 'custom_hours' ? 'Special hours added' : 'Closure added',
             type: 'success',
@@ -438,7 +459,7 @@ function Closures({
   };
 
   const onDelete = async (exception: AvailabilityException) => {
-    const label = exceptionReason(exception, exceptionRange(exception));
+    const label = exceptionReason(exception, exceptionRange(exception, zoneOf(exception)));
     const ok = await confirm({
       title: `Remove “${label}”?`,
       description: 'Bookings will be offered on these dates again, subject to the weekly hours.',
@@ -473,8 +494,8 @@ function Closures({
             const glyph = hours ? faClock : faCalendarXmark;
             const title = exceptionReason(exception, hours ? 'Special hours' : 'Closed');
             const detail = hours
-              ? `${exceptionRange(exception)} · ${minutesToClock(hours.startMinute)} – ${minutesToClock(hours.endMinute)}`
-              : exceptionRange(exception);
+              ? `${exceptionRange(exception, zoneOf(exception))} · ${minutesToClock(hours.startMinute)} – ${minutesToClock(hours.endMinute)}`
+              : exceptionRange(exception, zoneOf(exception));
             return (
               <div key={exception.id} className="flex items-center gap-3 py-2">
                 <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden />
@@ -487,7 +508,7 @@ function Closures({
                   </Text>
                 </div>
                 <Badge
-                  color={exception.resourceId === null ? 'info' : 'neutral'}
+                  color={exception.resourceId === null ? 'info' : 'module'}
                   variant="soft"
                   size="sm"
                 >
@@ -496,7 +517,7 @@ function Closures({
                 <Button
                   size="sm"
                   variant="ghost"
-                  color="neutral"
+                  color="danger"
                   shape="square"
                   aria-label={`Remove ${exceptionReason(exception, hours ? 'these special hours' : 'this closure')}`}
                   onClick={() => {
@@ -585,7 +606,6 @@ function Closures({
               <Input
                 color="module"
                 value={reason}
-                placeholder={customHours ? 'Christmas Eve' : 'Public holiday'}
                 onChange={(event) => {
                   setReason(event.target.value);
                 }}
@@ -648,6 +668,9 @@ function Closures({
               </NativeSelect>
             }
           />
+          <FieldDescription>
+            {wallClockHint(zone, thisComputersTimezone(), 'midnight to midnight')}
+          </FieldDescription>
         </Field>
 
         <div className="flex items-center gap-3">
@@ -741,6 +764,9 @@ export function AvailabilitySurface() {
   useDirtySource(dirty, 'Your weekly hours have unsaved changes. Close anyway?');
 
   const selected = resourceList.find((resource) => resource.id === resourceId) ?? null;
+  // The clock a closure for everyone is counted on. Undefined while it loads, and
+  // the closures wait for it rather than stamping a guess.
+  const businessZone = useBusinessTimezone();
   const resourceName = selected?.name ?? 'this resource';
 
   const switchResource = async (nextId: string) => {
@@ -871,10 +897,24 @@ export function AvailabilitySurface() {
               ) : null}
             </FormSection>
 
-            {resourceId && exceptionsQuery.data ? (
+            {resourceId && windowsQuery.data ? (
+              <HoursCopy
+                key={resourceId}
+                sourceId={resourceId}
+                sourceName={resourceName}
+                resources={resourceList}
+                windows={windowsQuery.data}
+                exceptions={exceptionsQuery.data}
+                dirty={dirty}
+              />
+            ) : null}
+
+            {resourceId && exceptionsQuery.data && businessZone ? (
               <Closures
                 resourceId={resourceId}
                 resourceName={selected?.name ?? 'this one'}
+                resourceZone={selected?.timezone ?? businessZone}
+                businessZone={businessZone}
                 exceptions={exceptionsQuery.data}
               />
             ) : null}

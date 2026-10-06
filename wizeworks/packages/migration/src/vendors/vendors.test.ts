@@ -111,6 +111,31 @@ describe('shopify products', () => {
     expect(kg[0]!.weight_grams).toBe('2000');
   });
 
+  it('drops the "Title: Default Title" placeholder a product with no options carries', () => {
+    const plain = shopifyInternals.mapProducts(
+      rows(
+        'Handle,Title,Option1 Name,Option1 Value,Variant SKU,Variant Price\nmag-hytec-dana-80-differential-cover,Mag-Hytec Dana 80 Differential Cover,Title,Default Title,#80,319.00'
+      )
+    );
+    expect(plain[0]).toMatchObject({ sku: '#80', price: '319.00' });
+    expect(plain[0]!.option1_name).toBeUndefined();
+    expect(plain[0]!.option1_value).toBeUndefined();
+    // A real option literally named "Title" keeps its values.
+    const real = shopifyInternals.mapProducts(
+      rows(
+        'Handle,Title,Option1 Name,Option1 Value,Variant SKU,Variant Price\nb,Book,Title,Hardback,B-1,30'
+      )
+    );
+    expect(real[0]).toMatchObject({ option1_name: 'Title', option1_value: 'Hardback' });
+    // "Default Title" beside a real choice is still no choice.
+    const mixed = shopifyInternals.mapProducts(
+      rows(
+        'Handle,Title,Option1 Name,Option1 Value,Variant SKU,Variant Price\npod,Pod Mounts,Choose,Single Pod,63359,121.11\npod,,,Default Title,63359,121.11'
+      )
+    );
+    expect(mixed.map((row) => row.option1_value)).toEqual(['Single Pod', undefined]);
+  });
+
   it('defaults an unknown status to draft rather than publishing the catalogue', () => {
     const odd = shopifyInternals.mapProducts(
       rows('Handle,Title,Variant SKU,Variant Price,Status\nx,X,X-1,5,something-else')

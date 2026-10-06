@@ -14,6 +14,12 @@
 
 import { getGatewayDescriptor, getPlatformStripe } from '@wizeworks/payments';
 import { prisma, withTenant } from '@wizeworks/db';
+import {
+  createPublisher,
+  publishEvent,
+  type PublisherLogger,
+  type SiteUpdatedPayload,
+} from '@wizeworks/events';
 
 import { env } from '../env.js';
 import { hasActiveCredentials } from './gateway-credentials.js';
@@ -74,6 +80,46 @@ export class PaymentsUnconfiguredError extends Error {
   }
 }
 
+const eventLogger: PublisherLogger = {
+  info: (obj, msg) => console.info(msg ?? '', obj),
+  warn: (obj, msg) => console.warn(msg ?? '', obj),
+  error: (obj, msg) => console.error(msg ?? '', obj),
+};
+
+interface PaymentSwitch {
+  gatewayId: string;
+  isActive: boolean;
+}
+
+/**
+ * Tell the website its way of taking payment moved, when it did.
+ *
+ * The site reads `paymentMode` (card / in person / unavailable) out of its
+ * cached business payload, and it decides whether a product page says "Pay
+ * today" and whether checkout draws a card form at all. Held for five minutes,
+ * a shop that has just finished payment setup goes on telling shoppers it cannot
+ * take their money (sparx persona issue 040). Compared before and after, because
+ * `refreshSparxPayStatus` runs every time Settings → Payments opens and should
+ * not purge a site when nothing changed. Best-effort and after the write:
+ * `publishEvent` never throws.
+ */
+async function announcePaymentSwitch(
+  tenantId: string,
+  before: PaymentSwitch,
+  after: PaymentSwitch
+): Promise<void> {
+  if (before.gatewayId === after.gatewayId && before.isActive === after.isActive) return;
+  const payload: SiteUpdatedPayload = { propertyId: null, changed: ['payments'] };
+  await publishEvent(
+    createPublisher({ logger: eventLogger }),
+    'site.updated',
+    tenantId,
+    null,
+    payload,
+    eventLogger
+  );
+}
+
 /** The tenant's connected account id from the root row (RLS-safe). */
 async function tenantAccountId(tenantId: string): Promise<string | null> {
   const tenant = await prisma.tenant.findUnique({
@@ -114,15 +160,39 @@ async function fetchAccountStatus(
   };
 }
 
+/** The path segment each merchant-registered gateway's webhook lives under. The
+ *  route in `routes/v1/webhooks/payments.ts` reads the same map. Square, PayPal,
+ *  Authorize.net and the custom gateway were missing: their adapters could read
+ *  a webhook, but there was no address for one to arrive at, and the console
+ *  asked for signing keys that nothing could use. */
+export const WEBHOOK_PATHS: Readonly<Record<string, string>> = {
+  stripe_direct: 'stripe-direct',
+  square: 'square',
+  paypal: 'paypal',
+  authorize_net: 'authorize-net',
+  custom: 'custom',
+};
+
+/** One gateway's webhook address for one tenant, or null when the public API
+ *  origin isn't configured. Square signs the exact address it was given, so the
+ *  route checks against this same string. */
+export function gatewayWebhookUrl(gatewayId: string, tenantId: string): string | null {
+  const base = env.SPARX_PUBLIC_API_REST_URL?.trim().replace(/\/+$/, '');
+  const path = WEBHOOK_PATHS[gatewayId];
+  if (!base || !path) return null;
+  return `${base}/v1/public/webhooks/${path}/${tenantId}`;
+}
+
 /** The merchant-registered webhook URLs, per gateway. Empty when the public API origin
  *  isn't configured — better to show nothing than a wrong URL a merchant would paste
- *  into Stripe and then wait forever for events that never arrive. */
+ *  into their gateway and then wait forever for events that never arrive. */
 function webhookUrlsFor(tenantId: string): Record<string, string> {
-  const base = env.SPARX_PUBLIC_API_REST_URL?.trim().replace(/\/+$/, '');
-  if (!base) return {};
-  return {
-    stripe_direct: `${base}/v1/public/webhooks/stripe-direct/${tenantId}`,
-  };
+  const urls: Record<string, string> = {};
+  for (const gatewayId of Object.keys(WEBHOOK_PATHS)) {
+    const url = gatewayWebhookUrl(gatewayId, tenantId);
+    if (url) urls[gatewayId] = url;
+  }
+  return urls;
 }
 
 /** The full payment configuration + (for sparx Pay) live onboarding status. */
@@ -175,7 +245,7 @@ export async function selectGateway(
   tenantId: string,
   gatewayId: PaymentGatewayId
 ): Promise<PaymentConfigState> {
-  await ensureConfig(tenantId);
+  const before = await ensureConfig(tenantId);
   const desc = getGatewayDescriptor(gatewayId);
 
   // Activation by onboarding style: manual is on at once; an api-key gateway is on once
@@ -196,6 +266,7 @@ export async function selectGateway(
       },
     })
   );
+  await announcePaymentSwitch(tenantId, before, { gatewayId, isActive });
   return getPaymentConfig(tenantId);
 }
 
@@ -213,6 +284,7 @@ export async function activateGatewayIfSelected(
       data: { isActive: true, onboardedAt: new Date() },
     })
   );
+  await announcePaymentSwitch(tenantId, config, { gatewayId, isActive: true });
 }
 
 /** Get the connected account, creating an Express account on first use and persisting
@@ -237,10 +309,14 @@ async function ensureConnectAccount(tenantId: string): Promise<string> {
     where: { id: tenantId },
     data: { stripeAccountId: account.id },
   });
-  await ensureConfig(tenantId);
+  const before = await ensureConfig(tenantId);
   await withTenant({ tenantId }, (tx) =>
     tx.tenantPaymentConfig.update({ where: { tenantId }, data: { gatewayId: 'sparx_pay' } })
   );
+  await announcePaymentSwitch(tenantId, before, {
+    gatewayId: 'sparx_pay',
+    isActive: before.isActive,
+  });
 
   return account.id;
 }
@@ -272,7 +348,7 @@ export async function refreshSparxPayStatus(tenantId: string): Promise<PaymentCo
   if (accountId) {
     const live = await fetchAccountStatus(accountId);
     if (live) {
-      await ensureConfig(tenantId);
+      const before = await ensureConfig(tenantId);
       await withTenant({ tenantId }, (tx) =>
         tx.tenantPaymentConfig.update({
           where: { tenantId },
@@ -282,6 +358,10 @@ export async function refreshSparxPayStatus(tenantId: string): Promise<PaymentCo
           },
         })
       );
+      await announcePaymentSwitch(tenantId, before, {
+        gatewayId: before.gatewayId,
+        isActive: live.chargesEnabled,
+      });
     }
   }
   return getPaymentConfig(tenantId);
@@ -342,7 +422,7 @@ export async function reconcileSparxPayAccount(account: {
   if (!tenant) return;
 
   const chargesEnabled = account.charges_enabled ?? false;
-  await ensureConfig(tenant.id);
+  const before = await ensureConfig(tenant.id);
   await withTenant({ tenantId: tenant.id }, (tx) =>
     tx.tenantPaymentConfig.update({
       where: { tenantId: tenant.id },
@@ -352,4 +432,8 @@ export async function reconcileSparxPayAccount(account: {
       },
     })
   );
+  await announcePaymentSwitch(tenant.id, before, {
+    gatewayId: before.gatewayId,
+    isActive: chargesEnabled,
+  });
 }

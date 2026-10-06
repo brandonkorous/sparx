@@ -53,6 +53,10 @@ const CHANNEL: Record<string, string> = {
   unknown: 'Other',
 };
 
+/** The source the quote conversion stamps on an order: `document:<number>`
+ *  (crm billing-document-conversion-service). */
+const DOCUMENT_SOURCE = 'document:';
+
 /**
  * Where a sale came from, in one phrase.
  *
@@ -64,6 +68,13 @@ const CHANNEL: Record<string, string> = {
 export function channelLabel(channel: string | null | undefined, source?: string | null): string {
   if (channel === 'marketplace' && source) {
     return MARKETPLACE_SOURCE[source] ?? source.replace(/_/g, ' ');
+  }
+  // An order made from a quote or estimate says which one. The conversion
+  // writes `document:<number>` as the source; the channel alone said "Added by
+  // hand" about an order nobody typed (sparx persona issue 085).
+  if (source?.startsWith(DOCUMENT_SOURCE)) {
+    const number = source.slice(DOCUMENT_SOURCE.length).trim();
+    if (number) return `Made from ${number}`;
   }
   if (!channel) return 'Other';
   // An unknown channel prints readably rather than as a slug. Never invented

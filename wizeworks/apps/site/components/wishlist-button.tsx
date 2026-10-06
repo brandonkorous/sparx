@@ -23,11 +23,18 @@ export function WishlistButton({
 
   const saved = has(variantId);
 
+  // Only a real "nobody is signed in" goes to sign in. While the session is
+  // still being read, or the shop could not be reached to read it, the button
+  // waits (disabled below) rather than sending a signed-in shopper to the
+  // sign-in page (persona issue 086).
+  const unknown = status === 'loading' || status === 'unreachable';
+
   async function onClick() {
-    if (status !== 'authenticated') {
+    if (status === 'anonymous') {
       router.push(`/account/login?redirect=${encodeURIComponent(pathname || '/')}`);
       return;
     }
+    if (status !== 'authenticated') return;
     await toggle(variantId);
   }
 
@@ -35,7 +42,7 @@ export function WishlistButton({
     <button
       type="button"
       className={[
-        'rounded-field bg-base-100 focus-visible:outline-primary inline-flex h-10 w-10 cursor-pointer items-center justify-center border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2',
+        'rounded-field bg-base-100 focus-visible:outline-primary inline-flex h-10 w-10 cursor-pointer items-center justify-center border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed',
         saved
           ? 'border-danger/40 text-danger'
           : 'border-base-300 text-base-content hover:border-primary hover:text-primary',
@@ -45,7 +52,14 @@ export function WishlistButton({
         .join(' ')}
       aria-pressed={saved}
       aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
-      title={saved ? 'Saved' : 'Save to wishlist'}
+      title={
+        status === 'unreachable'
+          ? 'We couldn’t reach your account just now. Try again in a moment.'
+          : saved
+            ? 'Saved'
+            : 'Save to wishlist'
+      }
+      disabled={unknown}
       onClick={() => void onClick()}
     >
       <svg

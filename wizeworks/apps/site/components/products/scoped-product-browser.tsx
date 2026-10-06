@@ -11,7 +11,8 @@
 // + a GET form — no client JS. `basePath` points the facet form + pager at the current
 // route so filters stay on THIS surface; `scope` narrows the search to a collection/category.
 
-import { Input } from '@wizeworks/silicaui-react';
+import Link from 'next/link';
+import { Alert, Input } from '@wizeworks/silicaui-react';
 
 import { ButtonLink } from '@/components/button-link';
 import { BrowseEmpty } from '@/components/products/browse-empty';
@@ -145,6 +146,10 @@ export async function ScopedProductBrowser({
   const tag = one(sp.tag);
   const options = many(sp.options);
   const fitmentDomainSlug = one(sp.fitmentDomain);
+  // "Parts that fit Unit 12", linked from the trade portal's fleet page. The API
+  // checks the vehicle against the signed-in buyer's own account (sparx persona
+  // issue 086).
+  const fleetVehicle = one(sp.fleetVehicle);
   const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
 
   // Resolve the fitment domain + drill chain so the panel can render the applicability
@@ -190,6 +195,7 @@ export async function ScopedProductBrowser({
     ...(fitmentName && selectedDepth === 1 ? { fitmentModels: fitmentName } : {}),
     ...(fitmentName && selectedDepth >= 2 ? { fitmentEngines: fitmentName } : {}),
     ...(primaryRange ? { fitmentYear: Number(primaryRange) } : {}),
+    ...(fleetVehicle ? { fleetVehicle } : {}),
     page,
     perPage: PER_PAGE,
   };
@@ -209,6 +215,7 @@ export async function ScopedProductBrowser({
     options.length > 0,
     selectedNode,
     primaryRange,
+    result.fleetVehicle,
   ].some(Boolean);
 
   // One answer for both the search label and the empty state, which have to agree about
@@ -264,7 +271,20 @@ export async function ScopedProductBrowser({
               associates a control with a form it is not nested in, which is what that
               attribute is for: one GET form, one Apply, no duplicated filter state and
               still no client JS. Enter submits, as it would in any search box. */}
+          {fleetVehicle ? (
+            <FleetVehicleNotice vehicle={result.fleetVehicle} basePath={basePath} sp={sp} />
+          ) : null}
+
           <div className="mb-5">
+            {/* Keeps "parts that fit" through Apply on the filters. */}
+            {result.fleetVehicle ? (
+              <input
+                type="hidden"
+                form={FACET_FORM_ID}
+                name="fleetVehicle"
+                value={result.fleetVehicle.id}
+              />
+            ) : null}
             <Input
               form={FACET_FORM_ID}
               type="search"
@@ -309,5 +329,54 @@ export async function ScopedProductBrowser({
         </div>
       </div>
     </>
+  );
+}
+
+/** The same listing without the vehicle narrowing (and back on page one). */
+function withoutVehicle(basePath: string, sp: SearchParams): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(sp)) {
+    if (key === 'fleetVehicle' || key === 'page' || value === undefined) continue;
+    for (const v of Array.isArray(value) ? value : [value]) params.append(key, v);
+  }
+  const qs = params.toString();
+  return qs ? `${basePath}?${qs}` : basePath;
+}
+
+/** Says which vehicle the listing is narrowed to, or that the vehicle could not be
+ *  found on the buyer's account and the whole shop is showing instead. Never a
+ *  silent whole-shop listing under the impression it is one truck's parts. */
+function FleetVehicleNotice({
+  vehicle,
+  basePath,
+  sp,
+}: {
+  vehicle: { id: string; label: string } | null | undefined;
+  basePath: string;
+  sp: SearchParams;
+}) {
+  const everything = withoutVehicle(basePath, sp);
+  if (vehicle) {
+    return (
+      <Alert color="success" className="mb-5">
+        <span>
+          Showing the parts that fit <strong>{vehicle.label}</strong>.{' '}
+          <Link href={everything} className="link">
+            Show everything
+          </Link>
+        </span>
+      </Alert>
+    );
+  }
+  return (
+    <Alert color="warning" className="mb-5">
+      <span>
+        We could not find that vehicle on your account, so this shows everything. Sign in with your
+        trade account to see the parts that fit your vehicles.{' '}
+        <Link href={everything} className="link">
+          Clear this
+        </Link>
+      </span>
+    </Alert>
   );
 }

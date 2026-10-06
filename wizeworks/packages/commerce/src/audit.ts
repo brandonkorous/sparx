@@ -32,3 +32,24 @@ export async function writeAuditLog(input: AuditWriteInput): Promise<void> {
     },
   });
 }
+
+/** Many rows in one statement, for a bulk write touching hundreds of products:
+ *  one INSERT per product inside the write's transaction is what runs it past
+ *  the transaction's time limit. Same row shape as `writeAuditLog`. */
+export async function writeAuditLogs(
+  tx: TxClient,
+  rows: Omit<AuditWriteInput, 'tx'>[]
+): Promise<void> {
+  if (rows.length === 0) return;
+  await tx.auditLog.createMany({
+    data: rows.map((row) => ({
+      tenantId: row.tenantId,
+      actorId: row.actorId,
+      actorType: row.actorType,
+      action: row.action,
+      entityType: row.entityType,
+      entityId: row.entityId,
+      diff: (row.diff ?? null) as never,
+    })),
+  });
+}

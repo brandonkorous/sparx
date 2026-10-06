@@ -90,6 +90,7 @@ afterAll(async () => {
 
 describe('interval cadence — once-per-entity dedupe', () => {
   const spec: SystemAutomationSpec = {
+    key: 'test.interval-customer-scan',
     name: 'Test interval customer scan',
     description: 'Fires once per customer regardless of how often the interval ticks.',
     trigger: {
@@ -200,6 +201,7 @@ describe('billing_document scanner', () => {
 
   function dueInThreeSpec(): SystemAutomationSpec {
     return {
+      key: 'test.invoice-due-in-3',
       name: 'Test invoice due in 3',
       description: 'Selects a billing document due in exactly 3 days.',
       trigger: {

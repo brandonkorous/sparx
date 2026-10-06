@@ -19,7 +19,7 @@ import { Plus, Puzzle, Sparkles } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { FitmentDictionaryPicker } from './fitment-dictionary-picker';
 import { resolveFitmentIcon } from './fitment-icons';
 import {
@@ -37,6 +37,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('commerce.fitment.list');
   const toast = useToast();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useFitmentDomains();
   const [search, setSearch] = useState('');
@@ -88,9 +89,21 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
         }
         primary={
           <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0 whitespace-nowrap"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
+            onClick={create}
+          >
+            <Plus className="size-4" aria-hidden />
+            <span>{createLabel}</span>
+          </Button>
+        }
+        controls={
+          <Button
             size="sm"
             variant="outline"
-            className="ml-auto shrink-0 whitespace-nowrap"
+            className="shrink-0 whitespace-nowrap"
             title="Start from a ready-made list"
             onClick={() => {
               setPickerOpen(true);
@@ -99,20 +112,6 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             <Sparkles className="size-4" aria-hidden />
             <span>Ready-made lists</span>
           </Button>
-        }
-        controls={
-          <>
-            <Button
-              color="module"
-              size="sm"
-              className="shrink-0 whitespace-nowrap"
-              title="Build a list from scratch. Hold Shift to open alongside, Alt for a new window"
-              onClick={create}
-            >
-              <Plus className="size-4" aria-hidden />
-              <span className="hidden @xl:inline">Add a list</span>
-            </Button>
-          </>
         }
         refresh={
           <RefreshButton

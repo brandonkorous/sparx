@@ -26,6 +26,7 @@ import { shownInPlace } from '@wizeworks/query';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -52,7 +53,8 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { CustomerPicker, customerName, type CustomerSummary } from '../invoicing/customer-picker';
 import { formatCents, formatDate } from './products-data';
 import { orderErrorMessage } from './data';
-import { useVariantCatalog, type VariantChoice } from './bundles-data';
+import { useVariantSearch, type VariantChoice } from './bundles-data';
+import { variantMatches } from './variant-search';
 import { usePaymentConfig } from './providers-data';
 import {
   useCustomerAddresses,
@@ -139,28 +141,24 @@ function priceCentsOf(line: DraftLine): number {
 
 /* -- Picking what goes out ------------------------------------------------ */
 
-function VariantPicker({
-  variants,
-  isLoading,
-  isError,
-  onPick,
-}: {
-  variants: VariantChoice[];
-  isLoading: boolean;
-  isError: boolean;
-  onPick: (variant: VariantChoice) => void;
-}) {
+function VariantPicker({ onPick }: { onPick: (variant: VariantChoice) => void }) {
   const [search, setSearch] = useState('');
-  const term = search.trim().toLowerCase();
-  const results = variants
-    .filter((v) => v.archivedAt === null && v.productStatus !== 'archived')
-    .filter(
-      (v) =>
-        term === '' ||
-        v.productTitle.toLowerCase().includes(term) ||
-        v.sku.toLowerCase().includes(term)
-    )
-    .slice(0, 12);
+  const term = search.trim();
+  // The server searches what is typed, so a version past the first window is
+  // as findable as the first (sparx persona P01, issue 069). The same rule runs
+  // on the rows in hand, so the list narrows on the keystroke: the product's
+  // name, its code, its version's name and its option values, word by word.
+  const catalog = useVariantSearch(search);
+  const isLoading = catalog.isPending;
+  const isError = catalog.isError;
+  const results = useMemo(
+    () =>
+      (catalog.data ?? [])
+        .filter((v) => v.archivedAt === null && v.productStatus !== 'archived')
+        .filter((v) => variantMatches(v, term))
+        .slice(0, 12),
+    [catalog.data, term]
+  );
 
   if (isError) {
     return (
@@ -168,10 +166,14 @@ function VariantPicker({
         <AlertContent>
           <AlertTitle>Could not load what you sell</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server, not a problem with this repeat order. Try again
-            in a moment.
+            This is a problem reaching the server, not a problem with this repeat order.
           </AlertDescription>
         </AlertContent>
+        <AlertActions>
+          <Button size="sm" variant="outline" onClick={catalog.retry}>
+            Try again
+          </Button>
+        </AlertActions>
       </Alert>
     );
   }
@@ -189,11 +191,15 @@ function VariantPicker({
       </div>
       {isLoading ? (
         <PaneWaiting label="Loading what you sell…" />
+      ) : results.length === 0 && catalog.searching ? (
+        // Never "nothing matches" while the answer is still on its way: it may
+        // simply be past the rows already in hand.
+        <PaneWaiting label="Looking through what you sell…" />
       ) : results.length === 0 ? (
         <Text className="text-sm">
           {term === ''
             ? 'Nothing set up to sell yet. Add a product first and it will show up here.'
-            : `Nothing you sell is called “${search.trim()}”. Try a different word.`}
+            : `Nothing you sell matches “${term}”. Try fewer words, or the code off the box.`}
         </Text>
       ) : (
         <div className="border-base-300 max-h-64 overflow-y-auto rounded border p-1">
@@ -370,7 +376,6 @@ function DeliveryAddress({
 export function RepeatOrderNewSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const start = useStartRepeatOrder();
-  const variants = useVariantCatalog();
   const payments = usePaymentConfig();
 
   const [customer, setCustomer] = useState<CustomerSummary | null>(null);
@@ -546,9 +551,6 @@ export function RepeatOrderNewSurface({ ctx }: { ctx: SurfaceContext }) {
             <Text className="text-sm">{eachTimeNote(valued, money)}</Text>
 
             <VariantPicker
-              variants={variants.data ?? []}
-              isLoading={variants.isPending}
-              isError={variants.isError}
               onPick={(variant) => {
                 setLines((current) => [...current, lineFrom(variant)]);
               }}

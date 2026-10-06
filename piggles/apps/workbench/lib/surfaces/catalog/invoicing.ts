@@ -88,7 +88,19 @@ export const INVOICING_SURFACES: SurfaceDefinition[] = [
     component: TemplatesListSurface,
     section: 'Setup',
     order: 11,
-    keywords: ['pdf', 'layout', 'letterhead', 'branding'],
+    // "invoice template" is what an owner types; it found nothing (sparx persona
+    // issue 036), because the screen is named for printing and "invoicing" does not
+    // contain "invoice".
+    keywords: [
+      'pdf',
+      'layout',
+      'letterhead',
+      'branding',
+      'invoice template',
+      'invoice design',
+      'quote template',
+      'receipt template',
+    ],
     createSurface: 'invoicing.template.edit',
     createLabel: 'New template',
   },

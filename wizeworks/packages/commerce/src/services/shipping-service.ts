@@ -663,55 +663,91 @@ export async function quoteForCart(
         currency: true,
         // The site this cart is on (docs/131 §4) — bounds which zones may quote.
         propertyId: true,
-        items: {
-          select: {
-            quantity: true,
-            subtotalCents: true,
-            variant: {
-              select: {
-                id: true,
-                weightGrams: true,
-                lengthMm: true,
-                widthMm: true,
-                heightMm: true,
-                product: {
-                  select: {
-                    weightGrams: true,
-                    lengthMm: true,
-                    widthMm: true,
-                    heightMm: true,
-                  },
-                },
-              },
-            },
-          },
-        },
+        items: { select: { variantId: true, quantity: true, subtotalCents: true } },
       },
     })
   );
   if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
 
-  const shipmentPackage = resolvePackageForItems(
-    cart.items.map((it) => ({
-      quantity: it.quantity,
-      weightGrams: it.variant.weightGrams,
-      lengthMm: it.variant.lengthMm,
-      widthMm: it.variant.widthMm,
-      heightMm: it.variant.heightMm,
-      productWeightGrams: it.variant.product.weightGrams,
-      productLengthMm: it.variant.product.lengthMm,
-      productWidthMm: it.variant.product.widthMm,
-      productHeightMm: it.variant.product.heightMm,
-    }))
+  return quoteForLines(ctx, {
+    propertyId: cart.propertyId,
+    currency: cart.currency,
+    toAddress,
+    lines: cart.items,
+  });
+}
+
+/**
+ * Rate a set of lines that is not a cart: a repeat delivery's renewal, which
+ * has a subscription's items and no basket (issue 916).
+ *
+ * It is the second half of `quoteForCart`, split out so a renewal is rated by
+ * the SAME composition checkout used for the first delivery: one package built
+ * from the versions' weights, the declared value that a "free over" rate is
+ * judged against, the product groups, and the site's own zones. A renewal
+ * priced any other way would charge postage that differs from checkout's for
+ * the same parcel to the same door.
+ */
+export async function quoteForLines(
+  ctx: ServiceContext,
+  input: {
+    propertyId: string | null;
+    currency: string;
+    toAddress: ShipmentRequest['toAddress'];
+    /** `subtotalCents` is what the line costs, and the sum is what a "free over"
+     *  rate compares with. */
+    lines: readonly { variantId: string; quantity: number; subtotalCents: number }[];
+  }
+): Promise<RateOption[]> {
+  const variants = await withTenant(ctx, (tx) =>
+    tx.productVariant.findMany({
+      where: { id: { in: [...new Set(input.lines.map((line) => line.variantId))] } },
+      select: {
+        id: true,
+        weightGrams: true,
+        lengthMm: true,
+        widthMm: true,
+        heightMm: true,
+        product: {
+          select: {
+            weightGrams: true,
+            lengthMm: true,
+            widthMm: true,
+            heightMm: true,
+          },
+        },
+      },
+    })
   );
-  shipmentPackage.declaredValueCents = cart.items.reduce((sum, it) => sum + it.subtotalCents, 0);
+  const byId = new Map(variants.map((variant) => [variant.id, variant]));
+
+  const shipmentPackage = resolvePackageForItems(
+    input.lines.map((line) => {
+      const variant = byId.get(line.variantId);
+      return {
+        quantity: line.quantity,
+        weightGrams: variant?.weightGrams ?? null,
+        lengthMm: variant?.lengthMm ?? null,
+        widthMm: variant?.widthMm ?? null,
+        heightMm: variant?.heightMm ?? null,
+        productWeightGrams: variant?.product.weightGrams ?? null,
+        productLengthMm: variant?.product.lengthMm ?? null,
+        productWidthMm: variant?.product.widthMm ?? null,
+        productHeightMm: variant?.product.heightMm ?? null,
+      };
+    })
+  );
+  shipmentPackage.declaredValueCents = input.lines.reduce(
+    (sum, line) => sum + line.subtotalCents,
+    0
+  );
 
   // What is actually in the basket, in product-group terms. Without this every
   // group's delivery options were offered to every basket: a shop that priced
   // coats at $25 offered $25 to somebody buying a scarf (issue 427).
   const contents = await shipmentContents(
     ctx,
-    cart.items.map((it) => it.variant.id)
+    input.lines.map((line) => line.variantId)
   );
 
   // A missing/placeholder warehouse address only costs LIVE rates — manual zone
@@ -725,10 +761,10 @@ export async function quoteForCart(
   return rateShipment(
     ctx,
     {
-      ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
+      ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       fromAddress,
-      toAddress,
-      currency: cart.currency,
+      toAddress: input.toAddress,
+      currency: input.currency,
       signatureRequired: false,
       saturdayDelivery: false,
       packages: [shipmentPackage],

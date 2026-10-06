@@ -23,6 +23,7 @@
 // query it with the supplier, which stops the payment run.
 
 import { useEffect, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Alert,
@@ -32,7 +33,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -54,7 +54,6 @@ import {
   faCheck,
   faCommentExclamation,
   faMoneyBill,
-  faReceipt,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
@@ -125,12 +124,19 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }, [data]);
 
   if (bill.isError) {
+    // A 404 (removed, or another business's id) and a failed request say
+    // different things; the shared screen reads which from the error rather
+    // than calling every one a connection problem (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
+        <PaneLoadError
+          error={bill.error}
+          noun="bill"
           title="Could not load that bill"
-          description="This is a problem reaching the server, not a statement that the bill is gone. Try again in a moment."
+          description="This is a problem reaching the server. The bill itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void bill.refetch();
+          }}
         />
       </div>
     );

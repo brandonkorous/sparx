@@ -234,7 +234,11 @@
                       "tag": "p",
                       "kind": "element",
                       "class": "max-w-xs text-sm text-base-content",
-                      "children": ["Everything you publish and sell, in one place."]
+                      "children": ["Glad you found us. Get in touch any time."],
+                      "data": {
+                        "kind": "value",
+                        "ref": "site.identity.tagline"
+                      }
                     }
                   ]
                 },
@@ -1107,79 +1111,6 @@
                             },
                             "class": "btn btn-primary mt-2 self-start",
                             "children": ["Wholesale & trade"]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "id": "d7c70671-9bda-4b42-8901-365b37076968",
-            "ord": "a5",
-            "tag": "section",
-            "kind": "element",
-            "class": "@container bg-base-100",
-            "children": [
-              {
-                "id": "7c6ce5a1-8072-4d6d-b884-72fbbcfd296d",
-                "ord": "a0",
-                "tag": "figure",
-                "kind": "element",
-                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-8 px-6 py-16 text-center",
-                "children": [
-                  {
-                    "id": "9ce05e9a-4516-40a7-ae71-81540c7676be",
-                    "ord": "a0",
-                    "tag": "blockquote",
-                    "kind": "element",
-                    "class": "text-2xl font-medium leading-relaxed text-base-content @2xl:text-3xl",
-                    "children": [
-                      "“We went from an idea to open for business in a single afternoon. Everything we needed was already here.”"
-                    ]
-                  },
-                  {
-                    "id": "9fe1a87d-6f88-42db-a2c3-cb6d66f4039f",
-                    "ord": "a1",
-                    "tag": "figcaption",
-                    "kind": "element",
-                    "class": "flex items-center gap-4",
-                    "children": [
-                      {
-                        "id": "2dcf6167-f059-4942-bfba-4b6e8b9256e0",
-                        "ord": "a0",
-                        "kind": "component",
-                        "class": "avatar w-12 rounded-full",
-                        "props": {
-                          "alt": "",
-                          "src": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80"
-                        },
-                        "component": "Avatar"
-                      },
-                      {
-                        "id": "951ab98c-1c8a-49f5-85ab-7c0585919272",
-                        "ord": "a1",
-                        "tag": "div",
-                        "kind": "element",
-                        "class": "text-left",
-                        "children": [
-                          {
-                            "id": "ee90b3e4-e5f2-4dfa-908d-8c9ea6fb232a",
-                            "ord": "a0",
-                            "tag": "p",
-                            "kind": "element",
-                            "class": "font-semibold text-base-content",
-                            "children": ["Priya Nair"]
-                          },
-                          {
-                            "id": "bd05e304-612b-4e3d-89c1-1f4f8297991a",
-                            "ord": "a1",
-                            "tag": "p",
-                            "kind": "element",
-                            "class": "text-sm text-base-content",
-                            "children": ["Founder, independent shop"]
                           }
                         ]
                       }

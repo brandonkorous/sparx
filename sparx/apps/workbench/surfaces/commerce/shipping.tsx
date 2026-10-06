@@ -29,7 +29,7 @@ import { Boxes, Plus, ServerCrash, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { coverageSummary } from '../../lib/geo';
 import {
   shippingErrorMessage,
@@ -127,6 +127,7 @@ function ProfileRow({ profile, onOpen }: { profile: ShippingProfile; onOpen: Row
 type RowOpen = (surface: string, id: string, event: { shiftKey: boolean; altKey: boolean }) => void;
 
 export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('commerce.shipping.list');
   const zones = useShippingZones();
   const profiles = useShippingProfiles();
   const readiness = useShippingReadiness();
@@ -271,7 +272,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Plus className="size-4" aria-hidden />
-                    Add a region
+                    {createLabel}
                   </Button>
                 }
               >

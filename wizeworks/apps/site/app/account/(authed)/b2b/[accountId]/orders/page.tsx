@@ -1,14 +1,31 @@
 'use client';
 
-// B2B portal — order list for one account.
+// Wholesale account: the orders placed on one trade account. A viewer sees
+// only her own; every other role sees the whole account's (the portal API
+// decides which).
+//
+// Statuses read in the shopper's words through the same `orderStatusLabel` the
+// personal order list uses, so one order is never called two things (sparx
+// persona issue 084).
+//
+// Each order opens to its own page, and a contact who can order can Order
+// again from here: the order's items go into the cart at today's prices for
+// the account (sparx persona issue 086).
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
-import { orderStatusTone } from '@/components/order-timeline';
-import { getB2bOrders, type B2bOrderEntry } from '@/lib/customer-client';
+import { orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
+import {
+  getB2bOrders,
+  getB2bSummary,
+  ORDERING_ROLES,
+  reorderB2bOrder,
+  type B2bOrderEntry,
+} from '@/lib/customer-client';
+import { FillCartButton } from '@/components/account/order-again-button';
 import { formatMoney } from '@/lib/format';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
@@ -30,6 +47,17 @@ export default function B2bOrdersPage() {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [canOrder, setCanOrder] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    getB2bSummary(tenantSlug, accountId)
+      .then((s) => active && setCanOrder(ORDERING_ROLES.has(s.account.role)))
+      .catch(() => active && setCanOrder(false));
+    return () => {
+      active = false;
+    };
+  }, [tenantSlug, accountId]);
 
   useEffect(() => {
     let active = true;
@@ -41,7 +69,7 @@ export default function B2bOrdersPage() {
         setOrders(res.items);
         setTotal(res.total);
       })
-      .catch(() => active && setError('Could not load orders.'));
+      .catch(() => active && setError('The orders on this account could not be loaded just now.'));
     return () => {
       active = false;
     };
@@ -49,9 +77,9 @@ export default function B2bOrdersPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="link link-primary text-sm">
-          ← Back
+      <div className="mb-5 flex flex-wrap items-center gap-4">
+        <Link href={`/account/b2b/${accountId}`} className="link link-primary">
+          ← Back to account
         </Link>
         <h1 className="text-base-content text-3xl font-semibold tracking-tight">Orders</h1>
       </div>
@@ -61,55 +89,54 @@ export default function B2bOrdersPage() {
           {error}
         </Alert>
       ) : orders === null ? (
-        <div className="skeleton" style={{ height: 200 }} />
+        <div className="skeleton h-50" />
       ) : orders.length === 0 ? (
-        <div
-          className="card border-base-300 border"
-          style={{ padding: '2rem', textAlign: 'center' }}
-        >
-          <p className="text-base-content">No orders found on this account.</p>
+        <div className="card border-base-300 items-center border p-8 text-center">
+          <p className="text-base-content">No orders have been placed on this account yet.</p>
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="flex flex-col gap-2">
             {orders.map((o) => (
-              <div
-                key={o.id}
-                className="card border-base-300 border"
-                style={{
-                  padding: '0.875rem 1rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '1rem',
-                }}
-              >
-                <div>
-                  <strong>#{o.orderNumber}</strong>
-                  <div
-                    className="text-base-content"
-                    style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
-                  >
-                    {formatDate(o.createdAt)}
-                    {o.customerName && (
-                      <span style={{ marginLeft: '0.4rem' }}>· {o.customerName}</span>
-                    )}
+              <div key={o.id} className="card border-base-300 gap-3 border px-4 py-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <div className="min-w-0">
+                    {/* An order number is one token: it must not break across lines. */}
+                    <Link
+                      href={`/account/b2b/${accountId}/orders/${o.id}`}
+                      className="link link-primary font-semibold whitespace-nowrap"
+                    >
+                      {o.orderNumber}
+                    </Link>
+                    <div className="text-base-content text-sm">
+                      {formatDate(o.createdAt)}
+                      {o.customerName && <span> · Placed by {o.customerName}</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge color={orderStatusTone(o.status)} variant="soft">
+                      {orderStatusLabel(o.status)}
+                    </Badge>
+                    <strong className="whitespace-nowrap">
+                      {formatMoney(o.totalCents, o.currency)}
+                    </strong>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Badge color={orderStatusTone(o.status)} variant="soft">
-                    {o.status}
-                  </Badge>
-                  <strong style={{ whiteSpace: 'nowrap' }}>
-                    {formatMoney(o.totalCents, o.currency)}
-                  </strong>
-                </div>
+                {canOrder && (
+                  <FillCartButton
+                    label="Order again"
+                    busyLabel="Adding to your cart…"
+                    size="sm"
+                    variant="outline"
+                    run={(cartId) => reorderB2bOrder(tenantSlug, accountId, o.id, cartId)}
+                  />
+                )}
               </div>
             ))}
           </div>
 
           {total > PAGE_SIZE && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+            <div className="mt-4 flex items-center justify-between gap-3">
               <Button
                 type="button"
                 color="primary"
@@ -119,11 +146,8 @@ export default function B2bOrdersPage() {
               >
                 Previous
               </Button>
-              <span
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
-              >
-                {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
+              <span className="text-base-content text-sm">
+                {skip + 1} to {Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button
                 type="button"

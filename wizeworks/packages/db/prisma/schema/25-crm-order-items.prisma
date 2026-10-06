@@ -39,6 +39,21 @@ model OrderItem {
   quantityFulfilled Int @default(0) @map("quantity_fulfilled")
   quantityRefunded  Int @default(0) @map("quantity_refunded")
 
+  // Core charge per unit (a refundable deposit on a rebuilt part), or null. The
+  // deposit rides on the part's own line so picking, stock and sales figures
+  // never see it as an item. Each unit's core ends one of three ways: the part
+  // itself comes back (counted in quantityRefunded, deposit refunded with it),
+  // the old part comes back (coresReturned), or the business keeps the deposit
+  // (coresKept). What is left is a core still owed.
+  coreCharge         Decimal?  @map("core_charge") @db.Decimal(12, 2)
+  coresReturned      Int       @default(0) @map("cores_returned")
+  coresKept          Int       @default(0) @map("cores_kept")
+  // Bought the other way (issue 057): the buyer sends the old part FIRST, pays no
+  // deposit, and this line ships when the old part arrives (coresReturned counts
+  // the arrivals). coreHoldReleasedAt = the business chose to ship it before then.
+  coreFirst          Boolean   @default(false) @map("core_first")
+  coreHoldReleasedAt DateTime? @map("core_hold_released_at") @db.Timestamptz
+
   metadata Json @default("{}")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz

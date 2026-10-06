@@ -150,6 +150,13 @@ describe('paymentState money truth', () => {
     expect(state.detail).toContain('Nothing is owed');
   });
 
+  it('names a refund on an order stored as paid', () => {
+    // How the rollup stores a paid-in-full order with a refund since sparx issue 051.
+    const state = paymentState(order({ paymentStatus: 'paid', amountPaid: 105 }));
+    expect(state.label).toBe('Part refunded');
+    expect(state.detail).toContain('Nothing is owed');
+  });
+
   it('still says money is owed when some of it genuinely is', () => {
     // Paid $60 of $147, then $20 back: most of it is still outstanding.
     const state = paymentState(order({ amountPaid: 60, refundTotal: 20 }));
@@ -168,5 +175,37 @@ describe('paymentState money truth', () => {
     expect(
       paymentState(order({ paymentStatus: 'refunded', amountPaid: 0, refundTotal: 147 })).label
     ).toBe('Refunded');
+  });
+});
+
+describe('a core deposit that came back', () => {
+  const order = (over: Partial<Order>): Order =>
+    ({
+      paymentStatus: 'paid',
+      total: 750,
+      amountPaid: 600,
+      refundTotal: 150,
+      depositsReturned: 150,
+      ...over,
+    }) as Order;
+
+  it('reads as paid, not as a refund, when only deposits went back', () => {
+    const state = paymentState(order({}));
+    expect(state.label).toBe('Paid, deposit back');
+    expect(state.tone).toBe('success');
+  });
+
+  it('still says "Part refunded" when something else went back too', () => {
+    expect(paymentState(order({ refundTotal: 192, amountPaid: 558 })).label).toBe('Part refunded');
+  });
+});
+
+// Sparx persona issue 085: an order held for sign-off read "To send", asking
+// somebody to pack an order nobody had approved.
+describe('an order waiting for sign-off', () => {
+  it('is not to be sent yet, and says why', () => {
+    const state = shippingState(order('pending_approval', false));
+    expect(state.label).toBe('Not to send yet');
+    expect(state.detail).toMatch(/Approvals shows who it waits on/);
   });
 });

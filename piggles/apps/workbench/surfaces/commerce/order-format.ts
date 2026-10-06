@@ -3,8 +3,10 @@
 // An order rendered for reading — the buyer, what is still owed, and dates and
 // amounts in the reader’s own locale.
 
+import { HELD_FOR_SIGN_OFF_STATUS } from '@wizeworks/crm-schemas';
 import type { Order, OrderAddress, OrderCustomer } from './order-types';
 import { formatAmount } from '../../lib/money-format';
+import { localityLine } from '../../lib/address-format';
 
 /** The buyer in one line: a company if they trade as one, otherwise their name,
  *  otherwise their email. Never an empty cell — an order always has a buyer. */
@@ -27,8 +29,35 @@ export function customerName(customer: OrderCustomer | null): string {
  */
 export function amountDue(order: Order): number {
   if (order.status === 'cancelled' || order.status === 'refunded') return 0;
+  // Held for sign-off: nothing is owed until it is approved. See
+  // HELD_FOR_SIGN_OFF_STATUS in @wizeworks/crm-schemas.
+  if (order.status === HELD_FOR_SIGN_OFF_STATUS) return 0;
   if (order.paymentStatus === 'refunded') return 0;
   return Math.max(0, order.total - order.amountPaid - order.refundTotal);
+}
+
+/**
+ * The Collection card's line once nothing is left to hand over. It used to be
+ * "They picked this up." whatever the reason, so a canceled order nobody came
+ * for read "They picked this up." above "This order has not been collected
+ * yet." (sparx persona issue 091, O-000016).
+ */
+export function collectedWords(order: Order): string {
+  if ((order.items ?? []).some((item) => item.quantityFulfilled > 0)) {
+    return 'They picked this up.';
+  }
+  if (order.status === 'refunded') return 'This order was refunded before anyone collected it.';
+  return 'This order was canceled, so there is nothing to collect.';
+}
+
+/**
+ * The empty Collection or Deliveries card. "Not collected yet" promises it will
+ * be; on a canceled or refunded order it never will (sparx persona issue 091).
+ */
+export function nothingHandedOverWords(order: Order, collected: boolean): string {
+  const over = order.status === 'cancelled' || order.status === 'refunded';
+  if (collected) return over ? 'Nothing was collected.' : 'This order has not been collected yet.';
+  return over ? 'Nothing was sent.' : 'Nothing has been sent for this order yet.';
 }
 
 export function formatMoney(amount: number, currency = 'USD'): string {
@@ -49,7 +78,7 @@ export function formatDateTime(value: string | null | undefined): string {
  *  individually leaves gaps where an optional one is missing. */
 export function addressLines(address: OrderAddress | null): string[] {
   if (!address) return [];
-  const region = [address.city, address.region, address.postalCode].filter(Boolean).join(', ');
+  const region = localityLine(address);
   return [
     address.recipientName,
     address.company,

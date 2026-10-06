@@ -29,6 +29,8 @@ export interface WizardBodyProps {
 
   /** The selected starting point, the SCRATCH sentinel, or null. */
   choice: string | null;
+  /** The starting point the story matched, drawn first in the gallery. */
+  recommendedKey: string | null;
   onChoice: (key: string) => void;
   /** Whether the chosen design brings its examples (issue 098). */
   sampleData: boolean;
@@ -65,6 +67,7 @@ export function WizardBody(props: WizardBodyProps) {
         <StepBlueprint
           blueprints={props.blueprints}
           selectedKey={props.choice}
+          recommendedKey={props.recommendedKey}
           onSelect={props.onChoice}
           sampleData={props.sampleData}
           onSampleData={props.onSampleData}
@@ -116,6 +119,7 @@ export function WizardBody(props: WizardBodyProps) {
           published={props.published}
           moduleCount={props.activeModuleCount}
           pendingDomain={props.pendingDomain}
+          sampleData={props.sampleData}
           actions={props.actions}
         />
       );

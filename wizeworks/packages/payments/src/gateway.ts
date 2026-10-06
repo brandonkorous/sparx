@@ -7,6 +7,11 @@ export type PaymentIntentStatus =
   | 'requires_payment_method'
   | 'requires_confirmation'
   | 'requires_action'
+  // The card is held (authorized) and nothing is charged until `capturePayment`.
+  // Its own state, not "requires confirmation": a held wholesale order waits here
+  // for its sign-off, and reading it as unconfirmed would tell nobody the card is
+  // good (sparx persona issue 087).
+  | 'requires_capture'
   | 'processing'
   | 'succeeded'
   | 'canceled';
@@ -30,6 +35,9 @@ export interface PaymentIntent {
   currency: string;
   status: PaymentIntentStatus;
   metadata: Record<string, string>;
+  /** The gateway-side customer the card will be kept on, when `saveForLater`
+   *  was asked for and the gateway decides it at this step (Stripe). */
+  customerRef?: string;
 }
 
 export interface PaymentResult {
@@ -52,6 +60,10 @@ export interface RefundResult {
 export interface WebhookEvent {
   rawBody: Buffer;
   signature: string;
+  /** Every request header, lower-cased, for a vendor whose proof is more than
+   *  one header. PayPal signs with five (`paypal-transmission-sig` and the
+   *  four that say how to check it). */
+  headers?: Record<string, string | undefined>;
 }
 
 /** The vendor-neutral payment facts the reconciler needs (docs/111 §1 D5). Every
@@ -62,6 +74,12 @@ export interface NormalizedPaymentData {
   /** The gateway charge / intent id — matches `payment_intents.external_id` and
    *  `order_payments.processor_ref` (what create stamped). */
   chargeId: string;
+  /** The gateway's own id for the money movement, when it is NOT `chargeId`.
+   *  Authorize.net reports our invoice reference as `chargeId` and its
+   *  transaction id only here; Square reports its order id and its payment id
+   *  only here. Kept on the order's payment so the card a payment saved can be
+   *  read back from that exact transaction (issue 739). */
+  transactionRef?: string;
   /** Amount in cents (received amount for a success). */
   amountCents: number;
   currency: string;
@@ -83,6 +101,9 @@ export interface NormalizedPaymentData {
 export interface ParsedWebhookEvent {
   type:
     | 'payment.succeeded'
+    // A card is held for the amount and nothing is charged yet (a manual-capture
+    // intent the shopper confirmed). Records the hold; never marks anything paid.
+    | 'payment.authorized'
     | 'payment.failed'
     | 'payment.refunded'
     | 'dispute.created'
@@ -98,6 +119,20 @@ export interface ParsedWebhookEvent {
   /** Vendor-neutral facts for payment.* events; absent for account/dispute/ignored. */
   data?: NormalizedPaymentData;
   payload: unknown;
+}
+
+export interface LookupPaymentParams {
+  tenantId: string;
+  /** What create stamped: `payment_intents.external_id` / `order_payments.processor_ref`. */
+  paymentRef: string;
+}
+
+/** Where a payment stands at the gateway, mapped to the webhook vocabulary so
+ *  the same reconcile handlers apply. `pending` covers everything not yet
+ *  settled either way (still being confirmed, a bank payment in flight). */
+export interface LookedUpPayment {
+  status: 'succeeded' | 'authorized' | 'failed' | 'pending';
+  data: NormalizedPaymentData;
 }
 
 export interface CreatePaymentIntentParams {
@@ -117,12 +152,35 @@ export interface CreatePaymentIntentParams {
    *  by inline (Stripe) gateways. */
   returnUrl?: string;
   cancelUrl?: string;
+  /** Keep the card this payment is made with, so it can be charged again with
+   *  the shopper absent (issue 739: a repeat order started at checkout). Only
+   *  passed to a gateway whose `capabilities.storedMethods` is true; the service
+   *  refuses it otherwise. After the payment succeeds, `vaultFromPayment` reads
+   *  the kept card back. */
+  saveForLater?: SaveForLater;
+}
+
+/** Who a card kept by a payment belongs to. */
+export interface SaveForLater {
+  /** The sparx customer. */
+  customerId: string;
+  /** The gateway-side customer, when this shopper already has one. Omitted on
+   *  their first saved card; the gateway creates one and the caller keeps it. */
+  customerRef?: string;
+  /** For gateways that ask for it when creating their customer. */
+  email?: string;
 }
 
 export interface RefundParams {
   tenantId: string;
-  /** The gateway charge / payment-intent id to refund. */
+  /** The gateway charge / payment-intent id to refund: what create stamped. */
   chargeId: string;
+  /** The gateway's own id for the money movement, when it is not `chargeId`
+   *  (see `NormalizedPaymentData.transactionRef`). Square refunds a PAYMENT, not
+   *  the order the reference names; Authorize.net refunds a TRANSACTION, not our
+   *  invoice number. Filled by `PaymentService.refund` from the order's payment;
+   *  a gateway that is not given it works it out from `chargeId`. */
+  transactionRef?: string;
   /** Partial refund (cents) if specified; full refund otherwise. */
   amount?: number;
   reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer';
@@ -230,6 +288,23 @@ export interface CompleteVaultParams {
   postalCode?: string;
 }
 
+/** Reading back the card a payment kept (`CreatePaymentIntentParams.saveForLater`). */
+export interface VaultFromPaymentParams {
+  tenantId: string;
+  /** The sparx customer the card belongs to. */
+  customerId: string;
+  /** The payment's own reference: the intent id `createPaymentIntent` returned. */
+  paymentRef: string;
+  /** The gateway's charge id, when the gateway reports one separately from the
+   *  intent (Authorize.net's transaction id, Square's payment id). */
+  chargeRef?: string;
+  /** The gateway-side customer, when known. */
+  customerRef?: string;
+  /** Square's CreateCard refuses a card without a name. */
+  cardholderName?: string;
+  postalCode?: string;
+}
+
 export interface ChargeStoredMethodParams {
   tenantId: string;
   /** Amount in cents. */
@@ -305,8 +380,12 @@ export interface PaymentGateway {
   // Core payment operations.
   createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent>;
   confirmPayment(intentId: string): Promise<PaymentResult>;
-  capturePayment(intentId: string, amount?: number): Promise<PaymentResult>;
-  cancelPayment(intentId: string): Promise<PaymentResult>;
+  // `tenantId` rides on capture and cancel for a gateway that keeps a client per
+  // merchant (Stripe Direct): the intent id alone does not say whose account it
+  // is on. `capabilities.capture` is true only where both of these work.
+  capturePayment(intentId: string, amount?: number, tenantId?: string): Promise<PaymentResult>;
+  /** Release a held card. `success` means the hold is gone. */
+  cancelPayment(intentId: string, tenantId?: string): Promise<PaymentResult>;
   refund(params: RefundParams): Promise<RefundResult>;
 
   /** Hosted payment link for invoices. Returns null when the gateway can't host one. */
@@ -327,6 +406,19 @@ export interface PaymentGateway {
 
   /** Charge a vaulted method with the customer absent (merchant-initiated). */
   chargeStoredMethod?(params: ChargeStoredMethodParams): Promise<StoredChargeResult>;
+
+  /** The card a successful payment kept because it was created with
+   *  `saveForLater`. Null when the payment kept nothing: it was not asked to,
+   *  the shopper paid some other way, or it has not succeeded yet. */
+  vaultFromPayment?(params: VaultFromPaymentParams): Promise<VaultedMethod | null>;
+
+  /** Ask the gateway where a payment stands, in the words a webhook would use.
+   *  The webhook is how a payment is normally marked paid, but a shop that
+   *  never set one up (the console calls it optional) would otherwise leave
+   *  every card order unpaid for ever. Checkout completion and the stranded
+   *  payment sweep ask this when the shop's own record has not heard. Null
+   *  when the gateway does not know the reference. */
+  lookupPayment?(params: LookupPaymentParams): Promise<LookedUpPayment | null>;
 
   // Webhook handling.
   parseWebhook(event: WebhookEvent): Promise<ParsedWebhookEvent>;

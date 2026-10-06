@@ -1,8 +1,8 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.31
+**Version:** 6.35
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-01
+**Last Updated:** 2026-10-06
 
 **Status:** in progress
 **Run:** 2026-08-23
@@ -16997,3 +16997,116 @@ One more, in her own list of groups: a built-in called **B2B Fleet**, "primary
 target for parts cross-sell", in a linen shop. It is **Wholesale customers with
 vehicles** now, and says it stays empty for a business without them
 ([915](issues/915-a-linen-shop-had-a-group-for-parts-cross-sell.md)).
+
+### Act 323 · The things still open
+
+Her screen list is done, so she went back through what she had reported and
+was still waiting on. Ten of her issues were open.
+
+The first she could act on: one action, two names
+([743](issues/743-the-rail-and-the-pane-name-one-action-twice.md)). Eleven lists
+still offered "make a new one" under different words on the `+` and on the
+list's own button: "New pipeline" and "New process", "New transfer" and "Start
+a move". Both now read one place. Opening How things move, the `+` and the
+button both say **New process**; Kinds of content says **New kind of content**
+in the search box and on its button.
+
+A repeat order a shopper can ask for themselves
+([739](issues/739-a-shopper-cannot-subscribe.md)): Brandon chose the familiar
+way, where paying for the first one also keeps the card. Built end to end. She
+ticked **Every month** and **Every 2 months** on the Linen Shirtdress, and the
+pane told her straight that shoppers will not see it while she takes payment in
+person. Her product page agrees: no "How often". A real card run waits on test
+keys. On the way: a renewal charged no postage and no tax
+([916](issues/916-a-repeat-delivery-charged-no-postage-and-no-tax.md)). Her
+scarf customer's last renewal, O-000017, was $58.00 flat. The next one,
+O-000030, is $58.00 plus $9.00 postage, $67.00, and the emailed bill says so.
+Every place that says what a repeat costs now adds "plus postage and tax".
+
+Then the real card run, in Stripe's sandbox. She switched to **Your own
+Stripe**, and her dress page still offered Buy once only: she had edited that
+page before repeat orders existed, and the repair that brings older pages
+forward did not know about them. It does now, her home screen said so, and she
+published. A new customer, Mara Ellison, chose **Every month**, made an account
+when checkout asked, and paid $158.21 ($145.00, $9.00 delivery, $4.21 Colorado
+tax) with Stripe's 4242 test card. The order sat at unpaid: only a webhook ever
+marked a Stripe order paid, and she had none, under a field the console calls
+optional. Now checkout and the 5-minute sweep ask Stripe. O-000031 turned paid,
+the repeat order started with her Visa 4242 kept, Mara's Repeat orders page
+showed it, and the November renewal, O-000032, charged that card $158.21 with
+nobody there.
+
+### Act 324 · Links to nothing, and the other ways to get paid
+
+First the last addresses from [226](issues/226-a-link-to-somebody-elses-record-spins-for-ever.md),
+pasted with an id that belongs to nobody. Most said "That … is no longer here".
+Four did not: the invoice preview read "Preparing preview…" for ever, automation
+runs said only "Could not load this rule's results.", the site check hedged
+between gone and unreachable, and a partner address printed
+"partner.bootcamp.detail" at her, a name she never typed. Each now says the
+record is gone, or says back the address she used. 226 is closed. Her saved
+layout had 29 tabs from those checks; they are gone and her 80 real ones stay.
+
+Then the last open part of [739](issues/739-a-shopper-cannot-subscribe.md):
+Square, PayPal and Authorize.net only learned of a payment from a webhook. Giving
+them the same "ask the gateway" check Stripe got meant reading how each takes a
+payment, and none of them could be paid at all
+([917](issues/917-a-shop-on-square-paypal-or-authorize-net-could-not-be-paid.md)).
+Every shopper's payment carried the same reference, the word `sparx`; there was
+no webhook address for any of them; PayPal never took the money after the
+shopper approved; an unsigned webhook was trusted; and no refund reached the
+money. All fixed, 35 gateway tests, 34 of them red on the old code. Her own shop
+is on Stripe and was not touched. A sandbox run per vendor is still owed.
+
+Then [273](issues/273-her-shop-page-was-not-in-her-list-of-pages.md), open
+since act 7 because nobody could say what removed her Shop page. The audit log
+could: on August 25 a catering design was added to her main site and taken off
+39 seconds later. Adding it replaced her 16 pages without a word in the log;
+taking it off removed only its own. The design list then went on calling her
+old Fashion Boutique design "Added as drafts" over pages that were gone, and
+removing it would have cleared her current header and footer. It now reads
+**Pages gone**, says how to bring them back, and removing it leaves her header
+alone. Replaced pages are logged by name. The second "All products" heading
+under her Shop heading is gone too.
+
+Clearing my old tabs out of her layout turned up one that was not mine: a
+**Broken link** for her own payment settings. The console writes
+`/commerce/payment-providers/stripe_direct` into the bar for "Your own Stripe",
+and that address opened nothing, because a word cannot sit where a record id
+goes ([918](issues/918-her-payment-settings-could-not-be-opened-from-their-own-address.md)).
+It opens now; no other screen had the same problem.
+
+Two older issues turned out to need only checking, and one small fix.
+[180](issues/180-her-console-keeps-telling-her-about-another-companys-products.md),
+another company's products in her console: every one is excluded now, and
+sparx Pay stays out even by its own address; the 11 sentences left sit in
+code she is never shown. [083](issues/083-a-link-to-an-order-this-salon-cannot-see-spun-for-ever.md),
+another business's order spinning for ever: it reads "That order is no longer
+here", and the three lists under such an order now answer 404 like the order.
+
+Then three of Halo & Hem's, read from here. [110](issues/110-her-diary-follows-the-laptops-clock-so-a-thursday-appointment-can-land-on-friday.md),
+the diary on the laptop's clock, was fixed on September 30 and its file never
+told; on a browser set to Lisbon time, the salon's Thursday 4:00 PM client
+stays on Thursday at 4:00 PM.
+[113](issues/113-a-clients-record-in-a-booking-business-has-no-appointments-on-it.md)
+has a Bookings tab now, but a booked client still reads "Lead" and "Total spent"
+still ignores bookings; the fix belongs in scheduling, which holds another
+session's large change, so it waits. [085](issues/085-her-price-list-had-two-of-everything-at-two-different-prices.md):
+Practice data now counts the services and people its Remove takes away. The two
+menus a salon starts with are still two; the choices are written down there.
+
+Two more from Halo & Hem, checked on her own pages.
+[099](issues/099-the-layers-list-called-her-map-site-map.md): her Shop page's
+Layers list says **Product listing**, not `commerce.plp`; fixed some time ago.
+[129](issues/129-the-email-editor-draws-her-button-black-and-the-preview-draws-it-brown.md):
+her own Booking reminder drew a black button in the editor and her orange one in
+Preview. The editor now loads the email painted in her brand by the same code the
+send uses, and the canvas matches. The header bar the inbox shows is still not on
+the canvas.
+
+On the way, her reminder still opened "Hi Alex — a friendly reminder", a
+wording the platform dropped on September 16. 870 untouched copies of default
+emails, across 44 kinds and nearly every business, are stuck on older wordings
+because the refresh does not recognize them
+([919](issues/919-her-automatic-emails-are-stuck-on-an-older-wording.md)).
+Another session is mid-change in the same file, so it is written up, not fixed.

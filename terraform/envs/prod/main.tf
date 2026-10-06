@@ -154,6 +154,9 @@ module "pubsub" {
     "crm.customer.updated" = []
     "crm.customer.deleted" = []
     "crm.customer.merged"  = []
+    # A person who arrived through a form, a booking or a checkout rather than
+    # being typed in (sparx persona issue 086). commerce-indexer consumes it.
+    "crm.customer.captured" = []
 
     # The REST of the CRM bus. `CrmTopic` in wizeworks/packages/crm/src/events.ts is a
     # SECOND event catalog, parallel to the `EventType` union in
@@ -390,16 +393,20 @@ module "pubsub" {
     "redirect.changed" = []
     "redirect.removed" = []
 
-    # Site publish (api-rest publishes on publish + rollback). The intended
-    # consumer is cache-revalidation-worker, which maps `builder.*` onto the
-    # `builder:<slug>` cache tag — but that worker is not deployed yet (no
-    # Cloud Run service, no k8s manifest), so these are topic-only. They exist
-    # NOW because every storefront route is still `force-dynamic`: nothing is
-    # cached, so a missing subscriber costs nothing, whereas a missing TOPIC
-    # would make the publisher fail silently and leave the switch to ISR
-    # looking fine right up until a rollback served a stale broken page.
+    # Site publish (api-rest publishes on publish + rollback). The consumer is
+    # cache-revalidation-worker, which maps `builder.*` onto the `builder:<slug>`
+    # cache tag. It is a HANDLER inside wizeworks/services/event-worker (a pull
+    # subscriber on the in-cluster broker), not a Cloud Run service, so these are
+    # topic-only here: this file is the retired GCP environment and nothing in it
+    # runs the fleet. The old note said the worker "is not deployed yet (no
+    # Cloud Run service, no k8s manifest)"; that stopped being true when it moved
+    # into the fleet (sparx persona issue 040).
     "builder.published"   = []
     "builder.rolled_back" = []
+    # A site's own settings changed without a publish: its name, links, contact
+    # details, brand, cookie banner, shop settings, payment method or footer legal
+    # links. Same consumer, same reason for being topic-only.
+    "site.updated" = []
 
     # Dropship (docs/14). dropship-worker (Cloud Run) consumes
     # dropship.supplier.sync_started + dropship.order.route + order.placed via

@@ -10,23 +10,25 @@
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 
-import { Alert, Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
+import { Alert, Button, Input } from '@wizeworks/silicaui-react';
 
+import { accountTermsSentence, canBillToAccount } from '@/lib/account-terms-words';
 import { formatMoney } from '@/lib/format';
+import {
+  approvalPreviewSentence,
+  HOSTED_PAYMENT_NOTE,
+  paymentNotice,
+  type HeldCard,
+} from '@/lib/sign-off-words';
 import { getStripe, PLATFORM_PUBLISHABLE_KEY } from '@/lib/stripe-loader';
 import {
+  cardConfirmed,
   completeCheckout,
   submitPayment,
+  type CheckoutApproval,
   type CheckoutSession,
   type PaymentIntentResult,
 } from '@/lib/checkout-client';
-
-const NET_TERMS_OPTIONS = [
-  { value: 'net15', label: 'Net 15' },
-  { value: 'net30', label: 'Net 30' },
-  { value: 'net60', label: 'Net 60' },
-  { value: 'net90', label: 'Net 90' },
-] as const;
 
 /**
  * What the CARD is charged, which is not always the order total.
@@ -41,6 +43,21 @@ function payNowCents(session: CheckoutSession): number {
   return session.madeToOrder?.dueNowCents ?? session.totals.totalCents;
 }
 
+/** What `onPaid` hands back. `held` is a trade order waiting to be signed
+ *  off: over a spending limit, or past the account's credit limit (sparx
+ *  persona issue 085). It is not placed yet, and the last screen has to say so
+ *  rather than "Order confirmed". `approval` says who it is waiting on, the
+ *  account's own approvers, the business, or both, so that screen can name them
+ *  (sparx persona issue 087). `card` is what happened to the card: held until
+ *  the order is approved, charged, or none. */
+export interface PlacedOrderResult {
+  orderId: string;
+  orderNumber: string;
+  held: boolean;
+  approval: CheckoutApproval | null;
+  card: HeldCard;
+}
+
 export interface PaymentStepProps {
   tenantSlug: string;
   session: CheckoutSession;
@@ -48,11 +65,71 @@ export interface PaymentStepProps {
   onBack: () => void;
   /** The order that now exists: its number for the shopper, its id for the
    *  link to it. `placeOrder` has always returned both. */
-  onPaid: (order: { orderId: string; orderNumber: string }) => void;
+  onPaid: (order: PlacedOrderResult) => void;
   /** Whether THIS order is being handed over rather than posted. The manual
    *  payment screen is the only one that reads it, and it is the difference
    *  between a true sentence and a false one (issue 215). */
   collecting: boolean;
+  /** The business's own name, for "Gillett Diesel Service approves it". */
+  shopName: string | null;
+  /** The trade account's name, for "over Wasatch Front's $1,000.00 limit". */
+  accountName: string | null;
+}
+
+/**
+ * Said before Place order, on every way of paying: this order goes over the
+ * account's spending limit, and who approves it before it goes ahead (sparx
+ * persona issue 087). Renée found out her order was held only after placing it,
+ * and was told the business would approve it when it was her own colleague who
+ * had to. Nothing when no limit covers the order.
+ */
+function ApprovalNotice({
+  session,
+  shopName,
+  accountName,
+  card,
+  then,
+  otherwise,
+}: Pick<PaymentStepProps, 'session' | 'shopName' | 'accountName'> & {
+  /** On the card form, whether the card is held or charged meanwhile. */
+  card?: HeldCard;
+  /** What this way of paying says, after who approves it, in the same box.
+   *  Two info boxes stacked read as one cluttered block (sparx persona issue
+   *  087), so a step that has its own note hands it here. */
+  then?: string;
+  /** That step's note when no approval is needed, in the same one box. */
+  otherwise?: string;
+}) {
+  const preview = session.approvalPreview;
+  const sentence = preview
+    ? approvalPreviewSentence({
+        waitingOn: preview.waitingOn,
+        accountApprovers: preview.accountApprovers,
+        limitCents: preview.limitCents,
+        currency: session.currency,
+        accountName,
+        shopName,
+        ...(card ? { card } : {}),
+      })
+    : null;
+  const text = paymentNotice(sentence, then, otherwise);
+  return text ? <Alert color="info">{text}</Alert> : null;
+}
+
+/** The order the complete call made, as `onPaid` hands it on. */
+function placedResult(
+  result: Awaited<ReturnType<typeof completeCheckout>>,
+  card: HeldCard
+): PlacedOrderResult {
+  return {
+    orderId: result.orderId,
+    orderNumber: result.orderNumber,
+    held: result.pendingApproval === true,
+    approval: result.approval ?? null,
+    // A card held for a sign-off the order turned out not to need was charged
+    // the moment it was placed.
+    card: card === 'held' && result.pendingApproval !== true ? 'charged' : card,
+  };
 }
 
 // Top-level payment step. A signed-in B2B customer (session.companyId
@@ -86,11 +163,11 @@ export function PaymentStep(props: PaymentStepProps) {
 function CardOrAccountPaymentStep(props: PaymentStepProps) {
   const { session } = props;
 
-  // A prepay-designated account has no net-terms entitlement — go straight
-  // to card, same as a non-B2B shopper (server-side submitPayment() also
-  // rejects a net-terms request from a prepay account either way).
+  // Only an account the shop has given day terms to can be billed: a prepay
+  // account, or one nobody has set terms on yet, goes straight to card, same as
+  // a non-B2B shopper. The server refuses both either way (issue 082).
   const netTermsEligible =
-    Boolean(session.companyId) && session.b2bAccountPaymentTerms !== 'prepay';
+    Boolean(session.companyId) && canBillToAccount(session.b2bAccountPaymentTerms);
   const [method, setMethod] = useState<'choose' | 'card' | 'account'>(
     netTermsEligible ? 'choose' : 'card'
   );
@@ -99,21 +176,22 @@ function CardOrAccountPaymentStep(props: PaymentStepProps) {
     return (
       <div className="flex max-w-[560px] flex-col gap-4">
         <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
+        <ApprovalNotice {...props} />
         <div className="flex flex-col gap-3">
           <Button type="button" color="primary" size="lg" onClick={() => setMethod('card')}>
             Pay by card
           </Button>
           <Button
             type="button"
-            color="neutral"
-            variant="soft"
+            color="primary"
+            variant="outline"
             size="lg"
             onClick={() => setMethod('account')}
           >
-            Bill to my account (net terms)
+            Bill to my account
           </Button>
         </div>
-        <Button type="button" color="neutral" variant="ghost" onClick={props.onBack}>
+        <Button type="button" variant="ghost" onClick={props.onBack}>
           ← Back
         </Button>
       </div>
@@ -162,6 +240,8 @@ function InPersonPaymentStep({
   onPaid,
   tenantSlug,
   collecting,
+  shopName,
+  accountName,
 }: PaymentStepProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -181,23 +261,29 @@ function InPersonPaymentStep({
         crypto.randomUUID(),
         session.totals.totalCents
       );
-      onPaid({ orderId: result.orderId, orderNumber: result.orderNumber });
+      onPaid(placedResult(result, 'none'));
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
     }
   }
 
+  const inPersonNote = collecting
+    ? 'You pay when you collect. Placing this order does not take any money now, and no card details are needed.'
+    : 'Placing this order does not take any money now, and no card details are needed. We’ll be in touch about paying for it.';
+
   return (
     <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
       <h2 className="text-base-content text-3xl font-semibold tracking-tight">
         How you&rsquo;ll pay
       </h2>
-      <Alert color="info">
-        {collecting
-          ? 'You pay when you collect. Placing this order does not take any money now, and no card details are needed.'
-          : 'Placing this order does not take any money now, and no card details are needed. We’ll be in touch about paying for it.'}
-      </Alert>
+      <ApprovalNotice
+        session={session}
+        shopName={shopName}
+        accountName={accountName}
+        then={inPersonNote}
+        otherwise={inPersonNote}
+      />
       {error ? <Alert color="danger">{error}</Alert> : null}
       <div className="flex gap-3">
         <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
@@ -213,9 +299,15 @@ function InPersonPaymentStep({
   );
 }
 
-function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStepProps) {
+function AccountPaymentStep({
+  session,
+  onBack,
+  onPaid,
+  tenantSlug,
+  shopName,
+  accountName,
+}: PaymentStepProps) {
   const [poNumber, setPoNumber] = useState('');
-  const [terms, setTerms] = useState<string>('net30');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -224,8 +316,10 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
     setBusy(true);
     setError(null);
     try {
+      // The terms are the account's own; sending them back is only the
+      // "bill this to my account" signal (issue 082).
       await submitPayment(tenantSlug, session.sessionId, {
-        paymentTermsRequested: terms,
+        paymentTermsRequested: session.b2bAccountPaymentTerms ?? '',
         ...(poNumber.trim() ? { poNumber: poNumber.trim() } : {}),
       });
       const result = await completeCheckout(
@@ -234,7 +328,7 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
         crypto.randomUUID(),
         session.totals.totalCents
       );
-      onPaid({ orderId: result.orderId, orderNumber: result.orderNumber });
+      onPaid(placedResult(result, 'none'));
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
@@ -243,24 +337,30 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
 
   return (
     <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
-      <h2 className="text-base-content text-3xl font-semibold tracking-tight">Bill to account</h2>
+      <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+        Bill to your account
+      </h2>
+      {/* One box: who approves it first, then how it is billed once they do.
+          "We add this order to your account" is not true of a held order until
+          it is approved (sparx persona issue 087). */}
+      <ApprovalNotice
+        session={session}
+        shopName={shopName}
+        accountName={accountName}
+        then={accountTermsSentence(session.b2bAccountPaymentTerms, true)}
+        otherwise={accountTermsSentence(session.b2bAccountPaymentTerms)}
+      />
       <label className="flex flex-col gap-1.5">
-        <span className="text-base-content text-sm font-medium">PO number (optional)</span>
+        <span className="text-base-content text-sm font-medium">Your PO number (optional)</span>
         <Input value={poNumber} onChange={(e) => setPoNumber(e.target.value)} />
-      </label>
-      <label className="flex flex-col gap-1.5">
-        <span className="text-base-content text-sm font-medium">Payment terms</span>
-        <NativeSelect value={terms} onChange={(e) => setTerms(e.target.value)}>
-          {NET_TERMS_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </NativeSelect>
+        <span className="text-base-content text-sm">
+          If your business gave this order a number of its own, type it here. We print it on your
+          invoice so your accounts team can match it.
+        </span>
       </label>
       {error ? <Alert color="danger">{error}</Alert> : null}
       <div className="flex gap-3">
-        <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+        <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
         </Button>
         <Button type="submit" color="primary" size="lg" className="flex-1" disabled={busy}>
@@ -273,7 +373,15 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
   );
 }
 
-function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: PaymentStepProps) {
+function CardPaymentStep({
+  tenantSlug,
+  session,
+  createIntent,
+  onBack,
+  onPaid,
+  shopName,
+  accountName,
+}: PaymentStepProps) {
   const [intent, setIntent] = useState<PaymentIntentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -293,6 +401,14 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // What happens to the card while the order waits for sign-off, once the
+  // server has said: held where the card processor can hold one, charged now
+  // where it cannot (sparx persona issue 087).
+  const card: HeldCard = intent?.cardHeld ? 'held' : 'charged';
+  const notice = (
+    <ApprovalNotice session={session} shopName={shopName} accountName={accountName} card={card} />
+  );
+
   // The merchant's own key when the gateway sent one, else sparx's platform key.
   const publishableKey = intent?.publishableKey ?? PLATFORM_PUBLISHABLE_KEY;
   const stripe = useMemo(
@@ -304,7 +420,7 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
     return (
       <div className="flex max-w-[560px] flex-col gap-4">
         <Alert color="danger">{error}</Alert>
-        <Button type="button" color="neutral" variant="ghost" onClick={onBack}>
+        <Button type="button" variant="ghost" onClick={onBack}>
           ← Back to shipping
         </Button>
       </div>
@@ -323,7 +439,25 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
   // Hosted-redirect gateways (Square / Authorize.net / 1stPay / custom, docs/111 D4):
   // the shopper pays on the vendor's own page. No Stripe key / Elements involved.
   if (intent.redirectUrl) {
-    return <RedirectPay intent={intent} session={session} onBack={onBack} />;
+    // One box: who approves it and what happens to the card meanwhile, then
+    // that they finish paying on the provider's page (sparx persona issue 087).
+    return (
+      <RedirectPay
+        intent={intent}
+        session={session}
+        onBack={onBack}
+        notice={
+          <ApprovalNotice
+            session={session}
+            shopName={shopName}
+            accountName={accountName}
+            card={card}
+            then={HOSTED_PAYMENT_NOTE}
+            otherwise={HOSTED_PAYMENT_NOTE}
+          />
+        }
+      />
+    );
   }
 
   if (!stripe) {
@@ -353,8 +487,10 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
         session={session}
         providerSlug={intent.providerSlug}
         paymentRef={intent.paymentRef}
+        card={card}
         onBack={onBack}
         onPaid={onPaid}
+        notice={notice}
       />
     </Elements>
   );
@@ -368,10 +504,14 @@ function RedirectPay({
   intent,
   session,
   onBack,
+  notice,
 }: {
   intent: PaymentIntentResult;
   session: CheckoutSession;
   onBack: () => void;
+  /** The one note on this screen: who approves the order, when someone has
+   *  to, and that they finish paying on the provider's page. */
+  notice: React.ReactNode;
 }) {
   const [busy, setBusy] = useState(false);
 
@@ -397,11 +537,9 @@ function RedirectPay({
   return (
     <div className="flex max-w-[560px] flex-col gap-4">
       <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
-      <Alert color="info">
-        You’ll finish paying securely on your payment provider’s page, then return here.
-      </Alert>
+      {notice}
       <div className="flex gap-3">
-        <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+        <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
         </Button>
         <Button
@@ -426,22 +564,34 @@ function PaymentInner({
   session,
   providerSlug,
   paymentRef,
+  card,
   onBack,
   onPaid,
+  notice,
 }: {
   tenantSlug: string;
   session: CheckoutSession;
   providerSlug: string;
   paymentRef: string;
+  /** Held until the order is approved, or charged now. */
+  card: HeldCard;
   onBack: () => void;
+  /** Who approves this order before it goes ahead, when someone has to. */
+  notice: React.ReactNode;
   /** The order that now exists: its number for the shopper, its id for the
    *  link to it. `placeOrder` has always returned both. */
-  onPaid: (order: { orderId: string; orderNumber: string }) => void;
+  onPaid: (order: PlacedOrderResult) => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // A trade buyer paying by card has a purchase order too (sparx persona issue
+  // 086). It rides on the card order and onto its invoice and statement, exactly
+  // as it does on an order billed to the account. Offered only to a signed-in
+  // trade contact, the only buyer the server takes one from.
+  const [poNumber, setPoNumber] = useState('');
+  const tradeBuyer = Boolean(session.companyId);
 
   async function pay(e: React.FormEvent) {
     e.preventDefault();
@@ -449,7 +599,7 @@ function PaymentInner({
     setBusy(true);
     setError(null);
     try {
-      const { error: confirmError } = await stripe.confirmPayment({
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
         redirect: 'if_required',
       });
@@ -458,10 +608,16 @@ function PaymentInner({
         setBusy(false);
         return;
       }
+      if (!cardConfirmed(paymentIntent?.status)) {
+        setError('Your card did not go through. Check the details, or try another card.');
+        setBusy(false);
+        return;
+      }
       // Record the confirmed payment on the session, then finalize the order.
       await submitPayment(tenantSlug, session.sessionId, {
         paymentProviderSlug: providerSlug,
         paymentRef,
+        ...(tradeBuyer && poNumber.trim() ? { poNumber: poNumber.trim() } : {}),
       });
       const result = await completeCheckout(
         tenantSlug,
@@ -469,7 +625,7 @@ function PaymentInner({
         paymentRef,
         session.totals.totalCents
       );
-      onPaid({ orderId: result.orderId, orderNumber: result.orderNumber });
+      onPaid(placedResult(result, card));
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
@@ -479,10 +635,26 @@ function PaymentInner({
   return (
     <form onSubmit={pay} className="flex max-w-[560px] flex-col gap-4">
       <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
+      {notice}
+      {tradeBuyer ? (
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Your PO number (optional)</span>
+          <Input
+            value={poNumber}
+            maxLength={63}
+            onChange={(e) => setPoNumber(e.target.value)}
+            disabled={busy}
+          />
+          <span className="text-base-content text-sm">
+            If your business gave this order a number of its own, type it here. It is kept with this
+            order and printed on any invoice we send for it, so your accounts team can match it.
+          </span>
+        </label>
+      ) : null}
       <PaymentElement options={{ layout: 'tabs' }} />
       {error ? <Alert color="danger">{error}</Alert> : null}
       <div className="flex gap-3">
-        <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+        <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
         </Button>
         <Button
@@ -492,7 +664,11 @@ function PaymentInner({
           className="flex-1"
           disabled={!stripe || busy}
         >
-          {busy ? 'Processing…' : `Pay ${formatMoney(payNowCents(session), session.currency)}`}
+          {busy
+            ? 'Processing…'
+            : // A held card is not paid with yet: the order is placed and the card
+              // charged once it is approved (sparx persona issue 087).
+              `${card === 'held' ? 'Place order:' : 'Pay'} ${formatMoney(payNowCents(session), session.currency)}`}
         </Button>
       </div>
     </form>

@@ -9,16 +9,17 @@ import { Text } from '@wizeworks/silicaui-react';
 
 import { FormSection } from '../../components/form-section';
 import { MoneyRow } from './order-detail-blocks';
-import { amountDue, formatMoney, type Order } from './data';
+import { amountDue, customerName, formatMoney, type Order } from './data';
 import { deliveryPlan } from './order-types';
 import { refundNote } from './refund-note';
+import { OrderLineCore } from './order-cores';
 
 type OrderItem = NonNullable<Order['items']>[number];
 
 const ROW =
   'border-base-300 flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b py-3 first:pt-0 last:border-b-0 last:pb-0';
 
-function LineRow({ item, currency }: { item: OrderItem; currency: string }) {
+function LineRow({ item, currency, buyer }: { item: OrderItem; currency: string; buyer: string }) {
   const partlySent = item.quantityFulfilled > 0 && item.quantityFulfilled < item.quantity;
   return (
     <li className={ROW}>
@@ -37,6 +38,7 @@ function LineRow({ item, currency }: { item: OrderItem; currency: string }) {
         {item.quantityRefunded > 0 ? (
           <span className="text-sm">{item.quantityRefunded} refunded</span>
         ) : null}
+        <OrderLineCore item={item} currency={currency} customerName={buyer} />
       </div>
       {/* Quantity × price, NOT the stored `lineTotal` — that one folds the
           line's own tax in, while the totals block charges tax and discount as
@@ -48,15 +50,14 @@ function LineRow({ item, currency }: { item: OrderItem; currency: string }) {
   );
 }
 
-function OrderTotals({ order }: { order: Order }) {
+/** Everything between "Items" and "Order total". */
+function ChargeRows({ order }: { order: Order }) {
   const currency = order.currency;
-  const due = amountDue(order);
   // Free delivery is a decision she made, not a line with nothing in it, so a
   // posted order shows the row at zero. Only a collected one has no delivery.
   const posted = !deliveryPlan(order).collected;
   return (
-    <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
-      <MoneyRow label="Items" amount={order.subtotal} currency={currency} />
+    <>
       {order.discountTotal > 0 ? (
         <MoneyRow label="Discount" amount={-order.discountTotal} currency={currency} />
       ) : null}
@@ -74,10 +75,24 @@ function OrderTotals({ order }: { order: Order }) {
       {order.taxTotal > 0 ? (
         <MoneyRow label="Tax" amount={order.taxTotal} currency={currency} />
       ) : null}
-      {/* No gift-card line here on purpose. A card is money IN, not a discount,
-          so it is an OrderPayment and shows under "Money in" with its code — and
-          the order's own total stays the value of what was sold. Repeating it as
-          a negative here would take the same $150 off twice on one screen. */}
+      {/* Refundable core deposits: money paid, not a sale, so never in "Items". */}
+      {order.coreChargeTotal > 0 ? (
+        <MoneyRow label="Core deposits" amount={order.coreChargeTotal} currency={currency} />
+      ) : null}
+    </>
+  );
+}
+
+function OrderTotals({ order }: { order: Order }) {
+  const currency = order.currency;
+  const due = amountDue(order);
+  return (
+    <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
+      <MoneyRow label="Items" amount={order.subtotal} currency={currency} />
+      <ChargeRows order={order} />
+      {/* No gift-card line on purpose: a card is money IN, shown under "Money
+          in" with its code. Repeating it here as a negative would take the same
+          $150 off twice on one screen. */}
       <MoneyRow label="Order total" amount={order.total} currency={currency} emphasis />
       {order.amountPaid > 0 ? (
         <MoneyRow label="Paid so far" amount={order.amountPaid} currency={currency} />
@@ -85,10 +100,9 @@ function OrderTotals({ order }: { order: Order }) {
       {order.refundTotal > 0 ? (
         <MoneyRow label="Given back" amount={order.refundTotal} currency={currency} />
       ) : null}
-      {/* An unmarked line beside a full refund reads as "this one was kept", and
-          on O-000004 that was wrong about $128 of stock. The note says which kind
-          of refund it was; it states no figure, because the split was never
-          recorded (see refund-note.ts). */}
+      {/* An unmarked line beside a full refund reads as "this one was kept". The
+          note says which kind of refund it was, with no figure, because the split
+          was never recorded (see refund-note.ts). */}
       {refundNote(order) !== null ? <Text className="text-sm">{refundNote(order)}</Text> : null}
       {due > 0 ? <MoneyRow label="Still owed" amount={due} currency={currency} emphasis /> : null}
     </div>
@@ -104,7 +118,12 @@ export function OrderLines({ order }: { order: Order }) {
       ) : (
         <ul className="flex flex-col">
           {items.map((item) => (
-            <LineRow key={item.id} item={item} currency={order.currency} />
+            <LineRow
+              key={item.id}
+              item={item}
+              currency={order.currency}
+              buyer={customerName(order.customer)}
+            />
           ))}
         </ul>
       )}

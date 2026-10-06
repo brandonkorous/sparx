@@ -22,6 +22,25 @@ export interface SiteIdentityPreview {
   tagline: string | null;
   logo: { url: string; alt: string } | null;
   logoDark: { url: string; alt: string } | null;
+  /**
+   * How customers reach this business — the same five the LIVE site resolves.
+   *
+   * They were missing here, so a starter site's Contact page went on drawing the
+   * blueprint's invented `(555) 123-4567` and "123 Main Street, Portland" in the
+   * editor while the live page showed the owner's real details. An owner who typed
+   * his number over the sample would have cut the page loose from Business details
+   * (sparx persona issue 047; Piggles fixed the same gap earlier).
+   *
+   * `null`, never '', for the same reason as `tagline` — see the live site's
+   * `siteRoot`, which this mirrors field for field.
+   */
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  /** The dialable and mailable forms, composed HERE because an attribute binding
+   *  fills a value verbatim and cannot prefix it. Same rule as the live site. */
+  phoneHref: string | null;
+  emailHref: string | null;
 }
 
 /** The tenant's real `site.*` chrome data — identity + social links — overlaid onto

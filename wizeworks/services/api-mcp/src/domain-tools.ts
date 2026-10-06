@@ -13,6 +13,7 @@
 
 import { z } from 'zod';
 import { prisma, withTenant } from '@wizeworks/db';
+import { tenantZone } from '@wizeworks/db/site-origin';
 import { buildSparxDnsRecords, RegistrarError } from '@wizeworks/registrar';
 import { getRegistrar } from './registrar.js';
 import { createPublisher, publishEvent, type PublisherLogger } from '@wizeworks/events';
@@ -304,22 +305,13 @@ export const domainMcpTools = [
   purchaseDomainTool,
 ];
 
-/** Which zone this tenant's free subdomain sits in — read off the host they
- *  already have rather than assumed, so no shared code branches on brand.
- *  Mirrors wizeworks/services/api-rest's `tenantZone`; null when they have none, and the
- *  record builder then falls back to the deployment default. */
-async function tenantZoneFor(tenantId: string): Promise<string | null> {
-  const rows = await prisma.domain.findMany({
-    where: { tenantId, type: 'subdomain' },
-    select: { host: true },
-  });
-  const zones = (process.env.SPARX_ZONE_DOMAINS ?? process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone')
-    .split(',')
-    .map((z) => z.trim().toLowerCase())
-    .filter(Boolean);
-  for (const { host } of rows) {
-    const zone = zones.find((z) => host === z || host.endsWith(`.${z}`));
-    if (zone) return zone;
-  }
-  return null;
+/** Which zone this tenant's free subdomain sits in: read off the host they already
+ *  have rather than assumed, so no shared code branches on brand. The shared
+ *  `tenantZone` (`@wizeworks/db/site-origin`), the same answer api-rest mints a new
+ *  site's host from. This used to be a local copy that took the FIRST subdomain row
+ *  rather than the primary site's, and gave up on a zone `SPARX_ZONE_DOMAINS` had not
+ *  been told about: the two halves of issue 316, fixed in api-rest and still live
+ *  here, which is what a second copy costs. */
+function tenantZoneFor(tenantId: string): Promise<string> {
+  return tenantZone(prisma, tenantId);
 }

@@ -85,6 +85,14 @@ spec:
             - { name: NODE_ENV, value: production }
             - { name: SERVICE_NAME, value: event-worker }
             - { name: PORT, value: '8080' }
+            # Where @wizeworks/cache-revalidation-worker purges a website's cached
+            # reads: the `site` Service (k8s/apps/site.yaml). Its secret,
+            # SPARX_REVALIDATE_SECRET, arrives with `sparx-app-secrets` above, the
+            # same key the site maps by name.
+            - {
+                name: SITE_REVALIDATE_URL,
+                value: 'http://site.sparx-prod.svc.cluster.local:3000/api/revalidate',
+              }
           resources:
             # 384Mi against a measured 347Mi. Unlike its BestEffort siblings
             # this one declares a request, because it is the ONLY consumer of

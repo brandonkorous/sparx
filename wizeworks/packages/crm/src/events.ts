@@ -37,6 +37,13 @@ export type CrmTopic =
   // `.created` so the email module can route only consenting contacts to an
   // audience without re-checking gdpr_consent on every customer write.
   | 'crm.customer.subscribed'
+  // A new person who handed their details over BY THEMSELVES: a form on the
+  // site, a booking, a checkout, a marketplace order. Distinct from `.created`
+  // (a person signed up for an account, or somebody on the team typed them in),
+  // because "Welcome new customers" answers `.created`, and a stranger who asked
+  // a question through a contact form did not join anything. Everything that has
+  // to KNOW about a new person (search, groups, scores) listens to both.
+  | 'crm.customer.captured'
   | 'crm.b2b_account.created'
   | 'crm.b2b_account.updated'
   | 'crm.pipeline.created'

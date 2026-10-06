@@ -184,6 +184,18 @@ export function daysPastDue(dueAt: Date | null, now: Date, timeZone?: string | n
   return Math.round((zoneDay(now, timeZone) - utcDay(dueAt)) / DAY_MS);
 }
 
+/** Which aging bucket a balance that many days past due falls in. The one copy
+ *  of the 30/60/90 boundaries: the aging report and the account statement both
+ *  file a balance through here, so the two can never put the same invoice in
+ *  different columns. Zero or fewer days is `current`. */
+export function agingBucketKey(daysPast: number): AgingBucketKey {
+  if (daysPast <= 0) return 'current';
+  if (daysPast <= 30) return 'd1_30';
+  if (daysPast <= 60) return 'd31_60';
+  if (daysPast <= 90) return 'd61_90';
+  return 'd90_plus';
+}
+
 /** Bucket open balances by days past `dueAt`. A row with no `dueAt` (a pay-now
  *  retail document, not on terms) counts as `current`; a non-positive balance is
  *  skipped. `current` also holds anything not yet past due. */
@@ -201,17 +213,7 @@ export function bucketAging(
   };
   for (const r of rows) {
     if (r.balance <= 0) continue;
-    const daysPast = daysPastDue(r.dueAt, now, timeZone);
-    const key: AgingBucketKey =
-      daysPast <= 0
-        ? 'current'
-        : daysPast <= 30
-          ? 'd1_30'
-          : daysPast <= 60
-            ? 'd31_60'
-            : daysPast <= 90
-              ? 'd61_90'
-              : 'd90_plus';
+    const key = agingBucketKey(daysPastDue(r.dueAt, now, timeZone));
     out[key].count += 1;
     out[key].balance = round2(out[key].balance + r.balance);
   }

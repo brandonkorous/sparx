@@ -1,6 +1,7 @@
-import type { ReactNode } from 'react';
-import { Button, Heading, Text } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref, SALES_HREF } from './cta';
+import type { ReactNode } from 'react';
+import { Heading, Text } from '@wizeworks/silicaui-react';
 import { Dot, getModuleColor, type MarketingModule, Spark } from './primitives';
 import { Band } from './band';
 import { MODULE_ORDER } from '@/lib/modules';
@@ -150,12 +151,15 @@ function PlatformHero() {
             <div className="flex flex-wrap items-center gap-3">
               {/* Was `` — the page's single most important action,
                   rendered in the one color RULE #4 says has to be earned. */}
-              <Button color="primary" size="xl">
+              <a
+                href={signupHref('platform-hero')}
+                className={buttonClasses({ color: 'primary', size: 'xl' })}
+              >
                 Start free →
-              </Button>
-              <Button size="xl" variant="outline">
+              </a>
+              <a href={SALES_HREF} className={buttonClasses({ size: 'xl', variant: 'outline' })}>
                 Talk to sales
-              </Button>
+              </a>
             </div>
             <Text className="font-mono text-sm">No credit card · Live in five minutes</Text>
           </div>
@@ -942,12 +946,15 @@ function PlatformCta() {
           rest whenever you&apos;re ready.
         </Text>
         <div className="flex flex-wrap items-center justify-center gap-3.5">
-          <Button color="primary" size="xl">
+          <a
+            href={signupHref('platform-final')}
+            className={buttonClasses({ color: 'primary', size: 'xl' })}
+          >
             Start free
-          </Button>
-          <Button size="xl" variant="outline">
+          </a>
+          <a href={SALES_HREF} className={buttonClasses({ size: 'xl', variant: 'outline' })}>
             Talk to sales
-          </Button>
+          </a>
         </div>
         <Text className="mt-6 font-mono text-sm">
           No credit card · Cancel anytime · Your data, always exportable

@@ -243,7 +243,7 @@ export function PaneToolbar({
           // tabs made the chrome jump. The floor is spelled out as its parts, so it
           // survives silica retuning its control sizes; `flex-wrap` raises the
           // ceiling only when there is genuinely more than a row's worth to hold.
-          className={`bg-base-100 min-h-[calc(2rem+1rem+2px)] w-full flex-wrap gap-2 p-2 ${className ?? ''}`}
+          className={`bg-base-100 min-h-[calc(2rem+1rem+2px)] w-full flex-wrap gap-2 p-2 [&:has(>.contents>.ml-auto)>.toolbar-end]:ml-0 [&:has(>.ml-auto:not(.toolbar-end))>.toolbar-end]:ml-0 ${className ?? ''}`}
         >
           {/* Information first; `min-w-0` truncates rather than overflowing. */}
           {status ? (
@@ -279,8 +279,16 @@ export function PaneToolbar({
 
           {/* `ml-auto` on the GROUP, not the primary button, so it still pushes
               right on a surface with no primary action — and, once the row wraps,
-              keeps the whole group together and right-aligned on its own line. */}
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+              keeps the whole group together and right-aligned on its own line.
+
+              `toolbar-end` is a marker the bar's own class reads: when a surface
+              pushes its OWN controls right with an `ml-auto`, this group stops
+              pushing. Two auto margins split the free space equally, so both
+              pushing put the surface's buttons in the MIDDLE of the bar: 61
+              toolbars across both consoles, the content editor's Unpublish and
+              Save among them. Letting the surface's push win keeps what it asked
+              for, its buttons at the right beside this group. */}
+          <div className="toolbar-end ml-auto flex shrink-0 items-center gap-2">
             {!collapsed && hasActions ? <ToolbarActionButtons actions={actions ?? []} /> : null}
             {primaryAction ? (
               <ToolbarPrimaryAction action={primaryAction} compact={narrow} />

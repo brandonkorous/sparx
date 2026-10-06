@@ -27,6 +27,7 @@ import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { formatCentsAmount } from '../../lib/money-format';
 import { customerKeys } from '../crm/customers-data';
+import { discountSummary } from './pricing-tiers-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -46,7 +47,10 @@ export interface AccountRow {
   taxId: string | null;
   website: string | null;
   pricingTierId: string | null;
+  /** The tier that prices them; null for normal prices, a removed tier included. */
   pricingTierName: string | null;
+  /** The tier they are still linked to after it was removed, which prices nothing. */
+  removedTierName: string | null;
   creditLimitCents: number;
   creditUsedCents: number;
   creditRemainingCents: number;
@@ -99,6 +103,11 @@ export interface AccountContact {
 export interface TierChoice {
   id: string;
   name: string;
+  /** Read so the picker can say what the tier gives ("Fleet · 12% off"):
+   *  names alone made the owner remember which group was which (sparx
+   *  persona issue 074). */
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
 }
 
 export const accountKeys = {
@@ -138,6 +147,24 @@ export const CONTACT_ROLE_LABELS: Record<ContactRole, string> = {
   approver: 'Can approve orders',
   viewer: 'Can view only',
 };
+
+/**
+ * The people already on an account, by customer id, with the words the Add
+ * someone picker shows under each instead of letting them be picked again. The
+ * picker offered Renée to Wasatch a second time and the server then refused her
+ * (sparx persona issue 086). Only the active ones: adding someone who was
+ * switched off turns them back on, which is allowed.
+ */
+export function alreadyOnAccount(contacts: readonly AccountContact[]): Map<string, string> {
+  return new Map(
+    contacts
+      .filter((contact) => contact.isActive)
+      .map((contact) => [
+        contact.customer.id,
+        `Already on this account (${CONTACT_ROLE_LABELS[contact.role].toLowerCase()})`,
+      ])
+  );
+}
 
 export function formatCents(cents: number, currency = 'USD'): string {
   return formatCentsAmount(cents, currency);
@@ -195,12 +222,64 @@ export function useTierChoices() {
   });
 }
 
+/**
+ * The choices for a "Price tier" select: normal prices (the empty value), then
+ * every tier with what it gives.
+ *
+ * Shared by the Wholesale account pane and the CRM company pane, so the two put
+ * the same question the same way. The CRM pane had a free-text box writing a
+ * column nothing priced from, and showed Wasatch Front with no tier while this
+ * pane showed it on Fleet at 12% off (sparx persona issue 086).
+ *
+ * `current` is the tier the account is linked to. When it is not among the
+ * choices it is still offered under its own name, so the select never shows a
+ * blank for a tier that is set. A removed one (`removed`, or missing from a list
+ * that has loaded) says so: it prices nothing, so the account pays normal prices.
+ */
+export function tierChoiceItems(
+  tiers: TierChoice[] | undefined,
+  noneLabel: string,
+  current?: { id: string | null; name: string | null; removed?: boolean }
+): { value: string; label: string }[] {
+  const items = (tiers ?? []).map((tier) => ({
+    value: tier.id,
+    label: `${tier.name} · ${discountSummary(tier)}`,
+  }));
+  if (current?.id && !items.some((item) => item.value === current.id)) {
+    const name = current.name ?? 'The tier they were on';
+    const removed = current.removed === true || tiers !== undefined;
+    items.push({ value: current.id, label: removed ? removedTierWords(name) : name });
+  }
+  return [{ value: '', label: noneLabel }, ...items];
+}
+
+/** How a removed tier reads wherever the account's own screen names it. */
+export function removedTierWords(name: string): string {
+  return `${name} (removed, so normal prices)`;
+}
+
+/**
+ * The tier line under the account's name: the tier that prices them, the
+ * removed one said plainly, or null for normal prices. It named a removed tier
+ * as if it still applied (sparx persona issue 086).
+ */
+export function accountTierWords(account: {
+  pricingTierName: string | null;
+  removedTierName: string | null;
+}): string | null {
+  if (account.pricingTierName) return account.pricingTierName;
+  return account.removedTierName ? removedTierWords(account.removedTierName) : null;
+}
+
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
 export function useInvalidateAccounts() {
   const queryClient = useQueryClient();
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: accountKeys.all });
+    // The same row is the CRM's company: its pane, open beside this one, shows
+    // the same tier and terms and has to hear about a change made here.
+    void queryClient.invalidateQueries({ queryKey: ['crm', 'accounts'] });
     if (id) void queryClient.invalidateQueries({ queryKey: accountKeys.detail(id) });
   };
 }
@@ -312,19 +391,37 @@ export function useDeleteAccount(id: string) {
   });
 }
 
+/**
+ * Who on an account can approve orders decides who signs the orders a spending
+ * limit holds for its own approvers (sparx persona issue 087). The limits and
+ * the held orders name those people, so a contact added, re-roled or removed
+ * here has to reach Approvals too. Literal keys: approvals-data imports this
+ * file, so importing it back would be a cycle.
+ */
+function useInvalidateSignOff() {
+  const queryClient = useQueryClient();
+  return () => {
+    void queryClient.invalidateQueries({ queryKey: ['b2b', 'approval-rules'] });
+    void queryClient.invalidateQueries({ queryKey: ['b2b', 'approval-queue'] });
+  };
+}
+
 export function useAddContact(id: string) {
   const invalidate = useInvalidateMembership();
+  const invalidateSignOff = useInvalidateSignOff();
   return useMutation({
     mutationFn: (input: { customerId: string; role: ContactRole }) =>
       api.post(`/v1/crm/b2b-accounts/${id}/contacts`, input),
     onSuccess: () => {
       invalidate(id);
+      invalidateSignOff();
     },
   });
 }
 
 export function useUpdateContact(id: string) {
   const invalidate = useInvalidateMembership();
+  const invalidateSignOff = useInvalidateSignOff();
   return useMutation({
     mutationFn: (input: { contactId: string; role?: ContactRole; isActive?: boolean }) =>
       api.patch(`/v1/crm/b2b-accounts/${id}/contacts/${input.contactId}`, {
@@ -333,6 +430,7 @@ export function useUpdateContact(id: string) {
       }),
     onSuccess: () => {
       invalidate(id);
+      invalidateSignOff();
     },
   });
 }

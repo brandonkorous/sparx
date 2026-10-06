@@ -10,12 +10,15 @@ import { useEffect, useState } from 'react';
 import { useConfirm } from '../../lib/confirm';
 import { cancelAsk, noShowAsk, type Ask } from './booking-endings-copy';
 import { usePolicy } from './setup-data';
+import { thisComputersTimezone } from '../../lib/business-timezone';
 import {
-  fromLocalInputValue,
-  isTerminalBooking,
-  toLocalInputValue,
-  type Booking,
-} from './bookings-data';
+  instantFromWall,
+  wallClockHint,
+  wallProblem,
+  wallValue,
+  type WallClockBox,
+} from '../../lib/wall-clock';
+import { isTerminalBooking, type Booking } from './bookings-data';
 import {
   calendarErrorMessage,
   useCancel,
@@ -115,6 +118,8 @@ function actsFor(
 export interface CalendarBookingState {
   when: string;
   setWhen: (value: string) => void;
+  /** Whose clock the move box is on: the booking's own. */
+  whenClock: WallClockBox;
   moves: Moves;
   busy: Moves;
   canMove: boolean;
@@ -132,14 +137,18 @@ export function useCalendarBooking(booking: Booking): CalendarBookingState {
   const m = useMutations(booking.id);
   const all = Object.values(m);
 
-  // The pending new time. Re-seeds from the booking whenever its start moves, so
-  // after a successful reschedule the field shows the time it now sits at.
-  const [when, setWhen] = useState(() => toLocalInputValue(booking.startAt));
+  // The pending new time, on the booking's OWN clock, the one its block, its
+  // header and the customer's emails use (sparx persona issue 086). Re-seeds from
+  // the booking whenever its start moves, so after a successful reschedule the
+  // field shows the time it now sits at.
+  const zone = booking.timezone;
+  const startWall = wallValue(booking.startAt, zone);
+  const [when, setWhen] = useState(startWall);
   useEffect(() => {
-    setWhen(toLocalInputValue(booking.startAt));
-  }, [booking.startAt]);
+    setWhen(startWall);
+  }, [startWall]);
 
-  const movedTo = fromLocalInputValue(when);
+  const movedTo = instantFromWall(when, zone);
   // ONE message, the most specific one — the latest action that was refused,
   // named verbatim by the server (a clash, a closed hour).
   const failed = all.find((one) => one.isError);
@@ -154,7 +163,14 @@ export function useCalendarBooking(booking: Booking): CalendarBookingState {
     setWhen,
     moves: movesFor(booking),
     busy: busyOf(m),
-    canMove: movedTo !== null && movedTo !== booking.startAt && !m.reschedule.isPending,
+    whenClock: {
+      zone,
+      hint: wallClockHint(zone, thisComputersTimezone()),
+      problem: wallProblem(when, zone),
+    },
+    // Compared as the box reads, so the second 1:30 AM of the night the clocks go
+    // back does not count as a move just by being shown.
+    canMove: movedTo !== null && when !== startWall && !m.reschedule.isPending,
     anyPending: all.some((one) => one.isPending),
     actionError: failed
       ? calendarErrorMessage(failed.error, 'That did not go through. Nothing was changed.')

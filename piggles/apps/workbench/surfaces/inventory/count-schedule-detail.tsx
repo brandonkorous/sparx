@@ -21,6 +21,7 @@
 // front of them.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Alert,
@@ -302,6 +303,25 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <PaneWaiting label="Loading the schedule…" />
+      </div>
+    );
+  }
+
+  // A schedule that is not there (deleted, or a link to another business)
+  // says so, rather than opening an empty form that would save as nothing
+  // (persona issue 226).
+  if (!isNew && !existing.data) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          {...(existing.isError ? { error: existing.error } : { reason: 'missing' as const })}
+          noun="count schedule"
+          title="Could not load this schedule"
+          description="This is a problem reaching the server. The schedule itself is unaffected. Nothing has been changed or lost."
+          onRetry={() => {
+            void existing.refetch();
+          }}
+        />
       </div>
     );
   }

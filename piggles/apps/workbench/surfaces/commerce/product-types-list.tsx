@@ -32,7 +32,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useProductTypeList, type ProductType } from './product-types-data';
 import { productCopy } from '../../lib/product';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -63,6 +63,7 @@ function attributeLabel(type: ProductType): string {
 }
 
 export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('commerce.product-types.list');
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<KindFilterValue>('all');
 
@@ -111,7 +112,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'New kind of product',
+          label: createLabel,
           icon: faPlus,
           onClick: create,
           title: 'Define a new kind of product. Hold Shift to open alongside, Alt for a new window',
@@ -194,7 +195,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Icon glyph={faPlus} className="size-4" aria-hidden />
-                    New kind of product
+                    {createLabel}
                   </Button>
                 ),
               }}
@@ -209,7 +210,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               emptyHint={
                 kind === 'built_in'
                   ? null
-                  : 'You have not defined any of your own yet. Use “New kind of product” above, or open a built-in and edit it to start your own copy.'
+                  : `You have not defined any of your own yet. Use “${createLabel}” above, or open a built-in and edit it to start your own copy.`
               }
               onOpen={open}
             />

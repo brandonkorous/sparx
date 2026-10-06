@@ -30,6 +30,7 @@ import {
   Field,
   FieldControl,
   FieldDescription,
+  FieldError,
   FieldLabel,
   Heading,
   Input,
@@ -54,9 +55,17 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingTimeline } from './booking-timeline';
+import { BookingServiceRecord } from './booking-service-record';
 import { BookingWho } from './booking-who';
 import { CustomerPicker } from './bookings-customer-picker';
 import { SaveFailure } from '@/components/save-failure';
+import { thisComputersTimezone } from '../../lib/business-timezone';
+import { instantFromWall, wallClockHint, wallProblem, wallValue } from '../../lib/wall-clock';
+import { useBookingZone } from './booking-zone';
+import { resourceKindGlyph } from './resource-kind-icon';
+import { resourceKindLabel, usePolicy } from './setup-data';
+import { depositLine } from './booking-money';
+import { BookingMoneyLine } from './booking-money-line';
 import {
   bookingResourceLabel,
   bookingStateMeta,
@@ -64,11 +73,8 @@ import {
   bookingWhoLabel,
   formatMoney,
   formatWhen,
-  fromLocalInputValue,
   isTerminalBooking,
-  localTimezone,
   schedulingErrorMessage,
-  toLocalInputValue,
   useBooking,
   useCancelBooking,
   useCheckInBooking,
@@ -115,7 +121,12 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
   const chosenService = serviceList.find((s) => s.id === serviceId) ?? null;
   const resourceList = resources.data ?? [];
 
-  const startIso = fromLocalInputValue(startLocal);
+  // The box is typed on the clock the booking will be made on: the service's
+  // place, else the business's (sparx persona issue 086). It used to be this
+  // computer's, so an owner away from the shop booked hours out without a word.
+  const clock = useBookingZone(chosenService?.locationId);
+  const startIso = clock.zone ? instantFromWall(startLocal, clock.zone) : null;
+  const startProblem = clock.zone ? wallProblem(startLocal, clock.zone) : null;
   const changed =
     serviceId !== '' ||
     startLocal !== '' ||
@@ -144,13 +155,14 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
     : null;
 
   const submit = () => {
-    if (!canSave || !startIso) return;
+    if (!canSave || !startIso || !clock.zone) return;
     const size = Number.parseInt(partySize, 10);
     create.mutate(
       {
         serviceId,
         startAt: startIso,
-        timezone: localTimezone(),
+        // The zone the box was read in, so the record says the time that was typed.
+        timezone: clock.zone,
         ...(customer ? { customerId: customer.id } : {}),
         ...(Number.isFinite(size) && size > 1 ? { partySize: size } : {}),
         resourceIds,
@@ -256,24 +268,27 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
               )}
             </Field>
 
-            <Field>
+            <Field invalid={startProblem !== null}>
               <FieldLabel>Starts</FieldLabel>
               <FieldControl
                 render={
                   <Input
-                    color="module"
+                    color={startProblem ? 'error' : 'module'}
                     type="datetime-local"
                     className="max-w-xs"
                     value={startLocal}
+                    disabled={clock.zone === undefined}
                     onChange={(event) => {
                       setStartLocal(event.target.value);
                     }}
                   />
                 }
               />
-              <FieldDescription>
-                The day and time it begins, in your own time zone.
-              </FieldDescription>
+              {startProblem ? (
+                <FieldError match>{startProblem}</FieldError>
+              ) : (
+                <FieldDescription>The day and time it begins. {clock.hint}</FieldDescription>
+              )}
             </Field>
           </FormSection>
 
@@ -337,9 +352,10 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
                           toggleResource(resource.id);
                         }}
                       />
+                      {resourceKindGlyph(resource.kind, 'size-4 shrink-0')}
                       <span className="min-w-0 flex-1 font-medium">{resource.name}</span>
-                      <Text as="span" className="shrink-0 text-sm capitalize">
-                        {resource.kind}
+                      <Text as="span" className="shrink-0 text-sm">
+                        {resourceKindLabel(resource.kind)}
                       </Text>
                     </label>
                   );
@@ -356,7 +372,6 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
               color="module"
               rows={3}
               value={notes}
-              placeholder="Please arrive five minutes early."
               onChange={(event) => {
                 setNotes(event.target.value);
               }}
@@ -391,10 +406,17 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
 
   const [notes, setNotes] = useState(booking.notes ?? '');
   const [staffNotes, setStaffNotes] = useState(booking.staffNotes ?? '');
-  const [rescheduleLocal, setRescheduleLocal] = useState(toLocalInputValue(booking.startAt));
+  // On the booking's own clock: the one its header, the diary and every email to
+  // the customer use. This computer's clock is a different question.
+  const zone = booking.timezone;
+  const startWall = wallValue(booking.startAt, zone);
+  const [rescheduleLocal, setRescheduleLocal] = useState(startWall);
 
   const meta = bookingStateMeta(booking.status);
   const terminal = isTerminalBooking(booking.status);
+  // The rules the booking was made under, for what is held on the card before
+  // it ends. Once it has ended, the record says what the card did.
+  const policy = usePolicy(booking.policyId ?? 'new');
 
   useEffect(() => {
     ctx.setTitle(booking.service.name || 'Booking');
@@ -403,8 +425,11 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
   const notesChanged = notes !== (booking.notes ?? '') || staffNotes !== (booking.staffNotes ?? '');
   useDirtySource(notesChanged, 'This booking has unsaved notes. Close anyway?');
 
-  const rescheduleIso = fromLocalInputValue(rescheduleLocal);
-  const rescheduleMoved = rescheduleIso !== null && rescheduleIso !== booking.startAt;
+  const rescheduleIso = instantFromWall(rescheduleLocal, zone);
+  const rescheduleProblem = wallProblem(rescheduleLocal, zone);
+  // Compared as the box reads, so the second 1:30 AM of the night the clocks go
+  // back does not count as a move just by being shown.
+  const rescheduleMoved = rescheduleIso !== null && rescheduleLocal !== startWall;
 
   // ONE message, the most specific one — the latest action that failed.
   const actionError = useMemo(() => {
@@ -587,6 +612,9 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                 </>
               ) : null}
             </div>
+            {/* Where the money stands: a fee charged, a hold let go, a refund
+                that did not go through (sparx persona issue 087). */}
+            <BookingMoneyLine money={depositLine(booking, policy.data)} />
           </div>
 
           <SaveFailure title="That did not go through" message={actionError} />
@@ -598,15 +626,15 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
           {!terminal ? (
             <FormSection
               title="Move it"
-              description="Change when this happens. The new time is checked for a clash before it takes, and the customer is told."
+              description={`Change when this happens. ${wallClockHint(zone, thisComputersTimezone())} The new time is checked for a clash before it takes, and the customer is told.`}
             >
               <div className="flex flex-wrap items-end gap-3">
-                <Field className="min-w-0">
+                <Field className="min-w-0" invalid={rescheduleProblem !== null}>
                   <FieldLabel>New start</FieldLabel>
                   <FieldControl
                     render={
                       <Input
-                        color="module"
+                        color={rescheduleProblem ? 'error' : 'module'}
                         type="datetime-local"
                         className="max-w-xs"
                         value={rescheduleLocal}
@@ -616,6 +644,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                       />
                     }
                   />
+                  {rescheduleProblem ? <FieldError match>{rescheduleProblem}</FieldError> : null}
                 </Field>
                 <Button
                   size="sm"
@@ -656,7 +685,6 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                     color="module"
                     rows={3}
                     value={notes}
-                    placeholder="Please arrive five minutes early."
                     onChange={(event) => {
                       setNotes(event.target.value);
                     }}
@@ -672,7 +700,6 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                     color="module"
                     rows={3}
                     value={staffNotes}
-                    placeholder="Regular: prefers the bay by the window."
                     onChange={(event) => {
                       setStaffNotes(event.target.value);
                     }}
@@ -682,6 +709,9 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
               <FieldDescription>The customer never sees this.</FieldDescription>
             </Field>
           </FormSection>
+
+          {/* The vehicle and the parts, for a trade account's visit (sparx persona issue 086). */}
+          <BookingServiceRecord ctx={ctx} booking={booking} />
 
           {/* The change history — what has happened to this booking, and the old
               values its own row no longer keeps (the time it moved from, the note

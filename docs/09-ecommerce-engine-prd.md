@@ -1,8 +1,8 @@
 # WizeWorks Platform — E-Commerce Engine PRD
 
-**Version:** 1.1  
+**Version:** 1.3  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-10-01
 
 ---
 
@@ -171,6 +171,12 @@ pending → paid → partially_refunded → refunded
 
 - Orders can have multiple fulfillments (partial shipment)
 - Each fulfillment has: items, carrier, tracking number, tracking URL
+- **One shipping rule for every way out** (`crm-schemas/src/ship-gate.ts`): an order
+  that is cancelled, refunded or still waiting for B2B approval cannot ship, and a
+  line bought by sending the old part first ships one unit per old part that has
+  arrived. `createFulfillment` enforces it, so the pick list, the box, the pack scan,
+  pack-and-ship, a handover and a label purchase all do; the warehouse refuses early
+  in the same words (persona issues 057, 058).
 - Tracking number entry triggers `order.fulfilled` event → shipping email
 - Dropship fulfillments created automatically when supplier ships
 
@@ -198,6 +204,72 @@ Every order has a chronological timeline:
 - Tracking updated
 - Refund issued
 - Status changes
+
+### Core charges (rebuilt parts)
+
+A core charge is a refundable deposit on a remanufactured part. The buyer pays it
+on top of the price and gets it back when the old part (the "core") comes back
+fit to rebuild. Added 2026-10-01 for persona P01 (sparx persona issue 051).
+
+- **Where it is set.** Per variant (`ProductVariant.coreChargeCents`). Editable on
+  the variant, through MCP (`update_variant`), and by the import's **Core charge**
+  column.
+- **Or the old part comes first.** A part with a deposit may also offer
+  `coreFirstOffered`: the buyer sends the old part FIRST, pays no deposit, and the
+  part ships when it arrives. The shopper picks on the product page ("Pay the
+  deposit now" or "Send your old part first"), and can switch in the basket. The
+  line carries `coreFirst` instead of a deposit (cart, checkout, order; a check
+  forbids both). The order, the receipt email and the account page say where to
+  send the old part (Business details address). Recording the old part's arrival
+  releases one unit to ship; "Ship without waiting" (`release_core_hold`, with a
+  reason) releases the line while the old part stays owed. Refused on a part the
+  supplier ships, since the old part cannot come here first. Added for persona
+  issue 057.
+- **Where it rides.** On the part's OWN line at every stage: cart line
+  (snapshot like the price), order line (`OrderItem.coreCharge`), invoice line
+  (`BillingDocumentLine.coreCharge`). Never a separate item, so picking, stock,
+  top-product and sales figures never count a deposit as something sold.
+- **The money rules.** Never discounted, never taxed, never surcharged, never in
+  a subtotal. Always in the total and in what the card is charged. A gift card or
+  account credit may pay it. Every document that adds up (cart, checkout, order,
+  receipt email, invoice, invoice email, printed invoice) names it as its own row:
+  "Refundable core deposits".
+- **The product page says it before the button.** One deposit across every
+  version reads as one sentence; versions that differ name their own deposit in
+  the version picker. Pages saved before this get the notice from the page
+  repair on next edit (`upgrade-page.ts`, `coreDeposit.shown`).
+- **How each core ends.** Every unit ends one of three ways: the part itself came
+  back (a return: its deposit goes back with it automatically), the old part came
+  back (`coresReturned`, deposit refunded), or the business kept the deposit
+  (`coresKept`, with a reason). The rest is a core still owed.
+- **Getting the money back.** "Core came back" on the order line. An invoice
+  still open on the order takes the deposit off what is owed first (a fleet on
+  Net 30 is never handed back money it has not paid). Anything already paid goes
+  back to the card it came from (through the gateway, or recorded for the shop to
+  hand back when it was cash or a cheque), or onto the customer's account credit.
+- **Cores owed.** A workbench list (After the sale > Cores owed), filterable by
+  age, and the MCP tools `list_cores_owed`, `receive_cores` and
+  `keep_core_deposits`. REST: `GET /v1/commerce/cores`,
+  `POST /v1/commerce/order-items/:id/cores/received` and `…/cores/kept`.
+- **Revenue.** A deposit whose core is still out is the customer's money, so the
+  revenue summary and job profit leave it out; one paid back is a refund, one
+  kept is revenue.
+- **The shopper.** The cart, checkout and receipt say what the deposit is; the
+  account's order page says how many old parts are still to send back and where.
+- **A core charge another store faked as a choice.** A store with no deposit sells
+  a rebuilt part as two versions: "Accept Core Charge (+$150)" (dearer, ship now)
+  and "Defer Core Charge" or "Ship when core received" (the part alone, old part
+  first). That is one part on one shelf sold as two, with its stock split. "Core
+  charges set up as choices" (workbench; REST `GET /v1/commerce/core-choices`,
+  `POST …/core-choices/convert`; MCP `list_core_choices`, `convert_core_choices`)
+  lists every such product and turns each, after the owner reviews it, into one
+  version: the plain code stays at the part price with the deposit its WORDS name
+  (never the price difference, which on Gillett Diesel's 84 matched almost none),
+  the other side stops being sold, its photos move over, open baskets move onto the
+  one that stays, and "send the old part first" stays on offer. A product with
+  stock on the side that would go is refused until it is counted onto the other.
+  Move in imports these as they are and points to the screen; bringing the same
+  file in again leaves a converted product's choice and prices alone.
 
 ---
 

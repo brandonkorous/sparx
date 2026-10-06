@@ -13,6 +13,7 @@ import {
   toCommerceContext,
 } from '../../../lib/commerce-context.js';
 import { resolveListScope } from '../../../lib/property.js';
+import { scopeProductSelection } from '../../../lib/product-selection-scope.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -131,6 +132,36 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
       body.categoryIds
     );
     return ok({ updated: true });
+  });
+
+  // Many products into, or out of, one category. Additive: every other category
+  // a product is in is kept. Body `{ selection }`: `{ productIds }`, or
+  // `{ match }` with the Products list's own narrowing, scoped to the site the
+  // list is (see scopeProductSelection).
+  app.post('/v1/commerce/categories/:id/add-products', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (await scopeProductSelection(request, auth, request.body)) as object;
+    return ok(
+      await categoryService.addProductsToCategory(toCommerceContext(request), {
+        ...body,
+        categoryId: id,
+      })
+    );
+  });
+
+  app.post('/v1/commerce/categories/:id/remove-products', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (await scopeProductSelection(request, auth, request.body)) as object;
+    return ok(
+      await categoryService.removeProductsFromCategory(toCommerceContext(request), {
+        ...body,
+        categoryId: id,
+      })
+    );
   });
 
   // Collections

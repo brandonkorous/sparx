@@ -1,11 +1,10 @@
 'use client';
 
 import { SiteHeader } from './site-header';
+import { APP_BASE } from './cta';
 
 // The marketing site's header. Nav links stay relative — this IS the marketing
-// site — while the auth CTAs cross to the dashboard app origin. APP_BASE
-// mirrors lib/marketplace.ts's hand-off origin.
-const APP_BASE = 'https://app.sparx.works';
+// site — while the auth CTAs cross to the workbench origin, which cta.ts owns.
 
 export function Nav() {
   return <SiteHeader signInHref={`${APP_BASE}/sign-in`} signUpHref={`${APP_BASE}/sign-up`} />;

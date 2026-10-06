@@ -5,11 +5,12 @@
 // through `addFloatingGroup` — dockview's only public reposition.
 
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
-import type { DockviewApi } from 'dockview';
+import type { DockviewApi, DockviewGroupPanel } from 'dockview';
 import { arrangeWindows, type ArrangeStyle } from '../window-arrange';
 import { rescaleWindows, type ZoomLevel } from '../window-zoom';
 import {
   boxOf,
+  fillBox,
   floatingGroups,
   sameBox,
   snapBox,
@@ -34,6 +35,12 @@ export interface CanvasCommands {
   arrange: (style: ArrangeStyle) => void;
   /** Runs when a window drag finishes — see `WindowCanvasOptions.onDragEnd`. */
   dragEnded: (moved: HTMLElement | null) => void;
+  /** Make one window fill what you can see, or put it back where it was. Returns
+   *  whether it now fills. dockview's own maximize only knows the tiled grid, so in
+   *  windows mode the title bar's maximize did nothing while its icon flipped
+   *  (sparx persona issue 030). */
+  toggleFill: (group: DockviewGroupPanel) => boolean;
+  isFilled: (groupId: string) => boolean;
 }
 
 export function useCanvasCommands({
@@ -94,5 +101,31 @@ export function useCanvasCommands({
     [api, canvas, fit, forget, readViewport]
   );
 
-  return { arrange, dragEnded };
+  // Each filled window's box from before it filled, by group id. Kept here, not in the
+  // title bar: re-placing a window rebuilds its frame, and the bar remounts with it.
+  const unfilled = useRef(new Map<string, FloatBox>());
+
+  const toggleFill = useCallback(
+    (group: DockviewGroupPanel): boolean => {
+      const dock = api.current;
+      const ground = canvas.current;
+      if (!dock || !ground) return false;
+      const before = unfilled.current.get(group.id);
+      if (before) {
+        unfilled.current.delete(group.id);
+        dock.addFloatingGroup(group, before);
+      } else {
+        unfilled.current.set(group.id, boxOf(group, ground));
+        dock.addFloatingGroup(group, fillBox(readViewport()));
+      }
+      forget();
+      fit();
+      return !before;
+    },
+    [api, canvas, fit, forget, readViewport]
+  );
+
+  const isFilled = useCallback((groupId: string) => unfilled.current.has(groupId), []);
+
+  return { arrange, dragEnded, toggleFill, isFilled };
 }

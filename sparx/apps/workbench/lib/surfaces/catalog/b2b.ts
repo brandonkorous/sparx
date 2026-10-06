@@ -28,7 +28,19 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     module: 'b2b',
     icon: Building2,
     order: 1,
-    keywords: ['trade', 'companies', 'buyers', 'dealers', 'wholesale'],
+    // A reseller's or a ranch's tax exemption certificate is kept on the
+    // account, in its Tax exemption section (sparx persona issue 075).
+    keywords: [
+      'trade',
+      'companies',
+      'buyers',
+      'dealers',
+      'wholesale',
+      'tax exempt',
+      'tax exemption',
+      'resale certificate',
+      'exemption certificate',
+    ],
     component: AccountsListSurface,
     createSurface: 'b2b.account.detail',
     createLabel: 'Add a trade account',
@@ -52,6 +64,13 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     order: 10,
     keywords: ['trade orders', 'bulk'],
     component: WholesaleOrdersListSurface,
+    // The till, which is a COMMERCE surface. Safe from here because
+    // `requiredModules('b2b')` is `['commerce']`: b2b cannot be on without it.
+    // It is the console's only screen for writing an order down, and a business
+    // that phones one through had nowhere to go before it (issue 061).
+    createSurface: 'commerce.sale.new',
+    createParams: { through: 'wholesale' },
+    createLabel: 'Enter an order',
   },
   {
     key: 'b2b.quotes.list',
@@ -109,7 +128,20 @@ export const B2B_SURFACES: SurfaceDefinition[] = [
     icon: DollarSign,
     section: 'Setup',
     order: 20,
-    keywords: ['trade price', 'levels', 'discount tier', 'volume'],
+    // What an owner calls it: what dealers and fleets pay (sparx persona
+    // issue 074). "Price tiers" alone was found by nobody who typed their own
+    // words.
+    keywords: [
+      'trade price',
+      'levels',
+      'discount tier',
+      'volume',
+      'dealer price',
+      'fleet price',
+      'fleet pricing',
+      'wholesale price',
+      'trade discount',
+    ],
     component: PricingTiersListSurface,
     createSurface: 'b2b.pricing-tier.detail',
     createLabel: 'Add a price tier',

@@ -42,6 +42,14 @@ export interface QuoteLine {
 
 /** One quote, as the B2B route projects it. Money arrives as Decimal strings and
  *  is coerced at the fetch boundary. */
+/** What a buyer said about getting the order to them. `neededBy` is a calendar
+ *  day, `YYYY-MM-DD`. */
+export interface QuoteDelivery {
+  neededBy: string | null;
+  deliverTo: string | null;
+  notes: string | null;
+}
+
 export interface QuoteRow {
   id: string;
   number: string | null;
@@ -53,6 +61,10 @@ export interface QuoteRow {
   currency: string;
   validUntil: string | null;
   customerNote: string | null;
+  /** The buyer's own purchase order number, when they gave one. */
+  poNumber: string | null;
+  /** When and where the buyer needs it, when they said (sparx persona issue 086). */
+  delivery: QuoteDelivery | null;
   stage: QuoteStage;
   /** What is on the quote, in the order it was written. */
   lines: QuoteLine[];
@@ -185,6 +197,32 @@ export function formatMoney(amount: number, currency = 'USD'): string {
 export function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
   return new Date(value).toLocaleDateString(undefined, { dateStyle: 'medium' });
+}
+
+/**
+ * A calendar day (`YYYY-MM-DD`) as words. Built from its parts rather than
+ * parsed, because `new Date('2026-10-20')` is midnight in London, which is the
+ * evening of the 19th in Salt Lake City: the buyer asked for the 20th.
+ */
+export function formatDay(day: string): string {
+  const [y, m, d] = day.split('-').map(Number);
+  if (!y || !m || !d) return day;
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { dateStyle: 'medium' });
+}
+
+/**
+ * What the buyer asked for besides the items, as rows to read: their PO number
+ * and their delivery needs (sparx persona issue 086). Only what they said; a
+ * quote the business made itself has none of these and shows none.
+ */
+export function quoteRequestRows(row: QuoteRow): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = [];
+  if (row.poNumber) rows.push({ label: 'Their PO number', value: row.poNumber });
+  const d = row.delivery;
+  if (d?.neededBy) rows.push({ label: 'Needed by', value: formatDay(d.neededBy) });
+  if (d?.deliverTo) rows.push({ label: 'Deliver to', value: d.deliverTo });
+  if (d?.notes) rows.push({ label: 'Delivery notes', value: d.notes });
+  return rows;
 }
 
 /** Whether a quote's validity window has already passed. */

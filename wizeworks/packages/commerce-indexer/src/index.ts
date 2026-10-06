@@ -42,6 +42,14 @@ export const EVENTS = [
   'crm.customer.updated',
   'crm.customer.deleted',
   'crm.customer.merged',
+  // The two ways a person arrives WITHOUT anybody on the team typing them in. A
+  // form, a booking or a checkout handing over details says `captured`; a
+  // newsletter opt-in says `subscribed`. Neither was here, so a buyer who made
+  // an account on the website sat in the customer list and nowhere in the search
+  // box, and a brand-new subscriber was never findable at all (sparx persona
+  // issue 086).
+  'crm.customer.captured',
+  'crm.customer.subscribed',
   // `order.placed` and `order.paid` were BOTH absent, so a new order was never
   // indexed and a paid one was never re-indexed. See handler.ts's order case.
   'order.placed',
@@ -50,6 +58,10 @@ export const EVENTS = [
   'order.fulfilled',
   'order.delivered',
   'order.refunded',
+  // A held order and a rejected one, which publish these in place of
+  // `order.placed` and `order.cancelled` (sparx persona issue 086).
+  'b2b.order.pending_approval',
+  'b2b.order.rejected',
   'search.reindex.requested',
   'search.entity.changed',
   // A wholesale invoice announces itself on its own catalog topic, and the three

@@ -21,6 +21,7 @@
 // rail beside it.
 
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@wizeworks/query';
 import Image from 'next/image';
 import {
   Badge,
@@ -39,7 +40,8 @@ import {
 import { ImageIcon, ImagePlus, Palette, PanelTop, Plus, Save, Trash2, X } from 'lucide-react';
 import { PANE_SHELL, PaneToolbar } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
+import { api } from '../../lib/api/client';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, useMediaPicker } from '../cms/media-picker';
@@ -58,6 +60,8 @@ import {
   type Brand,
   type SiteContact,
   type SocialLink,
+  contactFromBusiness,
+  type BusinessContactSource,
 } from './site-identity-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -73,8 +77,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: active } = useActiveSiteId();
-  const propertyId = active?.propertyId ?? undefined;
+  const currentSiteId = useActivePropertyId();
+  const propertyId = currentSiteId ?? undefined;
 
   const brandQuery = useBrand();
   const propertyQuery = useSiteProperty(propertyId);
@@ -156,6 +160,18 @@ function IdentityEditor({
   const [favicon, setFavicon] = useState<string | null>(effective.faviconMediaId);
   const [socials, setSocials] = useState<SocialLink[]>(() => socialsOf(property));
   const [contact, setContact] = useState<SiteContact>(() => contactOf(property));
+
+  // A site keeps its own contact (one owner can run two businesses), so nothing is
+  // copied silently. But a first site's owner has usually just typed these into
+  // Business details, so an empty contact offers them in one press instead of a
+  // second round of typing (sparx persona issue 029).
+  const business = useQuery({
+    queryKey: ['tenant', 'business'],
+    queryFn: () => api.get<BusinessContactSource>('/v1/tenant/business'),
+  });
+  const fromBusiness = contactFromBusiness(business.data);
+  const offerBusiness =
+    fromBusiness !== null && !contact.phone && !contact.email && !contact.address;
 
   // The draft as a stable signature; its divergence from the last-saved baseline
   // is what makes the pane dirty. Preview URLs aren't tracked — only stored ids.
@@ -292,8 +308,8 @@ function IdentityEditor({
                 }
               />
               <FieldDescription>
-                The name customers see on this site. Its title, header, and emails. Your legal or
-                billing name is set separately in your account settings.
+                The name customers see on this site. Its title, header, and emails. The name on your
+                invoices is set separately, in Business details.
               </FieldDescription>
             </Field>
 
@@ -350,6 +366,23 @@ function IdentityEditor({
             title="How customers reach you"
             description="Your phone, email and address, shown on this site's contact page and footer. Leave any blank and it simply isn't shown."
           >
+            {offerBusiness ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="outline"
+                  color="module"
+                  size="sm"
+                  onClick={() => {
+                    setContact(fromBusiness);
+                  }}
+                >
+                  Use my business details
+                </Button>
+                <Text className="text-sm">
+                  Fills these in from Business details. Nothing is saved until you press Save.
+                </Text>
+              </div>
+            ) : null}
             <Field>
               <FieldLabel>Phone number</FieldLabel>
               <FieldControl

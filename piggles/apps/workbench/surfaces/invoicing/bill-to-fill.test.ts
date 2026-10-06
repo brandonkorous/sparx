@@ -128,3 +128,40 @@ describe('clearedFromCustomer', () => {
     expect(fillFromCustomer(afterClear, null, MARGUERITE)).toEqual(MARGUERITE);
   });
 });
+
+/**
+ * A BUSINESS ON ACCOUNT, BILLED AS A PERSON WITH NO ADDRESS (issue 077).
+ *
+ * Renée buys for Wasatch Front, and her default address is their accounts
+ * payable office. Picking her filled the name and left the address box empty.
+ */
+describe('the billing address', () => {
+  const WASATCH: BilledParty = {
+    name: 'Wasatch Front Utility Contractors, LLC',
+    email: 'renee.castaneda@wasatchutility.test',
+    address: 'Accounts Payable\n2275 S 900 W\nSuite 200\nSalt Lake City, UT 84119\nUS',
+  };
+
+  it('fills an empty address from the customer picked', () => {
+    expect(fillFromCustomer({ name: '', email: '', address: '' }, null, WASATCH)).toEqual(WASATCH);
+  });
+
+  it('never overwrites an address somebody typed', () => {
+    const typed = { name: '', email: '', address: 'PO Box 1170\nSandy, UT 84091' };
+    expect(fillFromCustomer(typed, null, WASATCH).address).toBe('PO Box 1170\nSandy, UT 84091');
+  });
+
+  it('moves an address it filled from the customer being replaced', () => {
+    const marguerite = { ...MARGUERITE, address: '18 Larch Lane\nEugene, OR 97401' };
+    expect(fillFromCustomer(marguerite, marguerite, WASATCH)).toEqual(WASATCH);
+  });
+
+  it('leaves the address alone when the caller does not know one', () => {
+    const typed = { name: '', email: '', address: 'PO Box 1170' };
+    // The editor spreads the result over what is on the form.
+    expect({ ...typed, ...fillFromCustomer(typed, null, WREN) }).toEqual({
+      ...WREN,
+      address: 'PO Box 1170',
+    });
+  });
+});

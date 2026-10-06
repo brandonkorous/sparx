@@ -247,7 +247,9 @@ describe('order lifecycle', () => {
     const after = await orderService.get(test.ctx, order.id);
     expect(Number(after.refundTotal)).toBe(25);
     expect(Number(after.amountPaid)).toBe(25);
-    expect(after.paymentStatus).toBe('partially_paid');
+    // Paid asks whether the money that came in covered the order (order-payments-
+    // service, issue 051): a part refund does not make it owed again.
+    expect(after.paymentStatus).toBe('paid');
     expect(after.status).toBe('placed'); // partial refund doesn't flip status
     expect(after.items[0]!.quantityRefunded).toBe(1);
   });
@@ -310,7 +312,7 @@ describe('order lifecycle', () => {
         status: 'pending',
         lines: [{ orderItemId: item.id, quantity: 3 }],
       })
-    ).rejects.toThrow(/exceeds remaining/);
+    ).rejects.toThrow(/are still to send/);
   });
 
   // Touch withTenant to silence the unused-import warning; the real

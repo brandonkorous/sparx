@@ -52,6 +52,22 @@ export const OWING_PAYMENT_STATUSES: readonly OrderPaymentStatus[] = ['unpaid', 
 export const NOT_COLLECTABLE_ORDER_STATUSES: readonly OrderStatus[] = ['cancelled', 'refunded'];
 
 /**
+ * An order held for sign-off. Nothing on it is collectable YET: checkout told
+ * the buyer "Nothing is charged or sent until then", a bill-to-account order is
+ * invoiced when it is approved, and a card is only held.
+ *
+ * Measured 2026-10-06 on Gillett: O-000016, $4,758.30 on Salt Lake County's
+ * account and waiting for Doty's team, opened under "$4,758.30 still owed. No
+ * money has come in for this order yet.", offered "Make an invoice", offered to
+ * write down $4,758.30 cash, and counted under the orders list's "Still owed"
+ * chip (sparx persona issue 091).
+ *
+ * Not one of `OrderStatus`, which predates sign-off; the approval gate in
+ * @wizeworks/b2b stores it.
+ */
+export const HELD_FOR_SIGN_OFF_STATUS = 'pending_approval';
+
+/**
  * Whether this order still has money to collect, decided from the two stored
  * words alone — which is what a database query can ask.
  *
@@ -68,6 +84,7 @@ export function isOwingOrder(order: {
   paymentStatus: string | null | undefined;
 }): boolean {
   if (NOT_COLLECTABLE_ORDER_STATUSES.includes(order.status as OrderStatus)) return false;
+  if (order.status === HELD_FOR_SIGN_OFF_STATUS) return false;
   return OWING_PAYMENT_STATUSES.includes(order.paymentStatus as OrderPaymentStatus);
 }
 

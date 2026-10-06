@@ -19,6 +19,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { useDebouncedValue } from '../../lib/api/search';
 // The read shapes are the product layer's — one definition, shared, so the
 // bundle a product-scoped pane reads and the one this list reads cannot drift.
 import type { ProductDeposit } from './made-to-order-data';
@@ -105,7 +106,16 @@ export interface VariantChoice {
   options: VariantOption[];
   isDefault: boolean;
   priceCents: number;
+  /** What it costs the business, in cents, or null; a quote line picked from it
+   *  starts from this (sparx persona issue 086). Absent from an older server. */
+  costCents?: number | null;
   currency: string;
+  /** A rebuilt part's refundable core deposit per unit, in cents, or null when
+   *  this version takes no core (sparx persona issue 051). */
+  coreChargeCents: number | null;
+  /** The buyer may bring the old part first and pay no deposit (issue 057).
+   *  Only ever true alongside a deposit. The till asks which (issue 061). */
+  coreFirstOffered: boolean;
   archivedAt: string | null;
   productId: string;
   productTitle: string;
@@ -117,13 +127,21 @@ export interface VariantChoice {
   deposit: ProductDeposit;
 }
 
+/** The first window of the catalog: what a picker lists before anybody types. */
+const CATALOG_KEY = ['commerce', 'variants', 'catalog'] as const;
+
+/** How many versions a search asks for. Every picker draws 40 or fewer. */
+const SEARCH_TAKE = 40;
+
+/** How long typing has to pause before the server is asked. */
+const SEARCH_DEBOUNCE_MS = 250;
+
 /**
- * Everything THIS SITE sells, one call.
+ * The first 500 versions THIS SITE sells, ordered by product title.
  *
- * The endpoint takes no search term of its own, so this pulls a window ordered
- * by product title and the picker filters it in the browser. Fine for the
- * realistic case; a catalog past the ceiling is the signal to give that
- * endpoint a real `q`.
+ * A window, not the catalog: a parts counter with 693 versions has a tail this
+ * never reaches. Nothing searches it any more (that is `useVariantSearch`); it
+ * is what a picker shows before anybody has typed.
  *
  * The site rides the `x-sparx-property-id` header the client attaches to every
  * request, and switching site reloads the page, so there is no site in the key
@@ -132,8 +150,78 @@ export interface VariantChoice {
  */
 export function useVariantCatalog() {
   return useQuery({
-    queryKey: ['commerce', 'variants', 'catalog'] as const,
+    queryKey: CATALOG_KEY,
     queryFn: () => api.get<VariantChoice[]>('/v1/commerce/variants', { take: 500 }),
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * The catalog as a search box sees it, however large the catalog is.
+ *
+ * Empty search: the first window, exactly as before. Anything typed: the
+ * SERVER is asked (`q`), so a version past the 500th is as findable as the
+ * first. Until 2026-10-01 every picker filtered the first window in the
+ * browser, and on a parts counter with 693 versions everything after roughly
+ * the 500th alphabetically could not be found at the till at all (sparx
+ * persona P01, issue 069).
+ *
+ * The previous answer stays on screen while the next one loads, so the list
+ * narrows rather than blinking empty on every keystroke. A caller should run
+ * `variantMatches` over `data` with the LIVE search, which narrows the held rows
+ * at once, and must not call an empty result "nothing matches" while
+ * `searching` is true: that empty list is an unanswered question, and it sends
+ * somebody off to type in by hand a part they already stock.
+ */
+export function useVariantSearch(
+  search: string,
+  /** Off until the caller has something to ask: a picker that searches only
+   *  from two letters (the invoice line editor) would otherwise pull the whole
+   *  500-row first window it never draws. */
+  options: { enabled?: boolean } = {}
+) {
+  const live = search.trim();
+  const term = useDebouncedValue(live, SEARCH_DEBOUNCE_MS);
+  const query = useQuery({
+    enabled: options.enabled ?? true,
+    queryKey: term === '' ? CATALOG_KEY : ([...CATALOG_KEY, 'search', term] as const),
+    queryFn: () =>
+      term === ''
+        ? api.get<VariantChoice[]>('/v1/commerce/variants', { take: 500 })
+        : api.get<VariantChoice[]>('/v1/commerce/variants', { q: term, take: SEARCH_TAKE }),
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
+  });
+  return {
+    data: query.data,
+    isPending: query.isPending,
+    isError: query.isError,
+    /** The rows in hand answer an older search; the current one is on its way. */
+    searching: live !== term || query.isPlaceholderData,
+    /** Ask again. A failed search keeps its error until the words change, so
+     *  "try again" needs a button that really does. */
+    retry: () => {
+      void query.refetch();
+    },
+  };
+}
+
+/**
+ * Every version of ONE product, in the catalog's own shape.
+ *
+ * For a picker that floats the product it is about to the top. In a big
+ * catalog that product may be nowhere in the first window, so it is asked for
+ * by name rather than hoped for.
+ */
+export function useProductVariantChoices(productId: string | undefined) {
+  return useQuery({
+    queryKey: [...CATALOG_KEY, 'product', productId ?? ''] as const,
+    queryFn: () =>
+      api.get<VariantChoice[]>('/v1/commerce/variants', {
+        product_id: productId ?? '',
+        take: 250,
+      }),
+    enabled: Boolean(productId),
     staleTime: 60_000,
   });
 }

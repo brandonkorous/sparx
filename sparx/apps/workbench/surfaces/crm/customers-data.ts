@@ -450,18 +450,18 @@ export function useCustomerAddresses(id: string) {
  *  `country` are the fields it requires. */
 export interface CustomerAddressInput {
   type: 'shipping' | 'billing' | 'both';
-  label?: string;
+  label?: string | null;
   isDefault?: boolean;
-  recipientName?: string;
-  company?: string;
+  recipientName?: string | null;
+  company?: string | null;
   line1: string;
-  line2?: string;
+  line2?: string | null;
   city: string;
-  region?: string;
-  postalCode?: string;
+  region?: string | null;
+  postalCode?: string | null;
   /** ISO 3166-1 alpha-2, e.g. "US". */
   country: string;
-  phone?: string;
+  phone?: string | null;
 }
 
 export function useAddAddress(customerId: string) {

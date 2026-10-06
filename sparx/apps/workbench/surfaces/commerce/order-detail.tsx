@@ -31,12 +31,15 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { HELD_FOR_SIGN_OFF_STATUS, poNumberOf } from '@wizeworks/crm-schemas';
+import { orderDeliveryRows } from './order-delivery-needs';
 import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Ban, Route, Undo2 } from 'lucide-react';
 import { useGeneratePickList, pickErrorMessage } from '../inventory/picking-data';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { deferTick } from '../../lib/defer';
+import { paymentTermsLabel } from '../../lib/payment-terms';
 import { useSites, useModuleStates, useViewer } from '../../lib/api/shell-data';
 import { refundNote } from './refund-note';
 import { SoldBySection } from './sold-by-section';
@@ -45,6 +48,9 @@ import { OrderNotes } from './order-notes';
 import { canTakeOff, takeOffWords } from './payment-undo';
 import { OrderAddressForm } from './order-address-form';
 import { RecordHandover } from './record-handover';
+import { OrderLineCore } from './order-cores';
+import { shipHoldLabel, whatCanShipNow } from './order-ship-gate';
+import { HeldOrderSignOff } from '../b2b/held-order-sign-off';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import {
@@ -83,6 +89,8 @@ import {
   type OrderAddress,
   type OrderInvoice,
   type OrderPayment,
+  collectedWords,
+  nothingHandedOverWords,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -215,6 +223,9 @@ function reasonNotToAsk(order: Order): string | null {
   }
   if (order.status === 'refunded') {
     return 'This order was refunded, so there is nothing to ask for.';
+  }
+  if (order.status === HELD_FOR_SIGN_OFF_STATUS) {
+    return 'This order is waiting for sign-off, so there is nothing to ask for yet.';
   }
   if (order.total - order.amountPaid <= 0) return 'This order is paid in full.';
   return null;
@@ -559,6 +570,15 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const stillToFulfil =
     cancellable && items.some((item) => item.quantity - item.quantityFulfilled > 0);
 
+  // What may actually leave NOW. Still owed is not the same as ready to go: a B2B
+  // order waiting for approval, or a rebuilt part whose customer is sending the
+  // old part first, is owed and must not be picked, packed or handed over yet
+  // (issues 057, 058). The same function the server refuses with, so the screen
+  // and the endpoint agree, in the same words.
+  const shipNow = whatCanShipNow(order);
+  const canShipNow = stillToFulfil && shipNow.lines.length > 0;
+  const holdLabel = shipHoldLabel(order, shipNow);
+
   // How this order leaves, as the shopper chose it. Everything about the bottom
   // half of this pane turns on it: a customer coming to collect has no carrier,
   // no tracking number, and no warehouse walk that means anything.
@@ -655,11 +675,14 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const onCancel = async () => {
+    // Pieces, not lines: two turbos on one line are 2 items to the person
+    // reading this, not "1 item worth $4,758.30".
+    const units = items.reduce((sum, item) => sum + item.quantity, 0);
     const ok = await confirm({
       title: `Cancel order ${order.orderNumber}?`,
       description:
         `This marks the order as canceled for ${customerName(order.customer)}: ` +
-        `${String(items.length)} ${items.length === 1 ? 'item' : 'items'} worth ` +
+        `${String(units)} ${units === 1 ? 'item' : 'items'} worth ` +
         `${formatMoney(order.total, currency)} will no longer be sent. ` +
         (order.amountPaid > 0
           ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this. You refund that separately.`
@@ -709,6 +732,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 {shipped.label}
               </Badge>
             )}
+            {holdLabel ? (
+              <Badge color="warning" variant="soft" size="sm">
+                {holdLabel}
+              </Badge>
+            ) : null}
             <div className="flex-1" />
             {/* Send it to the warehouse (docs/146 Phase 4). Only while there is
             something left to send: an order already fulfilled has nothing to
@@ -721,7 +749,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             Wears the INVENTORY hue on a commerce pane, deliberately — it is a
             warehouse action surfacing here, and color follows functionality
             rather than the page it happens to be on. */}
-            {stillToFulfil && !plan.collected ? (
+            {canShipNow && !plan.collected ? (
               <Button
                 size="sm"
                 color="module-inventory"
@@ -761,6 +789,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className={COLUMN}>
           <OrderIdentity order={order} siteName={site?.name ?? null} />
+
+          {/* Who a held order is waiting on: your team, the approvers at the
+              account, or both (sparx persona issue 087). Nothing for any other
+              order. */}
+          <HeldOrderSignOff ctx={ctx} orderNumber={order.orderNumber} status={order.status} />
 
           {/* ONE message, the most specific true one. A cancelled order says why
               it was cancelled; otherwise money owed is the thing worth saying,
@@ -822,6 +855,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         {item.quantityRefunded > 0 ? (
                           <span className="text-sm">{item.quantityRefunded} refunded</span>
                         ) : null}
+                        <OrderLineCore
+                          item={item}
+                          currency={currency}
+                          customerName={customerName(order.customer)}
+                        />
                       </div>
                       {/* Quantity × price, NOT the stored `lineTotal` — that one
                           folds the line's own tax in, while the totals block
@@ -855,6 +893,15 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : null}
               {order.taxTotal > 0 ? (
                 <MoneyRow label="Tax" amount={order.taxTotal} currency={currency} />
+              ) : null}
+              {/* Refundable core deposits on rebuilt parts: money paid, not a
+                  sale, so never inside "Items" (issue 051). */}
+              {order.coreChargeTotal > 0 ? (
+                <MoneyRow
+                  label="Core deposits"
+                  amount={order.coreChargeTotal}
+                  currency={currency}
+                />
               ) : null}
               {/* No gift-card line here on purpose. A card is money IN, not a
                   discount, so it is an OrderPayment and shows under the payments
@@ -897,10 +944,22 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Text className="text-base">
                     Trade account: {order.customer.b2bAccount.companyName}
                     {order.customer.b2bAccount.paymentTerms
-                      ? ` · pays on ${order.customer.b2bAccount.paymentTerms} terms`
+                      ? ` · ${paymentTermsLabel(order.customer.b2bAccount.paymentTerms)}`
                       : ''}
                   </Text>
                 ) : null}
+                {/* Their own purchase order number, from checkout or from the
+                    quote this order was made from (issue 077). */}
+                {poNumberOf(order.metadata) ? (
+                  <Text className="text-base">Their PO number: {poNumberOf(order.metadata)}</Text>
+                ) : null}
+                {/* When and where they need it, from the quote request this
+                    order came from (sparx persona issue 086). */}
+                {orderDeliveryRows(order.metadata).map((row) => (
+                  <Text key={row.label} className="text-base whitespace-pre-line">
+                    {row.label}: {row.value}
+                  </Text>
+                ))}
               </div>
             </FormSection>
           </ModuleScope>
@@ -1082,24 +1141,31 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               plan.collected
                 ? stillToFulfil
                   ? 'The customer is coming to fetch this one. Mark it off when they do.'
-                  : 'They picked this up.'
+                  : collectedWords(order)
                 : 'Each shipment sent for this order, and how to follow it.'
             }
             isPending={fulfillments.isPending}
             isError={fulfillments.isError}
             errorText="We could not load the deliveries just now. Anything already shipped is unaffected. Try reopening this order in a moment."
-            emptyText={
-              plan.collected
-                ? 'This order has not been collected yet.'
-                : 'Nothing has been sent for this order yet.'
-            }
+            emptyText={nothingHandedOverWords(order, plan.collected)}
             count={fulfillments.data?.length ?? 0}
             footer={
               /* Only while something is still owed. An order already handed
                                over has nothing left to hand over, and a cancelled or
                                refunded one is refused by the server anyway — a control
                                whose only job is to return an error is worse than none. */
-              stillToFulfil ? <RecordHandover order={order} plan={plan} /> : null
+              !stillToFulfil ? null : canShipNow ? (
+                <RecordHandover order={order} plan={plan} shipNow={shipNow} />
+              ) : (
+                <Alert color="warning" className="mt-4">
+                  <AlertContent>
+                    <AlertTitle>
+                      {plan.collected ? 'Not ready to hand over yet' : 'Not ready to send yet'}
+                    </AlertTitle>
+                    <AlertDescription>{shipNow.refusal}</AlertDescription>
+                  </AlertContent>
+                </Alert>
+              )
             }
           >
             <ul className="flex flex-col">

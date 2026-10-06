@@ -20,12 +20,14 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { isModuleEnabled } from '@wizeworks/auth';
+import { approvalService } from '@wizeworks/b2b';
 import { cartService, COLLECTION_RATE_REF } from '@wizeworks/commerce';
-import { orderService, orderFulfillmentsService } from '@wizeworks/crm';
+import { heldOrderMoney, orderService, orderFulfillmentsService } from '@wizeworks/crm';
+import { unitsWaitingForCore } from '@wizeworks/crm-schemas';
+import { NET_TERMS_AR_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { withTenant } from '@wizeworks/db';
 import {
   CustomerAuthError,
-  ensureMembership,
   sendCustomerPasswordReset,
   resetCustomerPassword,
   signInCustomer,
@@ -43,9 +45,14 @@ import {
   validationError,
 } from '@wizeworks/api-core/errors';
 
+import { resolveCoreReturnAddress } from '../../../lib/business-identity.js';
 import { resolvePublicPropertyId, siteDisabledModules } from '../../../lib/property.js';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
-import { requireCustomerId, relaySetCookies } from '../../../lib/customer-session.js';
+import {
+  ensureAnnouncedMembership,
+  requireCustomerId,
+  relaySetCookies,
+} from '../../../lib/customer-session.js';
 
 const RegisterBody = z.object({
   email: z.string().min(3).max(255),
@@ -126,6 +133,57 @@ function readShippingDescription(metadata: unknown): string | null {
 /** Coming to fetch it, so there is no delivery and no address to show. */
 function isCollectedOrder(metadata: unknown): boolean {
   return orderMeta(metadata).shippingRateRef === COLLECTION_RATE_REF;
+}
+
+/** How an order billed to a trade account is paid: its terms, and its invoice
+ *  once issued (sparx persona issue 087). */
+interface AccountBilling {
+  /** The terms it was placed on, as stored ("net30"). */
+  terms: string;
+  invoice: {
+    number: string | null;
+    dueAt: string | null;
+    totalCents: number;
+    balanceCents: number;
+    /** unpaid | partial | paid | overdue | void */
+    status: string;
+  } | null;
+}
+
+/** Null for an order paid at checkout. An order on terms carries the terms it
+ *  was placed on in its metadata (checkout and an accepted quote both write
+ *  `paymentTermsRequested`), and its receivable is the net-terms document that
+ *  names it. */
+async function accountBilling(
+  ctx: CustomerAuthContext,
+  orderId: string,
+  metadata: unknown
+): Promise<AccountBilling | null> {
+  const terms = orderMeta(metadata).paymentTermsRequested;
+  if (typeof terms !== 'string' || terms === '') return null;
+  const doc = await withTenant(ctx, (tx) =>
+    tx.billingDocument.findFirst({
+      where: {
+        orderId,
+        deletedAt: null,
+        workflow: { slug: NET_TERMS_AR_WORKFLOW_SLUG },
+      },
+      orderBy: { createdAt: 'asc' },
+      select: { number: true, dueAt: true, total: true, balance: true, status: true },
+    })
+  );
+  return {
+    terms,
+    invoice: doc
+      ? {
+          number: doc.number,
+          dueAt: doc.dueAt?.toISOString() ?? null,
+          totalCents: toCents(doc.total),
+          balanceCents: toCents(doc.balance),
+          status: doc.status,
+        }
+      : null,
+  };
 }
 
 interface CustomerProfile {
@@ -263,7 +321,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     // Per-site membership (docs/58 D2). `recognized` (D6): true when a fresh
     // membership was created for a user who already had a login (on this or a
     // sister site) — the storefront surfaces a "separate account on this site" notice.
-    const { customerId, created } = await ensureMembership(
+    const { customerId, created } = await ensureAnnouncedMembership(
       ctx,
       propertyId,
       outcome.userId,
@@ -287,7 +345,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     if (!outcome) throw unauthorized('Invalid email or password.');
     // Recognition (docs/58 D6): a first sign-in on this site creates a fresh
     // membership (created) because the account lived on a sister site until now.
-    const { customerId, created } = await ensureMembership(
+    const { customerId, created } = await ensureAnnouncedMembership(
       ctx,
       propertyId,
       outcome.userId,
@@ -438,7 +496,50 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
         lineSubtotalCents: toCents(it.lineSubtotal),
         discountAmountCents: toCents(it.discountAmount),
         lineTotalCents: toCents(it.lineTotal),
+        // A rebuilt part's refundable core deposit, and where its old parts stand
+        // (sparx issue 051), so the buyer knows what to send back and what is
+        // coming back to them.
+        coreChargeCents: it.coreCharge === null ? null : toCents(it.coreCharge),
+        coresOwed:
+          it.coreCharge === null && !it.coreFirst
+            ? 0
+            : Math.max(0, it.quantity - it.quantityRefunded - it.coresReturned - it.coresKept),
+        coresReturned: it.coresReturned,
+        coresKept: it.coresKept,
+        // Bought by sending the old part first (issue 057), and how many units are
+        // still waiting for theirs before they can ship.
+        coreFirst: it.coreFirst,
+        waitingForOldPart: unitsWaitingForCore(it),
       })),
+      // Where to send an old part, when this order is waiting on one. Null when
+      // nothing is owed, or the business has no street address on file.
+      coreReturnTo: order.items.some(
+        (it) =>
+          (it.coreCharge !== null || it.coreFirst) &&
+          it.quantity - it.quantityRefunded - it.coresReturned - it.coresKept > 0
+      )
+        ? await resolveCoreReturnAddress(ctx)
+        : null,
+      coreChargeTotalCents: toCents(order.coreChargeTotal),
+      // A wholesale order held for sign-off says who it is waiting on: somebody
+      // at the buyer's own account, the business, or both, and who has already
+      // said yes (sparx persona issue 087). Null for every other order.
+      signOff:
+        order.status === 'pending_approval'
+          ? await approvalService.heldOrderSignOff(ctx, order.id)
+          : null,
+      // Approved, but the card held for it could not be charged when it was (the
+      // hold ran out, or the bank said no), so it has gone ahead unpaid and the
+      // page asks them to pay (sparx persona issue 087).
+      cardNotCharged: await withTenant(ctx, (tx) =>
+        heldOrderMoney.approvedButNotCharged(tx, order)
+      ),
+      // An order billed to a trade account is paid after it ships, against its
+      // invoice, so the order page must not say "Payment confirmed" before it
+      // goes out (sparx persona issue 087). Null for an order paid at checkout.
+      // The invoice is null until it is issued (a held order's is issued when it
+      // is approved).
+      onAccount: await accountBilling(ctx, order.id, order.metadata),
       fulfillments: fulfillments.map((f) => ({
         id: f.id,
         status: f.status,

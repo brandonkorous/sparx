@@ -12,9 +12,17 @@
 // Pricing math defers to pricingService.resolve(); discount + gift-card
 // + account-credit application defers to discountService. This file is the
 // orchestrator only.
+//
+// A basket that has been bought takes no more writes: every write path, here
+// and in discountService, asks `assertCartOpenOnTx` first (sparx persona issue
+// 087).
 
 import {
   AddCartItemInput,
+  cadenceKey,
+  cadenceWords,
+  readRepeatOptions,
+  RepeatCadence,
   type CartItemSnapshot,
   type CartMadeToOrder,
   type CartTotals,
@@ -29,7 +37,7 @@ import type { Prisma, TxClient } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
 
 import { writeAuditLog } from '../audit';
-import { CommerceNotFoundError, CommerceValidationError } from '../errors';
+import { CommerceCartBoughtError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
@@ -44,6 +52,8 @@ import {
 
 import * as configuratorService from './configurator-service';
 import { isDiscountRunning, usageBlock } from './discount-conditions';
+import * as paymentMethodService from './payment-method-service';
+import * as accountBuyingRules from './account-buying-rules';
 import * as pricingService from './pricing-service';
 import { businessZone, assertWithinDailyLimits } from './made-to-order-service';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
@@ -66,6 +76,10 @@ export interface CartSnapshot {
    *  an ordinary basket reads as "no notice, all of it due now", which is what
    *  every screen already assumed silently. */
   madeToOrder: CartMadeToOrder;
+  /** A signed-in trade contact's account rules on this basket: whether they may
+   *  order, each line's quantity rule, and any shortfall under the account's
+   *  minimum order. Null for every other basket (sparx persona issue 086). */
+  accountRules?: accountBuyingRules.CartAccountRules | null;
   expiresAt: string;
   abandonedAt: string | null;
 }
@@ -141,6 +155,7 @@ export async function claim(
       select: { id: true, customerId: true, channel: true, currency: true, propertyId: true },
     });
     if (!cart || cart.customerId) return;
+    await assertCartOpenOnTx(tx, input.cartId);
     await tx.cart.update({
       where: { id: input.cartId },
       data: { customerId: input.customerId },
@@ -164,7 +179,7 @@ export async function claim(
 export async function get(ctx: ServiceContext, cartId: string): Promise<CartSnapshot | null> {
   return withTenant(ctx, async (tx) => {
     const row = await settleCart(tx, ctx, await loadCart(tx, cartId));
-    return row ? serializeCart(row, await businessZone(tx)) : null;
+    return row ? withAccountRules(tx, serializeCart(row, await businessZone(tx)), row) : null;
   });
 }
 
@@ -181,7 +196,7 @@ export async function getByGuestToken(
     });
     if (!cart) return null;
     const full = await settleCart(tx, ctx, await loadCart(tx, cart.id));
-    return full ? serializeCart(full, await businessZone(tx)) : null;
+    return full ? withAccountRules(tx, serializeCart(full, await businessZone(tx)), full) : null;
   });
 }
 
@@ -193,6 +208,7 @@ export async function addItem(
 ): Promise<{ cartItemId: string }> {
   const input = AddCartItemInput.parse(rawInput);
   const inventoryActive = await isInventoryActive(ctx.tenantId);
+  if (input.repeat) await assertShopCanRepeat(ctx);
 
   const cartItemId = await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
@@ -208,6 +224,7 @@ export async function addItem(
       },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+    await assertCartOpenOnTx(tx, cart.id);
 
     let variantId = input.variantId;
     let resolvedConfig: ResolvedConfiguration | null = null;
@@ -258,6 +275,15 @@ export async function addItem(
       // price this line.
       ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
     });
+    // The core deposit is the variant's, snapshot like the price. No price list,
+    // tier or contract changes it: it is the customer's own money, held until the
+    // old part comes back.
+    // The other way to buy it (issue 057): send the old part first, no deposit.
+    // Checked here as well as on the page, for the same reason as `repeat` below.
+    const { coreFirst, coreChargeCents } = coreTermsForLine(
+      await coreTermsOf(tx, variantId),
+      input.coreFirst === true
+    );
 
     // Configurator price adjustments are layered on top of the resolved
     // base variant price. We trust the configurator's adjustment because
@@ -267,6 +293,11 @@ export async function addItem(
       unitPriceCents = Math.max(0, unitPriceCents + resolvedConfig.totalAdjustmentCents);
     }
     const attributes = serializeAttributes(input.attributes);
+    // A repeat line must be a cadence THIS product offers (issue 739). Checked on
+    // the server because the product page is not the only door: a stale page, a
+    // second tab after the owner unticked a cadence, or a direct API call would
+    // otherwise put a schedule into the basket that the shop never agreed to run.
+    const repeat = input.repeat ? await assertRepeatOffered(tx, variantId, input.repeat) : null;
 
     // A SECOND add of the same thing is MORE OF IT, not another row. Adding a
     // croissant twice used to leave two identical lines of one — the subtotal was
@@ -283,7 +314,21 @@ export async function addItem(
     const mergeInto = plainAdd
       ? ((
           await tx.cartItem.findMany({
-            where: { cartId: input.cartId, variantId, unitPriceCents },
+            // Bought once and delivered every month are two different lines,
+            // even of the same thing at the same price.
+            where: {
+              cartId: input.cartId,
+              variantId,
+              unitPriceCents,
+              // A changed core charge is a changed price: a new line, never a
+              // silent repricing of what is already in the basket.
+              coreChargeCents,
+              // Sending the old part first is a different promise from paying for
+              // it: two lines, never one.
+              coreFirst,
+              repeatIntervalUnit: repeat?.intervalUnit ?? null,
+              repeatIntervalCount: repeat?.intervalCount ?? null,
+            },
             select: {
               id: true,
               quantity: true,
@@ -296,6 +341,18 @@ export async function addItem(
       : null;
 
     const quantity = (mergeInto?.quantity ?? 0) + input.quantity;
+
+    // The account's own rules (sparx persona issue 086): a view-only contact
+    // cannot order, and a line must keep to its minimum, maximum and case pack.
+    // HERE, in the one add path, so the product page, a reorder and a saved cart
+    // all meet the same refusal.
+    await accountBuyingRules.assertMayAddToCart(tx, {
+      customerId: cart.customerId,
+      primaryAccountId: cart.customer?.companyId,
+      variantId,
+      quantity,
+      alreadyInCart: mergeInto?.quantity ?? 0,
+    });
     const subtotalCents = unitPriceCents * quantity;
 
     // Today's allowance (issue 026) — checked HERE so somebody hears "only four
@@ -318,9 +375,13 @@ export async function addItem(
             quantity,
             unitPriceCents,
             subtotalCents,
+            coreChargeCents,
+            coreFirst,
             ...(configurationPayload ? { configurationPayload } : {}),
             attributes,
             unitPriceTrace: priced.trace,
+            repeatIntervalUnit: repeat?.intervalUnit ?? null,
+            repeatIntervalCount: repeat?.intervalCount ?? null,
           },
           select: { id: true },
         });
@@ -373,7 +434,15 @@ export async function addItem(
       action: 'commerce.cart.item_added',
       entityType: 'Cart',
       entityId: input.cartId,
-      diff: { after: { cartItemId: item.id, variantId, quantity: input.quantity } },
+      diff: {
+        after: {
+          cartItemId: item.id,
+          variantId,
+          quantity: input.quantity,
+          ...(repeat ? { repeat } : {}),
+          ...(coreFirst ? { coreFirst } : {}),
+        },
+      },
     });
 
     return item.id;
@@ -392,10 +461,15 @@ export async function addItem(
 export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = UpdateCartItemInput.parse(rawInput);
   const inventoryActive = await isInventoryActive(ctx.tenantId);
+  if (input.repeat) await assertShopCanRepeat(ctx);
 
   const cartId = await withTenant(ctx, async (tx) => {
     const item = await tx.cartItem.findFirst({
-      where: { id: input.cartItemId },
+      // The basket named in the path, when the caller has one: a line is only
+      // changed through the basket it is in. The token check proves ownership
+      // of THAT basket, so without this a line in any other basket on the shop
+      // could be changed by its id.
+      where: { id: input.cartItemId, ...(input.cartId ? { cartId: input.cartId } : {}) },
       select: {
         id: true,
         cartId: true,
@@ -403,11 +477,24 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
         unitPriceCents: true,
         quantity: true,
         inventoryReservationId: true,
-        variant: { select: { dropshipSourceId: true } },
+        variant: {
+          select: { dropshipSourceId: true, coreChargeCents: true, coreFirstOffered: true },
+        },
       },
     });
     if (!item) throw new CommerceNotFoundError('CartItem', input.cartItemId);
+    await assertCartOpenOnTx(tx, item.cartId);
+    // Switching how the old part is handled (issue 057): sending it first takes the
+    // deposit off the line; paying puts the part's current deposit back on.
+    const coreSwitch =
+      input.coreFirst === undefined ? {} : coreTermsForLine(item.variant, input.coreFirst);
     const isDropshipVariant = Boolean(item.variant.dropshipSourceId);
+    // `repeat` absent leaves the schedule alone; null turns the line back into a
+    // one-off; a cadence must be one the product offers (issue 739).
+    const repeat =
+      input.repeat === undefined || input.repeat === null
+        ? input.repeat
+        : await assertRepeatOffered(tx, item.variantId, input.repeat);
 
     if (input.quantity === 0) {
       // Remove — release the soft hold first, then drop the line.
@@ -419,6 +506,15 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
       // Today's allowance again (issue 026) — raising the quantity on a line
       // already in the basket is the same request as adding it, and skipping
       // the check here would leave the one way round the limit.
+      // A changed amount must still keep to the account's minimum, maximum and
+      // case pack (sparx persona issue 086).
+      if (input.quantity !== item.quantity) {
+        await accountBuyingRules.assertCartLineQuantity(tx, {
+          cartId: item.cartId,
+          variantId: item.variantId,
+          quantity: input.quantity,
+        });
+      }
       if (input.quantity > item.quantity) {
         await assertWithinDailyLimits(tx, [
           { variantId: item.variantId, quantity: input.quantity },
@@ -447,6 +543,13 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
           quantity: input.quantity,
           subtotalCents: item.unitPriceCents * input.quantity,
           ...(input.attributes ? { attributes: serializeAttributes(input.attributes) } : {}),
+          ...coreSwitch,
+          ...(repeat !== undefined
+            ? {
+                repeatIntervalUnit: repeat?.intervalUnit ?? null,
+                repeatIntervalCount: repeat?.intervalCount ?? null,
+              }
+            : {}),
           ...(reservationId !== item.inventoryReservationId
             ? { inventoryReservationId: reservationId }
             : {}),
@@ -478,8 +581,14 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
   });
 }
 
-export async function removeItem(ctx: ServiceContext, cartItemId: string): Promise<void> {
-  await updateItem(ctx, { cartItemId, quantity: 0 });
+/** `cartId` is the basket the caller proved it owns; when given, the line must
+ *  be in it. */
+export async function removeItem(
+  ctx: ServiceContext,
+  cartItemId: string,
+  cartId?: string
+): Promise<void> {
+  await updateItem(ctx, { cartItemId, quantity: 0, ...(cartId ? { cartId } : {}) });
 }
 
 export async function clear(ctx: ServiceContext, cartId: string): Promise<void> {
@@ -487,6 +596,7 @@ export async function clear(ctx: ServiceContext, cartId: string): Promise<void> 
   await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({ where: { id: cartId }, select: { id: true } });
     if (!cart) throw new CommerceNotFoundError('Cart', cartId);
+    await assertCartOpenOnTx(tx, cartId);
     // Release each line's soft hold before dropping the lines, so cleared carts
     // don't leak `allocated` until their TTL expires.
     if (inventoryActive) {
@@ -560,16 +670,32 @@ export async function merge(
     ]);
     if (!source) throw new CommerceNotFoundError('Cart', input.sourceCartId);
     if (!target) throw new CommerceNotFoundError('Cart', input.targetCartId);
+    // Neither side may be a bought basket: merging moves lines out of the
+    // source and deletes it, and puts lines into the target.
+    await assertCartOpenOnTx(tx, source.id);
+    await assertCartOpenOnTx(tx, target.id);
     if (source.currency !== target.currency) {
       throw new CommerceValidationError(
         `Cannot merge carts in different currencies (${source.currency} vs ${target.currency})`
       );
     }
 
-    const targetByVariant = new Map(target.items.map((it) => [it.variantId, it]));
+    // Keyed by what was bought AND how often: a guest's monthly order of
+    // something must not fold into the signed-in basket's one-off of the same
+    // thing (issue 739).
+    // And by how the old part is handled: a part bought by sending the old one
+    // first must not fold into the same part with a deposit paid (issue 057).
+    const lineKey = (it: {
+      variantId: string;
+      repeatIntervalUnit: string | null;
+      repeatIntervalCount: number | null;
+      coreFirst: boolean;
+    }) =>
+      `${it.variantId}|${it.repeatIntervalUnit ?? 'once'}|${String(it.repeatIntervalCount ?? 0)}|${it.coreFirst ? 'core-first' : 'deposit'}`;
+    const targetByLine = new Map(target.items.map((it) => [lineKey(it), it]));
 
     for (const srcItem of source.items) {
-      const existing = targetByVariant.get(srcItem.variantId);
+      const existing = targetByLine.get(lineKey(srcItem));
       if (!existing) {
         await tx.cartItem.create({
           data: {
@@ -579,6 +705,8 @@ export async function merge(
             quantity: srcItem.quantity,
             unitPriceCents: srcItem.unitPriceCents,
             subtotalCents: srcItem.subtotalCents,
+            coreChargeCents: srcItem.coreChargeCents,
+            coreFirst: srcItem.coreFirst,
             ...(srcItem.configurationPayload !== null
               ? {
                   configurationPayload: srcItem.configurationPayload,
@@ -586,6 +714,8 @@ export async function merge(
               : {}),
             attributes: srcItem.attributes as Prisma.InputJsonValue,
             unitPriceTrace: srcItem.unitPriceTrace as Prisma.InputJsonValue,
+            repeatIntervalUnit: srcItem.repeatIntervalUnit,
+            repeatIntervalCount: srcItem.repeatIntervalCount,
           },
         });
         continue;
@@ -671,6 +801,7 @@ export async function repriceCart(ctx: ServiceContext, cartId: string): Promise<
       select: { id: true, channel: true, currency: true, customerId: true, propertyId: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', cartId);
+    await assertCartOpenOnTx(tx, cartId);
     await repriceItems(tx, ctx, cart);
   });
   await publishCommerceEvent({
@@ -724,6 +855,9 @@ export async function reconcileCartOnAuth(
             guestToken: input.guestToken,
             channel: input.channel,
             customerId: null,
+            // A bought basket is not one to carry on with (sparx persona issue
+            // 087): signing in after buying must not hand it back.
+            ...NOT_BOUGHT_YET,
           },
           orderBy: { updatedAt: 'desc' },
           select: { id: true },
@@ -736,6 +870,10 @@ export async function reconcileCartOnAuth(
       where: {
         customerId: input.customerId,
         channel: input.channel,
+        // The newest basket that is still a basket. Renée's newest was the one
+        // she had just bought, so signing in could hand it back to her to go on
+        // editing an order already placed (sparx persona issue 087).
+        ...NOT_BOUGHT_YET,
         ...(guestCart ? { id: { not: guestCart.id } } : {}),
       },
       orderBy: { updatedAt: 'desc' },
@@ -783,6 +921,28 @@ export const NOT_BOUGHT_YET = {
 } as const;
 
 /**
+ * Refuse a write to a basket that has already been bought, inside the caller's
+ * transaction. The one gate for every cart write (sparx persona issue 087).
+ *
+ * Renée's basket became an order at checkout, and minutes later it took an edit
+ * through the public cart routes, because nothing asked. Asked here rather than
+ * at each route, so a write path added later (a reorder, a saved cart, a code)
+ * meets it by calling the service, and the answer is `NOT_BOUGHT_YET`'s, so
+ * "bought" means one thing everywhere.
+ */
+export async function assertCartOpenOnTx(tx: TxClient, cartId: string): Promise<void> {
+  const bought = await tx.cart.count({ where: { id: cartId, NOT: NOT_BOUGHT_YET } });
+  if (bought > 0) throw new CommerceCartBoughtError(cartId);
+}
+
+/** `assertCartOpenOnTx` in its own transaction, for a caller about to READ a
+ *  basket to carry on with it: the shopper's own cart read says a bought basket
+ *  is gone, so the site starts a fresh one. */
+export async function assertCartOpen(ctx: ServiceContext, cartId: string): Promise<void> {
+  await withTenant(ctx, (tx) => assertCartOpenOnTx(tx, cartId));
+}
+
+/**
  * Flag a basket as having gone quiet.
  *
  * This is a SIGNAL, never a lifecycle state. The basket stays completely usable
@@ -803,7 +963,11 @@ export async function markAbandoned(ctx: ServiceContext, cartId: string): Promis
   const now = new Date();
   await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
-      where: { id: cartId, abandonedAt: null },
+      // A bought basket was not walked away from, so there is nothing to mark
+      // (sparx persona issue 087). A no-op rather than a refusal: the sweep
+      // finds baskets first and marks them after, and one bought in between is
+      // not a failure.
+      where: { id: cartId, abandonedAt: null, ...NOT_BOUGHT_YET },
       select: { id: true, updatedAt: true },
     });
     if (!cart) return;
@@ -843,6 +1007,7 @@ export async function markRecovered(ctx: ServiceContext, cartId: string): Promis
       select: { id: true, abandonedAt: true },
     });
     if (!cart?.abandonedAt) return;
+    await assertCartOpenOnTx(tx, cartId);
     await tx.cart.update({
       where: { id: cartId },
       data: { recoveredAt: now, abandonedAt: null },
@@ -944,6 +1109,18 @@ type CartWithRelations = Prisma.CartGetPayload<{
   };
 }>;
 
+/** The snapshot with the signed-in trade contact's account rules on it (sparx
+ *  persona issue 086). A separate step so the snapshot itself stays a plain
+ *  reading of the row. */
+async function withAccountRules(
+  tx: TxClient,
+  snapshot: CartSnapshot,
+  row: CartWithRelations
+): Promise<CartSnapshot> {
+  snapshot.accountRules = await accountBuyingRules.cartAccountRules(tx, row);
+  return snapshot;
+}
+
 async function loadCart(tx: TxClient, cartId: string): Promise<CartWithRelations | null> {
   return tx.cart.findFirst({
     where: { id: cartId },
@@ -1010,7 +1187,13 @@ async function repriceItems(
 ): Promise<void> {
   const items = await tx.cartItem.findMany({
     where: { cartId: cart.id },
-    select: { id: true, variantId: true, quantity: true, configurationPayload: true },
+    select: {
+      id: true,
+      variantId: true,
+      quantity: true,
+      configurationPayload: true,
+      coreFirst: true,
+    },
   });
   if (items.length === 0) return;
 
@@ -1049,6 +1232,7 @@ async function repriceItems(
       where: { id: item.id },
       data: {
         unitPriceCents,
+        ...(await repricedCore(tx, item.variantId, item.coreFirst)),
         subtotalCents: unitPriceCents * item.quantity,
         unitPriceTrace: priced.trace,
       },
@@ -1138,9 +1322,13 @@ export async function recomputeCartTotals(
 ): Promise<void> {
   const items = await tx.cartItem.findMany({
     where: { cartId },
-    select: { subtotalCents: true },
+    select: { subtotalCents: true, quantity: true, coreChargeCents: true },
   });
   const subtotal = items.reduce((sum, i) => sum + i.subtotalCents, 0);
+  // Core deposits sit beside the subtotal, never in it: a saving, a tax rate or a
+  // card fee worked out on the subtotal must not reach a deposit the customer
+  // gets back in full.
+  const coreChargeTotal = coreChargeTotalOf(items);
 
   const discountTotal = await foldRunningDiscounts(tx, cartId);
 
@@ -1158,13 +1346,15 @@ export async function recomputeCartTotals(
   });
 
   const postDiscount = Math.max(0, subtotal - discountTotal);
-  const giftCardApplied = Math.min(current.giftCardAppliedCents, postDiscount);
-  const afterGc = Math.max(0, postDiscount - giftCardApplied);
+  // A gift card or account credit is money, and pays a deposit like anything else.
+  const payable = postDiscount + coreChargeTotal;
+  const giftCardApplied = Math.min(current.giftCardAppliedCents, payable);
+  const afterGc = Math.max(0, payable - giftCardApplied);
   const accountCreditApplied = Math.min(current.accountCreditAppliedCents, afterGc);
 
   const total = Math.max(
     0,
-    postDiscount -
+    payable -
       giftCardApplied -
       accountCreditApplied +
       current.shippingTotalCents +
@@ -1178,9 +1368,66 @@ export async function recomputeCartTotals(
       discountTotalCents: discountTotal,
       giftCardAppliedCents: giftCardApplied,
       accountCreditAppliedCents: accountCreditApplied,
+      coreChargeTotalCents: coreChargeTotal,
       totalCents: total,
     },
   });
+}
+
+/** The variant's core deposit per unit, and whether the old part may come first. */
+async function coreTermsOf(
+  tx: TxClient,
+  variantId: string
+): Promise<{ coreChargeCents: number | null; coreFirstOffered: boolean }> {
+  const variant = await tx.productVariant.findFirst({
+    where: { id: variantId },
+    select: { coreChargeCents: true, coreFirstOffered: true },
+  });
+  return {
+    coreChargeCents: variant?.coreChargeCents ?? null,
+    coreFirstOffered: variant?.coreFirstOffered ?? false,
+  };
+}
+
+/**
+ * A line's core terms after a reprice. A send-first line stays one while the part
+ * still offers it; if the owner has since stopped offering it, the line goes back
+ * to the deposit, which the basket then shows as a changed price rather than
+ * holding a promise the business no longer makes.
+ */
+async function repricedCore(
+  tx: TxClient,
+  variantId: string,
+  coreFirst: boolean
+): Promise<{ coreChargeCents: number | null; coreFirst: boolean }> {
+  const core = await coreTermsOf(tx, variantId);
+  return coreTermsForLine(core, coreFirst && core.coreFirstOffered);
+}
+
+/**
+ * A basket line's core terms, bought one way or the other (issue 057). Paying puts
+ * the part's deposit on the line; sending the old part first puts none, and is
+ * refused on a part that does not offer it. One answer for adding, switching and
+ * repricing, so a basket can never hold a line that is both, or neither.
+ */
+export function coreTermsForLine(
+  core: { coreChargeCents: number | null; coreFirstOffered: boolean },
+  coreFirst: boolean
+): { coreFirst: boolean; coreChargeCents: number | null } {
+  if (coreFirst && !core.coreFirstOffered) {
+    throw new CommerceValidationError(
+      'This part cannot be bought by sending the old part first. Pay the core deposit instead.',
+      [{ field: 'coreFirst', message: 'Not offered on this part.' }]
+    );
+  }
+  return { coreFirst, coreChargeCents: coreFirst ? null : core.coreChargeCents };
+}
+
+/** Σ core × quantity over a basket's lines. */
+export function coreChargeTotalOf(
+  lines: readonly { quantity: number; coreChargeCents: number | null }[]
+): number {
+  return lines.reduce((sum, line) => sum + (line.coreChargeCents ?? 0) * line.quantity, 0);
 }
 
 async function bootstrapFromDocument(
@@ -1208,11 +1455,68 @@ async function bootstrapFromDocument(
         variantId: line.variantId,
         quantity,
         unitPriceCents,
+        // The quote's deposit, as quoted.
+        coreChargeCents:
+          line.coreCharge === null ? null : Math.round(line.coreCharge.toNumber() * 100),
         subtotalCents: unitPriceCents * quantity,
         attributes: {},
       },
     });
   }
+}
+
+/**
+ * A repeat delivery is charged to a kept card with nobody at the checkout, so a
+ * shop whose payment provider cannot keep one cannot run it (issue 739). The
+ * product page is told the same thing and offers no cadence there; this is the
+ * door a stale page or a direct call would otherwise walk through.
+ */
+async function assertShopCanRepeat(ctx: ServiceContext): Promise<void> {
+  if (await paymentMethodService.canSaveMethods(ctx)) return;
+  throw new CommerceValidationError(
+    'This shop can only sell things one at a time for now. Choose to buy it once.',
+    [{ field: 'repeat', message: 'Repeat delivery is not available at this shop.' }]
+  );
+}
+
+/**
+ * The cadence, if the product behind this variant offers it; otherwise a refusal
+ * the shopper can act on.
+ */
+async function assertRepeatOffered(
+  tx: TxClient,
+  variantId: string,
+  repeat: RepeatCadence
+): Promise<RepeatCadence> {
+  const variant = await tx.productVariant.findFirst({
+    where: { id: variantId },
+    select: { product: { select: { title: true, repeatOptions: true } } },
+  });
+  if (!variant) throw new CommerceNotFoundError('ProductVariant', variantId);
+  const offered = readRepeatOptions(variant.product.repeatOptions);
+  if (!offered.some((option) => cadenceKey(option) === cadenceKey(repeat))) {
+    throw new CommerceValidationError(
+      offered.length === 0
+        ? `${variant.product.title} can only be bought once.`
+        : `${variant.product.title} can be delivered ${offered.map(cadenceWords).join(', ')}, not ${cadenceWords(repeat)}.`,
+      [{ field: 'repeat', message: 'Choose one of the delivery schedules on offer.' }]
+    );
+  }
+  return repeat;
+}
+
+/** A line's cadence, or null for a one-off. Half a cadence cannot be stored
+ *  (the database refuses it), so either both columns are set or neither is. */
+export function lineRepeat(line: {
+  repeatIntervalUnit: string | null;
+  repeatIntervalCount: number | null;
+}): RepeatCadence | null {
+  if (line.repeatIntervalUnit === null || line.repeatIntervalCount === null) return null;
+  const parsed = RepeatCadence.safeParse({
+    intervalUnit: line.repeatIntervalUnit,
+    intervalCount: line.repeatIntervalCount,
+  });
+  return parsed.success ? parsed.data : null;
 }
 
 function serializeAttributes(attributes: CartItemAttributes | undefined): Prisma.InputJsonValue {
@@ -1261,6 +1565,12 @@ function serializeCart(row: CartWithRelations, zone: string): CartSnapshot {
     quantity: it.quantity,
     unitPriceCents: it.unitPriceCents,
     subtotalCents: it.subtotalCents,
+    coreChargeCents: it.coreChargeCents,
+    coreFirst: it.coreFirst,
+    coreChoice:
+      it.variant.coreFirstOffered && it.variant.coreChargeCents !== null
+        ? { depositCents: it.variant.coreChargeCents }
+        : null,
     madeToOrder: isMadeToOrder(ruled[i]!.rule)
       ? {
           orderAheadDays: ruled[i]!.rule.orderAheadDays,
@@ -1279,6 +1589,7 @@ function serializeCart(row: CartWithRelations, zone: string): CartSnapshot {
     unitPriceTrace: Array.isArray(it.unitPriceTrace)
       ? (it.unitPriceTrace as CartItemSnapshot['unitPriceTrace'])
       : [],
+    repeat: lineRepeat(it),
   }));
 
   return {
@@ -1302,6 +1613,7 @@ function serializeCart(row: CartWithRelations, zone: string): CartSnapshot {
       taxTotalCents: row.taxTotalCents,
       giftCardAppliedCents: row.giftCardAppliedCents,
       accountCreditAppliedCents: row.accountCreditAppliedCents,
+      coreChargeTotalCents: row.coreChargeTotalCents,
       totalCents: row.totalCents,
     },
     madeToOrder: {

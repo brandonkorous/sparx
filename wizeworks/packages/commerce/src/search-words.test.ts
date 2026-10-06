@@ -12,6 +12,7 @@ import {
   pipelineObjectWords,
   returnOutcomeWords,
   segmentKindWords,
+  taskLineWords,
   taskPriorityWords,
 } from './search-words';
 
@@ -49,6 +50,9 @@ describe('search result second lines', () => {
     expect(returnOutcomeWords('account_credit')).toBe('Wants credit on their account');
     expect(paymentStatusWords('partial')).toBe('Partly paid');
     expect(taskPriorityWords('urgent')).toBe('Urgent');
+    expect(taskLineWords('open', 'medium')).toBe('Medium priority');
+    expect(taskLineWords('completed', 'medium')).toBe('Done');
+    expect(taskLineWords('cancelled', 'high')).toBe('Canceled');
     expect(fileKindWords('application/pdf')).toBe('PDF');
     expect(fileKindWords('video/mp4')).toBe('Video');
     expect(fileKindWords('application/zip')).toBe('File');

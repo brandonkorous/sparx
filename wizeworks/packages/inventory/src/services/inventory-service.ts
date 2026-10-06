@@ -117,17 +117,34 @@ export {
   expireDueReservations,
   listReservations,
   pickWarehouseFor,
+  chooseWarehouse,
+  mostOneLineCanHold,
 } from './reservations';
 export type { ReservationResult, ReservationRow, ListReservationsFilter } from './reservations';
 
 // ─── Sell path (checkout commit · cancel restock · default warehouse) ──
 export {
   commitSaleOnTx,
+  commitPlacedOrderSale,
   emitSaleEvents,
   reverseOrderSale,
   resolveDefaultWarehouseId,
+  // A held order's stock, set aside while it waits for a sign-off and let go
+  // when it is turned down (see the section header in sell-path.ts).
+  holdStockForOrderOnTx,
+  holdHeldOrderStock,
+  releaseOrderHoldsOnTx,
+  orderStockOutcomeOnTx,
+  orderStockNote,
 } from './sell-path';
-export type { SellLine, CommittedSale } from './sell-path';
+export type {
+  SellLine,
+  CommittedSale,
+  HoldLine,
+  HeldOrderStock,
+  OrderStockOutcome,
+  OrderStockShortLine,
+} from './sell-path';
 
 // ─── External-feed reconcile (sync sources) ───────────────────────────
 export { reconcileStockLevel } from './sync';
@@ -240,10 +257,20 @@ export type {
   PurchaseOrderDocumentData,
   PurchaseOrderDocumentBrand,
 } from './purchase-order-document';
+export {
+  preparePurchaseOrderEmail,
+  recordPurchaseOrderEmailed,
+  purchaseOrderEmailRefusal,
+  purchaseOrderEmailProps,
+  purchaseOrderEmailLines,
+  purchaseOrderEmailSummary,
+} from './purchase-order-email';
+export type { PurchaseOrderEmail } from './purchase-order-email';
 export type {
   PurchaseOrderRow,
   PurchaseOrderLineRow,
   PurchaseOrderDetail,
+  PurchaseOrderEmailRecord,
 } from './purchase-order-shared';
 
 // ─── Goods receipts (P3c supply path) ─────────────────────────────────

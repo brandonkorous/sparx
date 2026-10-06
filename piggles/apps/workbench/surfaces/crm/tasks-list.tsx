@@ -13,7 +13,7 @@ import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-re
 import { Table } from '../../components/table';
 import { faListCheck, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -47,6 +47,7 @@ function shortDate(iso: string | null): string {
 }
 
 export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('crm.tasks.list');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | TaskStatus>('open');
 
@@ -76,7 +77,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
   // invitation. Split, the label drifts — and the first-run state used to
   // have no button at all, so "Add your first one" pointed at nothing.
   const createFirst = {
-    label: 'Add something to do',
+    label: createLabel,
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('crm.task.detail', { id: 'new' }, { target: targetFor(event) });
     },
@@ -103,7 +104,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="Add something to do: hold Shift to open alongside, Alt for a new window"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
             onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -170,7 +171,9 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'Nothing to do',
               description:
-                'This is what you owe people: a call to return, a quote to chase, a sample to send. Add your first one and it shows up here with its due date.',
+                // True whether or not tasks exist: the list opens on "To do", so
+                // "add your first one" was said to an owner with tasks done.
+                'This is what you owe people: a call to return, a quote to chase, a sample to send. A new one shows up here with its due date; finished ones are under Done in the filter above.',
               action: createFirst,
             }}
           />

@@ -17,6 +17,7 @@ const money = (over: Partial<InvoiceMoney> = {}): InvoiceMoney => ({
   taxTotal: 0,
   shippingTotal: 0,
   surchargeTotal: 0,
+  coreChargeTotal: 0,
   amountPaid: 0,
   ...over,
 });
@@ -70,5 +71,12 @@ describe('invoiceSummaryRows', () => {
     const rows = invoiceSummaryRows(money({ amountPaid: 40 }), 'USD');
     expect(rows.at(-1)).toEqual({ label: 'Already paid', value: '-$40.00' });
     expect(addsUpTo(rows)).toBe(18);
+  });
+
+  it('names the refundable core deposits a rebuilt part carries (sparx issue 051)', () => {
+    // A fleet invoice: a $580.15 injector and its $150.00 core deposit.
+    const rows = invoiceSummaryRows(money({ subtotal: 580.15, coreChargeTotal: 150 }), 'USD');
+    expect(rows).toContainEqual({ label: 'Refundable core deposits', value: '$150.00' });
+    expect(addsUpTo(rows)).toBe(730.15);
   });
 });

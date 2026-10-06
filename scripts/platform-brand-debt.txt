@@ -9,7 +9,6 @@ sparx Managed Hosting
 sparx Pay
 sparx commission (${commissionRateLabel})
 sparx operations
-sparx order ${ref}
 sparx platform billing
 sparx subdomain
 sparx tenant ${params.tenantId}

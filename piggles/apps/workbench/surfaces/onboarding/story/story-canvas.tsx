@@ -1,7 +1,15 @@
 'use client';
 
 import { Fragment, type ReactNode } from 'react';
-import { CLAUSE, TENSE, AUDIENCE, connector as conn, industryOf } from '@wizeworks/story-schemas';
+import {
+  CLAUSE,
+  TENSE,
+  AUDIENCE,
+  connector as conn,
+  industryOf,
+  lineLead,
+  storyNoun,
+} from '@wizeworks/story-schemas';
 import {
   flatUnused,
   type StoryDispatch,
@@ -120,8 +128,8 @@ export function StoryCanvas({
         menu={(c) => (
           <IndustryMenu
             current={null}
-            onPick={(s) => {
-              d.setIndustry(s);
+            onPick={(s, label) => {
+              d.setIndustry(s, label);
               c();
             }}
           />
@@ -134,13 +142,13 @@ export function StoryCanvas({
   push(
     <ChipTok
       module="builder"
-      label={ind.noun}
+      label={storyNoun(story)}
       icon={<IndustryIcon icon={ind.icon} size={26} />}
       menu={(c) => (
         <IndustryMenu
           current={story.industry}
-          onPick={(s) => {
-            d.setIndustry(s);
+          onPick={(s, label) => {
+            d.setIndustry(s, label);
             c();
           }}
         />
@@ -214,12 +222,10 @@ export function StoryCanvas({
   // the voice stays consistent across the whole story: a business you already RUN speaks
   // in the present ("I share …. I also remember …"), one you WANT TO START speaks in
   // intent ("I’ll share …. I’ll also remember …") — parallel to the opening, never a
-  // present-tense "I also" bolted onto a future "I’ll".
-  const present = story.tense === 'current';
-  const firstLead = present ? ' I ' : ' I’ll ';
-  const alsoLead = present ? ' I also ' : ' I’ll also ';
+  // present-tense "I also" bolted onto a future "I’ll". `lineLead` is shared with the
+  // prose we persist, which used to say "I’ll" whatever the tense (sparx persona issue 010).
   story.lines.forEach((line, li) => {
-    T(li === 0 ? firstLead : alsoLead);
+    T(` ${lineLead(story.tense, li)} `);
     line.forEach((id, i) => {
       if (i) T(conn(i, line.length));
       push(chip(id, 'owner'));

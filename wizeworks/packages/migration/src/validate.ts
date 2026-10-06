@@ -62,6 +62,13 @@ export interface DuplicateGroup {
 export interface ValidationReport {
   entity: CanonicalEntity;
   rowCount: number;
+  /**
+   * How many THINGS the rows describe, where one thing spans several rows: a
+   * product with versions, an order with lines. Equal to `rowCount` for every
+   * other entity. "787 products" over a file of 653 products in 787 versions was
+   * the figure Gillett Diesel's owner was shown (sparx persona issue 053).
+   */
+  recordCount: number;
   /** Rows with no error-severity issue — the number that would actually import. */
   okCount: number;
   errorCount: number;
@@ -355,6 +362,7 @@ export function validateRows(entity: CanonicalEntity, rows: CanonicalRow[]): Val
   return {
     entity,
     rowCount: rows.length,
+    recordCount: recordCountOf(entity, rows),
     okCount: blocked ? 0 : okCount,
     errorCount,
     warningCount,
@@ -365,6 +373,39 @@ export function validateRows(entity: CanonicalEntity, rows: CanonicalRow[]): Val
     unmappedColumns,
     duplicates: duplicates.slice(0, 200),
   };
+}
+
+/** The column whose value names the thing a row belongs to, for entities whose
+ *  things span rows. Grouped the way the importer groups them. */
+const GROUPED_BY: Partial<Record<CanonicalEntity, readonly string[]>> = {
+  products: ['handle', 'sku', 'title'],
+  orders: ['order_number'],
+};
+
+function recordCountOf(entity: CanonicalEntity, rows: CanonicalRow[]): number {
+  const keys = GROUPED_BY[entity];
+  if (!keys) return rows.length;
+  const seen = new Set<string>();
+  for (const row of rows) {
+    const key = keys.map((k) => clean(row[k])).find((value) => value !== '');
+    if (key !== undefined) seen.add(key.toLowerCase());
+  }
+  return seen.size;
+}
+
+/** The word for one row when a thing spans several. */
+const PART_WORD: Partial<Record<CanonicalEntity, { one: string; many: string }>> = {
+  products: { one: 'version', many: 'versions' },
+  orders: { one: 'line', many: 'lines' },
+};
+
+/** "653 products in 787 versions" when things span rows; else the plain count. */
+function thingsLabel(report: ValidationReport): string {
+  const part = PART_WORD[report.entity];
+  if (!part || report.recordCount === report.rowCount) {
+    return countLabel(report.entity, report.rowCount);
+  }
+  return `${countLabel(report.entity, report.recordCount)} in ${report.rowCount.toLocaleString()} ${report.rowCount === 1 ? part.one : part.many}`;
 }
 
 /** Row indexes that carry at least one error — the ones an import must skip. */
@@ -388,6 +429,25 @@ export function countLabel(entity: CanonicalEntity, count: number): string {
   return `${count.toLocaleString()} ${noun}`;
 }
 
+/**
+ * The words on the button that starts an import: what comes in, by name.
+ *
+ * It said "Bring in 787" over a file of 653 products: a sum of ROWS with no noun,
+ * read as a count of products (sparx persona issue 053). One kind of thing is
+ * named and counted; several are "it all", since adding products to customers
+ * makes a number of nothing.
+ */
+export function bringInLabel(
+  entities: readonly { entity: CanonicalEntity; report: ValidationReport }[]
+): string {
+  const [only] = entities;
+  if (entities.length !== 1 || only === undefined) return 'Bring it all in';
+  const { entity, report } = only;
+  return report.errorRows.length === 0
+    ? `Bring in ${countLabel(entity, report.recordCount)}`
+    : `Bring in ${report.okCount.toLocaleString()} of ${report.rowCount.toLocaleString()} rows`;
+}
+
 /** One-line summary for a surface header. Plain language, no jargon. */
 export function summarize(report: ValidationReport): string {
   if (report.blocked) {
@@ -395,7 +455,7 @@ export function summarize(report: ValidationReport): string {
     return `This file cannot be imported yet: ${problems} problem${problems === 1 ? '' : 's'} to fix first.`;
   }
   if (report.errorCount === 0 && report.warningCount === 0)
-    return `${countLabel(report.entity, report.rowCount)} ready to import.`;
+    return `${thingsLabel(report)} ready to import.`;
   if (report.errorCount === 0)
     return `${countLabel(report.entity, report.okCount)} ready: ${report.warningCount} thing${report.warningCount === 1 ? '' : 's'} to know about.`;
   return `${countLabel(report.entity, report.okCount)} ready: ${report.errorRows.length} row${report.errorRows.length === 1 ? '' : 's'} of ${report.rowCount.toLocaleString()} will be skipped.`;

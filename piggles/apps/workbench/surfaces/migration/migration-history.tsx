@@ -22,7 +22,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { entityLabel, runTone, useMigrationRuns, type RunSummary } from './data';
 import { landedBreakdown } from './run-outcome';
-import type { CanonicalEntity } from '@wizeworks/migration';
+import { getVendor, type CanonicalEntity } from '@wizeworks/migration';
 
 /** Registry module for this pane, so the brand draws the right picture in the
  *  empty and waiting states rather than the generic one. */
@@ -62,7 +62,8 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Heading level={3} className="text-base">
-            {run.vendor ?? 'A file'}
+            {/* The platform's own name ("Shopify"), not its slug (sparx persona 053). */}
+            {run.vendor === null ? 'A file' : (getVendor(run.vendor)?.name ?? run.vendor)}
           </Heading>
           <Badge color={runTone(run.status)} variant="soft" size="sm">
             {run.status === 'running'
@@ -89,7 +90,8 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
       <div className="flex flex-col items-end gap-0.5">
         <Text className="text-2xl font-semibold tabular-nums">{landed.toLocaleString()}</Text>
         <Text className="text-sm">
-          {run.dryRun ? 'would come across' : 'brought across'}
+          {/* Rows, said as rows: a product with versions is several (sparx 053). */}
+          {run.dryRun ? 'rows would come across' : 'rows brought across'}
           {run.errorCount > 0 ? ` · ${run.errorCount.toLocaleString()} skipped` : ''}
         </Text>
         {breakdown === null ? null : <Text className="text-end text-sm">{breakdown}</Text>}

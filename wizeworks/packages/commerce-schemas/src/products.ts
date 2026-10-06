@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { Uuid } from '@wizeworks/crm-schemas';
 
 import { PlainTextField } from './plain-text';
+import { ProductRepeatOptions } from './repeat';
 
 import {
   Barcode,
@@ -133,6 +134,16 @@ export const CreateVariantInput = z.object({
   priceCents: MoneyCents,
   compareAtPriceCents: MoneyCents.nullish(),
   costCents: MoneyCents.nullish(),
+  // Core charge: a refundable deposit per unit on a rebuilt part, paid on top of
+  // the price and refunded when the old part comes back. Null = no core. Zero is
+  // refused rather than stored, so "no core" has one spelling.
+  coreChargeCents: MoneyCents.refine((cents) => cents > 0, {
+    message: 'A core charge is more than $0. Clear it instead to take no core.',
+  }).nullish(),
+  // The other way to buy a part with a core charge (issue 057): the buyer sends the
+  // old part FIRST, pays no deposit, and the part ships when the old one arrives.
+  // Only with a core charge, and never on a part the supplier ships.
+  coreFirstOffered: z.boolean().default(false),
   currency: Currency.default('USD'),
   weight: WeightGrams.nullish(),
   dimensions: Dimensions.nullish(),
@@ -166,6 +177,7 @@ export const UpdateVariantInput = CreateVariantInput.partial()
     // Re-declaring them as plain `.optional()` restores true partial semantics.
     // Keep this list in sync with every `.default()` in CreateVariantInput.
     currency: Currency.optional(),
+    coreFirstOffered: z.boolean().optional(),
     inventoryPolicy: InventoryPolicy.optional(),
     requiresShipping: z.boolean().optional(),
     isDefault: z.boolean().optional(),
@@ -180,6 +192,7 @@ export const UpdateVariantInput = CreateVariantInput.partial()
     barcode: Barcode.nullish(),
     compareAtPriceCents: MoneyCents.nullish(),
     costCents: MoneyCents.nullish(),
+    coreChargeCents: CreateVariantInput.shape.coreChargeCents,
     weight: WeightGrams.nullish(),
     dimensions: Dimensions.nullish(),
     fulfillmentType: FulfillmentType.nullish(),
@@ -295,6 +308,8 @@ export const CreateProductInput = z.object({
   vendor: z.string().max(127).nullish(),
   tags: z.array(z.string().min(1).max(63)).max(50).default([]),
   fulfillmentType: FulfillmentType.default('physical'),
+  // How often a shopper may ask for this again (issue 739). Empty = once only.
+  repeatOptions: ProductRepeatOptions.default([]),
   weight: WeightGrams.nullish(), // default for variants without explicit weight
   dimensions: Dimensions.optional(),
   hazmatClass: HazmatClass.default('none'),
@@ -340,6 +355,7 @@ export const UpdateProductInput = CreateProductInput.partial()
     status: ProductStatus.optional(),
     tags: z.array(z.string().min(1).max(63)).max(50).optional(),
     fulfillmentType: FulfillmentType.optional(),
+    repeatOptions: ProductRepeatOptions.optional(),
     hazmatClass: HazmatClass.optional(),
     requiresShipping: z.boolean().optional(),
     categoryIds: z.array(Uuid).max(20).optional(),

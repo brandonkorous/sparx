@@ -102,6 +102,19 @@ export function taskPriorityWords(priority: string): string {
   return from(TASK_PRIORITIES, priority);
 }
 
+/**
+ * The line under a task in search: how urgent it is while it is open, and that
+ * it is closed once it is. Priority alone told nobody a task was finished:
+ * "Order O-000012 ... is waiting for your sign-off" sat in the search box as
+ * "Medium priority" after the order was signed off and the task was done.
+ * The words are the task list's own: Done, Canceled.
+ */
+export function taskLineWords(status: string, priority: string): string {
+  if (status === 'completed') return 'Done';
+  if (status === 'cancelled') return 'Canceled';
+  return taskPriorityWords(priority);
+}
+
 const ENTRY_STATUSES: Record<string, string> = {
   draft: 'Draft',
   published: 'Published',

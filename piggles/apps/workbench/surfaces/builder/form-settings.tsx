@@ -122,7 +122,7 @@ function useFormDraft(ctx: SurfaceContext, data: FormDefinition | undefined) {
 }
 
 function EditForm({ ctx, formNodeId }: { ctx: SurfaceContext; formNodeId: string }) {
-  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } =
+  const { data, isLoading, isError, error, isFetching, dataUpdatedAt, refetch } =
     useFormDefinition(formNodeId);
   const save = useSaveFormDefinition(formNodeId);
   const toast = useToast();
@@ -134,6 +134,10 @@ function EditForm({ ctx, formNodeId }: { ctx: SurfaceContext; formNodeId: string
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
             module={MODULE}
+            // A form on no page of this site is a 404, not a connection fault
+            // (persona issue 226).
+            error={error}
+            noun="form"
             title="Could not load these settings"
             description="This is a problem reaching the server. The form on your site is unaffected and is still taking messages."
             onRetry={() => {

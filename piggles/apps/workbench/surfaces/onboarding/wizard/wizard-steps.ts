@@ -44,7 +44,7 @@ export const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting
   workspace: {
     title: 'Name your workspace',
     supporting:
-      'Your company and its first site. We pre-filled what you told us at signup. Change anything. Your free web address goes live the moment you launch.',
+      'Your company and its first site. We pre-filled what you told us at signup. Change anything. Your free web address already works, and shows your site the moment you launch.',
   },
   domain: {
     title: 'Make it yours',

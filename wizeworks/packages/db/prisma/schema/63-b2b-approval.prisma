@@ -45,7 +45,15 @@ model PurchaseApprovalRule {
   minAmountCents Int @default(0) @map("min_amount_cents")
 
   // Specific approver; null = any staff user with editor role may approve.
+  // Always null when the account signs (`signOffBy = 'account'`).
   requiredApproverUserId String? @map("required_approver_user_id") @db.Uuid
+
+  // Who signs off an order this rule holds (sparx persona issue 087):
+  //   'business' = the business's own team (the named approver above, or anyone)
+  //   'account'  = the account's own contacts with the role 'approver'
+  // An account with no active approver falls back to 'business', so a held
+  // order always has somebody who can release it. Checked in SQL.
+  signOffBy String @default("business") @map("sign_off_by") @db.VarChar(20)
 
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz

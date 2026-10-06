@@ -411,6 +411,11 @@ export interface SampleDataCounts {
   reviews: number;
   questions: number;
   bookings: number;
+  /** Sample bookable services, and the people and equipment they are booked
+   *  with. Clear removes both and nothing counted them, so the screen that
+   *  offers to clear them never said they were there (persona issue 085). */
+  services: number;
+  resources: number;
   deals: number;
   /** Demo support requests (docs/144 §7) — the queue's spread of states. */
   tickets: number;

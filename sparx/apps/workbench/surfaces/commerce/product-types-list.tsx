@@ -32,7 +32,7 @@ import { Plus, Shapes } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useProductTypeList, type ProductType } from './product-types-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 
@@ -58,6 +58,7 @@ function attributeLabel(type: ProductType): string {
 }
 
 export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('commerce.product-types.list');
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<KindFilterValue>('all');
 
@@ -110,11 +111,11 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Define a new kind of product. Hold Shift to open alongside, Alt for a new window"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">New type</span>
+            <span className="hidden @2xl:inline">{createLabel}</span>
           </Button>
         }
         controls={
@@ -197,7 +198,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Plus className="size-4" aria-hidden />
-                    New type
+                    {createLabel}
                   </Button>
                 ),
               }}
@@ -212,7 +213,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               emptyHint={
                 kind === 'built_in'
                   ? null
-                  : 'You have not defined any of your own yet. Use “New type” above, or open a built-in and edit it to start your own copy.'
+                  : `You have not defined any of your own yet. Use “${createLabel}” above, or open a built-in and edit it to start your own copy.`
               }
               onOpen={open}
             />

@@ -81,6 +81,12 @@ export interface PurchaseOrder {
 }
 
 export interface PurchaseOrderDetail extends PurchaseOrder {
+  /** Where the supplier takes orders, from their supplier page. Null when the
+   *  business has none on file. */
+  supplierEmail: string | null;
+  /** Every time the order was emailed to the supplier, newest first. Empty is
+   *  never, from here. */
+  emails: { to: string; at: string }[];
   lines: PurchaseOrderLine[];
   /** Freight booked in WITH a delivery, which `freightCents` never hears about.
    *  Separate from it on purpose: one is what was agreed and the other is what
@@ -313,6 +319,21 @@ export function usePlacePurchaseOrder(id: string) {
   });
 }
 
+/** Email a placed order to the supplier, or to `to` for this one send. */
+export function useEmailPurchaseOrder(id: string) {
+  const invalidate = useInvalidatePurchaseOrders();
+  return useMutation({
+    mutationFn: (to?: string) =>
+      api.post<{ to: string; order: PurchaseOrderDetail }>(
+        `/v1/inventory/purchase-orders/${id}/email`,
+        to ? { to } : {}
+      ),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
 export function useCancelPurchaseOrder(id: string) {
   const invalidate = useInvalidatePurchaseOrders();
   return useMutation({
@@ -378,7 +399,9 @@ export function purchaseOrderState(po: {
       return {
         label: 'Placed',
         tone: 'info',
-        detail: 'Sent to the supplier. Waiting for it to arrive.',
+        // What the owner did. Whether the supplier was emailed is its own line
+        // (`emailedLine`), because an order can go by phone or on paper too.
+        detail: 'Placed with the supplier. Waiting for it to arrive.',
       };
     case 'partial':
       return {

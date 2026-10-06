@@ -154,6 +154,25 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // the full receipt — product thumbnails, a subtotal/shipping/tax/total cost summary,
     // a self-dropping ship-to card, and a "Pairs well with" rail.
     '20ac7029d9ba4bea9fa35e4bd603f04bac5401b3791ae64cf2dc6c870ea6f8e1',
+    // Outgoing (2026-10-01, persona issue 064): every receipt body shipped since the
+    // 2026-08-11 redesign, none of which was ever appended here, so a tenant on any
+    // of them was never refreshed. Each one printed "Shipping to [object Object]"
+    // and promised tracking to a customer collecting from the counter. Computed
+    // from the shipped code at each commit, oldest first: the redesign itself
+    // (62b77fb02, unchanged through 17743942f); + "Ready from" / "Due on collection"
+    // (5e402a0a8, issue 026); the em-dash sweep (851aa54d6, unchanged at d1b4166fc);
+    // + the refundable core deposit row (issue 051, never committed before this).
+    // And one older gap found the same way: the body shipped 788298f62 (2026-07-29)
+    // through 475d3e695 (2026-08-04), still held by 14 untouched rows in dev.
+    '2aef252cb40e5a4263550b9563e7231a10ff24a8d8afc6f706c252423babbbb8',
+    '716f0860b7fd1a17a5c9f3d1418ae9aeef052922ffcef4a289c2022d3eb28b84',
+    'bf43e27847e614760c9d6b9c4e1326a4d4b654b9bcc02796ba7a7c945467a6af',
+    'ed8cb5381a0afcee19d6d5639a335177dcd5a2ba9ccd254da3682d8f23f57bac',
+    '1407b8ecb544a6ace2860f517f086f68fa13efbe91feb64ba9ba307dc131dce2',
+    // Outgoing (2026-10-01, issue 064): the first pickup/delivery split, which still
+    // promised "we'll let you know when it's ready to pick up" to a counter sale
+    // already handed over. Never released, but the dev refresh put it on rows.
+    'a29816b886fbe85b5205d40ed960bc213ee82c21cd4bb558775085892c6cdcbb',
   ]),
   'shipping-confirmation': new Set([
     'c9d48b50aaf7363fc5f029b24d1ec49476259ba20c7a29a746a47707d4162fdc',
@@ -170,6 +189,16 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // Outgoing (2026-08-11 email redesign): the product-rail body, replaced now by the
     // same + a CMS-gated content rail ("While it's fresh") for content-and-commerce.
     '48e7eac39513db9790afa45cd27f4b16af5d8c3e021b00d646a93b1243f7ebdf',
+    // Outgoing (2026-10-01, persona issue 064): the bodies that told a customer who
+    // collected their order at the counter that it "has been delivered", replaced by
+    // one that says "You picked up order …" for a pickup. The content-rail body as
+    // shipped (62b77fb02 through 5e402a0a8), then after the em-dash sweep (851aa54d6
+    // through d1b4166fc); neither had been appended. Plus the body shipped 788298f62
+    // (2026-07-29) through 475d3e695 (2026-08-04), still held by 18 untouched rows in
+    // dev, which had not been appended either.
+    '5a9760f56f1e5e67faf360c1e13f178849e6f11ce6ba72f852c097664c9468e8',
+    'd1acc230009aad6b3e219aedc6b56b66a89d7269d30e0df074b3e0e1cd2d9b67',
+    '39c373a4d7518e64424dc474e6bec58430f0e1bf2c9fa19584d8299d5ae252af',
   ]),
   'order-cancelled': new Set([
     '1e15199075b2e949414fb79039ab1b41aaf432acc81a0b56499d79a3d625d990',
@@ -214,9 +243,21 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'return-denied': new Set([]),
   'b2b-order-approved': new Set([
     'fc09aded0e05d7213355165dd0bf3f8c77039e682c2ea42bb2edcf2a0fbbc38b',
+    // Found missing (2026-10-03, sparx persona issue 087): the body shipped from
+    // the tree move (17743942f) until the em-dash sweep (851aa54d6), "Hi … — order
+    // … has been approved", never appended, so a tenant still on it was never
+    // refreshed. Computed with today's kit, which has not changed since.
+    '4d0e35c65f33518517213e00b984b6c9b85a6628b14ddac739389dd553eb3a5f',
   ]),
   'b2b-order-rejected': new Set([
     '5a521482b7f1a9b1c214285d48404920fa1bfcbd4df913f9c9525b99683ef995',
+    // Outgoing (2026-10-03, sparx persona issue 087): the bodies that told the
+    // buyer nothing about who turned the order down or why, and sent them to
+    // their account manager even when the no came from their own colleague.
+    // The em-dash body (17743942f until 851aa54d6), never appended, then the
+    // colon body that replaced it.
+    'a36ea61f9a1c1edef74b6ef6d00f1bb8e76fdf4ba9e64c196556fa7f32d3f9b8',
+    '842bba138d62324d3cd75c07f8479ed23255aec8dc220f4140aba7e5579c8334',
   ]),
   'booking-confirmation': new Set([
     '5cd91e9ae085185fe763833e62d1b62dd05e2d559f4edfe2b5495ae436117e42',

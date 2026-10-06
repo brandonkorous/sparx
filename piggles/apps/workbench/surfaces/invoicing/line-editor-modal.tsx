@@ -40,8 +40,10 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { ProductPicker } from './product-picker';
 import { type MarkupRuleSummary } from './line-markup';
 import { LineEditorNumbers } from './line-editor-numbers';
+import { LineEditorNotes } from './line-editor-notes';
 import { useLineForm, type LineTypeOption } from './use-line-form';
 import { type DraftLine } from './totals';
+import type { TradeAccount } from './trade-price';
 
 // Re-exported so existing importers (invoice-editor, line-items) keep their
 // `from './line-editor-modal'` path — the type just no longer lives here.
@@ -54,8 +56,12 @@ interface LineEditorModalProps {
   lineTypes: LineTypeOption[];
   markupRules: MarkupRuleSummary[];
   currency: string;
+  /** The wholesale account whose own prices a picked part takes, or null. */
+  tradeAccount: TradeAccount | null;
   onClose: () => void;
   onSave: (line: DraftLine) => void;
+  /** Opens the markup rules screen beside the document (sparx persona issue 086). */
+  onManageMarkupRules?: (() => void) | undefined;
 }
 
 export function LineEditorModal({
@@ -64,11 +70,13 @@ export function LineEditorModal({
   lineTypes,
   markupRules,
   currency,
+  tradeAccount,
   onClose,
   onSave,
+  onManageMarkupRules,
 }: LineEditorModalProps) {
   const isEdit = Boolean(line?.id ?? line?.description);
-  const form = useLineForm({ open, line, lineTypes, markupRules, onSave });
+  const form = useLineForm({ open, line, lineTypes, markupRules, tradeAccount, onSave });
   const confirm = useConfirm();
 
   // Declares the in-progress line to the PANE, so closing the whole pane while
@@ -156,7 +164,6 @@ export function LineEditorModal({
                   productId={form.productId}
                   variantId={form.variantId}
                   productLabel={form.productLabel}
-                  currency={currency}
                   onPick={form.pickProduct}
                   onClear={form.clearProduct}
                 />
@@ -182,7 +189,14 @@ export function LineEditorModal({
               ) : null}
             </Field>
 
-            <LineEditorNumbers form={form} markupRules={markupRules} currency={currency} />
+            <LineEditorNumbers
+              form={form}
+              markupRules={markupRules}
+              currency={currency}
+              onManageMarkupRules={onManageMarkupRules}
+            />
+
+            <LineEditorNotes form={form} tradeAccount={tradeAccount} currency={currency} />
 
             <label className="flex items-center gap-2">
               <Checkbox
@@ -202,7 +216,6 @@ export function LineEditorModal({
                 cheap to trigger has to go through the same question every other
                 dismissal does. */}
             <Button
-              color="neutral"
               variant="ghost"
               size="sm"
               onClick={() => {

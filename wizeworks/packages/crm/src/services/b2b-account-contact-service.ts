@@ -21,6 +21,7 @@
 import { CreateB2bAccountContactInput, UpdateB2bAccountContactInput } from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { B2bAccountContact, Customer } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import { membershipDeactivated, membershipRestored } from './trade-membership';
@@ -126,7 +127,27 @@ export async function create(
     });
   });
 
+  await reindexContact(ctx, result.customerId);
   return result;
+}
+
+/**
+ * The person's search document names every trade account they are an active
+ * contact on, and a membership row is not the customer row, so nothing else here
+ * announces the change. After commit, like every index signal.
+ *
+ * Without it a contact added on the account's screen could not be found by the
+ * account's name, and one switched off went on being found by it, until somebody
+ * happened to edit them (Gillett Diesel, 2026-10-03: two of the three people on
+ * Wasatch Front Utility Contractors, LLC could not be found by typing "Wasatch").
+ */
+async function reindexContact(ctx: ServiceContext, customerId: string): Promise<void> {
+  await indexEntity({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    entityType: 'customer',
+    recordId: customerId,
+  });
 }
 
 export async function update(
@@ -137,7 +158,7 @@ export async function update(
 ): Promise<B2bAccountContactRow> {
   const input = UpdateB2bAccountContactInput.parse(rawInput);
 
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const before = await tx.b2bAccountContact.findUnique({ where: { id: contactId } });
     if (before?.accountId !== accountId) {
       throw new CrmNotFoundError('B2bAccountContact', contactId);
@@ -183,4 +204,7 @@ export async function update(
 
     return updated;
   });
+
+  await reindexContact(ctx, result.customerId);
+  return result;
 }

@@ -29,8 +29,14 @@ export type { InventoryTopic, InventoryEventInput } from './events';
  * `z.enum`. A kind missing from a copy is a document nobody can scan.
  */
 export { ALL_KINDS as SCAN_KINDS } from './services/scan';
-export { computeAvailability } from './services/availability';
+export {
+  computeAvailability,
+  AVAILABILITY_LEVEL_SELECT,
+  availabilityLevelOf,
+  levelSellable,
+} from './services/availability';
 export type { AvailabilityLevel, VariantAvailability } from './services/availability';
+export type { OrderStockOutcome, OrderStockShortLine } from './services/sell-path';
 
 /**
  * HOW AN ITEM IS NAMED, for anything outside this package that has to say what a
@@ -92,7 +98,10 @@ export type {
   PurchaseOrderRow,
   PurchaseOrderLineRow,
   PurchaseOrderDetail,
+  PurchaseOrderEmailRecord,
+  PurchaseOrderEmail,
   PurchaseOrderDocumentBrand,
+  PurchaseOrderDocumentData,
   // Picking + packing (docs/146 Phase 4)
   PickListRow,
   PickListLineRow,

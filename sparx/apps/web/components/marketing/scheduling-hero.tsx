@@ -1,6 +1,7 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import {
   Badge,
-  Button,
   Card,
   Display,
   Divider,
@@ -15,7 +16,6 @@ import {
 // Server→Client boundary and arrives as a lazy client reference, so its `.type`
 // is undefined and silica's `cloneElement(render, …)` throws. The class builders
 // are React-free; import them from `/server` because the ROOT is 'use client'.
-import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Container, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { SCHEDULING_SCENES, type SchedulingScene } from './scheduling-data';
@@ -60,9 +60,12 @@ export function SchedulingHero() {
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
-              <Button size="lg" color="primary">
+              <a
+                href={signupHref('scheduling-hero')}
+                className={buttonClasses({ size: 'lg', color: 'primary' })}
+              >
                 Activate Scheduling →
-              </Button>
+              </a>
               <a href="#shapes" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
                 See the booking shapes
               </a>

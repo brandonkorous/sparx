@@ -2,6 +2,7 @@
 //
 //   GET    /v1/commerce/products                              → list
 //   GET    /v1/commerce/products/facets                       → type/vendor/tag/tax-class lookups
+//   GET    /v1/commerce/products/types                        → kinds of product in use (list filter)
 //   POST   /v1/commerce/products/:id/preview-tokens           → mint a draft-preview token
 //   POST   /v1/commerce/products                              → create
 //   GET    /v1/commerce/products/:id                          → fetch
@@ -11,7 +12,7 @@
 //   POST   /v1/commerce/products/:id/publish                  → publish
 //   POST   /v1/commerce/products/:id/unpublish                → unpublish
 //   DELETE /v1/commerce/products/:id                          → soft delete
-//   POST   /v1/commerce/products/bulk-status                  → bulk status change
+//   POST   /v1/commerce/products/bulk-status                  → bulk status change (ids or a selection)
 //   POST   /v1/commerce/products/bulk-delete                  → bulk delete
 //   POST   /v1/commerce/products/bulk-tag                     → bulk tag add/remove
 //   POST   /v1/commerce/products/bulk-price/preview           → price adjust dry run
@@ -44,7 +45,12 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { queryBool } from '@wizeworks/api-core/query';
-import { bulkPriceService, productService, variantService } from '@wizeworks/commerce';
+import {
+  bulkPriceService,
+  productSelectionService,
+  productService,
+  variantService,
+} from '@wizeworks/commerce';
 import { Sku } from '@wizeworks/commerce-schemas';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
@@ -56,6 +62,7 @@ import {
 } from '../../../lib/commerce-context.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 import { resolveListScope } from '../../../lib/property.js';
+import { scopeProductSelection } from '../../../lib/product-selection-scope.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
@@ -128,6 +135,22 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     return ok(await productService.getFacets(toCommerceContext(request)));
+  });
+
+  // The kinds of product this catalog actually uses, for the list's filter. Not
+  // `facets`: that merges a platform baseline in for the editor's suggestions,
+  // and a filter offering a kind nobody has can only ever find nothing.
+  app.get('/v1/commerce/products/types', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const propertyId = await resolveListScope(
+      auth,
+      undefined,
+      request.headers['x-sparx-property-id']
+    );
+    return ok(
+      await productSelectionService.productTypesInUse(toCommerceContext(request), propertyId)
+    );
   });
 
   // Mint a short-lived (15 min) draft-preview token for one product. The
@@ -232,9 +255,22 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     reply.code(204);
   });
 
+  // `{ productIds, status }` acts on those ids. `{ selection, status }` acts on
+  // a selection, including "everything the list matches", scoped to the site
+  // the list is (see scopeProductSelection) and counting only products whose
+  // status actually moves.
   app.post('/v1/commerce/products/bulk-status', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
+    const body = request.body as { selection?: unknown } | null;
+    if (body && typeof body === 'object' && 'selection' in body) {
+      return ok(
+        await productSelectionService.updateStatusBySelection(
+          toCommerceContext(request),
+          await scopeProductSelection(request, auth, body)
+        )
+      );
+    }
     const result = await productService.bulkUpdateStatus(toCommerceContext(request), request.body);
     return ok(result);
   });

@@ -54,6 +54,7 @@ import { startConsumer, type RunningConsumer, type WorkerSubscription } from '@w
 
 import * as automation from '@wizeworks/automation-worker';
 import { runTick } from '@wizeworks/automation-worker';
+import * as cacheRevalidation from '@wizeworks/cache-revalidation-worker';
 import * as channelSync from '@wizeworks/channel-sync-worker';
 import * as commerceIndexer from '@wizeworks/commerce-indexer';
 import * as domain from '@wizeworks/domain-worker';
@@ -91,6 +92,7 @@ function forWorker(name: string): pino.Logger {
 
 const SUBSCRIPTIONS: WorkerSubscription[] = [
   automation.createSubscription(),
+  cacheRevalidation.createSubscription(forWorker(cacheRevalidation.DURABLE)),
   channelSync.createSubscription(forWorker(channelSync.DURABLE)),
   commerceIndexer.createSubscription(forWorker(commerceIndexer.DURABLE)),
   domain.createSubscription(forWorker(domain.DURABLE)),

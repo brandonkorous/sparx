@@ -9,6 +9,12 @@
 # a cross-tenant sweep in the same minute as crm-partition-rollover on a single
 # 2-vCPU node.
 #
+# Every release also runs the seed half of this, right after its containers roll
+# out (release.yml, "Re-sync system automations"), so a changed seed reaches
+# every business with the release rather than at 02:07. This stays as the
+# backstop: a module switched on between releases, a business the release's pass
+# stepped over, and the campaign scan, which only runs here.
+#
 # Same shared-secret auth as automation-tick; see that file for why the OIDC path
 # did not survive the move off Cloud Scheduler.
 ---

@@ -7,13 +7,18 @@
 // an inline `display:flex` that never names a direction cannot undo that — the
 // row rendered as a centred stack for exactly that reason (issue 294). A
 // `flex-row` utility says the axis out loud.
+//
+// A wholesale buyer can Order again from here (sparx persona issue 086): the
+// order's items into the cart at today's prices for their account.
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
 import { orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
-import { getOrders, type OrderSummary } from '@/lib/customer-client';
+import { getOrders, reorderOwnOrder, type OrderSummary } from '@/lib/customer-client';
+import { FillCartButton } from '@/components/account/order-again-button';
+import { useOrderingAccounts } from '@/components/account/ordering-accounts';
 import { formatMoney } from '@/lib/format';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
@@ -29,6 +34,9 @@ export default function OrdersPage() {
   const { tenantSlug } = useCustomer();
   const [orders, setOrders] = useState<OrderSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Order again is for a contact who can order on a wholesale account.
+  const { accounts } = useOrderingAccounts();
+  const canOrderAgain = accounts.length > 0;
 
   useEffect(() => {
     let active = true;
@@ -60,25 +68,35 @@ export default function OrdersPage() {
       ) : (
         <div className="flex flex-col gap-3">
           {orders.map((o) => (
-            <Link
-              key={o.id}
-              href={`/account/orders/${o.id}`}
-              // Wraps rather than overflows: at 360px the number, the status and the
-              // total do not fit on one line, and the total was sitting on the border.
-              className="card border-base-300 flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2 border px-5 py-4 sm:gap-x-4"
-            >
-              <div className="min-w-0">
-                {/* An order number is one token — it must not break across lines at 360px. */}
-                <strong className="whitespace-nowrap">#{o.orderNumber}</strong>
-                <div className="text-base-content text-sm">{formatDate(o.placedAt)}</div>
-              </div>
-              <div className="flex items-center gap-3 sm:gap-4">
-                <Badge color={orderStatusTone(o.status)} variant="soft">
-                  {orderStatusLabel(o.status)}
-                </Badge>
-                <strong>{formatMoney(o.totalCents, o.currency)}</strong>
-              </div>
-            </Link>
+            <div key={o.id} className="flex flex-col gap-2">
+              <Link
+                href={`/account/orders/${o.id}`}
+                // Wraps rather than overflows: at 360px the number, the status and the
+                // total do not fit on one line, and the total was sitting on the border.
+                className="card border-base-300 flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2 border px-5 py-4 sm:gap-x-4"
+              >
+                <div className="min-w-0">
+                  {/* An order number is one token: it must not break across lines at 360px. */}
+                  <strong className="whitespace-nowrap">#{o.orderNumber}</strong>
+                  <div className="text-base-content text-sm">{formatDate(o.placedAt)}</div>
+                </div>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <Badge color={orderStatusTone(o.status)} variant="soft">
+                    {orderStatusLabel(o.status)}
+                  </Badge>
+                  <strong>{formatMoney(o.totalCents, o.currency)}</strong>
+                </div>
+              </Link>
+              {canOrderAgain && (
+                <FillCartButton
+                  label="Order again"
+                  busyLabel="Adding to your cart…"
+                  size="sm"
+                  variant="outline"
+                  run={(cartId) => reorderOwnOrder(tenantSlug, o.id, cartId)}
+                />
+              )}
+            </div>
           ))}
         </div>
       )}

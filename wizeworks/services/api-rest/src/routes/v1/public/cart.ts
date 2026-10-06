@@ -24,6 +24,10 @@
 // shopper acting on a basket the abandonment sweep had marked quiet has come
 // back. The GET stays a pure read - a basket still sitting in a browser tab is
 // not somebody returning to buy it.
+//
+// A basket that has been bought answers 410 `CART_ALREADY_BOUGHT`, to the GET
+// and to every write (the writes are refused in the cart service), and the
+// site starts a fresh basket on it (sparx persona issue 087).
 
 import { randomUUID } from 'node:crypto';
 
@@ -31,12 +35,16 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import {
+  CommerceCartBoughtError,
   cartService,
+  type CartAccountRules,
   type CartSnapshot,
   discountService,
   commerceSiteService,
+  paymentMethodService,
   type ServiceContext,
 } from '@wizeworks/commerce';
+import { readRepeatOptions, RepeatCadence } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { badRequest } from '@wizeworks/api-core/errors';
@@ -60,8 +68,20 @@ const CreateCartQuery = z.object({ property: z.string().optional() });
 const AddItemBody = z.object({
   variantId: z.string().uuid(),
   quantity: z.number().int().positive().max(999).default(1),
+  // Deliver this again on a schedule (issue 739). The service checks it is one
+  // the product offers and that the shop can keep a card.
+  repeat: RepeatCadence.optional(),
+  // Send the old part first instead of paying the core deposit (issue 057). The
+  // service checks the part offers it.
+  coreFirst: z.boolean().optional(),
 });
-const UpdateItemBody = z.object({ quantity: z.number().int().nonnegative().max(999) });
+const UpdateItemBody = z.object({
+  quantity: z.number().int().nonnegative().max(999),
+  // A new schedule, or null to buy it once instead. Omitted leaves it alone.
+  repeat: RepeatCadence.nullable().optional(),
+  // Switch between paying the core deposit and sending the old part first.
+  coreFirst: z.boolean().optional(),
+});
 const DiscountBody = z.object({ code: z.string().min(1).max(64) });
 
 // Storefront-facing line shape: the service snapshot enriched with the product
@@ -79,6 +99,21 @@ interface PublicCartLine {
   unitPriceCents: number;
   quantity: number;
   lineTotalCents: number;
+  /** Refundable core deposit per unit on a rebuilt part, on top of the price and
+   *  not in `lineTotalCents`; null = no core (issue 051). */
+  coreChargeCents: number | null;
+  /** Bought by sending the old part first: no deposit, and it ships when the old
+   *  part arrives (issue 057). */
+  coreFirst: boolean;
+  /** Present when the part can be bought either way, so the basket can offer the
+   *  switch: the deposit per unit paying it would cost. Null otherwise. */
+  coreChoice: { depositCents: number } | null;
+  /** How often this line is delivered again; null = bought once (issue 739). */
+  repeat: RepeatCadence | null;
+  /** The schedules this line could be switched to, so the basket can offer a
+   *  change without a trip back to the product. Empty when the product is
+   *  bought once only or the shop cannot keep a card. */
+  repeatOptions: RepeatCadence[];
 }
 
 async function serializePublicCart(
@@ -96,6 +131,10 @@ async function serializePublicCart(
    *  the money splits between now and then. Passed straight through from the
    *  cart service so the cart, the checkout and the gateway agree. */
   madeToOrder: CartSnapshot['madeToOrder'];
+  /** A signed-in trade contact's account rules on this basket: whether they may
+   *  order, each line's minimum, maximum and case pack, and any shortfall under
+   *  the account's minimum order. Null for everyone else (sparx persona issue 086). */
+  accountRules: CartAccountRules | null;
 } | null> {
   const snapshot = await cartService.get(ctx, cartId);
   if (!snapshot) return null;
@@ -128,6 +167,7 @@ async function serializePublicCart(
             product: {
               select: {
                 handle: true,
+                repeatOptions: true,
                 images: {
                   take: 1,
                   orderBy: { position: 'asc' },
@@ -155,6 +195,10 @@ async function serializePublicCart(
     return v.title;
   };
 
+  // Whether this shop can keep a card at all. Without it no schedule is offered,
+  // the same answer the product page gives.
+  const canRepeat = await paymentMethodService.canSaveMethods(ctx);
+
   const items: PublicCartLine[] = snapshot.items.map((i) => {
     const v = byVariant.get(i.variantId);
     return {
@@ -169,6 +213,11 @@ async function serializePublicCart(
       unitPriceCents: i.unitPriceCents,
       quantity: i.quantity,
       lineTotalCents: i.subtotalCents,
+      coreChargeCents: i.coreChargeCents ?? null,
+      coreFirst: i.coreFirst,
+      coreChoice: i.coreChoice ?? null,
+      repeat: i.repeat ?? null,
+      repeatOptions: canRepeat && v ? readRepeatOptions(v.product.repeatOptions) : [],
     };
   });
 
@@ -183,6 +232,7 @@ async function serializePublicCart(
     appliedGiftCardCodes: snapshot.appliedGiftCardCodes,
     totals: totalsView(snapshot.totals),
     madeToOrder: snapshot.madeToOrder,
+    accountRules: snapshot.accountRules ?? null,
   };
 }
 
@@ -193,6 +243,7 @@ function totalsView(t: {
   taxTotalCents: number;
   giftCardAppliedCents: number;
   accountCreditAppliedCents: number;
+  coreChargeTotalCents: number;
   totalCents: number;
 }) {
   return {
@@ -206,6 +257,9 @@ function totalsView(t: {
     // money that closed the gap has no name.
     giftCardAppliedCents: t.giftCardAppliedCents,
     accountCreditAppliedCents: t.accountCreditAppliedCents,
+    // Inside totalCents too, and named for the same reason: refundable core
+    // deposits on rebuilt parts (issue 051).
+    coreChargeTotalCents: t.coreChargeTotalCents,
     totalCents: t.totalCents,
   };
 }
@@ -274,6 +328,10 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const { cartId } = CartParam.parse(request.params);
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertCartToken(request, tenantId, cartId);
+    // A bought basket is gone as far as the shopper is concerned: the site
+    // forgets it and starts a fresh one, rather than showing what was already
+    // ordered as if it could still be changed (sparx persona issue 087).
+    await cartService.assertCartOpen(ctx, cartId);
     const cart = await serializePublicCart(ctx, tenantId, cartId);
     return ok(cart);
   });
@@ -289,7 +347,13 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     // their B2B membership rather than the stale anonymous default.
     const customer = await optionalCustomer(request, { tenantId });
     if (customer) await cartService.claim(ctx, { cartId, customerId: customer.customerId });
-    await cartService.addItem(ctx, { cartId, variantId: body.variantId, quantity: body.quantity });
+    await cartService.addItem(ctx, {
+      cartId,
+      variantId: body.variantId,
+      quantity: body.quantity,
+      ...(body.repeat ? { repeat: body.repeat } : {}),
+      ...(body.coreFirst ? { coreFirst: true } : {}),
+    });
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });
 
@@ -298,7 +362,14 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const body = UpdateItemBody.parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertCartTokenForWrite(request, ctx, tenantId, cartId);
-    await cartService.updateItem(ctx, { cartItemId: itemId, quantity: body.quantity });
+    await cartService.updateItem(ctx, {
+      cartItemId: itemId,
+      // The line must be in the basket the token was checked against.
+      cartId,
+      quantity: body.quantity,
+      ...(body.repeat !== undefined ? { repeat: body.repeat } : {}),
+      ...(body.coreFirst !== undefined ? { coreFirst: body.coreFirst } : {}),
+    });
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });
 
@@ -306,7 +377,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const { cartId, itemId } = ItemParam.parse(request.params);
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertCartTokenForWrite(request, ctx, tenantId, cartId);
-    await cartService.removeItem(ctx, itemId);
+    await cartService.removeItem(ctx, itemId, cartId);
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });
 
@@ -332,6 +403,9 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
       await discountService.redeemCode(ctx, { cartId, code: body.code });
       return ok({ ...(await serializePublicCart(ctx, tenantId, cartId)), kind: 'discount' });
     } catch (err) {
+      // A bought basket takes no code of either kind, and the site needs its
+      // own code to start a fresh basket, not a "can't be applied".
+      if (err instanceof CommerceCartBoughtError) throw err;
       discountError = err as Error;
     }
 

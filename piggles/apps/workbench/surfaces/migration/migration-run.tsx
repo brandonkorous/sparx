@@ -16,7 +16,7 @@ import { Button, useToast } from '@wizeworks/silicaui-react';
 import { faPlay, faRotate, faUpload } from '@fortawesome/pro-solid-svg-icons';
 
 import { Icon } from '@piggles/ui';
-import type { MappedEntity } from '@wizeworks/migration';
+import { bringInLabel, type MappedEntity } from '@wizeworks/migration';
 import { RunProgress } from './migration-progress';
 import { PickSource } from './migration-pick-source';
 import { StagedSource } from './migration-staged';
@@ -94,8 +94,6 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
     }
     return usable(loaded.result.entities);
   }, [live, loaded, manual]);
-
-  const totalReady = importable.reduce((sum, entity) => sum + entity.report.okCount, 0);
 
   const begin = useCallback(
     async (dryRun: boolean) => {
@@ -200,7 +198,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
                   onClick={() => void begin(false)}
                 >
                   <Icon glyph={faUpload} className="size-4" aria-hidden />
-                  Bring in {totalReady.toLocaleString()}
+                  {bringInLabel(importable)}
                 </Button>
               </>
             ) : null}

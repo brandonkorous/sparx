@@ -40,7 +40,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Mail, Phone, PhoneCall, Send, StickyNote } from 'lucide-react';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
@@ -140,8 +140,8 @@ export function EngagementComposer({
   const { data: snippetData } = useSalesSnippets();
 
   const { data: voiceData } = useVoiceConnections();
-  const { data: siteState } = useActiveSiteId();
-  const activeSiteId = siteState?.propertyId ?? null;
+  const currentSiteId = useActivePropertyId();
+  const activeSiteId = currentSiteId ?? null;
   const placeCall = usePlaceCall();
 
   const sendEmail = useSendEngagementEmail();

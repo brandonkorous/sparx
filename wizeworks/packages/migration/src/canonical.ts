@@ -189,6 +189,12 @@ export const ENTITY_FIELDS: Record<CanonicalEntity, readonly FieldSpec[]> = {
     { key: 'price', label: 'Price', kind: 'money' },
     { key: 'compare_at_price', label: 'Compare-at price', kind: 'money' },
     { key: 'cost_per_item', label: 'Cost', kind: 'money' },
+    {
+      key: 'core_charge',
+      label: 'Core charge',
+      kind: 'money',
+      help: 'A refundable deposit on a rebuilt part, charged on top of the price and paid back when the old part comes back. Leave blank for none.',
+    },
     { key: 'currency', label: 'Currency', kind: 'text', max: 3 },
     { key: 'barcode', label: 'Barcode', kind: 'text', max: 14 },
     { key: 'track_inventory', label: 'Track stock', kind: 'boolean' },

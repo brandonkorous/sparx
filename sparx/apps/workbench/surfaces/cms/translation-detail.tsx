@@ -28,6 +28,8 @@
 // nothing here routes around it.
 
 import { useEffect, useMemo, useState } from 'react';
+import type { ViewParamHandle } from '../../lib/workbench/view-param';
+import { useViewParamHandle } from '../../lib/workbench/view-param';
 import {
   Badge,
   Button,
@@ -102,6 +104,8 @@ function same(a: Draft, b: Draft): boolean {
 
 export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const productId = typeof ctx.params.id === 'string' ? ctx.params.id : '';
+  // The language tab, held in the pane's address (issue 374).
+  const language = useViewParamHandle(ctx, 'lang');
   const source = useProductSource(productId);
   const translations = useProductTranslations(productId);
 
@@ -183,6 +187,7 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       isFetching={translations.isFetching}
       dataUpdatedAt={translations.dataUpdatedAt}
       onRefresh={refresh}
+      language={language}
     />
   );
 }
@@ -196,10 +201,12 @@ function Editor({
   isFetching,
   dataUpdatedAt,
   onRefresh,
+  language,
 }: {
   productId: string;
   product: ProductSource;
   rows: ProductTranslation[];
+  language: ViewParamHandle;
   isFetching: boolean;
   dataUpdatedAt: number;
   onRefresh: () => void;
@@ -214,7 +221,6 @@ function Editor({
   // is what lets "add a language" not need a round trip before you can type.
   const [pending, setPending] = useState<string[]>([]);
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
-  const [active, setActive] = useState<string>(rows[0]?.locale ?? '');
 
   const saved = useMemo(() => {
     const map: Record<string, Draft> = {};
@@ -232,9 +238,17 @@ function Editor({
   useEffect(() => {
     setPending((current) => current.filter((locale) => !rows.some((row) => row.locale === locale)));
   }, [rows]);
-  useEffect(() => {
-    if (active === '' || !locales.includes(active)) setActive(locales[0] ?? '');
-  }, [locales, active]);
+  // The language is the pane's address (issue 374), so a reload or a link
+  // keeps it. One the record does not have (an old link, a language since
+  // removed) shows the first. The first needs no param, so it is the plain
+  // address.
+  const active =
+    language.value !== undefined && locales.includes(language.value)
+      ? language.value
+      : (locales[0] ?? '');
+  const setActive = (locale: string) => {
+    language.set(locale === locales[0] ? null : locale);
+  };
 
   const currentSaved = saved[active] ?? BLANK;
   const current = drafts[active] ?? currentSaved;

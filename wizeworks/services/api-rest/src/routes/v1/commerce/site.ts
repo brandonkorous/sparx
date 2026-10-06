@@ -7,6 +7,7 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 import { resolveListScope, resolvePropertyId, type SiteActor } from '../../../lib/property.js';
+import { publishSiteUpdated } from '../../../lib/site-events.js';
 
 /** The active site (docs/49 Phase 6): the `x-sparx-property-id` the dashboard
  *  switcher sets, else the tenant's primary. */
@@ -76,11 +77,17 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.patch('/v1/commerce/site/settings', async (request) => {
-    requireRole(request, 'admin');
+    const auth = requireRole(request, 'admin');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     const propertyId = await resolveRequestProperty(request, requireAuth(request));
     await commerceSiteService.updateSettings(ctx, propertyId, request.body);
+    // Currency, locale, the low-stock line and the sign-in gates are read out of
+    // the website's cached business payload; purge it so they apply at once.
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId,
+      changed: ['shop-settings'],
+    });
     return ok({ updated: true });
   });
 
@@ -93,11 +100,15 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.patch('/v1/commerce/site/theme', async (request) => {
-    requireRole(request, 'admin');
+    const auth = requireRole(request, 'admin');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     const propertyId = await resolveRequestProperty(request, requireAuth(request));
     await commerceSiteService.updateTheme(ctx, propertyId, request.body);
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId,
+      changed: ['shop-theme'],
+    });
     return ok({ updated: true });
   });
 

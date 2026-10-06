@@ -3,9 +3,11 @@
 // Checkout-side order summary. Mirrors the cart summary but read-only.
 
 import Image from 'next/image';
+import { cadenceLabel } from '@wizeworks/commerce-schemas';
 
 import { formatMoney } from '@/lib/format';
 import type { CartLine, CartMadeToOrder, CartTotals } from '../cart-provider';
+import { CoreLine } from '../core-choice';
 import { MadeToOrderSummary } from '../made-to-order-summary';
 import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 import { shippingLine, summaryTotalCents } from './summary-lines';
@@ -19,6 +21,7 @@ export function OrderSummary({
   paymentMode = 'card',
   shippingSettled = true,
   pendingShippingCents = null,
+  onCoreFirst,
 }: {
   lines: CartLine[];
   totals: CartTotals;
@@ -51,6 +54,13 @@ export function OrderSummary({
    * amount, and null means nothing is chosen yet.
    */
   pendingShippingCents?: number | null;
+  /**
+   * Switch a rebuilt part between paying the core deposit and sending the old part
+   * first (issue 057). Passed only while the summary still follows the basket; once
+   * the payment step holds the total, a switch would change what the card is about to
+   * be charged, so the line says what it is and offers nothing.
+   */
+  onCoreFirst?: (lineId: string, coreFirst: boolean) => Promise<void>;
 }) {
   const surchargeCents = totals.surchargeTotalCents ?? 0;
   const chosenShippingCents = pendingShippingCents ?? null;
@@ -87,12 +97,26 @@ export function OrderSummary({
                 {line.quantity}
               </span>
             </div>
-            <span className="flex-1 text-[0.9rem]">
+            <div className="flex-1 text-[0.9rem]">
               {line.title}
+              {line.repeat ? (
+                <span className="text-base-content"> · {cadenceLabel(line.repeat)}</span>
+              ) : null}
               {line.variantTitle ? (
                 <span className="text-base-content"> · {line.variantTitle}</span>
               ) : null}
-            </span>
+              {/* The deposit, or "Ready once your old part arrives" (sparx issues
+                  051, 057), and the switch while the basket can still change. */}
+              <div>
+                <CoreLine
+                  line={line}
+                  currency={currency}
+                  {...(onCoreFirst
+                    ? { onSwitch: (coreFirst: boolean) => onCoreFirst(line.id, coreFirst) }
+                    : {})}
+                />
+              </div>
+            </div>
             <span className="text-[0.9rem] font-semibold">
               {formatMoney(line.lineTotalCents, currency)}
             </span>
@@ -108,6 +132,15 @@ export function OrderSummary({
         <div className="text-success flex justify-between text-sm">
           <span>Discount</span>
           <span>−{formatMoney(totals.discountTotalCents, currency)}</span>
+        </div>
+      ) : null}
+      {/* Refundable core deposits on rebuilt parts (sparx issue 051). Inside the
+          total and outside the subtotal, so it needs its own row for the sum to
+          add up, and its own name so nobody reads it as a fee. */}
+      {totals.coreChargeTotalCents > 0 ? (
+        <div className="text-base-content flex justify-between text-sm">
+          <span>Refundable core deposits</span>
+          <span>{formatMoney(totals.coreChargeTotalCents, currency)}</span>
         </div>
       ) : null}
       <div className="text-base-content flex justify-between text-sm">

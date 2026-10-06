@@ -190,11 +190,17 @@ const orderRoutes: FastifyPluginAsync = (app) => {
   });
 
   // ── payments ────────────────────────────────────────────────────────────
+  //
+  // Each list under an order asks for the order first, so an order this
+  // business cannot see answers 404 here as it does at `/v1/orders/:id`. They
+  // answered 200 with an empty list, which leaked nothing but disagreed with
+  // the order about whether it exists (persona issue 083).
 
   app.get('/v1/orders/:id/payments', async (request) => {
     requireRole(request, 'viewer');
     await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
+    await orderService.get(toOrderContext(request), id);
     const rows = await orderPaymentsService.listForOrder(toOrderContext(request), id);
     return ok(rows);
   });
@@ -231,6 +237,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
+    await orderService.get(toOrderContext(request), id);
     const rows = await orderFulfillmentsService.listForOrder(toOrderContext(request), id);
     return ok(rows);
   });
@@ -338,6 +345,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
+    await orderService.get(toOrderContext(request), id);
     const rows = await orderRefundsService.listForOrder(toOrderContext(request), id);
     return ok(rows);
   });

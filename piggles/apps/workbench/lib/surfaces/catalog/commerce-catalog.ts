@@ -2,6 +2,7 @@
 // suppliers and shipping rules attached to them.
 
 import {
+  faArrowRightArrowLeft,
   faBox,
   faCubes,
   faLayerGroup,
@@ -25,6 +26,7 @@ import { ConfiguratorListSurface } from '../../../surfaces/commerce/configurator
 import { ConfiguratorTemplateDetailSurface } from '../../../surfaces/commerce/configurator-template-detail';
 import { FitmentListSurface } from '../../../surfaces/commerce/fitment-list';
 import { FitmentDomainDetailSurface } from '../../../surfaces/commerce/fitment-domain-detail';
+import { CoreChoicesSurface } from '../../../surfaces/commerce/core-choices';
 
 export const CATALOG_SURFACES: SurfaceDefinition[] = [
   /* ── Catalog ───────────────────────────────────────────────────────────── */
@@ -44,6 +46,7 @@ export const CATALOG_SURFACES: SurfaceDefinition[] = [
     key: 'commerce.product.detail',
     title: 'Product',
     module: 'commerce',
+    viewParams: ['tab'],
     icon: faBox,
     component: ProductDetailSurface,
     // Reachable from the list and from the nav panel's `+`, not as a launcher
@@ -149,10 +152,9 @@ export const CATALOG_SURFACES: SurfaceDefinition[] = [
     component: ConfiguratorTemplateDetailSurface,
     listed: false,
   },
-  // Product TYPES (docs/143) — the typed attribute schema a product carries, the
-  // commerce mirror of CMS content types. NOT a product facet (the frozen set
-  // above): this is a catalog-structure list + its editor, added here per docs/143
-  // §6.7, so the "do not add a facet" rule above does not apply.
+  // Product TYPES (docs/143 §6.7): the typed attribute schema a product carries.
+  // A catalog-structure list and its editor, NOT a product facet, so the "do not
+  // add a facet" rule above does not apply.
   {
     key: 'commerce.product-types.list',
     title: 'Product types',
@@ -175,5 +177,26 @@ export const CATALOG_SURFACES: SurfaceDefinition[] = [
     // edit) — a create is the same surface as an edit, so it is a pane, not a
     // launcher entry of its own.
     listed: false,
+  },
+  {
+    // A core deposit the old store faked as a choice (issue 057): a one-time job
+    // for a business that moved in. Also reached from Options and Cores owed.
+    key: 'commerce.core-choices.list',
+    title: 'Core charges set up as choices',
+    module: 'commerce',
+    icon: faArrowRightArrowLeft,
+    section: 'Catalog',
+    order: 17,
+    keywords: [
+      'core charge choices',
+      'core charges',
+      'convert core charge',
+      'accept core charge',
+      'defer core charge',
+      'ship when core received',
+      'core charge option',
+      'core charge variant',
+    ],
+    component: CoreChoicesSurface,
   },
 ];

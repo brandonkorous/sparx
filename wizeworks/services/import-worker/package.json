@@ -18,6 +18,7 @@
     "@prisma/client": "^6.19.3",
     "@wizeworks/cms": "workspace:*",
     "@wizeworks/commerce": "workspace:*",
+    "@wizeworks/commerce-schemas": "workspace:*",
     "@wizeworks/crm": "workspace:*",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",

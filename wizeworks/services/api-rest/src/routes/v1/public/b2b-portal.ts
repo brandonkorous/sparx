@@ -21,10 +21,12 @@
 //
 //   GET  /v1/public/b2b/portal/:accountId/quotes?tenant=&skip=&take=
 //        → paged quote list (a quote IS a BillingDocument on the system
-//          `b2b-quotes` workflow — docs/87 convergence)
+//          `b2b-quotes` workflow — docs/87 convergence), each with its
+//          lines and the name of the site that issued it
 //   POST /v1/public/b2b/portal/:accountId/quotes?tenant=
-//        → submit a new RFQ (creates a draft document + its lines, then
-//          advances it straight to "Submitted")
+//        → submit a new RFQ in one go (a quote at "Submitted", with any PO
+//          number and delivery needs). A request built up from the catalog
+//          is in b2b-portal-buying.ts
 //   POST /v1/public/b2b/portal/:accountId/quotes/:id/accept?tenant=
 //        → customer accepts a merchant-priced quote ("Quoted" → "Accepted")
 //   POST /v1/public/b2b/portal/:accountId/quotes/:id/decline?tenant=
@@ -33,19 +35,36 @@
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@wizeworks/db';
+import { approvalService } from '@wizeworks/b2b';
 import {
+  accountOrderGate,
+  b2bQuoteRequestService,
   b2bQuoteService,
+  billingDocumentConversionService,
   billingDocumentService,
   billingDocumentStageService,
-  billingLineService,
+  billingRenderService,
+  CrmValidationError,
+  ISSUED_BILL_WHERE,
+  taskService,
 } from '@wizeworks/crm';
+import { deliveryNeedsOf, poNumberOf } from '@wizeworks/crm-schemas';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { inventoryService } from '@wizeworks/inventory';
+import { commerceSiteService, pricingService } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
-import { forbidden, notFound } from '@wizeworks/api-core/errors';
+import { forbidden, notFound, validationError } from '@wizeworks/api-core/errors';
 import { type CustomerAuthContext } from '@wizeworks/customer-auth';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
 import { requireCustomerId } from '../../../lib/customer-session.js';
+import { requirePortalWriter } from '../../../lib/portal-writer.js';
+import {
+  accountPricer,
+  portalDocumentPrintable,
+  portalQuoteMoney,
+  quotePricesShown,
+} from '../../../lib/portal-quote-prices.js';
 
 // Contact roles allowed to submit/accept/decline a quote (docs/64 §5.2) —
 // `approver`/`viewer` are read-only for quotes, same as for orders/invoices.
@@ -74,11 +93,57 @@ const HoldsQuery = z.object({
 });
 
 /** The signed-in customer id for the active site, or 401 (docs/27 v2 — resolved
- *  in lib/customer-session: session → Better Auth user → per-site membership). The
- *  whole portal is read-only, so a customer MCP OAuth bearer needs `b2b:read`
- *  (docs/113 §5); a cookie session always passes. */
+ *  in lib/customer-session: session → Better Auth user → per-site membership). A
+ *  customer MCP OAuth bearer needs `b2b:read` to READ (docs/113 §5); a cookie
+ *  session always passes. Sending, accepting and declining a quote change things
+ *  (accepting places an order), so those take `requirePortalWriter` instead,
+ *  which refuses a connected app (sparx persona issue 086). */
 function requirePortalCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
   return requireCustomerId(request, ctx, 'b2b:read');
+}
+
+/** A task for whoever looks after an accepted quote whose order could not be
+ *  made: the person the quote is assigned to, else the business's owner (the
+ *  same fallback the automation engine uses for its tasks). */
+async function tellTheBusinessTheOrderFailed(
+  ctx: CustomerAuthContext,
+  documentId: string,
+  reason: string
+): Promise<void> {
+  const facts = await withTenant(ctx, async (tx) => {
+    const doc = await tx.billingDocument.findUnique({
+      where: { id: documentId },
+      select: {
+        number: true,
+        assignedUserId: true,
+        customerId: true,
+        customer: { select: { firstName: true, lastName: true, email: true } },
+      },
+    });
+    const owner = await tx.user.findFirst({
+      where: { role: 'owner' },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+    return { doc, ownerId: owner?.id ?? null };
+  });
+  const assignee = facts.doc?.assignedUserId ?? facts.ownerId;
+  if (!facts.doc || !assignee) return;
+  const who =
+    ([facts.doc.customer?.firstName, facts.doc.customer?.lastName].filter(Boolean).join(' ') ||
+      facts.doc.customer?.email) ??
+    'The buyer';
+  const quote = facts.doc.number ? `quote ${facts.doc.number}` : 'a quote';
+  await taskService.create(
+    { tenantId: ctx.tenantId, userId: assignee },
+    {
+      title: `${who} accepted ${quote}, but its order could not be made`,
+      description: `${reason} Open the quote and turn it into an order once this is sorted out.`,
+      priority: 'high',
+      assignedToUserId: assignee,
+      customerId: facts.doc.customerId,
+    }
+  );
 }
 
 /** Verify the customer has an active contact role on `accountId` and return the
@@ -119,6 +184,15 @@ async function assertOwnQuote(
     })
   );
   if (!doc) throw notFound('quote');
+}
+
+/**
+ * The account's bills, as its buyer sees them: issued bills only, so a quote is
+ * listed under Quotes and never as an unpaid invoice, and a draft the shop has
+ * not sent is not shown (sparx persona issue 084).
+ */
+function accountBillsWhere(accountId: string) {
+  return { companyId: accountId, deletedAt: null, ...ISSUED_BILL_WHERE };
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
@@ -170,7 +244,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     const { accountId } = PathAccountId.parse(request.params);
     const role = await requireContactRole(ctx, customerId, accountId);
 
-    const [account, invoiceCounts, contactIds] = await withTenant(ctx, (tx) =>
+    const [account, invoiceCounts, contactIds, settings] = await withTenant(ctx, (tx) =>
       Promise.all([
         tx.company.findFirst({
           where: { id: accountId, deletedAt: null },
@@ -186,15 +260,22 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
         }),
         // Net-terms AR now lives on billing_documents (docs/87 §15). Summarise the
         // account's receivables by status, summing the OPEN balance per bucket.
+        // Bills only: a quote carries `unpaid` from the moment it exists, and
+        // Renée's account read "2 unpaid invoices, $4,753.60" over one $678.00
+        // invoice and an unaccepted quote (sparx persona issue 084).
         tx.billingDocument.groupBy({
           by: ['status'],
-          where: { companyId: accountId, deletedAt: null },
+          where: accountBillsWhere(accountId),
           _count: { id: true },
           _sum: { balance: true },
         }),
         tx.b2bAccountContact
           .findMany({ where: { accountId, isActive: true }, select: { customerId: true } })
           .then((rows) => rows.map((r) => r.customerId)),
+        // The currency the account's limit and bills are in: the business's own,
+        // from its primary site. The page printed every figure in dollars
+        // because nothing told it otherwise (sparx persona issue 085).
+        commerceSiteService.resolveSettingsRow(tx, ctx.tenantId, null),
       ])
     );
 
@@ -203,9 +284,9 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     const recentOrders = await withTenant(ctx, (tx) =>
       tx.order.findMany({
         // No channel filter: B2B orders place through the same storefront
-        // checkout everyone uses and carry channel='storefront', never
-        // 'b2b_portal' (no code path sets that value) — contactIds already
-        // scopes this to the account's own orders.
+        // checkout everyone uses and carry channel='storefront', and an accepted
+        // quote's order carries 'b2b_portal' (sparx persona issue 085). Both are
+        // the account's; contactIds already scopes this to them.
         where: { customerId: { in: contactIds } },
         select: {
           id: true,
@@ -247,6 +328,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
         creditUsed: Number(account.creditUsed),
         creditAvailable: Math.max(0, Number(account.creditLimit) - Number(account.creditUsed)),
         discountPercent: Number(account.discountPercent),
+        currency: settings?.defaultCurrency ?? 'USD',
         role,
       },
       invoiceSummary,
@@ -270,7 +352,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     await requireContactRole(ctx, customerId, accountId);
     const q = PagedQuery.parse(request.query);
 
-    const invoiceWhere = { companyId: accountId, deletedAt: null };
+    const invoiceWhere = accountBillsWhere(accountId);
     const { invoiceItems, invoiceTotal } = await withTenant(ctx, async (tx) => {
       const [invoiceItems, invoiceTotal] = await Promise.all([
         tx.billingDocument.findMany({
@@ -280,10 +362,16 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
             number: true,
             total: true,
             balance: true,
+            // Every amount on the page was printed in dollars, because the
+            // currency never left the server (sparx persona issue 085).
+            currency: true,
             status: true,
             overdueDays: true,
             dueAt: true,
             paidAt: true,
+            // The order it bills: the real link now (issue 084's migration),
+            // the old metadata note for anything older.
+            orderId: true,
             metadata: true,
             notes: true,
             createdAt: true,
@@ -307,9 +395,11 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
           invoiceNumber: inv.number ?? '',
           amountCents: Math.round(Number(inv.total) * 100),
           balanceCents: Math.round(Number(inv.balance) * 100),
+          currency: inv.currency,
           status: inv.status,
           overdueDays: inv.overdueDays,
-          orderId: typeof meta.orderId === 'string' ? meta.orderId : null,
+          orderId: inv.orderId ?? (typeof meta.orderId === 'string' ? meta.orderId : null),
+          poNumber: poNumberOf(inv.metadata),
           notes: inv.notes,
           dueAt: inv.dueAt ? inv.dueAt.toISOString() : null,
           paidAt: inv.paidAt ? inv.paidAt.toISOString() : null,
@@ -393,6 +483,73 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
   // ── Quotes ────────────────────────────────────────────────────────────────
   // A quote IS a BillingDocument on the system `b2b-quotes` workflow (docs/87
   // convergence) — there is no separate quote entity anymore.
+  // ── Print or save as PDF (sparx persona issue 085) ─────────────────────────
+  // The /b2b page promises "The buyer gets a branded quote PDF". The buyer got
+  // an email with the figures in it and nothing they could keep, print or file:
+  // only the business could print the document. This is the SAME branded page
+  // the business previews (its published print template, its logo, its frozen
+  // letterhead), served to the buyer for their own account, which their browser
+  // prints or saves as a PDF. The quote and invoice emails link to it.
+  //
+  // What a buyer may print: a quote once the business has priced it and made
+  // the offer (`portalDocumentPrintable`), and an invoice that has been issued. A draft
+  // is the business's working copy, not something it has said to them.
+  app.get('/v1/public/b2b/portal/:accountId/documents/:id/print', async (request, reply) => {
+    const tenantId = await resolveTenantId(request);
+    const ctx: CustomerAuthContext = { tenantId };
+    const customerId = await requirePortalCustomer(request, ctx);
+    const { accountId, id } = PathAccountQuoteId.parse(request.params);
+    const role = await requireContactRole(ctx, customerId, accountId);
+
+    const doc = await withTenant(ctx, (tx) =>
+      tx.billingDocument.findFirst({
+        where: {
+          id,
+          companyId: accountId,
+          deletedAt: null,
+          // A viewer sees only their own quotes in the list; the print follows.
+          OR: [
+            {
+              workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
+              ...(role === 'viewer' ? { customerId } : {}),
+            },
+            ISSUED_BILL_WHERE,
+          ],
+        },
+        select: {
+          id: true,
+          issuedBy: true,
+          propertyId: true,
+          metadata: true,
+          stage: { select: { name: true, stageType: true } },
+          workflow: { select: { slug: true } },
+        },
+      })
+    );
+    // A quote prints once the offer is made, by the quotes list's own rule
+    // (sparx persona issue 086); an issued bill always.
+    if (
+      !doc ||
+      !portalDocumentPrintable({
+        isQuote: doc.workflow.slug === B2B_QUOTE_WORKFLOW_SLUG,
+        stage: doc.stage,
+        metadata: doc.metadata,
+      })
+    ) {
+      throw notFound('That document is not on this account.');
+    }
+
+    const data = await billingRenderService.buildRenderData(ctx, doc.id);
+    const brand = await resolveInvoiceBrand(ctx, doc.issuedBy);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand, doc.propertyId);
+    void reply.header('Content-Type', 'text/html; charset=utf-8');
+    void reply.header(
+      'Content-Disposition',
+      `inline; filename="${data.number ?? 'document'}.html"`
+    );
+    return reply.send(html);
+  });
+
   app.get('/v1/public/b2b/portal/:accountId/quotes', async (request) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
@@ -415,11 +572,42 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
           select: {
             id: true,
             number: true,
+            subtotal: true,
+            discountTotal: true,
+            taxTotal: true,
+            shippingTotal: true,
+            surchargeTotal: true,
+            coreChargeTotal: true,
             total: true,
             currency: true,
             validUntil: true,
+            // The buyer's own purchase order number, when one was given.
+            metadata: true,
             createdAt: true,
             stage: { select: { name: true, customerLabel: true, stageType: true } },
+            // The site that issued it, so the buyer reads who is working on it.
+            property: { select: { name: true } },
+            // What was asked for and, once priced, what it costs. Without these a
+            // buyer could accept a total without seeing a single line of it
+            // (sparx persona issue 084).
+            lines: {
+              select: {
+                id: true,
+                description: true,
+                quantity: true,
+                unitPrice: true,
+                lineSubtotal: true,
+                lineTotal: true,
+                // A rebuilt part's refundable core deposit, per unit. It is in
+                // the quote's total but not in any line's amount, so without it
+                // the lines do not add up to the total.
+                coreCharge: true,
+              },
+              orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+            },
+            // The order an accepted quote became, and whether it is waiting for
+            // sign-off, so the quote can say so (sparx persona issue 085).
+            convertedOrder: { select: { id: true, orderNumber: true, status: true } },
           },
           orderBy: { createdAt: 'desc' },
           take: q.take,
@@ -432,26 +620,94 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     type QuoteRow = (typeof quoteItems)[number];
 
+    // Who each held order is waiting on, so its quote can name them rather than
+    // the business (sparx persona issue 087). Read only for the few that are held.
+    const heldSignOffs = new Map(
+      await Promise.all(
+        quoteItems.flatMap((q2: QuoteRow) =>
+          q2.convertedOrder?.status === 'pending_approval'
+            ? [
+                approvalService
+                  .heldOrderSignOff(ctx, q2.convertedOrder.id)
+                  .then((signOff) => [q2.convertedOrder!.id, signOff] as const),
+              ]
+            : []
+        )
+      )
+    );
+
     return paged(
-      quoteItems.map((q2: QuoteRow) => ({
-        id: q2.id,
-        number: q2.number,
-        stage: q2.stage,
-        totalCents: Math.round(Number(q2.total) * 100),
-        currency: q2.currency,
-        validUntil: q2.validUntil?.toISOString() ?? null,
-        createdAt: q2.createdAt.toISOString(),
-      })),
+      quoteItems.map((q2: QuoteRow) => {
+        // No money before the business has made the offer: a request the buyer
+        // sent starts at their account's price, and those are the business's
+        // working figures until it prices and sends it (sparx persona issue 086).
+        const money = portalQuoteMoney(
+          {
+            totalCents: Math.round(Number(q2.total) * 100),
+            // The parts of `totalCents`, so the buyer can see how it adds up.
+            totals: {
+              subtotalCents: Math.round(Number(q2.subtotal) * 100),
+              discountCents: Math.round(Number(q2.discountTotal) * 100),
+              taxCents: Math.round(Number(q2.taxTotal) * 100),
+              shippingCents: Math.round(Number(q2.shippingTotal) * 100),
+              surchargeCents: Math.round(Number(q2.surchargeTotal) * 100),
+              coreDepositCents: Math.round(Number(q2.coreChargeTotal) * 100),
+            },
+            lines: q2.lines.map((l) => ({
+              id: l.id,
+              description: l.description,
+              quantity: Number(l.quantity),
+              unitPriceCents: Math.round(Number(l.unitPrice) * 100),
+              lineSubtotalCents: Math.round(Number(l.lineSubtotal) * 100),
+              lineTotalCents: Math.round(Number(l.lineTotal) * 100),
+              coreDepositCents:
+                l.coreCharge == null ? null : Math.round(Number(l.coreCharge) * 100),
+            })),
+          },
+          quotePricesShown(q2.stage, q2.metadata)
+        );
+        return {
+          id: q2.id,
+          number: q2.number,
+          stage: q2.stage,
+          totalCents: money.totalCents,
+          totals: money.totals,
+          currency: q2.currency,
+          validUntil: q2.validUntil?.toISOString() ?? null,
+          createdAt: q2.createdAt.toISOString(),
+          poNumber: poNumberOf(q2.metadata),
+          // When and where the buyer said they need it (sparx persona issue 086).
+          delivery: deliveryNeedsOf(q2.metadata),
+          shopName: q2.property.name,
+          order: q2.convertedOrder
+            ? {
+                id: q2.convertedOrder.id,
+                orderNumber: q2.convertedOrder.orderNumber,
+                status: q2.convertedOrder.status,
+                signOff: heldSignOffs.get(q2.convertedOrder.id) ?? null,
+              }
+            : null,
+          lines: money.lines,
+        };
+      }),
       { total: quoteTotal, skip: q.skip, take: q.take }
     );
   });
 
-  // Submit a new RFQ — creates a draft document + its requested lines (no
-  // pricing yet; the merchant prices them in the "respond" step on the
-  // dashboard), then advances it straight to "Submitted" so it shows up in the
-  // merchant's queue immediately.
+  // Submit a new RFQ in one go: a quote at "Submitted" with the requested lines
+  // (no prices yet; the business prices them on the dashboard). A request built
+  // up from the catalog over time is `b2b-portal-buying.ts`; both make the quote
+  // through `b2bQuoteRequestService.createRequestedQuote`, so both carry the PO
+  // number and the delivery needs the same way (sparx persona issue 086).
   const SubmitQuoteBody = z.object({
     customerNote: z.string().max(2000).optional(),
+    poNumber: z.string().trim().max(63).optional(),
+    neededBy: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    deliverTo: z.string().trim().max(1000).optional(),
+    deliveryNotes: z.string().trim().max(2000).optional(),
     lines: z
       .array(
         z.object({
@@ -467,71 +723,115 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/b2b/portal/:accountId/quotes', async (request, reply) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
-    const customerId = await requirePortalCustomer(request, ctx);
+    const customerId = await requirePortalWriter(request, ctx);
     const { accountId } = PathAccountId.parse(request.params);
     const role = await requireContactRole(ctx, customerId, accountId);
     requireQuoteWriter(role);
     const body = SubmitQuoteBody.parse(request.body);
 
-    const { draftStage, submittedStage } = await withTenant(ctx, async (tx) => ({
-      draftStage: await b2bQuoteService.b2bQuoteDraftStage(tx, ctx.tenantId),
-      submittedStage: await b2bQuoteService.b2bQuoteStageByName(tx, ctx.tenantId, 'Submitted'),
-    }));
-
-    let doc = await billingDocumentService.create(ctx, {
-      workflowId: draftStage.workflowId,
-      stageId: draftStage.id,
-      customerId,
-      companyId: accountId,
-      ...(body.customerNote !== undefined ? { customerNote: body.customerNote } : {}),
-    });
-
-    // A requested line has no price yet — the merchant sets it while
-    // responding. `addLine`'s default `flat` pricing mode requires an
-    // explicit `unitPrice` and throws without one, so a product-linked line
-    // uses the `catalog` line type instead (auto-resolves to the variant's
-    // list price, a sensible reference the merchant can override) and a
-    // free-text line explicitly passes `unitPrice: 0` (nothing to reference).
-    for (const line of body.lines) {
-      doc = await billingLineService.addLine(ctx, doc.id, {
-        description: line.description,
-        quantity: line.quantity,
-        ...(line.variantId
-          ? { variantId: line.variantId, lineTypeKey: 'catalog' }
-          : { unitPrice: 0 }),
-      });
-    }
-
-    doc = await billingDocumentStageService.advance(ctx, doc.id, { stageId: submittedStage.id });
+    const quote = await b2bQuoteRequestService.createRequestedQuote(
+      ctx,
+      {
+        customerId,
+        accountId,
+        customerNote: body.customerNote ?? null,
+        poNumber: body.poNumber ?? null,
+        delivery: {
+          neededBy: body.neededBy ?? null,
+          deliverTo: body.deliverTo ?? null,
+          notes: body.deliveryNotes ?? null,
+        },
+        lines: body.lines.map((line) => ({
+          variantId: line.variantId ?? null,
+          description: line.description,
+          quantity: line.quantity,
+        })),
+      },
+      // Each catalog line starts at this account's price (sparx persona issue 086).
+      { accountPrice: accountPricer(ctx, pricingService.resolveForAccount) }
+    );
 
     reply.code(201);
-    return ok({ id: doc.id, number: doc.number });
+    return ok(quote);
   });
 
   const AcceptDeclineBody = z.object({
     reason: z.string().max(500).optional(),
   });
 
+  // ACCEPTING IS ORDERING. The /b2b page promises "On accept, the quote converts
+  // straight to an order at the quoted prices", and accepting only moved the
+  // quote to Accepted: the order waited for the business to notice a task and
+  // press a button (sparx persona issue 085). Now the order is written here,
+  // through the same rule checkout uses (`account-order-gate.ts`): it goes
+  // ahead, or waits for the business to sign it off when it is over a spending
+  // limit or the account's credit, and announces itself either way.
+  //
+  // An account the business has stopped (credit hold, suspended, not trading)
+  // is refused BEFORE the quote moves, so a refusal leaves the quote standing
+  // as it was rather than accepted with nothing behind it.
   app.post('/v1/public/b2b/portal/:accountId/quotes/:id/accept', async (request) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
-    const customerId = await requirePortalCustomer(request, ctx);
+    const customerId = await requirePortalWriter(request, ctx);
     const { accountId, id } = PathAccountQuoteId.parse(request.params);
     const role = await requireContactRole(ctx, customerId, accountId);
     requireQuoteWriter(role);
     await assertOwnQuote(ctx, accountId, id);
 
+    const account = await withTenant(ctx, (tx) =>
+      tx.company.findUnique({ where: { id: accountId }, select: { status: true } })
+    );
+    const refusal = account ? accountOrderGate.accountStandingRefusal(account.status) : null;
+    if (refusal) throw validationError(refusal);
+
     const acceptedStage = await withTenant(ctx, (tx) =>
       b2bQuoteService.b2bQuoteStageByName(tx, ctx.tenantId, 'Accepted')
     );
     const doc = await billingDocumentStageService.advance(ctx, id, { stageId: acceptedStage.id });
-    return ok({ id: doc.id, stageId: doc.stageId });
+
+    try {
+      const converted = await billingDocumentConversionService.convertToOrder(ctx, id, {
+        channel: 'b2b_portal',
+      });
+      return ok({
+        id: doc.id,
+        stageId: doc.stageId,
+        order: {
+          id: converted.order.id,
+          orderNumber: converted.order.orderNumber,
+          held: converted.held.length > 0,
+          // Who the held order is waiting on (sparx persona issue 087).
+          signOff:
+            converted.held.length > 0
+              ? await approvalService.heldOrderSignOff(ctx, converted.order.id)
+              : null,
+        },
+        orderProblem: null,
+      });
+    } catch (err) {
+      if (!(err instanceof CrmValidationError)) throw err;
+      // The quote IS accepted; only the order is missing. Somebody at the
+      // business has to know, because nothing else will tell them: the order
+      // they would have been told about does not exist.
+      request.log.warn(
+        { err, tenantId, documentId: id },
+        'b2b-portal: quote accepted but the order could not be made'
+      );
+      await tellTheBusinessTheOrderFailed(ctx, id, err.message);
+      return ok({
+        id: doc.id,
+        stageId: doc.stageId,
+        order: null,
+        orderProblem: err.message,
+      });
+    }
   });
 
   app.post('/v1/public/b2b/portal/:accountId/quotes/:id/decline', async (request) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
-    const customerId = await requirePortalCustomer(request, ctx);
+    const customerId = await requirePortalWriter(request, ctx);
     const { accountId, id } = PathAccountQuoteId.parse(request.params);
     const role = await requireContactRole(ctx, customerId, accountId);
     requireQuoteWriter(role);

@@ -12,6 +12,7 @@
 
 import type { PrismaClient } from '@prisma/client';
 import { upsertSystemAutomation } from '@wizeworks/automation';
+import { taskService } from '@wizeworks/crm/services';
 
 import { SYSTEM_AUTOMATIONS, seedSystemAutomations } from './index.js';
 
@@ -31,6 +32,9 @@ export interface ReconcileSummary {
   tenantsSeeded: number;
   /** Tenants stepped over across every module. Non-zero means look at the warns. */
   tenantsSkipped: number;
+  /** Tasks these seeds opened that were closed because their reason had already
+   *  gone (see the last pass below), and tenants that pass stepped over. */
+  tasks: { closed: number; skipped: number };
 }
 
 interface ReconcileLogger {
@@ -44,7 +48,8 @@ interface ReconcileLogger {
  * DEFINER `find_tenants_with_active_module`); the per-tenant upsert rides
  * `seedSystemAutomations`' own `withTenant` on the default `@wizeworks/db` client
  * (sparx_app — the worker's identity), so every write stays RLS-scoped.
- * Idempotent (upsert by origin+name); safe to run on a daily cadence.
+ * Idempotent (upsert by each seed's `key`), and it never overrides a business's
+ * own edit, pause or rename; safe to run on a daily cadence.
  *
  * ONE TENANT CANNOT SINK THE PASS. Discovery and seeding are separate steps, so a
  * tenant can be deleted in the gap between them — the write then fails on
@@ -100,7 +105,7 @@ export async function reconcileSystemSeeds(
 
   // Always-on seeds → every tenant. `tenants` is the app-readable dispatch table
   // (the same slug→id lookup the public routes use, no tenant GUC needed), so we can
-  // enumerate directly. Idempotent upsert (origin+name), so re-running is a safe
+  // enumerate directly. Idempotent upsert (by `key`), so re-running is a safe
   // no-op; module.activated already installs these forward, this is the backstop for
   // tenants with no seed-owning module active.
   if (alwaysOn.length > 0) {
@@ -126,5 +131,41 @@ export async function reconcileSystemSeeds(
     logger?.info({ tenants: tenants.length, seeded, skipped }, 'reconciled always-on system seeds');
   }
 
-  return { modules: results, tenantsSeeded, tenantsSkipped };
+  const tasks = await closeTasksWhoseReasonIsGone(db, logger);
+
+  return { modules: results, tenantsSeeded, tenantsSkipped, tasks };
+}
+
+/**
+ * The last pass: close every open task a seed opened whose reason is already
+ * gone, in every tenant, through the same closers every save calls
+ * (`taskService.closeTasksWhoseReasonIsGone`).
+ *
+ * Every write of an account's terms, a deal's stage or a document's stage
+ * closes such a task as it happens. This catches what no write will: a task
+ * opened before it was linked to what it is about (the migration that added the
+ * link copies it from each run's record, and the reason may have gone long
+ * before), and so the release that ships a seed's close setting also settles
+ * the tasks it left open. "Set up prices and terms" on an account set up last
+ * week closes here, the first time the reconcile runs.
+ *
+ * Sealed off per tenant, like the passes above.
+ */
+async function closeTasksWhoseReasonIsGone(
+  db: PrismaClient,
+  logger?: ReconcileLogger
+): Promise<{ closed: number; skipped: number }> {
+  const tenants = await db.tenant.findMany({ select: { id: true } });
+  let closed = 0;
+  let skipped = 0;
+  for (const { id } of tenants) {
+    try {
+      closed += await taskService.closeTasksWhoseReasonIsGone({ tenantId: id });
+    } catch (err) {
+      skipped += 1;
+      logger?.warn({ tenantId: id, err }, 'reconcile: skipped a tenant on the task pass');
+    }
+  }
+  logger?.info({ tenants: tenants.length, closed, skipped }, 'closed tasks whose reason had gone');
+  return { closed, skipped };
 }

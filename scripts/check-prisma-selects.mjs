@@ -23,6 +23,20 @@
 // GET /v1/finance/jobs answered 500, in the screen's DEFAULT filter, for every
 // tenant, past typecheck, lint and the whole test suite.
 //
+// ── AND A `where` ONE RELATION DOWN ─────────────────────────────────────────
+//
+// "`where` IS checked" is true at the top level only. A filter THROUGH a relation
+// (`order: { deletedAt: null }`) is typed `XOR<RelationFilter, WhereInput>`, and a
+// union defeats excess-property checking just as the mapped type does. Measured:
+//
+//     tx.orderItem.findMany({ where: { order: { deletedAt: null } } })   → compiles ✗
+//
+// `Order` has no `deletedAt`. That shipped in the Cores owed list (sparx persona
+// issue 057) and answered every request with a Prisma error, past typecheck and a
+// service test that mocked the client. So every `where` is walked too: its keys
+// against the model, descending through relation filters (`is`, `some`, …), `AND`,
+// `OR` and `NOT`, and the `where` inside a nested relation select.
+//
 // ── WHAT IT READS ───────────────────────────────────────────────────────────
 //
 // The SCHEMA, not the generated client: `prisma/schema/*.prisma` is the source of
@@ -36,7 +50,8 @@
 // ── WHAT IT CANNOT SEE, AND SAYS SO ─────────────────────────────────────────
 //
 // Only a select whose MODEL is legible from the call site — `<anything>.<model>.<op>({…})`.
-// A select built in a variable, spread in, or reached through a generic helper is
+// A select held in a `const` in the same file is followed and read like an inline
+// one. A select imported from another file, spread in, or reached through a generic helper is
 // counted as SKIPPED and printed in the summary, so the denominator is honest
 // about its own blind spot rather than reporting green over the part it did not read.
 
@@ -79,6 +94,20 @@ function readModels() {
       const fields = new Map();
       for (const line of body.split('\n')) {
         const bare = line.replace(/\/\/.*$/, '').trim();
+        // A compound unique or id is a legal `where` key on its own: the name it was
+        // given, or its fields joined by `_` (`tenantId_sku`).
+        const compound = /^@@(?:unique|id)\(\s*(?:fields:\s*)?\[([^\]]*)\](.*)\)/.exec(bare);
+        if (compound) {
+          const named = /name:\s*"(\w+)"/.exec(compound[2] ?? '');
+          const key =
+            named?.[1] ??
+            compound[1]
+              .split(',')
+              .map((f) => f.trim().replace(/\(.*$/, ''))
+              .join('_');
+          fields.set(key, 'Compound');
+          continue;
+        }
         if (bare === '' || bare.startsWith('@@')) continue;
         const f = /^(\w+)\s+(\w+)/.exec(bare);
         if (!f) continue;
@@ -161,6 +190,52 @@ function walk(dir, out = []) {
   return out;
 }
 
+/* A select written apart from its query — `const PRODUCT_SELECT = {…} as const`
+ * and then `select: PRODUCT_SELECT` — used to be counted as not legible and
+ * skipped. That is how `optionValues` (no such relation on ProductVariant; it is
+ * `optionAssignments`) reached the Core charges set up as choices screen, which
+ * answered every request with a Prisma error (sparx persona issue 057). Its row
+ * type was written by hand behind a cast, so typecheck had nothing to compare.
+ * A `const` object in the same file is as legible as one written inline. */
+
+/** Every `const NAME = { … }` in the file, unwrapped of `as` / `satisfies`. */
+function constObjectsOf(sf) {
+  const out = new Map();
+  const visit = (node) => {
+    if (
+      ts.isVariableDeclaration(node) &&
+      ts.isIdentifier(node.name) &&
+      node.initializer &&
+      ts.isVariableDeclarationList(node.parent) &&
+      (node.parent.flags & ts.NodeFlags.Const) !== 0
+    ) {
+      const literal = unwrap(node.initializer);
+      if (ts.isObjectLiteralExpression(literal)) out.set(node.name.text, literal);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return out;
+}
+
+function unwrap(expr) {
+  let e = expr;
+  while (ts.isAsExpression(e) || ts.isSatisfiesExpression(e) || ts.isParenthesizedExpression(e)) {
+    e = e.expression;
+  }
+  return e;
+}
+
+let fileConsts = new Map();
+
+/** The object literal an expression stands for: written inline, or a same-file const. */
+function literalOf(expr) {
+  const e = unwrap(expr);
+  if (ts.isObjectLiteralExpression(e)) return e;
+  if (ts.isIdentifier(e)) return fileConsts.get(e.text) ?? null;
+  return null;
+}
+
 const problems = [];
 let checked = 0;
 let skipped = 0;
@@ -195,12 +270,70 @@ function checkSelect(node, modelName, file, path) {
         for (const inner of value.properties) {
           if (!ts.isPropertyAssignment(inner)) continue;
           const innerName = ts.isIdentifier(inner.name) ? inner.name.text : null;
-          if (innerName !== 'select' && innerName !== 'include') continue;
-          if (ts.isObjectLiteralExpression(inner.initializer)) {
-            checkSelect(inner.initializer, field.relation, file, [...path, name]);
+          const innerValue = literalOf(inner.initializer);
+          if (innerName === 'where' && innerValue) {
+            checkWhere(innerValue, field.relation, file, [...path, name]);
+            continue;
           }
+          if (innerName !== 'select' && innerName !== 'include') continue;
+          if (innerValue) checkSelect(innerValue, field.relation, file, [...path, name]);
         }
       }
+    }
+  }
+}
+
+/** Keys Prisma understands inside a `where`, which are not fields. */
+const WHERE_LOGIC = new Set(['AND', 'OR', 'NOT']);
+const RELATION_FILTERS = new Set(['is', 'isNot', 'some', 'every', 'none']);
+
+function noteSkipped(file) {
+  skipped += 1;
+  skippedWhere.set(file, (skippedWhere.get(file) ?? 0) + 1);
+}
+
+/** Validate a `where` object's keys against `modelName`, through relations. */
+function checkWhere(node, modelName, file, path) {
+  const fields = models.get(modelName);
+  if (!fields) return;
+  for (const prop of node.properties) {
+    if (!ts.isPropertyAssignment(prop)) {
+      noteSkipped(file);
+      continue;
+    }
+    const name =
+      ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name) ? prop.name.text : null;
+    if (name === null) continue;
+    const value = prop.initializer;
+    if (WHERE_LOGIC.has(name)) {
+      const parts = ts.isArrayLiteralExpression(value) ? value.elements : [value];
+      for (const part of parts) {
+        if (ts.isObjectLiteralExpression(part)) checkWhere(part, modelName, file, path);
+      }
+      continue;
+    }
+    checked += 1;
+    const field = fields.get(name);
+    if (!field) {
+      const { line } = node.getSourceFile().getLineAndCharacterOfPosition(prop.getStart());
+      problems.push({ file, line: line + 1, model: modelName, path: [...path, name].join('.') });
+      continue;
+    }
+    if (!field.relation || !ts.isObjectLiteralExpression(value)) continue;
+    const keys = value.properties
+      .filter(ts.isPropertyAssignment)
+      .map((p) => (ts.isIdentifier(p.name) ? p.name.text : null));
+    if (keys.some((k) => k !== null && RELATION_FILTERS.has(k))) {
+      for (const inner of value.properties) {
+        if (!ts.isPropertyAssignment(inner) || !ts.isIdentifier(inner.name)) continue;
+        if (!RELATION_FILTERS.has(inner.name.text)) continue;
+        if (ts.isObjectLiteralExpression(inner.initializer)) {
+          checkWhere(inner.initializer, field.relation, file, [...path, name]);
+        }
+      }
+    } else {
+      // A to-one relation takes its model's where directly.
+      checkWhere(value, field.relation, file, [...path, name]);
     }
   }
 }
@@ -215,9 +348,11 @@ for (const root of SOURCE_ROOTS) {
   }
   for (const file of walk(abs)) {
     const text = readFileSync(file, 'utf8');
-    if (!text.includes('select:') && !text.includes('include:')) continue;
+    if (!text.includes('select:') && !text.includes('include:') && !text.includes('where:'))
+      continue;
     const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
     const rel = relative(ROOT, file).replace(/\\/g, '/');
+    fileConsts = constObjectsOf(sf);
 
     const visit = (node) => {
       if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
@@ -230,9 +365,15 @@ for (const root of SOURCE_ROOTS) {
             for (const prop of arg.properties) {
               if (!ts.isPropertyAssignment(prop)) continue;
               const key = ts.isIdentifier(prop.name) ? prop.name.text : null;
+              if (key === 'where') {
+                const where = literalOf(prop.initializer);
+                if (where) checkWhere(where, modelName, rel, [modelName]);
+                continue;
+              }
               if (key !== 'select' && key !== 'include') continue;
-              if (ts.isObjectLiteralExpression(prop.initializer)) {
-                checkSelect(prop.initializer, modelName, rel, [modelName]);
+              const select = literalOf(prop.initializer);
+              if (select) {
+                checkSelect(select, modelName, rel, [modelName]);
               } else {
                 skipped += 1;
                 skippedWhere.set(rel, (skippedWhere.get(rel) ?? 0) + 1);
@@ -250,7 +391,7 @@ for (const root of SOURCE_ROOTS) {
 /* ── 3. Report ────────────────────────────────────────────────────────────── */
 
 if (problems.length > 0) {
-  console.error('✗ Prisma select names a field the model does not have\n');
+  console.error('✗ A Prisma select or where names a field the model does not have\n');
   for (const p of problems) {
     console.error(`  ${p.file}:${String(p.line)}`);
     console.error(`      ${p.path}   — no such field on ${p.model}\n`);
@@ -262,7 +403,8 @@ if (problems.length > 0) {
   );
   console.error(
     'TypeScript cannot catch these: a generated `<Model>Select` is a mapped type over\n' +
-      'a type parameter, so excess-property checking never runs on it. Read the field\n' +
+      'a type parameter, and a filter through a relation is a union, so excess-property\n' +
+      'checking never runs on either. Read the field\n' +
       'list in wizeworks/packages/db/prisma/schema/ — a relation that is not there is\n' +
       'usually deliberate, and the fix is to read the id column instead.'
   );
@@ -270,6 +412,6 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `✓ Prisma selects clean (${String(checked)} fields across ${String(models.size)} models · ` +
+  `✓ Prisma selects and wheres clean (${String(checked)} fields across ${String(models.size)} models · ` +
     `${String(skipped)} not legible from the call site)`
 );

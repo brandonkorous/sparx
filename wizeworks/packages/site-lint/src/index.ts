@@ -32,7 +32,12 @@ export type {
   SiteCapabilities,
   SiteLintInput,
   SiteLintReport,
+  StarterText,
 } from './types';
+
+// The design's own words. A caller builds `StarterText` from an install's baseline
+// trees with `starterLinesOf`, so the check and the caller read a "line" the same way.
+export { starterLinesOf } from './starter-text';
 
 // The route table is exported so a caller assembling `LinkTargets` can see which
 // paths it does NOT need to supply, and so the storefront's own routes have one

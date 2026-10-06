@@ -225,6 +225,8 @@ const OVERRIDE: Record<string, string> = {
   'builder.component.created': 'Saved piece created',
   'builder.component.updated': 'Saved piece updated',
   'builder.component.deleted': 'Saved piece deleted',
+  // A design added to a site takes the place of the pages it does not carry.
+  'builder.page.replaced': 'Page replaced by a design',
   'builder.archetype.created': 'Ready-made section created',
   'builder.archetype.updated': 'Ready-made section updated',
   'builder.archetype.deleted': 'Ready-made section deleted',

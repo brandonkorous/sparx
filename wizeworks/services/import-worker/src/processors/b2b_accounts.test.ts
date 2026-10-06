@@ -54,7 +54,12 @@ vi.mock('@wizeworks/crm', () => {
         calls.created.push(input);
         return Promise.resolve({ id: `account-${calls.created.length}` });
       },
-      update: () => Promise.resolve({}),
+      // The tier is linked through the company's own save, so whatever a save of
+      // the tier has to do (close a finished set-up task) happens on import too.
+      update: (_ctx: unknown, id: string, input: Record<string, unknown>) => {
+        calls.companyUpdates.push({ where: { id }, data: input });
+        return Promise.resolve({});
+      },
     },
     b2bAccountContactService: {
       create: (_ctx: unknown, accountId: string, input: Record<string, unknown>) => {
@@ -126,10 +131,13 @@ describe('the trade-account import contract', () => {
     expect(calls.created).toHaveLength(1);
     expect(calls.created[0]).toMatchObject({
       companyName: 'Acme Wholesale',
-      pricingTier: 'Gold',
       paymentTerms: 'net30',
       creditLimit: 5000,
     });
+    // Nothing is written to the legacy free-text column: it priced nothing, and
+    // a name with no tier behind it read as a tier the account was not on
+    // (sparx persona issue 086).
+    expect(calls.created[0]).not.toHaveProperty('pricingTier');
     // The tier is linked, not just labelled: pricing reads the id.
     expect(calls.companyUpdates).toEqual([
       { where: { id: 'account-1' }, data: { pricingTierId: 'tier-gold' } },
@@ -164,7 +172,7 @@ describe('the trade-account import contract', () => {
     });
     expect(read).toMatchObject({
       companyName: 'Acme Wholesale',
-      pricingTier: 'Gold',
+      tierName: 'Gold',
       paymentTerms: 'net60',
       creditLimit: 2500,
       discountPercent: 7.5,

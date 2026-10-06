@@ -11,7 +11,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { nameSearchClauses, productSiteVisibilityWhere } from '@wizeworks/db';
+import { nameSearchClauses } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
 import { depositFromColumns, VARIANT_OPTION_SELECT, variantOptions } from '@wizeworks/commerce';
 import { withRequestTenant } from '@wizeworks/api-core/db';
@@ -21,6 +21,7 @@ import { notFound } from '@wizeworks/api-core/errors';
 import { requireCommerceModule } from '../../../lib/commerce-context.js';
 import { cartContacts } from './cart-contact.js';
 import { resolveListScope } from '../../../lib/property.js';
+import { variantCatalogWhere } from '../../../lib/variant-search.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -140,6 +141,11 @@ const ListQuestionsQuery = z.object({
   order: ListSortOrder.optional(),
 });
 
+const VariantCatalogSearch = z.object({
+  q: z.string().trim().max(200).optional(),
+  product_id: z.string().uuid().optional(),
+});
+
 const ListReviewsQuery = z.object({
   status: z.string().optional(),
   q: z.string().trim().min(1).max(200).optional(),
@@ -164,6 +170,20 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
   // a tennis bracelet at $6,800 sat four rows below them. The products LIST in
   // the same app showed 10 of her 34 products, correctly — so within one app
   // the list was scoped and the till was not ([[feedback_site_is_the_business]]).
+  //
+  // Query:
+  //   q                 words, every one matched (case-insensitive) against the
+  //                     product's name, the version's code, the version's name
+  //                     or one of its option values. Omitted = no search.
+  //   product_id        only this product's versions.
+  //   take              rows, default 500, at most 1000. A search asks for few.
+  //   include_archived  'true' to include archived versions.
+  //   property          a named site, instead of the header's.
+  //
+  // It had no `q` until 2026-10-01. Every picker pulled the first 500 versions
+  // by product title and filtered them in the browser, so on a parts counter
+  // with 693 versions everything after roughly the 500th alphabetically could
+  // not be found at the till at all (sparx persona P01, issue 069).
   app.get('/v1/commerce/variants', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
@@ -171,6 +191,10 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const q = request.query as Record<string, string | undefined>;
     const take = q?.take ? Math.min(Number(q.take), 1000) : 500;
     const includeArchived = q?.include_archived === 'true';
+    // What was typed, and the one product a picker floats to the top. Parsed,
+    // because an unparsed `product_id` reaches Postgres as a malformed uuid and
+    // comes back a 500 instead of a 422.
+    const search = VariantCatalogSearch.parse({ q: q?.q, product_id: q?.product_id });
     const propertyId = await resolveListScope(
       auth,
       q?.property,
@@ -179,13 +203,15 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
 
     const rows = await withRequestTenant(request, (tx) =>
       tx.productVariant.findMany({
-        where: {
-          ...(includeArchived ? {} : { deletedAt: null }),
-          // The same clause the products list filters on, so the two screens
-          // agree by construction rather than by coincidence. A product with no
-          // site rows is global and belongs to every counter.
-          ...(propertyId === undefined ? {} : { product: productSiteVisibilityWhere(propertyId) }),
-        },
+        // Site scope, archived filter and the search, composed in one place so
+        // the search can never be added in a way that drops the scope. See
+        // `variantCatalogWhere`.
+        where: variantCatalogWhere({
+          includeArchived,
+          propertyId,
+          q: search.q,
+          productId: search.product_id,
+        }),
         orderBy: [{ product: { title: 'asc' } }, { sku: 'asc' }],
         take,
         select: {
@@ -194,8 +220,18 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
           title: true,
           isDefault: true,
           priceCents: true,
+          // What the version costs the business, so a quote line picked from
+          // this list starts from its cost and shows its margin (sparx persona
+          // issue 086). Staff only: this route needs a console role.
+          costCents: true,
           currency: true,
           deletedAt: true,
+          // A rebuilt part's refundable core deposit, and whether the buyer may
+          // bring the old part first instead (sparx persona issues 051, 057). The
+          // till sells from this list, so a part counter has to know which
+          // versions take a core before it can ask about the old part (issue 061).
+          coreChargeCents: true,
+          coreFirstOffered: true,
           // What actually tells two versions of one garment apart (issue 182).
           // `title` is documented as "computed from options when omitted" and is
           // empty on every seeded variant, so a till reading only `title` shows
@@ -235,7 +271,10 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         options: variantOptions(r.optionAssignments),
         isDefault: r.isDefault,
         priceCents: r.priceCents,
+        costCents: r.costCents,
         currency: r.currency,
+        coreChargeCents: r.coreChargeCents,
+        coreFirstOffered: r.coreFirstOffered,
         archivedAt: r.deletedAt?.toISOString() ?? null,
         productId: r.product.id,
         productTitle: r.product.title,

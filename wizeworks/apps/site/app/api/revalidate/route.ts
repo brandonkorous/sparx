@@ -7,9 +7,13 @@
 // `tenant:<slug>` on the tenant/theme read. Those caches would otherwise only
 // expire on their TTL; this endpoint purges them immediately on a catalog/content edit.
 //
-// Trigger: api-rest (or a Pub/Sub worker reacting to product.updated /
-// collection.updated / content.published) POSTs here after a mutation. Secured
-// by a shared secret in the `x-revalidate-secret` header (constant-time compare).
+// Trigger: the event worker's cache-revalidation handler
+// (wizeworks/packages/cache-revalidation-worker) POSTs here when an owner's save
+// publishes an event that changes something a visitor reads: `product.updated`,
+// `content.entry.published`, `builder.published`, `site.updated` and the rest of
+// its list. Secured by a shared secret in the `x-revalidate-secret` header
+// (constant-time compare); both sides read SPARX_REVALIDATE_SECRET from the same
+// `sparx-app-secrets` Secret.
 //
 //   POST /api/revalidate
 //   header: x-revalidate-secret: <SPARX_REVALIDATE_SECRET>

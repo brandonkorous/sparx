@@ -5,8 +5,8 @@
 // No per-vendor code, SAQ-A (the card form is the processor's). For full control a
 // developer implements PaymentGateway directly — this is the no-code path.
 //
-// The processor must POST sparx a webhook in this shape (signed with the webhook secret,
-// `X-Sparx-Signature: <hex hmac-sha256 of the raw body>` when a secret is set):
+// The processor must POST sparx a webhook in this shape, signed with the webhook secret
+// (`X-Sparx-Signature: <hex hmac-sha256 of the raw body>`; an unsigned one is refused):
 //   { "event": "payment.succeeded" | "payment.failed" | "payment.refunded",
 //     "charge_id": "<your charge id>", "reference": "<the sparx reference>",
 //     "amount_cents": 1234, "currency": "USD", "refund_id"?: "<id>" }
@@ -23,7 +23,7 @@ import type {
   RefundResult,
   WebhookEvent,
 } from '../gateway';
-import { loadCredentials, orderReference } from './adapter-util';
+import { loadCredentials, paymentReference } from './adapter-util';
 
 export const CUSTOM_ID = 'custom';
 
@@ -54,7 +54,7 @@ export class CustomRedirectGateway implements PaymentGateway {
     const creds = await loadCredentials(params.tenantId, CUSTOM_ID);
     const hostedUrl = creds.publicMeta.hosted_url;
     if (!hostedUrl) throw new Error('custom gateway has no hosted_url configured');
-    const reference = orderReference(params);
+    const reference = paymentReference();
     return {
       id: reference,
       clientSecret: '',
@@ -122,14 +122,15 @@ export class CustomRedirectGateway implements PaymentGateway {
 
   async parseWebhookForTenant(tenantId: string, event: WebhookEvent): Promise<ParsedWebhookEvent> {
     const creds = await loadCredentials(tenantId, CUSTOM_ID);
+    // An unsigned message is refused, never trusted: anyone who knew this
+    // address could otherwise mark an order paid.
     const secret = creds.secrets.webhook_secret;
-    if (secret) {
-      const expected = createHmac('sha256', secret).update(event.rawBody).digest('hex');
-      const got = event.signature.replace(/^sha256=/i, '');
-      const ok =
-        expected.length === got.length && timingSafeEqual(Buffer.from(expected), Buffer.from(got));
-      if (!ok) throw new Error('custom gateway webhook signature mismatch');
-    }
+    if (!secret) throw new Error('custom gateway webhook refused: no webhook secret is set');
+    const expected = createHmac('sha256', secret).update(event.rawBody).digest('hex');
+    const got = event.signature.replace(/^sha256=/i, '');
+    const ok =
+      expected.length === got.length && timingSafeEqual(Buffer.from(expected), Buffer.from(got));
+    if (!ok) throw new Error('custom gateway webhook signature mismatch');
     return normalizeCustomEvent(
       JSON.parse(event.rawBody.toString('utf8')) as CustomWebhook,
       tenantId

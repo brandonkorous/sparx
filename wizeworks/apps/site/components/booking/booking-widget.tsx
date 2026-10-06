@@ -24,6 +24,7 @@ import {
 import { BookingDepositStep } from './booking-deposit-step';
 import { AddToCalendar } from './add-to-calendar';
 import {
+  bookButtonLabel,
   dayAfter,
   dayOf,
   formatStamp,
@@ -247,9 +248,11 @@ export function BookingWidget({
     setJoiningWaitlist(true);
     setError(null);
     try {
-      const from = new Date(`${date}T00:00`);
-      const to = new Date(from);
-      to.setDate(to.getDate() + 30);
+      // From the start of the chosen day where the business is, for thirty of its
+      // days. It was the reader's midnight, so a waiting-list window opened hours
+      // early or late for anybody not in the business's zone (sparx persona 086).
+      const from = startOfDay(date, tz);
+      const to = startOfDay(dayAfter(date, 30), tz);
       await joinWaitlist(tenantSlug, {
         serviceId: service.id,
         customer: {
@@ -474,7 +477,7 @@ export function BookingWidget({
       {error ? <Alert color="danger">{error}</Alert> : null}
 
       <Button type="submit" color="primary" disabled={submitting || !selected}>
-        {submitting ? 'Booking…' : selected ? `Book ${formatTime(selected, tz)}` : 'Choose a time'}
+        {submitting ? 'Booking…' : selected ? bookButtonLabel(selected, tz) : 'Choose a time'}
       </Button>
     </form>
   );

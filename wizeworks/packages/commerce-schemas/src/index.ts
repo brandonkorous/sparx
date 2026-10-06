@@ -22,12 +22,20 @@ export * from './plain-text';
 // fitment).
 export * from './products';
 
+// How often a shopper may ask for a product again (issue 739): the fixed set of
+// cadences, their words, and the rule an owner's choices are held to.
+export * from './repeat';
+
 // Typed product types + attributes (docs/143) — the commerce mirror of CMS
 // content types, backed by the shared @wizeworks/field-schema engine.
 export * from './product-types';
 export * from './categories';
 export * from './fitment';
 export * from './fitment-dictionaries';
+// A trade account's fleet and the words a vehicle is called by (sparx persona issue 086).
+export * from './fleet';
+// Bulk writes that take a selection: explicit ids, or the list's own narrowing.
+export * from './product-bulk';
 
 // Phase 2 — inventory (warehouses, levels, lots, serials).
 export * from './inventory';
@@ -133,6 +141,10 @@ export * from './reviews';
 
 // Phase 5/7 — returns / RMA.
 export * from './returns';
+// Core charges: refundable deposits on rebuilt parts (persona issue 051).
+export * from './cores';
+// A core charge a store faked as a choice, read back into a real deposit (issue 057).
+export * from './core-choices';
 
 // Phase 8 — storefront-level settings + theme.
 export * from './site';
@@ -140,3 +152,8 @@ export * from './site';
 // sparx.market — the first-party marketplace (docs/106 §4.7): category taxonomy,
 // flat commission model, and every market write/browse surface.
 export * from './market';
+
+// A trade account's minimum, maximum and case pack on a version, shared by the
+// cart, checkout and fleet holds so they refuse in the same words (sparx persona
+// issue 086).
+export * from './quantity-rules';

@@ -27,6 +27,7 @@ import {
   Field,
   FieldControl,
   FieldDescription,
+  FieldError,
   FieldLabel,
   Heading,
   Input,
@@ -43,12 +44,13 @@ import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { CustomerPicker } from './bookings-customer-picker';
 import { SaveFailure } from '@/components/save-failure';
+import { instantFromWall, wallProblem } from '../../lib/wall-clock';
+import { useBookingZone } from './booking-zone';
 import {
   buildRrule,
   bookingStateMeta,
   bookingTypeLabel,
   formatWhen,
-  fromLocalInputValue,
   humanizeRrule,
   schedulingErrorMessage,
   seriesStateMeta,
@@ -270,7 +272,11 @@ function SeriesCreate({ ctx }: { ctx: SurfaceContext }) {
 
   const serviceList = services.data?.items ?? [];
   const chosenService = serviceList.find((s) => s.id === serviceId) ?? null;
-  const startIso = fromLocalInputValue(startLocal);
+  // On the clock of the place it happens at, which is the clock every occurrence
+  // will be booked on (sparx persona issue 086), never this computer's.
+  const clock = useBookingZone(chosenService?.locationId);
+  const startIso = clock.zone ? instantFromWall(startLocal, clock.zone) : null;
+  const startProblem = clock.zone ? wallProblem(startLocal, clock.zone) : null;
   const rrule = buildRrule(recurrence);
 
   const changed =
@@ -404,24 +410,29 @@ function SeriesCreate({ ctx }: { ctx: SurfaceContext }) {
               ) : null}
             </Field>
 
-            <Field>
+            <Field invalid={startProblem !== null}>
               <FieldLabel>First one starts</FieldLabel>
               <FieldControl
                 render={
                   <Input
-                    color="module"
+                    color={startProblem ? 'error' : 'module'}
                     type="datetime-local"
                     className="max-w-xs"
                     value={startLocal}
+                    disabled={clock.zone === undefined}
                     onChange={(event) => {
                       setStartLocal(event.target.value);
                     }}
                   />
                 }
               />
-              <FieldDescription>
-                The day and time of the first occurrence, in your own time zone.
-              </FieldDescription>
+              {startProblem ? (
+                <FieldError match>{startProblem}</FieldError>
+              ) : (
+                <FieldDescription>
+                  The day and time of the first occurrence. {clock.hint}
+                </FieldDescription>
+              )}
             </Field>
           </FormSection>
 
@@ -486,8 +497,8 @@ function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSer
         scope === 'all' ? 'Stop and cancel every upcoming one?' : 'Stop this repeating booking?',
       description:
         scope === 'all'
-          ? 'This stops the pattern and cancels every occurrence still to come, including ones already in progress. Past and completed ones are kept. Customers are told. This cannot be undone.'
-          : 'This stops the pattern from creating any more, and cancels the ones not yet started. Anything already under way or completed is kept. This cannot be undone.',
+          ? 'This stops the pattern and cancels every occurrence still to come, including ones already in progress. Past and completed ones are kept. Customers are told. Any card hold or deposit on them is settled by your booking rules, the same as canceling each one on its own, late-cancellation fees included. This cannot be undone.'
+          : 'This stops the pattern from creating any more, and cancels the ones not yet started. Anything already under way or completed is kept. Any card hold or deposit on them is settled by your booking rules, the same as canceling each one on its own, late-cancellation fees included. This cannot be undone.',
       confirmLabel: scope === 'all' ? 'Stop and cancel all' : 'Stop it',
       cancelLabel: 'Keep it running',
       color: 'danger',
@@ -559,7 +570,7 @@ function SeriesManage({ ctx, series }: { ctx: SurfaceContext; series: BookingSer
                     >
                       <CalendarRange className="size-4 shrink-0" aria-hidden />
                       <span className="min-w-0 flex-1 font-medium">
-                        {formatWhen(occurrence.startAt)}
+                        {formatWhen(occurrence.startAt, occurrence.timezone)}
                       </span>
                       <Badge color={oMeta.tone} variant="soft" size="sm">
                         {oMeta.label}

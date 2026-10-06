@@ -322,7 +322,7 @@ export const updateTask: McpToolDefinition = {
 export const createCompany: McpToolDefinition = {
   name: 'create_company',
   description:
-    'Add a company: the organization a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricing tier) only mean anything to a business selling on account: set them and customers become authorized buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
+    'Add a company: the organization a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricingTierId: the id of one of the price tiers set up for this business, from list_b2b_pricing_tiers, or null for normal prices) only mean anything to a business selling on account: set them and customers become authorized buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateCompanyInput,
@@ -332,7 +332,7 @@ export const createCompany: McpToolDefinition = {
 export const updateCompany: McpToolDefinition = {
   name: 'update_company',
   description:
-    'Update a company: any subset of name, tax id, website, email domains, pricing tier, credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are left exactly as they are.',
+    'Update a company: any subset of name, tax id, website, email domains, price tier (pricingTierId, or null for normal prices), credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are left exactly as they are.',
   scope: 'write:crm',
   confirmation: true,
   input: UpdateCompanyInput.extend({ companyId: z.string().uuid() }),

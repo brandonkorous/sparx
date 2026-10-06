@@ -8,6 +8,7 @@ import { Uuid } from '@wizeworks/crm-schemas';
 import { ConfigurationSelection, ResolvedConfiguration } from './bundles';
 import { Channel, Currency, MoneyCents } from './common';
 import { PriceTraceStep } from './pricing';
+import { RepeatCadence } from './repeat';
 
 export const CartItemAttributes = z
   .object({
@@ -25,13 +26,28 @@ export const AddCartItemInput = z.object({
   quantity: z.number().int().positive().default(1),
   configuration: ConfigurationSelection.optional(),
   attributes: CartItemAttributes.optional(),
+  /** Deliver this again on a schedule (issue 739). Must be one the product
+   *  offers; omitted = bought once. */
+  repeat: RepeatCadence.optional(),
+  /** Bought by sending the old part FIRST instead of paying the core deposit
+   *  (issue 057): no deposit on the line, and it ships when the old part
+   *  arrives. Only on a part that offers it; omitted = pay the deposit. */
+  coreFirst: z.boolean().optional(),
 });
 export type AddCartItemInput = z.infer<typeof AddCartItemInput>;
 
 export const UpdateCartItemInput = z.object({
   cartItemId: Uuid,
+  /** The basket the caller proved it owns. When given, the line must be in it. */
+  cartId: Uuid.optional(),
   quantity: z.number().int().nonnegative(), // 0 = remove
   attributes: CartItemAttributes.optional(),
+  /** Change how often this line repeats; null makes it a one-off again.
+   *  Omitted leaves it as it is. */
+  repeat: RepeatCadence.nullable().optional(),
+  /** Switch between paying the core deposit and sending the old part first.
+   *  Omitted leaves it as it is. */
+  coreFirst: z.boolean().optional(),
 });
 export type UpdateCartItemInput = z.infer<typeof UpdateCartItemInput>;
 
@@ -84,10 +100,20 @@ export const CartItemSnapshot = z.object({
   quantity: z.number().int().positive(),
   unitPriceCents: MoneyCents,
   subtotalCents: MoneyCents,
+  /** Refundable core deposit per unit on a rebuilt part, on top of the price;
+   *  null = no core. Not in `subtotalCents`. */
+  coreChargeCents: MoneyCents.nullish(),
+  /** Bought by sending the old part first: no deposit, ships when it arrives. */
+  coreFirst: z.boolean().default(false),
+  /** Present when this part can be bought EITHER way, so the basket can offer the
+   *  switch: the deposit paying it would cost per unit. Null otherwise. */
+  coreChoice: z.object({ depositCents: MoneyCents }).nullish(),
   configuration: ResolvedConfiguration.optional(),
   attributes: CartItemAttributes.optional(),
   unitPriceTrace: z.array(PriceTraceStep),
   madeToOrder: CartItemMadeToOrder.nullish(),
+  /** How often this line is delivered again (issue 739); null = bought once. */
+  repeat: RepeatCadence.nullish(),
 });
 export type CartItemSnapshot = z.infer<typeof CartItemSnapshot>;
 
@@ -111,6 +137,9 @@ export const CartTotals = z.object({
   taxTotalCents: MoneyCents,
   giftCardAppliedCents: MoneyCents,
   accountCreditAppliedCents: MoneyCents,
+  /** Refundable core deposits (Σ core × quantity). Part of `totalCents`; never
+   *  discounted or taxed, so it is not in `subtotalCents`. */
+  coreChargeTotalCents: MoneyCents,
   totalCents: MoneyCents,
 });
 export type CartTotals = z.infer<typeof CartTotals>;

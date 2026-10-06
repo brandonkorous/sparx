@@ -57,7 +57,6 @@ export function BookingCreateWho({
               <Input
                 color="module"
                 className="max-w-sm"
-                placeholder="Tomás from next door"
                 value={guestName}
                 onChange={(event) => {
                   setGuestName(event.target.value);

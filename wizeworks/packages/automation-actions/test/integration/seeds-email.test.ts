@@ -1,15 +1,23 @@
-// Email system seeds (docs/90 Step 4) on the real engine — the ENQUEUE side of the
+// Email system seeds (docs/90 Step 4) on the real engine: the ENQUEUE side of the
 // send-by-key contract. Proves:
 //   1. The welcome seed fires on crm.customer.created and writes a ScheduledSend
 //      whose body is a `defer` reference to the 'welcome-customer' template by KEY
-//      (resolved to the tenant's published tree at DISPATCH — that half lives in
+//      (resolved to the tenant's published tree at DISPATCH; that half lives in
 //      api-rest's email-dispatch send-by-key test), carrying the firing customer's
-//      entityRefs + the declared transactional emailType.
-//   2. The email MODULE gate — a CRM-only tenant records the send as `gated`
-//      (docs/90 §4) and enqueues nothing until email activates.
-//   3. The suppression SCOPE follows emailType — a `transactional` campaign
-//      (welcome) is NOT withheld by a marketing-scope unsubscribe; a `marketing`
-//      campaign (win-back) is.
+//      entityRefs + the declared marketing emailType.
+//   2. The email MODULE gate follows the step's declared emailType (sparx persona
+//      issue 087). On a CRM-only tenant a TRANSACTIONAL send goes out anyway,
+//      because the email module gates campaigns, not the emails a customer gets
+//      because of something they did. A MARKETING send is recorded as `gated`
+//      (docs/90 §4) and enqueues nothing until email activates, and the welcome is
+//      one of those (Brandon, 2026-10-03): a CRM-only business with email off
+//      does not mail every contact it types in.
+//   3. The suppression SCOPE follows emailType: a `transactional` send is NOT
+//      withheld by a marketing-scope unsubscribe; a `marketing` one (the welcome,
+//      an ad-hoc promo) is.
+//
+// No CRM seed sends a transactional email, so the transactional side is an ad-hoc
+// automation the business wrote itself, built the same way as the ad-hoc promo.
 //
 // Ticks run on sparx_app (the worker's identity); seeding/asserts use sparx_owner.
 
@@ -91,7 +99,7 @@ afterAll(async () => {
   await appDb.$disconnect();
 });
 
-describe('welcome seed — send by key', () => {
+describe('welcome seed: send by key', () => {
   it('fires on crm.customer.created and enqueues a defer.builderEmailKey send', async () => {
     const tenantId = await seedTenant(['crm', 'email']);
     await seedSystemAutomations({ tenantId }, { module: 'crm' });
@@ -104,78 +112,145 @@ describe('welcome seed — send by key', () => {
     expect(send?.recipient).toBe(email);
     expect(send?.customerId).toBe(customerId);
     // The body references the template by KEY (not a per-tenant id) + declares its
-    // transactional intent — resolved + gate-checked at dispatch.
+    // marketing intent, resolved + gate-checked at dispatch.
     const payload = send?.payload as {
       defer?: { builderEmailKey?: string; emailType?: string };
     } | null;
     expect(payload?.defer?.builderEmailKey).toBe('welcome-customer');
-    expect(payload?.defer?.emailType).toBe('transactional');
+    expect(payload?.defer?.emailType).toBe('marketing');
     // entityRefs name the firing customer for the deferred per-recipient render.
     const refs = send?.entityRefs as { customerId?: string } | null;
     expect(refs?.customerId).toBe(customerId);
   });
 });
 
+/** An automation the business wrote itself: one keyed email on one event. */
+async function adHocEmail(
+  tenantId: string,
+  name: string,
+  triggerType: string,
+  config: { builderEmailKey: string; emailType: 'transactional' | 'marketing' }
+): Promise<void> {
+  await ownerDb.automation.create({
+    data: {
+      tenantId,
+      name,
+      status: 'active',
+      triggerType,
+      triggerConfig: {},
+      conditions: { logic: 'AND', conditions: [] },
+      actions: [{ type: 'email.send_campaign', config }],
+      origin: 'user',
+      maxDepth: 3,
+    },
+  });
+}
+
+/** The built-in email each send this tenant enqueued names. */
+async function sentKeys(tenantId: string): Promise<(string | undefined)[]> {
+  const sends = await ownerDb.scheduledSend.findMany({ where: { tenantId } });
+  return sends.map(
+    (s) => (s.payload as { defer?: { builderEmailKey?: string } } | null)?.defer?.builderEmailKey
+  );
+}
+
+/** The one run of the named automation, with its steps. */
+async function runOf(tenantId: string, name: string) {
+  const automation = await ownerDb.automation.findFirst({ where: { tenantId, name } });
+  return ownerDb.automationRun.findFirst({
+    where: { tenantId, automationId: automation?.id },
+    include: { steps: true },
+  });
+}
+
 describe('email module gate', () => {
-  it('records the send as gated (enqueues nothing) when email is inactive', async () => {
+  it('a transactional send goes out with the email module off', async () => {
     const tenantId = await seedTenant(['crm']); // email NOT active
-    await seedSystemAutomations({ tenantId }, { module: 'crm' });
-    const { id: customerId } = await makeCustomer(tenantId, 'nobody@sparx.test');
+    await adHocEmail(tenantId, 'Account details', 'crm.customer.created', {
+      builderEmailKey: 'account-details',
+      emailType: 'transactional',
+    });
+    const { id: customerId, email } = await makeCustomer(tenantId, 'signed-up@sparx.test');
 
     await handleTrigger(evt('crm.customer.created', tenantId, { customerId }), deps, appDb);
     await runAutomationTick(deps, appDb);
 
-    // Nothing enqueued — but the run COMPLETES with the send step recorded `gated`
+    const send = await ownerDb.scheduledSend.findFirst({ where: { tenantId } });
+    expect(send?.recipient).toBe(email);
+    expect(await sentKeys(tenantId)).toEqual(['account-details']);
+  });
+
+  it('holds the welcome while the email module is off', async () => {
+    // A CRM-only business typing in its contacts. With email off, none of them is
+    // mailed: the welcome is marketing, so its step is recorded `gated`.
+    const tenantId = await seedTenant(['crm']); // email NOT active
+    await seedSystemAutomations({ tenantId }, { module: 'crm' });
+    const { id: customerId } = await makeCustomer(tenantId, 'typed-in@sparx.test');
+
+    await handleTrigger(evt('crm.customer.created', tenantId, { customerId }), deps, appDb);
+    await runAutomationTick(deps, appDb);
+
+    expect(await sentKeys(tenantId)).toEqual([]);
+    const run = await runOf(tenantId, 'Welcome new customers');
+    expect(run?.status).toBe('completed');
+    expect(run?.steps.map((s) => s.status)).toEqual(['gated']);
+  });
+
+  it('records a marketing send as gated (enqueues nothing) when email is inactive', async () => {
+    const tenantId = await seedTenant(['crm']); // email NOT active
+    const { id: customerId } = await makeCustomer(tenantId, 'nobody@sparx.test');
+    await adHocEmail(tenantId, 'Promo', 'crm.customer.subscribed', {
+      builderEmailKey: 'win-back',
+      emailType: 'marketing',
+    });
+
+    await handleTrigger(evt('crm.customer.subscribed', tenantId, { customerId }), deps, appDb);
+    await runAutomationTick(deps, appDb);
+
+    // Nothing enqueued, but the run COMPLETES with the send step recorded `gated`
     // (the conversion nudge in run history, docs/90 §4), not failed.
     expect(await ownerDb.scheduledSend.count({ where: { tenantId } })).toBe(0);
-    const run = await ownerDb.automationRun.findFirst({
-      where: { tenantId },
-      include: { steps: true },
-    });
+    const run = await runOf(tenantId, 'Promo');
     expect(run?.status).toBe('completed');
     expect(run?.steps.some((s) => s.status === 'gated')).toBe(true);
   });
 });
 
 describe('suppression scope follows emailType', () => {
-  it('a transactional campaign ignores a marketing unsubscribe; a marketing one honors it', async () => {
+  it('a transactional send ignores a marketing unsubscribe; the welcome and a promo honor it', async () => {
     const tenantId = await seedTenant(['crm', 'email']);
     await seedSystemAutomations({ tenantId }, { module: 'crm' });
+    await adHocEmail(tenantId, 'Account details', 'crm.customer.created', {
+      builderEmailKey: 'account-details',
+      emailType: 'transactional',
+    });
     const { id: customerId, email } = await makeCustomer(tenantId, 'optout@sparx.test');
     // The recipient unsubscribed from MARKETING only.
     await ownerDb.emailSuppression.create({
       data: { tenantId, email: email.toLowerCase(), scope: 'marketing', reason: 'unsubscribe' },
     });
 
-    // welcome (transactional) → still enqueues despite the marketing opt-out.
+    // One event, two automations: the account details (transactional) still
+    // enqueue; the welcome (marketing) is withheld by the unsubscribe.
     await handleTrigger(evt('crm.customer.created', tenantId, { customerId }), deps, appDb);
     await runAutomationTick(deps, appDb);
-    expect(await ownerDb.scheduledSend.count({ where: { tenantId } })).toBe(1);
+    expect(await sentKeys(tenantId)).toEqual(['account-details']);
+    // Withheld by the suppression list, not skipped for some other reason.
+    const welcome = await runOf(tenantId, 'Welcome new customers');
+    expect(welcome?.steps.map((s) => s.output)).toEqual([
+      expect.objectContaining({ enqueued: false, suppressed: true }),
+    ]);
 
-    // An ad-hoc MARKETING campaign to the same recipient → suppressed (no row).
-    await ownerDb.automation.create({
-      data: {
-        tenantId,
-        name: 'Promo',
-        status: 'active',
-        triggerType: 'crm.customer.subscribed',
-        triggerConfig: {},
-        conditions: { logic: 'AND', conditions: [] },
-        actions: [
-          {
-            type: 'email.send_campaign',
-            config: { builderEmailKey: 'win-back', emailType: 'marketing' },
-          },
-        ],
-        origin: 'user',
-        maxDepth: 3,
-      },
+    // An ad-hoc MARKETING campaign to the same recipient is suppressed too.
+    await adHocEmail(tenantId, 'Promo', 'crm.customer.subscribed', {
+      builderEmailKey: 'win-back',
+      emailType: 'marketing',
     });
     await handleTrigger(evt('crm.customer.subscribed', tenantId, { customerId }), deps, appDb);
     await runAutomationTick(deps, appDb);
 
-    // Still just the one welcome send — the marketing promo was suppressed.
-    expect(await ownerDb.scheduledSend.count({ where: { tenantId } })).toBe(1);
+    // Still just the one transactional send.
+    expect(await sentKeys(tenantId)).toEqual(['account-details']);
   });
 });
 

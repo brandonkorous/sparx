@@ -24,7 +24,7 @@ import {
 
 import { bookingCalendarLinks } from './scheduling-ical.js';
 import { publishBookingEvent } from './scheduling-events.js';
-import { settleBookingPayment } from './scheduling-payments.js';
+import { settleBookingMoney } from './scheduling-payments.js';
 
 /** Where the request came from, for the audit trail: the signed-in portal or a
  *  signed link out of an email. */
@@ -91,8 +91,8 @@ export async function toCustomerBookingDto(
 /**
  * Call a booking off on the customer's own behalf. The policy fee is NOT waived
  * — a late cancel captures it from the hold and an on-time one releases it, and
- * `settleBookingPayment` is what decides, so nobody can waive a fee for
- * themselves by clicking their own link.
+ * the booking's own rules decide (`waiveFee: false`), so nobody can waive a fee
+ * for themselves by clicking their own link.
  */
 export async function cancelForCustomer(
   log: FastifyBaseLogger,
@@ -102,13 +102,13 @@ export async function cancelForCustomer(
   source: CustomerBookingSource,
   reason?: string
 ): Promise<Record<string, unknown>> {
-  const updated = await cancelBooking(tenantId, {
+  const { booking: updated, money } = await cancelBooking(tenantId, {
     id: bookingId,
     reason: reason ?? NO_REASON_GIVEN,
     waiveFee: false,
     notifyCustomer: true,
   });
-  await settleBookingPayment(log, tenantId, bookingId, 'cancel');
+  await settleBookingMoney(log, { tenantId }, [money]);
   await publishBookingEvent('booking.cancelled', tenantId, null, {
     bookingId,
     customerId,

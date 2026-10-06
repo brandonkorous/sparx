@@ -46,7 +46,14 @@
 export interface RefundedOrder {
   total: number;
   refundTotal: number;
-  items?: { quantity: number; quantityRefunded: number }[] | null;
+  /** Of `refundTotal`, how much went back as returned core deposits (from the
+   *  refunds' own record of what they were for). */
+  depositsReturned?: number;
+  items?: { quantity: number; quantityRefunded: number; coresReturned?: number }[] | null;
+}
+
+function money(amount: number): string {
+  return `$${amount.toFixed(2)}`;
 }
 
 /**
@@ -61,6 +68,29 @@ export function refundNote(order: RefundedOrder): string | null {
 
   const marked = items.reduce((n, i) => n + i.quantityRefunded, 0);
   const bought = items.reduce((n, i) => n + i.quantity, 0);
+
+  // A returned core deposit is money back for a known line, recorded as such, and
+  // the line above already says "1 core back". Read as an unexplained whole-order
+  // refund it told Gillett Diesel the opposite of what happened (sparx persona
+  // issue 057).
+  const deposits = order.depositsReturned ?? 0;
+  if (deposits > 0) {
+    const cores = items.reduce((n, i) => n + (i.coresReturned ?? 0), 0);
+    const which =
+      cores === 1
+        ? 'the core deposit, given back when the old part came in'
+        : 'core deposits, given back as the old parts came in';
+    if (order.refundTotal <= deposits + 0.005) {
+      return cores === 1 ? `That was ${which}.` : `That was all ${which}.`;
+    }
+    if (marked === 0) {
+      return (
+        `${money(deposits)} of it was ${which}. The rest was given back against the ` +
+        'order as a whole rather than item by item.'
+      );
+    }
+    return null;
+  }
 
   // Ten of the eleven. Nothing above it says anything, so the money is the only
   // record of what happened.

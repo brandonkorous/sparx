@@ -15,6 +15,8 @@ import {
   fitmentService,
   providerService,
   returnService,
+  coreService,
+  coreChoiceService,
   markupService,
 } from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
@@ -203,12 +205,39 @@ const getReturns: McpToolDefinition = {
         'inspecting',
         'inspected',
         'refunded',
+        'exchanged',
         'cancelled',
       ])
       .optional(),
     take: z.number().int().min(1).max(100).default(25),
   }),
   run: (ctx, input) => returnService.list(ctx, input as Record<string, unknown>),
+};
+
+const listCoresOwed: McpToolDefinition = {
+  name: 'list_cores_owed',
+  description:
+    'List the cores still owed back: rebuilt parts sold with a refundable core deposit, or bought by sending the old part first, whose old part (the "core") has not come back yet. Each row names the order, customer, part, how many cores are owed, the deposit each, the total that would go back, how many days since the order, and for a send-first line (`coreFirst`) how many units are waiting for their old part before they can go out (`waitingToShip`). Filter by customer, company, order, or how old.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({
+    customerId: z.string().uuid().optional(),
+    companyId: z.string().uuid().optional(),
+    orderId: z.string().uuid().optional(),
+    olderThanDays: z.number().int().min(0).optional(),
+    limit: z.number().int().min(1).max(500).default(200),
+  }),
+  run: (ctx, input) => coreService.listOwed(ctx, input),
+};
+
+const listCoreChoices: McpToolDefinition = {
+  name: 'list_core_choices',
+  description:
+    'List products whose core charge is sold as a CHOICE rather than a real deposit (typical of a catalog moved in from a store that had no core deposit): "Accept Core Charge (+$150)" beside "Defer Core Charge", or "Ship now add $200 core charge" beside "Ship when core received". Each row gives today’s price on each side, the suggested part price (the old-part-first price) and deposit (the amount the words name, never the price difference), the version that would stay, and a `problem` when the product cannot be changed as it stands. Feed the rows to `convert_core_choices`.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({}),
+  run: (ctx) => coreChoiceService.listCandidates(ctx),
 };
 
 const getCart: McpToolDefinition = {
@@ -357,6 +386,8 @@ export const readTools: AnyMcpTool[] = [
   searchFitment,
   getProviderHealth,
   getReturns,
+  listCoresOwed,
+  listCoreChoices,
   getCart,
   getDropshipMarginReport,
   getMargin,

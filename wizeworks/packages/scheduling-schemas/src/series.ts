@@ -32,5 +32,9 @@ export const CancelBookingSeriesInput = z.object({
    *  cancels in-progress/upcoming ones. Past terminal bookings are never touched. */
   scope: z.enum(['future', 'all']).default('future'),
   reason: z.string().max(2000).nullable().optional(),
+  /** Let every customer off the fee, as on a single cancel: a held card is let
+   *  go and a paid deposit refunded, whatever the rules say. Without it each
+   *  booking is settled by its rules, a late one charged (sparx persona issue 087). */
+  waiveFee: z.boolean().default(false),
 });
 export type CancelBookingSeriesInput = z.infer<typeof CancelBookingSeriesInput>;

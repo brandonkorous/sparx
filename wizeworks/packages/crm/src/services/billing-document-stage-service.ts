@@ -38,6 +38,7 @@ import { netTermsDays } from './billing-ar';
 import { buildSnapshotPayload } from './billing-snapshot';
 import type { DocumentWithLines } from './billing-document-service';
 import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
+import { closeWhenDocumentMovesOn } from './task-service';
 
 // Fallback when a stage is configured `numberOnEnter` without a prefix — the
 // universal invoice prefix. Seeded workflows always set one; this only guards a
@@ -190,6 +191,10 @@ export async function advance(
       entityId: documentId,
       diff: { before: { stageId: fromStageId }, after: { stageId: target.id } },
     });
+
+    // "EST-000123 was approved: take it to the next step" is done once it is
+    // taken there (or no longer needed, when this stage voids it).
+    await closeWhenDocumentMovesOn(tx, ctx, { documentId, byUserId: ctx.userId ?? null });
 
     const stageChanged: PendingDocEvent = {
       topic: 'crm.billing_document.stage_changed',

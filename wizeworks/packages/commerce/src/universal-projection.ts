@@ -16,6 +16,11 @@
 // `commerceUniversalProjectors` to backfill regardless. The doc shape is
 // dictated by wizeworks/packages/search/src/schemas/entities.ts — keep them in sync.
 
+import {
+  B2B_QUOTE_WORKFLOW_SLUG,
+  NET_TERMS_AR_WORKFLOW_SLUG,
+} from '@wizeworks/crm-schemas/builtins';
+import { companyService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
 import {
   type EntityProjector,
@@ -25,7 +30,6 @@ import {
 } from '@wizeworks/search';
 import {
   bundlePricingWords,
-  codeAsWords,
   collectionKindWords,
   companyStatusWords,
   entryStatusWords,
@@ -34,7 +38,7 @@ import {
   pipelineObjectWords,
   returnOutcomeWords,
   segmentKindWords,
-  taskPriorityWords,
+  taskLineWords,
 } from './search-words';
 
 // ─── helpers ─────────────────────────────────────────────────────────
@@ -435,8 +439,17 @@ const b2bAccountProjector: EntityProjector = {
     }),
   project: (ctx: ProjectorContext, id: string) =>
     withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
-      const a = await tx.company.findFirst({ where: { id, deletedAt: null } });
+      // The tier's name comes from the tier the account points at. The legacy
+      // free-text column was empty on every account set up from the tiers
+      // screen, so the search box showed Gillett's accounts with no tier at all
+      // (sparx persona issue 086).
+      const a = await tx.company.findFirst({
+        where: { id, deletedAt: null },
+        include: { pricingTierFk: { select: { name: true, deletedAt: true } } },
+      });
       if (!a) return null;
+      // A removed tier prices nothing, so it is not named under the account.
+      const tier = companyService.tierInEffect(a.pricingTierFk);
       return {
         id: universalId(ctx.tenantId, 'b2b_account', a.id),
         tenant_id: ctx.tenantId,
@@ -444,9 +457,9 @@ const b2bAccountProjector: EntityProjector = {
         module: 'crm',
         record_id: a.id,
         title: a.companyName,
-        subtitle: a.pricingTier ? codeAsWords(a.pricingTier) : companyStatusWords(a.status),
+        subtitle: tier ? tier.name : companyStatusWords(a.status),
         body: snippet(a.notes),
-        keywords: keywords([a.companyName, a.taxId, a.website, ...a.tags]),
+        keywords: keywords([a.companyName, a.taxId, a.website, tier?.name, ...a.tags]),
         status: a.status,
         url: `/crm/b2b/${a.id}`,
         created_at: epoch(a.createdAt),
@@ -459,44 +472,113 @@ const b2bAccountProjector: EntityProjector = {
 // (soft-deletable — excludes deletedAt rows, unlike the other CRM projectors
 // above which have no soft-delete column)
 
+// A wholesale quote is indexed as a `quote`, not a `billing_document`. Both are
+// rows in the same table, but they are different things on screen with
+// different homes: the search box filed Wasatch Front's quotes Q-000012 and
+// Q-000013 under "Invoices", and opening one landed on the wholesale invoices
+// list rather than on the quote (sparx persona issue 086). The route table
+// already sends `quote` to the quote's own screen under "Quotes", and the CRM
+// bridge already publishes `crm.quote.*` as `quote`; what was missing was this
+// projector, so every one of those events was skipped as "no projector".
+//
+// One reader serves both, and each answers only for its own kind. A billing
+// event about a quote therefore projects to null on the `billing_document`
+// side, which DELETES the old `billing_document` entry the quote used to have,
+// and the reindex walk finds the quote under `quote`. Each projector writes its
+// own `entity_type` and `module` out literally, so check:search-entities can
+// read and check both.
+
+/** Is this workflow's document a wholesale quote? The one rule for the split. */
+function isWholesaleQuote(workflowSlug: string): boolean {
+  return workflowSlug === B2B_QUOTE_WORKFLOW_SLUG;
+}
+
+/** The screen a document opens on: the quote, the invoice on account, or the
+ *  invoice editor. The old `/invoicing/documents/:id` matched no screen. */
+function billingDocumentUrl(workflowSlug: string, id: string): string {
+  if (isWholesaleQuote(workflowSlug)) return `/wholesale/quotes/${id}`;
+  if (workflowSlug === NET_TERMS_AR_WORKFLOW_SLUG) return `/wholesale/invoices/${id}`;
+  return `/invoicing/invoices/${id}`;
+}
+
+function listBillingDocumentIds(ctx: ProjectorContext, quotes: boolean): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.billingDocument.findMany({
+      where: {
+        deletedAt: null,
+        workflow: quotes
+          ? { slug: B2B_QUOTE_WORKFLOW_SLUG }
+          : { slug: { not: B2B_QUOTE_WORKFLOW_SLUG } },
+      },
+      select: { id: true },
+    });
+    return rows.map((r) => r.id);
+  });
+}
+
+/** Everything a billing document's search entry says except which kind it is,
+ *  or null when the row is gone or is the other kind. */
+function readBillingDocument(
+  ctx: ProjectorContext,
+  id: string,
+  quote: boolean
+): Promise<Omit<UniversalSearchDocument, 'id' | 'tenant_id' | 'entity_type' | 'module'> | null> {
+  return withTenant(ctx, async (tx) => {
+    const doc = await tx.billingDocument.findFirst({
+      where: { id, deletedAt: null },
+      include: {
+        customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
+        company: { select: { companyName: true } },
+        workflow: { select: { slug: true } },
+      },
+    });
+    if (!doc || isWholesaleQuote(doc.workflow.slug) !== quote) return null;
+    const who = doc.company?.companyName ?? (doc.customer ? customerName(doc.customer) : undefined);
+    return {
+      record_id: doc.id,
+      title: doc.number ?? 'Untitled document',
+      subtitle: who ?? paymentStatusWords(doc.status),
+      keywords: keywords([doc.number, who]),
+      status: doc.status,
+      url: billingDocumentUrl(doc.workflow.slug, doc.id),
+      created_at: epoch(doc.createdAt),
+      updated_at: epoch(doc.updatedAt),
+    };
+  });
+}
+
 const billingDocumentProjector: EntityProjector = {
   entityType: 'billing_document',
   module: 'invoicing',
-  listIdsForTenant: (ctx: ProjectorContext) =>
-    withTenant(ctx, async (tx) => {
-      const rows = await tx.billingDocument.findMany({
-        where: { deletedAt: null },
-        select: { id: true },
-      });
-      return rows.map((r) => r.id);
-    }),
-  project: (ctx: ProjectorContext, id: string) =>
-    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
-      const doc = await tx.billingDocument.findFirst({
-        where: { id, deletedAt: null },
-        include: {
-          customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
-          company: { select: { companyName: true } },
-        },
-      });
-      if (!doc) return null;
-      const who =
-        doc.company?.companyName ?? (doc.customer ? customerName(doc.customer) : undefined);
-      return {
-        id: universalId(ctx.tenantId, 'billing_document', doc.id),
-        tenant_id: ctx.tenantId,
-        entity_type: 'billing_document',
-        module: 'invoicing',
-        record_id: doc.id,
-        title: doc.number ?? 'Untitled document',
-        subtitle: who ?? paymentStatusWords(doc.status),
-        keywords: keywords([doc.number, who]),
-        status: doc.status,
-        url: `/invoicing/documents/${doc.id}`,
-        created_at: epoch(doc.createdAt),
-        updated_at: epoch(doc.updatedAt),
-      };
-    }),
+  listIdsForTenant: (ctx: ProjectorContext) => listBillingDocumentIds(ctx, false),
+  project: async (ctx: ProjectorContext, id: string) => {
+    const doc = await readBillingDocument(ctx, id, false);
+    if (!doc) return null;
+    return {
+      id: universalId(ctx.tenantId, 'billing_document', id),
+      tenant_id: ctx.tenantId,
+      entity_type: 'billing_document',
+      module: 'invoicing',
+      ...doc,
+    };
+  },
+};
+
+const quoteProjector: EntityProjector = {
+  entityType: 'quote',
+  module: 'b2b',
+  listIdsForTenant: (ctx: ProjectorContext) => listBillingDocumentIds(ctx, true),
+  project: async (ctx: ProjectorContext, id: string) => {
+    const doc = await readBillingDocument(ctx, id, true);
+    if (!doc) return null;
+    return {
+      id: universalId(ctx.tenantId, 'quote', id),
+      tenant_id: ctx.tenantId,
+      entity_type: 'quote',
+      module: 'b2b',
+      ...doc,
+    };
+  },
 };
 
 // ─── crm: segment (archive = soft-inactive; kept in index with status) ─
@@ -631,7 +713,7 @@ const taskProjector: EntityProjector = {
         module: 'crm',
         record_id: t.id,
         title: t.title,
-        subtitle: taskPriorityWords(t.priority),
+        subtitle: taskLineWords(t.status, t.priority),
         body: snippet(t.description),
         keywords: keywords([t.priority]),
         status: t.status,
@@ -1165,6 +1247,7 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   giftCardProjector,
   b2bAccountProjector,
   billingDocumentProjector,
+  quoteProjector,
   // Phase 2 — breadth (commerce)
   collectionProjector,
   categoryProjector,

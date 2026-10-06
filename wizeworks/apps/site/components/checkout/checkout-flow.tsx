@@ -16,8 +16,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Alert } from '@wizeworks/silicaui-react';
 
+import { checkoutBlock } from '@/lib/account-buying-rules';
 import {
   createPaymentIntent,
+  isCheckoutUnreachable,
   isCollectionRate,
   quoteShipping,
   startCheckout,
@@ -33,16 +35,31 @@ import { EMPTY_ADDRESS } from './address-form';
 import { PaymentStep } from './payment-step';
 import { OrderSummary } from './order-summary';
 import { Confirmation, EmptyCart, StepIndicator, type CheckoutStep } from './checkout-chrome';
+import type { PlacedOrderResult } from './payment-step';
 import { ContactStep, EMPTY_CONTACT, type ContactDraft } from './contact-step';
 import { CollectionStep } from './collection-step';
 import { DeliveryStep } from './delivery-step';
 import { useAddressBook } from './use-address-book';
+import { RepeatNeedsDelivery, RepeatNeedsSignIn, RepeatTerms } from './repeat-checkout';
 import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
+import { isBoughtCartError } from '@/lib/bought-cart';
+import {
+  CART_UNREACHABLE_MESSAGE,
+  CHECKOUT_UNREACHABLE_MESSAGE,
+  retryDelayMs,
+} from '@/lib/shop-reach';
 
 /** The sale, as the confirmation screen needs it. */
 interface PlacedOrder {
   orderId: string;
   orderNumber: string;
+  /** Waiting to be signed off (sparx persona issue 085), and by whom: the
+   *  account's own approvers, the business, or both (sparx persona issue 087). */
+  held: boolean;
+  approval: PlacedOrderResult['approval'];
+  /** What happened to the card: held until it is approved, charged, or none,
+   *  so the confirmation says which (sparx persona issue 087). */
+  card: PlacedOrderResult['card'];
   lines: CartLine[];
   totals: CartTotals;
   currency: string;
@@ -58,12 +75,16 @@ export function CheckoutFlow({
    *  on screen from the first step, saying what the card will be charged before
    *  anything has asked the server anything (issue 185). */
   paymentMode: shopPaymentMode = 'card',
+  /** The business's own name, so a held order says who approves it (sparx
+   *  persona issue 087). */
+  shopName = null,
 }: {
   tenantSlug: string;
   paymentMode?: StorefrontPaymentMode;
+  shopName?: string | null;
 }) {
   const cart = useCart();
-  const { customer } = useCustomer();
+  const { customer, status } = useCustomer();
   const [step, setStep] = useState<CheckoutStep>('contact');
   const [session, setSession] = useState<CheckoutSession | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +131,15 @@ export function CheckoutFlow({
   // on "Saving…" forever, because the session it waits for needs a cart.
   const cartEmpty = cart.known && cart.lines.length === 0;
 
+  // Lines the shopper asked to have delivered again (issue 739). They need an
+  // account and a delivery, and both are said here, before the forms, rather
+  // than as a refusal at the last button.
+  const repeating = cart.lines.filter((line) => line.repeat !== null);
+  // Only a real "nobody is signed in". A session read that got no answer
+  // (`unreachable`) says nothing about the buyer, and telling a signed-in buyer
+  // to sign in mid-checkout is how a blip loses the sale (persona issue 086).
+  const repeatNeedsSignIn = repeating.length > 0 && status === 'anonymous';
+
   // Fill in what we already know about a signed-in shopper. Only into empty
   // fields: this must never overwrite something they have started typing.
   useEffect(() => {
@@ -124,17 +154,47 @@ export function CheckoutFlow({
 
   // Open the session as soon as there is a cart, so the fulfilment question
   // below can be asked before the first form is drawn.
+  //
+  // When the shop cannot be reached to open it, every step below waits on a
+  // session that never comes, so this asks again by itself on a backing-off
+  // timer and says so, rather than stopping at an error with no way forward
+  // (persona issue 086). `openMisses` counts the unanswered tries.
   const opening = useRef(false);
+  const [openMisses, setOpenMisses] = useState(0);
+  const refreshCart = cart.refresh;
   useEffect(() => {
-    if (!cart.cartId || session || opening.current) return;
-    opening.current = true;
-    startCheckout(tenantSlug, cart.cartId)
-      .then(setSession)
-      .catch((err: unknown) => {
-        opening.current = false;
-        setError((err as Error).message);
-      });
-  }, [cart.cartId, session, tenantSlug]);
+    const cartId = cart.cartId;
+    if (!cartId || session || opening.current) return;
+    const open = () => {
+      opening.current = true;
+      startCheckout(tenantSlug, cartId)
+        .then((opened) => {
+          setOpenMisses(0);
+          setSession(opened);
+        })
+        .catch((err: unknown) => {
+          opening.current = false;
+          if (isCheckoutUnreachable(err)) {
+            setOpenMisses((n) => n + 1);
+            return;
+          }
+          // This basket was already bought, in another tab or on another
+          // device. Reading it again makes the cart forget it, and the page
+          // shows an empty basket rather than an error (sparx persona issue 087).
+          if (isBoughtCartError(err)) {
+            void refreshCart();
+            return;
+          }
+          setError((err as Error).message);
+        });
+    };
+    if (openMisses === 0) {
+      open();
+      return;
+    }
+    const timer = window.setTimeout(open, retryDelayMs(openMisses - 1));
+    return () => window.clearTimeout(timer);
+  }, [cart.cartId, refreshCart, session, tenantSlug, openMisses]);
 
   // Does this shop deliver? Asked with no destination, because the honest
   // answer does not depend on one — see the shipping-quote route.
@@ -283,10 +343,13 @@ export function CheckoutFlow({
     }
   }
 
-  function handlePaid(order: { orderId: string; orderNumber: string }) {
+  function handlePaid(order: PlacedOrderResult) {
     setPlaced({
       orderId: order.orderId,
       orderNumber: order.orderNumber,
+      held: order.held,
+      approval: order.approval,
+      card: order.card,
       lines: cart.lines,
       totals: session?.totals ?? cart.totals,
       currency: session?.currency ?? cart.currency,
@@ -297,13 +360,27 @@ export function CheckoutFlow({
     cart.reset();
   }
 
+  // The basket could not be read yet. Not "your cart is empty": the cart
+  // provider keeps it and asks again by itself (persona issue 086).
+  if (cart.unreachable && !cart.known && step !== 'done') {
+    return (
+      <Alert color="warning" role="status" aria-live="polite">
+        {CART_UNREACHABLE_MESSAGE}
+      </Alert>
+    );
+  }
   if (cartEmpty && step !== 'done') return <EmptyCart />;
+  if (repeatNeedsSignIn && step !== 'done') return <RepeatNeedsSignIn lines={repeating} />;
 
   if (step === 'done' && placed) {
     return (
       <Confirmation
         orderId={placed.orderId}
         orderNumber={placed.orderNumber}
+        held={placed.held}
+        approval={placed.approval}
+        card={placed.card}
+        shopName={shopName}
         paymentMode={session?.paymentMode ?? shopPaymentMode}
         collecting={collectedOrder.current}
         {...(session?.madeToOrder ? { madeToOrder: session.madeToOrder } : {})}
@@ -322,7 +399,36 @@ export function CheckoutFlow({
       <div>
         <StepIndicator step={step} collectionOnly={collectionOnly} />
 
-        {error ? <Alert color="danger">{error}</Alert> : null}
+        {/* A trade account's rules on this basket (sparx persona issue 086): the
+            shortfall under its minimum order, a line off its case pack, or a role
+            that cannot order. Said before any step, because the server refuses to
+            take a payment for this basket until it is put right in the cart. */}
+        {checkoutBlock(cart.accountRules) ? (
+          <Alert color={cart.accountRules?.canOrder === false ? 'info' : 'warning'}>
+            {checkoutBlock(cart.accountRules)}
+            {cart.accountRules?.canOrder === false ? null : (
+              <>
+                {' '}
+                Change it in{' '}
+                <a href="/cart" className="underline">
+                  your cart
+                </a>
+                .
+              </>
+            )}
+          </Alert>
+        ) : null}
+        {error && error !== checkoutBlock(cart.accountRules) ? (
+          <Alert color="danger">{error}</Alert>
+        ) : null}
+        {openMisses > 0 && !session ? (
+          <Alert color="warning" role="status" aria-live="polite">
+            {CHECKOUT_UNREACHABLE_MESSAGE}
+          </Alert>
+        ) : null}
+
+        {repeating.length > 0 && collectionOnly ? <RepeatNeedsDelivery lines={repeating} /> : null}
+        {repeating.length > 0 && step === 'payment' ? <RepeatTerms lines={repeating} /> : null}
 
         {step === 'contact' ? (
           <ContactStep
@@ -382,6 +488,8 @@ export function CheckoutFlow({
             tenantSlug={tenantSlug}
             session={session}
             collecting={collectedOrder.current}
+            shopName={shopName}
+            accountName={cart.accountRules?.accountName ?? null}
             onBack={() => setStep('shipping')}
             onPaid={handlePaid}
             createIntent={() =>
@@ -414,6 +522,10 @@ export function CheckoutFlow({
           paymentMode={session?.paymentMode ?? shopPaymentMode}
           shippingSettled={settled}
           pendingShippingCents={chosenRate ? chosenRate.amountCents : null}
+          // Pay the core deposit or send the old part first (issue 057), while the
+          // summary still follows the basket. Once the payment step holds the
+          // total, a switch would change what the card is about to be charged.
+          {...(settled ? {} : { onCoreFirst: cart.setCoreFirst })}
         />
       </aside>
     </div>

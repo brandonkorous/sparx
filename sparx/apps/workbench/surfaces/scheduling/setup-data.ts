@@ -45,6 +45,8 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { formatCentsAmount } from '../../lib/money-format';
+import { oneLineAddress } from '../../lib/address-format';
+import { runCopy } from './hours-copy';
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
@@ -571,9 +573,7 @@ export function useDeleteLocation(id: string) {
 
 /** One line of address, in reading order, for a list row. */
 export function formatAddress(address: LocationAddress): string {
-  return [address.line1, address.line2, address.city, address.region, address.postalCode]
-    .filter((part) => part && part.trim() !== '')
-    .join(', ');
+  return oneLineAddress(address);
 }
 
 /** A short, familiar set of zones — the same list the resource form offers, so a
@@ -742,14 +742,18 @@ export function useExceptions() {
 
 export interface ExceptionInput {
   resourceId?: string | null;
+  locationId?: string | null;
   /** `closed` = shut all day; `custom_hours` = open, but with special hours (the
-   *  hours ride in `meta` as minutes-from-midnight). */
-  kind: 'closed' | 'custom_hours';
+   *  hours ride in `meta` as minutes-from-midnight). The screen only ever adds
+   *  those two; the other kinds arrive here when "Use these hours for…" copies a
+   *  closure someone set elsewhere, and are copied exactly as they are. */
+  kind: AvailabilityException['kind'];
   startAt: string;
   endAt: string;
   reason?: string | null;
-  /** For `custom_hours`: the special open/close, local minutes from midnight. */
-  meta?: { startMinute: number; endMinute: number };
+  /** For `custom_hours`: `{ startMinute, endMinute }`, local minutes from
+   *  midnight. Copied whole for any other kind. */
+  meta?: Record<string, unknown>;
 }
 
 /** Read the special open/close out of a `custom_hours` exception's meta, or null
@@ -781,6 +785,45 @@ export function useCreateException() {
       api.post<AvailabilityException>('/v1/scheduling/exceptions', input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: availabilityKeys.exceptions(null) });
+    },
+  });
+}
+
+/**
+ * Copy one resource's SAVED week onto others, with its closures if asked.
+ *
+ * One write per target through the same endpoint Save uses; `runCopy` explains
+ * why that, and not a bulk endpoint. Every target's cached week is refreshed
+ * afterward, the failed ones included, because a write that timed out may still
+ * have landed.
+ */
+export function useCopyHours() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (plan: {
+      windows: AvailabilityWindowInput[];
+      targets: { id: string; name: string }[];
+      closures: AvailabilityException[];
+      existing: AvailabilityException[];
+    }) =>
+      runCopy({
+        targets: plan.targets,
+        closures: plan.closures,
+        existing: plan.existing,
+        writeHours: (id) =>
+          api.put<AvailabilityWindow[]>(`/v1/scheduling/resources/${id}/availability`, {
+            windows: plan.windows,
+          }),
+        addClosure: (input) => api.post<AvailabilityException>('/v1/scheduling/exceptions', input),
+        errorText: (error) => schedulingErrorMessage(error, 'Nothing was changed.'),
+      }),
+    onSettled: (_results, _error, plan) => {
+      for (const target of plan.targets) {
+        void queryClient.invalidateQueries({ queryKey: availabilityKeys.windows(target.id) });
+      }
+      if (plan.closures.length > 0) {
+        void queryClient.invalidateQueries({ queryKey: availabilityKeys.exceptions(null) });
+      }
     },
   });
 }

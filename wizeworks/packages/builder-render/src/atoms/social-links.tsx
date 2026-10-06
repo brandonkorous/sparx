@@ -99,6 +99,17 @@ const ALIAS: Record<string, string> = {
 const NAMES: Record<string, string> = {
   whatsapp: 'WhatsApp',
   bluesky: 'Bluesky',
+  // The networks WITH a glyph need their names too: this is also every icon's
+  // spoken label, so a screen reader read "facebook", "linkedin" and "x" off a
+  // live footer (sparx persona issue 039).
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  x: 'X',
+  tiktok: 'TikTok',
+  youtube: 'YouTube',
+  linkedin: 'LinkedIn',
+  pinterest: 'Pinterest',
+  threads: 'Threads',
 };
 
 /** The name a platform normalizes to — lower-case, no punctuation. */

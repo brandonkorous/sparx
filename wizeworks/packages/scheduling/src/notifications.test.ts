@@ -7,6 +7,7 @@ import {
   dropPendingBookingNotifications,
   rescheduleBookingNotifications,
   scheduleBookingNotifications,
+  smsNoticeStatus,
 } from './notifications';
 
 type Row = Record<string, unknown>;
@@ -15,6 +16,8 @@ interface FakeTxOpts {
   customer?: { email: string | null; phone: string | null } | null;
   reminderOffsetsMin?: number[];
   confirmationCount?: number;
+  /** The business's texting switch: on, off, or never set up (no row). */
+  texting?: 'on' | 'off' | 'never';
 }
 
 /** A hand-rolled TxClient stub that records the writes the ledger functions make,
@@ -32,6 +35,12 @@ function makeTx(opts: FakeTxOpts): {
     },
     bookingPolicy: {
       findUnique: () => Promise.resolve({ reminderOffsetsMin: opts.reminderOffsetsMin ?? [] }),
+    },
+    smsSettings: {
+      findUnique: () =>
+        Promise.resolve(
+          opts.texting === 'never' ? null : { enabled: (opts.texting ?? 'on') === 'on' }
+        ),
     },
     bookingNotification: {
       count: () => Promise.resolve(opts.confirmationCount ?? 0),
@@ -112,6 +121,60 @@ describe('scheduleBookingNotifications', () => {
     });
     await scheduleBookingNotifications(tx, 't1', booking, NOW);
     expect(created.filter((r) => r.type === 'confirmation')).toHaveLength(0);
+  });
+});
+
+// sparx persona issue 086: Gillett never switched texting on, and every booking
+// still queued a text, which the send side then recorded as "failed". A text the
+// shop never turned on is not a failure, and it is not a promise either.
+describe('texting the shop has not switched on', () => {
+  const reachable = { email: 'a@b.com', phone: '+15555550123' };
+
+  it('queues no text when texting is switched off, and still sends the email', async () => {
+    const { tx, created } = makeTx({
+      customer: reachable,
+      texting: 'off',
+      reminderOffsetsMin: [60],
+    });
+    await scheduleBookingNotifications(tx, 't1', booking, NOW);
+    expect(created.filter((r) => r.channel === 'sms')).toHaveLength(0);
+    expect(created.filter((r) => r.channel === 'email')).toHaveLength(2);
+  });
+
+  it('queues no text when texting was never set up', async () => {
+    const { tx, created } = makeTx({ customer: reachable, texting: 'never' });
+    await scheduleBookingNotifications(tx, 't1', booking, NOW);
+    expect(created.filter((r) => r.channel === 'sms')).toHaveLength(0);
+  });
+
+  it('queues no text for a move or a cancellation either', async () => {
+    const moved = makeTx({ customer: reachable, texting: 'off' });
+    await rescheduleBookingNotifications(moved.tx, 't1', booking, NOW);
+    expect(moved.created.filter((r) => r.channel === 'sms')).toHaveLength(0);
+    const cancelled = makeTx({ customer: reachable, texting: 'off' });
+    await cancelBookingNotifications(cancelled.tx, 't1', booking, NOW);
+    expect(cancelled.created.filter((r) => r.channel === 'sms')).toHaveLength(0);
+  });
+});
+
+describe('what a text that did not go out is recorded as', () => {
+  it('only a real attempt that went wrong is a failure', () => {
+    expect(smsNoticeStatus('sent')).toBe('sent');
+    expect(smsNoticeStatus('failed')).toBe('failed');
+    expect(smsNoticeStatus('capped')).toBe('failed');
+  });
+
+  it('texting switched off is "not set up", never a failure', () => {
+    expect(smsNoticeStatus('disabled')).toBe('not_set_up');
+  });
+
+  it('a number that said STOP, or never agreed, is "opted out"', () => {
+    expect(smsNoticeStatus('suppressed')).toBe('opted_out');
+    expect(smsNoticeStatus('no_consent')).toBe('opted_out');
+  });
+
+  it('a number nobody can text is "no address"', () => {
+    expect(smsNoticeStatus('invalid')).toBe('no_address');
   });
 });
 

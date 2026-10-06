@@ -114,7 +114,11 @@ export function resolveDeepLink(
   const allowed: DeepLinkTarget[] = [];
   for (const target of link.targets) {
     if (!getSurface(target.surface)) {
-      return { kind: 'unresolved', reason: 'unknown-path', detail: target.surface };
+      // The address matched a route whose screen this console does not have.
+      // Say the ADDRESS back, as the no-route case does: the screen's key
+      // ("partner.bootcamp.detail") is the code's name for it, and the pane
+      // printed it at a business owner as if she had typed it.
+      return { kind: 'unresolved', reason: 'unknown-path', detail: link.href.split('?')[0] ?? '' };
     }
     const verdict = gateSurface(target.surface, modules);
     // Decide nothing yet rather than deciding wrongly. `nothing` is what this

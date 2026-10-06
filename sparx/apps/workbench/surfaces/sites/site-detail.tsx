@@ -29,7 +29,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Save, Star, Trash2 } from 'lucide-react';
 import { useWorkbench } from '../../lib/workbench/context';
-import { useActiveSiteId, useModuleStates, switchSite } from '../../lib/api/shell-data';
+import { useActivePropertyId, useModuleStates, switchSite } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -209,7 +209,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { controller } = useWorkbench();
   const { data: site, isError, error, isPending, refetch } = useSite(id);
   const { data: modules } = useModuleStates();
-  const { data: activeSite } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const { data: domains } = useDomains();
   const update = useUpdateSite(id);
   const makePrimary = useMakePrimary(id);
@@ -272,7 +272,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  const isActive = site.id === (activeSite?.propertyId ?? null);
+  const isActive = site.id === (currentSiteId ?? null);
 
   /** `moduleScope` stores what is switched OFF, so the switch state is its
    *  inverse. Writing the array back is full-replace, not a merge. */
@@ -308,7 +308,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       });
       if (!ok) return;
     }
-    await switchSite(controller, activeSite?.propertyId ?? 'default', site.id);
+    await switchSite(controller, currentSiteId ?? 'default', site.id);
   };
 
   const onDelete = async () => {

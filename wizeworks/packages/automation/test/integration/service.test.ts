@@ -23,7 +23,7 @@ import {
   upsertSystemAutomation,
   type ServiceCtx,
 } from '../../src/service/automation-service';
-import { createTenant, dropTenant } from '../helpers';
+import { createTenant, dropTenant, ownerDb } from '../helpers';
 
 /** Read a field off the staged draft JSON blob (typed loosely on the Prisma row). */
 function draftField<T = string>(draft: unknown, key: string): T {
@@ -105,6 +105,7 @@ describe('automation service — CRUD', () => {
     const ctx = await tenant();
     await createAutomation(ctx, { name: 'u', trigger: eventTrigger, actions: oneAction });
     await upsertSystemAutomation(ctx, {
+      key: 'test.sys',
       name: 'sys',
       trigger: eventTrigger,
       conditions: { logic: 'AND', conditions: [] },
@@ -122,6 +123,7 @@ describe('automation service — locked tier (§3.1)', () => {
   it('a locked system automation rejects edit / status / delete', async () => {
     const ctx = await tenant();
     const sys = await upsertSystemAutomation(ctx, {
+      key: 'test.locked-dunning',
       name: 'locked dunning',
       trigger: eventTrigger,
       conditions: { logic: 'AND', conditions: [] },
@@ -142,6 +144,7 @@ describe('automation service — locked tier (§3.1)', () => {
   it('a tenant can clone a locked automation into an editable copy', async () => {
     const ctx = await tenant();
     const sys = await upsertSystemAutomation(ctx, {
+      key: 'test.locked',
       name: 'locked',
       trigger: eventTrigger,
       conditions: { logic: 'AND', conditions: [] },
@@ -157,6 +160,7 @@ describe('automation service — locked tier (§3.1)', () => {
   it('system seeding is idempotent (updates in place, no duplicate)', async () => {
     const ctx = await tenant();
     const spec = {
+      key: 'test.seeded',
       name: 'seeded',
       trigger: eventTrigger,
       conditions: { logic: 'AND' as const, conditions: [] },
@@ -166,7 +170,9 @@ describe('automation service — locked tier (§3.1)', () => {
     const first = await upsertSystemAutomation(ctx, spec);
     const second = await upsertSystemAutomation(ctx, { ...spec, status: 'paused' });
     expect(second.id).toBe(first.id);
-    expect(second.status).toBe('paused');
+    // A spec's status is where a NEW install starts. It is never written onto a
+    // row that exists: pausing or resuming one is the business's call.
+    expect(second.status).toBe('active');
     expect(second.version).toBe(1); // re-seed doesn't bump the version
     const all = await listAutomations(ctx, { origin: 'system' });
     expect(all).toHaveLength(1);
@@ -244,6 +250,7 @@ describe('automation service — versioning (Slice G-versioning)', () => {
   it('a locked automation rejects publish / discard / restore', async () => {
     const ctx = await tenant();
     const sys = await upsertSystemAutomation(ctx, {
+      key: 'test.locked-v',
       name: 'locked v',
       trigger: eventTrigger,
       conditions: { logic: 'AND', conditions: [] },
@@ -272,13 +279,26 @@ describe('automation service — versioning (Slice G-versioning)', () => {
   });
 });
 
-describe('automation service: a renamed system seed', () => {
-  // The seed is matched on (origin, name), so the display name IS the identity.
-  // Reword the name and the lookup misses: a second row is created, the first
-  // stays active, and the tenant now holds two copies of one rule. These are
-  // mostly email rules, and the reconcile pass runs daily over every tenant, so
-  // the failure mode is every customer receiving the same message twice.
+/** Make a row look like one installed before `system_key` and the seeded
+ *  fingerprint existed: the state every production row is in when this ships. */
+async function asInstalledBeforeKeys(id: string): Promise<void> {
+  await ownerDb.automation.update({
+    where: { id },
+    data: { systemKey: null, seededFingerprint: null },
+  });
+}
+
+async function systemRows(ctx: ServiceCtx) {
+  return listAutomations(ctx, { origin: 'system' });
+}
+
+describe('automation service: a seed the platform renamed', () => {
+  // Rows installed before `system_key` existed can only be found by name, and a
+  // platform reword of the name used to miss them: a second row was created, the
+  // first stayed active, and the tenant held two copies of one rule. `previousNames`
+  // is how such a row is still found, and once found it is keyed for good.
   const seed = (name: string, previousNames?: readonly string[]) => ({
+    key: 'test.renamed-seed',
     name,
     ...(previousNames ? { previousNames } : {}),
     trigger: eventTrigger,
@@ -286,30 +306,33 @@ describe('automation service: a renamed system seed', () => {
     actions: oneAction,
   });
 
-  it('adopts and renames the existing row instead of adding a second one', async () => {
+  it('adopts, keys and renames the existing row instead of adding a second one', async () => {
     const ctx = await tenant();
     const before = await upsertSystemAutomation(ctx, seed('Order delivered — email'));
+    await asInstalledBeforeKeys(before.id);
 
     await upsertSystemAutomation(ctx, seed('Order delivered: email', ['Order delivered — email']));
 
-    const rows = await listAutomations(ctx, { origin: 'system' });
-    // Remove `previousNames` from the seed above and this is 2, not 1 — which is
-    // the whole defect, stated as a number.
+    const rows = await systemRows(ctx);
+    // Remove `previousNames` from the seed above and this is 2, not 1.
     expect(rows).toHaveLength(1);
     expect(rows[0]!.id).toBe(before.id);
     expect(rows[0]!.name).toBe('Order delivered: email');
+    expect(rows[0]!.systemKey).toBe('test.renamed-seed');
   });
 
-  it('matches the current name first, so a re-run after the rename is a no-op', async () => {
+  it('matches by key once keyed, so a re-run after the rename is a no-op', async () => {
     const ctx = await tenant();
     const spec = seed('Payment failed: email', ['Payment failed — email']);
     const first = await upsertSystemAutomation(ctx, spec);
-    await upsertSystemAutomation(ctx, spec);
+    const again = await upsertSystemAutomation(ctx, spec);
     await upsertSystemAutomation(ctx, spec);
 
-    const rows = await listAutomations(ctx, { origin: 'system' });
+    const rows = await systemRows(ctx);
     expect(rows).toHaveLength(1);
     expect(rows[0]!.id).toBe(first.id);
+    // Nothing differed, so nothing was written.
+    expect(again.updatedAt.getTime()).toBe(first.updatedAt.getTime());
   });
 
   it('leaves a tenant-authored rule of the same old name alone', async () => {
@@ -328,6 +351,203 @@ describe('automation service: a renamed system seed', () => {
     expect(user).toHaveLength(1);
     expect(user[0]!.id).toBe(mine.id);
     expect(user[0]!.name).toBe('Order delivered — email');
-    expect(await listAutomations(ctx, { origin: 'system' })).toHaveLength(1);
+    expect(user[0]!.systemKey).toBeNull();
+    expect(await systemRows(ctx)).toHaveLength(1);
+  });
+});
+
+describe('automation service: a re-sync keeps what the business chose', () => {
+  // The re-sync runs on module activation, every day, and at release. It used to
+  // write the stock rule over the tenant's copy every time: an edit was put back,
+  // a paused rule was switched on, and a renamed one was missed and duplicated.
+  const welcome = {
+    key: 'test.welcome',
+    name: 'Welcome new customers',
+    description: 'Send a welcome email',
+    trigger: { kind: 'event', eventType: 'customer.created' } as Trigger,
+    conditions: { logic: 'AND' as const, conditions: [] },
+    actions: oneAction,
+    status: 'active' as const,
+  };
+  // The platform's next version of the same seed: a new condition, the way
+  // today's fixes reach a seed.
+  const welcomeV2 = {
+    ...welcome,
+    conditions: {
+      logic: 'AND' as const,
+      conditions: [{ field: 'customer.accepts_marketing', operator: 'eq' as const, value: true }],
+    },
+  };
+
+  it('an untouched copy takes the platform version', async () => {
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    const v2 = await upsertSystemAutomation(ctx, welcomeV2);
+
+    expect(v2.id).toBe(v1.id);
+    expect(v2.conditions).toEqual(welcomeV2.conditions);
+    expect(v2.seededFingerprint).not.toBe(v1.seededFingerprint);
+    expect(v2.platformUpdateAt).toBeNull();
+    expect(v2.version).toBe(1);
+  });
+
+  it('an edited copy keeps the edit and records that a newer version exists', async () => {
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    await updateAutomation(ctx, v1.id, { description: 'Our own hello' });
+    await publishAutomation(ctx, v1.id);
+
+    const after = await upsertSystemAutomation(ctx, welcomeV2);
+    expect(after.description).toBe('Our own hello');
+    expect(after.conditions).toEqual(welcome.conditions);
+    expect(after.seededFingerprint).toBe(v1.seededFingerprint);
+    expect(after.platformUpdateAt).toBeInstanceOf(Date);
+
+    // The next pass keeps the time it was first held back.
+    const later = await upsertSystemAutomation(ctx, welcomeV2);
+    expect(later.platformUpdateAt?.getTime()).toBe(after.platformUpdateAt?.getTime());
+    expect(later.description).toBe('Our own hello');
+  });
+
+  it('an edited copy is not flagged while the platform version has not changed', async () => {
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    await updateAutomation(ctx, v1.id, { description: 'Our own hello' });
+    await publishAutomation(ctx, v1.id);
+
+    const after = await upsertSystemAutomation(ctx, welcome);
+    expect(after.description).toBe('Our own hello');
+    expect(after.platformUpdateAt).toBeNull();
+  });
+
+  it('a paused copy stays paused, and still takes the platform fix', async () => {
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    await setAutomationStatus(ctx, v1.id, 'paused');
+
+    const after = await upsertSystemAutomation(ctx, welcomeV2);
+    expect(after.status).toBe('paused');
+    expect(after.conditions).toEqual(welcomeV2.conditions);
+  });
+
+  it('a renamed copy keeps its name, takes the platform fix, and is never duplicated', async () => {
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    await updateAutomation(ctx, v1.id, { name: 'Say hi to new people' });
+    await publishAutomation(ctx, v1.id);
+
+    const after = await upsertSystemAutomation(ctx, welcomeV2);
+    expect(after.id).toBe(v1.id);
+    expect(after.name).toBe('Say hi to new people');
+    expect(after.conditions).toEqual(welcomeV2.conditions);
+    expect(await systemRows(ctx)).toHaveLength(1);
+  });
+
+  it('a renamed copy may take the name another seed uses, and that seed still installs', async () => {
+    // Once a row is keyed its name is a label. Holding names unique would make
+    // the other seed's install fail for this tenant forever.
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    await updateAutomation(ctx, v1.id, { name: 'Tag VIP customers' });
+    await publishAutomation(ctx, v1.id);
+
+    const other = await upsertSystemAutomation(ctx, {
+      ...welcome,
+      key: 'test.tag-vip',
+      name: 'Tag VIP customers',
+    });
+    expect(other.id).not.toBe(v1.id);
+    expect(await systemRows(ctx)).toHaveLength(2);
+  });
+
+  it('a duplicate-to-edit copy is the business’s own rule and is never adopted', async () => {
+    const ctx = await tenant();
+    const v1 = await upsertSystemAutomation(ctx, welcome);
+    const copy = await cloneAutomation(ctx, v1.id, { name: welcome.name });
+    expect(copy.systemKey).toBeNull();
+
+    await upsertSystemAutomation(ctx, welcomeV2);
+    const mine = await listAutomations(ctx, { origin: 'user' });
+    expect(mine).toHaveLength(1);
+    expect(mine[0]!.conditions).toEqual(welcome.conditions);
+  });
+
+  it('a locked seed always takes the platform version, status included', async () => {
+    const ctx = await tenant();
+    const locked = { ...welcome, key: 'test.locked-resync', locked: true };
+    const v1 = await upsertSystemAutomation(ctx, locked);
+    // The business cannot change a locked rule, so stand in for drift directly.
+    await ownerDb.automation.update({
+      where: { id: v1.id },
+      data: { description: 'drifted', status: 'paused' },
+    });
+
+    const after = await upsertSystemAutomation(ctx, {
+      ...locked,
+      conditions: welcomeV2.conditions,
+    });
+    expect(after.description).toBe(welcome.description);
+    expect(after.conditions).toEqual(welcomeV2.conditions);
+    expect(after.status).toBe('active');
+  });
+
+  it('overlapping first installs leave exactly one row, and none of them fails', async () => {
+    // The lookup is check-then-insert. `automations_system_key_key` refuses the
+    // loser's INSERT, and the loser re-reads the winner's row inside a savepoint
+    // (an error in a Postgres transaction otherwise aborts the rest of it).
+    const ctx = await tenant();
+    const runs = await Promise.all(
+      Array.from({ length: 8 }, () => upsertSystemAutomation(ctx, welcome))
+    );
+    expect(new Set(runs.map((r) => r.id)).size).toBe(1);
+    expect(await systemRows(ctx)).toHaveLength(1);
+  });
+
+  describe('a row installed before keys and fingerprints', () => {
+    it('never published by the business: takes the platform version and is keyed', async () => {
+      const ctx = await tenant();
+      const v1 = await upsertSystemAutomation(ctx, welcome);
+      await setAutomationStatus(ctx, v1.id, 'paused');
+      await asInstalledBeforeKeys(v1.id);
+
+      const after = await upsertSystemAutomation(ctx, welcomeV2);
+      expect(after.id).toBe(v1.id);
+      expect(after.systemKey).toBe(welcome.key);
+      expect(after.conditions).toEqual(welcomeV2.conditions);
+      expect(after.status).toBe('paused');
+      expect(after.seededFingerprint).toMatch(/^[0-9a-f]{64}$/);
+    });
+
+    it('their published edit is what runs: kept, keyed and flagged', async () => {
+      const ctx = await tenant();
+      const v1 = await upsertSystemAutomation(ctx, welcome);
+      await updateAutomation(ctx, v1.id, { description: 'Our own hello' });
+      await publishAutomation(ctx, v1.id);
+      await asInstalledBeforeKeys(v1.id);
+
+      const after = await upsertSystemAutomation(ctx, welcomeV2);
+      expect(after.systemKey).toBe(welcome.key);
+      expect(after.description).toBe('Our own hello');
+      expect(after.conditions).toEqual(welcome.conditions);
+      expect(after.platformUpdateAt).toBeInstanceOf(Date);
+      expect(after.seededFingerprint).toBeNull();
+    });
+
+    it('a re-sync already put the stock rule back over their edit: treated as untouched', async () => {
+      const ctx = await tenant();
+      const v1 = await upsertSystemAutomation(ctx, welcome);
+      await updateAutomation(ctx, v1.id, { description: 'Our own hello' });
+      await publishAutomation(ctx, v1.id);
+      // What the old re-sync did the next day: the stock document, version untouched.
+      await ownerDb.automation.update({
+        where: { id: v1.id },
+        data: { description: welcome.description },
+      });
+      await asInstalledBeforeKeys(v1.id);
+
+      const after = await upsertSystemAutomation(ctx, welcomeV2);
+      expect(after.conditions).toEqual(welcomeV2.conditions);
+      expect(after.platformUpdateAt).toBeNull();
+    });
   });
 });

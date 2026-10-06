@@ -1,6 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getSession } from '@wizeworks/auth';
+import { ACTIVE_PROPERTY_COOKIE, readActiveSite } from '../lib/active-site-cookie';
 import { COMPACT_COOKIE, guessCompact } from '../lib/compact';
 import { WorkbenchShell } from '../components/workbench-shell';
 
@@ -43,7 +44,10 @@ export async function WorkbenchEntry({ address }: { address: string }) {
   // the dock and toolbar mount on the first paint instead of after a token
   // round trip, for everyone who has picked a site before (the common case).
   const cookieStore = await cookies();
-  const initialSiteKey = cookieStore.get('sparx_active_property')?.value ?? null;
+  const initialSiteKey = readActiveSite(
+    cookieStore.get(ACTIVE_PROPERTY_COOKIE)?.value,
+    session.user.tenantId
+  );
 
   // Which presentation this device gets, answered HERE so the markup that ships
   // is already the right one. Guessing desktop and correcting after hydration is

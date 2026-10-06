@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Button, Heading, Text } from '@wizeworks/silicaui-react';
 import { faArrowUpRightFromSquare, faGlobe } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { industryOf, type StoryState } from '@wizeworks/story-schemas';
+import { storySubject, type StoryState } from '@wizeworks/story-schemas';
 import { storefrontPreviewUrl, type OnboardingActions } from '../../../lib/onboarding/api';
 import { handleSlug } from '../../../lib/onboarding/story-state';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
@@ -22,8 +22,7 @@ import { PRODUCT } from '@piggles/config';
 const SITE_ZONE = PRODUCT.tenantSites.suffix;
 
 function subjectNoun(story: StoryState): string {
-  const noun = story.industry ? industryOf(story.industry).noun : 'a business';
-  return noun.replace(/^an? /, '');
+  return storySubject(story);
 }
 
 /** A plain-language recap of what the starting point already dropped into the site. */

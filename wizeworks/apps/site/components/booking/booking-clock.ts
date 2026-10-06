@@ -42,6 +42,26 @@ export function formatShortDateTime(iso: string, tz: string | null): string {
   }).format(new Date(iso));
 }
 
+/**
+ * The day and the time together, "Sat, Oct 3 at 9:00 AM", on the business's
+ * clock. For anything a person is about to AGREE to: a time alone does not say
+ * which day, and the day picker it came from may have scrolled out of view
+ * (sparx persona issue 086).
+ */
+export function formatDayAndTime(iso: string, tz: string | null): string {
+  const day = inZone(tz, { weekday: 'short', month: 'short', day: 'numeric' }).format(
+    new Date(iso)
+  );
+  return `${day} at ${formatTime(iso, tz)}`;
+}
+
+/** The words on a booking's submit button: "Book Sat, Oct 3 at 9:00 AM", with the
+ *  zone's short name only when the reader's own clock would say something else. */
+export function bookButtonLabel(iso: string, tz: string | null): string {
+  const when = formatDayAndTime(iso, tz);
+  return tz && !readsTheSame(iso, tz) ? `Book ${when} ${zoneName(iso, tz)}` : `Book ${when}`;
+}
+
 /** The zone's short name for a given day — "PDT", "GMT+1". Daylight saving moves
  *  it, so it is read off the date in hand rather than stored. */
 export function zoneName(iso: string, tz: string): string {

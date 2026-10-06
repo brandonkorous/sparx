@@ -109,7 +109,9 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
   });
 
   it('getDefaultEmailTemplate looks up by key', () => {
-    expect(getDefaultEmailTemplate('welcome-customer')?.type).toBe('transactional');
+    expect(getDefaultEmailTemplate('welcome-customer')?.type).toBe('marketing');
+    expect(getDefaultEmailTemplate('chat-satisfaction')?.type).toBe('marketing');
+    expect(getDefaultEmailTemplate('order-confirmation')?.type).toBe('transactional');
     expect(getDefaultEmailTemplate('abandoned-cart')?.type).toBe('marketing');
     expect(getDefaultEmailTemplate('nope')).toBeUndefined();
   });

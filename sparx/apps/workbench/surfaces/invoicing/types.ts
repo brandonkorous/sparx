@@ -41,6 +41,11 @@ export interface BillingDocumentLine {
   costCents?: number | null;
   /** Present on a line priced by cost + markup. */
   appliedMarkup?: LineMarkupSnapshotWire | null;
+  /** Refundable core deposit per unit on a rebuilt part (sparx issue 051). */
+  coreCharge?: number | string | null;
+  /** The line's free-form bag. Carries `priceNote`, the words saying where a
+   *  trade price came from (issue 077); read it through `priceNoteOf`. */
+  metadata?: Record<string, unknown> | null;
 }
 
 /**
@@ -143,6 +148,12 @@ export interface BillingDocument {
    * rows. Null means the bill is still sitting here.
    */
   sentAt?: string | null;
+  /** On a list row: a quote or estimate, a price offered rather than a bill
+   *  (sparx persona issue 085). */
+  priceOffer?: boolean;
+  /** On a list row: where it stands on its workflow, and that stage's type. */
+  stageName?: string;
+  stageType?: DocumentStage['stageType'];
   /**
    * Where a send would actually go, resolved server-side on the single-document
    * read: the frozen `billTo` address first, else the customer's own.
@@ -198,6 +209,8 @@ export interface BillingDocument {
    */
   overdueDays: number;
   workflowId: string;
+  /** The wholesale account this document bills, or null for none. */
+  companyId?: string | null;
   stageId: string;
   lines?: BillingDocumentLine[];
   /** Set once an accepted quote has been converted — the FK lives on Order, so

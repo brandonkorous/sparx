@@ -68,6 +68,10 @@ const EXEMPT = new Map([
     'wizeworks/packages/automation-actions/src/seeds/b2b.ts',
     'a seeded automation whose stored trigger condition is the literal slug — it is DATA in a row, not a decision in code',
   ],
+  [
+    'wizeworks/packages/automation-actions/src/seeds/invoicing.ts',
+    'the same: the generic "approved" task stores `workflowSlug neq b2b-quotes` as its condition, because accepting a wholesale quote places its order and there is no next step to do by hand (sparx persona issues 084, 085)',
+  ],
 ]);
 
 function die(lines) {

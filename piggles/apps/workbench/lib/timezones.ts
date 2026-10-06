@@ -17,6 +17,9 @@ export interface TimezoneOption {
   label: string;
   /** Minutes east of UTC, for ordering. */
   offsetMinutes: number;
+  /** A big city sharing another city's zone (CITY_ALIASES). Sorted after the real
+   *  entries, so finding an option by its stored zone returns the real one. */
+  alias?: true;
 }
 
 function partOf(zone: string, style: 'long' | 'longOffset', at: Date): string | undefined {
@@ -45,17 +48,82 @@ function cityOf(zone: string): string {
   return (zone.split('/').pop() ?? zone).replace(/_/g, ' ');
 }
 
-function describe(zone: string, at: Date): TimezoneOption | null {
+function describe(zone: string, at: Date, city = cityOf(zone)): TimezoneOption | null {
   const offset = partOf(zone, 'longOffset', at);
   if (offset === undefined) return null;
   const name = partOf(zone, 'long', at);
-  const city = cityOf(zone);
   // `name` is the seasonal name ("Mountain Daylight Time") — genuinely the most
   // recognisable part. When the runtime has none it falls back to the offset
   // alone rather than printing an empty gap.
   const label = name && name !== city ? `${city}, ${name} (${offset})` : `${city} (${offset})`;
   return { value: zone, label, offsetMinutes: offsetToMinutes(offset) };
 }
+
+/**
+ * Big cities that share a zone named after another city. The picker says "Search for
+ * your city", and the IANA list names one city per zone, so an owner in Salt Lake
+ * City, Dallas or Seattle typed their city and got "No time zone matches that city"
+ * (sparx persona issue 027). Each becomes its own item that saves the shared zone.
+ */
+const CITY_ALIASES: Readonly<Record<string, readonly string[]>> = {
+  'America/New_York': [
+    'Atlanta',
+    'Baltimore',
+    'Boston',
+    'Charlotte',
+    'Cleveland',
+    'Columbus',
+    'Jacksonville',
+    'Miami',
+    'Orlando',
+    'Philadelphia',
+    'Pittsburgh',
+    'Raleigh',
+    'Richmond',
+    'Tampa',
+    'Washington, DC',
+  ],
+  'America/Chicago': [
+    'Austin',
+    'Dallas',
+    'Fort Worth',
+    'Houston',
+    'Kansas City',
+    'Memphis',
+    'Milwaukee',
+    'Minneapolis',
+    'Nashville',
+    'New Orleans',
+    'Oklahoma City',
+    'Omaha',
+    'San Antonio',
+    'St. Louis',
+  ],
+  'America/Denver': [
+    'Albuquerque',
+    'Billings',
+    'Cheyenne',
+    'Colorado Springs',
+    'El Paso',
+    'Salt Lake City',
+  ],
+  'America/Phoenix': ['Mesa', 'Scottsdale', 'Tucson'],
+  'America/Los_Angeles': [
+    'Las Vegas',
+    'Oakland',
+    'Portland',
+    'Reno',
+    'Sacramento',
+    'San Diego',
+    'San Francisco',
+    'San Jose',
+    'Seattle',
+  ],
+  'America/Toronto': ['Ottawa', 'Quebec City'],
+  'America/Edmonton': ['Calgary'],
+  'America/Vancouver': ['Victoria'],
+  'Europe/London': ['Birmingham', 'Edinburgh', 'Glasgow', 'Manchester'],
+};
 
 /**
  * Every time zone this runtime can format, ordered west to east.
@@ -76,10 +144,21 @@ export function timezoneOptions(current?: string | null): TimezoneOption[] {
         // values preserved by the `current` branch below.
         [Intl.DateTimeFormat().resolvedOptions().timeZone];
 
-  const options = supported
-    .map((zone) => describe(zone, at))
+  const named = supported.map((zone) => describe(zone, at));
+  const aliased = supported.flatMap((zone) =>
+    (CITY_ALIASES[zone] ?? []).map((city) => {
+      const option = describe(zone, at, city);
+      return option ? { ...option, alias: true as const } : null;
+    })
+  );
+  const options = [...named, ...aliased]
     .filter((option): option is TimezoneOption => option !== null)
-    .sort((a, b) => a.offsetMinutes - b.offsetMinutes || a.label.localeCompare(b.label));
+    .sort(
+      (a, b) =>
+        a.offsetMinutes - b.offsetMinutes ||
+        Number(Boolean(a.alias)) - Number(Boolean(b.alias)) ||
+        a.label.localeCompare(b.label)
+    );
 
   if (current && !options.some((option) => option.value === current)) {
     options.push({ value: current, label: current, offsetMinutes: 0 });

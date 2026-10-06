@@ -55,6 +55,7 @@ import {
   Heading,
   Input,
   Select,
+  Switch,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -100,6 +101,10 @@ interface VariantDraft {
   price: number;
   compareAt: number | null;
   cost: number | null;
+  /** The refundable core deposit on a rebuilt part; null = no core. */
+  core: number | null;
+  /** Buyers may send the old part first instead of paying the deposit. */
+  coreFirst: boolean;
   weightGrams: number | null;
   lengthMm: number | null;
   widthMm: number | null;
@@ -117,6 +122,8 @@ function toDraft(variant: Variant): VariantDraft {
     price: variant.priceCents / 100,
     compareAt: variant.compareAtPriceCents === null ? null : variant.compareAtPriceCents / 100,
     cost: variant.costCents === null ? null : variant.costCents / 100,
+    core: variant.coreChargeCents === null ? null : variant.coreChargeCents / 100,
+    coreFirst: variant.coreFirstOffered,
     weightGrams: variant.weightGrams,
     lengthMm: variant.lengthMm,
     widthMm: variant.widthMm,
@@ -131,6 +138,10 @@ function cents(value: number): number {
   return Math.round(value * 100);
 }
 
+function offersCoreFirst(draft: VariantDraft): boolean {
+  return draft.coreFirst && draft.core !== null && cents(draft.core) > 0;
+}
+
 /** Only what moved. Sending the whole row back would rewrite fields nobody
  *  touched, and on a nullable column `undefined` and `null` are the difference
  *  between "leave it alone" and "clear it". */
@@ -142,6 +153,17 @@ function buildPatch(draft: VariantDraft, saved: VariantDraft): VariantPatch {
   }
   if (draft.cost !== saved.cost) {
     patch.costCents = draft.cost === null ? null : cents(draft.cost);
+  }
+  if (draft.core !== saved.core) {
+    // A deposit of nothing is no deposit: the server keeps one spelling of it.
+    patch.coreChargeCents =
+      draft.core === null || cents(draft.core) <= 0 ? null : cents(draft.core);
+  }
+  // The switch only means something beside a deposit. Clearing the deposit takes
+  // the offer with it (the server does the same), and the switch's own position is
+  // kept in the draft so typing the deposit back in brings it back.
+  if (offersCoreFirst(draft) !== offersCoreFirst(saved)) {
+    patch.coreFirstOffered = offersCoreFirst(draft);
   }
   if (draft.barcode.trim() !== saved.barcode.trim()) {
     patch.barcode = draft.barcode.trim() === '' ? null : draft.barcode.trim();
@@ -1147,6 +1169,12 @@ function VariantRow({
         )}
         <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
         <span className="tabular-nums">{formatCents(cents(draft.price), variant.currency)}</span>
+        {draft.core !== null && draft.core > 0 ? (
+          <span className="tabular-nums">
+            + {formatCents(cents(draft.core), variant.currency)} core
+            {offersCoreFirst(draft) ? ', or old part first' : ''}
+          </span>
+        ) : null}
         {variant.isDefault ? (
           <Badge color="info" variant="soft" size="sm">
             Shown first
@@ -1212,6 +1240,15 @@ function VariantRow({
               }}
             />
           </div>
+
+          <CoreDeposit
+            variant={variant}
+            label={label}
+            draft={draft}
+            onChange={(change) => {
+              onChange(variant.id, change);
+            }}
+          />
 
           <div className="flex flex-col gap-3 @md:flex-row">
             <Field className="min-w-0 flex-1">
@@ -1393,6 +1430,71 @@ function VariantRow({
             </div>
           </div>
         </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ── The core deposit, and the other way to buy a part that carries one ── */
+
+/**
+ * A rebuilt part is bought one of two ways (persona issue 057): pay the deposit
+ * and it ships now, or send the old part first and pay nothing, and it ships
+ * when the old one arrives. The second is only offered beside a deposit, so the
+ * switch appears once there is one. A part the supplier ships straight to the
+ * buyer cannot offer it: the old part would have to come here first. The server
+ * refuses that in these same words.
+ */
+function CoreDeposit({
+  variant,
+  label,
+  draft,
+  onChange,
+}: {
+  variant: Variant;
+  label: string;
+  draft: VariantDraft;
+  onChange: (change: Partial<VariantDraft>) => void;
+}) {
+  const hasDeposit = draft.core !== null && draft.core > 0;
+  const fromSupplier = variant.dropshipSourceId !== null;
+  return (
+    <div className="flex flex-col gap-3">
+      <OptionalMoney
+        label="Core deposit"
+        description="For a rebuilt part. Charged on top of the price, never taxed or discounted, and paid back when the customer returns their old part."
+        value={draft.core}
+        addLabel="Add a core deposit"
+        onChange={(next) => {
+          onChange({ core: next });
+        }}
+      />
+      {hasDeposit ? (
+        <Field>
+          <FieldLabel>Buyers can send their old part first instead</FieldLabel>
+          <FieldControl
+            render={
+              <Switch
+                color="module"
+                checked={draft.coreFirst && !fromSupplier}
+                disabled={fromSupplier}
+                aria-label={`Buyers of ${label} can send their old part first`}
+                onCheckedChange={(next: boolean) => {
+                  onChange({ coreFirst: next });
+                }}
+              />
+            }
+          />
+          <FieldDescription>
+            No deposit. The part is held until the old one arrives.
+          </FieldDescription>
+          {fromSupplier ? (
+            <FieldStatus status="warning">
+              Your supplier ships this part straight to the buyer, so the old part cannot come to
+              you first.
+            </FieldStatus>
+          ) : null}
+        </Field>
       ) : null}
     </div>
   );

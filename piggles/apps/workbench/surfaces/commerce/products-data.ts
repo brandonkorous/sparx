@@ -58,6 +58,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import type { RepeatCadence } from '@wizeworks/commerce-schemas';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 // The API origin, for the ONE request that cannot go through `api`: the media
@@ -118,6 +119,9 @@ export interface Product {
   vendor: string | null;
   tags: string[];
   fulfillmentType: string;
+  /** How often a shopper may ask for this again (issue 739). Empty = buy once.
+   *  Optional for an api-rest that predates it. */
+  repeatOptions?: RepeatCadence[];
   weightGrams: number | null;
   lengthMm: number | null;
   widthMm: number | null;
@@ -212,6 +216,10 @@ export interface Variant {
   priceCents: number;
   compareAtPriceCents: number | null;
   costCents: number | null;
+  /** Refundable core deposit per unit on a rebuilt part; null = no core. */
+  coreChargeCents: number | null;
+  /** Buyers may send the old part first instead of paying the deposit (057). */
+  coreFirstOffered: boolean;
   currency: string;
   weightGrams: number | null;
   lengthMm: number | null;
@@ -419,12 +427,16 @@ export interface ProductPriceListEntry {
 export interface MarkupRule {
   id: string;
   name: string;
-  /** How the price is derived — `percent`, `multiplier`, `fixed`, `bands`, … */
+  /** `percentage`, `multiplier`, `flat`, `margin_target` or `matrix` (issue 086). */
   method: string;
   /** The number `method` uses. Null for band-based rules, whose value varies. */
   value: number | null;
-  /** Which cost it marks up — `last_cost`, `avg_cost`, `supplier_cost`, … */
+  /** A `matrix` rule's cost ranges; only their count is read here. */
+  bands?: unknown[];
+  /** Which cost it marks up: `variant_cost` or `supplier_cost`. */
   costBasis: string;
+  /** `catalog`, `document` (quote and invoice lines only) or `both`. */
+  appliesTo: string;
   isActive: boolean;
   /** How many variants across the whole catalog are priced by this rule. */
   boundVariantCount: number;
@@ -557,6 +569,8 @@ export interface ProductQuery {
   status?: ProductStatus;
   /** Include retired products. The server hides them unless asked. */
   includeArchived?: boolean;
+  /** One kind of product, by its exact name ("Fuel System"). */
+  productType?: string;
   sortBy: ProductSortKey;
   order: SortDirection;
   take: number;
@@ -571,6 +585,7 @@ export function useProducts(query: ProductQuery) {
         ...(query.q ? { q: query.q } : {}),
         ...(query.status ? { status: query.status } : {}),
         ...(query.includeArchived ? { include_archived: true } : {}),
+        ...(query.productType ? { product_type: query.productType } : {}),
         sort_by: query.sortBy,
         order: query.order,
         take: query.take,
@@ -861,6 +876,23 @@ export function useProductFacets() {
   });
 }
 
+/** One kind of product this catalog uses, and how many products are that kind. */
+export interface ProductTypeInUse {
+  name: string;
+  count: number;
+}
+
+/** The kinds of product actually in use, for the list's filter. Not the facets:
+ *  those mix in a platform starter list, and a filter offering a kind nobody
+ *  has can only ever find nothing. */
+export function useProductTypesInUse() {
+  return useQuery({
+    queryKey: [...productKeys.all, 'types-in-use'] as const,
+    queryFn: () => api.get<ProductTypeInUse[]>('/v1/commerce/products/types'),
+    staleTime: 60_000,
+  });
+}
+
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
 /**
@@ -971,6 +1003,8 @@ export function useCreateProduct() {
 /** Everything the detail pane's tabs write to the product record itself.
  *  Partial: an omitted field is left alone by the server, and `null` clears one. */
 export interface ProductPatch {
+  /** Which schedules shoppers may choose (issue 739); [] = buy once only. */
+  repeatOptions?: RepeatCadence[];
   title?: string;
   handle?: string;
   description?: string | null;
@@ -1087,6 +1121,8 @@ export interface VariantPatch {
   priceCents?: number;
   compareAtPriceCents?: number | null;
   costCents?: number | null;
+  coreChargeCents?: number | null;
+  coreFirstOffered?: boolean;
   weight?: number | null;
   /** All three or none — the server rejects a partial set. `null` clears them.
    *  There is no way to remove ONE measurement and keep the others. */
@@ -2445,6 +2481,9 @@ export interface TradeAccountOverride {
   discountPercentage: number | null;
   minOrderQty: number | null;
   maxOrderQty: number | null;
+  /** The case pack: this business buys the version only in multiples of this
+   *  many. Null = any amount (sparx persona issue 086). */
+  orderMultiple: number | null;
   notes: string | null;
 }
 
@@ -2591,15 +2630,23 @@ export function useAddAccountOverride(productId: string) {
       variantId: string;
       priceCents?: number;
       discountPercentage?: number;
+      /** Buying rules (sparx persona issue 086). A row may carry these and no
+       *  price of its own, in which case the business keeps its usual price. */
+      minOrderQty?: number | null;
+      maxOrderQty?: number | null;
+      orderMultiple?: number | null;
     }) =>
       api.post(`/v1/b2b/accounts/${input.accountId}/overrides`, {
         variantId: input.variantId,
-        // The server enforces EXACTLY one of these two, so an undefined key must
-        // be absent rather than present-and-undefined.
+        // The server takes AT MOST one of these two, so an undefined key must be
+        // absent rather than present-and-undefined.
         ...(input.priceCents !== undefined ? { priceCents: input.priceCents } : {}),
         ...(input.discountPercentage !== undefined
           ? { discountPercentage: input.discountPercentage }
           : {}),
+        ...(input.minOrderQty != null ? { minOrderQty: input.minOrderQty } : {}),
+        ...(input.maxOrderQty != null ? { maxOrderQty: input.maxOrderQty } : {}),
+        ...(input.orderMultiple != null ? { orderMultiple: input.orderMultiple } : {}),
       }),
     onSuccess: () => {
       invalidate(productId, 'b2b-pricing');
@@ -2631,6 +2678,36 @@ export function useAddContractPrice(productId: string) {
         validFrom: input.validFrom,
         ...(input.validTo ? { validTo: input.validTo } : {}),
       }),
+    onSuccess: () => {
+      invalidate(productId, 'b2b-pricing');
+    },
+  });
+}
+
+/**
+ * Change one business's row on one version: its price, or its buying rules
+ * (sparx persona issue 086). There is one row per business and version, so a
+ * second price for the same pair is a change to this one, never a new row.
+ * `null` clears a value; a key left out is left alone.
+ */
+export function useUpdateAccountOverride(productId: string) {
+  const invalidate = useInvalidateProduct();
+  return useMutation({
+    mutationFn: (input: {
+      accountId: string;
+      overrideId: string;
+      priceCents?: number | null;
+      discountPercentage?: number | null;
+      minOrderQty?: number | null;
+      maxOrderQty?: number | null;
+      orderMultiple?: number | null;
+    }) => {
+      const { accountId, overrideId, ...body } = input;
+      return api.patch(
+        `/v1/b2b/accounts/${accountId}/overrides/${overrideId}`,
+        Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined))
+      );
+    },
     onSuccess: () => {
       invalidate(productId, 'b2b-pricing');
     },

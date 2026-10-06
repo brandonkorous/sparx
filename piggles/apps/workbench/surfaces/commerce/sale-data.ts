@@ -13,9 +13,10 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { ORDERS_KEY, type Order } from './data';
-import { useVariantCatalog, type VariantChoice } from './bundles-data';
+import { useVariantSearch, type VariantChoice } from './bundles-data';
 import type { ProductDeposit } from './made-to-order-data';
 import { noticeOn } from './sale-made-to-order';
+import { coreFieldsFrom, handedOverNow, saleItem, type CoreOffer } from './sale-core';
 
 /** Anything the business can put on a sale: a thing off the shelf, or an hour of
  *  its own time. Both are lines on the same receipt, so both live in one list. */
@@ -28,12 +29,17 @@ export interface Sellable {
   priceCents: number;
   currency: string;
   sku: string;
+  /** Searched, never drawn: a version's own name when the row shows its options. */
+  keywords?: string | null;
   productId?: string;
   variantId?: string;
   /** Days of notice this needs before it can be handed over. Null for anything
    *  off a shelf, and for every service (a booking carries its own). */
   orderAheadDays?: number | null;
   deposit?: ProductDeposit;
+  /** A rebuilt part's core deposit, and whether its old part may come first
+   *  (sparx issue 061). Absent on everything that takes no core. */
+  core?: CoreOffer;
 }
 
 /** One line as it is being built. `sellable` is null for a hand-typed line. */
@@ -61,6 +67,12 @@ export interface SaleLine {
    *  why. Absent until the answer arrives, and on a hand-typed line forever —
    *  nothing in the catalog to price. */
   agreed?: AgreedPrice;
+  /** The version's core deposit, carried from the catalog. Absent on anything
+   *  that takes no core, including every hand-typed line (sparx issue 061). */
+  core?: CoreOffer;
+  /** The buyer will bring the old part first instead of paying the deposit.
+   *  Absent or false means the deposit is paid, which is the default. */
+  coreFirst?: boolean;
 }
 
 /** One line's answer from the pricing engine: the figure, the figure it would
@@ -197,8 +209,12 @@ function serviceSku(name: string): string {
  * She does not think "catalog" and "diary" — she thinks a bottle of shampoo and
  * a bond-repair treatment, and both go on the same receipt.
  */
-export function useSellables() {
-  const variants = useVariantCatalog();
+export function useSellables(search: string) {
+  // What is typed goes to the server, so a part past the first window is as
+  // findable as the first (sparx persona P01, issue 069: 693 versions, and
+  // everything after roughly the 500th alphabetically could not be sold here).
+  // Services are a short list of their own and are filtered where they are drawn.
+  const variants = useVariantSearch(search);
   const services = useSellableServices();
 
   const items = useMemo<Sellable[]>(() => {
@@ -212,10 +228,12 @@ export function useSellables() {
         priceCents: v.priceCents,
         currency: v.currency,
         sku: v.sku,
+        keywords: v.title,
         productId: v.productId,
         variantId: v.id,
         orderAheadDays: v.orderAheadDays,
         deposit: v.deposit,
+        ...coreFieldsFrom(v),
       }));
 
     const fromServices = (services.data?.items ?? []).map<Sellable>((s) => ({
@@ -235,6 +253,9 @@ export function useSellables() {
     items,
     isPending: variants.isPending || (services.isFetching && services.data === undefined),
     isError: variants.isError,
+    /** The rows in hand answer an older search; never call them "no match". */
+    searching: variants.searching,
+    retry: variants.retry,
   };
 }
 
@@ -258,10 +279,9 @@ export interface TakeSaleInput {
 const COLLECTION_RATE_REF = 'collection:in-person';
 
 async function handOver(order: Order): Promise<void> {
-  const lines = (order.items ?? []).map((item) => ({
-    orderItemId: item.id,
-    quantity: item.quantity,
-  }));
+  // A part held for its old part stays on the shelf (sparx issue 061): the order
+  // spine refuses to record it as handed over, which would read as the sale failing.
+  const lines = handedOverNow(order.items ?? []);
   if (lines.length === 0) return;
   await api.post(`/v1/orders/${order.id}/fulfillments`, {
     status: 'delivered',
@@ -302,14 +322,9 @@ export function useTakeSale() {
           shippingRateRef: COLLECTION_RATE_REF,
           shippingDescription: 'Taken at the counter',
         },
-        items: input.lines.map((line) => ({
-          sku: line.sku,
-          name: line.name,
-          quantity: line.quantity,
-          unitPrice: Number(line.price),
-          ...(line.productId ? { productId: line.productId } : {}),
-          ...(line.variantId ? { variantId: line.variantId } : {}),
-        })),
+        // A rebuilt part carries its core deposit, or "old part first" and no
+        // deposit, never both (sparx issue 061). See sale-core.ts.
+        items: input.lines.map(saleItem),
       });
       if (input.paid > 0) {
         await api.post(`/v1/orders/${order.id}/payments`, {

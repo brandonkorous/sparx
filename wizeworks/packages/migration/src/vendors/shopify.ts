@@ -51,6 +51,11 @@ const INVENTORY_FIXED = new Set(
   ].map((header) => header.toLowerCase())
 );
 
+/** Shopify's placeholder for "no choice", never a value a shopper picks. */
+function realValue(value: string): string {
+  return value === 'Default Title' ? '' : value;
+}
+
 function mapProducts(rows: SourceRow[]): CanonicalRow[] {
   const out: CanonicalRow[] = [];
 
@@ -79,6 +84,13 @@ function mapProducts(rows: SourceRow[]): CanonicalRow[] {
         pick(source, 'Option1 Value') !== ''
     );
     const effective = variantRows.length > 0 ? variantRows : [head];
+
+    // Shopify writes a product with no options as one option, "Title", whose only value
+    // is "Default Title". It is a placeholder, not a choice: kept, it put a "Title"
+    // picker with one entry on 523 of Gillett Diesel's 653 products.
+    const noOptions =
+      pick(head, 'Option1 Name') === 'Title' &&
+      effective.every((source) => ['', 'Default Title'].includes(pick(source, 'Option1 Value')));
 
     effective.forEach((source, index) => {
       const grams = pick(source, 'Variant Grams');
@@ -114,8 +126,11 @@ function mapProducts(rows: SourceRow[]): CanonicalRow[] {
           image_url: index === 0 ? images[0] : '',
           image_alt: index === 0 ? pick(head, 'Image Alt Text') : '',
 
-          option1_name: pick(head, 'Option1 Name'),
-          option1_value: pick(source, 'Option1 Value'),
+          option1_name: noOptions ? '' : pick(head, 'Option1 Name'),
+          // "Default Title" is never a choice, even beside real ones: a file that
+          // mixes "Single Pod" with "Default Title" (Gillett Diesel's does) means
+          // one choice and a row with none.
+          option1_value: noOptions ? '' : realValue(pick(source, 'Option1 Value')),
           option2_name: pick(head, 'Option2 Name'),
           option2_value: pick(source, 'Option2 Value'),
           option3_name: pick(head, 'Option3 Name'),

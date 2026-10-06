@@ -1,26 +1,6 @@
-// WHO SIGNS IT OFF — one answer, written for a <select>.
-//
-// A spending rule can route to a ROLE ("any administrator") or to one named
-// PERSON. Those are stored as two different columns, and that is right: a role
-// survives somebody leaving, a name does not. But they answer ONE question, so
-// they are ONE control. Two dropdowns would make the reader answer "who signs
-// this off" twice and then work out which of their two answers wins.
-//
-// The encoding is a plain string so a native <select> can hold it:
-//
-//     ''              nobody in particular
-//     'owner'         a role
-//     'user:<uuid>'   one named person
-//
-// `user:` is a prefix rather than a bare uuid because a role word and a uuid
-// are both strings, and a rule that names a person called "owner" is not a
-// thing worth leaving to chance.
-//
-// Pure on purpose. The thing that goes wrong with a control like this is the
-// round trip — read a rule, show it, save it back, and silently drop the half
-// the form did not have a box for. That is what happened here: the person
-// column has existed since this shipped, the list printed the name it held,
-// and no form ever wrote one. So the round trip is what the test pins.
+// WHO SIGNS IT OFF, one answer for a <select>: '' nobody in particular, 'owner'
+// a role, 'user:<uuid>' one named person. Role and person are two columns but ONE
+// question. Pure so the round trip (read, show, save back) is what the test pins.
 
 /** Nobody in particular: whoever the screen already lets in. */
 export const ANY_APPROVER = '';
@@ -55,6 +35,38 @@ export function approverChoice(value: string): {
   };
 }
 
+// THE ACCOUNT'S OWN APPROVERS (sparx persona issue 087): a third answer, stored as
+// `signOffBy`. The server refuses it alongside a named teammate, so the helpers
+// below always send both halves or a choice would keep the rule's old value.
+
+/** The account's own approvers sign, on the site. */
+export const ACCOUNT_APPROVERS = 'account:approvers';
+
+export type SignOffBy = 'business' | 'account';
+
+/** What a wholesale spending limit reads as in the control. */
+export function signOffValue(rule: {
+  signOffBy?: SignOffBy | null;
+  requiredApproverUserId: string | null;
+}): string {
+  // The account wins over a stale name, as it does on the server: a rule the
+  // account signs names nobody here.
+  if (rule.signOffBy === 'account') return ACCOUNT_APPROVERS;
+  return approverValue({ requiredApproverUserId: rule.requiredApproverUserId });
+}
+
+/** What the control's value means, as the two fields a limit is saved with. */
+export function signOffChoice(value: string): {
+  signOffBy: SignOffBy;
+  requiredApproverUserId: string | null;
+} {
+  if (value === ACCOUNT_APPROVERS) return { signOffBy: 'account', requiredApproverUserId: null };
+  return {
+    signOffBy: 'business',
+    requiredApproverUserId: approverChoice(value).requiredApproverUserId,
+  };
+}
+
 /** The role words, as the person running the business reads them. */
 export const APPROVER_ROLES: { value: string; label: string }[] = [
   { value: ANY_APPROVER, label: 'Anyone who can edit buying' },
@@ -71,14 +83,8 @@ export interface ApproverPerson {
   status: string;
 }
 
-/**
- * Who can actually be named.
- *
- * Only people who are already IN the account. Somebody invited on Tuesday has
- * no login yet, so naming them as the only person who may sign would park every
- * order behind an empty chair. The roster surface shows them as invited; this
- * list leaves them out until they arrive.
- */
+// Who can actually be named: only people already IN the account. An invitee has
+// no login yet, so naming them would park every order behind an empty chair.
 export function namableApprovers(members: readonly ApproverPerson[]): ApproverPerson[] {
   return members
     .filter((member) => member.status === 'active')

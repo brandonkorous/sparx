@@ -56,11 +56,12 @@ import { useQueryClient } from '@wizeworks/query';
 import { useConfirm } from '../../../lib/confirm';
 import { useDirtySource } from '../../../lib/workbench/dirty';
 import { MediaPickerProvider, useMediaPicker } from '../../cms/media-picker';
-import { useActiveSiteId, useModuleStates, useTenant } from '../../../lib/api/shell-data';
+import { useActivePropertyId, useModuleStates, useTenant } from '../../../lib/api/shell-data';
 import type { SurfaceContext } from '../../../lib/surfaces/registry';
 import {
   builderErrorMessage,
   getSiteCheck,
+  PUBLISH_STATE_KEY,
   SITE_CHECK_KEY,
   useSiteCheck,
   useActiveProperty,
@@ -78,6 +79,7 @@ import {
   useSilicaPieces,
   useSaveSilicaPiece,
   useSyncSite,
+  useLinkChoices,
   type ActiveProperty,
   type BrandDto,
   type SiteConfigDto,
@@ -109,6 +111,8 @@ import {
 import { makeRenderHostNode } from './host-cores';
 import { buildPreviewRoot, type SitePreviewData } from './preview-data';
 import { PaneLoadError } from '../../../components/pane-load-error';
+import { StudioLiveGaps } from '../site-behind';
+import { sameDocument } from './same-document';
 
 /** The editor's four surfaces (silicaui `BuilderProps['initialMode']`). Named here so a
  *  deep link carrying a typo opens the editor normally instead of handing silica a mode
@@ -158,8 +162,8 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
   const tenant = useTenant();
   const pieces = useSilicaPieces();
 
-  const { data: siteState } = useActiveSiteId();
-  const propertyId = siteState?.propertyId ?? null;
+  const currentSiteId = useActivePropertyId();
+  const propertyId = currentSiteId ?? null;
   const property = useActiveProperty(propertyId);
   // Scope the chrome preview to the ACTIVE site so a per-site brand override
   // previews correctly.
@@ -177,6 +181,15 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
   // nonce so the editor remounts on the fresh load. Bumping AFTER the refetch settles means
   // the remount reads the new snapshot, not the stale cache.
   const [reloadNonce, setReloadNonce] = useState(0);
+  // The publish state is fetched alongside the site, and the SITE read is what repairs
+  // every stale page's saved copy. So the first answer can describe the pages as they
+  // were before that repair; read it again once the site has landed, or the gaps above
+  // the canvas say "not in your saved site" about things that now are (issue 060).
+  const queryClient = useQueryClient();
+  const siteLoadedAt = site.dataUpdatedAt;
+  useEffect(() => {
+    if (siteLoadedAt > 0) void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
+  }, [queryClient, siteLoadedAt]);
   const reload = useCallback(() => {
     void site.refetch().finally(() => setReloadNonce((n) => n + 1));
   }, [site]);
@@ -304,6 +317,11 @@ function StudioEditor({
   // Read once and read early: it must already be in hand when Preview is pressed, and
   // pressing Preview should never wait on a lookup that exists to improve the destination.
   const recordSamples = useRecordSamplePaths();
+  // Where a link can point besides builder pages, for the link field's suggestions.
+  // Held in a ref for the same reason as the picker: the host is built once.
+  const linkChoices = useLinkChoices();
+  const linkChoicesRef = useRef(linkChoices.data ?? []);
+  linkChoicesRef.current = linkChoices.data ?? [];
 
   const pageIdParam = typeof ctx.params.pageId === 'string' ? ctx.params.pageId : null;
   // Which editing surface the author LANDS on (silicaui 0.36's `initialMode` — docs/silicaui/01
@@ -440,6 +458,11 @@ function StudioEditor({
   // would quietly become the after-state.
   const prevSiteRef = useRef<Site>(site);
 
+  // The document as it was last loaded or saved. An undo or redo that lands back on
+  // it is not an unsaved change (sparx persona issue 060): the status read
+  // "Unsaved changes" and closing asked to throw away changes that did not exist.
+  const savedSiteRef = useRef<Site>(site);
+
   // Host-owned undo/redo (docs/126 §4.5). The stacks live here because the studio is
   // what learns about each action; `<CollaborativeHistory>` drives them. `historyRev`
   // is how a ref mutation reaches that component — it re-announces the delegate so
@@ -502,6 +525,11 @@ function StudioEditor({
    *  check pass on every image while helping nobody. The author writes real alt text;
    *  a missing one is a finding for the pre-publish check, not something to paper over.
    *
+   *  The alt the OWNER wrote on the picture in the library is a different thing, and it
+   *  is passed. Dropping it left the swapped image wearing the old picture's alt ("A
+   *  laptop and notebook…" on a photo of his shop), which the alt-text check counts as
+   *  fine (sparx persona issue 045).
+   *
    *  0.35.0 only ever asks for `"image"`; the `kind` is honoured anyway so a future
    *  video request doesn't silently get a picture. */
   const pickAsset = useCallback(async (kind: 'image' | 'video') => {
@@ -509,7 +537,8 @@ function StudioEditor({
     const picked = await pickPictureRef.current();
     // A library asset with no resolvable URL cannot render — treat it as a cancel
     // rather than writing an empty `src` that blanks the image on the live site.
-    return picked?.url ? { url: picked.url } : null;
+    if (!picked?.url) return null;
+    return picked.altText ? { url: picked.url, alt: picked.altText } : { url: picked.url };
   }, []);
   const pickAssetRef = useRef(pickAsset);
   pickAssetRef.current = pickAsset;
@@ -624,6 +653,7 @@ function StudioEditor({
       pickAsset: (kind) => pickAssetRef.current(kind),
       inspectorPanels: (node) => inspectorPanelsRef.current(node),
       inspectorTabs: () => inspectorTabsRef.current(),
+      linkTargets: () => linkChoicesRef.current,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -694,11 +724,20 @@ function StudioEditor({
     setThemeFonts(themeFontFamilies(next.theme));
     siteRef.current = next;
     prevSiteRef.current = next;
-    if (ops.length) {
-      batchIdRef.current ??= `wb-${crypto.randomUUID()}`;
-      opsBufferRef.current.push(...ops);
+    if (sameDocument(next, savedSiteRef.current)) {
+      // Back where the last save left it. The buffered ops are an edit and its
+      // exact reverse, never sent (Save holds them), so they go too: sending a
+      // no-op pair to co-editors on the next Save would only make their canvas flicker.
+      opsBufferRef.current = [];
+      batchIdRef.current = null;
+      setDirty(false);
+    } else {
+      if (ops.length) {
+        batchIdRef.current ??= `wb-${crypto.randomUUID()}`;
+        opsBufferRef.current.push(...ops);
+      }
+      setDirty(true);
     }
-    setDirty(true);
     setHistoryRev((n) => n + 1);
   }, []);
 
@@ -792,6 +831,7 @@ function StudioEditor({
     // The server now holds our current set (having deleted only what we named); advance
     // the baseline so the next removal is computed against the truth, not the load.
     baselineIdsRef.current = currentIds;
+    savedSiteRef.current = next;
     setDirty(false);
 
     // Page settings (chrome choice, title/description/social picture/indexing) land
@@ -1024,53 +1064,57 @@ function StudioEditor({
   // second bar on silica's; the whole point is that the operator sees one row of
   // controls, not two. `ApplyInitialPage` renders nothing and rides along here.
   return (
-    <div className="h-full">
-      <Builder
-        key={propertyId ?? 'site'}
-        document={site}
-        host={host}
-        persistKey={null}
-        dataToggle={false}
-        peers={peers}
-        initialMode={modeParam}
-        onModeChange={setMode}
-        onChange={onChange}
-        onActivePageChange={onActivePageChange}
-        onPublish={onPublish}
-        // STATE GOES IN THE STATUS BAR (silicaui 0.41 `statusBarSlot` / docs/silicaui/01 §14).
-        //
-        // It rode in the header first — `toolbarSlot`, then §13's `toolbarStatusSlot` — and
-        // the header was the wrong FLOOR, not just the wrong slot. The footer already carries
-        // exactly this kind of fact and nothing else: which surface you are on, which device
-        // width you are looking at. Two indicators of the same kind up in the toolbar meant a
-        // person read the session's state in a bar packed with buttons, next to controls it
-        // has nothing to do with. Down here it sits beside `mode` and reads left to right as
-        // one sentence about the session: Page · 3 editing · Unsaved changes … Desktop.
-        //
-        // Non-interactive only, and the engine is stricter about it here than in the header —
-        // a 28px strip is no place for a control, and its own two children are plain text. So
-        // the live-sync Reload BUTTON stays in the action slot below, driven by the hints this
-        // reports up. That split is why there are two components rather than one.
-        //
-        // No `toolbarStatusSlot` at all now. Splitting the two badges across two floors would
-        // be the worst of both: state in two places, and neither of them complete.
-        statusBarSlot={
-          <div className="flex items-center gap-2">
-            {propertyId ? (
-              <BuilderLiveSync
-                propertyId={propertyId}
-                baselineIdsRef={baselineIdsRef}
-                ownBatchesRef={ownBatchesRef}
-                onRemoteApplied={onRemoteApplied}
-                onReloadHints={onReloadHints}
-                onPeers={setPeers}
-                localEditRef={localEditRef}
-              />
-            ) : null}
-            <Badge color={status.tone} variant="soft" size="sm">
-              {status.label}
-            </Badge>
-            {/* The check, WHOLE, now that a status item may disclose its own detail
+    <div className="flex h-full flex-col">
+      {/* What the LIVE site cannot say yet, above the canvas so the Publish beside it is
+          not a guess (sparx persona issue 060). Nothing at all when it can. */}
+      <StudioLiveGaps state={publishState} />
+      <div className="min-h-0 flex-1">
+        <Builder
+          key={propertyId ?? 'site'}
+          document={site}
+          host={host}
+          persistKey={null}
+          dataToggle={false}
+          peers={peers}
+          initialMode={modeParam}
+          onModeChange={setMode}
+          onChange={onChange}
+          onActivePageChange={onActivePageChange}
+          onPublish={onPublish}
+          // STATE GOES IN THE STATUS BAR (silicaui 0.41 `statusBarSlot` / docs/silicaui/01 §14).
+          //
+          // It rode in the header first — `toolbarSlot`, then §13's `toolbarStatusSlot` — and
+          // the header was the wrong FLOOR, not just the wrong slot. The footer already carries
+          // exactly this kind of fact and nothing else: which surface you are on, which device
+          // width you are looking at. Two indicators of the same kind up in the toolbar meant a
+          // person read the session's state in a bar packed with buttons, next to controls it
+          // has nothing to do with. Down here it sits beside `mode` and reads left to right as
+          // one sentence about the session: Page · 3 editing · Unsaved changes … Desktop.
+          //
+          // Non-interactive only, and the engine is stricter about it here than in the header —
+          // a 28px strip is no place for a control, and its own two children are plain text. So
+          // the live-sync Reload BUTTON stays in the action slot below, driven by the hints this
+          // reports up. That split is why there are two components rather than one.
+          //
+          // No `toolbarStatusSlot` at all now. Splitting the two badges across two floors would
+          // be the worst of both: state in two places, and neither of them complete.
+          statusBarSlot={
+            <div className="flex items-center gap-2">
+              {propertyId ? (
+                <BuilderLiveSync
+                  propertyId={propertyId}
+                  baselineIdsRef={baselineIdsRef}
+                  ownBatchesRef={ownBatchesRef}
+                  onRemoteApplied={onRemoteApplied}
+                  onReloadHints={onReloadHints}
+                  onPeers={setPeers}
+                  localEditRef={localEditRef}
+                />
+              ) : null}
+              <Badge color={status.tone} variant="soft" size="sm">
+                {status.label}
+              </Badge>
+              {/* The check, WHOLE, now that a status item may disclose its own detail
                 (silicaui 0.45 / docs/silicaui/01 §18). The count and the list used to be
                 two floors apart — the number here, the button that opened it up in the
                 toolbar — because §14 documented this slot as carrying nothing
@@ -1078,65 +1122,66 @@ function StudioEditor({
                 "nothing that ACTS", so the number a person wants to click is the thing
                 they click. There is no Check button in the toolbar any more; one target,
                 where the fact is. */}
-            <SiteCheck
-              open={checkOpen}
-              onOpenChange={setCheckOpen}
-              report={check.data ?? null}
-              stale={checkStale}
-              running={check.isFetching}
-              error={check.error}
-              onRun={() => void runCheck()}
-            />
-          </div>
-        }
-        toolbarSlot={
-          <div className="flex items-center gap-2">
-            <CollaborativeHistory
-              stacksRef={historyRef}
-              invertRef={invertRef}
-              revision={historyRev}
-              onApplied={onHistoryApplied}
-            />
-            <BuilderReloadNotice
-              hints={reloadHints}
-              onReload={() => {
-                setReloadHints([]);
-                onReload();
-              }}
-            />
-            <Button
-              data-tour="builder-preview"
-              size="sm"
-              variant="outline"
-              color="neutral"
-              loading={previewToken.isPending}
-              onClick={() => {
-                void onPreview();
-              }}
-            >
-              <Eye className="size-4" aria-hidden />
-              Preview
-            </Button>
-            <Button
-              data-tour="builder-save"
-              size="sm"
-              color="module"
-              disabled={!unsaved || sync.isPending}
-              loading={sync.isPending}
-              onClick={() => {
-                void onSave();
-              }}
-            >
-              <Save className="size-4" aria-hidden />
-              {unsaved ? 'Save' : 'Saved'}
-            </Button>
-            {pageIdParam && validPageIds.has(pageIdParam) ? (
-              <ApplyInitialPage pageId={pageIdParam} />
-            ) : null}
-            {componentIdParam ? <ApplyInitialPiece pieceKey={componentIdParam} /> : null}
-          </div>
-        }
-      />
+              <SiteCheck
+                open={checkOpen}
+                onOpenChange={setCheckOpen}
+                report={check.data ?? null}
+                stale={checkStale}
+                running={check.isFetching}
+                error={check.error}
+                onRun={() => void runCheck()}
+              />
+            </div>
+          }
+          toolbarSlot={
+            <div className="flex items-center gap-2">
+              <CollaborativeHistory
+                stacksRef={historyRef}
+                invertRef={invertRef}
+                revision={historyRev}
+                onApplied={onHistoryApplied}
+              />
+              <BuilderReloadNotice
+                hints={reloadHints}
+                onReload={() => {
+                  setReloadHints([]);
+                  onReload();
+                }}
+              />
+              <Button
+                data-tour="builder-preview"
+                size="sm"
+                variant="outline"
+                color="neutral"
+                loading={previewToken.isPending}
+                onClick={() => {
+                  void onPreview();
+                }}
+              >
+                <Eye className="size-4" aria-hidden />
+                Preview
+              </Button>
+              <Button
+                data-tour="builder-save"
+                size="sm"
+                color="module"
+                disabled={!unsaved || sync.isPending}
+                loading={sync.isPending}
+                onClick={() => {
+                  void onSave();
+                }}
+              >
+                <Save className="size-4" aria-hidden />
+                {unsaved ? 'Save' : 'Saved'}
+              </Button>
+              {pageIdParam && validPageIds.has(pageIdParam) ? (
+                <ApplyInitialPage pageId={pageIdParam} />
+              ) : null}
+              {componentIdParam ? <ApplyInitialPiece pieceKey={componentIdParam} /> : null}
+            </div>
+          }
+        />
+      </div>
     </div>
   );
 }

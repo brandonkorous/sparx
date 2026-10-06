@@ -3,65 +3,35 @@
 // Linking a line to a catalog product.
 //
 // A billing line can stand alone (a typed description + price) or point at a real
-// product in inventory. Pointing at one seeds the description and unit price from
-// the catalog and records the productId / variantId on the line — so the invoice
-// ties back to stock, cost, and reporting instead of being loose text. Picking is
-// a convenience that fills the fields; they stay editable afterwards.
+// product version in inventory. Pointing at one seeds the description and unit
+// price from the catalog and records the productId / variantId on the line, so
+// the invoice ties back to stock, cost and reporting instead of being loose text.
+// Picking is a convenience that fills the fields; they stay editable afterwards.
 //
-// Two levels: a product, then — only when the product has more than one variant —
-// the specific variant, because that is what carries the real price and cost. A
-// single-variant product needs no second choice.
-//
-// The list is the Combobox's own client-side filter over a bounded fetch (Base UI
-// filters the items it is given; there is no async-search hook). For a catalog
-// bigger than that fetch we say so plainly rather than pretend the list is whole —
-// a silent cap reads as "this product doesn't exist."
+// ONE search over every version the site sells, asked of the SERVER as you type:
+// the part's name, its code, the version's name or an option value ("6.7L").
+// It used to list the first 100 products and filter those in the browser, then
+// ask a second question about which version; on a parts counter with 653
+// products the code typed into the box found nothing, and a near-identical part
+// one digit off got quoted at its own price (sparx persona issue 077). What a
+// row and a line say lives in ./product-pick.ts.
 
-import { useMemo, useState } from 'react';
-import { useQuery } from '@wizeworks/query';
-import { Button, Combobox, Text } from '@wizeworks/silicaui-react';
-import { X } from 'lucide-react';
-import { api } from '../../lib/api/client';
-import { formatMoney } from './types';
+import { useState } from 'react';
+import { Package, RotateCw } from 'lucide-react';
+import { SearchPicker, type PickerRow } from '../../components/search-picker';
+import { useProductVariantChoices, useVariantSearch } from '../commerce/bundles-data';
+import { pickable, pickerRowFor, pickFrom, type ProductPick } from './product-pick';
 
-interface ProductListItem {
-  id: string;
-  title: string;
-  priceMinCents: number;
-  priceMaxCents: number;
-  variantCount: number;
-  vendor: string | null;
-}
+export type { ProductPick };
 
-interface VariantItem {
-  id: string;
-  sku: string;
-  title: string | null;
-  priceCents: number;
-}
-
-export interface ProductPick {
-  productId: string;
-  variantId: string | null;
-  description: string;
-  /** Dollars — seeds the line's unit price. */
-  unitPrice: number;
-}
-
-interface Option {
-  value: string;
-  label: string;
-  product: ProductListItem;
-}
-
-const FETCH_LIMIT = 100;
+/** Two letters before it asks, the same floor every server search here has. */
+const MIN_QUERY = 2;
 
 interface ProductPickerProps {
   productId: string | null;
   variantId?: string | null;
-  /** A label to show for an already-linked product not in the fetched page. */
+  /** What the line already calls the linked product, when the editor knows. */
   productLabel?: string | null;
-  currency: string;
   disabled?: boolean;
   onPick: (pick: ProductPick) => void;
   onClear: () => void;
@@ -71,162 +41,58 @@ export function ProductPicker({
   productId,
   variantId,
   productLabel,
-  currency,
   disabled,
   onPick,
   onClear,
 }: ProductPickerProps) {
-  // The product whose variants we're choosing among — held locally so a
-  // multi-variant pick is a two-step without committing an incomplete line.
-  const [activeProductId, setActiveProductId] = useState<string | null>(productId);
+  const [query, setQuery] = useState('');
+  const search = useVariantSearch(query, { enabled: query.trim().length >= MIN_QUERY });
+  const found = (search.data ?? []).filter(pickable);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['commerce', 'products', 'picker'],
-    queryFn: () =>
-      api.list<ProductListItem>('/v1/commerce/products', { take: FETCH_LIMIT, status: 'active' }),
-    staleTime: 60_000,
-  });
-
-  // MEMOISED — a fresh `?? []` each render would re-key the options memo (and
-  // the Combobox effect) every time, looping "Maximum update depth exceeded".
-  const products = useMemo(() => data?.items ?? [], [data]);
-  const total = data?.total ?? 0;
-
-  const options: Option[] = useMemo(
-    () =>
-      products.map((product) => ({
-        value: product.id,
-        label: product.vendor ? `${product.title} · ${product.vendor}` : product.title,
-        product,
-      })),
-    [products]
-  );
-
-  const selected = useMemo(() => {
-    const match = options.find((option) => option.value === productId);
-    if (match) return match;
-    // Linked to a product outside the fetched page — show what we know so the
-    // field isn't blank on an existing line.
-    if (productId) {
-      return {
-        value: productId,
-        label: productLabel ?? 'Linked product',
-        product: null,
-      } as unknown as Option;
-    }
-    return null;
-  }, [options, productId, productLabel]);
-
-  const activeProduct = products.find((p) => p.id === activeProductId);
-  const needsVariant = (activeProduct?.variantCount ?? 0) > 1;
-
-  const { data: variants } = useQuery({
-    queryKey: ['commerce', 'variants', activeProductId],
-    queryFn: () =>
-      api.get<VariantItem[]>(`/v1/commerce/products/${activeProductId ?? ''}/variants`),
-    enabled: Boolean(activeProductId) && needsVariant,
-    staleTime: 60_000,
-  });
-
-  const variantOptions = useMemo(
-    () =>
-      (variants ?? []).map((variant) => ({
-        value: variant.id,
-        label: `${variant.title ?? variant.sku} · ${formatMoney(variant.priceCents / 100, currency)}`,
-        variant,
-      })),
-    [variants, currency]
-  );
-
-  const selectedVariant = useMemo(
-    () => variantOptions.find((option) => option.value === variantId) ?? null,
-    [variantOptions, variantId]
-  );
-
-  function pickProduct(product: ProductListItem) {
-    setActiveProductId(product.id);
-    // A single-variant product is complete on the spot — seed from the product.
-    // A multi-variant one waits for the variant choice below before it prices.
-    if (product.variantCount > 1) return;
-    onPick({
-      productId: product.id,
-      variantId: null,
-      description: product.title,
-      unitPrice: product.priceMinCents / 100,
-    });
-  }
+  // The version already on the line, read by its product rather than hoped for
+  // in a search window: a line reopened months later must still say what it is.
+  const linked = useProductVariantChoices(productId ?? undefined);
+  const onLine = (linked.data ?? []).find((variant) => variant.id === variantId);
+  const chosen: PickerRow | null = productId
+    ? onLine
+      ? pickerRowFor(onLine)
+      : { id: productId, primary: productLabel ?? 'Linked product', secondary: null }
+    : null;
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <div className="min-w-0 flex-1">
-          <Combobox
-            color="module"
-            items={options}
-            value={selected}
-            disabled={disabled ?? isLoading}
-            placeholder={isLoading ? 'Loading products…' : 'Search products…'}
-            emptyMessage="No product matches that."
-            aria-label="Product"
-            clearable={false}
-            onValueChange={(next) => {
-              if (!next) return;
-              pickProduct((next as Option).product);
-            }}
-          />
-        </div>
-        {productId ? (
-          <Button
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            shape="square"
-            disabled={disabled}
-            aria-label="Unlink product"
-            onClick={() => {
-              setActiveProductId(null);
-              onClear();
-            }}
-          >
-            <X className="size-4" aria-hidden />
-          </Button>
-        ) : null}
-      </div>
-
-      {needsVariant ? (
-        <Combobox
-          color="module"
-          items={variantOptions}
-          value={selectedVariant}
-          disabled={disabled}
-          placeholder="Choose a variant…"
-          emptyMessage="No variants found."
-          aria-label="Variant"
-          clearable={false}
-          onValueChange={(next) => {
-            if (!next || !activeProduct) return;
-            const option = next as { value: string; variant: VariantItem };
-            onPick({
-              productId: activeProduct.id,
-              variantId: option.variant.id,
-              description: `${activeProduct.title} (${option.variant.title ?? option.variant.sku})`,
-              unitPrice: option.variant.priceCents / 100,
-            });
-          }}
-        />
-      ) : null}
-
-      {/* The search box filters THESE rows in the browser, so "refine your
-          search" was advice that works only when the product is already among
-          them — and this band exists precisely for the ones that are not. It
-          names what actually works instead. A promise of a remedy has to be a
-          remedy that is available. [[feedback_one_outcome_two_causes]] */}
-      {total > products.length ? (
-        <Text className="text-sm">
-          These are the first {products.length} of your {total} products, and typing here searches
-          only those. For any of the others, open it in Selling and add it from there.
-        </Text>
-      ) : null}
-    </div>
+    <SearchPicker
+      chosen={chosen}
+      loadingChosen={Boolean(productId) && linked.isPending && !productLabel}
+      results={found.map(pickerRowFor)}
+      searching={search.searching || search.isPending}
+      query={query}
+      onQuery={setQuery}
+      disabled={disabled}
+      label="Search your products"
+      placeholder="Search by name or part number…"
+      tooShort="Type at least two letters of its name or code."
+      // A failed search is not "nothing matches": that sends somebody off to
+      // type in by hand a part they stock. It says so, with a way to ask again.
+      nothingFound={
+        search.isError
+          ? 'Your products could not be searched just now.'
+          : 'Nothing you sell matches that. Check the code, or type the line in by hand below.'
+      }
+      {...(search.isError
+        ? { nothingFoundAction: { label: () => 'Try again', onAct: search.retry, icon: RotateCw } }
+        : {})}
+      clearLabel="Choose a different product"
+      icon={Package}
+      onSelect={(id) => {
+        const variant = found.find((candidate) => candidate.id === id);
+        if (!variant) return;
+        setQuery('');
+        onPick(pickFrom(variant));
+      }}
+      onClear={() => {
+        setQuery('');
+        onClear();
+      }}
+    />
   );
 }

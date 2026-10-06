@@ -23,13 +23,16 @@ function money(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function contentFacts(bp: WizardBlueprint | null): string[] {
+/** What the install actually put in the site. With examples off, the example
+ *  products and articles never arrive, so they are not counted: the line read "6
+ *  products … installed" over a catalog of 0 (sparx persona issue 020). */
+function contentFacts(bp: WizardBlueprint | null, withExamples: boolean): string[] {
   if (!bp) return [];
   const c = bp.contents;
   const facts: string[] = [];
   if (c.pages > 0) facts.push(`${c.pages} pages`);
-  if (c.products > 0) facts.push(`${c.products} products`);
-  if (c.content > 0) facts.push(`${c.content} content entries`);
+  if (withExamples && c.products > 0) facts.push(`${c.products} example products`);
+  if (withExamples && c.content > 0) facts.push(`${c.content} example articles`);
   if (c.emails > 0) facts.push(`${c.emails} emails`);
   facts.push(`${c.theme} theme`);
   return facts;
@@ -45,6 +48,7 @@ export function StepLaunch({
   monthlyTotal,
   monthlyElsewhere,
   pendingDomain,
+  sampleData,
   actions,
 }: {
   slug: string;
@@ -56,6 +60,8 @@ export function StepLaunch({
   monthlyTotal: number;
   monthlyElsewhere: number;
   pendingDomain: PendingDomain | null;
+  /** Whether the starting point brought its examples. */
+  sampleData: boolean;
   actions: OnboardingActions;
 }) {
   const [token, setToken] = useState<string | null>(null);
@@ -81,7 +87,7 @@ export function StepLaunch({
 
   const monthlySavings = Math.max(0, monthlyElsewhere - monthlyTotal);
   const annualSavings = monthlySavings * 12;
-  const facts = contentFacts(blueprint);
+  const facts = contentFacts(blueprint, sampleData);
   const previewHref = installId && token ? storefrontPreviewUrl(slug, token) : null;
 
   return (
@@ -195,7 +201,7 @@ export function StepLaunch({
         <ValuePoint
           icon={<Receipt className="text-module size-4" aria-hidden />}
           title="One login, one invoice"
-          body="Flat per-module pricing: no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
+          body="Flat per-module pricing: no per-seat fees, no surprise overages. Card payments through sparx Pay carry one flat 0.5% fee; connect your own card processor under Payment providers and sparx takes nothing. Turn modules on and off anytime."
         />
         <ValuePoint
           icon={<TrendingUp className="text-module size-4" aria-hidden />}

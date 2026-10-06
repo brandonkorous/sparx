@@ -26,9 +26,9 @@
 
 import { CountryField } from '../../components/country-field';
 import { useEffect, useMemo, useState } from 'react';
-import { shownInPlace } from '@wizeworks/query';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { supplierInputFrom } from './supplier-input';
 import {
   Alert,
   AlertContent,
@@ -51,6 +51,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { useConfirm } from '../../lib/confirm';
+import { VariantPicker } from '../commerce/variant-picker';
+import type { VariantChoice } from '../commerce/bundles-data';
 import {
   faBoxArchive,
   faClipboardList,
@@ -78,7 +80,6 @@ import {
 } from './purchase-orders-data';
 import {
   buyingErrorMessage,
-  isNotFound,
   supplierState,
   useArchiveSupplier,
   useCreateSupplier,
@@ -86,9 +87,7 @@ import {
   useSupplier,
   useUpdateSupplier,
   useUpsertSupplierVariant,
-  useVariantLookup,
   type SupplierDetail,
-  type SupplierInput,
   type SupplierVariant,
 } from './suppliers-data';
 
@@ -155,33 +154,6 @@ function formFrom(supplier: SupplierDetail): FormState {
   };
 }
 
-/** Only the keys the API accepts, with blanks dropped so an empty optional field
- *  is omitted rather than sent as "". Country must be exactly two letters or not
- *  sent at all. */
-function toInput(form: FormState): SupplierInput {
-  const trimmed = (value: string) => value.trim();
-  const optional = (value: string) => (value.trim() === '' ? undefined : value.trim());
-  const lead = Number.parseInt(form.leadTimeDays, 10);
-  return {
-    name: trimmed(form.name),
-    code: trimmed(form.code),
-    ...(optional(form.contactName) ? { contactName: trimmed(form.contactName) } : {}),
-    ...(optional(form.email) ? { email: trimmed(form.email) } : {}),
-    ...(optional(form.phone) ? { phone: trimmed(form.phone) } : {}),
-    ...(optional(form.website) ? { website: trimmed(form.website) } : {}),
-    ...(optional(form.line1) ? { line1: trimmed(form.line1) } : {}),
-    ...(optional(form.line2) ? { line2: trimmed(form.line2) } : {}),
-    ...(optional(form.city) ? { city: trimmed(form.city) } : {}),
-    ...(optional(form.region) ? { region: trimmed(form.region) } : {}),
-    ...(optional(form.postalCode) ? { postalCode: trimmed(form.postalCode) } : {}),
-    ...(form.country.trim().length === 2 ? { country: form.country.trim().toUpperCase() } : {}),
-    ...(optional(form.paymentTerms) ? { paymentTerms: trimmed(form.paymentTerms) } : {}),
-    ...(Number.isFinite(lead) && lead >= 0 ? { leadTimeDays: lead } : {}),
-    currency: form.currency.trim() === '' ? 'USD' : form.currency.trim().toUpperCase(),
-    ...(optional(form.notes) ? { notes: trimmed(form.notes) } : {}),
-  };
-}
-
 /* ── Money helpers for the purchasing links ─────────────────────────────── */
 
 /** Nothing typed reads as nothing set. Everything else goes through
@@ -205,19 +177,21 @@ function PurchasingLinks({
 }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const lookup = useVariantLookup();
   const upsert = useUpsertSupplierVariant(supplierId);
   const remove = useRemoveSupplierVariant(supplierId);
 
   const [adding, setAdding] = useState(false);
-  const [sku, setSku] = useState('');
+  // Chosen from the catalog by name or code. Typing your own code from memory
+  // was the only way in, and an owner with 693 parts does not carry their codes
+  // in his head (sparx persona issue 071).
+  const [picked, setPicked] = useState<VariantChoice | null>(null);
   const [cost, setCost] = useState('');
   const [supplierSku, setSupplierSku] = useState('');
   const [preferred, setPreferred] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const resetForm = () => {
-    setSku('');
+    setPicked(null);
     setCost('');
     setSupplierSku('');
     setPreferred(false);
@@ -225,40 +199,20 @@ function PurchasingLinks({
     setAdding(false);
   };
 
-  const addLink = async () => {
+  const addLink = () => {
     setError(null);
-    const code = sku.trim();
-    if (code === '') return;
-    let resolved;
-    try {
-      // `shownInPlace` because this catch renders the failure beside the field,
-      // and a try/catch is as invisible to the failed-write net as a render is:
-      // without it the net sees a call site that said nothing, and speaks too.
-      // What it says here is not a duplicate but a contradiction — a lookup miss
-      // comes back 404, and the net's 404 sentence is "someone may have deleted
-      // it while you had it open", about a code that never existed, to an owner
-      // who works alone. The recipe pane two files over passes its own onError
-      // and is quiet for the same reason.
-      resolved = await lookup.mutateAsync(code, { onError: shownInPlace });
-    } catch (err) {
-      setError(
-        isNotFound(err)
-          ? `No item in your catalog has the code "${code}". Check the code and try again.`
-          : buyingErrorMessage(err, 'Could not look that code up.')
-      );
-      return;
-    }
+    if (!picked) return;
     const costCents = inputToCents(cost);
     upsert.mutate(
       {
-        variantId: resolved.variantId,
+        variantId: picked.id,
         ...(costCents !== null ? { unitCostCents: costCents } : {}),
         ...(supplierSku.trim() ? { supplierSku: supplierSku.trim() } : {}),
         isPreferred: preferred,
       },
       {
         onSuccess: () => {
-          const title = resolved.productTitle ?? resolved.sku;
+          const title = picked.productTitle;
           resetForm();
           afterPaneChange(() => {
             toast.add({ title: `${title} added to what you buy here`, type: 'success' });
@@ -307,7 +261,6 @@ function PurchasingLinks({
           <Button
             size="sm"
             variant="outline"
-            color="neutral"
             onClick={() => {
               setAdding(true);
             }}
@@ -375,23 +328,31 @@ function PurchasingLinks({
             Add an item you buy here
           </Heading>
           <div className="grid gap-3 @md:grid-cols-2">
-            <Field>
-              <FieldLabel>Your product code</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
+            <Field className="@md:col-span-2">
+              <FieldLabel>The item</FieldLabel>
+              {picked ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Text className="font-medium">{picked.productTitle}</Text>
+                  <Text as="span" className="font-mono text-sm">
+                    {picked.sku}
+                  </Text>
+                  <Button
                     size="sm"
-                    value={sku}
-                    placeholder="The code you gave the item"
-                    spellCheck={false}
-                    onChange={(event) => {
-                      setSku(event.target.value);
+                    variant="ghost"
+                    onClick={() => {
+                      setPicked(null);
                     }}
-                  />
-                }
-              />
-              <FieldDescription>We find the item in your catalog by its code.</FieldDescription>
+                  >
+                    Choose a different one
+                  </Button>
+                </div>
+              ) : (
+                <VariantPicker
+                  onPick={setPicked}
+                  excludeIds={variants.map((link) => link.variantId)}
+                  placeholder="Search your products by name or code…"
+                />
+              )}
             </Field>
             <Field>
               <FieldLabel>Their code (optional)</FieldLabel>
@@ -454,15 +415,15 @@ function PurchasingLinks({
             <Button
               size="sm"
               color="module"
-              disabled={sku.trim() === ''}
-              loading={lookup.isPending || upsert.isPending}
+              disabled={picked === null}
+              loading={upsert.isPending}
               onClick={() => {
-                void addLink();
+                addLink();
               }}
             >
               Add item
             </Button>
-            <Button size="sm" variant="ghost" color="neutral" onClick={resetForm}>
+            <Button size="sm" variant="ghost" onClick={resetForm}>
               Cancel
             </Button>
           </div>
@@ -478,7 +439,7 @@ function SupplierPurchaseOrders({ supplierId, ctx }: { supplierId: string; ctx: 
   const { data, isLoading } = usePurchaseOrders({ supplierId, take: 10, skip: 0 });
   const rows = data?.items ?? [];
 
-  if (isLoading || rows.length === 0) return null;
+  if (isLoading) return null;
 
   const openPo = (po: PurchaseOrder, event: { shiftKey: boolean }) => {
     ctx.open(
@@ -490,9 +451,28 @@ function SupplierPurchaseOrders({ supplierId, ctx }: { supplierId: string; ctx: 
 
   return (
     <FormSection
-      title="Orders you have sent them"
-      description="The most recent orders you have placed with them."
+      title="Orders to this supplier"
+      description="Their most recent orders. A new one starts with this supplier chosen and their items ready to add."
+      action={
+        <Button
+          size="sm"
+          color="module"
+          onClick={() => {
+            // The section always promised that an order to them starts here;
+            // until there was a button, it started nowhere (sparx persona
+            // issue 071).
+            ctx.open(
+              'inventory.purchase-orders.detail',
+              { id: 'new', supplier: supplierId },
+              { target: 'tab' }
+            );
+          }}
+        >
+          New order
+        </Button>
+      }
     >
+      {rows.length === 0 ? <Text className="text-sm">Nothing ordered from them yet.</Text> : null}
       <ul className="flex flex-col gap-2">
         {rows.map((po) => {
           const state = purchaseOrderState(po);
@@ -595,7 +575,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const save = () => {
     if (!canSave) return;
-    const input = toInput(form);
+    const input = supplierInputFrom(form);
     if (isNew) {
       create.mutate(input, {
         onSuccess: (result) => {

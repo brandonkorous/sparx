@@ -16,10 +16,10 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-academy',
-  version: '1.5.1',
+  version: '1.5.2',
   name: 'Academy',
   summary:
-    'The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Academy look, tuned for schools, tutoring, and training providers. Install it, make it yours, and launch a polished working site in minutes.',
+    'A complete starter in the Academy look, tuned for schools, tutoring, and training providers: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

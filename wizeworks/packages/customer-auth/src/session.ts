@@ -7,6 +7,20 @@
 /** The first-party httpOnly cookie carrying the site session token. */
 export const SESSION_COOKIE_NAME = 'sparx_customer_session';
 
+/**
+ * The name every OTHER cookie this instance sets or reads starts with.
+ *
+ * Left unset it was Better Auth's default, `better-auth`, which is also the
+ * staff instance's prefix. The staff instance keeps a signed copy of its session
+ * in `better-auth.session_data`, and this instance read that cookie as its own,
+ * failed it, and answered "not signed in". Measured 2026-10-02: Renée's site
+ * session read 200 alone and 401 with the workbench's `session_data` cookie
+ * beside it, so a shop owner signed in to the workbench on the same host could
+ * not stay signed in to their own site as a customer (sparx persona issue 084).
+ * The session token keeps its own name above, so no session is lost.
+ */
+export const CUSTOMER_COOKIE_PREFIX = 'sparx-customer';
+
 /** Session lifetime (matches server.ts `session.expiresIn`). Sessions slide
  *  forward on use — Better Auth manages the refresh. */
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days

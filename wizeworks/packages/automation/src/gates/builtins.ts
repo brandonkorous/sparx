@@ -10,7 +10,7 @@
 // "guardrail against over-build").
 
 import type { EffectInput, Gate, GateResult, NamedGate } from '../engine-types';
-import { moduleForAction } from '../actions/registry';
+import { moduleForEffect } from '../actions/registry';
 import { automationsDisabled, loadTenantState, moduleEnabledInSettings } from './tenant-state';
 
 /** Tenant must be active — a suspended/closed tenant produces no automation effects. */
@@ -29,10 +29,13 @@ const killSwitch: Gate = async (ctx) => {
     : { kind: 'allow' };
 };
 
-/** The action's owning module must be enabled — don't send email if the email
- *  module is off, etc. Platform-level actions (module === null) always pass. */
+/** The module this step needs must be enabled: no campaign goes out with the
+ *  email module off, etc. Platform-level steps (no module) always pass, and so
+ *  does a step whose action says it needs none, such as an order confirmation,
+ *  which a buyer gets whether or not the business has email (sparx persona
+ *  issue 087). */
 const moduleActive: Gate = async (ctx, effect) => {
-  const moduleSlug = moduleForAction(effect.actionType);
+  const moduleSlug = moduleForEffect(effect);
   if (!moduleSlug) return { kind: 'allow' };
   const { settings } = await loadTenantState(ctx);
   return moduleEnabledInSettings(settings, moduleSlug)

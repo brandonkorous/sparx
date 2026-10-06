@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import { Button, Text } from '@wizeworks/silicaui-react';
 import { Display, Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
@@ -241,9 +243,12 @@ function DropshipPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('dropship-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate Dropship
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -265,9 +270,12 @@ function DropshipCta() {
           Dropship off the day you stop, and your products and orders stay yours.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
-          <Button color="module-dropship" size="xl">
+          <a
+            href={signupHref('dropship-final')}
+            className={buttonClasses({ color: 'module-dropship', size: 'xl' })}
+          >
             Activate Dropship →
-          </Button>
+          </a>
           <a href="#routing">
             <Button size="xl" variant="outline">
               See how an order routes

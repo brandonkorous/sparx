@@ -380,7 +380,6 @@ function ServiceEditor({
                   <Input
                     color="module"
                     value={draft.name}
-                    placeholder="Full color & cut"
                     onChange={(event) => {
                       set('name', event.target.value);
                     }}
@@ -554,7 +553,6 @@ function ServiceEditor({
                       step={0.01}
                       className="max-w-40 tabular-nums"
                       value={draft.price}
-                      placeholder="0.00"
                       onChange={(event) => {
                         set('price', event.target.value);
                       }}
@@ -645,7 +643,6 @@ function ServiceEditor({
                         <Input
                           color="module"
                           value={requirement.role}
-                          placeholder="Stylist"
                           onChange={(event) => {
                             updateRequirement(index, { role: event.target.value });
                           }}

@@ -1,13 +1,13 @@
 # 099 — The Layers list called her map "site.map"
 
-**Status:** open
+**Status:** fixed (confirmed act 324); the second, smaller note not checked
 **Severity:** minor
 **Found by:** P02 · Halo & Hem · act 5
 **Surface:** mypiggles › My Site › Page › Layers
 **Filed:** 2026-08-22
 **Fixed:** —
-**Confirmed by:** —
-**Blocked on:** scope — the fix is a new hook on the shared studio engine, used by both brands
+**Confirmed by:** P03 · Juniper Row · act 324
+**Blocked on:** —
 
 ## What happened
 
@@ -87,6 +87,19 @@ Portland, OR 97205` in the Layers list while the canvas beside it correctly show
 `214 Bower Street, Suite B`. It is consistent — every bound node behaves this way —
 but it means the list shows the demo values for exactly the nodes that are
 already right.
+
+## Act 324: fixed another way
+
+The engine no longer needs a hook from the app: `rowLabel` in
+`studio/src/react/navigator/layer-tree.ts` names a live region from
+`HOST_COMPONENTS` in `@wizeworks/silica-catalog`, the same registry the palette
+reads, so the list and the palette now use one name. `site.map` and
+`scheduling.services` are both registered there ("Booking services"). On
+Juniper Row's Shop page the Layers list reads **Product listing**, not
+`commerce.plp`. Seen on screen.
+
+The second note, a bound node listed by its sample, is not checked: Juniper Row
+has no bound address on any page, so there was nothing to read.
 
 ## Rating effect
 

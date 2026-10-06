@@ -494,6 +494,18 @@ export async function setProductCategories(
   });
 }
 
+// Many products into, or out of, one category at once: additive, never a
+// replace. Lives in its own file; exported here so callers keep writing
+// `categoryService.addProductsToCategory`.
+export {
+  addProductsToCategory,
+  removeProductsFromCategory,
+  planCategoryAdds,
+  planCategoryRemovals,
+  type CategoryBulkResult,
+  type CategoryLink,
+} from './category-membership';
+
 // ─── Internal helpers ─────────────────────────────────────────────────
 
 // `shopperVisibleProduct` moved to ./site-visibility so the COLLECTION service

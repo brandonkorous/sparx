@@ -31,7 +31,7 @@ import {
   type SilicaResolver,
 } from '@wizeworks/builder-schemas';
 import { PLACEHOLDER_IMAGE } from '@wizeworks/silica-catalog';
-import { plainText } from '@wizeworks/commerce-schemas';
+import { cadenceKey, cadenceLabel, plainText } from '@wizeworks/commerce-schemas';
 
 import {
   isNotFound,
@@ -43,9 +43,12 @@ import {
   type PublicProductVariant,
 } from './commerce';
 import { getEntriesByIds, publicGetPaged, type ApiEntry } from './content';
+import { CORE_FIRST_SENTENCE, CORE_FIRST_SOME_VERSIONS, corePaySentence } from './core-choice-copy';
 import { backInStockLine, formatMoney, preorderShipsLine } from './format';
 import { madeToOrderCopy, type StorefrontPaymentMode } from './made-to-order-copy';
 import { mediaUrl } from './media';
+import { fleetFitRecordFields } from './fleet-fit-tree';
+import { REPEAT_NOTE } from './repeat-copy';
 
 /** How many products a bounded rail shows at most — a curated handful, never the whole
  *  catalog (the whole-catalog grid binds `commerce.product`).
@@ -110,7 +113,10 @@ function setListMeta(root: DataSources, key: string, shown: number, paging: List
  *  refs). `image` is a `{ url, alt }` object; the host `format` unwraps it to the
  *  `<img src>` string. `price`/`compareAtPrice` are raw dollars — the host formats
  *  currency. */
-function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<string, unknown> {
+export function toSilicaProduct(
+  p: PublicProductListItem,
+  tenantSlug: string
+): Record<string, unknown> {
   const url = mediaUrl(p.primaryImageId, tenantSlug);
   // A signed-in B2B viewer's price wins over retail — reusing the existing
   // compareAtPrice strikethrough mechanic (a sale-price pattern) to show it: `price`
@@ -149,6 +155,10 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     // the field entirely has to fall on the sellable side. A grid is where a shopper
     // decides what to open, so it has to ride the list shape and not just the PDP.
     soldOut: p.inStock ? undefined : true,
+    // What the card's fleet badges hang on (sparx persona issue 086). BOTH keys on
+    // every record, undefined unless this buyer's fleet says so: a key missing from
+    // the record is unknown to the resolver, which keeps the badge showing.
+    ...fleetFitRecordFields(p.fleetFit),
   };
 }
 
@@ -238,6 +248,24 @@ export function productToSilicaRecord(
     // bind. `shown` is what the panel's visibility hangs on — absent, not false,
     // because the engine drops a node whose ref is absent (see `visibleWhen`).
     madeToOrder: madeToOrderRecord(p, price, commerce),
+    // A rebuilt part's refundable core deposit (sparx persona issue 051). Every key,
+    // always, with `shown` false when no version carries one.
+    coreDeposit: coreDepositRecord(
+      p,
+      commerce?.defaultCurrency ?? 'USD',
+      commerce?.defaultLocale ?? 'en-US'
+    ),
+    // …and the other way to buy that part: send the old one first, pay no deposit
+    // (issue 057). Same rule as above: every key, always.
+    coreChoice: coreChoiceRecord(
+      p,
+      commerce?.defaultCurrency ?? 'USD',
+      commerce?.defaultLocale ?? 'en-US'
+    ),
+    // How often (issue 739). Same rule as `madeToOrder`: every key, always, with
+    // `shown` false rather than absent, so a product bought once only draws no
+    // picker instead of an empty fieldset.
+    repeat: repeatRecord(p),
     // Something you can buy before it exists (issue 682). Same shape and same
     // reasoning as `madeToOrder` above: sentences, not values, because the tree
     // has no calendar.
@@ -245,6 +273,9 @@ export function productToSilicaRecord(
     // The day a sold-out thing comes back (issue 683). Only read inside the
     // sold-out notice, so it never argues with a buyable product.
     backInStock: backInStockSentence(p, commerce?.defaultLocale ?? 'en-US'),
+    // A product card an author bound to this product reads its fleet badges here
+    // (sparx persona issue 086). Both keys, always: a missing key would show them.
+    ...fleetFitRecordFields(p.fleetFit),
   };
 }
 
@@ -351,6 +382,7 @@ function productVersions(
   const options = [...p.options].sort((a, b) => a.position - b.position);
   const prices = new Set(p.variants.map((v) => v.yourPriceCents ?? v.priceCents));
   const showPrice = prices.size > 1;
+  const coresDiffer = new Set(p.variants.map((v) => v.coreChargeCents ?? 0)).size > 1;
   // Sorted the way the owner listed the options — XS through XL, then by color —
   // rather than in the order the variants happened to be generated in. A size list
   // reading XS, S, M, L, S, XL is a list a shopper has to search.
@@ -380,6 +412,10 @@ function productVersions(
     const parts = [shown];
     if (showPrice)
       parts.push(formatMoney(variant.yourPriceCents ?? variant.priceCents, currency, locale));
+    // When the versions differ in their core deposit, each one names its own: the
+    // buy box sentence can only speak for all of them at once.
+    if (coresDiffer && variant.coreChargeCents !== null)
+      parts.push(`plus ${formatMoney(variant.coreChargeCents, currency, locale)} core deposit`);
     if (!variant.inStock) parts.push('sold out');
     // PRESENT and false, NOT absent — the one place in this file where the
     // absent-rather-than-false convention is wrong. The picker gates its buyable
@@ -388,6 +424,97 @@ function productVersions(
     // every in-stock size rendered a radio with no words beside it (issue 214).
     return { id: variant.id, label: parts.join(', '), soldOut: !variant.inStock };
   });
+}
+
+/**
+ * The buy box's core deposit sentences (sparx persona issue 051).
+ *
+ * A remanufactured part is charged a refundable deposit on top of its price, and
+ * the shopper is charged it at checkout, so the page has to say so before the
+ * button. One deposit across every version reads as a plain sentence. Versions
+ * that differ (a "core sent first" choice with none, beside one that takes the
+ * deposit) are named in the version picker, and the sentence says so instead of
+ * quoting the wrong figure for half of them.
+ */
+function coreDepositRecord(
+  p: PublicProduct,
+  currency: string,
+  locale: string
+): { shown: boolean; headline: string; detail: string } {
+  const cores = p.variants.map((v) => v.coreChargeCents ?? 0);
+  if (!cores.some((cents) => cents > 0)) return { shown: false, headline: '', detail: '' };
+  const detail =
+    'It is paid back when you return your old part (the core) in a condition that can be rebuilt.';
+  const first = cores[0] ?? 0;
+  if (cores.every((cents) => cents === first)) {
+    // "Plus a deposit" is a promise of extra money, and it is false for a buyer who
+    // picks the other way below (issue 057). So when there IS another way, the
+    // headline names both, and the choice under it does the deciding.
+    const deposit = `${formatMoney(first, currency, locale)} refundable core deposit`;
+    return {
+      shown: true,
+      headline: coreChoiceRecord(p, currency, locale).shown
+        ? `A ${deposit}, or send your old part first`
+        : `Plus a ${deposit}`,
+      detail,
+    };
+  }
+  return {
+    shown: true,
+    headline: 'Some versions carry a refundable core deposit, shown beside each one',
+    detail,
+  };
+}
+
+/**
+ * The buy box's "Your old part" choice (sparx persona issue 057): pay the core
+ * deposit and ship now, or send the old part first, pay no deposit, and ship when it
+ * arrives.
+ *
+ * Shown when the version the page OPENS on can be bought both ways, which for a
+ * converted part (one version, one stock count) is the only version there is. When
+ * only some versions offer it, the second sentence says so, and the cart refuses the
+ * others in words a shopper can act on ("Pay the core deposit instead.").
+ *
+ * The deposit is named in the sentence only when every version carries the same one;
+ * otherwise the version picker names each version's own, and quoting one figure here
+ * would be wrong for half of them.
+ *
+ * Every key, always, with `shown` false: an ABSENT ref is unknown to the engine, which
+ * keeps the node as authored and would draw two empty radios on every product.
+ */
+function coreChoiceRecord(
+  p: PublicProduct,
+  currency: string,
+  locale: string
+): { shown: boolean; pay: string; first: string } {
+  const blank = { shown: false, pay: '', first: '' };
+  const offers = (v: PublicProductVariant): boolean =>
+    v.coreFirstOffered && (v.coreChargeCents ?? 0) > 0;
+  const opensOn = p.variants.find((v) => v.isDefault) ?? p.variants[0];
+  if (!opensOn || !offers(opensOn)) return blank;
+  const sameDeposit = new Set(p.variants.map((v) => v.coreChargeCents ?? 0)).size === 1;
+  return {
+    shown: true,
+    pay: corePaySentence(sameDeposit ? opensOn.coreChargeCents : null, currency, locale),
+    first: p.variants.every(offers)
+      ? CORE_FIRST_SENTENCE
+      : `${CORE_FIRST_SENTENCE} ${CORE_FIRST_SOME_VERSIONS}`,
+  };
+}
+
+/** The buy box's "How often" picker: the schedules this product offers, in
+ *  words, and the sentence that says what choosing one means. Empty when the
+ *  product is bought once only, or the shop cannot keep a card (the API sends no
+ *  schedules then). */
+export function repeatRecord(p: PublicProduct): Record<string, unknown> {
+  const options = p.repeatOptions ?? [];
+  if (options.length === 0) return { shown: false, choices: [], note: '' };
+  return {
+    shown: true,
+    choices: options.map((option) => ({ key: cadenceKey(option), label: cadenceLabel(option) })),
+    note: REPEAT_NOTE,
+  };
 }
 
 function madeToOrderRecord(

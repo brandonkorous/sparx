@@ -93,6 +93,24 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
+/** The color of a quote's standing on this list. Accepted is the good outcome,
+ *  a priced quote is waiting on the customer, a declined or expired one is
+ *  over. A draft carries no color: nothing about it is decided yet. */
+function priceOfferTone(stageType: string | undefined): 'success' | 'info' | 'danger' | undefined {
+  switch (stageType) {
+    case 'committed':
+    case 'paid':
+      return 'success';
+    case 'open':
+    case 'final':
+      return 'info';
+    case 'void':
+      return 'danger';
+    default:
+      return undefined;
+  }
+}
+
 export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
   // Lateness is counted on the BUSINESS's day, the same zone the server uses,
   // so this list and Money -> Owed to you cannot give one invoice two ages.
@@ -393,7 +411,14 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             <tbody>
               {rows.map((doc) => {
                 const due = describeDue(doc.dueAt, doc.overdueDays, businessZone);
-                const state = invoiceState(doc.status);
+                // A quote or estimate is a price offered, not a bill: its payment
+                // status is `unpaid` from birth, and "Owed" beside an accepted
+                // quote said the money was owed twice, once on the quote and once
+                // on its invoice (sparx persona issue 085). It shows where it
+                // stands instead, and no balance.
+                const state = doc.priceOffer
+                  ? { label: doc.stageName ?? 'Quote', tone: priceOfferTone(doc.stageType) }
+                  : invoiceState(doc.status);
                 return (
                   <tr
                     key={doc.id}
@@ -463,7 +488,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
                         doc.balance > 0 ? 'font-medium' : '',
                       ].join(' ')}
                     >
-                      {formatMoney(doc.balance, doc.currency)}
+                      {doc.priceOffer ? '—' : formatMoney(doc.balance, doc.currency)}
                     </td>
                   </tr>
                 );

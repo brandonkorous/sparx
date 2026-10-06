@@ -14,6 +14,8 @@ import type {
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
   CreateSetupSessionParams,
+  LookedUpPayment,
+  LookupPaymentParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
@@ -22,15 +24,24 @@ import type {
   RefundResult,
   SetupSession,
   StoredChargeResult,
+  VaultFromPaymentParams,
   VaultedMethod,
   WebhookEvent,
 } from '../gateway';
 import { credentialRef, getPaymentSecretReader } from '../secrets';
-import { normalizeStripeEvent, toPaymentIntent, toPaymentResult } from '../stripe-util';
+import {
+  lookupStripePayment,
+  normalizeStripeEvent,
+  toCancelResult,
+  toPaymentIntent,
+  toPaymentResult,
+} from '../stripe-util';
 import {
   chargeStripeStoredMethod,
   completeStripeVault,
   createStripeSetupSession,
+  stripeSaveForLater,
+  vaultStripePayment,
 } from '../stripe-vault';
 import { constructEventWithAnySecret, parseWebhookSecrets } from '../webhook-secrets';
 
@@ -63,6 +74,12 @@ export class SparxPayGateway implements PaymentGateway {
   async createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent> {
     const stripe = this.platform();
     const destination = await this.merchantAccountId(params.tenantId);
+    // Keep the card for a repeat order (issue 739). The customer lives on the
+    // platform account, the same place `createSetupSession` vaults to, so a
+    // renewal finds it exactly as it would a card saved from the account page.
+    const save = params.saveForLater
+      ? await stripeSaveForLater(stripe, params.tenantId, params.saveForLater)
+      : null;
 
     const intent = await stripe.paymentIntents.create({
       amount: params.amount,
@@ -71,7 +88,7 @@ export class SparxPayGateway implements PaymentGateway {
       transfer_data: { destination },
       application_fee_amount: sparxPayFeeCents(params.amount),
       ...(params.captureMethod === 'manual' ? { capture_method: 'manual' as const } : {}),
-      automatic_payment_methods: { enabled: true },
+      ...(save ? save.params : { automatic_payment_methods: { enabled: true } }),
       metadata: {
         tenantId: params.tenantId,
         orderId: params.orderId ?? '',
@@ -81,7 +98,7 @@ export class SparxPayGateway implements PaymentGateway {
       },
     });
 
-    return toPaymentIntent(intent);
+    return { ...toPaymentIntent(intent), ...(save ? { customerRef: save.customerRef } : {}) };
   }
 
   async confirmPayment(intentId: string): Promise<PaymentResult> {
@@ -112,7 +129,7 @@ export class SparxPayGateway implements PaymentGateway {
 
   async cancelPayment(intentId: string): Promise<PaymentResult> {
     try {
-      return toPaymentResult(await this.platform().paymentIntents.cancel(intentId));
+      return toCancelResult(await this.platform().paymentIntents.cancel(intentId));
     } catch (err) {
       return { success: false, errorMessage: err instanceof Error ? err.message : 'cancel failed' };
     }
@@ -183,6 +200,15 @@ export class SparxPayGateway implements PaymentGateway {
 
   completeVault(params: CompleteVaultParams): Promise<VaultedMethod | null> {
     return completeStripeVault(this.platform(), params.setupRef);
+  }
+
+  vaultFromPayment(params: VaultFromPaymentParams): Promise<VaultedMethod | null> {
+    return vaultStripePayment(this.platform(), params.paymentRef);
+  }
+
+  /** Destination charges live on the platform account, as the vault does. */
+  lookupPayment(params: LookupPaymentParams): Promise<LookedUpPayment | null> {
+    return lookupStripePayment(this.platform(), params.paymentRef);
   }
 
   async chargeStoredMethod(params: ChargeStoredMethodParams): Promise<StoredChargeResult> {

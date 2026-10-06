@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import { Button, Heading } from '@wizeworks/silicaui-react';
 import {
@@ -156,9 +158,12 @@ function ConciergeHero() {
               unsure. Instant help at your front door, running on your own AI, never ours.
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('ai-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Turn on your concierge →
-              </Button>
+              </a>
               <a href="#how">
                 <Button size="lg" variant="outline">
                   See how it answers
@@ -677,9 +682,12 @@ function ConciergePricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('ai-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate AI
-          </Button>
+          </a>
         </div>
       </div>
       <p className="mt-3.5 font-sans text-sm">
@@ -705,9 +713,12 @@ function ConciergeCta() {
           stays.
         </p>
         <div className="flex flex-wrap items-center gap-4">
-          <Button color="module-ai" size="xl">
+          <a
+            href={signupHref('ai-final')}
+            className={buttonClasses({ color: 'module-ai', size: 'xl' })}
+          >
             Turn on your concierge →
-          </Button>
+          </a>
           <a href="/docs">
             {/* Inside the dark island `variant="outline"` resolves its own
                 border + ink from the flipped base ramp — no hexes needed. */}

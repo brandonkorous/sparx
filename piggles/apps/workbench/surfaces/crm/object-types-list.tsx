@@ -17,7 +17,7 @@ import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faBoxes, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { isModuleDisabled, useObjectTypes, type CrmObjectType } from './object-types-data';
@@ -31,6 +31,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('crm.object-types.list');
   const [showArchived, setShowArchived] = useState(false);
   const { data, error, isPending, isError, isFetching, dataUpdatedAt, refetch } = useObjectTypes({
     includeArchived: showArchived,
@@ -52,13 +53,13 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New thing to track: hold Shift to open alongside, Alt for a new window"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
             onClick={(event) => {
               ctx.open('crm.object-type.detail', { key: 'new' }, { target: targetFor(event) });
             }}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
-            New thing to track
+            {createLabel}
           </Button>
         }
         controls={

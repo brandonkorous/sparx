@@ -693,6 +693,8 @@ export const EMAIL_SOURCES: DataSource[] = [
       // delivered / cancelled emails read; each is empty when it doesn't apply, so
       // an optional row self-drops (a cancelled order with no reason shows no line).
       text('refundTotal', 'Refund total'),
+      // Refundable core deposits on rebuilt parts (sparx issue 051); empty when none.
+      text('coreChargeTotal', 'Refundable core deposits'),
       // Made to order (issue 026). Both self-drop: an order with nothing made
       // to order shows neither row, so an ordinary receipt is unchanged.
       text('readyOn', 'Ready date'),
@@ -700,6 +702,14 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('deliveredAt', 'Delivered date'),
       text('cancelReason', 'Cancellation reason'),
       text('shippingAddress', 'Shipping address'),
+      // How it reaches the customer (issue 064). Exactly one of the pair reads
+      // "yes" and the other is blank, so a block shown only when one of them is
+      // filled says the pickup sentence or the delivery one, never both.
+      text('pickup', 'Picked up in person'),
+      text('delivery', 'Delivered to the customer'),
+      text('pickupLater', 'Still to be picked up'),
+      text('pickedUp', 'Already picked up'),
+      text('pickupFrom', 'Pickup address'),
       text('placedAt', 'Date'),
       text('reviewUrl', 'Review link'),
       text('statusUrl', 'Order status link'),
@@ -851,6 +861,27 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('replacementCarrier', 'Replacement carrier'),
       text('replacementTracking', 'Replacement tracking number'),
       text('replacementTrackingUrl', 'Replacement tracking link'),
+    ],
+  },
+  {
+    // A wholesale order's sign-off: who decided it and why (sparx persona issue
+    // 087). Like a return's denial reason, these are facts about the DECISION,
+    // carried on `b2b.order.rejected` / `.approved` and overlaid through the
+    // send's snapshot; the order row has no column for them. `byAccount` /
+    // `byBusiness` read "yes" or are blank, so a block shown only when one is
+    // filled tells the buyer to ask their own colleague, or the business, never
+    // both. Every field is blank when it does not apply, so a row bound to it
+    // drops.
+    key: 'approval',
+    label: 'Order sign-off',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'order',
+    fields: [
+      text('decidedBy', 'Who decided'),
+      text('reason', 'The reason they gave'),
+      text('byAccount', 'Decided by someone at the customer'),
+      text('byBusiness', 'Decided by your team'),
     ],
   },
   {

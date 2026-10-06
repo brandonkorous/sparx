@@ -14,6 +14,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 /** Draft a launch post when a product goes live (`product.published`). Seeded
  *  paused — the tenant connects an account, picks targets, then turns it on. */
 export const SOCIAL_ANNOUNCE_PRODUCT: SystemAutomationSpec = {
+  key: 'social.announce-product',
   name: 'Announce new product',
   description:
     'Drafts a social post when you publish a new product, and drops it in your Approvals inbox to review before it goes out. Off by default. Connect a social account, pick where to post, then turn it on.',
@@ -27,6 +28,7 @@ export const SOCIAL_ANNOUNCE_PRODUCT: SystemAutomationSpec = {
 /** Draft an announcement when an article/blog post publishes
  *  (`content.entry.published`). Seeded paused — opt-in like the product one. */
 export const SOCIAL_ANNOUNCE_BLOG: SystemAutomationSpec = {
+  key: 'social.announce-blog-post',
   name: 'Announce new blog post',
   description:
     'Drafts a social post when you publish a new article, ready in your Approvals inbox to review before it goes out. Off by default. Connect a social account, pick where to post, then turn it on.',

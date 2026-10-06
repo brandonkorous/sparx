@@ -12,7 +12,7 @@
 // customer's Save draft), which is why Save/Cancel live on the address form
 // itself here, not on the pane toolbar.
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -38,6 +38,8 @@ import {
   type CustomerAddress,
   type CustomerAddressInput,
 } from './customers-data';
+import { localityLine } from '../../lib/address-format';
+import { useBusinessCountry } from '../../lib/business-country';
 
 const TYPE_ITEMS: Record<string, string> = {
   shipping: 'Delivery',
@@ -67,14 +69,14 @@ function AddressCard({
     address.company,
     address.line1,
     address.line2,
-    [address.city, address.region, address.postalCode].filter(Boolean).join(', '),
+    localityLine(address),
     address.country,
   ].filter((line): line is string => Boolean(line?.trim()));
 
   return (
     <div className="border-base-300 flex flex-col gap-2 rounded-lg border p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge color="neutral" variant="outline" size="sm">
+        <Badge variant="outline" size="sm">
           {addressTypeLabel(address.type)}
         </Badge>
         {address.label ? <Text className="text-sm font-semibold">{address.label}</Text> : null}
@@ -151,11 +153,18 @@ function toAddressDraft(a?: CustomerAddress): AddressDraft {
   };
 }
 
-/** Present fields only — the server treats optionals as absent-not-null, so an
- *  empty box must be an omitted key. Required fields always go. */
+/** A blank box goes as null, which the server reads as "take this off". It
+ *  used to be left out, which the server reads as "leave it", so a company,
+ *  suite or phone emptied on a saved address stayed on it (sparx persona
+ *  issue 073). Required fields always go. */
 function buildAddressInput(draft: AddressDraft): CustomerAddressInput {
-  const clean = (value: string) => (value.trim() === '' ? undefined : value.trim());
-  const optional: Partial<CustomerAddressInput> = {
+  const clean = (value: string) => (value.trim() === '' ? null : value.trim());
+  return {
+    type: draft.type,
+    line1: draft.line1.trim(),
+    city: draft.city.trim(),
+    country: draft.country.trim().toUpperCase(),
+    isDefault: draft.isDefault,
     label: clean(draft.label),
     recipientName: clean(draft.recipientName),
     company: clean(draft.company),
@@ -163,18 +172,6 @@ function buildAddressInput(draft: AddressDraft): CustomerAddressInput {
     region: clean(draft.region),
     postalCode: clean(draft.postalCode),
     phone: clean(draft.phone),
-  };
-  // Drop the undefined keys so the payload carries only fields the person filled.
-  for (const key of Object.keys(optional) as (keyof CustomerAddressInput)[]) {
-    if (optional[key] === undefined) delete optional[key];
-  }
-  return {
-    type: draft.type,
-    line1: draft.line1.trim(),
-    city: draft.city.trim(),
-    country: draft.country.trim().toUpperCase(),
-    isDefault: draft.isDefault,
-    ...optional,
   };
 }
 
@@ -195,6 +192,20 @@ function AddressForm({
 
   const [draft, setDraft] = useState<AddressDraft>(() => toAddressDraft(address));
   const [showErrors, setShowErrors] = useState(false);
+
+  // A NEW address starts in the business's own country (Business details), the
+  // way a new stock location does (issue 043): five trade accounts in Utah and
+  // Idaho each had "United States" picked by hand from 250 countries (sparx
+  // persona issue 079). Shown in the box before saving, so it can be changed,
+  // and never re-filled once the owner has touched the country.
+  const businessCountry = useBusinessCountry();
+  const countryTouched = useRef(false);
+  useEffect(() => {
+    if (!isNew || countryTouched.current || !businessCountry) return;
+    setDraft((current) =>
+      current.country === '' ? { ...current, country: businessCountry } : current
+    );
+  }, [isNew, businessCountry]);
 
   const set = <K extends keyof AddressDraft>(key: K, value: AddressDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -379,6 +390,7 @@ function AddressForm({
             required
             value={draft.country}
             onChange={(next) => {
+              countryTouched.current = true;
               set('country', next);
             }}
           />
@@ -437,7 +449,8 @@ function AddressForm({
 /* ── Section ────────────────────────────────────────────────────────────── */
 
 export function CustomerAddressesSection({ customerId }: { customerId: string }) {
-  const { data: addresses, isPending, isError } = useCustomerAddresses(customerId);
+  const addressesQuery = useCustomerAddresses(customerId);
+  const { data: addresses, isPending, isError } = addressesQuery;
   const remove = useDeleteAddress(customerId);
   const confirm = useConfirm();
 
@@ -492,7 +505,22 @@ export function CustomerAddressesSection({ customerId }: { customerId: string })
       ) : null}
 
       {isError ? (
-        <Text className="text-sm">Could not load addresses just now.</Text>
+        // A way back from a failed load, as the tax section beside it has: the
+        // sentence alone left a dead section until the whole page was reopened
+        // (sparx persona issue 079).
+        <div className="flex flex-wrap items-center gap-3">
+          <Text className="text-sm">Could not load addresses just now. Nothing has been lost.</Text>
+          <Button
+            size="sm"
+            variant="outline"
+            loading={addressesQuery.isFetching}
+            onClick={() => {
+              void addressesQuery.refetch();
+            }}
+          >
+            Try again
+          </Button>
+        </div>
       ) : isPending ? (
         <Text className="text-sm" role="status">
           Loading…

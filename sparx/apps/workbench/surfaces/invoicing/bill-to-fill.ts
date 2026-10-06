@@ -43,6 +43,12 @@
 export interface BilledParty {
   name: string;
   email: string;
+  /**
+   * The postal address printed under the name. Optional because a caller that
+   * does not know the customer's address must not be taken to say it is empty:
+   * left out, the address box is left exactly as it is (issue 077).
+   */
+  address?: string;
 }
 
 /**
@@ -62,9 +68,15 @@ export function fillFromCustomer(
   attachedTo: BilledParty | null,
   picked: BilledParty
 ): BilledParty {
-  return {
+  const filled: BilledParty = {
     name: follows(current.name, attachedTo?.name) ? picked.name : current.name,
     email: follows(current.email, attachedTo?.email) ? picked.email : current.email,
+  };
+  if (picked.address === undefined) return filled;
+  const address = current.address ?? '';
+  return {
+    ...filled,
+    address: follows(address, attachedTo?.address) ? picked.address : address,
   };
 }
 
@@ -85,7 +97,11 @@ export function clearedFromCustomer(
   current: BilledParty,
   attachedTo: BilledParty | null
 ): BilledParty {
-  return fillFromCustomer(current, attachedTo, { name: '', email: '' });
+  return fillFromCustomer(current, attachedTo, {
+    name: '',
+    email: '',
+    ...(attachedTo?.address !== undefined ? { address: '' } : {}),
+  });
 }
 
 /** Whether this box is still the previous customer's, rather than hers. */

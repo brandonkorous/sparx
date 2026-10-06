@@ -17,6 +17,7 @@ import {
   findableProductCount,
   findableRecordCount,
   generateScopedSearchKeyWithExpiry,
+  indexedSecondBoundary,
   palette,
   PLATFORM_MODULE,
   resolveTypesenseHost,
@@ -36,11 +37,17 @@ import { requireCommerceModule } from '../../lib/commerce-context.js';
 import { requireCrmModule } from '../../lib/crm-context.js';
 import { resolveListScope } from '../../lib/property.js';
 
-/** How long a product is allowed to be out of the index before its absence counts
- *  as lost rather than in flight. Generous on purpose: the cost of waiting five
- *  minutes to tell somebody is nothing, and the cost of a warning that appears and
- *  clears on every save is that she stops reading them. */
-const INDEX_GRACE_MS = 5 * 60 * 1000;
+/** How long a record is allowed to be out of the index before its absence counts
+ *  as lost rather than in flight.
+ *
+ *  It was five minutes, and that was not free. For five minutes after a buyer
+ *  signed up, an owner who had just watched it happen typed his name and was told
+ *  "Nothing in your records matches", with no offer to put him back (sparx
+ *  persona issue 086). The worker indexes a record in seconds, so a minute still
+ *  covers the in-flight case many times over, and a warning that appears and
+ *  clears on every save still cannot happen: an edit never moves the moment a
+ *  customer or order is counted from (see below). */
+const INDEX_GRACE_MS = 60 * 1000;
 
 const SearchProductsQuery = z.object({
   q: z.string().optional(),
@@ -73,7 +80,9 @@ const SearchQuery = z.object({
 
 const PaletteQuery = z.object({
   q: z.string().min(1),
-  limit: z.coerce.number().int().min(1).max(20).optional(),
+  // Up to 100 so the console's search box can offer "Show more" when a name
+  // matches more people or orders than its first page holds.
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 const SearchAllQuery = z.object({
@@ -193,6 +202,7 @@ const searchRoutes: FastifyPluginAsync = (app) => {
       products: result.products.map((h) => h.document),
       customers: result.customers.map((h) => h.document),
       orders: result.orders.map((h) => h.document),
+      found: result.found,
     });
   });
 
@@ -265,13 +275,26 @@ const searchRoutes: FastifyPluginAsync = (app) => {
       // that route filters on the tenant alone — so both halves of these two
       // comparisons are counted tenant-wide, with no site scope. Products are
       // the odd one out, not these.
-      findableRecordCount('customers', auth.tenantId),
+      //
+      // BOTH HALVES COUNT THE SAME PEOPLE, keyed on when each record came into
+      // being, which is a field the index holds too. They used to differ: this
+      // side left out anything EDITED inside the grace window and the index side
+      // counted every document, so each customer somebody had just edited hid one
+      // who was genuinely missing, and a customer in the bin (never in the index)
+      // read as missing forever. Either way the box could tell an owner nothing
+      // was missing while a buyer who signed up sat outside it, which is the
+      // shape found on Gillett Diesel on 2026-10-03 (sparx persona issue 086).
+      // `indexedSecondBoundary` stops this side on the same whole second the
+      // index side stops on.
+      findableRecordCount('customers', auth.tenantId, settledBefore),
       withTenant({ tenantId: auth.tenantId }, (tx) =>
-        tx.customer.count({ where: { updatedAt: { lte: settledBefore } } })
+        tx.customer.count({
+          where: { deletedAt: null, createdAt: { lt: indexedSecondBoundary(settledBefore) } },
+        })
       ),
-      findableRecordCount('orders', auth.tenantId),
+      findableRecordCount('orders', auth.tenantId, settledBefore),
       withTenant({ tenantId: auth.tenantId }, (tx) =>
-        tx.order.count({ where: { updatedAt: { lte: settledBefore } } })
+        tx.order.count({ where: { placedAt: { lt: indexedSecondBoundary(settledBefore) } } })
       ),
     ]);
     // `null` is "the collection is not there, so we could not look" — never zero,

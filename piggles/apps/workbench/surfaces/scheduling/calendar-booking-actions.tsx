@@ -5,7 +5,14 @@
 // which states what a booking LOOKS like — a different question, and the one
 // that changes for different reasons (RULE #0.5).
 
-import { Button, Field, FieldControl, FieldLabel, Input } from '@wizeworks/silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldError,
+  FieldLabel,
+  Input,
+} from '@wizeworks/silicaui-react';
 import {
   faCalendarClock,
   faCheck,
@@ -16,7 +23,8 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 
-import { MOVE_EXPLAINER } from './booking-move-copy';
+import type { WallClockBox } from '../../lib/wall-clock';
+import { moveExplainer } from './booking-move-copy';
 import { Section } from './calendar-booking-parts';
 import type { Acts, Moves } from './calendar-booking-state';
 
@@ -79,26 +87,29 @@ export function LifecycleRow({
 export function MoveSection({
   when,
   setWhen,
+  clock,
   canMove,
   busy,
   onMove,
 }: {
   when: string;
   setWhen: (value: string) => void;
+  /** Whose clock the box is on: the booking's own (sparx persona issue 086). */
+  clock: WallClockBox;
   canMove: boolean;
   busy: boolean;
   onMove: () => void;
 }) {
   return (
-    <Section title="Move it" description={MOVE_EXPLAINER}>
+    <Section title="Move it" description={moveExplainer(clock.hint)}>
       <div className="flex flex-wrap items-end gap-3">
-        <Field className="min-w-0">
+        <Field className="min-w-0" invalid={clock.problem !== null}>
           <FieldLabel>New start</FieldLabel>
           <FieldControl
             render={
               <Input
                 type="datetime-local"
-                color="module"
+                color={clock.problem ? 'error' : 'module'}
                 className="max-w-xs"
                 value={when}
                 onChange={(domEvent) => {
@@ -107,6 +118,7 @@ export function MoveSection({
               />
             }
           />
+          {clock.problem ? <FieldError match>{clock.problem}</FieldError> : null}
         </Field>
         <Button
           size="sm"

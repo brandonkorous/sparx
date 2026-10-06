@@ -41,6 +41,7 @@ import { ReturnDispositionPanel } from './return-disposition-panel';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatDate, formatDateTime, formatMoney, useOrder } from './data';
+import { coresOwedOn } from './cores-data';
 import { ReturnParcels } from './return-parcels';
 import { needsShipmentRecord } from './return-shipment';
 import {
@@ -187,6 +188,17 @@ function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: Return
     if (unit === undefined) return sum;
     const qty = it.approvedQuantity > 0 ? it.approvedQuantity : it.quantity;
     return sum + Math.round(unit * qty * 100);
+  }, 0);
+
+  // A rebuilt part that comes back is its own core, so its core deposit goes back
+  // with it. The server adds this to the refund itself; the same rule here so
+  // the dialog says the figure the customer will actually get (issue 051).
+  const itemById = new Map((order?.items ?? []).map((it) => [it.id, it] as const));
+  const coreBackCents = detail.items.reduce((sum, it) => {
+    const line = itemById.get(it.orderItemId);
+    if (line?.coreCharge == null) return sum;
+    const qty = it.approvedQuantity > 0 ? it.approvedQuantity : it.quantity;
+    return sum + Math.min(qty, coresOwedOn(line)) * Math.round(line.coreCharge * 100);
   }, 0);
 
   const canApprove = detail.status === 'requested' || detail.status === 'denied';
@@ -588,6 +600,7 @@ function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: Return
         detail={detail}
         currency={currency}
         suggestedCents={suggestedCents}
+        coreBackCents={coreBackCents}
         open={refundOpen}
         onClose={() => {
           setRefundOpen(false);

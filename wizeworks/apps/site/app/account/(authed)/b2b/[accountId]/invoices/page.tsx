@@ -1,6 +1,11 @@
 'use client';
 
-// B2B portal — invoice list for one account.
+// Wholesale account: the invoices the shop has issued to one trade account.
+// Quotes and unsent drafts are not invoices and are left out by the portal API.
+//
+// A partly paid invoice shows what is still owed beside what it was for, and a
+// status reads as a word ("Partly paid"), never the stored code (sparx persona
+// issue 084).
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -9,6 +14,7 @@ import { useParams } from 'next/navigation';
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bInvoices, type B2bInvoiceEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { invoiceStatusTone, invoiceStatusWords } from '@/lib/trade-account-words';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
@@ -21,8 +27,10 @@ function formatDate(iso: string): string {
   });
 }
 
-function invoiceStatusTone(status: string) {
-  return status === 'paid' ? 'success' : status === 'overdue' ? 'danger' : 'warning';
+/** The line under the invoice number: when it is due, or when it was paid. */
+function dueLine(inv: B2bInvoiceEntry): string | null {
+  if (inv.status === 'paid') return inv.paidAt ? `Paid ${formatDate(inv.paidAt)}` : null;
+  return inv.dueAt ? `Due ${formatDate(inv.dueAt)}` : null;
 }
 
 export default function B2bInvoicesPage() {
@@ -44,7 +52,9 @@ export default function B2bInvoicesPage() {
         setInvoices(res.items);
         setTotal(res.total);
       })
-      .catch(() => active && setError('Could not load invoices.'));
+      .catch(
+        () => active && setError('The invoices on this account could not be loaded just now.')
+      );
     return () => {
       active = false;
     };
@@ -52,9 +62,9 @@ export default function B2bInvoicesPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="link link-primary text-sm">
-          ← Back
+      <div className="mb-5 flex flex-wrap items-center gap-4">
+        <Link href={`/account/b2b/${accountId}`} className="link link-primary">
+          ← Back to account
         </Link>
         <h1 className="text-base-content text-3xl font-semibold tracking-tight">Invoices</h1>
       </div>
@@ -64,52 +74,63 @@ export default function B2bInvoicesPage() {
           {error}
         </Alert>
       ) : invoices === null ? (
-        <div className="skeleton" style={{ height: 200 }} />
+        <div className="skeleton h-50" />
       ) : invoices.length === 0 ? (
-        <div
-          className="card border-base-300 border"
-          style={{ padding: '2rem', textAlign: 'center' }}
-        >
-          <p className="text-base-content">No invoices found.</p>
+        <div className="card border-base-300 items-center border p-8 text-center">
+          <p className="text-base-content">There are no invoices on this account yet.</p>
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="flex flex-col gap-2">
             {invoices.map((inv) => {
               const isOverdue = inv.status === 'overdue';
+              const partlyPaid = inv.status !== 'paid' && inv.balanceCents < inv.amountCents;
+              const when = dueLine(inv);
+              const late = isOverdue && inv.overdueDays > 0;
               return (
                 <div
                   key={inv.id}
-                  className="card border-base-300 border"
-                  style={{
-                    padding: '0.875rem 1rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '1rem',
-                  }}
+                  className="card border-base-300 flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 border px-4 py-3.5"
                 >
-                  <div>
-                    <strong>{inv.invoiceNumber}</strong>
-                    <div
-                      className="text-base-content"
-                      style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
+                  <div className="min-w-0">
+                    <strong className="whitespace-nowrap">{inv.invoiceNumber}</strong>
+                    {(when !== null || late) && (
+                      <div className="text-base-content text-sm">
+                        {when}
+                        {late && (
+                          <span className="text-danger">
+                            {when ? ' · ' : ''}
+                            {inv.overdueDays === 1 ? '1 day' : `${inv.overdueDays} days`} late
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {inv.poNumber && (
+                      <div className="text-base-content text-sm">Your PO number {inv.poNumber}</div>
+                    )}
+                    {/* The invoice as the shop prints it, to keep or send on to
+                        accounts (sparx persona issue 085). */}
+                    <Link
+                      href={`/account/b2b/${accountId}/documents/${inv.id}`}
+                      className="link link-primary text-sm"
                     >
-                      Due {formatDate(inv.dueAt)}
-                      {isOverdue && inv.overdueDays > 0 && (
-                        <span className="text-danger" style={{ marginLeft: '0.4rem' }}>
-                          · {inv.overdueDays}d overdue
+                      Print or save as PDF
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge color={invoiceStatusTone(inv.status)} variant="soft">
+                      {invoiceStatusWords(inv.status)}
+                    </Badge>
+                    <div className="flex flex-col items-end">
+                      <strong className="whitespace-nowrap">
+                        {formatMoney(partlyPaid ? inv.balanceCents : inv.amountCents, inv.currency)}
+                      </strong>
+                      {partlyPaid && (
+                        <span className="text-base-content text-sm whitespace-nowrap">
+                          left of {formatMoney(inv.amountCents, inv.currency)}
                         </span>
                       )}
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Badge color={invoiceStatusTone(inv.status)} variant="soft">
-                      {inv.status}
-                    </Badge>
-                    <strong style={{ whiteSpace: 'nowrap' }}>
-                      {formatMoney(inv.amountCents, 'USD')}
-                    </strong>
                   </div>
                 </div>
               );
@@ -117,7 +138,7 @@ export default function B2bInvoicesPage() {
           </div>
 
           {total > PAGE_SIZE && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+            <div className="mt-4 flex items-center justify-between gap-3">
               <Button
                 type="button"
                 color="primary"
@@ -127,11 +148,8 @@ export default function B2bInvoicesPage() {
               >
                 Previous
               </Button>
-              <span
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
-              >
-                {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
+              <span className="text-base-content text-sm">
+                {skip + 1} to {Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button
                 type="button"

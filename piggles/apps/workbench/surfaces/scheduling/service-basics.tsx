@@ -56,7 +56,6 @@ export function ServiceBasics({
               <Input
                 color="module"
                 value={draft.name}
-                placeholder="Full color & cut"
                 onChange={(event) => {
                   onSet('name', event.target.value);
                 }}

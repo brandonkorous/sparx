@@ -18,6 +18,7 @@
 // identically wherever it appears, and a fix to a repeater is a fix everywhere.
 
 import { useEffect, useMemo, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -202,6 +203,25 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
+  // A record that is not there (removed, or another business's id) says so,
+  // rather than drawing its form under Remove and Save with the server's own
+  // words above it (persona issue 226).
+  if (!isNew && record.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={record.error}
+          noun={label.toLowerCase()}
+          title={`Could not load this ${label.toLowerCase()}`}
+          description={`This is a problem reaching the server. The ${label.toLowerCase()} itself is unaffected. Try again in a moment.`}
+          onRetry={() => {
+            void record.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -258,17 +278,6 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {record.isError ? (
-            <Alert color="error">
-              <AlertContent>
-                <AlertTitle>Could not load this {label.toLowerCase()}</AlertTitle>
-                <AlertDescription>
-                  {recordErrorMessage(record.error, 'It may have been removed.')}
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
-
           {fields.length === 0 && type.isSuccess ? (
             <Alert color="info">
               <AlertContent>

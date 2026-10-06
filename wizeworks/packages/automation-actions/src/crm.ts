@@ -64,7 +64,36 @@ const CreateTaskConfig = z.object({
   // resolved assignee doubles as the creator.
   assigneeField: z.string().min(1).optional(),
   assignedToUserId: z.string().uuid().optional(),
+  // The order status this task exists to move the order out of. Set, the task
+  // closes itself when the order leaves it, whoever moves it and wherever: the
+  // held-order task is `pending_approval`, and stayed open after the account's
+  // approver approved the order on the site. Needs a rule about an order.
+  closeWhenOrderLeaves: z.string().min(1).max(20).optional(),
+  // The task exists to get a wholesale account's prices and terms set up, and
+  // closes itself, done, the moment they are (by `ACCOUNT_SET_UP_TO_DO`, the
+  // rule the set-up automation opens it on). Wasatch Front's stayed open after
+  // it was put on Net 30 with a $25,000 limit. Needs a rule about an account.
+  closeWhenAccountSetUp: z.boolean().optional(),
+  // The deal stage TYPE (open | won | lost) the task exists for. It closes when
+  // the deal leaves it: a follow-up on a deal already won or lost asks for
+  // nothing. Needs a rule about a deal.
+  closeWhenDealLeaves: z.enum(['open', 'won', 'lost']).optional(),
+  // The task exists to take a billing document on from the stage it is in, and
+  // closes when it is taken on, turned into an order, voided or removed. Needs
+  // a rule about a document.
+  closeWhenDocumentMovesOn: z.boolean().optional(),
 });
+
+/** At most one thing a task can wait on: two would mean two different moments
+ *  it closes at, and only one of them can be right. */
+function waitsOnCount(cfg: z.infer<typeof CreateTaskConfig>): number {
+  return [
+    cfg.closeWhenOrderLeaves,
+    cfg.closeWhenAccountSetUp,
+    cfg.closeWhenDealLeaves,
+    cfg.closeWhenDocumentMovesOn,
+  ].filter(Boolean).length;
+}
 
 const MoveStageConfig = z.object({
   toStageId: z.string().uuid(),
@@ -216,6 +245,44 @@ export const installCrmActions = installOnce((): void => {
       // field → an explicit id → the tenant owner. The assignee is also the creator.
       const customerId = optionalEntityId(effect.fields, 'customer.id');
       const dealId = optionalEntityId(effect.fields, 'deal.id');
+      const orderId = optionalEntityId(effect.fields, 'order.id');
+      // The account and the billing document, when the rule is about one, so the
+      // task says what it is about and can close itself when that moves on.
+      const companyId = optionalEntityId(effect.fields, 'b2bAccount.id');
+      const billingDocumentId = optionalEntityId(effect.fields, 'invoice.id');
+      const documentStageId = optionalEntityId(effect.fields, 'invoice.stageId');
+      if (waitsOnCount(cfg) > 1) {
+        throw new Error(
+          'crm.create_task: this step says its task closes on more than one thing. Choose one.'
+        );
+      }
+      // Each refused rather than opened as an ordinary task: one that was meant
+      // to close itself and cannot is exactly the stale task the setting exists
+      // to prevent.
+      if (cfg.closeWhenOrderLeaves && !orderId) {
+        throw new Error(
+          'crm.create_task: this step closes its task when the order moves on, but what ' +
+            'started the rule is not about an order.'
+        );
+      }
+      if (cfg.closeWhenAccountSetUp && !companyId) {
+        throw new Error(
+          'crm.create_task: this step closes its task when the account is set up, but what ' +
+            'started the rule is not about a wholesale account.'
+        );
+      }
+      if (cfg.closeWhenDealLeaves && !dealId) {
+        throw new Error(
+          'crm.create_task: this step closes its task when the deal moves on, but what ' +
+            'started the rule is not about a deal.'
+        );
+      }
+      if (cfg.closeWhenDocumentMovesOn && (!billingDocumentId || !documentStageId)) {
+        throw new Error(
+          'crm.create_task: this step closes its task when the document moves on, but what ' +
+            'started the rule is not about a quote, estimate or invoice.'
+        );
+      }
       const fromField = cfg.assigneeField
         ? optionalEntityId(effect.fields, cfg.assigneeField)
         : undefined;
@@ -233,20 +300,64 @@ export const installCrmActions = installOnce((): void => {
         cfg.dueInDays !== undefined
           ? (await taskService.dueAtIn(ctx, cfg.dueInDays)).toISOString()
           : undefined;
-      const task = await taskService.create(
-        { tenantId: ctx.tenantId, userId: assignee, tx: ctx.tx },
-        {
-          title: interpolateFields(cfg.title, effect.fields),
-          description: cfg.description
-            ? interpolateFields(cfg.description, effect.fields)
-            : undefined,
-          dueAt,
-          priority: cfg.priority,
-          assignedToUserId: assignee,
-          customerId,
-          dealId,
-        }
-      );
+      const svcCtx = { tenantId: ctx.tenantId, userId: assignee, tx: ctx.tx };
+      const input = {
+        title: interpolateFields(cfg.title, effect.fields),
+        description: cfg.description
+          ? interpolateFields(cfg.description, effect.fields)
+          : undefined,
+        dueAt,
+        priority: cfg.priority,
+        assignedToUserId: assignee,
+        customerId,
+        dealId,
+        orderId,
+        companyId,
+        billingDocumentId,
+      };
+      // Each of these reads the subject under a lock and opens nothing when it
+      // has already moved on between the event and this run: then nothing is
+      // left to ask, and a task opened anyway is one nothing would ever close.
+      if (cfg.closeWhenAccountSetUp) {
+        const task = await taskService.createWhileAccountNeedsSetUp(svcCtx, input);
+        if (task) return { taskId: task.id };
+        return {
+          taskId: null,
+          skipped: 'The account already has its prices and terms, so there was nothing to set up.',
+        };
+      }
+      if (cfg.closeWhenDealLeaves) {
+        const task = await taskService.createWhileDealIs(svcCtx, input, cfg.closeWhenDealLeaves);
+        if (task) return { taskId: task.id };
+        return {
+          taskId: null,
+          skipped: `The deal is no longer ${cfg.closeWhenDealLeaves}, so there was nothing left to do.`,
+        };
+      }
+      if (cfg.closeWhenDocumentMovesOn && documentStageId) {
+        const task = await taskService.createWhileDocumentIsAt(svcCtx, input, documentStageId);
+        if (task) return { taskId: task.id };
+        return {
+          taskId: null,
+          skipped: 'The document has already moved on, so there was nothing left to do.',
+        };
+      }
+      if (cfg.closeWhenOrderLeaves) {
+        // The order can be decided between the event and this run. Then there is
+        // nothing to ask anybody, and opening the task would leave one nothing
+        // will ever close.
+        const task = await taskService.createWhileOrderIs(svcCtx, input, cfg.closeWhenOrderLeaves);
+        if (task) return { taskId: task.id };
+        const was =
+          cfg.closeWhenOrderLeaves === 'pending_approval'
+            ? 'waiting for sign-off'
+            : cfg.closeWhenOrderLeaves.replace(/_/g, ' ');
+        return {
+          taskId: null,
+          skipped: `The order is no longer ${was}, so there was nothing left to ask anybody.`,
+        };
+      }
+      const task = await taskService.create(svcCtx, input);
       return { taskId: task.id };
     },
   });

@@ -36,7 +36,7 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 import { indexCommerceEntity, publishCommerceEvent } from '../events';
-import { recomputeCartTotals } from './cart-service';
+import { assertCartOpenOnTx, recomputeCartTotals } from './cart-service';
 import { giftCardOnCart, giftCardReservation } from './gift-card-reservation';
 import { formatCents } from './money';
 import {
@@ -401,6 +401,8 @@ export async function redeemCode(
       select: { id: true, customerId: true, channel: true, propertyId: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+    // A bought basket takes no codes (sparx persona issue 087).
+    await assertCartOpenOnTx(tx, cart.id);
 
     const discount = await tx.discount.findFirst({
       where: {
@@ -504,6 +506,7 @@ export async function removeCode(
   args: { cartId: string; code: string }
 ): Promise<{ removed: number }> {
   return withTenant(ctx, async (tx) => {
+    await assertCartOpenOnTx(tx, args.cartId);
     const { count } = await tx.cartDiscount.deleteMany({
       where: {
         cartId: args.cartId,
@@ -816,6 +819,7 @@ export async function applyGiftCardToCart(
       select: { id: true, currency: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+    await assertCartOpenOnTx(tx, cart.id);
 
     const card = await tx.giftCard.findFirst({ where: { code: upper } });
     if (!card) throw new CommerceNotFoundError('GiftCard', upper);
@@ -880,6 +884,7 @@ export async function removeGiftCardFromCart(
       select: { id: true, pricingTrace: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+    await assertCartOpenOnTx(tx, cart.id);
     const trace = { ...((cart.pricingTrace ?? {}) as Prisma.JsonObject) };
     delete trace.giftCard;
     await tx.cart.update({
@@ -1129,6 +1134,8 @@ export async function grantAccountCredit(
         deltaCents: input.amountCents,
         reason: input.reason,
         note: input.note ?? null,
+        referenceType: input.referenceType ?? null,
+        referenceId: input.referenceId ?? null,
         actorUserId: ctx.userId ?? null,
       },
     });
@@ -1248,6 +1255,7 @@ export async function spendAccountCredit(
       select: { id: true, currency: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+    await assertCartOpenOnTx(tx, cart.id);
 
     const credit = await tx.accountCredit.findFirst({
       where: { customerId: input.customerId, currency: cart.currency },

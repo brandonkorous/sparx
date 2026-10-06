@@ -86,6 +86,7 @@ export async function applyScheduling(ctx: ApplyCtx, pack: SampleDataPack): Prom
       select: { id: true },
     });
     ctx.resourceIdByKey.set(r.key, row.id);
+    ctx.counts.resources += 1;
     const windows =
       r.windows ??
       DEFAULT_WINDOW.days.map((day) => ({
@@ -150,6 +151,7 @@ export async function applyScheduling(ctx: ApplyCtx, pack: SampleDataPack): Prom
       capacity,
     });
     ctx.serviceIdByKey.set(s.key, row.id);
+    ctx.counts.services += 1;
   }
 
   // Bookings — generated, each linking a persona-customer + the service's resources.

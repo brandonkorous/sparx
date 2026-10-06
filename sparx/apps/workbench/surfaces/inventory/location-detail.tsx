@@ -69,6 +69,7 @@ import {
   type LocationAddressInput,
 } from './locations-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { useBusinessCountry } from '../../lib/business-country';
 
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes fields pinned to the left edge. */
@@ -212,7 +213,11 @@ function LocationEditor({
   // Show the "needs a little more" note once the person has engaged the form —
   // on a new location that is the moment they name it or touch an address field,
   // so a disabled Create button always has a reason on screen next to it.
-  const anyAddressTyped = Boolean(draft.line1.trim() || draft.city.trim() || draft.country.trim());
+  // Against the STARTING values: a new location opens with the business's country
+  // already in it, which is not the person engaging the form (sparx issue 043).
+  const anyAddressTyped = Boolean(
+    draft.line1.trim() || draft.city.trim() || draft.country.trim() !== initial.country.trim()
+  );
   const showAddrWarning =
     addrRequired && !addrOk && (isNew ? nameOk || codeOk || anyAddressTyped : true);
 
@@ -221,8 +226,8 @@ function LocationEditor({
       return (
         draft.name.trim() !== '' ||
         draft.code.trim() !== '' ||
-        addressChanged(draft, BLANK) ||
-        draft.type !== BLANK.type
+        addressChanged(draft, initial) ||
+        draft.type !== initial.type
       );
     }
     return (
@@ -662,9 +667,28 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
   const location = useLocation(id);
+  const businessCountry = useBusinessCountry();
 
   if (isNew) {
-    return <LocationEditor ctx={ctx} id="new" initial={BLANK} existing={null} />;
+    // Held until the business's country is known, so the field opens on it rather
+    // than on "No country" (sparx persona issue 043). A cached read, so one frame.
+    if (businessCountry === undefined) {
+      return (
+        <div className={PANE_SHELL}>
+          <p className="p-4 text-sm" role="status">
+            Loading…
+          </p>
+        </div>
+      );
+    }
+    return (
+      <LocationEditor
+        ctx={ctx}
+        id="new"
+        initial={{ ...BLANK, country: businessCountry }}
+        existing={null}
+      />
+    );
   }
 
   // A failed load REPLACES the form — never an empty form beside a dead Save,

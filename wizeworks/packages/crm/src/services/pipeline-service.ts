@@ -22,6 +22,7 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '../errors';
+import { closeWhenDealMovesOn } from './task-service';
 
 /**
  * A stage's meaning has to belong to the object the pipeline moves.
@@ -269,6 +270,20 @@ export async function updateStage(
       entityId: updated.id,
       diff: null,
     });
+    // Changing what a stage MEANS moves every deal on it without touching a
+    // deal: a "Follow up" task on a deal in a stage that now counts as won asks
+    // for nothing, the same as if the deal had been moved there.
+    if (before.pipeline.objectKey === 'deal' && updated.stageType !== before.stageType) {
+      const onStage = await tx.deal.findMany({
+        where: { stageId, deletedAt: null },
+        select: { id: true },
+      });
+      await closeWhenDealMovesOn(tx, ctx, {
+        dealIds: onStage.map((d) => d.id),
+        because: `The stage “${updated.name}” now counts as ${updated.stageType}, so this no longer needs doing.`,
+        byUserId: ctx.userId ?? null,
+      });
+    }
     return updated;
   });
 }
@@ -335,6 +350,14 @@ export async function deleteStage(
       const target = pipeline.stages.find((s) => s.id === args.reassignToStageId);
       if (!target) throw new CrmNotFoundError('PipelineStage', args.reassignToStageId);
 
+      // The deals about to move, so a task waiting on the kind of stage they
+      // leave can be closed once they have.
+      const movingDeals = isTickets
+        ? []
+        : await tx.deal.findMany({
+            where: { stageId: args.stageId, deletedAt: null },
+            select: { id: true },
+          });
       const moved = isTickets
         ? await tx.ticket.updateMany({
             where: { stageId: args.stageId, deletedAt: null },
@@ -345,6 +368,10 @@ export async function deleteStage(
             data: { stageId: args.reassignToStageId },
           });
       movedRecords = moved.count;
+      await closeWhenDealMovesOn(tx, ctx, {
+        dealIds: movingDeals.map((d) => d.id),
+        byUserId: ctx.userId ?? null,
+      });
     }
 
     await tx.pipelineStage.delete({ where: { id: args.stageId } });

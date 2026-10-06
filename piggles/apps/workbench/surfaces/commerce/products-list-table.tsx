@@ -94,11 +94,13 @@ function Row({
       }}
     >
       <ChooseCell checked={chosen} label={`Choose ${product.title}`} onToggle={onChoose} />
-      <td>
+      <td className="w-full max-w-0 min-w-56">
         {/* The name IS the row. The web address underneath is a note about it,
             so it is smaller — but at full ink, not faded: it is there to be
-            read. */}
-        <span className="block truncate font-medium">{product.title}</span>
+            read. The name takes the free width and wraps to two lines, so the
+            years and the model at the end of a long name stay visible (sparx
+            persona issue 070). */}
+        <span className="line-clamp-2 font-medium break-words">{product.title}</span>
         <span className="block truncate font-mono text-sm">/{product.handle}</span>
       </td>
       <td className="hidden max-w-40 truncate whitespace-nowrap @xl:table-cell">
@@ -126,23 +128,36 @@ export function ProductsListTable({
   onSort,
   onOpen,
   selection,
+  everyMatch = false,
+  onLeaveEveryMatch,
 }: {
   rows: ProductRow[];
   sort: Sort;
   onSort: (key: ProductSortKey) => void;
   onOpen: (product: ProductRow, event: Modifiers) => void;
   selection: ListSelection<ProductRow>;
+  /** Every product the list matches is chosen, on every page (issue 065). */
+  everyMatch?: boolean;
+  onLeaveEveryMatch?: () => void;
 }) {
   return (
     <Table size="sm" hover>
       <thead>
         <tr>
           <SelectAllCell
-            allChosen={selection.allOnPageChosen}
+            allChosen={everyMatch || selection.allOnPageChosen}
             someChosen={selection.someOnPageChosen}
             disabled={rows.length === 0}
             label="Choose every product on this page"
-            onToggle={selection.toggleAllOnPage}
+            onToggle={() => {
+              // Unticking the header while every match is chosen means "none".
+              if (everyMatch) {
+                onLeaveEveryMatch?.();
+                selection.clear();
+              } else {
+                selection.toggleAllOnPage();
+              }
+            }}
           />
           <SortHeader
             column="title"
@@ -175,8 +190,10 @@ export function ProductsListTable({
           <Row
             key={product.id}
             product={product}
-            chosen={selection.has(product.id)}
+            chosen={everyMatch || selection.has(product.id)}
             onChoose={(on, modifiers) => {
+              // Leaving one out of "every match" falls back to the ticked rows.
+              if (everyMatch) onLeaveEveryMatch?.();
               selection.toggle(product, on, modifiers);
             }}
             onOpen={onOpen}

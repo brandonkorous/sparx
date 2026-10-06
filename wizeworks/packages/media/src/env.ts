@@ -28,8 +28,9 @@ const StorageEnvSchema = z.object({
   // Externally-reachable api origin that serves /v1/public/media/* (empty →
   // same-origin relative URLs, used in dev).
   MEDIA_PUBLIC_URL: z.string().default(''),
-  // Local backend root (dev/test only).
-  MEDIA_LOCAL_DIR: z.string().default('.media-local'),
+  // Local backend root (dev/test only). Unset → the folder api-rest serves from
+  // (see `localMediaRoot` in storage.ts).
+  MEDIA_LOCAL_DIR: z.string().optional(),
 });
 
 export type StorageEnv = z.infer<typeof StorageEnvSchema>;

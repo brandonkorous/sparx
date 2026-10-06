@@ -22,6 +22,10 @@ export type {
   VaultedMethod,
   ChargeStoredMethodParams,
   StoredChargeResult,
+  SaveForLater,
+  VaultFromPaymentParams,
+  LookupPaymentParams,
+  LookedUpPayment,
 } from './gateway';
 
 export {
@@ -97,6 +101,7 @@ export {
 } from './gateways/authorize-net';
 export { FirstPayGateway, FIRST_PAY_ID, normalizeFirstPayEvent } from './gateways/first-pay';
 export { CustomRedirectGateway, CUSTOM_ID, normalizeCustomEvent } from './gateways/custom-redirect';
+export { PayPalGateway, PAYPAL_ID, normalizePayPalEvent } from './gateways/paypal';
 
 // sparx.market — merchant-of-record direct platform charges (docs/106 §4.7).
 export {

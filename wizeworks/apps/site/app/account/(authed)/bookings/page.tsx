@@ -18,6 +18,7 @@ import {
 } from '@/lib/customer-client';
 
 import { AddToCalendar } from '@/components/booking/add-to-calendar';
+import { formatStamp } from '@/components/booking/booking-clock';
 import { ReschedulePicker } from '@/components/booking/reschedule-picker';
 
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
@@ -31,7 +32,7 @@ const STATUS_LABEL: Record<string, string> = {
   confirmed: 'Confirmed',
   in_progress: 'In progress',
   completed: 'Completed',
-  cancelled: 'Cancelled',
+  cancelled: 'Canceled',
   no_show: 'Missed',
 };
 
@@ -49,16 +50,6 @@ function bookingStatusTone(status: string) {
     default:
       return 'warning';
   }
-}
-
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
 }
 
 export default function BookingsPage() {
@@ -162,7 +153,7 @@ export default function BookingsPage() {
                   <div className="min-w-0 flex-1">
                     <strong>{b.serviceName}</strong>
                     <div className="text-base-content mt-1 text-sm">
-                      {formatDateTime(b.startAt)} · {b.durationMinutes} min
+                      {formatStamp(b.startAt, b.timezone)} · {b.durationMinutes} min
                     </div>
                     {b.staff.length > 0 && (
                       <div className="text-base-content text-sm">With {b.staff.join(', ')}</div>
@@ -210,8 +201,8 @@ export default function BookingsPage() {
                 {confirmingCancel === b.id && (
                   <Alert color="warning" role="alertdialog" className="mt-2 flex-col items-start">
                     <p>
-                      Cancel {b.serviceName} on {formatDateTime(b.startAt)}? The time goes back to
-                      whoever wants it, and this cannot be undone.
+                      Cancel {b.serviceName} on {formatStamp(b.startAt, b.timezone)}? The time goes
+                      back to whoever wants it, and this cannot be undone.
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button

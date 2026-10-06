@@ -44,7 +44,15 @@
 
 import type { Node } from '@wizeworks/silicaui-html';
 
-import { backInStockLine, madeToOrderNote, preorderNote, soldOutNotice } from './commerce';
+import {
+  backInStockLine,
+  coreDepositNote,
+  corePicker,
+  madeToOrderNote,
+  preorderNote,
+  repeatPicker,
+  soldOutNotice,
+} from './commerce';
 import { visibleWhen } from './conditional';
 
 /**
@@ -449,6 +457,100 @@ function formSlotIndex(children: readonly (Node | string)[]): number {
   });
 }
 
+/** The add-to-cart form in a slot `formSlotIndex` found: the slot itself, or the form
+ *  directly inside the sold-out gate that wraps it. */
+function slotForm(slot: Node | string | undefined): Element | null {
+  if (slot === undefined || typeof slot === 'string') return null;
+  if (isAddToCartForm(slot)) return slot as Element;
+  const kids = (slot as Element).children;
+  if (!Array.isArray(kids)) return null;
+  const form = kids.find((k) => typeof k !== 'string' && isAddToCartForm(k));
+  return form === undefined || typeof form === 'string' ? null : (form as Element);
+}
+
+/** Does this subtree hold a control posting `name`? */
+function holdsControl(node: Node, name: string): boolean {
+  return controlNames(node).includes(name);
+}
+
+/** Is this node the form's submit button, in either shape a stamped tree carries it:
+ *  the `Button` atom the factory emits, or a raw `<button>`/`<input type="submit">`. */
+function isSubmit(node: Node): boolean {
+  if (node.kind === 'component') {
+    const props = (node as { props?: Record<string, unknown> }).props ?? {};
+    return props.type === 'submit';
+  }
+  if (node.kind !== 'element') return false;
+  if (node.tag === 'button') return node.attrs?.type !== 'button';
+  return node.tag === 'input' && node.attrs?.type === 'submit';
+}
+
+/**
+ * Put the "your old part" choice into a stamped add-to-cart form (issue 057).
+ *
+ * WHY THIS CLEARS THE BAR ABOVE. A part that may be bought by sending the old one first
+ * cannot be bought that way from a page stamped before the choice existed: the form
+ * posts no `coreFirst`, so every buyer pays the deposit whether the business offers the
+ * other way or not. The platform stamped the form (no author types an action ref), and
+ * the replacement is the factory's own `corePicker()`, CALLED rather than rebuilt.
+ *
+ * Safe on an ordinary product for the same reason as every node the disclosure repair
+ * adds: it hangs on `coreChoice.shown`, which is false for anything that cannot be
+ * bought both ways, and the engine drops it.
+ *
+ * WHERE, because presence is not placement. Before the quantity, which is where the
+ * factory puts it. A stamped form whose quantity an author removed gets it before the
+ * button instead, so it is still read before the press. A form with neither gets it
+ * last, inside the form, which is the only place a radio posts from.
+ */
+function insertCorePicker(form: Element): Element {
+  const children = [...(form.children ?? [])];
+  let at = children.findIndex((c) => typeof c !== 'string' && holdsControl(c, 'quantity'));
+  if (at === -1) at = children.findIndex((c) => typeof c !== 'string' && isSubmit(c));
+  if (at === -1) at = children.length;
+  return { ...form, children: [...children.slice(0, at), corePicker(), ...children.slice(at)] };
+}
+
+/**
+ * Put the "how often" choice into a stamped add-to-cart form (issue 739).
+ *
+ * The same bar as the core choice, cleared the same way. A page stamped before repeat
+ * orders existed posts no `repeat`, so an owner could tick "Offer it on repeat", be
+ * told her shoppers can choose it, and have nobody able to: her own product page had
+ * no place to choose. Found on Juniper Row's Linen Shirtdress, whose page Devi had
+ * edited, so the re-stamp rightly left it alone. The node is the factory's own
+ * `repeatPicker()`, hung on `repeat.shown`, which is false for every product that
+ * offers no schedule and at every shop that cannot keep a card.
+ *
+ * WHERE: the factory's order is how often, then your old part, then the quantity. So
+ * before the core choice when the form has one, then before the quantity, then before
+ * the button, then last.
+ */
+function insertRepeatPicker(form: Element): Element {
+  const children = [...(form.children ?? [])];
+  let at = children.findIndex(
+    (c) => typeof c !== 'string' && gatedOn(c, 'coreChoice.shown', false)
+  );
+  if (at === -1)
+    at = children.findIndex((c) => typeof c !== 'string' && holdsControl(c, 'quantity'));
+  if (at === -1) at = children.findIndex((c) => typeof c !== 'string' && isSubmit(c));
+  if (at === -1) at = children.length;
+  return { ...form, children: [...children.slice(0, at), repeatPicker(), ...children.slice(at)] };
+}
+
+/** The slot with its form changed by `insert`, whichever shape the slot is. */
+function withFormChange(slot: Node, insert: (form: Element) => Element): Node {
+  if (isAddToCartForm(slot)) return insert(slot as Element);
+  const kids = (slot as Element).children;
+  if (!Array.isArray(kids)) return slot;
+  return {
+    ...(slot as Element),
+    children: kids.map((k) =>
+      typeof k !== 'string' && isAddToCartForm(k) ? insert(k as Element) : k
+    ),
+  };
+}
+
 /** Put the back-in-stock line inside a sold-out notice that predates it. */
 function addDateToNotice(node: Node): Node {
   if (isElement(node) && gatedOn(node, 'soldOut', false)) {
@@ -469,6 +571,15 @@ export const DISCLOSURE_REFS = [
   'preorder.shown',
   'soldOut',
   'backInStock',
+  // A rebuilt part's refundable core deposit (sparx persona issue 051): charged on
+  // top of the price, so a page silent about it charges money it never named.
+  'coreDeposit.shown',
+  // The other way to buy that part (issue 057): send the old one first and pay no
+  // deposit. Unlike the four above it lives INSIDE the form, because it is a choice
+  // the form posts rather than a sentence beside it.
+  'coreChoice.shown',
+  // Buy once or on repeat (issue 739). Inside the form too, for the same reason.
+  'repeat.shown',
 ] as const;
 
 export type DisclosureRef = (typeof DISCLOSURE_REFS)[number];
@@ -495,6 +606,7 @@ export function missingDisclosures(column: Node): DisclosureRef[] {
   // The gate wrapper around the form is not the column; answering for it would count
   // the same buy box twice.
   if (gatedOn(column, 'soldOut', true) || gatedOn(column, 'soldOut', false)) return [];
+  const form = slotForm(children[formSlotIndex(children)]);
 
   const notice = children.find(
     (child) => typeof child !== 'string' && gatedOn(child, 'soldOut', false)
@@ -503,12 +615,21 @@ export function missingDisclosures(column: Node): DisclosureRef[] {
   const out: DisclosureRef[] = [];
   if (!hasDirectGate(children, 'madeToOrder.shown', false)) out.push('madeToOrder.shown');
   if (!hasDirectGate(children, 'preorder.shown', false)) out.push('preorder.shown');
+  if (!hasDirectGate(children, 'coreDeposit.shown', false)) out.push('coreDeposit.shown');
   // BOTH senses. The notice says the thing is gone; the negated gate is what stops the
   // button rendering beside it. A page with one and not the other contradicts itself.
   if (!notice || !hasDirectGate(children, 'soldOut', true)) out.push('soldOut');
   // Only when there IS a notice — otherwise the missing notice brings the line with it
   // and reporting both would name one repair twice.
   if (notice && !mentionsRef(notice, 'backInStock')) out.push('backInStock');
+  // A DIRECT child of the form, where the factory puts it — not "the ref is somewhere
+  // in the form", which is the search this file has been burned by three times.
+  if (form && !hasDirectGate(form.children ?? [], 'coreChoice.shown', false)) {
+    out.push('coreChoice.shown');
+  }
+  if (form && !hasDirectGate(form.children ?? [], 'repeat.shown', false)) {
+    out.push('repeat.shown');
+  }
   return out;
 }
 
@@ -534,6 +655,10 @@ function repairBuyBoxDisclosures(column: Element): Element {
   // The form itself has to disappear when there is nothing to sell. A stale tree leaves
   // it ungated, so it renders on a sold-out product beside the notice saying it is gone.
   let slot = children[at] as Node;
+  // Inside the form, so before the gate goes round it.
+  // The core choice first: the repeat choice is placed before it.
+  if (missing.has('coreChoice.shown')) slot = withFormChange(slot, insertCorePicker);
+  if (missing.has('repeat.shown')) slot = withFormChange(slot, insertRepeatPicker);
   if (!gatedOn(slot, 'soldOut', true)) {
     slot = visibleWhen(
       { kind: 'element', tag: 'div', class: 'flex flex-col', children: [slot] },
@@ -546,6 +671,7 @@ function repairBuyBoxDisclosures(column: Element): Element {
   const before: Node[] = [];
   if (missing.has('madeToOrder.shown')) before.push(madeToOrderNote());
   if (missing.has('preorder.shown')) before.push(preorderNote());
+  if (missing.has('coreDeposit.shown')) before.push(coreDepositNote());
 
   // Instead of the button. `soldOut` is missing when EITHER half is, so the notice is
   // added only when there is genuinely not one.

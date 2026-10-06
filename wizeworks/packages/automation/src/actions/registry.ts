@@ -13,7 +13,7 @@
 
 import type { ActionType } from '@wizeworks/automation-schemas';
 
-import type { ActionDescriptor } from '../engine-types';
+import type { ActionDescriptor, EffectInput } from '../engine-types';
 
 const registry = new Map<ActionType, ActionDescriptor>();
 
@@ -36,9 +36,18 @@ export function getDescriptor(type: ActionType): ActionDescriptor | undefined {
   return registry.get(type);
 }
 
-/** The owning module slug for an action (used by the module-active global gate). */
+/** The owning module slug for an action type. */
 export function moduleForAction(type: ActionType): string | null {
   return registry.get(type)?.module ?? null;
+}
+
+/** The module this one step needs before it may run (the module-active global
+ *  gate). The action's own `moduleFor` decides where it has one, otherwise its
+ *  owning module (sparx persona issue 087). */
+export function moduleForEffect(effect: EffectInput): string | null {
+  const descriptor = registry.get(effect.actionType);
+  if (!descriptor) return null;
+  return descriptor.moduleFor ? descriptor.moduleFor(effect) : descriptor.module;
 }
 
 export function registeredActionTypes(): ActionType[] {

@@ -151,6 +151,32 @@ const IDENTITY_SAMPLE = {
   supportEmail: 'hello@yourbusiness.example',
 };
 
+/**
+ * An address as an email reads it: its formatted parts (`.oneLine`, `.line1`,
+ * `.cityStateZip`, …) on an object that ALSO reads as its one-line form when a
+ * template uses it whole, as `{{order.shippingAddress}}`.
+ *
+ * Both spellings are in tenants' stored emails. The shipped receipt bound the whole
+ * object, which the merge-tag list offers as plain text, and every one printed
+ * "Shipping to [object Object]" (sparx persona issue 064); older bodies, and the
+ * default now, read `.oneLine`. A tenant who edited their receipt keeps whichever
+ * one they had, so both must read as the address. One definition, used by the send
+ * resolver and by the canvas sample below, so the editor and the inbox agree.
+ *
+ * `toString` is non-enumerable, so it is not a field: nothing that lists the parts
+ * (a snapshot, a merge-tag walk, JSON) meets it. '' when there is no address at
+ * all, so a "Shipping to" panel gated on either spelling drops whole rather than
+ * printing a label over a blank.
+ */
+export function addressMergeValue(
+  parts: Record<string, string> & { oneLine: string }
+): Record<string, string> | '' {
+  if (parts.oneLine.trim() === '') return '';
+  const value: Record<string, string> = { ...parts };
+  Object.defineProperty(value, 'toString', { value: () => parts.oneLine, enumerable: false });
+  return value;
+}
+
 // A neutral product-thumbnail placeholder for the editor CANVAS only. Line-item and
 // product-rail rows carry an `imageUrl`, and at a real send the resolver fills it with
 // the product's own photo; the sample needs *something* to draw so the canvas shows the
@@ -186,11 +212,27 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     placedAt: 'Jun 12, 2026',
     reviewUrl: '#',
     statusUrl: '#',
-    // The send resolver formats the shipping address to a single line, so the sample
-    // is that same STRING — not the structured object it used to be, which rendered as
-    // "[object Object]" on the editor canvas (the resolver never sees the sample; the
-    // canvas does). The digital-order case still self-drops the row (empty value).
-    shippingAddress: 'Alex Rivera, 128 Maple Ave, Springfield, IL 62704',
+    // The same SHAPE the send resolver produces (`addressMergeValue`): the parts the
+    // receipt binds (`.oneLine`), on a value that also reads as its one line when an
+    // older body binds the whole thing. The sample was a bare string for a while,
+    // which made the canvas look right while every real receipt printed
+    // "[object Object]" (issue 064): the canvas and the inbox disagreed about one tag.
+    shippingAddress: addressMergeValue({
+      name: 'Alex Rivera',
+      line1: '128 Maple Ave',
+      line2: '',
+      city: 'Springfield',
+      region: 'IL',
+      postalCode: '62704',
+      country: '',
+      cityStateZip: 'Springfield, IL 62704',
+      oneLine: 'Alex Rivera, 128 Maple Ave, Springfield, IL 62704',
+    }),
+    // A delivered order, so the canvas shows the delivery sentences; the pickup
+    // versions sit beside them in the email and show for a pickup order instead.
+    delivery: 'yes',
+    pickup: '',
+    pickupFrom: '',
     // Line items — the receipt the whole email is about. Absent from the sample before,
     // so the canvas showed tenants an empty item table while they edited it. Fields
     // match the resolver's item vocabulary (name · quantity · unitPrice · lineTotal),
@@ -283,6 +325,14 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     manageUrl: '#',
     replacement: 'Marlow Knit: Oat · L',
     deniedReason: 'It came back outside the 30-day window.',
+  },
+  // The business's own team turned it down, so the canvas shows the "ask your
+  // account manager" line and not the colleague one (exactly one is ever filled).
+  approval: {
+    decidedBy: 'Jordan Ellis',
+    reason: 'This needs a larger credit limit. We will be in touch to set one up.',
+    byAccount: '',
+    byBusiness: 'yes',
   },
   cart: {
     total: '$48.00',

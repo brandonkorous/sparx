@@ -126,6 +126,21 @@ body {
 .sparx-content ol {
   margin: 0.75rem 0 0.75rem 1.5rem;
 }
+/* The reset strips list markers, and nothing here put them back, so a policy's
+   bullet points read as indented paragraphs with no bullets (sparx persona
+   issue 038). Nested lists step down a marker, as written documents do. */
+.sparx-content ul {
+  list-style: disc outside;
+}
+.sparx-content ol {
+  list-style: decimal outside;
+}
+.sparx-content ul ul {
+  list-style-type: circle;
+}
+.sparx-content ol ol {
+  list-style-type: lower-alpha;
+}
 .sparx-content blockquote {
   border-left: 3px solid var(--color-base-300);
   padding-left: 1rem;

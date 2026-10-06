@@ -18,6 +18,10 @@ import { socialMcpTools } from '@wizeworks/social/mcp';
 import { b2bMcpTools } from '@wizeworks/b2b/mcp';
 import { funnelsMcpTools } from '@wizeworks/funnels/mcp';
 import { domainMcpTools } from './domain-tools.js';
+import { purchaseOrderMcpTools } from './purchase-order-tools.js';
+import { b2bPriceMcpTools } from './b2b-price-tools.js';
+import { b2bApprovalMcpTools } from './b2b-approval-tools.js';
+import { schedulingEndingMcpTools } from './scheduling-ending-tools.js';
 import { searchAdminMcpTools } from './search-admin-tools.js';
 
 // Structural type spanning every module's tool definition. Each module declares
@@ -39,6 +43,9 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   // Inventory (docs/100 P6c) — own read:inventory / write:inventory scopes;
   // additionally gated on the `inventory` module flag in server.ts (MODULE_BY_SCOPE).
   ...(inventoryMcpTools as unknown as AnyMcpTool[]),
+  // Emailing a placed order needs the mail bus, which the inventory package
+  // does not carry, so this one inventory tool lives here (purchase-order-tools.ts).
+  ...(purchaseOrderMcpTools as unknown as AnyMcpTool[]),
   ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
   ...(builderMcpTools as unknown as AnyMcpTool[]),
   // Media (image upload / reference) — write:builder scope (media is a builder/
@@ -60,6 +67,9 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   // Scheduling (docs/79 §11) — own read:scheduling / write:scheduling scopes;
   // additionally gated on the `scheduling` module flag in server.ts.
   ...(schedulingMcpTools as unknown as AnyMcpTool[]),
+  // Ending a booking settles the card on it, which needs the payment gateways
+  // the scheduling package does not carry (sparx persona issue 087).
+  ...(schedulingEndingMcpTools as unknown as AnyMcpTool[]),
   // CMS (docs/12) — content types + entries; own read:cms / write:cms scopes,
   // additionally gated on the `cms` module flag in server.ts. Thin wrappers over
   // the @wizeworks/cms service layer the REST routes drive (one service, many transports).
@@ -75,6 +85,12 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   // Thin wrappers over @wizeworks/b2b's service layer (extracted from the api-rest
   // routes so REST + MCP share one implementation — one service, many transports).
   ...(b2bMcpTools as unknown as AnyMcpTool[]),
+  // What one account pays answers from commerce's price engine, which the b2b
+  // package does not carry, so this one b2b tool lives here (b2b-price-tools.ts).
+  ...(b2bPriceMcpTools as unknown as AnyMcpTool[]),
+  // Deciding a held order also settles the card that paid for it, which needs the
+  // payment gateways the b2b package does not carry (sparx persona issue 087).
+  ...(b2bApprovalMcpTools as unknown as AnyMcpTool[]),
   // Funnels (docs/151) — campaigns and whether they worked; own read:funnels /
   // write:funnels scopes, additionally gated on the `funnels` module flag in
   // server.ts. The report tool is the one that matters: docs/152 A1 found that

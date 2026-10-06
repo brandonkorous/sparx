@@ -19,6 +19,7 @@
 // the operator did.
 
 import { useEffect, useRef, useState } from 'react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useMutation } from '@wizeworks/query';
 import {
@@ -61,6 +62,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     data: workflow,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -217,12 +219,19 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     : null;
 
   if (isError) {
+    // Gone (a 404) and unreachable say different things; the shared screen reads
+    // which from the error instead of one sentence hedging both (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <Alert color="danger" variant="soft">
-          This workflow could not be loaded. It may have been archived, or this is a problem
-          reaching the server.
-        </Alert>
+        <PaneLoadError
+          error={error}
+          noun="workflow"
+          title="Could not load this workflow"
+          description="This is a problem reaching the server. The workflow itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       </div>
     );
   }

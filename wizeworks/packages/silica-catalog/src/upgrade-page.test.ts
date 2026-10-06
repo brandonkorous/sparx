@@ -551,3 +551,234 @@ describe('the buy box that could not say why you cannot buy it', () => {
     expect(json(root)).toBe(before);
   });
 });
+
+describe('the buy box that could not take an old part first (issue 057)', () => {
+  type El = Extract<Node, { kind: 'element' }>;
+
+  /** A tree stamped before the "your old part" choice existed: today's factory output
+   *  with that one node taken out, so the test isolates exactly the thing it repairs. */
+  const withoutCorePicker = (node: Node): Node => {
+    if (node.kind === 'outlet') return node;
+    const kids = (node as El).children;
+    if (!Array.isArray(kids)) return node;
+    return {
+      ...(node as El),
+      children: kids
+        .filter(
+          (k) =>
+            typeof k === 'string' ||
+            k.kind === 'outlet' ||
+            !(k.data?.kind === 'visible' && k.data.ref === 'coreChoice.shown')
+        )
+        .map((k) => (typeof k === 'string' ? k : withoutCorePicker(k))),
+    };
+  };
+
+  const isPicker = (node: Node | string): boolean =>
+    typeof node !== 'string' &&
+    node.kind !== 'outlet' &&
+    node.data?.kind === 'visible' &&
+    node.data.ref === 'coreChoice.shown';
+
+  /** The add-to-cart form anywhere under a node. */
+  const findForm = (node: Node): El | null => {
+    if (node.kind === 'outlet') return null;
+    if (node.kind === 'element' && node.tag === 'form' && node.data?.kind === 'action') {
+      return node;
+    }
+    for (const k of (node as El).children ?? []) {
+      if (typeof k === 'string') continue;
+      const hit = findForm(k);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  const holdsQuantity = (node: Node | string): boolean =>
+    typeof node !== 'string' && JSON.stringify(node).includes('"name":"quantity"');
+
+  /** A buy box column stamped after the supply notices but before this: every other
+   *  disclosure already in place, so only the choice is missing. */
+  const olderColumn = (): Node =>
+    withoutCorePicker(
+      el('div', 'flex flex-col gap-4', {
+        children: [bind(el('h1', 'text-3xl', { text: 'Product name' }), 'title'), addToCartForm()],
+      })
+    );
+
+  it('fixture really is missing the choice', () => {
+    expect(JSON.stringify(olderColumn())).not.toContain('coreChoice.shown');
+  });
+
+  it('puts the choice INSIDE the form, right before the quantity', () => {
+    const { root, changed } = upgradePageBody(olderColumn());
+    expect(changed).toBe(true);
+    const form = findForm(root);
+    expect(form, 'the form went missing').not.toBeNull();
+    const kids = form?.children ?? [];
+    const picker = kids.findIndex(isPicker);
+    const quantity = kids.findIndex(holdsQuantity);
+    // A radio outside the form posts nothing, so presence anywhere else is no repair.
+    expect(picker, 'the choice is not a direct child of the form').toBeGreaterThan(-1);
+    expect(picker, 'the choice is not before the quantity').toBe(quantity - 1);
+  });
+
+  it('reaches a form that is already inside its sold-out gate', () => {
+    // The commonest stale shape now: a page healed for the supply notices, whose form
+    // sits one level down inside the `soldOut` wrapper.
+    const healedBefore = withoutCorePicker(buyBox());
+    const { root, changed } = upgradePageBody(healedBefore);
+    expect(changed).toBe(true);
+    expect((findForm(root)?.children ?? []).some(isPicker)).toBe(true);
+  });
+
+  it('goes before the button when an author removed the quantity', () => {
+    const noQuantity: Node = {
+      ...(withoutCorePicker(addToCartForm()) as El),
+    };
+    noQuantity.children = (noQuantity.children ?? []).filter((k) => !holdsQuantity(k));
+    const column = el('div', 'flex flex-col gap-4', { children: [noQuantity] });
+    const { root } = upgradePageBody(column);
+    const kids = findForm(root)?.children ?? [];
+    const picker = kids.findIndex(isPicker);
+    const button = kids.findIndex(
+      (k) => typeof k !== 'string' && k.kind === 'component' && k.component === 'Button'
+    );
+    expect(picker).toBeGreaterThan(-1);
+    expect(picker).toBe(button - 1);
+  });
+
+  it('heals once and then stops', () => {
+    const once = upgradePageBody(olderColumn());
+    const twice = upgradePageBody(once.root);
+    expect(twice.changed, 'the repair matched its own output').toBe(false);
+    const form = findForm(twice.root);
+    expect((form?.children ?? []).filter(isPicker)).toHaveLength(1);
+  });
+
+  it('adds not one word for a part that cannot be bought both ways', () => {
+    const host = {
+      resolveCollection: () => undefined,
+      resolveBinding: (ref: string, _scope: DataScope) =>
+        ref === 'title' ? { value: 'Bosch injector' } : { value: '' },
+    };
+    const words = (tree: Node) =>
+      toHtml(resolveTree(tree, host))
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const before = olderColumn();
+    const after = upgradePageBody(before).root;
+    expect(JSON.stringify(after), 'the repair did nothing').toContain('coreChoice.shown');
+    expect(words(after)).toBe(words(before));
+  });
+});
+
+describe('the buy box that could not offer a repeat order (issue 739)', () => {
+  type El = Extract<Node, { kind: 'element' }>;
+
+  /** Today's factory output with the nodes gated on `refs` taken out. */
+  const without =
+    (...refs: string[]) =>
+    (node: Node): Node => {
+      if (node.kind === 'outlet') return node;
+      const kids = (node as El).children;
+      if (!Array.isArray(kids)) return node;
+      return {
+        ...(node as El),
+        children: kids
+          .filter(
+            (k) =>
+              typeof k === 'string' ||
+              k.kind === 'outlet' ||
+              !(k.data?.kind === 'visible' && refs.includes(k.data.ref))
+          )
+          .map((k) => (typeof k === 'string' ? k : without(...refs)(k))),
+      };
+    };
+
+  const gatedOn =
+    (ref: string) =>
+    (node: Node | string): boolean =>
+      typeof node !== 'string' &&
+      node.kind !== 'outlet' &&
+      node.data?.kind === 'visible' &&
+      node.data.ref === ref;
+  const isRepeat = gatedOn('repeat.shown');
+  const isCore = gatedOn('coreChoice.shown');
+
+  const findForm = (node: Node): El | null => {
+    if (node.kind === 'outlet') return null;
+    if (node.kind === 'element' && node.tag === 'form' && node.data?.kind === 'action') {
+      return node;
+    }
+    for (const k of (node as El).children ?? []) {
+      if (typeof k === 'string') continue;
+      const hit = findForm(k);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  const holdsQuantity = (node: Node | string): boolean =>
+    typeof node !== 'string' && JSON.stringify(node).includes('"name":"quantity"');
+
+  const column = (form: Node): Node =>
+    el('div', 'flex flex-col gap-4', {
+      children: [bind(el('h1', 'text-3xl', { text: 'Product name' }), 'title'), form],
+    });
+
+  it('fixture really is missing the choice', () => {
+    expect(JSON.stringify(without('repeat.shown')(addToCartForm()))).not.toContain('repeat.shown');
+  });
+
+  it('puts the choice INSIDE the form, before the old-part choice, as the factory does', () => {
+    const { root, changed } = upgradePageBody(column(without('repeat.shown')(addToCartForm())));
+    expect(changed).toBe(true);
+    const kids = findForm(root)?.children ?? [];
+    const repeat = kids.findIndex(isRepeat);
+    expect(repeat, 'the choice is not a direct child of the form').toBeGreaterThan(-1);
+    expect(repeat, 'the choice is not right before the old-part choice').toBe(
+      kids.findIndex(isCore) - 1
+    );
+  });
+
+  it('keeps the factory order when the form is missing both choices', () => {
+    const older = column(without('repeat.shown', 'coreChoice.shown')(addToCartForm()));
+    const kids = findForm(upgradePageBody(older).root)?.children ?? [];
+    const repeat = kids.findIndex(isRepeat);
+    const core = kids.findIndex(isCore);
+    const quantity = kids.findIndex(holdsQuantity);
+    expect([repeat, core]).toEqual([quantity - 2, quantity - 1]);
+  });
+
+  it('reaches a form that is already inside its sold-out gate', () => {
+    const { root, changed } = upgradePageBody(without('repeat.shown')(buyBox()));
+    expect(changed).toBe(true);
+    expect((findForm(root)?.children ?? []).some(isRepeat)).toBe(true);
+  });
+
+  it('heals once and then stops', () => {
+    const once = upgradePageBody(column(without('repeat.shown')(addToCartForm())));
+    const twice = upgradePageBody(once.root);
+    expect(twice.changed, 'the repair matched its own output').toBe(false);
+    expect((findForm(twice.root)?.children ?? []).filter(isRepeat)).toHaveLength(1);
+  });
+
+  it('adds not one word for a product with no repeat offer', () => {
+    const host = {
+      resolveCollection: () => undefined,
+      resolveBinding: (ref: string, _scope: DataScope) =>
+        ref === 'title' ? { value: 'Linen Shirtdress' } : { value: '' },
+    };
+    const words = (tree: Node) =>
+      toHtml(resolveTree(tree, host))
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const before = column(without('repeat.shown')(addToCartForm()));
+    const after = upgradePageBody(before).root;
+    expect(JSON.stringify(after), 'the repair did nothing').toContain('repeat.shown');
+    expect(words(after)).toBe(words(before));
+  });
+});

@@ -37,6 +37,7 @@ import {
   LauncherGroup,
   RecordSearchNote,
 } from './launcher-rows';
+import { SEARCH_MOST_CHARS } from './launcher-search-words';
 import { EnterKey } from './shortcut-keys';
 import { useSearchStatus } from '../lib/api/search';
 
@@ -49,10 +50,21 @@ export function Launcher({
 }) {
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
+  // How many steps of "Show more" the record half has been asked for. Back to
+  // the first page whenever the words change: more of an OLD query is not what
+  // somebody typing a new one asked for.
+  const [pages, setPages] = useState(1);
   const listRef = useRef<HTMLDivElement>(null);
 
   const navEntries = useNavEntries();
-  const { entries: recordEntries, searching } = useRecordEntries(query, open);
+  const {
+    entries: recordEntries,
+    searching,
+    more,
+    canShowMore,
+    failed,
+    retry,
+  } = useRecordEntries(query, open, pages);
   // How much of the business this box can actually reach. Asked for once and
   // cached for a minute, so it costs nothing per keystroke; the note below the
   // list needs it before it may say her records do not match.
@@ -78,6 +90,7 @@ export function Launcher({
     if (open) {
       setQuery('');
       setActiveIndex(0);
+      setPages(1);
     }
   }, [open]);
 
@@ -172,7 +185,10 @@ export function Launcher({
             <SearchInput
               size="md"
               value={query}
-              onValueChange={setQuery}
+              onValueChange={(value) => {
+                setQuery(value);
+                setPages(1);
+              }}
               onKeyDown={onKeyDown}
               role="combobox"
               aria-label="Search everything"
@@ -192,7 +208,12 @@ export function Launcher({
             aria-label="Results"
           >
             {entries.length === 0 ? (
-              <LauncherEmpty searching={searching} typed={query.trim().length > 0} />
+              <LauncherEmpty
+                searching={searching}
+                typed={query.trim().length > 0}
+                failed={failed}
+                tooLong={query.trim().length > SEARCH_MOST_CHARS}
+              />
             ) : (
               groups.map((group) => (
                 <LauncherGroup
@@ -212,9 +233,19 @@ export function Launcher({
           <RecordSearchNote
             searching={searching}
             found={records.length}
+            more={more}
+            onShowMore={
+              canShowMore
+                ? () => {
+                    setPages((n) => n + 1);
+                  }
+                : undefined
+            }
             screens={surfaces.length}
             query={query}
             gaps={status.data}
+            failed={failed}
+            onRetry={retry}
           />
 
           {/* The modifier contract, spelled out — the same three destinations for

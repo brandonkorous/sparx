@@ -6,6 +6,8 @@
 //
 //   POST /v1/public/webhooks/sparx-pay              (platform account, destination charges)
 //   POST /v1/public/webhooks/stripe-direct/:tenantId (merchant's own account)
+//   POST /v1/public/webhooks/square/:tenantId        (and paypal, authorize-net, custom:
+//                                                     the merchant's own account at each)
 //
 // Always 200 on a valid signature (even unhandled types) so Stripe stops retrying;
 // 403 on a bad signature. Reconciliation is idempotent + best-effort (we prefer
@@ -14,13 +16,49 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
-import { gatewayRegistry, SPARX_PAY_ID, STRIPE_DIRECT_ID } from '@wizeworks/payments';
-import type { StripeDirectGateway } from '@wizeworks/payments';
+import {
+  AUTHORIZE_NET_ID,
+  CUSTOM_ID,
+  gatewayRegistry,
+  PAYPAL_ID,
+  SPARX_PAY_ID,
+  SQUARE_ID,
+  STRIPE_DIRECT_ID,
+} from '@wizeworks/payments';
+import type { ParsedWebhookEvent, StripeDirectGateway, WebhookEvent } from '@wizeworks/payments';
 import { ApiError } from '@wizeworks/api-core/errors';
 
 import { reconcilePaymentEvent } from '../../../lib/payment-webhook-reconcile.js';
+import { gatewayWebhookUrl, WEBHOOK_PATHS } from '../../../lib/payments-onboarding.js';
 
 const TenantPath = z.object({ tenantId: z.string().uuid() });
+
+/** The header each merchant-registered gateway signs with. PayPal's proof is
+ *  five headers, all passed on; this one is only what must be present. */
+const SIGNATURE_HEADER: Readonly<Record<string, string>> = {
+  [SQUARE_ID]: 'x-square-hmacsha256-signature',
+  [PAYPAL_ID]: 'paypal-transmission-sig',
+  [AUTHORIZE_NET_ID]: 'x-anet-signature',
+  [CUSTOM_ID]: 'x-sparx-signature',
+};
+
+/** What each of those gateways' adapters offer: a parse against one tenant's
+ *  own key. Square also signs the address it delivered to. */
+interface TenantWebhookParser {
+  parseWebhookForTenant(
+    tenantId: string,
+    event: WebhookEvent,
+    notificationUrl: string
+  ): Promise<ParsedWebhookEvent>;
+}
+
+function headerMap(headers: Record<string, unknown>): Record<string, string | undefined> {
+  const out: Record<string, string | undefined> = {};
+  for (const [name, value] of Object.entries(headers)) {
+    out[name.toLowerCase()] = typeof value === 'string' ? value : undefined;
+  }
+  return out;
+}
 
 function signature(headers: Record<string, unknown>): string {
   const sig = headers['stripe-signature'];
@@ -104,6 +142,48 @@ const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
     }
     await reply.code(200).send({ received: true });
   });
+
+  // ── Square, PayPal, Authorize.net and the custom gateway: the merchant's own
+  //    account at each, the same shape as Stripe Direct. The tenant rides in the
+  //    path, and the adapter checks the message against that tenant's own key,
+  //    refusing it when none is set. A paid order does not wait for these:
+  //    checkout and the stranded-payment sweep ask the gateway. What arrives here
+  //    is what only the gateway knows, such as a refund given in its own
+  //    dashboard.
+  for (const [gatewayId, path] of Object.entries(WEBHOOK_PATHS)) {
+    const header = SIGNATURE_HEADER[gatewayId];
+    if (!header) continue;
+    app.post(`/v1/public/webhooks/${path}/:tenantId`, async (request, reply) => {
+      const { tenantId } = TenantPath.parse(request.params);
+      const headers = headerMap(request.headers);
+      const sig = headers[header];
+      if (!sig) throw new ApiError('VALIDATION_ERROR', `Missing ${header} header`);
+      const rawBody = request.body as Buffer;
+      const gateway = gatewayRegistry.get(gatewayId) as unknown as TenantWebhookParser;
+
+      let parsed: ParsedWebhookEvent;
+      try {
+        parsed = await gateway.parseWebhookForTenant(
+          tenantId,
+          { rawBody, signature: sig, headers },
+          gatewayWebhookUrl(gatewayId, tenantId) ?? ''
+        );
+      } catch (err) {
+        request.log.warn({ err, tenantId, gatewayId }, 'payment webhook: refused');
+        throw new ApiError('FORBIDDEN', 'Invalid webhook signature');
+      }
+
+      try {
+        await reconcilePaymentEvent(request.log, parsed, { gatewayId, fallbackTenantId: tenantId });
+      } catch (err) {
+        request.log.error(
+          { err, tenantId, gatewayId, externalId: parsed.externalId },
+          'payment webhook: reconcile error'
+        );
+      }
+      await reply.code(200).send({ received: true });
+    });
+  }
 };
 
 export default paymentWebhookRoutes;

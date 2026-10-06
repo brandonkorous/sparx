@@ -161,15 +161,17 @@ model BillingDocument {
   // flag selects which lines it hits. Jurisdiction automation deferred (§17).
   taxRate Decimal @default(0) @map("tax_rate") @db.Decimal(6, 4)
 
-  subtotal       Decimal @default(0) @db.Decimal(12, 2)
-  discountTotal  Decimal @default(0) @map("discount_total") @db.Decimal(12, 2)
-  taxTotal       Decimal @default(0) @map("tax_total") @db.Decimal(12, 2)
-  shippingTotal  Decimal @default(0) @map("shipping_total") @db.Decimal(12, 2)
-  surchargeTotal Decimal @default(0) @map("surcharge_total") @db.Decimal(12, 2)
-  total          Decimal @default(0) @db.Decimal(12, 2)
-  depositTotal   Decimal @default(0) @map("deposit_total") @db.Decimal(12, 2)
-  amountPaid     Decimal @default(0) @map("amount_paid") @db.Decimal(12, 2)
-  balance        Decimal @default(0) @db.Decimal(12, 2)
+  subtotal        Decimal @default(0) @db.Decimal(12, 2)
+  discountTotal   Decimal @default(0) @map("discount_total") @db.Decimal(12, 2)
+  taxTotal        Decimal @default(0) @map("tax_total") @db.Decimal(12, 2)
+  shippingTotal   Decimal @default(0) @map("shipping_total") @db.Decimal(12, 2)
+  surchargeTotal  Decimal @default(0) @map("surcharge_total") @db.Decimal(12, 2)
+  // Refundable core deposits on the lines; part of `total`, never taxed.
+  coreChargeTotal Decimal @default(0) @map("core_charge_total") @db.Decimal(12, 2)
+  total           Decimal @default(0) @db.Decimal(12, 2)
+  depositTotal    Decimal @default(0) @map("deposit_total") @db.Decimal(12, 2)
+  amountPaid      Decimal @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  balance         Decimal @default(0) @db.Decimal(12, 2)
 
   // AR status — payment-derived, independent of the workflow stage (§8):
   // unpaid | partial | paid | overdue | void.
@@ -264,6 +266,7 @@ model BillingDocument {
   signatures     BillingDocumentSignature[]
   payments       BillingDocumentPayment[]
   dealLinks      DealBillingDocument[]
+  tasks          Task[]
 
   // Uniqueness is per SITE now: two businesses may each hold INV-000001, and
   // should — that is what separate books look like.
@@ -304,11 +307,14 @@ model BillingDocumentLine {
   costCents     Int?  @map("cost_cents")
   appliedMarkup Json? @map("applied_markup")
 
-  taxable        Boolean @default(true)
-  discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(12, 2)
-  taxAmount      Decimal @default(0) @map("tax_amount") @db.Decimal(12, 2)
-  lineSubtotal   Decimal @default(0) @map("line_subtotal") @db.Decimal(12, 2)
-  lineTotal      Decimal @default(0) @map("line_total") @db.Decimal(12, 2)
+  taxable        Boolean  @default(true)
+  discountAmount Decimal  @default(0) @map("discount_amount") @db.Decimal(12, 2)
+  taxAmount      Decimal  @default(0) @map("tax_amount") @db.Decimal(12, 2)
+  lineSubtotal   Decimal  @default(0) @map("line_subtotal") @db.Decimal(12, 2)
+  lineTotal      Decimal  @default(0) @map("line_total") @db.Decimal(12, 2)
+  // Core charge per unit on a rebuilt part (see OrderItem.coreCharge), or null.
+  // Printed as its own row under the line; not in lineTotal, never taxed.
+  coreCharge     Decimal? @map("core_charge") @db.Decimal(12, 2)
 
   sortOrder Int  @default(0) @map("sort_order")
   metadata  Json @default("{}")

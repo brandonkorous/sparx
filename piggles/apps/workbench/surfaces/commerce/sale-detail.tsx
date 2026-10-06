@@ -29,13 +29,7 @@ import { orderErrorMessage } from './data';
 import { SaleLines, salesTotal } from './sale-lines';
 import { SalePayment } from './sale-payment';
 import { useActivePropertyId } from '../../lib/api/shell-data';
-import {
-  useAgreedPrices,
-  useSellables,
-  useTakeSale,
-  type SaleLine,
-  type Sellable,
-} from './sale-data';
+import { useAgreedPrices, useTakeSale, type SaleLine, type Sellable } from './sale-data';
 import { depositDue, dueDayLabel } from './sale-made-to-order';
 import { takingNote, whatToOffer } from './sale-taking';
 
@@ -72,6 +66,9 @@ function lineFrom(sellable: Sellable | null): SaleLine {
     orderAheadDays: sellable.orderAheadDays ?? null,
     priceTouched: false,
     ...(sellable.deposit ? { deposit: sellable.deposit } : {}),
+    // Paying the core deposit is the default, as it is on the website (sparx
+    // issue 061): nobody waits on a part for a choice they never saw made.
+    ...(sellable.core ? { core: sellable.core, coreFirst: false } : {}),
   };
 }
 
@@ -93,7 +90,6 @@ function basketKey(
 export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const take = useTakeSale();
-  const sellables = useSellables();
   const propertyId = useActivePropertyId();
 
   const [customer, setCustomer] = useState<CustomerSummary | null>(null);
@@ -288,7 +284,6 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <SaleLines
             lines={lines}
             currency={currency}
-            sellables={sellables.items}
             onAdd={addLine}
             onChange={(id, next) => {
               setLines((current) => current.map((line) => (line.id === id ? next : line)));

@@ -165,3 +165,44 @@ export async function resolveBusinessIdentity(ctx: {
     ...(addressLines.length > 0 ? { addressLines } : {}),
   };
 }
+
+/**
+ * Where a customer sends an old part back to (sparx persona issue 057): the
+ * business's name and postal address from Business details, nothing else. A
+ * rebuilt part's buyer has to post the old one somewhere, and "send it back" with
+ * no address sends them to the phone.
+ *
+ * Null when the business has no street address on file: the page and the email
+ * then say to contact the business rather than print half an address.
+ */
+export async function resolveCoreReturnAddress(ctx: {
+  tenantId: string;
+}): Promise<{ name: string; lines: string[] } | null> {
+  const [business, tenant] = await Promise.all([
+    withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.tenantBusiness.findUnique({
+        where: { tenantId: ctx.tenantId },
+        select: {
+          businessName: true,
+          addressLine1: true,
+          addressLine2: true,
+          city: true,
+          region: true,
+          postalCode: true,
+        },
+      })
+    ),
+    withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { name: true } })
+    ),
+  ]);
+  if (!business?.addressLine1?.trim()) return null;
+  const cityRegion = [business.city, business.region].filter(Boolean).join(', ');
+  const locality = [cityRegion, business.postalCode].filter(Boolean).join(' ').trim();
+  const lines = [business.addressLine1, business.addressLine2, locality]
+    .map((line) => (line ?? '').trim())
+    .filter((line) => line !== '');
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- an empty name falls through
+  const name = business.businessName?.trim() || tenant?.name?.trim() || '';
+  return { name, lines };
+}

@@ -212,9 +212,8 @@ export async function planAdjustmentImport(
 
     const warehouses = await tx.warehouse.findMany({
       where: { tenantId: ctx.tenantId, deletedAt: null },
-      select: { id: true, code: true, isActive: true },
+      select: { id: true, code: true, name: true, isActive: true },
     });
-    const byCode = new Map(warehouses.map((w) => [w.code.toLowerCase(), w]));
     const byId = new Map(warehouses.map((w) => [w.id, w]));
 
     // Current stock for every (variant, warehouse) the file touches, so the plan
@@ -239,7 +238,7 @@ export async function planAdjustmentImport(
         customFields,
         line: parsed.lines[index] ?? index + 2,
         bySku,
-        byCode,
+        warehouses,
         byId,
         onHandByKey,
         fallbackWarehouseId,
@@ -331,7 +330,7 @@ type FieldReader = (
  *  as empty rather than falling through to an alias — a person who said "the
  *  quantity is column F" meant column F, and quietly reading column C instead is
  *  the failure the mapping screen exists to prevent. */
-function fieldReader(mapping: Record<string, string>): FieldReader {
+export function fieldReader(mapping: Record<string, string>): FieldReader {
   return (record, key, aliases) => {
     const mapped = mapping[key];
     if (mapped !== undefined) {
@@ -342,15 +341,41 @@ function fieldReader(mapping: Record<string, string>): FieldReader {
   };
 }
 
-interface PlanRowArgs {
+interface ImportLocation {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+}
+
+/**
+ * The location a file means, by its code ("WH-CP") or by its name ("Warehouse
+ * (Concord Park)"). A file from another system names the place; it has never
+ * seen our codes, so a lookup by code alone failed every row of an online
+ * store's inventory export (sparx persona issue 068). The code is tried first, so
+ * a code that happens to equal another location's name keeps meaning that code.
+ */
+export function locationNamed<T extends { code: string; name: string }>(
+  locations: readonly T[],
+  text: string
+): T | undefined {
+  const wanted = text.trim().toLowerCase();
+  if (wanted === '') return undefined;
+  return (
+    locations.find((location) => location.code.trim().toLowerCase() === wanted) ??
+    locations.find((location) => location.name.trim().toLowerCase() === wanted)
+  );
+}
+
+export interface PlanRowArgs {
   record: Record<string, string>;
   read: FieldReader;
   decimal: '.' | ',';
   customFields: readonly CustomFieldDefinition[];
   line: number;
   bySku: Map<string, string>;
-  byCode: Map<string, { id: string; code: string; isActive: boolean }>;
-  byId: Map<string, { id: string; code: string; isActive: boolean }>;
+  warehouses: readonly ImportLocation[];
+  byId: Map<string, ImportLocation>;
   onHandByKey: Map<string, number>;
   fallbackWarehouseId: string | null;
 }
@@ -371,7 +396,7 @@ function readInteger(raw: string | null, decimal: '.' | ','): number | null | un
 /** One row's verdict. Every failure names the line and says what to fix in
  *  words the person who typed the file will recognise — "no item with code
  *  BRK-9920", not "variant lookup failed". */
-function planRow(args: PlanRowArgs): ImportRowPlan {
+export function planRow(args: PlanRowArgs): ImportRowPlan {
   const { record, read, line } = args;
   const sku = read(record, 'sku', COLUMNS.sku);
   const explicitVariantId = read(record, 'variantId', COLUMNS.variantId);
@@ -404,11 +429,27 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
   // sentence is often the thing that explains the failure.
   const note = read(record, 'note', COLUMNS.note);
 
+  // Where the row goes is read BEFORE anything can fail, for the same reason as
+  // the quantity: a row whose code is unknown is fixed later by pointing it at an
+  // item, and that fix needs the location the file named. Read after the code
+  // check, it was stored as none, and every pointed row then failed with "does
+  // not say which location" beside a file that plainly did (sparx persona issue
+  // 068). A closed location is not carried: nothing may be adjusted there.
+  const warehouseCode = read(record, 'warehouse', COLUMNS.warehouseCode);
+  const explicitWarehouseId = read(record, 'warehouseId', COLUMNS.warehouseId);
+  const warehouse = warehouseCode
+    ? locationNamed(args.warehouses, warehouseCode)
+    : explicitWarehouseId
+      ? args.byId.get(explicitWarehouseId)
+      : args.fallbackWarehouseId
+        ? args.byId.get(args.fallbackWarehouseId)
+        : undefined;
+
   const fail = (error: string): ImportRowPlan => ({
     line,
     sku,
     variantId,
-    warehouseId: null,
+    warehouseId: warehouse?.isActive ? warehouse.id : null,
     outcome: 'error',
     // Null, because nothing was looked up — not zero, which would read as "we
     // checked and there are none".
@@ -425,16 +466,6 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
   if (!sku && !explicitVariantId) return fail('This row does not say which item it is about');
   if (!variantId) return fail(`Nothing in your catalog has the code ${sku ?? ''}`.trim());
 
-  const warehouseCode = read(record, 'warehouse', COLUMNS.warehouseCode);
-  const explicitWarehouseId = read(record, 'warehouseId', COLUMNS.warehouseId);
-  const warehouse = warehouseCode
-    ? args.byCode.get(warehouseCode.toLowerCase())
-    : explicitWarehouseId
-      ? args.byId.get(explicitWarehouseId)
-      : args.fallbackWarehouseId
-        ? args.byId.get(args.fallbackWarehouseId)
-        : undefined;
-
   if (!warehouse) {
     return fail(
       warehouseCode
@@ -443,7 +474,7 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
     );
   }
   if (!warehouse.isActive) {
-    return fail(`${warehouse.code} is closed, so stock cannot be adjusted there`);
+    return fail(`${warehouse.name} is closed, so stock cannot be adjusted there`);
   }
 
   const onHand = statedOnHand;
@@ -780,6 +811,21 @@ export interface ApplyImportResult extends ImportBatchDetail {
 }
 
 /**
+ * How long applying or undoing an import may hold its transaction.
+ *
+ * Every row is a ledger movement with its own reads and writes, all in ONE
+ * transaction so a file lands whole or not at all. Prisma's default of five
+ * seconds fits a few dozen rows: Gillett Diesel's opening stock (684 rows from an
+ * online store's inventory export) failed every time with a bare server error and
+ * "Nothing was changed" (sparx persona issue 068). The allowance grows with the
+ * file and is capped, so a runaway still fails loudly rather than holding locks
+ * for ever.
+ */
+export function importTimeoutMs(rows: number): number {
+  return Math.min(10 * 60_000, 15_000 + rows * 150);
+}
+
+/**
  * Post what was planned.
  *
  * Every movement carries `referenceType: 'InventoryImportBatch'` and the batch
@@ -821,75 +867,80 @@ export async function applyImportBatch(
   // inside it would announce stock levels that a rollback then un-did.
   const events: PendingEvent[] = [];
 
-  await withTenant(ctx, async (tx) => {
-    for (const row of toApply) {
-      if (!row.variantId || !row.warehouseId) continue;
-      const result = await applyMovement(tx, {
-        tenantId: ctx.tenantId,
-        variantId: row.variantId,
-        warehouseId: row.warehouseId,
-        delta: row.delta,
-        reason: batch.reason,
-        referenceType: 'InventoryImportBatch',
-        referenceId: id,
-        note: movementNote(batch.filename, row.line, row.note ?? null),
-        actorType: resolveActorType(ctx),
-        actorId: ctx.userId ?? null,
-        source: null,
-        unitCostCents: null,
-        // Batch + line. A resumed apply finds the rows it already wrote and
-        // dedupes them instead of posting the change twice.
-        idempotencyKey: `import:${id}:${row.line}`,
-      });
-      if (!result.deduped) {
-        applied += 1;
-        // The plan said the level was at `currentOnHand`; the ledger says what
-        // it was really at. A difference means somebody sold one while the file
-        // was being checked.
-        if (row.currentOnHand !== null && result.onHand - row.delta !== row.currentOnHand) {
-          driftedRows += 1;
-        }
-        events.push({
+  await withTenant(
+    ctx,
+    async (tx) => {
+      for (const row of toApply) {
+        if (!row.variantId || !row.warehouseId) continue;
+        const result = await applyMovement(tx, {
+          tenantId: ctx.tenantId,
           variantId: row.variantId,
           warehouseId: row.warehouseId,
-          result,
           delta: row.delta,
+          reason: batch.reason,
+          referenceType: 'InventoryImportBatch',
+          referenceId: id,
+          note: movementNote(batch.filename, row.line, row.note ?? null),
+          actorType: resolveActorType(ctx),
+          actorId: ctx.userId ?? null,
+          source: null,
+          unitCostCents: null,
+          // Batch + line. A resumed apply finds the rows it already wrote and
+          // dedupes them instead of posting the change twice.
+          idempotencyKey: `import:${id}:${row.line}`,
         });
+        if (!result.deduped) {
+          applied += 1;
+          // The plan said the level was at `currentOnHand`; the ledger says what
+          // it was really at. A difference means somebody sold one while the file
+          // was being checked.
+          if (row.currentOnHand !== null && result.onHand - row.delta !== row.currentOnHand) {
+            driftedRows += 1;
+          }
+          events.push({
+            variantId: row.variantId,
+            warehouseId: row.warehouseId,
+            result,
+            delta: row.delta,
+          });
+        }
       }
-    }
 
-    for (const row of fieldRows) {
-      if (!row.variantId || !row.warehouseId || !row.customFields) continue;
-      const written = await applyCustomFields(
-        tx,
-        ctx,
-        'level',
-        { variantId: row.variantId, warehouseId: row.warehouseId },
-        row.customFields
-      );
-      if (written.changed.length > 0) fieldsUpdated += 1;
-    }
+      for (const row of fieldRows) {
+        if (!row.variantId || !row.warehouseId || !row.customFields) continue;
+        const written = await applyCustomFields(
+          tx,
+          ctx,
+          'level',
+          { variantId: row.variantId, warehouseId: row.warehouseId },
+          row.customFields
+        );
+        if (written.changed.length > 0) fieldsUpdated += 1;
+      }
 
-    await tx.inventoryImportBatch.update({
-      where: { id },
-      data: { status: 'applied', rowsApplied: applied, appliedAt: new Date() },
-    });
+      await tx.inventoryImportBatch.update({
+        where: { id },
+        data: { status: 'applied', rowsApplied: applied, appliedAt: new Date() },
+      });
 
-    await audit(tx, ctx, id, 'applied', {
-      rowsApplied: applied,
-      driftedRows,
-      fieldsUpdated,
-      reason: batch.reason,
-    });
+      await audit(tx, ctx, id, 'applied', {
+        rowsApplied: applied,
+        driftedRows,
+        fieldsUpdated,
+        reason: batch.reason,
+      });
 
-    // The wizard's import step, ticked by the thing it was asking for. Only
-    // when a setup is actually under way — see `noteSetupStep`.
-    await noteSetupStep(tx, ctx.tenantId, 'import', {
-      batchId: id,
-      rowsApplied: applied,
-      filename: batch.filename,
-    });
-  });
+      // The wizard's import step, ticked by the thing it was asking for. Only
+      // when a setup is actually under way — see `noteSetupStep`.
+      await noteSetupStep(tx, ctx.tenantId, 'import', {
+        batchId: id,
+        rowsApplied: applied,
+        filename: batch.filename,
+      });
+    },
+    undefined,
+    { timeoutMs: importTimeoutMs(toApply.length + fieldRows.length) }
+  );
 
   await publishAll(ctx, events, batch.reason);
 
@@ -949,44 +1000,49 @@ export async function reverseImportBatch(
 
   const events: PendingEvent[] = [];
 
-  await withTenant(ctx, async (tx) => {
-    for (const row of batch.plan) {
-      if (row.outcome !== 'apply' || !row.variantId || !row.warehouseId) continue;
-      const result = await applyMovement(tx, {
-        tenantId: ctx.tenantId,
-        variantId: row.variantId,
-        warehouseId: row.warehouseId,
-        delta: -row.delta,
-        reason: batch.reason,
-        referenceType: 'InventoryImportBatch',
-        referenceId: id,
-        note: `Undo of import row ${row.line}`,
-        actorType: resolveActorType(ctx),
-        actorId: ctx.userId ?? null,
-        source: null,
-        unitCostCents: null,
-        idempotencyKey: `import-reverse:${id}:${row.line}`,
-        // An undo must be allowed to take a level negative. Refusing would leave
-        // the reversal half-done, which is worse than the negative: a level that
-        // is wrong AND partly corrected cannot be reasoned about at all.
-        allowNegative: true,
-      });
-      if (!result.deduped) {
-        events.push({
+  await withTenant(
+    ctx,
+    async (tx) => {
+      for (const row of batch.plan) {
+        if (row.outcome !== 'apply' || !row.variantId || !row.warehouseId) continue;
+        const result = await applyMovement(tx, {
+          tenantId: ctx.tenantId,
           variantId: row.variantId,
           warehouseId: row.warehouseId,
-          result,
           delta: -row.delta,
+          reason: batch.reason,
+          referenceType: 'InventoryImportBatch',
+          referenceId: id,
+          note: `Undo of import row ${row.line}`,
+          actorType: resolveActorType(ctx),
+          actorId: ctx.userId ?? null,
+          source: null,
+          unitCostCents: null,
+          idempotencyKey: `import-reverse:${id}:${row.line}`,
+          // An undo must be allowed to take a level negative. Refusing would leave
+          // the reversal half-done, which is worse than the negative: a level that
+          // is wrong AND partly corrected cannot be reasoned about at all.
+          allowNegative: true,
         });
+        if (!result.deduped) {
+          events.push({
+            variantId: row.variantId,
+            warehouseId: row.warehouseId,
+            result,
+            delta: -row.delta,
+          });
+        }
       }
-    }
 
-    await tx.inventoryImportBatch.update({
-      where: { id },
-      data: { reversedAt: new Date(), reversedBy: ctx.userId ?? null },
-    });
-    await audit(tx, ctx, id, 'reversed', { rows: batch.rowsApplied });
-  });
+      await tx.inventoryImportBatch.update({
+        where: { id },
+        data: { reversedAt: new Date(), reversedBy: ctx.userId ?? null },
+      });
+      await audit(tx, ctx, id, 'reversed', { rows: batch.rowsApplied });
+    },
+    undefined,
+    { timeoutMs: importTimeoutMs(batch.plan.length) }
+  );
 
   await publishAll(ctx, events, batch.reason);
   return getImportBatch(ctx, id);

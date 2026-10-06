@@ -47,6 +47,7 @@ import {
   productState,
   unfindableProductCount,
   useProducts,
+  useProductTypesInUse,
   useReindexSearch,
   useSearchStatus,
   type ProductRow,
@@ -77,6 +78,10 @@ const FILTERS = [
 
 type FilterValue = (typeof FILTERS)[number]['value'];
 
+/** The kind-of-product select's "not narrowing" value. Not '' (a select cannot
+ *  hold it) and not a word a business would name a kind of product. */
+const EVERY_KIND = 'every-kind';
+
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -89,11 +94,16 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
  * list. Telling someone to clear a filter they never set sends them hunting for a
  * control that is already off.
  */
-function emptyAdvice(search: string, filterLabel: string | null): string {
+function emptyAdvice(search: string, filterLabel: string | null, kind: string | null): string {
   const parts: string[] = [];
-  if (search) parts.push('Try part of the product name, its web address, or the brand.');
+  // Search reads name, web address, brand, kind, any version's code and what
+  // it fits (sparx persona issue 070), so the hint names the ones people type.
+  if (search) parts.push('Try part of the name, a product code, the brand, or what it fits.');
   if (filterLabel) {
     parts.push(`You are only seeing products marked “${filterLabel}”. Switch to All for the rest.`);
+  }
+  if (kind) {
+    parts.push(`You are only seeing “${kind}” products. Switch to every kind for the rest.`);
   }
   return parts.join(' ');
 }
@@ -101,6 +111,10 @@ function emptyAdvice(search: string, filterLabel: string | null): string {
 export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterValue>('all');
+  const [kind, setKind] = useState<string>(EVERY_KIND);
+  // "Every product that matches", chosen from the bulk bar: the bar then acts on
+  // the narrowing below rather than on the rows ticked (issue 065).
+  const [everyMatch, setEveryMatch] = useState(false);
   // Newest-changed first: a catalog is opened at whatever you were last working
   // on far more often than at the letter A.
   const [sort, setSort] = useState<{ key: ProductSortKey; dir: SortDirection }>({
@@ -116,12 +130,21 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const active = FILTERS.find((entry) => entry.value === filter) ?? FILTERS[0];
   const skip = (page - 1) * pageSize;
-  const narrowed = filter !== 'all' || search.trim() !== '';
+  const productType = kind === EVERY_KIND ? undefined : kind;
+  const narrowed = filter !== 'all' || search.trim() !== '' || productType !== undefined;
+  const match = {
+    ...(search.trim() ? { q: search.trim() } : {}),
+    ...(active.status ? { status: active.status } : {}),
+    ...(active.includeArchived ? { includeArchived: true } : {}),
+    ...(productType ? { productType } : {}),
+  };
+  const kinds = useProductTypesInUse();
 
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useProducts({
     q: search.trim(),
     ...(active.status ? { status: active.status } : {}),
     ...(active.includeArchived ? { includeArchived: true } : {}),
+    ...(productType ? { productType } : {}),
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -147,6 +170,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
     setPage(1);
     setTake(pageSize);
     selection.clear();
+    setEveryMatch(false);
   };
 
   const toggleSort = (key: ProductSortKey) => {
@@ -210,7 +234,13 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           width this is one line; at 320px, beside a product, it takes two rather
           than clipping the filters off the right edge. */}
       <ProductsBulkActions
+        ctx={ctx}
         selection={selection}
+        match={match}
+        total={total}
+        narrowed={narrowed}
+        everyMatch={everyMatch}
+        onEveryMatch={setEveryMatch}
         toolbar={
           <PaneToolbar
             label="Products controls"
@@ -219,7 +249,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <SearchInput
                   size="sm"
                   aria-label="Search products"
-                  placeholder="Product name or brand…"
+                  placeholder="Name, code or brand…"
                   value={search}
                   onValueChange={(next) => {
                     setSearch(next);
@@ -240,6 +270,31 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 options: FILTERS.map((entry) => ({ value: entry.value, label: entry.label })),
                 neutralValue: 'all',
               },
+              // Only once there is more than one kind to choose between. An
+              // open-ended set, so a select rather than chips: a parts catalog
+              // has eighteen kinds and eighteen chips are taller than the table.
+              ...((kinds.data?.length ?? 0) > 1
+                ? [
+                    {
+                      label: 'Kind of product',
+                      key: 'productType',
+                      value: kind,
+                      onValueChange: (next: string) => {
+                        setKind(next || EVERY_KIND);
+                        resetWindow();
+                      },
+                      options: [
+                        { value: EVERY_KIND, label: 'Every kind' },
+                        ...(kinds.data ?? []).map((entry) => ({
+                          value: entry.name,
+                          label: entry.name,
+                        })),
+                      ],
+                      neutralValue: EVERY_KIND,
+                      present: 'select' as const,
+                    },
+                  ]
+                : []),
             ]}
             primary={
               <Button
@@ -360,7 +415,11 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             noResults={{
               icon: <Package className="size-6" aria-hidden />,
               title: 'No products match that',
-              description: emptyAdvice(search.trim(), filter === 'all' ? null : active.label),
+              description: emptyAdvice(
+                search.trim(),
+                filter === 'all' ? null : active.label,
+                productType ?? null
+              ),
             }}
             firstRun={{
               title: 'Nothing in your catalog yet',
@@ -379,11 +438,20 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <SelectAllCell
-                  allChosen={selection.allOnPageChosen}
+                  allChosen={everyMatch || selection.allOnPageChosen}
                   someChosen={selection.someOnPageChosen}
                   disabled={rows.length === 0}
                   label="Choose every product here"
-                  onToggle={selection.toggleAllOnPage}
+                  onToggle={() => {
+                    // Unticking the header while every match is chosen means
+                    // "none of them", not "every match except this page".
+                    if (everyMatch) {
+                      setEveryMatch(false);
+                      selection.clear();
+                      return;
+                    }
+                    selection.toggleAllOnPage();
+                  }}
                 />
                 {header('title', 'Product')}
                 <th className="hidden @xl:table-cell">Brand</th>
@@ -412,20 +480,26 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <ChooseCell
-                      checked={selection.has(product.id)}
+                      checked={everyMatch || selection.has(product.id)}
                       label={`Choose ${product.title}`}
                       onToggle={(on, modifiers) => {
+                        // Leaving one out of "every match" falls back to the
+                        // rows actually ticked, so the count stays a count of
+                        // things somebody can see.
+                        if (everyMatch) setEveryMatch(false);
                         selection.toggle(product, on, modifiers);
                       }}
                     />
-                    <td>
+                    <td className="w-full max-w-0 min-w-56">
                       {/* The name IS the row. The web address underneath is a
                           note about it, so it is smaller — but at full ink, not
-                          faded: it is there to be read. */}
-                      <span className="block max-w-64 truncate font-medium">{product.title}</span>
-                      <span className="block max-w-64 truncate font-mono text-sm">
-                        /{product.handle}
-                      </span>
+                          faded: it is there to be read. The name takes the free
+                          width and wraps to two lines: capped at 16rem, "Banks
+                          Boost Tube Upgrade Kit for 12-…" hid the years and the
+                          engine, which is what tells a part from its neighbor
+                          (sparx persona issue 070). */}
+                      <span className="line-clamp-2 font-medium break-words">{product.title}</span>
+                      <span className="block truncate font-mono text-sm">/{product.handle}</span>
                     </td>
                     <td className="hidden max-w-40 truncate @xl:table-cell">
                       {product.vendor ?? product.productType ?? '—'}
@@ -433,7 +507,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden text-right tabular-nums @2xl:table-cell">
                       {product.variantCount}
                     </td>
-                    <td className="hidden text-sm @4xl:table-cell">
+                    <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
                       {formatDate(product.updatedAt)}
                     </td>
                     <td className="text-right font-medium whitespace-nowrap tabular-nums">

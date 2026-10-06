@@ -21,10 +21,11 @@ import type {
   RefundResult,
   SetupSession,
   StoredChargeResult,
+  VaultFromPaymentParams,
   VaultedMethod,
 } from './gateway';
 import { SPARX_PAY_ID } from './gateways/sparx-pay';
-import { gatewayRegistry } from './registry';
+import { GatewayNotFoundError, gatewayRegistry } from './registry';
 
 export class PaymentConfigError extends Error {
   constructor(message: string) {
@@ -48,7 +49,12 @@ export class PaymentService {
 
   /** Create a payment intent through the tenant's gateway + record it. */
   async createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent> {
-    const gateway = await this.getGatewayForTenant(params.tenantId);
+    // Keeping the card is a promise a gateway without a vault cannot keep, so it
+    // is refused here rather than silently dropped: a shopper told their repeat
+    // order is set up must not find out a month later that nothing was saved.
+    const gateway = params.saveForLater
+      ? await this.vaultingGateway(params.tenantId)
+      : await this.getGatewayForTenant(params.tenantId);
     const intent = await gateway.createPaymentIntent(params);
 
     const platformFee = gateway.id === SPARX_PAY_ID ? sparxPayFeeCents(params.amount) : 0;
@@ -85,7 +91,7 @@ export class PaymentService {
     amountCents?: number
   ): Promise<PaymentResult> {
     const gateway = await this.getGatewayForTenant(tenantId);
-    const result = await gateway.capturePayment(intentId, amountCents);
+    const result = await gateway.capturePayment(intentId, amountCents, tenantId);
     if (result.success) {
       await withTenant({ tenantId }, (tx) =>
         tx.paymentIntent.updateMany({
@@ -101,7 +107,7 @@ export class PaymentService {
    *  booking is cancelled in time or completed without a fee. */
   async cancelPayment(tenantId: string, intentId: string): Promise<PaymentResult> {
     const gateway = await this.getGatewayForTenant(tenantId);
-    const result = await gateway.cancelPayment(intentId);
+    const result = await gateway.cancelPayment(intentId, tenantId);
     if (result.success) {
       await withTenant({ tenantId }, (tx) =>
         tx.paymentIntent.updateMany({
@@ -113,10 +119,41 @@ export class PaymentService {
     return result;
   }
 
-  /** Refund through the tenant's gateway. */
+  /** Whether this tenant's gateway can hold a card at checkout and charge it
+   *  later (`capabilities.capture`). Asked before a card is held for an order
+   *  that waits for sign-off (sparx persona issue 087): a gateway that cannot
+   *  hold charges now, and a turned-down order is refunded instead. False when
+   *  no gateway is set up. */
+  async canHoldCards(tenantId: string): Promise<boolean> {
+    try {
+      const gateway = await this.getGatewayForTenant(tenantId);
+      return getGatewayDescriptor(gateway.id)?.capabilities.capture === true;
+    } catch (err) {
+      if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) return false;
+      throw err;
+    }
+  }
+
+  /** Refund through the tenant's gateway.
+   *
+   *  Every caller passes the reference create stamped, which on Square, PayPal
+   *  and Authorize.net is not the thing a refund is made against. The order's
+   *  payment kept the gateway's own id when the payment landed, so it is read
+   *  here once rather than at every caller (issue 917). */
   async refund(params: RefundParams): Promise<RefundResult> {
     const gateway = await this.getGatewayForTenant(params.tenantId);
-    return gateway.refund(params);
+    if (params.transactionRef) return gateway.refund(params);
+    const payment = await withTenant({ tenantId: params.tenantId }, (tx) =>
+      tx.orderPayment.findFirst({
+        where: { processorRef: params.chargeId },
+        select: { metadata: true },
+      })
+    );
+    const kept =
+      payment?.metadata && typeof payment.metadata === 'object'
+        ? (payment.metadata as Record<string, unknown>).transactionRef
+        : undefined;
+    return gateway.refund(typeof kept === 'string' ? { ...params, transactionRef: kept } : params);
   }
 
   /** Hosted payment link (invoices) through the tenant's gateway. */
@@ -165,6 +202,15 @@ export class PaymentService {
       throw new StoredMethodsUnsupportedError(gateway.name);
     }
     return gateway.completeVault(params);
+  }
+
+  /** The card a payment kept (`saveForLater`), read back once it succeeded. */
+  async vaultFromPayment(params: VaultFromPaymentParams): Promise<VaultedMethod | null> {
+    const gateway = await this.vaultingGateway(params.tenantId);
+    if (!gateway.vaultFromPayment) {
+      throw new StoredMethodsUnsupportedError(gateway.name);
+    }
+    return gateway.vaultFromPayment(params);
   }
 
   /** Charge a vaulted method. Also mirrors the attempt into our own

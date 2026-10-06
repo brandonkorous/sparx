@@ -28,6 +28,8 @@ import { withRequestTenant } from '@wizeworks/api-core/db';
 import {
   imageSourcesOf,
   lintSite,
+  starterLinesOf,
+  type StarterText,
   type LinkTargets,
   type LintablePage,
   type SiteCapabilities,
@@ -212,6 +214,47 @@ export async function linkTargets(tx: TxClient, ctx: PropertyContext): Promise<L
 }
 
 /**
+ * The copy the site's installed design shipped, per page and for the header and
+ * footer, read from the install's baseline trees (docs/55 §4). The check names any of
+ * it still on the site word for word, because a starter's pitch published unchanged
+ * reads to every visitor as the owner's own voice (sparx persona issue 046).
+ *
+ * `undefined`, never an empty answer, when there is no design or the read fails: the
+ * rule then says nothing rather than reporting a site clean that nobody compared.
+ */
+export async function starterText(
+  tx: TxClient,
+  ctx: PropertyContext
+): Promise<StarterText | undefined> {
+  const rows = await tx.tenantBlueprintInstallArtifact
+    .findMany({
+      where: {
+        kind: { in: ['page', 'frame'] },
+        install: { propertyId: ctx.propertyId, status: { not: 'failed' } },
+      },
+      select: { kind: true, refId: true, baseline: true },
+    })
+    .catch(() => null);
+  if (!rows || rows.length === 0) return undefined;
+
+  const pages: Record<string, string[]> = {};
+  const frame: string[] = [];
+  for (const row of rows) {
+    const tree = treeOf(row.baseline);
+    if (!tree) continue;
+    if (row.kind === 'frame') frame.push(...starterLinesOf(tree));
+    else if (row.refId) (pages[row.refId] ??= []).push(...starterLinesOf(tree));
+  }
+  return { pages, frame };
+}
+
+function treeOf(baseline: unknown): SilicaNode | null {
+  if (!baseline || typeof baseline !== 'object' || !('tree' in baseline)) return null;
+  const tree = (baseline as { tree?: unknown }).tree;
+  return tree && typeof tree === 'object' ? (tree as SilicaNode) : null;
+}
+
+/**
  * Every storage key a picture URL could have been built from.
  *
  * The platform emits a media URL through four different builders — api-rest's public
@@ -353,7 +396,7 @@ export async function runSiteCheck(
   ctx: PropertyContext
 ): Promise<SiteCheckReport> {
   return withRequestTenant(request, async (tx) => {
-    const [rows, layout, site, theme, targets, capabilities] = await Promise.all([
+    const [rows, layout, site, theme, targets, capabilities, starter] = await Promise.all([
       tx.builderPage.findMany({
         where: { propertyId: ctx.propertyId },
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
@@ -376,6 +419,7 @@ export async function runSiteCheck(
       effectiveTheme(tx, ctx),
       linkTargets(tx, ctx),
       siteCapabilities(ctx),
+      starterText(tx, ctx),
     ]);
 
     const symbols = (site?.silicaDraftSymbols ?? null) as Record<string, SymbolDef> | null;
@@ -399,6 +443,7 @@ export async function runSiteCheck(
       theme,
       targets,
       capabilities,
+      starterText: starter,
     };
 
     const notChecked = skippedPagesOf(rows);

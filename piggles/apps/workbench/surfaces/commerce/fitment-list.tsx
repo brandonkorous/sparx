@@ -24,7 +24,7 @@ import { EmptyStateActions } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { FitmentDictionaryPicker } from './fitment-dictionary-picker';
 import { resolveFitmentIcon } from './fitment-icons';
 import {
@@ -42,6 +42,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('commerce.fitment.list');
   const toast = useToast();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useFitmentDomains();
   const [search, setSearch] = useState('');
@@ -109,10 +110,10 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
         // overflow popover under 672px, and a commit action must be reachable
         // at every width. Enforced by scripts/check-toolbar-primary.mjs.
         primaryAction={{
-          label: 'Add a list',
+          label: createLabel,
           icon: faPlus,
           onClick: create,
-          title: 'Build a list from scratch. Hold Shift to open alongside, Alt for a new window',
+          title: `${createLabel}: hold Shift to open alongside, Alt for a new window`,
         }}
         views={{
           target: '/commerce/fitment',

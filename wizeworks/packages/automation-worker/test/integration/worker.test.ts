@@ -205,10 +205,12 @@ describe('automation-worker HTTP surface', () => {
       .sort();
     const seeded = await ownerDb.automation.findMany({
       where: { tenantId: tenant.id, origin: 'system' },
-      select: { name: true, locked: true },
+      select: { name: true, locked: true, systemKey: true },
     });
     expect(seeded.map((a) => a.name).sort()).toEqual(expected);
-    const dunning = seeded.find((a) => a.name === 'B2B overdue escalation');
+    // Found by its key, not its name: this looked for "B2B overdue escalation",
+    // a name the seed stopped shipping under, and read `undefined` ever since.
+    const dunning = seeded.find((a) => a.systemKey === 'b2b.chase-overdue-invoices');
     expect(dunning?.locked).toBe(true);
   });
 

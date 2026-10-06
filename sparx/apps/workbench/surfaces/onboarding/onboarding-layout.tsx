@@ -12,7 +12,7 @@
 //     width of whatever holds it — the full viewport in the gate, the pane width
 //     when reopened — never by the viewport (the workbench's responsive rule).
 
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { Wordmark } from '@sparx/brand/react';
 import { signOut } from '@wizeworks/auth/client';
@@ -103,8 +103,15 @@ export function OnboardingLayout({
   heading,
   belowWork,
 }: OnboardingLayoutProps) {
+  // A new step opens at its top, not at the last step's scroll position, which
+  // hid the Workspace heading (sparx persona issue 017).
+  const frame = useRef<HTMLDivElement>(null);
+  const current = steps?.find((s) => s.status === 'current')?.key;
+  useEffect(() => {
+    frame.current?.scrollTo({ top: 0 });
+  }, [current]);
   return (
-    <div className="@container min-h-0 flex-1 overflow-y-auto">
+    <div ref={frame} className="@container min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 @[48rem]:px-6 @[64rem]:gap-8 @[64rem]:py-10">
         {/* The step rail spans the full width above BOTH columns, a quiet breadcrumb
             on the canvas — so the work panel and the summary card start at the same

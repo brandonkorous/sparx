@@ -83,7 +83,20 @@ async function importFile(
     (_row, index) => !mapped.report.errorRows.includes(index)
   ) as ImportRow[];
 
-  const results = await processor.run(ctx, rows, { upsert: true, vendor: 'shopify' }, logger);
+  // The walkthrough moves a products file AND a stock file in one go, and the
+  // migration route tells the products step so (`stockLevelsInRun`), which keeps
+  // it from also counting the export's totals onto a "Main" shelf. The helper
+  // never passed it, so it asserted a move the screen cannot make.
+  const results = await processor.run(
+    ctx,
+    rows,
+    {
+      upsert: true,
+      vendor: 'shopify',
+      ...(entity === 'products' ? { stockLevelsInRun: true } : {}),
+    },
+    logger
+  );
 
   return {
     imported: results.filter((result) => result.status === 'imported').length,

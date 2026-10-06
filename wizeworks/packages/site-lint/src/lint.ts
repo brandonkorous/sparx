@@ -23,6 +23,7 @@ import { checkLinks, resolveTargets } from './links';
 import { checkAddresses } from './addresses';
 import { checkReach, linkedPaths } from './reach';
 import { checkSeo } from './seo';
+import { checkStarterText } from './starter-text';
 import { checkDuplicateIds, checkStructure } from './structure';
 import type { LintSeverity, LintStatus, SiteLintInput, SiteLintReport } from './types';
 import { inventoryOf } from './walk';
@@ -73,6 +74,7 @@ export function lintSite(input: SiteLintInput): SiteLintReport {
       // `mergeFindings` collapses: one row, with every page it costs a visitor on listed
       // in `seenOn`.
       ...checkChrome(inventory, input.capabilities),
+      ...checkStarterText(inventory, input.starterText),
     ];
     for (const finding of findings) sightings.push({ finding, page: inventory.page.name });
   }

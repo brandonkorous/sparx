@@ -5,7 +5,12 @@
 // total stock is conserved (allocated, never on_hand). Release frees the
 // reservation; consume commits it to a `sale` through the ledger.
 
-import { AccountAvailabilityInput, CreateFleetHoldInput } from '@wizeworks/commerce-schemas';
+import {
+  AccountAvailabilityInput,
+  CreateFleetHoldInput,
+  productLabel,
+  quantityProblem,
+} from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
@@ -44,6 +49,9 @@ export interface AccountAvailabilityRow {
   heldForAccount: number;
   minOrderQty: number | null;
   maxOrderQty: number | null;
+  /** Case pack: the account buys this only in multiples of this many. Null =
+   *  any amount (sparx persona issue 086). */
+  orderMultiple: number | null;
 }
 
 interface HoldWithJoins {
@@ -96,39 +104,44 @@ async function ensureAccount(tx: TxClient, ctx: ServiceContext, accountId: strin
   if (!account) throw new InventoryNotFoundError('Company', accountId);
 }
 
-async function loadOverride(
+/**
+ * Hold the amount to the account's buying rules on this version: its minimum,
+ * maximum and case pack (sparx persona issue 086). The rule and the sentence are
+ * the cart's own (`quantityProblem` in @wizeworks/commerce-schemas), so a hold
+ * and a cart refuse the same amount in the same words. The case pack used to be
+ * ignored here, so stock could be held for 5 of something sold in cases of 12.
+ */
+async function assertWithinBuyingRules(
   tx: TxClient,
   ctx: ServiceContext,
-  accountId: string,
-  variantId: string
-): Promise<{ minOrderQty: number | null; maxOrderQty: number | null }> {
+  input: { accountId: string; variantId: string; quantity: number }
+): Promise<void> {
   const row = await tx.b2bAccountProductOverride.findFirst({
-    where: { tenantId: ctx.tenantId, accountId, variantId },
-    select: { minOrderQty: true, maxOrderQty: true },
+    where: { tenantId: ctx.tenantId, accountId: input.accountId, variantId: input.variantId },
+    orderBy: { createdAt: 'asc' },
+    select: { minOrderQty: true, maxOrderQty: true, orderMultiple: true },
   });
-  return { minOrderQty: row?.minOrderQty ?? null, maxOrderQty: row?.maxOrderQty ?? null };
-}
-
-function assertWithinLimits(
-  quantity: number,
-  limits: { minOrderQty: number | null; maxOrderQty: number | null }
-): void {
-  if (limits.minOrderQty !== null && quantity < limits.minOrderQty) {
-    throw new InventoryValidationError(
-      `Quantity ${quantity} is below this account's minimum order quantity of ${limits.minOrderQty}.`
-    );
-  }
-  if (limits.maxOrderQty !== null && quantity > limits.maxOrderQty) {
-    throw new InventoryValidationError(
-      `Quantity ${quantity} exceeds this account's maximum order quantity of ${limits.maxOrderQty}.`
-    );
-  }
+  if (!row) return;
+  const rule = { minimum: row.minOrderQty, maximum: row.maxOrderQty, caseOf: row.orderMultiple };
+  if (rule.minimum === null && rule.maximum === null && rule.caseOf === null) return;
+  const [account, variant] = await Promise.all([
+    tx.company.findFirst({ where: { id: input.accountId }, select: { companyName: true } }),
+    tx.productVariant.findFirst({
+      where: { id: input.variantId },
+      select: { title: true, product: { select: { title: true } } },
+    }),
+  ]);
+  const problem = quantityProblem(rule, input.quantity, {
+    account: account?.companyName ?? 'This account',
+    product: variant ? productLabel(variant.product, variant.title) : 'this product',
+  });
+  if (problem) throw new InventoryValidationError(problem);
 }
 
 /**
  * Account-scoped availability for a set of variants: master available to reserve
  * (net of safety buffer), how much this account already holds, and the account's
- * per-variant min/max purchasing limits. Explicitly tenant-scoped (superuser-
+ * per-variant minimum, maximum and case pack. Explicitly tenant-scoped (superuser-
  * bypasses-RLS precedent).
  */
 export async function accountAvailability(
@@ -170,7 +183,7 @@ export async function accountAvailability(
           accountId: input.accountId,
           variantId: { in: input.variantIds },
         },
-        select: { variantId: true, minOrderQty: true, maxOrderQty: true },
+        select: { variantId: true, minOrderQty: true, maxOrderQty: true, orderMultiple: true },
       }),
     ]);
 
@@ -192,14 +205,15 @@ export async function accountAvailability(
         heldForAccount: heldBy.get(v.id) ?? 0,
         minOrderQty: o?.minOrderQty ?? null,
         maxOrderQty: o?.maxOrderQty ?? null,
+        orderMultiple: o?.orderMultiple ?? null,
       };
     });
   });
 }
 
 /**
- * Place a fleet / work-order hold for a B2B account: enforce the account's min/max
- * limits, reserve the stock through the reservation engine, and record the hold.
+ * Place a fleet / work-order hold for a B2B account: enforce the account's
+ * minimum, maximum and case pack, reserve the stock through the reservation engine, and record the hold.
  * Throws InventoryOutOfStockError if stock is short under a `deny` policy.
  */
 export async function createFleetHold(
@@ -211,10 +225,7 @@ export async function createFleetHold(
   const holdId = await withTenant(ctx, async (tx) => {
     await ensureAccount(tx, ctx, input.accountId);
     await ensureVariantExists(tx, input.variantId);
-    assertWithinLimits(
-      input.quantity,
-      await loadOverride(tx, ctx, input.accountId, input.variantId)
-    );
+    await assertWithinBuyingRules(tx, ctx, input);
 
     const warehouseId =
       input.warehouseId ??

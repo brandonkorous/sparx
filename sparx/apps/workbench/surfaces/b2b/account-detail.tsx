@@ -45,6 +45,7 @@ import { PaymentTermsField } from '../../components/payment-terms-field';
 import { SaveFailure } from '@/components/save-failure';
 import {
   CONTACT_ROLE_LABELS,
+  alreadyOnAccount,
   accountErrorMessage,
   accountState,
   formatCents,
@@ -55,6 +56,8 @@ import {
   useCreateAccount,
   useDeleteAccount,
   useSaveAccount,
+  accountTierWords,
+  tierChoiceItems,
   useSetAccountTier,
   useTierChoices,
   useUpdateContact,
@@ -65,7 +68,11 @@ import {
   type PaymentTerms,
 } from './accounts-data';
 import { creditStanding } from '../../lib/credit-standing';
+import { TaxExemptionsNotYet, TaxExemptionsSection } from '../commerce/tax-exemptions-section';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { APPROVER_ROLE_MEANING } from './sign-off-words';
+import { AccountStatementSection } from './account-statement';
+import { AccountFleet } from './account-fleet';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -384,13 +391,15 @@ function AccountEditor({
     });
   };
 
-  const tierItems = useMemo(() => {
-    const items = (tiersQuery.data?.items ?? []).map((tier) => ({
-      value: tier.id,
-      label: tier.name,
-    }));
-    return [{ value: '', label: 'No tier: normal prices' }, ...items];
-  }, [tiersQuery.data]);
+  const tierItems = useMemo(
+    () =>
+      tierChoiceItems(tiersQuery.data?.items, 'No tier: normal prices', {
+        id: account?.pricingTierId ?? null,
+        name: account?.pricingTierName ?? account?.removedTierName ?? null,
+        removed: Boolean(account?.removedTierName),
+      }),
+    [tiersQuery.data, account?.pricingTierId, account?.pricingTierName, account?.removedTierName]
+  );
 
   const state = account ? accountState(account.status) : null;
 
@@ -448,7 +457,7 @@ function AccountEditor({
                 {account.companyName}
               </Heading>
               <Text className="text-sm">
-                {account.pricingTierName ? `${account.pricingTierName} · ` : ''}
+                {accountTierWords(account) ? `${accountTierWords(account)} · ` : ''}
                 {paymentTermsLabel(account.paymentTerms)}
               </Text>
             </div>
@@ -682,70 +691,57 @@ function AccountEditor({
             <ContactsSection ctx={ctx} accountId={account.id} />
           ) : null}
 
-          {/* Fleet — read-only, only when the account has one recorded */}
-          {account && (account.fleetVehicles.length > 0 || account.fleetSize != null) ? (
-            <FormSection
-              title="Their fleet"
-              description="The equipment this business runs, used to show them only the parts that fit."
-            >
-              <Field>
-                <FieldLabel>Fleet size</FieldLabel>
-                <FieldControl
-                  render={
-                    <div className="max-w-40">
-                      <Input
-                        color={fleetError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step={1}
-                        inputMode="numeric"
-                        className="text-right tabular-nums"
-                        aria-label="Fleet size"
-                        value={draft.fleetSize}
-                        onChange={(event) => {
-                          set('fleetSize', event.target.value);
-                        }}
-                      />
-                    </div>
-                  }
-                />
-                {fleetError && touched ? (
-                  <FieldStatus status="error">{fleetError}</FieldStatus>
-                ) : (
-                  <FieldDescription>How many units they run in total.</FieldDescription>
-                )}
-              </Field>
-              {account.fleetVehicles.length > 0 ? (
-                <ul className="flex flex-col gap-2">
-                  {account.fleetVehicles.map((vehicle, index) => (
-                    <li
-                      key={`${vehicle.label ?? 'unit'}-${String(index)}`}
-                      className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-1 border-b pb-2 last:border-b-0 last:pb-0"
-                    >
-                      <span className="min-w-0 flex-1 font-medium">
-                        {vehicle.label ?? vehicle.nodeName ?? 'Unit'}
-                      </span>
-                      <Text as="span" className="text-sm">
-                        {[
-                          vehicle.domainName,
-                          vehicle.nodeName,
-                          ...vehicle.ranges.map(
-                            (range) => `${range.label} ${String(range.value)}${range.unit ?? ''}`
-                          ),
-                        ]
-                          .filter(Boolean)
-                          .join(' · ') || '—'}
-                      </Text>
-                      {vehicle.count && vehicle.count > 1 ? (
-                        <Badge color="neutral" variant="soft" size="sm">
-                          ×{vehicle.count}
-                        </Badge>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+          {/* 4 — Tax exemption: the certificate a reseller or a farm keeps on the
+              business, read at checkout for everyone ordering on its behalf. */}
+          {isNew ? (
+            <TaxExemptionsNotYet noun="account" />
+          ) : account ? (
+            <TaxExemptionsSection companyId={account.id} name={account.companyName} />
+          ) : null}
+
+          {/* 5 - Their fleet: add, change and remove the vehicles this business
+              runs, which decides what their buyers see as fitting on the website
+              (sparx persona issue 086). The fleet size still saves with the pane. */}
+          {isNew ? (
+            <FormSection title="Their fleet">
+              <Text className="text-sm">
+                Save the account first, then add the vehicles this business runs.
+              </Text>
             </FormSection>
+          ) : account ? (
+            <AccountFleet
+              ctx={ctx}
+              accountId={account.id}
+              sizeField={
+                <Field>
+                  <FieldLabel>Fleet size</FieldLabel>
+                  <FieldControl
+                    render={
+                      <div className="max-w-40">
+                        <Input
+                          color={fleetError && touched ? 'error' : 'module'}
+                          type="number"
+                          min={0}
+                          step={1}
+                          inputMode="numeric"
+                          className="text-right tabular-nums"
+                          aria-label="Fleet size"
+                          value={draft.fleetSize}
+                          onChange={(event) => {
+                            set('fleetSize', event.target.value);
+                          }}
+                        />
+                      </div>
+                    }
+                  />
+                  {fleetError && touched ? (
+                    <FieldStatus status="error">{fleetError}</FieldStatus>
+                  ) : (
+                    <FieldDescription>How many units they run in total.</FieldDescription>
+                  )}
+                </Field>
+              }
+            />
           ) : null}
 
           {/* Trade activity cross-links */}
@@ -792,6 +788,12 @@ function AccountEditor({
             </FormSection>
           ) : null}
 
+          {/* Statement: opening, every invoice and payment with their PO
+              numbers, closing and aging, to print or email to them. */}
+          {account ? (
+            <AccountStatementSection accountId={account.id} companyName={account.companyName} />
+          ) : null}
+
           {/* Delete — a plain row after the work, under a divider */}
           {account ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
@@ -832,8 +834,17 @@ function ContactsSection({ ctx, accountId }: { ctx: SurfaceContext; accountId: s
   const updateContact = useUpdateContact(accountId);
 
   const [picked, setPicked] = useState<CustomerSummary | null>(null);
+  // Bumped after each add, so the picker starts empty again instead of still
+  // showing the name just added and offering them a second time (sparx persona
+  // issue 086).
+  const [pickerRound, setPickerRound] = useState(0);
   const [role, setRole] = useState<ContactRole>('buyer');
 
+  // What "Can approve orders" actually does is said where the role is picked
+  // (the section's description, read with every picker in it). The role did
+  // nothing at all until a spending limit could be signed off by the account's
+  // own approvers, and nothing here said where that is set (sparx persona
+  // issue 087).
   const contacts = contactsQuery.data?.items ?? [];
   const active = contacts.filter((contact) => contact.isActive);
   const inactive = contacts.filter((contact) => !contact.isActive);
@@ -845,6 +856,7 @@ function ContactsSection({ ctx, accountId }: { ctx: SurfaceContext; accountId: s
       {
         onSuccess: () => {
           setPicked(null);
+          setPickerRound((round) => round + 1);
           setRole('buyer');
           toast.add({ title: `${customerName(picked)} added`, type: 'success' });
         },
@@ -862,7 +874,7 @@ function ContactsSection({ ctx, accountId }: { ctx: SurfaceContext; accountId: s
   return (
     <FormSection
       title="Who can order"
-      description="The people at this business allowed to place orders on its behalf, and what each is allowed to do."
+      description={`The people at this business allowed to place orders on its behalf, and what each is allowed to do. ${APPROVER_ROLE_MEANING}`}
     >
       {contactsQuery.isError ? (
         <Text className="text-sm">Their contacts could not be loaded just now.</Text>
@@ -899,7 +911,9 @@ function ContactsSection({ ctx, accountId }: { ctx: SurfaceContext; accountId: s
         </Heading>
         <div className="flex flex-col gap-3">
           <CustomerPicker
+            key={pickerRound}
             value={picked?.id ?? null}
+            unavailable={alreadyOnAccount(contacts)}
             onSelect={(customer) => {
               setPicked(customer);
             }}
@@ -952,6 +966,11 @@ function contactName(contact: AccountContact): string {
   return contact.customer.company ?? contact.customer.email ?? 'Unnamed contact';
 }
 
+/** A removed person can no longer order or approve for the account. It is a
+ *  `warning`, not a `danger`: the person is set aside and can be added back,
+ *  where red is kept for a suspended account or a failed payment. */
+const REMOVED = { label: 'Removed', tone: 'warning' } as const;
+
 function ContactRow({
   contact,
   busy,
@@ -963,6 +982,25 @@ function ContactRow({
   onRole: (role: ContactRole) => void;
   onToggleActive: () => void;
 }) {
+  // Asked first. Remove is one click and the list re-sorts after every change,
+  // so after Restore the pointer sat on the NEXT person's Remove: a double click
+  // took the account's only approver away, with nothing to say so (sparx persona
+  // issue 091). Restore needs no question; it gives access back.
+  const confirm = useConfirm();
+  const onToggle = async () => {
+    if (contact.isActive) {
+      const name = contactName(contact);
+      const ok = await confirm({
+        title: `Remove ${name} from this account?`,
+        description: `${name} will no longer be able to use this account on your site. Orders they already placed stay as they are. You can restore them here at any time.`,
+        confirmLabel: `Remove ${name}`,
+        cancelLabel: 'Keep them',
+        color: 'danger',
+      });
+      if (!ok) return;
+    }
+    onToggleActive();
+  };
   return (
     <li className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 border-b pb-3 last:border-b-0 last:pb-0">
       <span className="min-w-0 flex-1">
@@ -987,8 +1025,8 @@ function ContactRow({
           />
         </div>
       ) : (
-        <Badge color="neutral" variant="soft" size="sm">
-          Removed
+        <Badge color={REMOVED.tone} variant="soft" size="sm">
+          {REMOVED.label}
         </Badge>
       )}
       <Button
@@ -996,7 +1034,9 @@ function ContactRow({
         variant="ghost"
         color={contact.isActive ? 'danger' : 'module'}
         disabled={busy}
-        onClick={onToggleActive}
+        onClick={() => {
+          void onToggle();
+        }}
       >
         {contact.isActive ? 'Remove' : 'Restore'}
       </Button>

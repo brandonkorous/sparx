@@ -41,6 +41,7 @@ import { bind, el, type ElementNode, type Node } from '@wizeworks/silicaui-html'
 import { getBlock } from '@wizeworks/silicaui-html/blocks';
 
 import { HOST_KEYS, hostCore } from './host-nodes';
+import { bindFooterBlurb } from './upgrade-frame';
 
 /** The navbar blocks whose slot set sparx's fill matches — `brand`, `link1..4`,
  *  `secondary` (bar `centerLogo`, which omits it — `ensureAccountLink` appends the core
@@ -791,5 +792,7 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
         ];
     fillNavLinks(explore, [...destinations, ...extras]);
   }
-  return ensureLegalLinks(filled);
+  // The brand line under the name shows the owner's tagline once they set one (sparx
+  // persona issue 046), keeping the text above while they have none.
+  return bindFooterBlurb(ensureLegalLinks(filled));
 }

@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button, SearchInput } from '@wizeworks/silicaui-react';
 import { getSurface } from '../../lib/surfaces/registry';
+import { TabGlyph } from '../../lib/dock/tab-glyph';
 import { moduleLabel } from '../../lib/surfaces/nav';
 import { useWorkbench } from '../../lib/workbench/context';
 import type { StackPaneHost } from '../../lib/workbench/stack-host';
@@ -102,7 +103,6 @@ export function OpenSheet({ open, host, order, activeId, onDismiss }: OpenSheetP
         {shown.map((paneId) => {
           const descriptor = controller.getDescriptor(paneId);
           const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-          const Icon = definition?.icon;
           const focused = paneId === activeId;
 
           return (
@@ -121,7 +121,7 @@ export function OpenSheet({ open, host, order, activeId, onDismiss }: OpenSheetP
                     onDismiss();
                   }}
                 >
-                  {Icon ? <Icon className="text-module size-5" aria-hidden /> : null}
+                  <TabGlyph descriptor={descriptor} className="text-module size-5" />
                   <span className="min-w-0 flex-1 truncate text-start">{host.titleOf(paneId)}</span>
                   {definition ? (
                     <span className="text-sm">{moduleLabel(definition.module)}</span>

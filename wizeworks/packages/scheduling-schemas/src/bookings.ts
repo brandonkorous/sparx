@@ -23,9 +23,18 @@ export const BookingAttendeeInput = z.object({
 export type BookingAttendeeInput = z.infer<typeof BookingAttendeeInput>;
 
 // A linked part expected for the service (B2B/fleet). Mirrors bookings.parts_linked.
+// A part linked from one of the account's orders keeps that order (id, number and
+// line) plus a snapshot of what was bought, so the service record can show the
+// part and link back to the order it came from even after the catalog changes
+// (sparx persona issue 086).
 export const LinkedPart = z.object({
+  orderId: OptionalUuid,
+  orderItemId: OptionalUuid,
+  orderNumber: z.string().max(63).optional(),
   productId: OptionalUuid,
-  sku: z.string().max(120).optional(),
+  variantId: OptionalUuid,
+  sku: z.string().max(127).optional(),
+  title: z.string().max(255).optional(),
   description: z.string().max(500).optional(),
   quantity: z.number().int().min(1).default(1),
 });
@@ -64,6 +73,9 @@ export type CreateBookingInput = z.infer<typeof CreateBookingInput>;
 // Staff-side edits that don't move the booking in time (those go through reschedule).
 export const UpdateBookingInput = z.object({
   id: Uuid,
+  // The trade account the booking is for, set by staff alongside the vehicle
+  // (sparx persona issue 086). Null takes it off again.
+  companyId: OptionalUuid,
   notes: z.string().max(5000).nullable().optional(),
   staffNotes: z.string().max(10000).nullable().optional(),
   assetRef: z.record(z.string(), z.unknown()).nullable().optional(),

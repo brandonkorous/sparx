@@ -4,6 +4,7 @@
 // freeze to the same payload. Decimals are normalized to numbers (lossless at
 // the (12,2)/(12,3) scales the schema uses) so the frozen record is plain JSON.
 
+import { poNumberOf } from '@wizeworks/crm-schemas';
 import type { BillingDocument, BillingDocumentLine, DocumentStage } from '@wizeworks/db';
 
 export interface BillingSnapshotLine {
@@ -22,6 +23,8 @@ export interface BillingSnapshotLine {
   taxAmount: number;
   lineSubtotal: number;
   lineTotal: number;
+  /** Core deposit per unit (sparx issue 051); absent on snapshots frozen before it. */
+  coreCharge?: number | null;
   sortOrder: number;
 }
 
@@ -35,12 +38,17 @@ export interface BillingSnapshotPayload {
     status: string;
     notes: string | null;
     validUntil: string | null;
+    /** The buyer's purchase order number (issue 077). Absent on snapshots
+     *  frozen before it was carried. */
+    poNumber?: string | null;
     totals: {
       subtotal: number;
       discountTotal: number;
       taxTotal: number;
       shippingTotal: number;
       surchargeTotal: number;
+      /** Absent on snapshots frozen before core deposits existed. */
+      coreChargeTotal?: number;
       total: number;
       depositTotal: number;
       amountPaid: number;
@@ -89,12 +97,14 @@ export function buildSnapshotPayload(
       status: document.status,
       notes: document.notes,
       validUntil: document.validUntil ? document.validUntil.toISOString() : null,
+      poNumber: poNumberOf(document.metadata),
       totals: {
         subtotal: Number(document.subtotal),
         discountTotal: Number(document.discountTotal),
         taxTotal: Number(document.taxTotal),
         shippingTotal: Number(document.shippingTotal),
         surchargeTotal: Number(document.surchargeTotal),
+        coreChargeTotal: Number(document.coreChargeTotal ?? 0),
         total: Number(document.total),
         depositTotal: Number(document.depositTotal),
         amountPaid: Number(document.amountPaid),
@@ -124,6 +134,7 @@ export function buildSnapshotPayload(
       taxAmount: Number(l.taxAmount),
       lineSubtotal: Number(l.lineSubtotal),
       lineTotal: Number(l.lineTotal),
+      coreCharge: l.coreCharge == null ? null : Number(l.coreCharge),
       sortOrder: l.sortOrder,
     })),
   };

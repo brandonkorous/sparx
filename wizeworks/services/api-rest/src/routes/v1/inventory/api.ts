@@ -18,6 +18,8 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { queryBool } from '@wizeworks/api-core/query';
+import { notFound } from '@wizeworks/api-core/errors';
+import { withTenant } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole, requireScope } from '@wizeworks/api-core/auth';
@@ -96,6 +98,17 @@ const inventoryApiRoutes: FastifyPluginAsync = async (app) => {
       take,
       skip,
     });
+    // Asked about ONE item that is not this business's (removed, or another
+    // business's id): a 404, not an empty list. Empty is also the true answer
+    // for an item nobody has counted yet, and the stock item pane drew both the
+    // same way, as an item with a "Record a count" button (persona issue 226).
+    if (q.variant_id && total === 0) {
+      const ctx = toInventoryContext(request);
+      const variant = await withTenant(ctx, (tx) =>
+        tx.productVariant.findFirst({ where: { id: q.variant_id }, select: { id: true } })
+      );
+      if (!variant) throw notFound('ProductVariant', q.variant_id);
+    }
     return paged(items, { total, skip, per_page: take });
   });
 

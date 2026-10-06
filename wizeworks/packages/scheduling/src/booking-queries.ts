@@ -4,6 +4,7 @@
 
 import { withTenant, type TxClient } from '@wizeworks/db';
 
+import { latestBookingPayment } from './booking-history';
 import { BookingNotFoundError } from './errors';
 
 // Shape the relations once so list + detail return the same nested data.
@@ -76,7 +77,10 @@ export interface BookedCustomer {
   phone: string | null;
 }
 
-export type BookingWithRelations = Awaited<ReturnType<typeof getBooking>>;
+/** A booking as the list and the record both carry it. */
+export type BookingWithRelations = Omit<BookingDetail, 'payment'>;
+/** One booking's record: the list's shape plus what happened to its card. */
+export type BookingDetail = Awaited<ReturnType<typeof getBooking>>;
 
 export async function getBooking(tenantId: string, id: string) {
   return withTenant({ tenantId }, async (tx) => {
@@ -86,9 +90,16 @@ export async function getBooking(tenantId: string, id: string) {
     });
     if (!booking) throw new BookingNotFoundError(id);
     const customers = await customersFor(tx, [booking]);
-    // Null means "nobody is on this booking", which is a walk-in and a real
-    // answer. It is never the same thing as "not loaded".
-    return { ...booking, customer: customers.get(booking.customerId ?? '') ?? null };
+    return {
+      ...booking,
+      // Null means "nobody is on this booking", which is a walk-in and a real
+      // answer. It is never the same thing as "not loaded".
+      customer: customers.get(booking.customerId ?? '') ?? null,
+      // What the card was asked to do when the booking ended, and whether it
+      // did. The deposit status is where the money is; this is why (sparx
+      // persona issue 087). One booking, so one read; the list does not carry it.
+      payment: await latestBookingPayment(tx, id),
+    };
   });
 }
 

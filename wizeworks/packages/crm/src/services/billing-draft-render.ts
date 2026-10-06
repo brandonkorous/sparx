@@ -22,6 +22,7 @@ import type {
   BillingRenderLine,
   BillingRenderTotals,
 } from './billing-document-html';
+import { withCoreRows } from './billing-document-html';
 import { computeBillingTotals } from './billing-totals';
 import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
 
@@ -34,6 +35,8 @@ export interface BillingDraftLine {
   unitPrice?: number | null;
   discountAmount?: number | null;
   taxable?: boolean | null;
+  /** Core deposit per unit on a rebuilt part (sparx issue 051). */
+  coreCharge?: number | null;
 }
 
 /** The unsaved document as the wizard / line grid holds it. */
@@ -59,6 +62,8 @@ export interface BillingDraftInput {
   issuedAt?: string | null;
   dueAt?: string | null;
   validUntil?: string | null;
+  /** The buyer's purchase order number, as typed (issue 077). */
+  poNumber?: string | null;
   notes?: string | null;
   /** Fraction, not percent — 0.0875 is 8.75%, matching the persisted column. */
   taxRate?: number | null;
@@ -103,6 +108,7 @@ export async function buildRenderDataFromDraft(
       unitPrice: num(l.unitPrice),
       discountAmount: num(l.discountAmount),
       taxable: l.taxable ?? false,
+      coreCharge: l.coreCharge ?? null,
     }));
     // Same function the save path uses — preview numbers and saved numbers agree.
     const computed = computeBillingTotals(
@@ -122,14 +128,17 @@ export async function buildRenderDataFromDraft(
       balance: round2(computed.total - depositTotal - amountPaid),
     };
 
-    const lines: BillingRenderLine[] = draftLines.map((l, i) => ({
-      typeLabel: l.lineTypeId ? (typeLabels.get(l.lineTypeId) ?? null) : null,
-      description: l.description ?? '',
-      quantity: num(l.quantity),
-      unitPrice: num(l.unitPrice),
-      lineTotal: computeLineTotal(forTotals[i]!, taxRate),
-      taxable: l.taxable ?? false,
-    }));
+    const lines: BillingRenderLine[] = withCoreRows(
+      draftLines.map((l, i) => ({
+        typeLabel: l.lineTypeId ? (typeLabels.get(l.lineTypeId) ?? null) : null,
+        description: l.description ?? '',
+        quantity: num(l.quantity),
+        unitPrice: num(l.unitPrice),
+        lineTotal: computeLineTotal(forTotals[i]!, taxRate),
+        taxable: l.taxable ?? false,
+        coreCharge: l.coreCharge ?? null,
+      }))
+    );
 
     const priceOffer = isPriceOfferWorkflow(draft.workflowSlug);
     const noun = billingDocumentNoun(draft.workflowSlug);
@@ -149,6 +158,7 @@ export async function buildRenderDataFromDraft(
       issuedAt: draft.issuedAt ?? new Date().toISOString(),
       dueAt: draft.dueAt ?? null,
       validUntil: draft.validUntil ?? null,
+      poNumber: draft.poNumber?.trim() ? draft.poNumber.trim() : null,
       billTo,
       shipTo: partyFromJson(draft.shipTo, 'Ship to'),
       lines,

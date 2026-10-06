@@ -6,6 +6,11 @@
 import type { TxClient } from '@wizeworks/db';
 
 import { InventoryNotFoundError } from '../errors';
+import {
+  AVAILABILITY_LEVEL_SELECT,
+  availabilityLevelOf,
+  computeAvailability,
+} from './availability';
 import { isLowStock } from './low-stock';
 
 // Cart reservations default to a 30-minute soft hold; the reaper releases them.
@@ -83,41 +88,40 @@ export async function syncProductInStock(
     return;
   }
 
-  // A product is "in stock" if it has positive available inventory in any
-  // warehouse, OR any live variant is orderable without tracked stock
-  // (inventoryPolicy continue/preorder). The latter covers dropship / print-on-
-  // demand, whose stock lives with the supplier and never appears in
-  // inventory_levels — counting only on-hand would mark those permanently sold
-  // out even though they're always purchasable.
-  const [levels, sellableWithoutStock] = await Promise.all([
-    tx.inventoryLevel.findMany({
-      where: { variant: { productId: variant.productId, deletedAt: null } },
-      // safetyBuffer + reorderPoint feed the low-stock predicate below.
-      select: {
-        onHand: true,
-        allocated: true,
-        safetyBuffer: true,
-        unsellableOnHand: true,
-        reorderPoint: true,
-      },
-    }),
-    tx.productVariant.count({
-      where: {
-        productId: variant.productId,
-        deletedAt: null,
-        inventoryPolicy: { not: 'deny' },
-      },
-    }),
-  ]);
-  const total = levels.reduce((acc, l) => acc + (l.onHand - l.allocated - l.unsellableOnHand), 0);
-  // No level row anywhere means nobody has ever counted this product — the
-  // absence of a measurement, not a measurement of zero. It takes the untracked
-  // path, exactly as `computeAvailability` does, so the denormalized column and
-  // the live calc cannot disagree. Without this, every product a business typed
-  // in read "Sold out" on its own shop from the moment it was published, while
-  // the console beside it said On sale. See availability.ts's header.
-  const neverCounted = levels.length === 0;
-  const inStock = neverCounted || total > 0 || sellableWithoutStock > 0;
+  // A product is in stock when any live version of it can be bought, asked the
+  // ONE way the product page asks it: `computeAvailability`, per variant, over
+  // the same level columns (`AVAILABILITY_LEVEL_SELECT`). A version nobody has
+  // counted is untracked and buyable; one that may be sold past zero
+  // (continue / preorder, which covers dropship and print-on-demand) is always
+  // buyable; otherwise it needs a unit some location can actually sell.
+  //
+  // This used to be its own sum, `Σ(on_hand − allocated − unsellable)` over
+  // every level of every version, and it disagreed with the page twice. It
+  // dropped the safety buffer, so a product whose last units were withheld read
+  // in stock in the grid and sold out on its page. And it did not floor a
+  // location at zero, so one oversold location cancelled real stock at another:
+  // MEASURED 2026-10-03 on Gillett Diesel, a CP4 kit with one on the shop's
+  // shelf and the warehouse at 0 on hand / 3 allocated summed to −2, and the
+  // grid said Sold out while the product page offered Add to cart for the one
+  // that was there (after order O-000014).
+  const variants = await tx.productVariant.findMany({
+    where: { productId: variant.productId, deletedAt: null },
+    select: {
+      inventoryPolicy: true,
+      inventoryLevels: { select: { ...AVAILABILITY_LEVEL_SELECT, reorderPoint: true } },
+    },
+  });
+  const levels = variants.flatMap((v) => v.inventoryLevels);
+  // A product with no live version keeps the old answer (in stock): there is
+  // nothing to have counted, and the page falls back to this column for it.
+  const inStock =
+    variants.length === 0 ||
+    variants.some(
+      (v) =>
+        computeAvailability(v.inventoryLevels.map(availabilityLevelOf), v.inventoryPolicy, {
+          inventoryActive: true,
+        }).inStock
+    );
   // "Low stock" = still sellable, but at least one level has crossed its reorder
   // point per the module's ONE canonical predicate (isLowStock). A level with no
   // reorder point never counts (an owner who set no trigger asked for no signal),

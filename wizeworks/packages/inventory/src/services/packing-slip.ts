@@ -61,10 +61,41 @@ export interface PackingSlipData {
   boxCount: number;
   shipTo: { name: string; lines: string[] };
   customerNote: string | null;
+  /** What the buyer said about delivery when they asked for the quote this
+   *  order came from (sparx persona issue 086), or null when they said nothing. */
+  delivery: PackingSlipDelivery | null;
   lines: PackingSlipLine[];
   /** Ordered but in another box, or not yet packed at all. */
   toFollow: { description: string; sku: string | null; quantity: number }[];
   weightGrams: number | null;
+}
+
+/** `neededBy` is a calendar day, `YYYY-MM-DD`. */
+export interface PackingSlipDelivery {
+  neededBy: string | null;
+  deliverTo: string | null;
+  notes: string | null;
+}
+
+/**
+ * The delivery needs in an order's metadata bag (`metadata.delivery`), or null.
+ *
+ * The same reading as `deliveryNeedsOf` in crm-schemas `invoicing.ts`, which
+ * writes the bag; this package does not depend on crm-schemas, so the few lines
+ * are repeated here. Keep the two in step.
+ */
+export function orderDeliveryNeeds(metadata: unknown): PackingSlipDelivery | null {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
+  const raw = (metadata as Record<string, unknown>).delivery;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const bag = raw as Record<string, unknown>;
+  const text = (v: unknown) => (typeof v === 'string' && v.trim() !== '' ? v.trim() : null);
+  const neededBy =
+    typeof bag.neededBy === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(bag.neededBy)
+      ? bag.neededBy
+      : null;
+  const needs = { neededBy, deliverTo: text(bag.deliverTo), notes: text(bag.notes) };
+  return needs.neededBy || needs.deliverTo || needs.notes ? needs : null;
 }
 
 const DEFAULT_BRAND = {
@@ -106,6 +137,25 @@ function firstNonEmpty(...values: (string | null | undefined)[]): string | null 
   return null;
 }
 
+/** A calendar day as words, built from its parts so no time zone moves it. */
+function formatDay(day: string): string {
+  const [y, m, d] = day.split('-').map(Number);
+  if (!y || !m || !d) return day;
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/** Text the buyer typed over several lines, as separate lines. */
+function textLines(value: string): string[] {
+  return value
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+}
+
 function formatWeight(grams: number | null): string {
   if (grams === null || grams <= 0) return '';
   if (grams < 1000) return `${grams} g`;
@@ -130,6 +180,23 @@ export function renderPackingSlipHtml(data: PackingSlipData, brand: PackingSlipB
   const weight = formatWeight(data.weightGrams);
   if (weight) meta.push(`<div><span>Weight</span>${esc(weight)}</div>`);
 
+  // Where it goes. An order made from a quote request has no address of its
+  // own; the place the buyer wrote is then the address (sparx persona issue 086).
+  const delivery = data.delivery;
+  const addressLines = data.shipTo.lines.filter((l) => l.trim().length > 0);
+  const buyerPlace = delivery?.deliverTo ? textLines(delivery.deliverTo) : [];
+  const shipLines = addressLines.length > 0 ? addressLines : buyerPlace;
+  const placeAsWell = addressLines.length > 0 && buyerPlace.length > 0;
+  const deliveryRows: string[] = [];
+  if (delivery?.neededBy) {
+    deliveryRows.push(`<div><strong>Needed by</strong> ${esc(formatDay(delivery.neededBy))}</div>`);
+  }
+  if (placeAsWell) {
+    deliveryRows.push(`<div><strong>The buyer asked for it to go to</strong></div>`);
+    deliveryRows.push(...buyerPlace.map((l) => `<div>${esc(l)}</div>`));
+  }
+  if (delivery?.notes) deliveryRows.push(`<p>${esc(delivery.notes)}</p>`);
+
   const body = `
     <header class="masthead">
       <div class="seller">
@@ -152,12 +219,14 @@ export function renderPackingSlipHtml(data: PackingSlipData, brand: PackingSlipB
       <div class="party">
         <div class="party-heading">Deliver to</div>
         ${data.shipTo.name ? `<div class="party-name">${esc(data.shipTo.name)}</div>` : ''}
-        ${data.shipTo.lines
-          .filter((l) => l.trim().length > 0)
-          .map((l) => `<div>${esc(l)}</div>`)
-          .join('')}
+        ${shipLines.map((l) => `<div>${esc(l)}</div>`).join('')}
       </div>
     </div>
+    ${
+      deliveryRows.length > 0
+        ? `<section class="notes delivery"><h2>Delivery</h2>${deliveryRows.join('')}</section>`
+        : ''
+    }
     ${lineTable(data)}
     ${toFollowTable(data)}
     ${
@@ -265,6 +334,8 @@ function styles(b: typeof DEFAULT_BRAND & PackingSlipBrand): string {
   .notes h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #9CA3AF;
     margin-bottom: 8px; }
   .notes p { margin: 0; white-space: pre-wrap; }
+  .delivery { margin-top: 0; margin-bottom: 24px; }
+  .delivery div + p { margin-top: 8px; }
   .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #9CA3AF; }
   @page { margin: 0.5in; }
   @media print {
@@ -323,6 +394,8 @@ async function loadPackingSlipData(
       placedAt: true,
       shippingAddress: true,
       customerNote: true,
+      // When and where the buyer needs it, from the quote request (issue 086).
+      metadata: true,
       // `companyName` is the SCALAR on Customer; `company` is the relation to the
       // Company row and selecting it would hand a whole object to a string field.
       customer: { select: { firstName: true, lastName: true, companyName: true } },
@@ -361,7 +434,7 @@ async function loadPackingSlipData(
           FROM inventory_shipment_package_lines x
           JOIN inventory_shipment_packages xp ON xp.id = x.package_id
          WHERE x.order_item_id = oi.id
-           AND xp.status <> 'canceled'
+           AND xp.status <> 'cancelled'
            AND xp.id <> ${packageId}::uuid
       ) other ON TRUE
      WHERE oi.tenant_id = ${tenantId}::uuid
@@ -401,6 +474,7 @@ async function loadPackingSlipData(
       ],
     },
     customerNote: order.customerNote,
+    delivery: orderDeliveryNeeds(order.metadata),
     lines: rows
       .filter((r) => r.inThisBox > 0)
       .map((r) => ({

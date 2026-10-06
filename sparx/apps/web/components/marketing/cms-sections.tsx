@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
@@ -48,9 +50,12 @@ export function CmsHero() {
               {lede}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('cms-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Start publishing →
-              </Button>
+              </a>
               <a href="#editor">
                 <Button size="lg" variant="outline">
                   See the editor

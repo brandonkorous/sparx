@@ -134,6 +134,7 @@ export interface PersistedStory {
   text?: string;
   tense?: string | null;
   industry?: string | null;
+  industryLabel?: string;
   audience?: string | null;
   name?: string;
   cust?: string[];

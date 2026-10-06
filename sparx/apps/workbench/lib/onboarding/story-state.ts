@@ -16,14 +16,15 @@ import {
   TENSE,
   AUDIENCE,
   INDUSTRY_BY_SLUG,
+  storyNoun,
+  lineLead,
   type StoryState,
-  type Industry,
   type ClauseVoice,
   type TenseKey,
   type AudienceKey,
 } from '@wizeworks/story-schemas';
 import { SWITCHBOARD_MODULES, MODULE_BY_KEY, moduleLock } from './modules';
-import type { PersistedStory, WizardBlueprint } from './types';
+import type { PersistedStory } from './types';
 
 export { EMPTY_STORY };
 export type { StoryState };
@@ -46,7 +47,8 @@ export function starterStory(name: string): StoryState {
  *  surfaces→lib import; the canvas and the step-by-step editor both drive this. */
 export interface StoryDispatch {
   setTense: (t: StoryState['tense']) => void;
-  setIndustry: (slug: string) => void;
+  /** `label` is the owner's own words, kept when they typed the business. */
+  setIndustry: (slug: string, label?: string) => void;
   setAudience: (a: AudienceKey) => void;
   addCust: (id: string) => void;
   addToLine: (li: number, id: string) => void;
@@ -64,6 +66,7 @@ export interface StoryPayload {
   text: string;
   tense: string | null;
   industry: string | null;
+  industryLabel?: string;
   audience: string | null;
   name: string;
   cust: string[];
@@ -79,6 +82,7 @@ export function storyFromPersisted(p: PersistedStory): StoryState {
   return {
     tense: (p.tense as TenseKey | null) ?? null,
     industry: p.industry ?? null,
+    ...(p.industryLabel ? { industryLabel: p.industryLabel } : {}),
     audience: (p.audience as AudienceKey | null) ?? null,
     cust: p.cust ?? [],
     lines: p.lines ?? [],
@@ -95,6 +99,7 @@ export function toPersistPayload(s: StoryState): StoryPayload {
     text: toProse(s),
     tense: s.tense,
     industry: s.industry,
+    ...(s.industryLabel ? { industryLabel: s.industryLabel } : {}),
     audience: s.audience,
     name: s.name,
     cust: s.cust,
@@ -243,6 +248,10 @@ export function enabledModuleKeys(s: StoryState): string[] {
 // phrase when you return to the story, and the plan is identical either way because
 // both read `resolveModules` off the same state.
 export const MODULE_PRIMARY_CLAUSE: Record<string, string> = {
+  social: 'social',
+  funnels: 'promos',
+  finance: 'finance',
+  staff: 'staff',
   commerce: 'shop',
   scheduling: 'book',
   cms: 'blog',
@@ -274,9 +283,17 @@ export function toggleModuleInStory(s: StoryState, key: string): StoryState {
     // Turn off: strip every clause that names this module.
     return clausesNaming(s, key).reduce((acc, id) => removeClause(acc, id), s);
   }
-  // Turn on: add its representative phrase (voice-routed by addNewLine).
+  // Turn on: add its representative phrase. An owner phrase joins the LAST sentence
+  // rather than opening its own: three switches flipped in step-by-step used to read
+  // "I also post …. I also run …. I also keep …" (sparx persona issue 010). A
+  // customer phrase joins the opening (addNewLine routes it), and a story with no
+  // owner sentence yet starts one.
   const clause = MODULE_PRIMARY_CLAUSE[key];
-  return clause ? addNewLine(s, clause) : s;
+  if (!clause) return s;
+  const last = s.lines.length - 1;
+  return clauseVoice(clause) === 'owner' && last >= 0
+    ? addToLine(s, last, clause)
+    : addNewLine(s, clause);
 }
 
 /** A clause directly names module `m` (or it's the Builder base). */
@@ -334,46 +351,19 @@ export function handleSlug(name: string): string {
 }
 
 // ── starting-point blueprint match ──────────────────────────────────────────────
-function richness(bp: WizardBlueprint): number {
-  const c = bp.contents;
-  return c.products + c.pages + c.content + c.emails + c.collections + c.categories;
-}
-
-/** Pick the starting-point blueprint for the story: among candidates whose required
- *  modules are ALL already enabled (so installing one never silently bills a module
- *  the owner didn't choose), prefer a vertical match; break a tie toward the LEAST
- *  content-rich (obviously-generic beats detailed-and-wrong for an owner who won't
- *  proofread every seeded page), then alphabetically by key. Returns null when
- *  nothing is compatible → the commit starts from a blank Builder site. */
-export function pickBlueprint(
-  industry: Industry | null,
-  modules: Record<string, boolean>,
-  blueprints: WizardBlueprint[]
-): WizardBlueprint | null {
-  const wanted = industry?.vertical ?? (modules.commerce || modules.b2b ? 'retail' : 'content');
-  const compatible = blueprints.filter((bp) => bp.requiresModules.every((m) => modules[m]));
-  if (!compatible.length) return null;
-  return (
-    [...compatible].sort((a, b) => {
-      const aMatch = a.vertical === wanted ? 1 : 0;
-      const bMatch = b.vertical === wanted ? 1 : 0;
-      if (aMatch !== bMatch) return bMatch - aMatch;
-      if (richness(a) !== richness(b)) return richness(a) - richness(b);
-      return a.key.localeCompare(b.key);
-    })[0] ?? null
-  );
-}
+// Shared with the other console: one copy, in @wizeworks/story-schemas (sparx
+// persona issue 003 — the two copies here matched on vertical alone).
+export { pickBlueprint } from '@wizeworks/story-schemas';
 
 /** Render the story as plain prose — the human-readable record we persist. */
 export function toProse(s: StoryState): string {
   if (!s.tense || !s.industry || !s.audience) return '';
-  const ind = INDUSTRY_BY_SLUG[s.industry];
-  const noun = ind?.noun ?? 'a business';
+  const noun = storyNoun(s);
   let out = `I ${TENSE[s.tense].verb} ${noun} for ${AUDIENCE[s.audience].label}`;
   if (s.cust.length) out += `, where they can ${joinClauses(s.cust, s.slots)}`;
   out += '.';
   s.lines.forEach((line, li) => {
-    out += `${li === 0 ? ' I’ll ' : ' I also '}${joinClauses(line, s.slots)}.`;
+    out += ` ${lineLead(s.tense, li)} ${joinClauses(line, s.slots)}.`;
   });
   out += ` Find me at ${handleSlug(s.name) || 'your-name'}.sparx.zone.`;
   return out;

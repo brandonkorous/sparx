@@ -66,6 +66,25 @@ export function useBuilderSite() {
   });
 }
 
+/** One place a link can point that is not a builder page: a policy page, a product,
+ *  a collection, a bookable service. */
+export interface LinkChoice {
+  href: string;
+  label: string;
+}
+
+/** Every non-builder place a link on this site can point, by name, for the link
+ *  field's suggestions (sparx persona issue 042). Degrades to `[]` on failure: these
+ *  are suggestions, the field stays free text, and a failed read must not block
+ *  typing an address. */
+export function useLinkChoices() {
+  return useQuery({
+    queryKey: ['builder', 'link-choices'],
+    queryFn: () =>
+      api.get<LinkChoice[]>('/v1/builder/site/link-choices').catch<LinkChoice[]>(() => []),
+  });
+}
+
 /** What differs between the draft and what visitors are served — the "not live
  *  yet" signal. Degrades to "nothing outstanding" on failure (it drives a badge; a
  *  failed read must never invent a scary warning). */
@@ -253,18 +272,35 @@ export function useSitePreview(tenantSlug: string | null, propertySlug: string |
           (s) =>
             typeof s?.platform === 'string' && typeof s?.url === 'string' && s.url.trim() !== ''
         );
+        const phone = orNull(payload.contact?.phone);
+        const email = orNull(payload.contact?.email);
         return {
           identity: {
             name,
             tagline: payload.tagline?.trim() ? payload.tagline : null,
             logo: logoUrl ? { url: logoUrl, alt: name } : null,
             logoDark: logoDarkUrl ? { url: logoDarkUrl, alt: name } : null,
+            phone,
+            email,
+            address: orNull(payload.contact?.address),
+            phoneHref: telHref(phone),
+            emailHref: email ? `mailto:${email}` : null,
           },
           social,
         };
       } catch {
         return {
-          identity: { name: 'Brand', tagline: null, logo: null, logoDark: null },
+          identity: {
+            name: 'Brand',
+            tagline: null,
+            logo: null,
+            logoDark: null,
+            phone: null,
+            email: null,
+            address: null,
+            phoneHref: null,
+            emailHref: null,
+          },
           social: [],
         };
       }
@@ -282,6 +318,25 @@ interface PublicTenantChrome {
   tagline?: string | null;
   theme: { logoMediaId: string | null; logoDarkMediaId?: string | null } | null;
   socials?: { platform: string; url: string }[];
+  /** How customers reach this site. Already returned by the endpoint; read by
+   *  nobody here until sparx persona issue 047. */
+  contact?: { phone: string | null; email: string | null; address: string | null } | null;
+}
+
+/** A phone number as something a phone can dial. Mirrors the live site's
+ *  `telHref` — a `tel:` with brackets and spaces in it does not dial. */
+function telHref(phone: string | null): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
+  return /\d/.test(digits) ? `tel:${digits}` : null;
+}
+
+/** Trimmed, or null. '' is a KNOWN-but-empty value that the resolver fills OVER
+ *  the authored words, which would blank the node instead of leaving the
+ *  placeholder the owner still needs to see. */
+function orNull(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed === undefined || trimmed === '' ? null : trimmed;
 }
 
 /** Persist the whole edited site — last-write-wins whole-site reconcile, the
@@ -483,6 +538,27 @@ export function usePublishSite() {
       api.post<{ published: boolean; releaseId: string; hash: string }>('/v1/builder/site/publish'),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
+    },
+  });
+}
+
+/**
+ * Bring every stale page's SAVED copy up to date with what the platform now knows
+ * how to say (sold out, a core deposit, "send the old part first", …).
+ *
+ * The same repair already runs on each page the studio opens. This is for the page
+ * nobody opens: a product template stamped when the site was made. Draft only, so a
+ * visitor sees nothing until the owner publishes. The cached site is dropped too:
+ * `useBuilderSite` never refetches on its own, so a studio opened later in the session
+ * would start from the stale tree and send it back out on its first Save.
+ */
+export function useRepairPages() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ repaired: number }>('/v1/builder/site/repair-pages', {}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
+      void queryClient.invalidateQueries({ queryKey: SITE_KEY });
     },
   });
 }

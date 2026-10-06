@@ -20,7 +20,12 @@ import { publish } from '@wizeworks/api-core/pubsub';
 import type { RawEmailSendPayload } from '@wizeworks/events';
 import { renderSilicaEmail } from '@wizeworks/email/silica';
 import { emailService } from '@wizeworks/builder';
-import { brandService, buildTenantFrom, emailTrackingService } from '@wizeworks/email-platform';
+import {
+  brandService,
+  buildTenantFrom,
+  emailTrackingService,
+  settingsService,
+} from '@wizeworks/email-platform';
 import {
   interpolateEmailTokens,
   resolvePath,
@@ -30,6 +35,7 @@ import {
 import {
   applyEntitySnapshot,
   resolveEmailFooterLinks,
+  resolveEmailSiteOrigin,
   resolveSilicaEmailData,
   type EmailRecipientRef,
 } from './email-data.js';
@@ -106,6 +112,16 @@ export async function loadSenderIdentity(
   return row ?? NO_IDENTITY;
 }
 
+/** `From` + `Reply-To` for a coded template send to somebody outside the
+ *  platform. The answer lives in email-platform so MCP sends resolve it too;
+ *  see `settingsService.senderHeaders` (sparx persona issue 071). */
+export function tenantSenderHeaders(
+  tenantId: string,
+  propertyId: string | null
+): Promise<{ from: string; replyTo: string | null }> {
+  return settingsService.senderHeaders({ tenantId }, propertyId);
+}
+
 /** A pre-rendered, branded email body the worker delivers as-is. */
 export interface RenderedRawSend {
   kind: 'raw';
@@ -153,13 +169,18 @@ export async function renderBuilderEmailDoc(
   // propertyId scopes `{{tenant.name}}` to the active site (docs/49 Phase 7) — the
   // SAME site whose brand this render uses below — so body copy and chrome agree.
   const silicaDoc = args.doc.silicaDoc;
+  // The site every link in this email opens: the one the email is ABOUT. Resolved
+  // once here and handed to the body AND the footer, so "Track your order" and
+  // "Your account" can never name two different addresses (issue 064).
+  const origin = await resolveEmailSiteOrigin(ctx, args.ref, args.propertyId);
   const emailData = applyEntitySnapshot(
     await resolveSilicaEmailData(
       ctx,
       silicaDoc,
       args.ref,
       [subject, preheader ?? ''],
-      args.propertyId
+      args.propertyId,
+      origin
     ),
     args.snapshot ?? null
   );
@@ -172,15 +193,18 @@ export async function renderBuilderEmailDoc(
   const brand = (await brandService.resolveEmailBrand(ctx, args.propertyId ?? null)) ?? undefined;
   // The footer's utility + legal links (account · contact · privacy · terms · …) for
   // THIS site — same published-legal-page source as the storefront footer.
-  const footerLinks = await resolveEmailFooterLinks(ctx, args.propertyId ?? null);
+  const footerLinks = await resolveEmailFooterLinks(ctx, args.propertyId ?? null, origin);
   // Attribution: tag this email's on-site links so a click (and any order that
   // follows) is credited to the email in the tenant's own analytics (docs/impl
-  // transactional-email Slice 10). undefined when there's no site host to attribute
-  // to (dev / no custom domain), in which case links ship untagged.
+  // transactional-email Slice 10). Every site has a public address now (its domain or
+  // its minted subdomain), so there is always a host to attribute to.
   const tracking = await emailTrackingService.resolveEmailTracking(
     ctx,
     { key: args.doc.key, name: args.doc.name, trackingCampaign: args.doc.trackingCampaign },
-    args.propertyId ?? null
+    args.propertyId ?? null,
+    // The origin this email's links were built on: an order email links into the
+    // site the order was placed on, which may not be the site it is sent for.
+    origin
   );
 
   // ONE engine (docs/120 slice 7): every email — including one authored on the retired

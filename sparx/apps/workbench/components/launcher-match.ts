@@ -94,18 +94,35 @@ export function score(entry: Entry, query: string): number {
   return bestOverForms(query, (form) => rate(entry, form));
 }
 
+/**
+ * A name, lowercased, with a dash or an underscore read as a space. "sign-off"
+ * and "sign off" are the same word to whoever typed it: the task reads "waiting
+ * for your sign-off", the screen was tagged "sign off", and typing the task's
+ * own word found nothing (sparx persona issue 086). Both sides go through this,
+ * so an order number such as "O-000012" still matches itself.
+ */
+export function plain(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[-_‐-―]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 /** One rung-by-rung reading of a row against one exact spelling. */
-function rate(entry: Entry, query: string): number {
-  const label = entry.label.toLowerCase();
+function rate(entry: Entry, typed: string): number {
+  const query = plain(typed);
+  if (!query) return 0;
+  const label = plain(entry.label);
   if (label === query) return 100;
   if (label.startsWith(query)) return 80;
   if (startsAWord(label, query)) return 60;
-  const keywords = entry.keywords ?? [];
-  if (keywords.some((keyword) => keyword.toLowerCase().startsWith(query))) return 45;
-  if (keywords.some((keyword) => startsAWord(keyword.toLowerCase(), query))) return 35;
+  const keywords = (entry.keywords ?? []).map(plain);
+  if (keywords.some((keyword) => keyword.startsWith(query))) return 45;
+  if (keywords.some((keyword) => startsAWord(keyword, query))) return 35;
   if (label.includes(query)) return 30;
-  if (keywords.some((keyword) => keyword.toLowerCase().includes(query))) return 20;
-  if (entry.group.toLowerCase().includes(query)) return 10;
+  if (keywords.some((keyword) => keyword.includes(query))) return 20;
+  if (plain(entry.group).includes(query)) return 10;
   return 0;
 }
 
@@ -114,9 +131,22 @@ function rate(entry: Entry, query: string): number {
  *  about payment. Unless that is the whole query, in which case it is the ask. */
 function meaningfulWords(query: string): string[] {
   const words = query.split(/\s+/).filter(Boolean);
-  const long = words.filter((word) => word.length > 2);
-  return long.length ? long : words;
+  // Short words are filler ("a", "of", "to") unless they hold a digit: "31" in
+  // "Units 31" is the point of the search. Dropped, the Units screen matched
+  // "Units 31" on one word and sat above the task that matched both (sparx
+  // persona issue 091).
+  const long = words.filter((word) => word.length > 2 || /\d/.test(word));
+  const kept = long.length ? long : words;
+  // "new discount", "add a supplier", "create invoice": the verb is what they want
+  // to DO, and the noun is where it is done. Requiring the verb as a word found
+  // nothing at all for "new discount" (sparx persona issue 036), because no screen
+  // is called "new". Dropped only when a noun is left to search for.
+  const nouns = kept.filter((word) => !INTENT_VERBS.has(word));
+  return nouns.length ? nouns : kept;
 }
+
+/** Words that say "make one" rather than naming a thing. */
+const INTENT_VERBS = new Set(['new', 'add', 'create', 'make', 'start']);
 
 /**
  * How well one row answers everything that was typed.
@@ -132,10 +162,27 @@ function meaningfulWords(query: string): string[] {
  * split, so the fallback never runs.
  */
 export function scoreQuery(entry: Entry, query: string): number {
+  const rank = matchQuery(entry, query);
+  // "new social post" asks to MAKE one, so the row that makes one leads its group
+  // instead of sitting under the list it belongs to (sparx persona issue 036).
+  return rank > 0 && entry.id.startsWith('create:') && asksToMake(query) ? rank + 5 : rank;
+}
+
+function asksToMake(query: string): boolean {
+  return query.split(/\s+/).some((word) => INTENT_VERBS.has(word));
+}
+
+function matchQuery(entry: Entry, query: string): number {
   const whole = score(entry, query);
-  if (whole > 0) return whole;
+  // A row that answers the whole PHRASE outranks one that only matches its words
+  // one at a time, at the same rung: "import products" is a thing Move in was
+  // tagged with, while the supplier list only happens to hold both words, and the
+  // tie went to whichever was registered first (sparx persona issue 052).
+  if (whole > 0) return /\s/.test(query.trim()) ? whole + 2 : whole;
   const words = meaningfulWords(query);
-  if (words.length < 2) return 0;
+  // One word left after dropping a verb ("new discount") still has to be tried;
+  // a one-word query re-scores to the same answer as the whole, so this is safe.
+  if (words.length === 0) return 0;
   let weakest = Number.POSITIVE_INFINITY;
   for (const word of words) {
     const each = score(entry, word);
@@ -158,13 +205,15 @@ export function scoreQuery(entry: Entry, query: string): number {
  * all returns 0 and keeps its place in the SERVER's order, because the server
  * matched it for a reason the client cannot see.
  */
-function recordWordRank(entry: Entry, query: string): number {
-  const label = entry.label.toLowerCase();
+function recordWordRank(entry: Entry, typed: string): number {
+  const query = plain(typed);
+  if (!query) return 0;
+  const label = plain(entry.label);
   if (label === query) return 100;
   if (label.startsWith(query)) return 80;
   if (startsAWord(label, query)) return 60;
   if (label.includes(query)) return 40;
-  const subtitle = (entry.subtitle ?? '').toLowerCase();
+  const subtitle = plain(entry.subtitle ?? '');
   if (subtitle.startsWith(query)) return 30;
   if (startsAWord(subtitle, query)) return 25;
   if (subtitle.includes(query)) return 15;
@@ -177,7 +226,9 @@ export function recordRank(entry: Entry, query: string): number {
   const whole = recordWordRank(entry, query);
   if (whole > 0) return whole;
   const words = meaningfulWords(query);
-  if (words.length < 2) return 0;
+  // One word left after dropping a verb ("new discount") still has to be tried;
+  // a one-word query re-scores to the same answer as the whole, so this is safe.
+  if (words.length === 0) return 0;
   let weakest = Number.POSITIVE_INFINITY;
   for (const word of words) {
     const each = recordWordRank(entry, word);

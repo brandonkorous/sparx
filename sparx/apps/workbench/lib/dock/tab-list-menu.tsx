@@ -56,6 +56,7 @@ import {
 import { getSurface } from '../surfaces/registry';
 import { useWorkbench } from '../workbench/context';
 import { usePaneDirty } from '../workbench/dirty';
+import { TabGlyph } from './tab-glyph';
 
 interface TabListMenuProps {
   /** Live from dockview's header-actions renderer — it re-renders on add/remove. */
@@ -228,7 +229,6 @@ function TabListRow({ panel, active, onActivate, onClosed, onNavigate }: TabList
   const { controller } = useWorkbench();
   const descriptor = controller.getDescriptor(panel.id);
   const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-  const Icon = definition?.icon;
   const dirty = usePaneDirty(panel.id);
   const title = panel.title ?? 'Panel';
 
@@ -251,14 +251,11 @@ function TabListRow({ panel, active, onActivate, onClosed, onNavigate }: TabList
         {/* On the active row the variant has already resolved a module ink, so
             the glyph inherits it; elsewhere it carries the hue itself. Same pair
             the tab strip uses — see pane-tab.tsx. */}
-        {Icon ? (
-          <Icon
-            className={active ? 'size-4 shrink-0' : 'text-module size-4 shrink-0'}
-            aria-hidden
-          />
-        ) : (
-          <span className="rounded-selector bg-module size-1.5 shrink-0" aria-hidden />
-        )}
+        <TabGlyph
+          descriptor={descriptor}
+          className={active ? 'size-4 shrink-0' : 'text-module size-4 shrink-0'}
+          fallback={<span className="rounded-selector bg-module size-1.5 shrink-0" aria-hidden />}
+        />
 
         {/* `title` gives the full name back when a long record name is clipped. */}
         <span className="min-w-0 flex-1 truncate text-left" title={title}>

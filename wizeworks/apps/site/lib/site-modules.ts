@@ -69,6 +69,7 @@ const OWNED_PATHS: { module: ScopeableModule; prefix: string }[] = [
   { module: 'commerce', prefix: '/account/returns' },
   { module: 'commerce', prefix: '/account/wishlist' },
   { module: 'commerce', prefix: '/account/payment-methods' },
+  { module: 'commerce', prefix: '/account/repeat-orders' },
   // Content.
   { module: 'cms', prefix: '/blog' },
   // Customers: the things a visitor asks for rather than buys.

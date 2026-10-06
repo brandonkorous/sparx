@@ -20,6 +20,7 @@ import {
 
 import { MoneyInput } from '../../../components/money-input';
 import { OptionalMoney } from './fields';
+import { CoreDeposit } from './core-deposit';
 import type { VariantDraft } from './draft';
 import type { Variant } from '../products-data';
 
@@ -138,26 +139,10 @@ function Codes({ draft, problem, onChange }: Omit<EditorProps, 'variant' | 'labe
   );
 }
 
-export function VariantEditor({ variant, label, draft, problem, onChange }: EditorProps) {
+/** When it runs out, what kind of thing it is, and whether it is posted. */
+function Handling({ label, draft, onChange }: Omit<EditorProps, 'problem' | 'variant'>) {
   return (
     <>
-      {variant.markupRuleId ? (
-        <Alert color="info">
-          <AlertContent>
-            <AlertTitle>This price is worked out for you</AlertTitle>
-            <AlertDescription>
-              It comes from a pricing rule based on what this costs you. Typing a price here changes
-              it now, but the rule will set it again next time your cost moves. Change the rule on
-              the Pricing tab to make it stick.
-            </AlertDescription>
-          </AlertContent>
-        </Alert>
-      ) : null}
-
-      <Prices label={label} draft={draft} onChange={onChange} />
-      <Codes draft={draft} problem={problem} onChange={onChange} />
-      {problem ? <FieldStatus status="error">{problem}</FieldStatus> : null}
-
       <Field>
         <FieldLabel>When you run out of this one</FieldLabel>
         <Select
@@ -193,18 +178,48 @@ export function VariantEditor({ variant, label, draft, problem, onChange }: Edit
           posted product, say.
         </FieldDescription>
       </Field>
+      <Posted label={label} draft={draft} onChange={onChange} />
+    </>
+  );
+}
 
-      <label className="flex items-center gap-2">
-        <Checkbox
-          color="module"
-          checked={draft.requiresShipping}
-          aria-label={`${label} has to be delivered`}
-          onChange={(event) => {
-            onChange({ requiresShipping: event.target.checked });
-          }}
-        />
-        <Text as="span">This has to be posted or delivered</Text>
-      </label>
+function Posted({ label, draft, onChange }: Omit<EditorProps, 'problem' | 'variant'>) {
+  return (
+    <label className="flex items-center gap-2">
+      <Checkbox
+        color="module"
+        checked={draft.requiresShipping}
+        aria-label={`${label} has to be delivered`}
+        onChange={(event) => {
+          onChange({ requiresShipping: event.target.checked });
+        }}
+      />
+      <Text as="span">This has to be posted or delivered</Text>
+    </label>
+  );
+}
+
+export function VariantEditor({ variant, label, draft, problem, onChange }: EditorProps) {
+  return (
+    <>
+      {variant.markupRuleId ? (
+        <Alert color="info">
+          <AlertContent>
+            <AlertTitle>This price is worked out for you</AlertTitle>
+            <AlertDescription>
+              It comes from a pricing rule based on what this costs you. Typing a price here changes
+              it now, but the rule will set it again next time your cost moves. Change the rule on
+              the Pricing tab to make it stick.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
+      <Prices label={label} draft={draft} onChange={onChange} />
+      <CoreDeposit variant={variant} label={label} draft={draft} onChange={onChange} />
+      <Codes draft={draft} problem={problem} onChange={onChange} />
+      {problem ? <FieldStatus status="error">{problem}</FieldStatus> : null}
+      <Handling label={label} draft={draft} onChange={onChange} />
     </>
   );
 }

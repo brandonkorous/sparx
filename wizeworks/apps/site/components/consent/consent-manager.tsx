@@ -28,6 +28,12 @@ const CATEGORY_COPY: Record<Exclude<ConsentCategory, 'strictly_necessary'>, stri
   marketing: 'Used to deliver and measure relevant offers.',
 };
 
+const CATEGORY_NAME: Record<Exclude<ConsentCategory, 'strictly_necessary'>, string> = {
+  preferences: 'Preferences',
+  analytics: 'Analytics',
+  marketing: 'Marketing',
+};
+
 const ALL_ON: ConsentState = {
   strictly_necessary: true,
   preferences: true,
@@ -75,11 +81,14 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
   }
 
   const policyHref = `/${config.policyPageSlug}`;
-  const nonEssential: Exclude<ConsentCategory, 'strictly_necessary'>[] = [
-    'preferences',
-    'analytics',
-    'marketing',
-  ];
+  // Only the kinds this business says its site uses. Listing all three asked
+  // visitors to decide about cookies the site never sets (sparx persona issue 037).
+  const nonEssential = (
+    ['preferences', 'analytics', 'marketing'] as const satisfies readonly Exclude<
+      ConsentCategory,
+      'strictly_necessary'
+    >[]
+  ).filter((cat) => config.activeCategories.includes(cat));
 
   return (
     <>
@@ -190,20 +199,26 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
               <input type="checkbox" checked readOnly disabled aria-label="Strictly necessary" />
             </div>
 
+            {nonEssential.length === 0 ? (
+              <p className="border-base-300 text-base-content border-t py-3 text-sm">
+                This site only uses the cookies it needs to work, so there is nothing to turn off.
+              </p>
+            ) : null}
+
             {nonEssential.map((cat) => (
               <label
                 key={cat}
                 className="border-base-300 [&_span]:text-base-content [&_strong]:text-base-content flex items-start justify-between gap-4 border-t py-3 [&_span]:block [&_span]:text-[0.8125rem] [&_strong]:block [&_strong]:text-[0.9rem]"
               >
                 <div>
-                  <strong>{cat.charAt(0).toUpperCase() + cat.slice(1)}</strong>
+                  <strong>{CATEGORY_NAME[cat]}</strong>
                   <span>{CATEGORY_COPY[cat]}</span>
                 </div>
                 <input
                   type="checkbox"
                   checked={draft[cat]}
                   onChange={(e) => setDraft((d) => ({ ...d, [cat]: e.target.checked }))}
-                  aria-label={cat}
+                  aria-label={CATEGORY_NAME[cat]}
                 />
               </label>
             ))}

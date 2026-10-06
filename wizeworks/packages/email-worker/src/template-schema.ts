@@ -374,8 +374,11 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       dashboardUrl: z.string().url(),
     }),
   }),
-  // Tenant→customer document signing request. `signingUrl` may be a bare PATH when
-  // SPARX_SITE_BASE is unset (signature-mail.ts) — so it is NOT `.url()`.
+  // Tenant→customer document signing request. `signingUrl` is ABSOLUTE: it was a
+  // bare `/sign/…` path whenever SPARX_SITE_BASE was unset, which was always, and
+  // this schema accepted it, so the request's one button opened nothing (issue
+  // 064). signature-mail.ts now builds it on the site's real origin, and `.url()`
+  // refuses a path rather than mailing one.
   z.object({
     template: z.literal('document-signature-request'),
     ...TemplateMeta,
@@ -386,7 +389,7 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       documentTotal: z.number(),
       currency: z.string().min(1),
       expiresAt: z.string(),
-      signingUrl: z.string().min(1),
+      signingUrl: z.string().url(),
     }),
   }),
   // Tenant -> customer invoice. The document travels IN the mail (there is no
@@ -405,6 +408,13 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       balance: z.number(),
       currency: z.string().min(1),
       dueAt: z.string().nullable().optional(),
+      // A quote or an estimate, and how long its price stands. These were not
+      // named here, so the gate STRIPPED them: every quote reached the renderer
+      // as a bill, "Due on receipt", asking for money nobody owed (issue 077).
+      priceOffer: z.boolean().optional(),
+      validUntil: z.string().nullable().optional(),
+      // The buyer's purchase order number (issue 077).
+      poNumber: z.string().nullable().optional(),
       lines: z.array(
         z.object({
           title: z.string(),
@@ -414,6 +424,103 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       ),
       summary: z.array(z.object({ label: z.string(), value: z.string() })),
       note: z.string().nullable().optional(),
+      // The button to the buyer's own copy, to print or save as a PDF. Named
+      // here or the gate strips it, and the button never renders (sparx
+      // persona issue 085).
+      viewUrl: z.string().nullable().optional(),
+    }),
+  }),
+  // Tenant -> their trade customer: the account statement. The open invoices
+  // travel IN the mail, each with the buyer's own PO number, because that is
+  // what accounts payable matches against. `poNumber` and `dueAt` are nullable:
+  // a buyer who gave no PO, or an invoice due on receipt, must not be dropped
+  // by this gate. `statementUrl` is `.min(1)`, not `.url()`, for the reason the
+  // package notes give: refuse an empty link, never a real one.
+  z.object({
+    template: z.literal('account-statement'),
+    ...TemplateMeta,
+    props: z.object({
+      fromName: z.string().min(1),
+      accountName: z.string().min(1),
+      contactName: z.string().nullable().optional(),
+      periodText: z.string().min(1),
+      currency: z.string().min(1),
+      opening: z.number(),
+      closing: z.number(),
+      dueNow: z.number(),
+      pastDue: z.number(),
+      aging: z.array(z.object({ label: z.string(), amount: z.number() })),
+      openInvoices: z.array(
+        z.object({
+          number: z.string(),
+          poNumber: z.string().nullable().optional(),
+          dueAt: z.string().nullable().optional(),
+          daysLate: z.number(),
+          amount: z.number(),
+        })
+      ),
+      statementUrl: z.string().min(1).nullable().optional(),
+    }),
+  }),
+  // Business -> its supplier: a placed purchase order. Like the invoice, the
+  // document travels IN the mail. `expectedBy` is nullable for the same reason
+  // `dueAt` is: an order nobody dated must not arrive carrying a deadline.
+  z.object({
+    template: z.literal('purchase-order-sent'),
+    ...TemplateMeta,
+    props: z.object({
+      fromName: z.string().min(1),
+      supplierName: z.string().min(1),
+      contactName: z.string().nullable().optional(),
+      documentNumber: z.string().min(1),
+      total: z.number(),
+      currency: z.string().min(1),
+      expectedBy: z.string().nullable().optional(),
+      shipTo: z.object({ name: z.string(), lines: z.array(z.string()) }),
+      reference: z.string().nullable().optional(),
+      paymentTerms: z.string().nullable().optional(),
+      lines: z.array(
+        z.object({
+          title: z.string(),
+          subtitle: z.string().optional(),
+          amount: z.string(),
+        })
+      ),
+      summary: z.array(z.object({ label: z.string(), value: z.string() })),
+      note: z.string().nullable().optional(),
+      canReply: z.boolean().optional(),
+    }),
+  }),
+  // Tenant -> their trade customer's own approver: a colleague's order is held
+  // over a spending limit the account signs off (sparx persona issue 087). The
+  // order travels IN the mail so they can decide from the inbox; the button
+  // goes to it on the business's site. `limit` is nullable: a rule removed
+  // since names no figure, and the gate must not drop the ask for it.
+  // `orderUrl` is `.url()`: an approver mailed a bare path cannot reach the one
+  // place they can say yes.
+  z.object({
+    template: z.literal('order-approval-request'),
+    ...TemplateMeta,
+    props: z.object({
+      fromName: z.string().min(1),
+      approverName: z.string().min(1),
+      accountName: z.string().min(1),
+      placedBy: z.string().min(1),
+      orderNumber: z.string().min(1),
+      total: z.number(),
+      currency: z.string().min(1),
+      limit: z.number().nullable().optional(),
+      poNumber: z.string().nullable().optional(),
+      businessToo: z.boolean().optional(),
+      lines: z.array(
+        z.object({
+          title: z.string(),
+          subtitle: z.string().optional(),
+          amount: z.string(),
+        })
+      ),
+      summary: z.array(z.object({ label: z.string(), value: z.string() })),
+      orderUrl: z.string().url(),
     }),
   }),
   // Team / org membership.

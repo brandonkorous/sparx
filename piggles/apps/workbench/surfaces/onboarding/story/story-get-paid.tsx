@@ -4,9 +4,10 @@ import { type ReactNode } from 'react';
 import { Button, FieldStatus, Heading, Text } from '@wizeworks/silicaui-react';
 import { faCheckCircle } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { industryOf, type StoryState } from '@wizeworks/story-schemas';
+import { storySubject, type StoryState } from '@wizeworks/story-schemas';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
+import { StripeWaiting } from '../stripe-waiting';
 
 // The story's "get paid" chapter — the SAME beat the classic wizard calls Payments,
 // but told as the next line of the owner's story instead of a bare integration tile.
@@ -16,8 +17,7 @@ import { useStripeConnect } from '../../../lib/onboarding/use-stripe-connect';
 
 function subject(story: StoryState): string {
   // "a salon" → "Your salon"; the generic fallback stays "Your business".
-  const noun = story.industry ? industryOf(story.industry).noun : 'a business';
-  return `Your ${noun.replace(/^an? /, '')}`;
+  return `Your ${storySubject(story)}`;
 }
 
 export function StoryGetPaid({
@@ -31,7 +31,7 @@ export function StoryGetPaid({
   actions: OnboardingActions;
   onConnected: () => void;
 }): ReactNode {
-  const { connect, connecting, error } = useStripeConnect(actions, onConnected);
+  const { connect, connecting, error, cancel } = useStripeConnect(actions, onConnected);
 
   return (
     <div className="flex min-w-0 flex-col gap-7">
@@ -68,6 +68,7 @@ export function StoryGetPaid({
         </div>
       )}
 
+      {connecting ? <StripeWaiting onCancel={cancel} /> : null}
       {error ? <FieldStatus status="error">{error}</FieldStatus> : null}
     </div>
   );

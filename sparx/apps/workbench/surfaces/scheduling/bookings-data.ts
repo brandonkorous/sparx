@@ -46,6 +46,10 @@ export interface ServiceLite {
   priceCents: number;
   currency: string;
   color: string | null;
+  /** The place it happens at, when it names one. Its zone is the clock a new
+   *  booking's time is typed on (sparx persona issue 086). The list returns it;
+   *  the copy embedded on a booking does not, hence optional. */
+  locationId?: string | null;
 }
 
 /** Anything a booking consumes the time of — a member of staff, a room, a bay. */
@@ -126,6 +130,24 @@ export interface Booking {
    *  whose customer the database could name (issue 138). The API read fetched
    *  the name and the route dropped it on the way out; both are fixed. */
   customer: BookedCustomer | null;
+  /** What the card was asked to do when the booking ended, and whether it did
+   *  (sparx persona issue 087). On the record only: a list row leaves it out,
+   *  and null means nothing was recorded. The deposit status says where the
+   *  money is; this says why, including a fee the card refused. */
+  payment?: BookingPayment | null;
+}
+
+/** The last word on a booking's card, from its history. */
+export interface BookingPayment {
+  /** The payment provider did what was asked. */
+  done: boolean;
+  move: 'capture_fee' | 'release_hold' | 'call_off' | 'refund_deposit' | 'keep_deposit';
+  ending: 'no_show' | 'cancel' | 'complete';
+  amountCents: number;
+  currency: string;
+  /** The payment provider's words when it did not. */
+  reason: string | null;
+  at: string;
 }
 
 /** The part of a customer a booking surface needs to say who turned up, and how
@@ -164,6 +186,9 @@ export interface SeriesOccurrence {
   status: BookingStatus;
   startAt: string;
   endAt: string;
+  /** The zone the occurrence was booked in, which is the clock its time is
+   *  read on. Without it the list printed each one on this computer's clock. */
+  timezone: string;
 }
 
 export interface BookingSeriesDetail extends BookingSeries {
@@ -810,35 +835,6 @@ export function formatMoney(cents: number, currency = 'USD'): string {
   }).format(cents / 100);
 }
 
-/** The browser's own time zone — the zone a booking made here was made in. */
-export function localTimezone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch {
-    return 'UTC';
-  }
-}
-
-/* ── datetime-local <-> ISO ─────────────────────────────────────────────── */
-
-/** An `<input type="datetime-local">` value for a given instant, in LOCAL time —
- *  which is what that control shows and edits. */
-export function toLocalInputValue(iso: string | null): string {
-  if (!iso) return '';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${String(date.getFullYear())}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-/** The instant a datetime-local value names, as an ISO string. Empty → null. */
-export function fromLocalInputValue(value: string): string | null {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toISOString();
-}
-
 /* ── Recurrence: building and reading an RRULE ──────────────────────────── */
 
 export type Frequency = 'DAILY' | 'WEEKLY' | 'MONTHLY';
@@ -863,12 +859,18 @@ export interface RecurrenceDraft {
   until: string;
 }
 
-/** RFC-5545 UNTIL wants `YYYYMMDDT000000Z`; the picker gives `YYYY-MM-DD`. */
+/**
+ * The last day a series can happen, as an RFC-5545 DATE (`YYYYMMDD`): a DAY,
+ * not a moment. The server reads it as the whole of that day on the clock of
+ * the place the series happens at (sparx persona issue 086).
+ *
+ * It used to be sent as `YYYYMMDDT000000Z`, midnight UTC, which is the evening
+ * BEFORE in the Americas: "Last day it can happen: December 5" dropped the
+ * December 5 booking, because 9:00 AM in Salt Lake City is after midnight UTC.
+ */
 function toUntil(day: string): string | null {
-  if (!day) return null;
-  const compact = day.replace(/-/g, '');
-  if (compact.length !== 8) return null;
-  return `${compact}T000000Z`;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+  return day.replace(/-/g, '');
 }
 
 /** Assemble an RRULE from the friendly draft, or null if it is not yet valid. */
@@ -989,7 +991,9 @@ export function isNotFound(error: unknown): boolean {
 const UPDATED_FIELD_LABELS: Record<string, string> = {
   notes: 'the note the customer sees',
   staffNotes: 'the private team note',
-  assetRef: 'the linked item',
+  // A trade account's visit: its vehicle and account (sparx persona issue 086).
+  assetRef: 'the vehicle',
+  companyId: 'the trade account',
   partsLinked: 'the linked parts',
   locationId: 'the location',
   workOrderId: 'the linked job',
@@ -1045,9 +1049,44 @@ export function describeTimelineEntry(
       const detail = fields.length ? `Changed ${joinWords(fields)}` : null;
       return { label: 'Details updated', detail };
     }
+    case 'booking.payment_settled':
+    case 'booking.payment_not_settled':
+      return paymentTimelineWords(entry.action === 'booking.payment_settled', diff);
     default:
       return { label: 'Updated', detail: null };
   }
+}
+
+/**
+ * What the card did when the booking ended, as a history line (sparx persona
+ * issue 087). These used to fall through to "Updated", which said nothing at
+ * all about a fee the card refused.
+ */
+function paymentTimelineWords(
+  done: boolean,
+  diff: Record<string, unknown>
+): { label: string; detail: string | null } {
+  const move = typeof diff.move === 'string' ? diff.move : '';
+  const fee = diff.ending === 'no_show' ? 'No-show fee' : 'Late-cancellation fee';
+  const money =
+    typeof diff.amountCents === 'number' && typeof diff.currency === 'string'
+      ? formatMoney(diff.amountCents, diff.currency)
+      : null;
+  const reason =
+    typeof diff.reason === 'string' && diff.reason.trim()
+      ? diff.reason.replace(/[.\s]+$/, '').trim()
+      : null;
+  const labels: Record<string, [string, string]> = {
+    capture_fee: [`${fee} charged`, `${fee} not charged`],
+    release_hold: ['Card hold let go', 'Card hold not let go yet'],
+    call_off: ['Deposit request called off', 'Deposit request not called off'],
+    refund_deposit: ['Deposit refunded', 'Deposit not refunded'],
+    keep_deposit: ['Deposit kept', 'Deposit not settled'],
+  };
+  const [doneLabel, notDoneLabel] = labels[move] ?? ['Card settled', 'Card not settled'];
+  if (done) return { label: doneLabel, detail: money };
+  const why = reason ? `It did not go through: ${reason}.` : 'It did not go through.';
+  return { label: notDoneLabel, detail: money ? `${money}. ${why}` : why };
 }
 
 /** Who made a change, in the words we can honestly stand behind — the trail

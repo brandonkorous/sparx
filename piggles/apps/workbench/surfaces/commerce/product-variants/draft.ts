@@ -11,6 +11,10 @@ export interface VariantDraft {
   price: number;
   compareAt: number | null;
   cost: number | null;
+  /** The refundable core deposit on a rebuilt part; null = no core. */
+  core: number | null;
+  /** Buyers may send the old part first instead of paying the deposit. */
+  coreFirst: boolean;
   weightGrams: number | null;
   lengthMm: number | null;
   widthMm: number | null;
@@ -28,6 +32,8 @@ export function toDraft(variant: Variant): VariantDraft {
     price: variant.priceCents / 100,
     compareAt: variant.compareAtPriceCents === null ? null : variant.compareAtPriceCents / 100,
     cost: variant.costCents === null ? null : variant.costCents / 100,
+    core: variant.coreChargeCents === null ? null : variant.coreChargeCents / 100,
+    coreFirst: variant.coreFirstOffered,
     weightGrams: variant.weightGrams,
     lengthMm: variant.lengthMm,
     widthMm: variant.widthMm,
@@ -42,6 +48,12 @@ export function cents(value: number): number {
   return Math.round(value * 100);
 }
 
+/** The offer only means something beside a deposit; the switch's own position
+ *  stays in the draft, so typing the deposit back brings it back. */
+export function offersCoreFirst(draft: VariantDraft): boolean {
+  return draft.coreFirst && draft.core !== null && cents(draft.core) > 0;
+}
+
 /** Only what moved. Sending the whole row back would rewrite fields nobody
  *  touched, and on a nullable column `undefined` and `null` are the difference
  *  between "leave it alone" and "clear it". */
@@ -53,6 +65,14 @@ export function buildPatch(draft: VariantDraft, saved: VariantDraft): VariantPat
   }
   if (draft.cost !== saved.cost) {
     patch.costCents = draft.cost === null ? null : cents(draft.cost);
+  }
+  if (draft.core !== saved.core) {
+    // A deposit of nothing is no deposit: the server keeps one spelling of it.
+    patch.coreChargeCents =
+      draft.core === null || cents(draft.core) <= 0 ? null : cents(draft.core);
+  }
+  if (offersCoreFirst(draft) !== offersCoreFirst(saved)) {
+    patch.coreFirstOffered = offersCoreFirst(draft);
   }
   if (draft.barcode.trim() !== saved.barcode.trim()) {
     patch.barcode = draft.barcode.trim() === '' ? null : draft.barcode.trim();

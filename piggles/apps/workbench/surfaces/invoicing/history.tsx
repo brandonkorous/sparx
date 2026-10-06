@@ -13,7 +13,6 @@
 
 import { useQuery } from '@wizeworks/query';
 import { Badge, Button, Tooltip, useToast } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
 import { faPrint } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { api } from '../../lib/api/client';
@@ -51,54 +50,45 @@ export function HistorySection({ doc }: { doc: BillingDocument }) {
       title="History"
       description="Permanent records frozen as this document moved through its stages. Each opens exactly as it stood at that moment: later edits never change it."
     >
-      <Table size="sm">
-        <thead>
-          <tr>
-            <th>When</th>
-            <th>Frozen at</th>
-            <th className="hidden @xl:table-cell">Number</th>
-            <th className="w-0" aria-label="Actions" />
-          </tr>
-        </thead>
-        <tbody>
-          {snapshots.map((snapshot) => (
-            <tr key={snapshot.id}>
-              <td className="whitespace-nowrap">
+      {/* A list, not a table. This section lives in the editor's narrow rail,
+          where a When / Frozen at / Number table scrolled sideways to reach its
+          own print button (sparx persona issue 085). Each record reads as one
+          line of who-and-when with the button beside it. */}
+      <ul className="flex flex-col gap-2">
+        {snapshots.map((snapshot) => (
+          <li key={snapshot.id} className="flex items-start justify-between gap-2">
+            <div className="flex min-w-0 flex-col gap-1">
+              {/* The label AS CAPTURED, not the stage's current name — a
+                  renamed stage must never rewrite what this record was. */}
+              <span>
+                <Badge color={stageTone(snapshot.stageType)} variant="soft" size="sm">
+                  {snapshot.customerLabel}
+                </Badge>
+              </span>
+              <span className="text-sm">
                 {new Date(snapshot.createdAt).toLocaleString(undefined, {
                   dateStyle: 'medium',
                   timeStyle: 'short',
                 })}
-              </td>
-              <td>
-                {/* The label AS CAPTURED, not the stage's current name — a
-                    renamed stage must never rewrite what this record was. */}
-                <Badge color={stageTone(snapshot.stageType)} variant="soft" size="sm">
-                  {snapshot.customerLabel}
-                </Badge>
-              </td>
-              <td className="hidden whitespace-nowrap @xl:table-cell">
-                {snapshot.documentNumber ?? '—'}
-              </td>
-              <td className="text-right">
-                <Tooltip content="Open this record's print view">
-                  <Button
-                    color="neutral"
-                    variant="ghost"
-                    size="xs"
-                    shape="square"
-                    aria-label={`Print the record frozen at ${snapshot.customerLabel}`}
-                    onClick={() => {
-                      open(snapshot);
-                    }}
-                  >
-                    <Icon glyph={faPrint} className="size-4" aria-hidden />
-                  </Button>
-                </Tooltip>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                {snapshot.documentNumber ? ` · ${snapshot.documentNumber}` : ''}
+              </span>
+            </div>
+            <Tooltip content="Open this record's print view">
+              <Button
+                variant="ghost"
+                size="xs"
+                shape="square"
+                aria-label={`Print the record frozen at ${snapshot.customerLabel}`}
+                onClick={() => {
+                  open(snapshot);
+                }}
+              >
+                <Icon glyph={faPrint} className="size-4" aria-hidden />
+              </Button>
+            </Tooltip>
+          </li>
+        ))}
+      </ul>
     </FormSection>
   );
 }

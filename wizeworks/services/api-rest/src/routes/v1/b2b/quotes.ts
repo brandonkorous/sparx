@@ -17,6 +17,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant, type Prisma } from '@wizeworks/db';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
+import { deliveryNeedsOf, poNumberOf } from '@wizeworks/crm-schemas';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
@@ -81,7 +82,8 @@ const QUOTE_INCLUDE = {
 
 type QuoteDoc = Prisma.BillingDocumentGetPayload<{ include: typeof QUOTE_INCLUDE }>;
 
-function mapQuote(doc: QuoteDoc) {
+/** One quote as the business reads it. Exported for its test. */
+export function mapQuote(doc: QuoteDoc) {
   return {
     id: doc.id,
     number: doc.number,
@@ -93,6 +95,10 @@ function mapQuote(doc: QuoteDoc) {
     currency: doc.currency,
     validUntil: doc.validUntil ? doc.validUntil.toISOString() : null,
     customerNote: doc.customerNote,
+    // What a buyer said when they sent it (sparx persona issue 086): their own
+    // PO number, and when and where they need it. Both live in the metadata bag.
+    poNumber: poNumberOf(doc.metadata),
+    delivery: deliveryNeedsOf(doc.metadata),
     stage: {
       id: doc.stage.id,
       name: doc.stage.name,

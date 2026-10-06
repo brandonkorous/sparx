@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
 import { Display, getModuleColor, Section, Spark, Text } from './primitives';
@@ -84,13 +86,13 @@ const B2B_FAQ: FaqItem[] = [
     id: 'b2b-net-terms',
     question: 'Can I offer net terms and credit limits?',
     answer:
-      'Yes. Set payment terms per account (Net 15, 30, 45, or 60) and a credit limit. An order on terms generates an invoice with the due date and the buyer’s PO number, and counts against the limit. When an account would exceed its limit the order holds for your approval, and the dashboard tracks A/R aging (current, 1–30, 31–60, and 60+ days) so you see what’s outstanding.',
+      'Yes. Set payment terms per account (Net 15, 30, 45, or 60) and a credit limit. An order on terms generates an invoice with the due date and the buyer’s PO number, and counts against the limit. When an account would exceed its limit the order holds for your approval, and the dashboard tracks A/R aging (not yet due, then 1–30, 31–60, 61–90 and 90+ days late) so you see what’s outstanding.',
   },
   {
     id: 'b2b-rfq',
     question: 'How does the RFQ and quote flow work?',
     answer:
-      'A buyer builds a request for quote from the catalog (quantities, delivery needs, and notes) and submits it. You review it in the dashboard, set line-item pricing, add notes and an expiry, and send the quote back. When the buyer accepts, the quote converts straight to an order at the quoted prices. The lifecycle is tracked end to end: submitted, under review, quoted, accepted, converted.',
+      'A buyer builds a request for quote from the catalog (quantities, delivery needs, and notes) and submits it. You review it in the dashboard, set line-item pricing, add notes and an expiry, and send the quote back. When the buyer accepts, the quote converts straight to an order at the quoted prices. The lifecycle is tracked end to end: submitted, quoted, accepted, and the order it became.',
   },
   {
     id: 'b2b-portal',
@@ -179,9 +181,12 @@ function B2bPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('b2b-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate B2B
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -203,9 +208,12 @@ function B2bCta() {
           the day you stop selling wholesale, and your accounts and history stay yours.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
-          <Button color="module-b2b" size="xl">
+          <a
+            href={signupHref('b2b-final')}
+            className={buttonClasses({ color: 'module-b2b', size: 'xl' })}
+          >
             Activate B2B →
-          </Button>
+          </a>
           <a href="#price-list">
             <Button size="xl" variant="outline">
               See account pricing

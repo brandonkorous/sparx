@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
 import { Display, Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
@@ -287,9 +289,12 @@ function CmsPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('cms-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate CMS
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -311,9 +316,12 @@ function CmsCta() {
           off the day you stop, and your content stays yours.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <Button color="module-cms" size="xl">
+          <a
+            href={signupHref('cms-final')}
+            className={buttonClasses({ color: 'module-cms', size: 'xl' })}
+          >
             Start publishing →
-          </Button>
+          </a>
           <a href="#editor">
             <Button size="xl" variant="outline">
               See the editor

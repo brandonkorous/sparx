@@ -147,7 +147,7 @@ const UpdateVariantArgs = z.object({
 const updateVariant: McpToolDefinition = {
   name: 'update_variant',
   description:
-    "Edit one variant of a product. Its price (`priceCents`), compare-at price, SKU, barcode, cost, weight, and stock policy. This is where a product's PRICE lives: `create_product` returns the `variantId` of the default variant it made, and get_product lists a product's variants. Send only the fields you want to change; pass null to clear a compare-at price, cost, or barcode.",
+    "Edit one variant of a product. Its price (`priceCents`), compare-at price, SKU, barcode, cost, core charge (`coreChargeCents`: a refundable deposit per unit on a rebuilt part, refunded when the old part comes back; `coreFirstOffered` lets the buyer send the old part first instead, with no deposit, the part held until it arrives; refused on a part the supplier ships), weight, and stock policy. This is where a product's PRICE lives: `create_product` returns the `variantId` of the default variant it made, and get_product lists a product's variants. Send only the fields you want to change; pass null to clear a compare-at price, cost, core charge, or barcode.",
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateVariantArgs,

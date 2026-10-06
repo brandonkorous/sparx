@@ -59,5 +59,11 @@
  * that app/globals.css gives portalled overlays, so a dialog opened from a tour
  * step still comes out on top. */
 [data-base-ui-portal] > *:has(> .sparx-tour-card) {
+  /* silica positions every popup with `[role='presentation'][data-side][data-align]
+   * { z-index: var(--z-popover, 70) }`, three attributes to this rule's two, so a
+   * bare z-index here lost and the card sat at 70 under the canvas tools (z 9000):
+   * the tour's Next button opened "Tidy up" instead (sparx persona issue 024).
+   * Setting silica's own dial makes its rule compute 9500. */
+  --z-popover: 9500;
   z-index: 9500;
 }

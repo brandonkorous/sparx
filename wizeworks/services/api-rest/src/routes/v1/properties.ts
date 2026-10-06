@@ -41,6 +41,7 @@ import { ALL_MODULES, type ModuleSlug } from '@wizeworks/modules';
 import { indexEntity } from '@wizeworks/events';
 import { mintZoneHost, tenantZone } from '../../lib/domain.js';
 import { PropertyBrandOverrideSchema, parseBrandOverride } from '../../lib/property-brand.js';
+import { publishSiteUpdated } from '../../lib/site-events.js';
 
 // A stable per-tenant property handle from a display name: lowercase, hyphenated,
 // ≤63 chars. Mirrors the tenant slugify in @wizeworks/auth.
@@ -475,6 +476,20 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       entityType: 'site',
       recordId: id,
     });
+    // Name, links, contact details, brand and module switches are all in the
+    // website's cached business payload. Without this the live site kept the old
+    // ones until that cache expired, up to five minutes (sparx persona issue 040).
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: id,
+      changed: [
+        ...(input.name !== undefined ? ['name'] : []),
+        ...(input.socials !== undefined ? ['socials'] : []),
+        ...(input.contact !== undefined ? ['contact'] : []),
+        ...(input.settings !== undefined ? ['settings'] : []),
+        ...(input.brandOverride !== undefined ? ['brand'] : []),
+        ...(input.moduleScope !== undefined ? ['modules'] : []),
+      ],
+    });
     return ok(toView(row));
   });
 
@@ -579,6 +594,12 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       entityType: 'site',
       recordId: id,
     });
+    // The bare address now serves a different site, and the cached business
+    // payload for that address still describes the old one.
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: id,
+      changed: ['primary'],
+    });
     return ok(toView(row));
   });
 
@@ -621,6 +642,12 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       entityType: 'site',
       recordId: id,
       op: 'delete',
+    });
+    // A deleted site's cached payload would otherwise go on answering for it
+    // until it expired.
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: id,
+      changed: ['deleted'],
     });
     return ok({ id });
   });

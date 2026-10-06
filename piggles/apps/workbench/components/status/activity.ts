@@ -14,7 +14,8 @@ import {
   faMoneyBill,
   faUserPlus,
 } from '@fortawesome/pro-solid-svg-icons';
-import type { ActivityItem } from '../../lib/api/activity';
+import { announceable, type ActivityItem } from '../../lib/api/activity';
+import { useViewer } from '../../lib/api/shell-data';
 
 /** The list surface that shows this kind of event. Every NOTABLE_ACTIONS entry
  *  must land somewhere real — a chip that opens the wrong list is worse than one
@@ -79,6 +80,7 @@ export function freshEnoughToShow(item: ActivityItem | undefined): ActivityItem 
  *  the very popup that's supposed to feel good. */
 export function useActivityToasts(items: ActivityItem[], ready: boolean) {
   const toast = useToast();
+  const viewerId = useViewer().data?.userId;
   // `toast.add` rather than `toast`: Base UI memoizes the manager on the toast
   // LIST, so its identity churns every time ANYTHING in the app raises one,
   // while `add` underneath it never does. Depending on the manager re-ran this
@@ -109,14 +111,17 @@ export function useActivityToasts(items: ActivityItem[], ready: boolean) {
     // fresh and the toast was gone for good.
     const timer = setTimeout(() => {
       for (const item of fresh) seen.current?.add(item.id);
+      // Seen either way; announced only when somebody else did it.
+      const news = announceable(fresh, viewerId);
+      if (news.length === 0) return;
       // Cap the celebration: a burst (bulk import, catch-up after sleep)
       // becomes one summary rather than a stack of popups.
-      if (fresh.length > 3) {
+      if (news.length > 3) {
         // Counted from the two actions that ARE a sale, not every `crm.order.*`
         // — that prefix now also carries payments. And only mentioned when there
         // were some: "6 new events — 0 sales among them" reads as a bad morning
         // when what actually happened was six invoices getting paid.
-        const sales = fresh.filter(
+        const sales = news.filter(
           (item) =>
             item.action === 'crm.order.created' || item.action === 'commerce.checkout.completed'
         ).length;
@@ -124,13 +129,13 @@ export function useActivityToasts(items: ActivityItem[], ready: boolean) {
           title: 'Things are happening',
           description:
             sales > 0
-              ? `${String(fresh.length)} new events, ${String(sales)} sales among them.`
-              : `${String(fresh.length)} new events across your business.`,
+              ? `${String(news.length)} new events, ${String(sales)} sales among them.`
+              : `${String(news.length)} new events across your business.`,
           type: 'success',
         });
         return;
       }
-      for (const item of fresh) {
+      for (const item of news) {
         addToast({
           title: item.title,
           description: item.subject ?? undefined,
@@ -141,5 +146,5 @@ export function useActivityToasts(items: ActivityItem[], ready: boolean) {
     return () => {
       clearTimeout(timer);
     };
-  }, [items, ready, addToast]);
+  }, [items, ready, addToast, viewerId]);
 }

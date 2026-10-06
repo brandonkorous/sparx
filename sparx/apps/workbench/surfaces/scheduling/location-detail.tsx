@@ -37,6 +37,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useBusinessTimezone } from '../../lib/business-timezone';
+import { useBusinessCountry } from '../../lib/business-country';
 import { SaveFailure } from '@/components/save-failure';
 import {
   TIMEZONE_OPTIONS,
@@ -123,12 +124,13 @@ function coordinate(value: string, bound: number): { ok: boolean; value: number 
 export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const businessZone = useBusinessTimezone();
+  const businessCountry = useBusinessCountry();
 
   if (id !== 'new') return <LocationLoader ctx={ctx} id={id} />;
 
   // Held until the zone resolves rather than stamped with a placeholder the
   // person would have to notice and undo. A cached read, so one frame.
-  if (businessZone === undefined) {
+  if (businessZone === undefined || businessCountry === undefined) {
     return (
       <p className="p-4 text-sm" role="status">
         Loading…
@@ -140,7 +142,8 @@ export function LocationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     <LocationEditor
       ctx={ctx}
       id="new"
-      initial={{ ...BLANK, timezone: businessZone }}
+      // The business's own country, not an empty field (sparx persona issue 043).
+      initial={{ ...BLANK, timezone: businessZone, country: businessCountry }}
       existing={null}
     />
   );
@@ -366,7 +369,6 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.name}
-                    placeholder="Main Street shop"
                     onChange={(event) => {
                       set('name', event.target.value);
                     }}
@@ -420,7 +422,6 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.line1}
-                    placeholder="123 Main St"
                     onChange={(event) => {
                       set('line1', event.target.value);
                     }}
@@ -435,7 +436,6 @@ function LocationEditor({
                   <Input
                     color="module"
                     value={draft.line2}
-                    placeholder="Unit 3"
                     onChange={(event) => {
                       set('line2', event.target.value);
                     }}
@@ -507,7 +507,6 @@ function LocationEditor({
                       color="module"
                       inputMode="decimal"
                       value={draft.lat}
-                      placeholder="40.7128"
                       onChange={(event) => {
                         set('lat', event.target.value);
                       }}
@@ -523,7 +522,6 @@ function LocationEditor({
                       color="module"
                       inputMode="decimal"
                       value={draft.lng}
-                      placeholder="-74.0060"
                       onChange={(event) => {
                         set('lng', event.target.value);
                       }}

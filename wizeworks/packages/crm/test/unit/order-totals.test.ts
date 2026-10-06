@@ -101,3 +101,20 @@ describe('the rest of the composition', () => {
     expect(computed.lineTotal).toBe(79.2);
   });
 });
+
+describe('core deposits on rebuilt parts (sparx issue 051)', () => {
+  it('adds them to the total but never to the subtotal', () => {
+    // A Bosch injector at $580.15 with a $150.00 core deposit, $42.06 header tax.
+    const injector = { ...TEE, unitPrice: 580.15, coreCharge: 150 };
+    const totals = computeTotals([injector], 0, 42.06);
+
+    expect(totals.subtotal).toBe(580.15);
+    expect(totals.coreChargeTotal).toBe(150);
+    expect(totals.total).toBe(772.21);
+  });
+
+  it('counts the deposit once per unit', () => {
+    const pair = { ...TEE, unitPrice: 580.15, quantity: 2, coreCharge: 150 };
+    expect(computeTotals([pair], 0).coreChargeTotal).toBe(300);
+  });
+});

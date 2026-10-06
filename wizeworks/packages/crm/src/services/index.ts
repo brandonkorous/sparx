@@ -8,8 +8,32 @@ export * as b2bAccountContactService from './b2b-account-contact-service';
 export * as b2bEscalationService from './b2b-escalation-service';
 // Order-derived B2B net-terms AR, materialised as BillingDocuments (docs/87 §15).
 export * as b2bArService from './b2b-ar-service';
+// Whether a trade account's order goes ahead, waits for sign-off, or is refused.
+// One rule for the checkout and an accepted quote (sparx persona issue 085).
+export * as accountOrderGate from './account-order-gate';
+// What a held order's card needs once it is approved or turned down: charge it,
+// let it go, or give it back (sparx persona issue 087).
+export * as heldOrderMoney from './held-order-money';
 // Quotes are BillingDocuments on the system `b2b-quotes` workflow.
 export * as b2bQuoteService from './b2b-quote-service';
+// A buyer's quote request while they build it (sparx persona issue 086).
+export * as b2bQuoteRequestService from './b2b-quote-request-service';
+// A trade account's statement: opening balance, every bill, payment and
+// write-off in a period with the buyer's PO numbers, closing balance and aging.
+export * as b2bStatementService from './b2b-statement-service';
+export type {
+  AccountStatement,
+  AccountStatementAccount,
+  StatementRecipient,
+} from './b2b-statement-service';
+export {
+  STATEMENT_AGING_LABELS,
+  paymentTermsWords as statementTermsWords,
+  type StatementRow,
+  type StatementOpenItem,
+  type StatementAgingBucket,
+} from './b2b-statement';
+export { renderAccountStatementHtml, statementPeriodText } from './b2b-statement-html';
 // The direct-customer (non-B2B) counterpart — estimate requests on the system
 // `customer-estimates` workflow.
 export * as customerEstimateService from './customer-estimate-service';
@@ -143,6 +167,9 @@ export * as documentLineTypeService from './document-line-type-service';
 export * as billingDocumentService from './billing-document-service';
 export * as billingLineService from './billing-line-service';
 export * as billingDocumentStageService from './billing-document-stage-service';
+// The email that gives a customer their invoice or quote, shared by the Send
+// button and the automation that emails an invoice issued on terms (issue 085).
+export * as billingDocumentMail from './billing-document-mail';
 export * as billingDocumentConversionService from './billing-document-conversion-service';
 // Raising an invoice FOR an order — the "ask the customer for the money" path a
 // shop that takes no payment at checkout has to walk. Distinct from the

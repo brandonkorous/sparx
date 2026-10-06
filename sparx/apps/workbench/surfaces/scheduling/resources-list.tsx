@@ -34,6 +34,7 @@ import {
   type SchedulingResource,
 } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { resourceKindGlyph } from './resource-kind-icon';
 
 const DETAIL_KEY = 'scheduling.resources.detail';
 
@@ -169,11 +170,14 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               >
                 <td className="w-full max-w-0 min-w-56">
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{resource.name}</span>
-                    <span className="truncate text-sm @lg:hidden">
-                      {resourceKindLabel(resource.kind)}
-                      {holds ? ` · ${holds}` : ''}
+                  <span className="flex min-w-0 items-center gap-2">
+                    {resourceKindGlyph(resource.kind, 'size-4 shrink-0')}
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate font-medium">{resource.name}</span>
+                      <span className="truncate text-sm @lg:hidden">
+                        {resourceKindLabel(resource.kind)}
+                        {holds ? ` · ${holds}` : ''}
+                      </span>
                     </span>
                   </span>
                 </td>

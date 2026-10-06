@@ -42,6 +42,7 @@
 
 import { shownInPlace } from '@wizeworks/query';
 import { useCallback, useMemo, useState } from 'react';
+import { useViewParamHandle } from '../../lib/workbench/view-param';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Alert,
@@ -1158,7 +1159,9 @@ function ConfiguratorBody({
   const bundles = useProductBundles(productId);
 
   const rows = templates.data ?? [];
-  const activeId = draft?.id === NEW ? null : (selectedId ?? rows[0]?.id ?? null);
+  // A build named in an old link that has since been deleted opens the first.
+  const chosen = selectedId && rows.some((row) => row.id === selectedId) ? selectedId : null;
+  const activeId = draft?.id === NEW ? null : (chosen ?? rows[0]?.id ?? null);
   const detail = useConfiguratorTemplate(activeId);
   const currency = 'USD';
 
@@ -1474,7 +1477,11 @@ export function ProductConfiguratorSurface({ ctx }: { ctx: SurfaceContext }) {
   // it, and the body is keyed on the product, so a re-point would have wiped the
   // draft before anyone could be asked about it.
   const [draft, setDraft] = useState<TemplateDraft | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Which build is open, held in the pane's address (issue 374), so a reload
+  // or a link comes back to it.
+  const build = useViewParamHandle(ctx, 'build');
+  const selectedId = build.value ?? null;
+  const setSelectedId = build.set;
   const scope = useProductScope(ctx, { noun: NOUN, hold: draft !== null });
 
   if (scope.state !== 'ready') {

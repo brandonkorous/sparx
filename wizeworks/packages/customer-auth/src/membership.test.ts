@@ -19,6 +19,7 @@ interface Row {
 
 let rows: Row[] = [];
 let created: Record<string, unknown> | null = null;
+let audited: Record<string, unknown>[] = [];
 
 const matches = (r: Row, where: Record<string, unknown>): boolean =>
   Object.entries(where).every(([k, v]) => (r as unknown as Record<string, unknown>)[k] === v);
@@ -35,6 +36,12 @@ const tx = {
     create: ({ data }: { data: Record<string, unknown> }) => {
       created = data;
       return Promise.resolve({ id: 'new-row' });
+    },
+  },
+  auditLog: {
+    create: ({ data }: { data: Record<string, unknown> }) => {
+      audited.push(data);
+      return Promise.resolve({});
     },
   },
 };
@@ -63,19 +70,20 @@ describe('ensureMembership', () => {
   beforeEach(() => {
     rows = [];
     created = null;
+    audited = [];
   });
 
   it('returns the membership already linked on this site', async () => {
     rows = [guest({ id: 'mine', authUserId: USER })];
     const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
-    expect(result).toEqual({ customerId: 'mine', created: false });
+    expect(result).toEqual({ customerId: 'mine', created: false, adopted: false });
     expect(created).toBeNull();
   });
 
   it('adopts a guest row on this site rather than making a second one', async () => {
     rows = [guest()];
     const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
-    expect(result).toEqual({ customerId: 'guest-row', created: false });
+    expect(result).toEqual({ customerId: 'guest-row', created: false, adopted: true });
     expect(rows[0]?.authUserId).toBe(USER);
     expect(created).toBeNull();
   });
@@ -87,7 +95,7 @@ describe('ensureMembership', () => {
   it('adopts a guest row that belongs to no site, and writes the site onto it', async () => {
     rows = [guest({ propertyId: null })];
     const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
-    expect(result).toEqual({ customerId: 'guest-row', created: false });
+    expect(result).toEqual({ customerId: 'guest-row', created: false, adopted: true });
     expect(rows[0]?.authUserId).toBe(USER);
     expect(rows[0]?.propertyId).toBe(SITE);
     expect(created).toBeNull();
@@ -98,7 +106,7 @@ describe('ensureMembership', () => {
   it('never takes a row belonging to a DIFFERENT site', async () => {
     rows = [guest({ propertyId: 'site-b' })];
     const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
-    expect(result).toEqual({ customerId: 'new-row', created: true });
+    expect(result).toEqual({ customerId: 'new-row', created: true, adopted: false });
     expect(created).toMatchObject({ propertyId: SITE, authUserId: USER, email: EMAIL });
   });
 
@@ -107,8 +115,30 @@ describe('ensureMembership', () => {
       firstName: 'Imani',
       lastName: 'Reyes',
     });
-    expect(result).toEqual({ customerId: 'new-row', created: true });
+    expect(result).toEqual({ customerId: 'new-row', created: true, adopted: false });
     expect(created).toMatchObject({ firstName: 'Imani', lastName: 'Reyes' });
+  });
+
+  // A sign-up left no trace the business could see. The activity bar names every
+  // new person who arrives through the site, and a buyer who made an account was
+  // the one kind it never showed (sparx persona issue 086).
+  it('writes down that somebody new arrived through the site', async () => {
+    await ensureMembership(CTX, SITE, USER, EMAIL, { firstName: 'Imani' });
+    expect(audited).toEqual([
+      expect.objectContaining({
+        tenantId: 't1',
+        action: 'crm.customer.captured',
+        entityType: 'Customer',
+        entityId: 'new-row',
+        actorType: 'customer',
+      }),
+    ]);
+  });
+
+  it('writes nothing down for somebody it already knew', async () => {
+    rows = [guest()];
+    await ensureMembership(CTX, SITE, USER, EMAIL, {});
+    expect(audited).toEqual([]);
   });
 
   it('fills in a name the guest row was missing, and leaves one it has', async () => {

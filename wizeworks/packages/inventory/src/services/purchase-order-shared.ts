@@ -67,7 +67,26 @@ export interface PurchaseOrderRow {
   updatedAt: string;
 }
 
+/** One time the order was emailed to the supplier, read from the audit trail
+ *  (`PURCHASE_ORDER_EMAILED_ACTION`). Newest first. */
+export interface PurchaseOrderEmailRecord {
+  to: string;
+  at: string;
+}
+
+/** The audit action written when an order is emailed to its supplier. The
+ *  trail IS the record: there is no column, and a send is an event, not a
+ *  state of the order. */
+export const PURCHASE_ORDER_EMAILED_ACTION = 'inventory.purchase_order.emailed';
+
 export interface PurchaseOrderDetail extends PurchaseOrderRow {
+  /** Where the supplier takes orders, from their record. Null when the
+   *  business has no address for them: the screen then cannot offer to email
+   *  the order and says why. */
+  supplierEmail: string | null;
+  /** Every time this order was emailed to the supplier, newest first. Empty
+   *  means never: the screen says so rather than implying it went. */
+  emails: PurchaseOrderEmailRecord[];
   lines: PurchaseOrderLineRow[];
   /** Freight booked in WITH the goods, which `freightCents` never hears about.
    *  Separate because one is what was agreed and the other is what turned up,
@@ -89,7 +108,7 @@ export const LIST_INCLUDE = {
 
 /** Detail: full lines with the variant SKU / product title for display. */
 export const DETAIL_INCLUDE = {
-  supplier: PARTY_SELECT,
+  supplier: { select: { name: true, code: true, email: true } },
   warehouse: PARTY_SELECT,
   lines: {
     orderBy: { createdAt: 'asc' },
@@ -157,9 +176,14 @@ export function serializePurchaseOrderLine(line: PoLineFull): PurchaseOrderLineR
   };
 }
 
-export function serializePurchaseOrderDetail(po: PoWithLines): PurchaseOrderDetail {
+export function serializePurchaseOrderDetail(
+  po: PoWithLines,
+  emails: PurchaseOrderEmailRecord[]
+): PurchaseOrderDetail {
   return {
     ...serializePurchaseOrderRow(po),
+    supplierEmail: po.supplier.email?.trim() ? po.supplier.email.trim() : null,
+    emails,
     lines: po.lines.map(serializePurchaseOrderLine),
     receiptFreightCents: receiptFreightCents(po),
   };
@@ -443,5 +467,22 @@ export async function loadPurchaseOrderDetail(
 ): Promise<PurchaseOrderDetail> {
   const po = await tx.purchaseOrder.findFirst({ where: { id }, include: DETAIL_INCLUDE });
   if (!po) throw new InventoryNotFoundError('PurchaseOrder', id);
-  return serializePurchaseOrderDetail(po);
+  return serializePurchaseOrderDetail(po, await loadPurchaseOrderEmails(tx, id));
+}
+
+/** The times this order was emailed, newest first, from the audit trail. */
+export async function loadPurchaseOrderEmails(
+  tx: TxClient,
+  id: string
+): Promise<PurchaseOrderEmailRecord[]> {
+  const rows = await tx.auditLog.findMany({
+    where: { entityType: 'PurchaseOrder', entityId: id, action: PURCHASE_ORDER_EMAILED_ACTION },
+    orderBy: { createdAt: 'desc' },
+    select: { createdAt: true, diff: true },
+    take: 20,
+  });
+  return rows.flatMap((row) => {
+    const after = (row.diff as { after?: { to?: unknown } } | null)?.after;
+    return typeof after?.to === 'string' ? [{ to: after.to, at: row.createdAt.toISOString() }] : [];
+  });
 }

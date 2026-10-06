@@ -13,6 +13,8 @@ import type { TimeWindow } from './calendar-grid';
 import { isToday, weekDays, weekdayHeading, type CalendarEvent } from './calendar-data';
 import { localDayKey, zoned } from './calendar-zone';
 import type { GridColumn } from './calendar-timegrid';
+import { Icon } from '@piggles/ui';
+import { resourceKindIcon } from './resource-kind-icon';
 
 export type View = 'week' | 'day';
 
@@ -51,14 +53,21 @@ export function weekColumns(anchor: Date, events: CalendarEvent[], shut: ShutHou
  */
 export function dayColumns(
   events: CalendarEvent[],
-  resources: { id: string; name: string }[],
+  resources: { id: string; name: string; kind?: string }[],
   chosenResourceId: string,
   anchor: Date,
   shut: ShutHours
 ): GridColumn[] {
   if (chosenResourceId) {
-    const name = resources.find((resource) => resource.id === chosenResourceId)?.name ?? 'Booked';
-    return [{ key: chosenResourceId, header: headerText(name), closed: shut.on(anchor), events }];
+    const chosen = resources.find((resource) => resource.id === chosenResourceId);
+    return [
+      {
+        key: chosenResourceId,
+        header: headerText(chosen?.name ?? 'Booked', chosen?.kind),
+        closed: shut.on(anchor),
+        events,
+      },
+    ];
   }
   if (resources.length === 0) {
     return [{ key: 'all', header: headerText('All bookings'), events }];
@@ -66,7 +75,7 @@ export function dayColumns(
   // Each column is one person, so each is shaded by that person's own hours.
   const columns: GridColumn[] = resources.map((resource) => ({
     key: resource.id,
-    header: headerText(resource.name),
+    header: headerText(resource.name, resource.kind),
     closed: shut.bands(anchor, resource.id),
     events: events.filter((event) => event.resourceIds.includes(resource.id)),
   }));
@@ -178,6 +187,14 @@ function shutLine(one: boolean, view: View): string {
     : 'Nobody is working this day, so nothing can be booked in it.';
 }
 
-function headerText(label: string) {
-  return <span className="truncate text-sm font-semibold">{label}</span>;
+/** A column's heading. A resource's carries the picture for its kind, so a bay
+ *  and the person working it are told apart at a glance (sparx persona issue 086). */
+function headerText(label: string, kind?: string) {
+  if (kind === undefined) return <span className="truncate text-sm font-semibold">{label}</span>;
+  return (
+    <span className="flex min-w-0 items-center gap-1.5">
+      <Icon glyph={resourceKindIcon(kind)} className="size-4 shrink-0" aria-hidden />
+      <span className="truncate text-sm font-semibold">{label}</span>
+    </span>
+  );
 }

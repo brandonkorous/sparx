@@ -1,7 +1,16 @@
 // What the business sells — products, the ways they are grouped, and the
 // fitment and configurator structures attached to them.
 
-import { Blocks, Layers, Package, Puzzle, Settings2, Shapes, Tags } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Blocks,
+  Layers,
+  Package,
+  Puzzle,
+  Settings2,
+  Shapes,
+  Tags,
+} from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { ProductDetailSurface } from '../../../surfaces/commerce/product-detail';
 import { ProductsListSurface } from '../../../surfaces/commerce/products-list';
@@ -17,6 +26,7 @@ import { ConfiguratorListSurface } from '../../../surfaces/commerce/configurator
 import { ConfiguratorTemplateDetailSurface } from '../../../surfaces/commerce/configurator-template-detail';
 import { FitmentListSurface } from '../../../surfaces/commerce/fitment-list';
 import { FitmentDomainDetailSurface } from '../../../surfaces/commerce/fitment-domain-detail';
+import { CoreChoicesSurface } from '../../../surfaces/commerce/core-choices';
 
 export const CATALOG_SURFACES: SurfaceDefinition[] = [
   {
@@ -35,6 +45,7 @@ export const CATALOG_SURFACES: SurfaceDefinition[] = [
     key: 'commerce.product.detail',
     title: 'Product',
     module: 'commerce',
+    viewParams: ['tab'],
     icon: Package,
     component: ProductDetailSurface,
     // Reachable from the list and from the nav panel's `+`, not as a launcher
@@ -165,5 +176,29 @@ export const CATALOG_SURFACES: SurfaceDefinition[] = [
     // edit) — a create is the same surface as an edit, so it is a pane, not a
     // launcher entry of its own.
     listed: false,
+  },
+  {
+    // Rebuilt parts whose old store faked the core deposit as a choice (persona
+    // issue 057): "Accept Core Charge (+$150)" beside "Defer Core Charge". A
+    // one-time job for a business that moved in, turning each into one part with
+    // a real deposit. Reached from search, the product's Options tab and the
+    // Cores owed list.
+    key: 'commerce.core-choices.list',
+    title: 'Core charges set up as choices',
+    module: 'commerce',
+    icon: ArrowLeftRight,
+    section: 'Catalog',
+    order: 17,
+    keywords: [
+      'core charge choices',
+      'core charges',
+      'convert core charge',
+      'accept core charge',
+      'defer core charge',
+      'ship when core received',
+      'core charge option',
+      'core charge variant',
+    ],
+    component: CoreChoicesSurface,
   },
 ];

@@ -15,6 +15,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 // (`customer.email is_set`), inlined per seed to match the other seed files.
 
 export const SUBSCRIPTION_CONFIRMED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.confirmed-email',
   name: 'Subscription confirmed: email',
   previousNames: ['Subscription confirmed — email'],
   description: 'Emails the customer when a new subscription starts.',
@@ -31,6 +32,7 @@ export const SUBSCRIPTION_CONFIRMED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_RENEWED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.renewed-email',
   name: 'Subscription renewed: email',
   previousNames: ['Subscription renewed — email'],
   description: 'Emails the customer when their subscription renews and reorders.',
@@ -47,6 +49,7 @@ export const SUBSCRIPTION_RENEWED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.payment-failed-email',
   name: 'Subscription payment failed: email',
   previousNames: ['Subscription payment failed — email'],
   description: 'Emails the customer when a subscription renewal payment fails, so they can fix it.',
@@ -63,6 +66,7 @@ export const SUBSCRIPTION_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.authentication-required-email',
   name: 'Subscription payment needs confirming: email',
   previousNames: ['Subscription payment needs confirming — email'],
   description:
@@ -83,6 +87,7 @@ export const SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL: SystemAutomationSpec = 
 };
 
 export const SUBSCRIPTION_INVOICE_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.invoice-email',
   name: 'Subscription invoice: email',
   previousNames: ['Subscription invoice — email'],
   description:
@@ -100,6 +105,7 @@ export const SUBSCRIPTION_INVOICE_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_PAUSED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.paused-email',
   name: 'Subscription paused: email',
   previousNames: ['Subscription paused — email'],
   description: 'Emails the customer when their subscription is paused.',
@@ -116,6 +122,7 @@ export const SUBSCRIPTION_PAUSED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_RESUMED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.resumed-email',
   name: 'Subscription resumed: email',
   previousNames: ['Subscription resumed — email'],
   description: 'Emails the customer when their subscription resumes.',
@@ -132,6 +139,7 @@ export const SUBSCRIPTION_RESUMED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_CANCELLED_EMAIL: SystemAutomationSpec = {
+  key: 'subscriptions.canceled-email',
   name: 'Subscription canceled: email',
   previousNames: ['Subscription cancelled: email', 'Subscription cancelled — email'],
   description: 'Emails the customer when their subscription is canceled.',

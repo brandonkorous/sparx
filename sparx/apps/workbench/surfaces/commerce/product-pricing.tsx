@@ -60,6 +60,7 @@ import { FormSection } from '../../components/form-section';
 import { MoneyInput } from '@/components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTabSave } from './product-tab-save';
+import { pricesCatalog, ruleSentence } from './markup-rule-words';
 import { SaveFailure } from '@/components/save-failure';
 import {
   formatCents,
@@ -167,29 +168,17 @@ function marginLine(
 }
 
 /** What a rule DOES, in one phrase, so nobody has to open the rules surface to
- *  find out why a price is what it is. */
+ *  find out why a price is what it is. The markup rules screen's own sentence:
+ *  this matched `percent` and `fixed`, names the server never sends, so every
+ *  rule read "Works the price out from what you last paid" (sparx persona issue
+ *  086). */
 function ruleSummary(rule: MarkupRule): string {
-  const basis =
-    rule.costBasis === 'supplier_cost'
-      ? 'what your supplier charges'
-      : rule.costBasis === 'avg_cost'
-        ? 'your average cost'
-        : 'what you last paid';
-  if (rule.method === 'percent' && rule.value != null) {
-    return `Adds ${String(rule.value)}% to ${basis}.`;
-  }
-  if (rule.method === 'multiplier' && rule.value != null) {
-    return `Multiplies ${basis} by ${String(rule.value)}.`;
-  }
-  if (rule.method === 'fixed' && rule.value != null) {
-    return `Adds ${formatCents(rule.value)} to ${basis}.`;
-  }
-  return `Works the price out from ${basis}.`;
+  return ruleSentence(rule);
 }
 
 /* ── The tab ────────────────────────────────────────────────────────────── */
 
-export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: Product }) {
+export function ProductPricingTab({ ctx, product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -386,7 +375,12 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
           supplier={
             variant.dropshipSourceId ? (suppliersById.get(variant.dropshipSourceId) ?? null) : null
           }
-          availableRules={rules.filter((rule) => rule.isActive)}
+          // A rule set to price only quote lines is not offered for a product
+          // (sparx persona issue 086): its own screen says so.
+          availableRules={rules.filter((rule) => rule.isActive && pricesCatalog(rule.appliesTo))}
+          onAddRule={() => {
+            ctx.open('commerce.markup-rules.list', {}, { target: 'beside' });
+          }}
           busy={bindRule.isPending || unbindRule.isPending}
           showTitle={variants.length > 1}
           onChange={(patch) => {
@@ -611,6 +605,7 @@ function VariantPricing({
   onChange,
   onBindRule,
   onUnbindRule,
+  onAddRule,
 }: {
   variant: Variant;
   options: ProductOption[];
@@ -623,6 +618,8 @@ function VariantPricing({
   onChange: (patch: Partial<PriceDraft>) => void;
   onBindRule: (ruleId: string) => void;
   onUnbindRule: () => void;
+  /** Opens the markup rules screen beside the product. */
+  onAddRule: () => void;
 }) {
   const byRule = variant.markupRuleId != null;
   const margin = marginLine(draft);
@@ -682,17 +679,18 @@ function VariantPricing({
           <FieldControl
             render={
               <MoneyInput
+                optional
                 color="module"
-                value={draft.compareAt ?? 0}
+                value={draft.compareAt}
                 aria-label="Was price"
                 onValueChange={(next) => {
-                  onChange({ compareAt: next === 0 ? null : next });
+                  onChange({ compareAt: next });
                 }}
               />
             }
           />
           <FieldDescription>
-            The old price, shown crossed out beside the new one. Leave it at zero if this is not on
+            The old price, shown crossed out beside the new one. Leave it blank if this is not on
             offer.
           </FieldDescription>
         </Field>
@@ -702,17 +700,20 @@ function VariantPricing({
           <FieldControl
             render={
               <MoneyInput
+                optional
                 color="module"
-                value={draft.cost ?? 0}
+                value={draft.cost}
                 aria-label="Cost"
                 onValueChange={(next) => {
-                  onChange({ cost: next === 0 ? null : next });
+                  onChange({ cost: next });
                 }}
               />
             }
           />
           <FieldDescription>
             Only you see this. It is what your profit (and any pricing rule) is worked out from.
+            Leave it blank until you know it. A blank box and 0.00 are different: 0.00 means it cost
+            you nothing.
           </FieldDescription>
         </Field>
       </div>
@@ -775,10 +776,16 @@ function VariantPricing({
             </Button>
           </div>
         ) : availableRules.length === 0 ? (
-          <Text className="text-sm">
-            You can have prices worked out for you from what you paid. Add a pricing rule and it
-            will be offered here.
-          </Text>
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <Text as="span" className="text-sm">
+              You can have prices worked out for you from what you paid.
+            </Text>
+            {/* There was nowhere to add one until the markup rules screen
+                (sparx persona issue 086). */}
+            <Button variant="link" color="module" size="sm" className="px-0" onClick={onAddRule}>
+              Add a markup rule
+            </Button>
+          </div>
         ) : (
           <Field>
             <FieldLabel>Have the price worked out for you</FieldLabel>

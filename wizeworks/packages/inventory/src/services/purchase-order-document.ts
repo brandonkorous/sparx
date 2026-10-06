@@ -54,6 +54,11 @@ export interface PurchaseOrderDocumentData {
   reference: string | null;
   paymentTerms: string | null;
   vendor: PurchaseOrderDocumentParty;
+  /** Where the supplier takes orders, and who there, from their record. Not
+   *  printed separately (the vendor block already carries both); the email
+   *  path reads them to address the order. */
+  vendorEmail: string | null;
+  vendorContactName: string | null;
   shipTo: PurchaseOrderDocumentParty;
   lines: PurchaseOrderDocumentLine[];
   subtotalCents: number;
@@ -72,10 +77,16 @@ const DEFAULT_BRAND = {
   fontBody: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
 };
 
-const STATUS_LABEL: Record<string, string> = {
+/** The console's words for each state (`purchaseOrderState` in both consoles),
+ *  so the paper the supplier holds and the screen the owner reads agree. It
+ *  printed "Submitted" beside a screen that said "Placed", and the raw
+ *  `pending_approval` for an order waiting on a sign-off (sparx persona
+ *  issue 071). */
+export const PURCHASE_ORDER_STATUS_LABEL: Record<string, string> = {
   draft: 'Draft',
-  submitted: 'Submitted',
-  partial: 'Partially received',
+  pending_approval: 'Waiting for sign-off',
+  submitted: 'Placed',
+  partial: 'Partly received',
   received: 'Received',
   closed: 'Closed',
   cancelled: 'Canceled',
@@ -126,7 +137,7 @@ export function renderPurchaseOrderHtml(
   if (data.reference) meta.push(`<div><span>Reference</span>${esc(data.reference)}</div>`);
   if (data.paymentTerms) meta.push(`<div><span>Terms</span>${esc(data.paymentTerms)}</div>`);
 
-  const statusLabel = STATUS_LABEL[data.status] ?? data.status;
+  const statusLabel = PURCHASE_ORDER_STATUS_LABEL[data.status] ?? data.status;
   const statusClass =
     data.status === 'received' || data.status === 'closed'
       ? 'ok'
@@ -289,11 +300,14 @@ export async function buildPurchaseOrderDocumentHtml(
   id: string,
   brand: PurchaseOrderDocumentBrand = {}
 ): Promise<string> {
-  const data = await withTenant(ctx, (tx) => loadDocumentData(tx, id));
+  const data = await withTenant(ctx, (tx) => loadPurchaseOrderDocumentData(tx, id));
   return renderPurchaseOrderHtml(data, brand);
 }
 
-async function loadDocumentData(tx: TxClient, id: string): Promise<PurchaseOrderDocumentData> {
+export async function loadPurchaseOrderDocumentData(
+  tx: TxClient,
+  id: string
+): Promise<PurchaseOrderDocumentData> {
   const po = await tx.purchaseOrder.findFirst({
     where: { id },
     include: {
@@ -330,6 +344,8 @@ async function loadDocumentData(tx: TxClient, id: string): Promise<PurchaseOrder
         s.email ?? '',
       ],
     },
+    vendorEmail: s.email?.trim() ? s.email.trim() : null,
+    vendorContactName: s.contactName?.trim() ? s.contactName.trim() : null,
     shipTo: {
       heading: 'Ship to',
       name: w.name,

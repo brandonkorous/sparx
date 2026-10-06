@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-signal",
   "name": "Signal",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "tagline": "A complete multi-module starter in the Signal look, for software, apps, and subscriptions.",
-  "description": "The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Signal look, tuned for software, apps, and subscriptions. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "A complete starter in the Signal look, tuned for software, apps, and subscriptions: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",

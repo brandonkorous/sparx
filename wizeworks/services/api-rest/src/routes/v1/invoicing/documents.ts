@@ -24,6 +24,7 @@ import { z } from 'zod';
 import { queryBool } from '@wizeworks/api-core/query';
 import { withTenant } from '@wizeworks/db';
 import {
+  b2bQuoteService,
   billingDocumentConversionService,
   billingDocumentService,
   billingDocumentStageService,
@@ -31,7 +32,10 @@ import {
   billingPaymentService,
   billingRenderService,
   buildRenderDataFromDraft,
+  type BillingDraftInput,
+  type BillingDraftLine,
 } from '@wizeworks/crm';
+import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@wizeworks/payments';
 import { indexEntity } from '@wizeworks/events';
 import { ok, paged } from '@wizeworks/api-core/envelope';
@@ -124,6 +128,10 @@ const DraftLineBody = z.object({
   unitPrice: z.coerce.number().nullish(),
   discountAmount: z.coerce.number().nullish(),
   taxable: z.boolean().nullish(),
+  // The refundable core deposit per unit (sparx issue 051). Named here or Zod
+  // strips it: Wasatch Front's quote previewed at $3,175.60 with no deposit
+  // rows while the editor beside it said $4,075.60 (persona issue 083).
+  coreCharge: z.coerce.number().nullish(),
 });
 
 const DraftPreviewBody = z.object({
@@ -155,6 +163,10 @@ const DraftPreviewBody = z.object({
   issuedAt: z.string().nullish(),
   dueAt: z.string().nullish(),
   validUntil: z.string().nullish(),
+  // The buyer's PO number as typed, printed beside the number (issue 077).
+  // Named here or Zod strips it, and the preview would show no PO number
+  // while the saved document prints one.
+  poNumber: z.string().max(63).nullish(),
   notes: z.string().nullish(),
   taxRate: z.coerce.number().nullish(),
   shippingTotal: z.coerce.number().nullish(),
@@ -163,10 +175,52 @@ const DraftPreviewBody = z.object({
   amountPaid: z.coerce.number().nullish(),
   lines: z.array(DraftLineBody).nullish(),
 });
+
+// Every field the draft renderer reads has to be named in the two schemas
+// above, or Zod strips it and the preview silently draws without it. That has
+// happened three times: the document kind (issue 764), the PO number (077) and
+// the core deposit (persona issue 083). A field added to the renderer and not
+// here is now a type error rather than a preview that is quietly wrong.
+type UnnamedDraftLineFields = Exclude<keyof BillingDraftLine, keyof z.infer<typeof DraftLineBody>>;
+type UnnamedDraftFields = Exclude<keyof BillingDraftInput, keyof z.infer<typeof DraftPreviewBody>>;
+const everyDraftFieldNamed: [UnnamedDraftLineFields, UnnamedDraftFields] extends [never, never]
+  ? true
+  : [UnnamedDraftLineFields, UnnamedDraftFields] = true;
+void everyDraftFieldNamed;
 const PaymentLinkBody = z.object({
   successUrl: z.string().url(),
   expiresAt: z.string().datetime().optional(),
 });
+
+/**
+ * A wholesale quote that has just been sent is now an offer the buyer can
+ * accept: move it to Quoted (sparx persona issue 084). The email has already
+ * gone, so a tenant whose quote workflow no longer has that stage keeps the
+ * send and logs the miss rather than reporting a failure.
+ */
+async function markQuoteQuoted(
+  log: { warn: (obj: object, msg: string) => void },
+  ctx: ReturnType<typeof toInvoicingContext>,
+  documentId: string
+): Promise<void> {
+  try {
+    const target = await withTenant(ctx, async (tx) => {
+      const doc = await tx.billingDocument.findUnique({
+        where: { id: documentId },
+        select: {
+          workflow: { select: { slug: true } },
+          stage: { select: { sortOrder: true, stageType: true } },
+        },
+      });
+      if (doc?.workflow.slug !== B2B_QUOTE_WORKFLOW_SLUG) return null;
+      const quoted = await b2bQuoteService.b2bQuoteStageByName(tx, ctx.tenantId, 'Quoted');
+      return b2bQuoteService.stageAfterQuoteSent(doc.stage, quoted);
+    });
+    if (target) await billingDocumentStageService.advance(ctx, documentId, { stageId: target });
+  } catch (err) {
+    log.warn({ err, documentId }, 'sent quote could not be moved to Quoted');
+  }
+}
 
 const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents', async (request) => {
@@ -262,6 +316,7 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     try {
       const sent = await sendInvoice(request, id);
       const ctx = toInvoicingContext(request);
+      await markQuoteQuoted(request.log, ctx, id);
       // Sending moves the status, and status is a facet.
       await indexEntity({
         tenantId: ctx.tenantId,

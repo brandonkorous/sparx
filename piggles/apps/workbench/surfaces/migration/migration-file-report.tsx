@@ -63,7 +63,9 @@ export function EntityReport({ mapped }: { mapped: MappedEntity }) {
         >
           {report.blocked
             ? 'Cannot import yet'
-            : `${report.okCount.toLocaleString()} of ${rows.length.toLocaleString()} ready`}
+            : // Rows, said as rows when a thing spans several (a product's versions):
+              // "787 of 787 ready" read as 787 products (sparx persona issue 053).
+              `${report.okCount.toLocaleString()} of ${rows.length.toLocaleString()}${report.recordCount === report.rowCount ? '' : ' rows'} ready`}
         </Badge>
       </div>
 
@@ -86,9 +88,11 @@ export function EntityReport({ mapped }: { mapped: MappedEntity }) {
 
       {report.unmappedColumns.length > 0 ? (
         <Text className="text-sm">
-          {report.unmappedColumns.length} column
-          {report.unmappedColumns.length === 1 ? '' : 's'} in this file have no home here and will
-          be left behind: {report.unmappedColumns.slice(0, 6).join(', ')}
+          {report.unmappedColumns.length}{' '}
+          {report.unmappedColumns.length === 1
+            ? 'column in this file has'
+            : 'columns in this file have'}{' '}
+          no home here and will be left behind: {report.unmappedColumns.slice(0, 6).join(', ')}
           {report.unmappedColumns.length > 6 ? '…' : ''}
         </Text>
       ) : null}

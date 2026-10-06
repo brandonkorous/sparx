@@ -20,13 +20,16 @@ import { visibilityRef, visibleWhen } from './conditional';
 import { productDetailPage } from './commerce';
 import { renderSilicaBody } from './render';
 
-/** A host answering from one flat record — the shape a PDP resolves against. */
+/** A host answering from one flat record — the shape a PDP resolves against. The
+ *  product list is answered as a collection-of-one, as the live product page injects
+ *  it (silica-resolve.ts). It used to answer `[]` and lean on the placeholder item,
+ *  which a visitor render no longer draws (sparx persona issue 022). */
 const hostFor = (record: Record<string, unknown>): ResolveHost => ({
   resolveBinding(ref: string, scope: DataScope) {
     const item = (scope.item as Record<string, unknown> | undefined) ?? record;
     return { value: item[ref] };
   },
-  resolveCollection: () => [],
+  resolveCollection: (ref: string) => (ref === 'product' ? [record] : []),
 });
 
 /** Render a conditional node the way a page actually contains one — NESTED. A

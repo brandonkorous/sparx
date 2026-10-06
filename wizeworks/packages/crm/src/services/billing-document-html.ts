@@ -84,10 +84,37 @@ export interface BillingRenderTotals {
   taxRate: number;
   shippingTotal: number;
   surchargeTotal: number;
+  /** Refundable core deposits (sparx issue 051); 0 or absent when none. */
+  coreChargeTotal?: number;
   total: number;
   depositTotal: number;
   amountPaid: number;
   balance: number;
+}
+
+/**
+ * The render lines with a rebuilt part's core deposit as its own row under the
+ * part (sparx issue 051). One place, so the live document, a frozen snapshot and
+ * an unsaved draft all print it the same way.
+ */
+export function withCoreRows(
+  lines: readonly (BillingRenderLine & { coreCharge?: number | null })[]
+): BillingRenderLine[] {
+  return lines.flatMap(({ coreCharge, ...line }) =>
+    coreCharge == null
+      ? [line]
+      : [
+          line,
+          {
+            typeLabel: 'Core deposit',
+            description: `Refundable core deposit: ${line.description}. Paid back when the old part is returned.`,
+            quantity: line.quantity,
+            unitPrice: coreCharge,
+            lineTotal: Math.round(coreCharge * line.quantity * 100) / 100,
+            taxable: false,
+          },
+        ]
+  );
 }
 
 export interface BillingRenderPaymentRow {
@@ -126,6 +153,8 @@ export interface BillingRenderData {
   issuedAt: string | null;
   dueAt: string | null;
   validUntil: string | null;
+  /** The buyer's purchase order number, or null/absent for none (issue 077). */
+  poNumber?: string | null;
   billTo: BillingRenderParty | null;
   shipTo: BillingRenderParty | null;
   lines: BillingRenderLine[];
@@ -225,6 +254,11 @@ export function docHeadBlockHtml(data: BillingRenderData): string {
   if (data.validUntil) {
     meta.push(`<div><span>Valid until</span>${esc(formatDate(data.validUntil))}</div>`);
   }
+  // The buyer's own reference, where their accounts department looks for it:
+  // beside the number, on the quote, the order's invoice, and every reprint.
+  if (data.poNumber) {
+    meta.push(`<div><span>PO number</span><strong>${esc(data.poNumber)}</strong></div>`);
+  }
   // An offer says where it stands; a bill says whether it has been paid.
   const statusLabel = data.standing ?? STATUS_LABEL[data.status] ?? data.status;
   const statusClass = data.standing
@@ -307,6 +341,9 @@ export function totalsBlockHtml(data: BillingRenderData): string {
   }
   if (t.shippingTotal > 0) out.push(row('Shipping', t.shippingTotal));
   if (t.surchargeTotal > 0) out.push(row('Surcharge', t.surchargeTotal));
+  if ((t.coreChargeTotal ?? 0) > 0) {
+    out.push(row('Refundable core deposits', t.coreChargeTotal ?? 0));
+  }
   out.push(row('Total', t.total, 'grand'));
   if (t.depositTotal > 0) out.push(row('Deposit', -t.depositTotal));
   if (t.amountPaid > 0) out.push(row('Amount paid', -t.amountPaid));

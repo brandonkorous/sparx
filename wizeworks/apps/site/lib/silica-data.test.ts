@@ -13,6 +13,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { PublicPreorderOffer, PublicProduct, PublicProductVariant } from './commerce';
+import { productToBuilderRecord } from './builder-commerce-data';
 import { productToSilicaRecord } from './silica-data';
 
 const OFFER: PublicPreorderOffer = {
@@ -31,6 +32,8 @@ function variant(over: Partial<PublicProductVariant> = {}): PublicProductVariant
     title: null,
     priceCents: 680000,
     compareAtPriceCents: null,
+    coreChargeCents: null,
+    coreFirstOffered: false,
     yourPriceCents: null,
     isDefault: true,
     inventoryPolicy: 'continue',
@@ -225,5 +228,132 @@ describe('the back-in-stock sentence', () => {
       })
     );
     expect(record.backInStock).toBe('Back in stock March 14, 2027');
+  });
+});
+
+describe('the core deposit sentences (sparx issue 051)', () => {
+  const coreOf = (record: Record<string, unknown>) =>
+    record.coreDeposit as { shown: boolean; headline: string; detail: string };
+
+  it('says the deposit before the button when every version carries the same one', () => {
+    const record = recordFor(product({ variants: [variant({ coreChargeCents: 15_000 })] }));
+    expect(coreOf(record)).toMatchObject({
+      shown: true,
+      headline: 'Plus a $150.00 refundable core deposit',
+    });
+    expect(coreOf(record).detail).toMatch(/return your old part/);
+  });
+
+  it('names each version’s own deposit when they differ', () => {
+    const record = recordFor(
+      product({
+        options: [
+          {
+            id: 'opt',
+            name: 'Core Charge',
+            position: 0,
+            values: [
+              { id: 'accept', value: 'Accept Core Charge', position: 0 },
+              { id: 'defer', value: 'Defer Core Charge', position: 1 },
+            ],
+          },
+        ] as PublicProduct['options'],
+        variants: [
+          variant({ id: 'a', optionValueIds: ['accept'], coreChargeCents: 15_000 }),
+          variant({ id: 'd', optionValueIds: ['defer'], coreChargeCents: null, isDefault: false }),
+        ],
+      })
+    );
+    expect(coreOf(record).headline).toMatch(/Some versions/);
+    const labels = (record.versions as { label: string }[]).map((v) => v.label);
+    expect(labels).toContain('Accept Core Charge, plus $150.00 core deposit');
+    expect(labels).toContain('Defer Core Charge');
+  });
+
+  it('says nothing for a part with no deposit', () => {
+    expect(coreOf(recordFor(product())).shown).toBe(false);
+  });
+});
+
+describe('the old-part choice (sparx issue 057)', () => {
+  const choiceOf = (record: Record<string, unknown>) =>
+    record.coreChoice as { shown: boolean; pay: string; first: string };
+  const headlineOf = (record: Record<string, unknown>) =>
+    (record.coreDeposit as { headline: string }).headline;
+
+  it('offers both ways on a part that can be bought both ways', () => {
+    const record = recordFor(
+      product({ variants: [variant({ coreChargeCents: 15_000, coreFirstOffered: true })] })
+    );
+    expect(choiceOf(record)).toEqual({
+      shown: true,
+      pay: 'Pay the $150.00 core deposit now. Your part is ready right away, and we pay the deposit back when your old part comes back.',
+      first: 'Send your old part first. No deposit. Your part is ready once it arrives.',
+    });
+  });
+
+  it('stops the deposit note promising extra money a buyer may not pay', () => {
+    // "Plus a $150.00 deposit" above a choice whose second answer is "No deposit"
+    // tells the buyer two different things about the same money.
+    const record = recordFor(
+      product({ variants: [variant({ coreChargeCents: 15_000, coreFirstOffered: true })] })
+    );
+    expect(headlineOf(record)).toBe(
+      'A $150.00 refundable core deposit, or send your old part first'
+    );
+  });
+
+  it('keeps the plain deposit note, and no choice, when the part takes the deposit only', () => {
+    const record = recordFor(product({ variants: [variant({ coreChargeCents: 15_000 })] }));
+    expect(choiceOf(record)).toEqual({ shown: false, pay: '', first: '' });
+    expect(headlineOf(record)).toBe('Plus a $150.00 refundable core deposit');
+  });
+
+  it('offers nothing on a part with no deposit, whatever the flag says', () => {
+    const record = recordFor(product({ variants: [variant({ coreFirstOffered: true })] }));
+    expect(choiceOf(record).shown).toBe(false);
+  });
+
+  it('follows the version the page opens on', () => {
+    const record = recordFor(
+      product({
+        variants: [
+          variant({ id: 'a', coreChargeCents: 15_000 }),
+          variant({ id: 'b', coreChargeCents: 15_000, coreFirstOffered: true, isDefault: false }),
+        ],
+      })
+    );
+    expect(choiceOf(record).shown).toBe(false);
+  });
+
+  it('says when only some versions can be bought this way, and quotes no single deposit', () => {
+    const record = recordFor(
+      product({
+        variants: [
+          variant({ id: 'a', coreChargeCents: 15_000, coreFirstOffered: true }),
+          variant({ id: 'b', coreChargeCents: 20_000, isDefault: false }),
+        ],
+      })
+    );
+    expect(choiceOf(record)).toEqual({
+      shown: true,
+      pay: 'Pay the core deposit now. Your part is ready right away, and we pay the deposit back when your old part comes back.',
+      first:
+        'Send your old part first. No deposit. Your part is ready once it arrives. Not every version can be bought this way.',
+    });
+  });
+});
+
+describe('the builder buy box record', () => {
+  it('carries the deposit and the send-first flag to the builder page (issues 051, 057)', () => {
+    // The builder buy box has drawn a deposit line since 051, and this record never
+    // carried the figure, so on a builder page the line could not appear. The
+    // old-part choice reads the same variant, so it would have been missing too.
+    const record = productToBuilderRecord(
+      product({ variants: [variant({ coreChargeCents: 15_000, coreFirstOffered: true })] }),
+      'doty',
+      'USD'
+    );
+    expect(record.variants[0]).toMatchObject({ coreChargeCents: 15_000, coreFirstOffered: true });
   });
 });

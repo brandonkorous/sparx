@@ -30,6 +30,7 @@ import { publish } from '@wizeworks/api-core/pubsub';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
 import { LEGAL_KINDS, type LegalKind } from '@wizeworks/legal-templates';
 import { resolvePropertyId, type SiteActor } from '../../lib/property.js';
+import { publishSiteUpdated } from '../../lib/site-events.js';
 
 /** The active site (docs/49 Phase 6c) — the `x-sparx-property-id` the dashboard
  *  switcher sets, else the tenant's primary. Drives which site's placements the
@@ -171,7 +172,15 @@ const legalRoutes: FastifyPluginAsync = (app) => {
     const propertyId = await activeProperty(request, auth);
     const rows = await withRequestTenant(request, (tx) =>
       tx.siteDocPlacement.findMany({
-        where: { placement: 'footer', OR: [{ propertyId: null }, { propertyId }] },
+        where: {
+          placement: 'footer',
+          AND: [
+            { OR: [{ propertyId: null }, { propertyId }] },
+            // A link to a deleted page is not a link. The public footer already
+            // skips them; this list showed one as "Draft" (sparx persona issue 041).
+            { OR: [{ entryId: null }, { entry: { deletedAt: null } }] },
+          ],
+        },
         orderBy: { position: 'asc' },
         select: {
           id: true,
@@ -255,12 +264,18 @@ const legalRoutes: FastifyPluginAsync = (app) => {
         },
       });
     });
+    // The footer's legal links are a cached read on the website (`content:`), so
+    // a new link would otherwise appear only when that cache expired.
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: created.propertyId,
+      changed: ['legal-links'],
+    });
     reply.code(201);
     return ok(created);
   });
 
   app.patch('/v1/legal/placements/:id', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
     const input = z
       .object({
@@ -279,19 +294,28 @@ const legalRoutes: FastifyPluginAsync = (app) => {
       if (!existing) throw notFound('Placement', id);
       return tx.siteDocPlacement.update({ where: { id }, data: input });
     });
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: updated.propertyId,
+      changed: ['legal-links'],
+    });
     return ok(updated);
   });
 
   app.delete('/v1/legal/placements/:id', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
-    await withRequestTenant(request, async (tx) => {
+    const removed = await withRequestTenant(request, async (tx) => {
       const existing = await tx.siteDocPlacement.findUnique({
         where: { id },
-        select: { id: true },
+        select: { id: true, propertyId: true },
       });
       if (!existing) throw notFound('Placement', id);
       await tx.siteDocPlacement.delete({ where: { id } });
+      return existing;
+    });
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: removed.propertyId,
+      changed: ['legal-links'],
     });
     return ok({ deleted: true });
   });

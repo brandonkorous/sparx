@@ -32,6 +32,7 @@
 // cell never clears what a product already has.
 
 import { collectionService, productService, variantService } from '@wizeworks/commerce';
+import { coreChoiceSide, isCoreOptionName } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
 import {
@@ -57,9 +58,30 @@ import {
 } from './types';
 
 interface Group {
+  /** The product's web name here: the file's, shortened when it is too long. */
   handle: string;
+  /** The file's own web name, when it had to be shortened. */
+  longHandle?: string;
   head: ImportRow;
   rows: { row: ImportRow; rowIndex: number }[];
+}
+
+/** The longest web name a product can have here (`commerce_products.handle`). */
+const HANDLE_MAX = 127;
+
+/**
+ * A web name that fits. Shopify allows longer ones than this platform keeps, and
+ * cutting at the limit could make two different products share one name: two of
+ * Gillett Diesel's FASS kits differ only by a trailing "-copy" past character 127.
+ * So the cut keeps room for a short code taken from the WHOLE name, which is the
+ * same on every run of the same file (sparx persona issue 054).
+ */
+function fitHandle(handle: string): string {
+  if (handle.length <= HANDLE_MAX) return handle;
+  let hash = 0;
+  for (let i = 0; i < handle.length; i++) hash = (hash * 31 + handle.charCodeAt(i)) >>> 0;
+  const code = hash.toString(36).padStart(7, '0').slice(-7);
+  return `${handle.slice(0, HANDLE_MAX - code.length - 1).replace(/-+$/, '')}-${code}`;
 }
 
 /** Group by handle, falling back to SKU and then the title — a file with no handle
@@ -72,7 +94,13 @@ function groupRows(rows: ImportRow[]): Group[] {
     if (handle === '') continue;
     const existing = groups.get(handle);
     if (existing === undefined) {
-      groups.set(handle, { handle, head: row, rows: [{ row, rowIndex }] });
+      const fitted = fitHandle(handle);
+      groups.set(handle, {
+        handle: fitted,
+        ...(fitted === handle ? {} : { longHandle: handle }),
+        head: row,
+        rows: [{ row, rowIndex }],
+      });
     } else {
       existing.rows.push({ row, rowIndex });
     }
@@ -94,12 +122,64 @@ function normalizeFulfillment(value: string | undefined): 'physical' | 'digital'
   return 'physical';
 }
 
-function grams(row: ImportRow): number | undefined {
+/** The heaviest thing a product here can weigh: 10 tonnes (`WeightGrams`). */
+const GRAMS_MAX = 10_000_000;
+
+/** The weight a file gives, in grams, read before it is checked. */
+function rawGrams(row: ImportRow): number | undefined {
   const asGrams = toDecimal(row.weight_grams);
   if (asGrams !== undefined) return Math.round(asGrams);
   const asKg = toDecimal(row.weight_kg);
   return asKg === undefined ? undefined : Math.round(asKg * 1000);
 }
+
+/** The weight, or nothing when the file's figure cannot be a real one. */
+function grams(row: ImportRow): number | undefined {
+  const value = rawGrams(row);
+  return value === undefined || value < 0 || value > GRAMS_MAX ? undefined : value;
+}
+
+/**
+ * Why a weight was left off, or null. One impossible figure used to fail the whole
+ * product: Gillett Diesel's file weighs a $480 catalytic converter at 27,265,891
+ * grams, and the part never came across (sparx persona issue 054).
+ */
+function weightNote(row: ImportRow): string | null {
+  const value = rawGrams(row);
+  if (value === undefined || (value >= 0 && value <= GRAMS_MAX)) return null;
+  return `The weight in your file (${(value / 1000).toLocaleString('en-US')} kg) cannot be right, so it was left off. Add the real one on the product.`;
+}
+
+/**
+ * A reason a person can read. A rejected value used to reach the results screen
+ * as the checker's raw JSON, field paths and regular expressions included.
+ */
+function describeError(error: unknown): string {
+  if (error instanceof Error && 'issues' in error && Array.isArray(error.issues)) {
+    const said = (error.issues as { path?: (string | number)[]; message?: string }[]).map(
+      (issue) => {
+        const first = issue.path?.[0];
+        const field = first === undefined ? undefined : FIELD_WORDS[String(first)];
+        return field ? `${field}: ${issue.message ?? 'not accepted'}` : (issue.message ?? '');
+      }
+    );
+    const sentence = said.filter((line) => line !== '').join(' ');
+    if (sentence !== '') return sentence;
+  }
+  return error instanceof Error ? error.message : String(error);
+}
+
+const FIELD_WORDS: Record<string, string> = {
+  sku: 'SKU',
+  handle: 'Web address',
+  title: 'Name',
+  priceCents: 'Price',
+  compareAtPriceCents: 'Compare-at price',
+  costCents: 'Cost',
+  coreChargeCents: 'Core charge',
+  weight: 'Weight',
+  barcode: 'Barcode',
+};
 
 /**
  * A dimension in millimetres, or `undefined` when the file did not say.
@@ -150,6 +230,90 @@ function fallbackSku(handle: string, index: number, row: ImportRow): string {
 
 function present(value: string | undefined): value is string {
   return value !== undefined && value.trim() !== '';
+}
+
+/** The variant's option values as a SKU tail: `Defer Core Charge` → `DEFER-CORE-CHARGE`. */
+function optionTail(row: ImportRow): string {
+  return [row.option1_value, row.option2_value, row.option3_value]
+    .filter(present)
+    .join('-')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+interface PlannedSku {
+  sku: string;
+  note?: string;
+  /** The same item listed a second time (same SKU, same price, same choices or
+   *  none): brought in once, and this row is skipped with a note. */
+  duplicateOf?: number;
+}
+
+/**
+ * The SKU every row is saved under, decided for the whole file before anything is
+ * written, keyed by row index.
+ *
+ * A SKU names one item here (unique per business). The old platform may not insist:
+ * Gillett Diesel's Shopify file gave both choices of 94 products one SKU ("Accept Core
+ * Charge" and "Defer Core Charge" were both `0986435621`), and two different products
+ * the SKU `-`. Matched by SKU, the second row overwrote the first one's price, or turned
+ * one product into an update of another. So the first row keeps the SKU, a repeat gets
+ * the SKU plus its option values (or a number), and a note says so. The plan depends on
+ * the file alone, so a re-run of the same file lands on the same items.
+ *
+ * A "SKU" with no letter or digit in it (`-`, `--`) is a placeholder, not a SKU, and is
+ * treated as missing.
+ */
+function planSkus(groups: Group[]): Map<number, PlannedSku> {
+  const plan = new Map<number, PlannedSku>();
+  const used = new Set<string>();
+  for (const group of groups) {
+    // Within one product, the first row to use each SKU: what it chose and cost.
+    const firstBySku = new Map<string, { rowIndex: number; tail: string; price: string }>();
+    for (const { row, rowIndex } of group.rows) {
+      const given = (row.sku ?? '').trim();
+      const tail = optionTail(row);
+      const price = (row.price ?? '').trim();
+      const first = given === '' ? undefined : firstBySku.get(given.toLowerCase());
+      // The same item listed twice: an old export's second row, or a copy with no
+      // choice beside one that has it. Brought in once; a rename would invent a
+      // second product the shop never sold (Gillett Diesel's file has ten).
+      if (first?.price === price && (first.tail === tail || tail === '' || first.tail === '')) {
+        plan.set(rowIndex, {
+          sku: given,
+          duplicateOf: first.rowIndex,
+          note: `An earlier row lists the same item (SKU “${given}”, same price), so it was brought in once.`,
+        });
+        continue;
+      }
+      if (given !== '' && !first) firstBySku.set(given.toLowerCase(), { rowIndex, tail, price });
+    }
+    group.rows.forEach(({ row, rowIndex }, index) => {
+      if (plan.get(rowIndex)?.duplicateOf !== undefined) return;
+      const given = (row.sku ?? '').trim();
+      const real = /[A-Za-z0-9]/.test(given);
+      const wanted = real ? given : fallbackSku(group.handle, index, row);
+      let sku = wanted;
+      let note: string | undefined;
+      if (used.has(sku.toLowerCase())) {
+        const tail = optionTail(row);
+        let attempt = tail === '' ? 2 : 1;
+        do {
+          const suffix =
+            tail === '' ? String(attempt) : attempt === 1 ? tail : `${tail}-${String(attempt)}`;
+          sku = `${wanted.slice(0, 99 - suffix.length)}-${suffix}`;
+          attempt += 1;
+        } while (used.has(sku.toLowerCase()));
+        note = `Your file gives the SKU “${wanted}” to more than one item. A SKU names one item here, so this one is saved as “${sku}”.`;
+      } else if (given !== '' && !real) {
+        note = `“${given}” is not a SKU, so this item is saved as “${sku}”.`;
+      }
+      used.add(sku.toLowerCase());
+      plan.set(rowIndex, note === undefined ? { sku } : { sku, note });
+    });
+  }
+  return plan;
 }
 
 /** A barcode the variant can hold: 8 to 14 digits (UPC, EAN, GTIN). Anything else
@@ -278,6 +442,22 @@ class CollectionLinker {
   }
 }
 
+/** One placement of a picture on a product: the version it belongs to (or none). */
+function imageKey(variantId: string | null, mediaAssetId: string): string {
+  return `${variantId ?? '-'}:${mediaAssetId}`;
+}
+
+/** The placements a product already has, as `imageKey`s. */
+async function attachedImages(ctx: ProcessorContext, productId: string): Promise<Set<string>> {
+  const images = await withTenant(ctx, (tx) =>
+    tx.variantImage.findMany({
+      where: { productId },
+      select: { variantId: true, mediaAssetId: true },
+    })
+  );
+  return new Set(images.map((image) => imageKey(image.variantId, image.mediaAssetId)));
+}
+
 /** The collections a product is already in by hand, so an import adds to them rather
  *  than replacing them. */
 async function manualCollectionsOf(ctx: ProcessorContext, productId: string): Promise<string[]> {
@@ -343,6 +523,45 @@ function optionsOf(group: Group): { name: string; values: string[] }[] {
   return options;
 }
 
+/**
+ * A core charge the old store sold as a CHOICE (sparx persona issue 057): one
+ * option about the core whose two values are a "ship now" side and an "old part
+ * first" side ("Accept Core Charge (+$150)" / "Defer Core Charge"). It comes across
+ * as it was, and the owner is told where to turn it into a real deposit.
+ */
+function fileCoreChoice(declared: { name: string; values: string[] }[]): string | null {
+  const core = declared.filter((option) => isCoreOptionName(option.name));
+  if (core.length !== 1 || core[0]!.values.length !== 2) return null;
+  const sides = core[0]!.values.map(coreChoiceSide);
+  return sides.includes('deposit') && sides.includes('first') ? core[0]!.name : null;
+}
+
+const CORE_CHOICE_NOTE =
+  'Its core charge is set up as a choice, the way your old store did it. Turn it into a real core deposit on the “Core charges set up as choices” screen.';
+
+const CONVERTED_NOTE =
+  'Its core charge is a real deposit here now, so the old store’s core choice and its prices in this file were left as they are. Its other details were brought in.';
+
+/**
+ * Whether this product's core choice was already turned into a deposit here: it
+ * has no core option left and a version carries a deposit. Bringing the same file
+ * in again must not undo that. Its "ship now" price would go back on top of the
+ * deposit and charge the core twice, and the retired side's code would be made
+ * again beside the one that stayed.
+ */
+async function coreChoiceConverted(ctx: ProcessorContext, productId: string): Promise<boolean> {
+  return withTenant(ctx, async (tx) => {
+    const [options, deposit] = await Promise.all([
+      tx.productOption.findMany({ where: { productId }, select: { name: true } }),
+      tx.productVariant.findFirst({
+        where: { productId, deletedAt: null, coreChargeCents: { not: null } },
+        select: { id: true },
+      }),
+    ]);
+    return deposit !== null && !options.some((option) => isCoreOptionName(option.name));
+  });
+}
+
 export const productsProcessor: EntityProcessor = {
   entity: 'products',
   module: 'commerce',
@@ -351,6 +570,7 @@ export const productsProcessor: EntityProcessor = {
     const resolver = new Resolver(ctx);
     const collections = new CollectionLinker(ctx);
     const groups = groupRows(rows);
+    const skus = planSkus(groups);
     const results: RowResult[] = [];
 
     const claimed = new Set(groups.flatMap((group) => group.rows.map((entry) => entry.rowIndex)));
@@ -367,6 +587,13 @@ export const productsProcessor: EntityProcessor = {
     for (const group of groups) {
       const { head, handle } = group;
       const notes: string[] = [];
+      if (group.longHandle !== undefined) {
+        notes.push(
+          `Its web address was too long to keep, so it is now /products/${handle}. The old one sends people here.`
+        );
+      }
+      const headWeight = weightNote(head);
+      if (headWeight !== null) notes.push(headWeight);
 
       try {
         const title = (head.title ?? '').trim();
@@ -393,8 +620,8 @@ export const productsProcessor: EntityProcessor = {
         );
         productId = byHandle?.id ?? null;
         if (productId === null) {
-          for (const { row } of group.rows) {
-            const sku = (row.sku ?? '').trim();
+          for (const { rowIndex } of group.rows) {
+            const sku = skus.get(rowIndex)?.sku ?? '';
             if (sku === '') continue;
             const variant = await resolver.variantBySku(sku);
             if (variant !== null) {
@@ -507,9 +734,15 @@ export const productsProcessor: EntityProcessor = {
         // ── Options ────────────────────────────────────────────────────────────
         // Set from the whole group at once. `setOptions` replaces the set, which is
         // right for an import: the file is the statement of what the options are.
+        // Except a core choice already turned into a deposit here (issue 057): the
+        // file cannot say what it became, so its choice and prices are left alone.
         const declared = optionsOf(group);
+        const coreChoice = fileCoreChoice(declared);
+        const converted =
+          coreChoice !== null && !isNew && (await coreChoiceConverted(ctx, productId));
+        if (coreChoice !== null && !converted) notes.push(CORE_CHOICE_NOTE);
         const valueIdByOption = new Map<string, Map<string, string>>();
-        if (declared.length > 0) {
+        if (declared.length > 0 && !converted) {
           const saved = await variantService.setOptions(ctx, productId, {
             options: declared.map((option, position) => ({
               name: option.name.slice(0, 63),
@@ -528,18 +761,35 @@ export const productsProcessor: EntityProcessor = {
         }
 
         // ── Images ─────────────────────────────────────────────────────────────
+        // The pictures a product already has, so a second run of the same file
+        // does not hang each one again. It did: re-importing Gillett Diesel's file
+        // gave all 643 products every picture twice (sparx persona issue 055).
+        // Keyed by picture AND version, since a version's own picture is a
+        // different placement of what may be the same file.
+        //
+        // Every picture is brought in FIRST and what the product holds is read
+        // after: bringing one in can swap an earlier run's link for the real copy
+        // on this very product, and reading before that would hang the copy twice.
         const assetByUrl = new Map<string, string>();
-        let position = 0;
+        const brought: { image: { url: string; alt?: string }; assetId: string }[] = [];
         let linkedNoted = false;
         for (const image of galleryOf(group).slice(0, 30)) {
           const ingested = await ingestImage(ctx, image.url, {
             ...(image.alt === undefined ? {} : { alt: image.alt }),
           });
           assetByUrl.set(image.url, ingested.assetId);
+          brought.push({ image, assetId: ingested.assetId });
           if (!ingested.copied && ingested.reason !== undefined && !linkedNoted) {
             notes.push(linkedNotice(ingested.reason));
             linkedNoted = true;
           }
+        }
+        const attached = isNew ? new Set<string>() : await attachedImages(ctx, productId);
+        let position = attached.size;
+        for (const { image, assetId } of brought) {
+          const ingested = { assetId };
+          if (attached.has(imageKey(null, ingested.assetId))) continue;
+          attached.add(imageKey(null, ingested.assetId));
           await variantService.addImage(ctx, {
             productId,
             mediaAssetId: ingested.assetId,
@@ -549,11 +799,33 @@ export const productsProcessor: EntityProcessor = {
           position += 1;
         }
 
+        if (converted) {
+          group.rows.forEach(({ rowIndex }, index) => {
+            results.push({
+              rowIndex,
+              status: 'skipped',
+              naturalKey: skus.get(rowIndex)?.sku ?? handle,
+              errorMsg: index === 0 ? [CONVERTED_NOTE, ...notes].join(' ') : CONVERTED_NOTE,
+            });
+          });
+          continue;
+        }
+
         // ── Variants ───────────────────────────────────────────────────────────
         for (let index = 0; index < group.rows.length; index++) {
           const { row, rowIndex } = group.rows[index]!;
           try {
-            const sku = (row.sku ?? '').trim() || fallbackSku(handle, index, row);
+            const planned = skus.get(rowIndex);
+            if (planned?.duplicateOf !== undefined) {
+              results.push({
+                rowIndex,
+                status: 'skipped',
+                naturalKey: planned.sku,
+                ...(planned.note === undefined ? {} : { errorMsg: planned.note }),
+              });
+              continue;
+            }
+            const sku = planned?.sku ?? fallbackSku(handle, index, row);
             const existingVariant = await resolver.variantBySku(sku);
 
             const optionValueIds: string[] = [];
@@ -566,6 +838,10 @@ export const productsProcessor: EntityProcessor = {
             }
 
             const rowNotes = index === 0 ? [...notes] : [];
+            // A later version's own impossible weight; the first row's is above.
+            const rowWeight = index === 0 ? null : weightNote(row);
+            if (rowWeight !== null) rowNotes.push(rowWeight);
+            if (planned?.note !== undefined) rowNotes.push(planned.note);
             const priceCents = toCents(row.price);
             const { barcode, note: barcodeNote } = barcodeOf(row.barcode);
             if (barcodeNote !== undefined) rowNotes.push(barcodeNote);
@@ -577,6 +853,14 @@ export const productsProcessor: EntityProcessor = {
                 : {}),
               ...(toCents(row.cost_per_item) !== undefined
                 ? { costCents: toCents(row.cost_per_item) }
+                : {}),
+              // A refundable core deposit on a rebuilt part (sparx issue 051). A
+              // zero is "none", which the variant stores as no deposit at all.
+              ...(toCents(row.core_charge) !== undefined
+                ? {
+                    coreChargeCents:
+                      (toCents(row.core_charge) ?? 0) > 0 ? toCents(row.core_charge) : null,
+                  }
                 : {}),
               ...(barcode === undefined ? {} : { barcode }),
               ...(grams(row) !== undefined ? { weight: grams(row) } : {}),
@@ -665,13 +949,13 @@ export const productsProcessor: EntityProcessor = {
               ...(rowNotes.length > 0 ? { errorMsg: rowNotes.join(' ') } : {}),
             });
           } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
+            const message = describeError(error);
             logger.warn({ err: error, handle, rowIndex }, 'variant row failed');
             results.push({ rowIndex, status: 'error', naturalKey: handle, errorMsg: message });
           }
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        const message = describeError(error);
         logger.warn({ err: error, handle }, 'product group failed');
         for (const { rowIndex } of group.rows) {
           results.push({ rowIndex, status: 'error', naturalKey: handle, errorMsg: message });
@@ -685,6 +969,7 @@ export const productsProcessor: EntityProcessor = {
   async preview(ctx, rows, logger) {
     const resolver = new Resolver(ctx);
     const groups = groupRows(rows);
+    const skus = planSkus(groups);
     const results: PreviewResult[] = [];
 
     const claimed = new Set(groups.flatMap((group) => group.rows.map((entry) => entry.rowIndex)));
@@ -700,6 +985,9 @@ export const productsProcessor: EntityProcessor = {
 
     for (const group of groups) {
       let exists = false;
+      // The practice run says what the real one will about a core choice too.
+      const coreChoice = fileCoreChoice(optionsOf(group));
+      let converted = false;
       try {
         const byHandle = await withTenant(ctx, (tx) =>
           tx.product.findFirst({
@@ -708,23 +996,52 @@ export const productsProcessor: EntityProcessor = {
           })
         );
         exists = byHandle !== null;
+        if (byHandle !== null && coreChoice !== null) {
+          converted = await coreChoiceConverted(ctx, byHandle.id);
+        }
       } catch (error) {
         logger.warn({ err: error }, 'product preview failed');
       }
 
-      for (const { row, rowIndex } of group.rows) {
-        const sku = (row.sku ?? '').trim();
+      if (converted) {
+        for (const { rowIndex } of group.rows) {
+          results.push({
+            rowIndex,
+            action: 'skip',
+            naturalKey: skus.get(rowIndex)?.sku ?? group.handle,
+            errorMsg: CONVERTED_NOTE,
+          });
+        }
+        continue;
+      }
+
+      for (const [position, { row, rowIndex }] of group.rows.entries()) {
+        const planned = skus.get(rowIndex);
+        const sku = planned?.sku ?? '';
         const variant = sku === '' ? null : await resolver.variantBySku(sku);
+        const untitled = (row.title ?? '').trim() === '';
+        if (planned?.duplicateOf !== undefined) {
+          results.push({
+            rowIndex,
+            action: 'skip',
+            naturalKey: planned.sku,
+            ...(planned.note === undefined ? {} : { errorMsg: planned.note }),
+          });
+          continue;
+        }
         results.push({
           rowIndex,
-          action:
-            (row.title ?? '').trim() === ''
-              ? 'error'
-              : variant !== null || exists
-                ? 'update'
-                : 'create',
+          action: untitled ? 'error' : variant !== null || exists ? 'update' : 'create',
           naturalKey: sku === '' ? group.handle : sku,
-          ...((row.title ?? '').trim() === '' ? { errorMsg: 'No title.' } : {}),
+          // The practice run says what the real one will: a SKU the file gives
+          // twice is saved under a new one, and the owner hears it BEFORE pressing
+          // the real button, not after (sparx persona issue 049).
+          ...(untitled
+            ? { errorMsg: 'No title.' }
+            : previewNote(
+                planned?.note,
+                position === 0 && coreChoice !== null ? CORE_CHOICE_NOTE : undefined
+              )),
         });
       }
     }
@@ -733,7 +1050,14 @@ export const productsProcessor: EntityProcessor = {
   },
 };
 
+/** One or two sentences for a practice-run row, or nothing. */
+function previewNote(...parts: (string | undefined)[]): { errorMsg?: string } {
+  const said = parts.filter((part): part is string => part !== undefined);
+  return said.length === 0 ? {} : { errorMsg: said.join(' ') };
+}
+
 export const productInternals = {
+  fileCoreChoice,
   groupRows,
   optionsOf,
   fallbackSku,

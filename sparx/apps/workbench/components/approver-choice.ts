@@ -55,6 +55,46 @@ export function approverChoice(value: string): {
   };
 }
 
+// ── THE ACCOUNT'S OWN APPROVERS (sparx persona issue 087) ──────────────────
+//
+// A spending limit on wholesale orders can be signed off by the people at the
+// buying business whose role is "Can approve orders", on the site, instead of
+// by anyone here. That is a third answer to the same question, so it is a third
+// value in the same control. It is stored as a third column (`signOffBy`), and
+// the server refuses a rule that asks for it AND names a teammate, so the two
+// helpers below always send both halves: a choice that left one out would keep
+// whatever the rule said before.
+//
+// Not a role word and not a `user:` value, so it can never be read as either.
+
+/** The account's own approvers sign, on the site. */
+export const ACCOUNT_APPROVERS = 'account:approvers';
+
+export type SignOffBy = 'business' | 'account';
+
+/** What a wholesale spending limit reads as in the control. */
+export function signOffValue(rule: {
+  signOffBy?: SignOffBy | null;
+  requiredApproverUserId: string | null;
+}): string {
+  // The account wins over a stale name, as it does on the server: a rule the
+  // account signs names nobody here.
+  if (rule.signOffBy === 'account') return ACCOUNT_APPROVERS;
+  return approverValue({ requiredApproverUserId: rule.requiredApproverUserId });
+}
+
+/** What the control's value means, as the two fields a limit is saved with. */
+export function signOffChoice(value: string): {
+  signOffBy: SignOffBy;
+  requiredApproverUserId: string | null;
+} {
+  if (value === ACCOUNT_APPROVERS) return { signOffBy: 'account', requiredApproverUserId: null };
+  return {
+    signOffBy: 'business',
+    requiredApproverUserId: approverChoice(value).requiredApproverUserId,
+  };
+}
+
 /** The role words, as the person running the business reads them. */
 export const APPROVER_ROLES: { value: string; label: string }[] = [
   { value: ANY_APPROVER, label: 'Anyone who can edit buying' },

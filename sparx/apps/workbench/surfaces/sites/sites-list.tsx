@@ -16,7 +16,7 @@ import { useWorkbench } from '../../lib/workbench/context';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { switchSite } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains, useSites, type Domain, type Site } from './data';
@@ -81,7 +81,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
   const { data: sites, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSites();
   const { data: domains } = useDomains();
-  const { data: active } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const [switching, setSwitching] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [pageSize, setPageSize] = useState<PageSize>(50);
@@ -110,7 +110,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   // simply does not exist yet — in which case api-rest is serving the primary.
   // Resolving it here means the badge is honest on a first-ever visit instead of
   // showing nothing as active.
-  const activeId = active?.propertyId ?? sites?.find((site) => site.isPrimary)?.id ?? null;
+  const activeId = currentSiteId;
 
   const open = (site: Site, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('platform.settings.site', { id: site.id }, { target: targetFor(event) });

@@ -20,6 +20,7 @@ import { publishCrmEvent } from '../events';
 import { syncPrimaryFromColumn } from './association-service';
 import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
 import { schemaFor } from './object-def-service';
+import { closeWhenDealMovesOn } from './task-service';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 
@@ -417,6 +418,10 @@ export async function moveStage(
       },
     });
 
+    // A task opened for the stage the deal was in ("Follow up" while it is
+    // open, "Create invoice" while it is won) asks for nothing once it leaves.
+    await closeWhenDealMovesOn(tx, ctx, { dealIds: [updated.id], byUserId: ctx.userId ?? null });
+
     return {
       deal: updated,
       fromStageId: before.stageId,
@@ -480,6 +485,7 @@ export async function softDelete(ctx: ServiceContext, dealId: string): Promise<D
       entityId: updated.id,
       diff: { before: { title: before.title }, after: { deletedAt: updated.deletedAt } },
     });
+    await closeWhenDealMovesOn(tx, ctx, { dealIds: [updated.id], byUserId: ctx.userId ?? null });
     return updated;
   });
 

@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Button, Text } from '@wizeworks/silicaui-react';
 import {
   Container,
@@ -59,9 +61,12 @@ export function EmailHero() {
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('email-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Activate Email →
-              </Button>
+              </a>
               <a href="#pipeline">
                 <Button size="lg" variant="outline">
                   See how a send flows

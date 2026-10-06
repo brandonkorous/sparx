@@ -30,6 +30,7 @@ import {
   formatMoney,
   isExpired,
   quoteParty,
+  quoteRequestRows,
   quoteTone,
   useQuote,
   type QuoteRow,
@@ -221,6 +222,14 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
                 <dt className="text-sm">Asked</dt>
                 <dd className="text-sm">{formatDate(quote.createdAt)}</dd>
               </div>
+              {/* What the buyer said besides the items: their PO number, and
+                  when and where they need it (sparx persona issue 086). */}
+              {quoteRequestRows(quote).map((row) => (
+                <div key={row.label} className="flex items-start justify-between gap-4">
+                  <dt className="text-sm">{row.label}</dt>
+                  <dd className="text-right text-sm whitespace-pre-line">{row.value}</dd>
+                </div>
+              ))}
             </dl>
             {quote.customerNote ? (
               <div className="border-base-300 flex flex-col gap-1 border-t pt-3">

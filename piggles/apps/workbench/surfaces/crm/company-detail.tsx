@@ -82,6 +82,7 @@ import {
   type CompanyStatus,
 } from './companies-data';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { WholesaleGroupField } from './wholesale-group-field';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -99,7 +100,8 @@ interface Draft {
   creditLimit: string;
   paymentTerms: string;
   discountPercent: string;
-  pricingTier: string;
+  /** The wholesale group they buy in; empty for normal prices. */
+  pricingTierId: string;
   assignedRepId: string;
   fleetSize: string;
   notes: string;
@@ -118,7 +120,7 @@ function emptyDraft(): Draft {
     creditLimit: '',
     paymentTerms: '',
     discountPercent: '',
-    pricingTier: '',
+    pricingTierId: '',
     assignedRepId: '',
     fleetSize: '',
     notes: '',
@@ -213,7 +215,7 @@ function toDraft(a: Company): Draft {
     creditLimit: credit > 0 ? String(credit) : '',
     paymentTerms: a.paymentTerms ?? '',
     discountPercent: discount > 0 ? String(discount) : '',
-    pricingTier: a.pricingTier ?? '',
+    pricingTierId: a.pricingTierId ?? '',
     assignedRepId: a.assignedRepId ?? '',
     fleetSize: a.fleetSize === null ? '' : String(a.fleetSize),
     notes: a.notes ?? '',
@@ -388,7 +390,7 @@ function CompanyEditor({
     website: trimOrNull(draft.website),
     domains: splitDomains(draft.domains),
     taxId: trimOrNull(draft.taxId),
-    pricingTier: trimOrNull(draft.pricingTier),
+    pricingTierId: draft.pricingTierId === '' ? null : draft.pricingTierId,
     status: draft.status,
     creditLimit: (creditCents ?? 0) / 100,
     discountPercent: draft.discountPercent.trim() === '' ? 0 : Number(draft.discountPercent),
@@ -687,24 +689,15 @@ function CompanyEditor({
                     How long they have to pay after you invoice them.
                   </FieldDescription>
                 </Field>
-                <Field>
-                  <FieldLabel>Wholesale price</FieldLabel>
-                  <FieldControl
-                    render={
-                      <Input
-                        color="module"
-                        value={draft.pricingTier}
-                        placeholder="Optional"
-                        onChange={(event) => {
-                          set('pricingTier', event.target.value);
-                        }}
-                      />
-                    }
-                  />
-                  <FieldDescription>
-                    A named group your special prices can point at, if you use them.
-                  </FieldDescription>
-                </Field>
+                <WholesaleGroupField
+                  value={draft.pricingTierId}
+                  currentId={account?.pricingTierId ?? null}
+                  currentName={account?.pricingTier ?? account?.removedTierName ?? null}
+                  removed={Boolean(account?.removedTierName)}
+                  onChange={(next) => {
+                    set('pricingTierId', next);
+                  }}
+                />
               </div>
             </FormSection>
           ) : null}

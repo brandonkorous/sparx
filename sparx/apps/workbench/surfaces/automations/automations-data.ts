@@ -98,6 +98,17 @@ export interface Automation {
   origin: AutomationOrigin;
   /** Locked = platform-managed; rejects edit/status/delete. */
   locked: boolean;
+  /** The permanent identity of a rule sparx set up; null on the business's own. */
+  systemKey: string | null;
+  /** When sparx first had a newer version of a rule it set up that it did NOT
+   *  apply, because the business had changed this one. Null = nothing waiting.
+   *  The re-sync never overrides an edit, a pause or a rename; this is how the
+   *  business learns the platform's version moved on. */
+  platformUpdateAt: string | null;
+  /** That newer version itself, kept beside the flag by the re-sync so it can be
+   *  compared with this one and switched to. Null whenever `platformUpdateAt` is
+   *  (and briefly on a row flagged before the document was stored). */
+  platformDocument: PlatformDocument | null;
   clonedFrom: string | null;
   maxDepth: number;
   runCount: number;
@@ -106,6 +117,18 @@ export interface Automation {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/** The platform's newer version of a rule it set up: the rule document without
+ *  the name, which stays the business's. Same column shapes as the live rule. */
+export interface PlatformDocument {
+  description: string | null;
+  triggerType: string;
+  triggerConfig: unknown;
+  conditions: unknown;
+  actions: unknown;
+  goal: unknown;
+  maxDepth: number;
 }
 
 /** One immutable published-version snapshot, as `/versions` returns it. */
@@ -480,6 +503,19 @@ export function useDiscardDraft(id: string) {
   const invalidate = useInvalidateAutomations();
   return useMutation({
     mutationFn: () => api.post<Automation>(`/v1/automations/${id}/discard-draft`),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+/** Switch a rule sparx set up to sparx's newer version of it. The server keeps
+ *  the name and on/off status, publishes the newer version, and keeps the
+ *  business's current version in the history. */
+export function useTakePlatformVersion(id: string) {
+  const invalidate = useInvalidateAutomations();
+  return useMutation({
+    mutationFn: () => api.post<Automation>(`/v1/automations/${id}/take-platform-version`),
     onSuccess: () => {
       invalidate(id);
     },

@@ -862,6 +862,38 @@ jobs:
                     echo "Media storage: AZURE_STORAGE_ACCOUNT supplied explicitly; leaving Terraform's value unused."
                   fi
 
+                  # SPARX_REVALIDATE_SECRET: kept, or minted, never silently absent.
+                  #
+                  # The site's /api/revalidate route and the event worker's
+                  # cache-revalidation handler share it: the handler purges a website's
+                  # cached reads the moment its owner saves, and the route refuses any
+                  # purge without it. It was set NOWHERE, on either side, so nothing was
+                  # ever purged and every owner change waited out the site's cache: up to
+                  # five minutes for the name, logo, links and cookie banner, measured at
+                  # 68 seconds for a banner save (sparx persona issue 040).
+                  #
+                  # It is a random string that only these two have to agree on, so it is
+                  # not a value a human should have to remember to add. Supplied
+                  # explicitly, it wins. Otherwise the value already in the live Secret is
+                  # carried forward, so a release never rotates it out from under a
+                  # running pod; and on the first release a fresh one is minted. Both
+                  # sides read it from THIS Secret (the worker via envFrom, the site via
+                  # secretKeyRef in k8s/apps/site.yaml), so they cannot disagree.
+                  if ! grep -q '^SPARX_REVALIDATE_SECRET=.' /tmp/app.env.plain; then
+                    sed -i '/^SPARX_REVALIDATE_SECRET=/d' /tmp/app.env.plain
+                    REVALIDATE_SECRET=$(kubectl get secret sparx-app-secrets -n "$NAMESPACE" \
+                      -o jsonpath='{.data.SPARX_REVALIDATE_SECRET}' 2>/dev/null | base64 -d 2>/dev/null || true)
+                    if [ -n "$REVALIDATE_SECRET" ]; then
+                      echo "SPARX_REVALIDATE_SECRET not supplied; carrying the live Secret's value forward."
+                    else
+                      REVALIDATE_SECRET=$(openssl rand -hex 32)
+                      echo "SPARX_REVALIDATE_SECRET not supplied and not in the live Secret; minted a new one."
+                    fi
+                    echo "::add-mask::$REVALIDATE_SECRET"
+                    printf 'SPARX_REVALIDATE_SECRET=%s\n' "$REVALIDATE_SECRET" >> /tmp/app.env.plain
+                    unset REVALIDATE_SECRET
+                  fi
+
                   # Every billing PLAN names the env vars holding its Stripe key, its webhook
                   # signing secret and its price ids (@wizeworks/billing/plans, BILLING_PLANS in
                   # the ConfigMap). A plan configured against an account whose key never shipped
@@ -1562,6 +1594,124 @@ jobs:
                     kubectl get events -n "$NAMESPACE" \
                       --sort-by=.lastTimestamp | tail -30 || true
                     exit 1
+                  fi
+
+            # -----------------------------------------------------------------------
+            # System automations, re-synced into every business by the code that
+            # just rolled out.
+            #
+            # A system automation is a row per tenant, written from a definition in
+            # code (the seeds in wizeworks/packages/automation-actions). Nothing but
+            # the daily `automation-reconcile-seeds` CronJob and a module being
+            # switched on ever rewrote those rows, so a release that changed a seed
+            # shipped the new definition and left every business running the OLD one
+            # until 02:07 the next night. The release that taught the held-order
+            # rules who signs is the example: for up to a day after it, every
+            # business would still get a task for an order only the buyer's own
+            # approver can sign, and that approver would get no email. Same bug as
+            # the empty marketplace this file's header opens with: the data a
+            # release carries is part of the release.
+            #
+            # WHY HERE AND NOT IN STAGE 2. Stage 2 writes data BEFORE the rollout so
+            # new code never meets missing rows. This is the other way round: the
+            # definitions live in code only the NEW containers have, so writing them
+            # from stage 2 would write the previous release's seeds back. It runs
+            # after `rollout status` has retired every old pod, and it checks that
+            # the event-worker answering it is the one this release built.
+            #
+            # It calls the SAME reconcile the daily CronJob calls, with `?only=seeds`
+            # (wizeworks/packages/automation-worker/src/server.ts): no upsert of its
+            # own, so whatever that reconcile learns, this inherits. The campaign
+            # scan the CronJob also runs stays on its daily clock. The CronJob stays
+            # as the backstop for a business whose module is switched on between
+            # releases and for a release that skipped this stage.
+            #
+            # Idempotent: every write is an upsert keyed on the rule. It runs even
+            # when the rollout was skipped (the definitions are then the ones already
+            # running, so it changes nothing and says so). A failure FAILS the
+            # release, so the tag is not cut on a version whose automations did not
+            # land.
+            # -----------------------------------------------------------------------
+            - name: Re-sync system automations
+              run: |
+                  set -euo pipefail
+
+                  # The worker that will answer must be running this release's code
+                  # when this release rolled it. Skipped rollout: nothing under the
+                  # runtime paths changed, so the running seeds are this commit's too.
+                  RUNNING=$(kubectl -n "$NAMESPACE" get deploy event-worker \
+                    -o jsonpath='{.spec.template.spec.containers[0].image}' | sed 's/.*://')
+                  if [ '${{ steps.changed.outputs.value }}' = 'true' ] && [ "$RUNNING" != '${{ github.sha }}' ]; then
+                    echo "::error::event-worker is running '$RUNNING', not this release (${{ github.sha }})." \
+                         "Re-syncing from it would write the previous release's automations back."
+                    exit 1
+                  fi
+                  kubectl -n "$NAMESPACE" rollout status deployment/event-worker --timeout=5m
+
+                  kubectl -n "$NAMESPACE" delete job automation-seeds --ignore-not-found
+                  # QUOTED heredoc, for the reason given on the data stage's Jobs.
+                  # The short Service name resolves inside the Job's own namespace,
+                  # so the destination stays the variable it is everywhere else.
+                  kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+                  apiVersion: batch/v1
+                  kind: Job
+                  metadata:
+                    name: automation-seeds
+                  spec:
+                    backoffLimit: 0
+                    ttlSecondsAfterFinished: 3600
+                    template:
+                      spec:
+                        restartPolicy: Never
+                        enableServiceLinks: false
+                        containers:
+                          - name: curl
+                            image: curlimages/curl:8.10.1
+                            command: ['sh', '-c']
+                            args:
+                              - >-
+                                curl --fail-with-body --silent --show-error
+                                --max-time 600
+                                -X POST
+                                -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                                "http://event-worker:8080/internal/cron/reconcile-seeds?only=seeds"
+                            env:
+                              - name: SPARX_INTERNAL_CRON_TOKEN
+                                valueFrom:
+                                  secretKeyRef: { name: sparx-app-secrets, key: SPARX_INTERNAL_CRON_TOKEN }
+                            securityContext:
+                              runAsNonRoot: true
+                              runAsUser: 1000
+                              allowPrivilegeEscalation: false
+                              capabilities: { drop: ['ALL'] }
+                              seccompProfile: { type: RuntimeDefault }
+                  YAML
+                  ./.github/scripts/await-job.sh automation-seeds "$NAMESPACE" 900
+
+                  # What LANDED, from the reconcile's own answer, not from a green Job.
+                  # A business the reconcile stepped over (deleted mid-pass, or its
+                  # write failed) is still on the old rules, so it is named here as a
+                  # warning; the daily CronJob tries it again.
+                  kubectl -n "$NAMESPACE" logs job/automation-seeds --tail=-1 > /tmp/seeds.json
+                  if ! jq -e '.modules | type == "array"' /tmp/seeds.json >/dev/null 2>&1; then
+                    echo "::error::The reconcile answered with something that is not its summary:"
+                    cat /tmp/seeds.json
+                    exit 1
+                  fi
+                  {
+                    echo '### System automations'
+                    echo ''
+                    echo "Re-synced by event-worker \`${RUNNING:0:12}\`."
+                    echo ''
+                    echo '| module | businesses | rules written | skipped |'
+                    echo '| --- | ---: | ---: | ---: |'
+                    jq -r '.modules[] | "| \(.module) | \(.tenants) | \(.seeded) | \(.skipped) |"' /tmp/seeds.json
+                    echo ''
+                    echo "**$(jq -r '.tenantsSeeded' /tmp/seeds.json) business(es) re-synced, $(jq -r '.tenantsSkipped' /tmp/seeds.json) skipped.**"
+                  } >> "$GITHUB_STEP_SUMMARY"
+                  SKIPPED=$(jq -r '.tenantsSkipped' /tmp/seeds.json)
+                  if [ "$SKIPPED" != '0' ]; then
+                    echo "::warning::The reconcile skipped $SKIPPED business(es); they keep the previous automations until the daily CronJob. See the event-worker log for 'reconcile: skipped'."
                   fi
 
             - name: Report

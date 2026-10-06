@@ -302,24 +302,29 @@ export const CreateSupplierInput = z.object({
     .min(1)
     .max(32)
     .regex(/^[A-Za-z0-9_-]+$/, 'Code may contain letters, numbers, hyphen, underscore'),
-  contactName: z.string().max(160).optional(),
-  email: z.string().email().max(255).optional(),
-  phone: z.string().max(50).optional(),
-  website: z.string().max(255).optional(),
-  line1: z.string().max(255).optional(),
-  line2: z.string().max(255).optional(),
-  city: z.string().max(120).optional(),
-  region: z.string().max(120).optional(),
-  postalCode: z.string().max(32).optional(),
-  country: z.string().length(2).optional(),
+  // `.nullish()`, not `.optional()`: on an update, null is how a cleared box
+  // says "take this off". Omitted meant "leave it", and there was no third
+  // word, so a supplier's email, phone or address could be changed but never
+  // removed: "Alliant Power saved" over the address still on file (sparx
+  // persona issue 073).
+  contactName: z.string().max(160).nullish(),
+  email: z.string().email().max(255).nullish(),
+  phone: z.string().max(50).nullish(),
+  website: z.string().max(255).nullish(),
+  line1: z.string().max(255).nullish(),
+  line2: z.string().max(255).nullish(),
+  city: z.string().max(120).nullish(),
+  region: z.string().max(120).nullish(),
+  postalCode: z.string().max(32).nullish(),
+  country: z.string().length(2).nullish(),
   // net-N / cod / prepaid — free-form within the column width, mirrors billing.
-  paymentTerms: z.string().max(20).optional(),
-  leadTimeDays: z.number().int().nonnegative().max(3650).optional(),
+  paymentTerms: z.string().max(20).nullish(),
+  leadTimeDays: z.number().int().nonnegative().max(3650).nullish(),
   currency: z
     .string()
     .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')
     .default('USD'),
-  notes: z.string().max(5000).optional(),
+  notes: z.string().max(5000).nullish(),
   isActive: z.boolean().default(true),
 });
 export type CreateSupplierInput = z.infer<typeof CreateSupplierInput>;

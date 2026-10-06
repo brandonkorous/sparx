@@ -91,8 +91,6 @@ const SPARX_DEBT = new Set([
   'sparx/apps/workbench/surfaces/automations/automation-editor.tsx',
   'sparx/apps/workbench/surfaces/b2b/invoice-detail.tsx',
   'sparx/apps/workbench/surfaces/builder/saved-piece-detail.tsx',
-  'sparx/apps/workbench/surfaces/cms/content-detail.tsx',
-  'sparx/apps/workbench/surfaces/commerce/fitment-list.tsx',
   'sparx/apps/workbench/surfaces/commerce/order-detail.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-configurator.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-detail.tsx',
@@ -112,6 +110,10 @@ const SPARX_DEBT = new Set([
 
 /** Persists work that is otherwise lost. Always `primary`. */
 const COMMIT_TEXT = /^\s*(Save|Save [a-z ]+|Create|Create [a-z ]+|Add [a-z][a-z ]*)\s*$/;
+
+/** What a button reading `createLabel` counts as: a create action, so a commit.
+ *  Worded so `COMMIT_TEXT` matches it and a failure says where it came from. */
+const CREATE_LABEL = 'Create from the registry';
 
 /** A state change on a saved record. Only a problem when nothing holds `primary`. */
 const LIFECYCLE_TEXT = /^\s*(Publish|Publish now|Send|Send [a-z ]+|Submit|Update)\s*$/;
@@ -202,6 +204,12 @@ function buttonTexts(region) {
       for (const [, literal] of children.matchAll(/['"`]([^'"`]*)['"`]/g)) {
         texts.push(literal.replace(/\s+/g, ' '));
       }
+      // A list's create button reads its words from the registry since issue 743
+      // (`createLabelFor`), so its text is an expression with no literal for the
+      // patterns above to see. It is a create action whatever it says, and moving
+      // one from a literal "Add a list" to `{createLabel}` hid it from this check
+      // the first time it happened. [[feedback_structural_checks_go_blind]]
+      if (/\{createLabel\}/.test(children)) texts.push(CREATE_LABEL);
     }
     at = region.indexOf('<Button', cursor);
   }
@@ -273,6 +281,8 @@ function foldableLabels(source) {
     for (const [, literal] of expression.matchAll(/['"`]([^'"`]*)['"`]/g)) {
       labels.push(literal.replace(/\s+/g, ' '));
     }
+    // The registry's create words, by reference. See `buttonTexts`.
+    if (/^createLabel\b/.test(expression)) labels.push(CREATE_LABEL);
   }
   return labels;
 }

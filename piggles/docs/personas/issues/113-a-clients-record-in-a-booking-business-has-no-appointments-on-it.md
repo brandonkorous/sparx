@@ -65,6 +65,22 @@ Every time. Book somebody in, then open their record.
 Point 1 is the one that matters most and is the smallest — the bookings list is
 already filterable and the customer id is in hand.
 
+## Where it stands (act 324)
+
+- **Point 1, partly done.** The record has a **Bookings** tab now
+  (`customer-bookings.tsx`). The overview still does not lead with the next
+  appointment.
+- **Point 3, not done.** Only an order turns a lead into a customer
+  (`recomputeCustomerCommerce` in `crm/customer-rollup.ts`). A booking does
+  not, so a booked client still reads "Lead".
+- **Point 2, not done.** "Total spent" still sums orders only.
+
+Points 2 and 3 belong in booking creation, and `wizeworks/packages/scheduling`
+holds a large change in progress from another session (27 files, a new
+`booking-money.ts`). Fixing them now would land on top of that change, so they
+wait for it to be committed. Checking on screen needs a booking business:
+Halo & Hem, not Juniper Row, which has no bookings.
+
 ## Rating effect
 
 `Customers › a customer` is scored in [rating.md](../rating.md).

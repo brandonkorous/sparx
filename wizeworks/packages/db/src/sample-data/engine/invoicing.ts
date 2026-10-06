@@ -17,7 +17,7 @@
 
 import type { Prisma } from '@prisma/client';
 
-import { withSampleMeta } from '../markers';
+import { SAMPLE_TIER_DESCRIPTION, withSampleMeta } from '../markers';
 
 import type { SampleDataPack } from '../types';
 import { type ApplyCtx, daysAgo, round2 } from './context';
@@ -288,6 +288,37 @@ const B2B_AR_SPECS: B2bArSpec[] = [
   { status: 'paid', createdDaysAgo: 30, dueDaysAgo: 0, laborHours: 1.5, qtyBase: 6 },
 ];
 
+/**
+ * The price tier the sample wholesale account buys on.
+ *
+ * It was given the word "wholesale" in the legacy free-text tier column, which
+ * prices nothing: the account looked like it was on a tier and paid list price,
+ * and the tiers screen had no tier to show for it (sparx persona issue 086). Now
+ * it is put on a real tier. The business's own "Wholesale" tier if it has one,
+ * since that is what an owner would choose; otherwise a sample one, marked so
+ * Clear can take it away again.
+ */
+export async function sampleTierId(ctx: Pick<ApplyCtx, 'tx' | 'tenantId'>): Promise<string> {
+  const { tx, tenantId } = ctx;
+  const existing = await tx.b2bPricingTier.findFirst({
+    where: { tenantId, deletedAt: null, name: { equals: 'Wholesale', mode: 'insensitive' } },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+  if (existing) return existing.id;
+  const created = await tx.b2bPricingTier.create({
+    data: {
+      tenantId,
+      name: 'Wholesale',
+      description: SAMPLE_TIER_DESCRIPTION,
+      discountType: 'percentage',
+      discountValue: 10,
+    },
+    select: { id: true },
+  });
+  return created.id;
+}
+
 /** Seed a demo B2B account + its net-terms AR documents (billing_documents scoped to
  *  the account). Populates `/b2b/invoices`, the B2B reports aging, and the account's
  *  `credit_used`. The account is tagged `sample` so Clear removes it. */
@@ -302,7 +333,7 @@ async function seedB2bAr(ctx: ApplyCtx, pack: SampleDataPack, opts: B2bArOpts): 
     data: {
       tenantId,
       companyName,
-      pricingTier: 'wholesale',
+      pricingTierId: await sampleTierId(ctx),
       paymentTerms: 'net30',
       creditLimit: 50000,
       status: 'active',

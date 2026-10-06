@@ -170,6 +170,8 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/commerce/product-types/:key', surface: 'commerce.product-types.detail' },
   { path: '/commerce/price-lists', surface: 'commerce.pricing.list' },
   { path: '/commerce/price-lists/:id', surface: 'commerce.pricelist.detail' },
+  { path: '/commerce/markup-rules', surface: 'commerce.markup-rules.list' },
+  { path: '/commerce/markup-rules/:id', surface: 'commerce.markup-rule.detail' },
   { path: '/commerce/discounts', surface: 'commerce.discounts.list' },
   {
     path: '/commerce/discounts/:id',
@@ -201,6 +203,8 @@ export const ROUTES: readonly AppRoute[] = [
     entityLabel: 'Subscriptions',
   },
   { path: '/commerce/returns', surface: 'commerce.returns.list' },
+  { path: '/commerce/cores', surface: 'commerce.cores.list' },
+  { path: '/commerce/core-choices', surface: 'commerce.core-choices.list' },
   {
     path: '/commerce/returns/:id',
     surface: 'commerce.return.detail',
@@ -229,7 +233,10 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/commerce/tax/places/:id', surface: 'commerce.tax.zone.detail' },
   { path: '/commerce/reports', surface: 'commerce.reports' },
   { path: '/commerce/payment-providers', surface: 'commerce.providers' },
-  { path: '/commerce/payment-providers/:id', surface: 'commerce.provider.detail' },
+  // `:key`, not `:id`: a provider is named by a word (`stripe_direct`), and `:id`
+  // only matches a minted record id, so every provider's own address answered
+  // "That link doesn't open anything", on a reload as much as a shared link.
+  { path: '/commerce/payment-providers/:key', surface: 'commerce.provider.detail' },
   { path: '/commerce/settings', surface: 'commerce.settings' },
 
   /* ── Customers ────────────────────────────────────────────────────────── */

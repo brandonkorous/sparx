@@ -94,8 +94,11 @@ model B2bAccountProductOverride {
   // Per-account purchasing limits (docs/100 P6d) — the minimum and maximum order
   // quantity this account may buy of the variant. Surfaced in account-scoped
   // availability + enforced when placing a fleet hold. Null = no limit.
-  minOrderQty Int? @map("min_order_qty")
-  maxOrderQty Int? @map("max_order_qty")
+  minOrderQty   Int? @map("min_order_qty")
+  maxOrderQty   Int? @map("max_order_qty")
+  // Case pack: this account buys the variant only in multiples of this many
+  // (a case of 12). Null = any quantity (sparx persona issue 086).
+  orderMultiple Int? @map("order_multiple")
 
   notes     String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz

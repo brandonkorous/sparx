@@ -155,12 +155,16 @@ describe('b2b fleet holds', () => {
       })
     );
 
+    // The buyer's own sentence from `quantityProblem` (commerce-schemas), the
+    // same one the cart and checkout give for the same rule (sparx persona issue
+    // 086). It replaced "Quantity 3 is below this account's minimum order
+    // quantity of 5", which named neither the product nor what would work.
     await expect(
       createFleetHold(ctx(), { accountId, variantId: variant, quantity: 3, workOrderRef: 'WO-X' })
-    ).rejects.toThrow(/minimum order quantity/i);
+    ).rejects.toThrow('Acme Fleet Co buys at least 5 of FH-MAIN at a time. Choose 5 or more.');
     await expect(
       createFleetHold(ctx(), { accountId, variantId: variant, quantity: 25, workOrderRef: 'WO-Y' })
-    ).rejects.toThrow(/maximum order quantity/i);
+    ).rejects.toThrow('Acme Fleet Co can order up to 20 of FH-MAIN at a time. Choose 20 or fewer.');
   });
 
   it('refuses a hold that oversells a deny-policy variant', async () => {

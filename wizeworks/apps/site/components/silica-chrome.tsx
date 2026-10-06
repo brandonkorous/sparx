@@ -23,7 +23,6 @@ import * as React from 'react';
 import {
   expandComponent,
   flattenSymbols,
-  resolveTree,
   iconSvg,
   type ComponentNode,
   type DataScope,
@@ -32,7 +31,12 @@ import {
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
-import { finalizeTree, imageAltsOf, renderSilicaBody } from '@wizeworks/silica-catalog';
+import {
+  finalizeTree,
+  imageAltsOf,
+  renderSilicaBody,
+  resolveForVisitors,
+} from '@wizeworks/silica-catalog';
 
 import { attrProps } from './silica-attrs';
 
@@ -214,7 +218,7 @@ export function SilicaChrome({
   children: React.ReactNode;
 }): React.ReactNode {
   const flat = flattenSymbols(frame, symbols ?? {});
-  const resolved = host ? resolveTree(flat, host) : flat;
+  const resolved = host ? resolveForVisitors(flat, host) : flat;
   // Mirror `renderSilicaBody`'s pipeline: the frame can bind attributes too (a
   // bound logo link), and an unhoisted carrier would render a stray hidden input
   // into the chrome. Always run — it also strips carriers that never resolved.
@@ -254,7 +258,7 @@ export function SilicaFunctionalBody({
   renderHost: HostRenderer;
 }): React.ReactNode {
   const flat = flattenSymbols(root, symbols ?? {});
-  const resolved = host ? resolveTree(flat, host, scope) : flat;
+  const resolved = host ? resolveForVisitors(flat, host, scope) : flat;
   // THE WIDTH LADDER BELONGS TO EVERY RENDER PATH, NOT THE HTML ONE.
   //
   // There are three ways a silica tree reaches a visitor — `SilicaBody` (the HTML-string

@@ -294,7 +294,6 @@ describe('CRM REST coverage — write paths through the service layer', () => {
       headers: authHeader(active.token),
       payload: {
         companyName: 'Gillett Diesel',
-        pricingTier: 'wholesale',
         status: 'active',
       },
     });

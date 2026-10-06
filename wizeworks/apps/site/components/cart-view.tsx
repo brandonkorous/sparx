@@ -7,14 +7,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { Button } from '@wizeworks/silicaui-react';
+import { Alert, Button } from '@wizeworks/silicaui-react';
+import { cadenceLabel, type RepeatCadence } from '@wizeworks/commerce-schemas';
 
+import { checkoutBlock, lineRule, ruleSentence } from '@/lib/account-buying-rules';
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
+import { RepeatChoice } from './repeat-choice';
+import { CoreLine } from './core-choice';
 import { CodeField } from './code-field';
 import { MadeToOrderSummary } from './made-to-order-summary';
+import { SaveCartForAccount } from './account/save-cart-for-account';
 import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
+import { CART_UNREACHABLE_MESSAGE } from '@/lib/shop-reach';
 
 export function CartView({
   /** Whether this website takes money at all. Handed down from the route rather
@@ -31,18 +37,37 @@ export function CartView({
     count,
     currency,
     updateItem,
+    setRepeat,
+    setCoreFirst,
     removeItem,
     appliedDiscountCodes,
     removeDiscount,
     appliedGiftCardCodes,
     removeGiftCard,
     madeToOrder,
+    accountRules,
+    known,
+    unreachable,
   } = useCart();
+
+  // A trade account's rules on this basket (sparx persona issue 086): who may
+  // order, each line's case pack, minimum and maximum, and the account minimum.
+  // Checkout refuses the same baskets on the server; this says so first.
+  const blocked = checkoutBlock(accountRules);
 
   // Why a quantity change was refused, against the line it was refused on. A
   // shop can run out for the day (issue 026), and a stepper that silently snaps
   // back leaves somebody pressing "+" at a number that will not move.
   const [refused, setRefused] = useState<{ lineId: string; message: string } | null>(null);
+
+  // Changing how often a line repeats can be refused too: the owner may have
+  // stopped offering that schedule since it went into the basket (issue 739).
+  const changeRepeat = (lineId: string, repeat: RepeatCadence | null) => {
+    setRefused(null);
+    void setRepeat(lineId, repeat).catch((err: unknown) => {
+      setRefused({ lineId, message: (err as Error).message });
+    });
+  };
 
   const changeQuantity = (lineId: string, quantity: number) => {
     setRefused(null);
@@ -51,22 +76,31 @@ export function CartView({
     });
   };
 
+  // No lines is only "empty" once the cart has answered. Before that it is
+  // still loading, or the shop could not be reached to ask, and "Your cart is
+  // empty" over a full basket is the wrong thing to tell anybody (persona issue
+  // 086). The cart provider asks again by itself.
+  if (lines.length === 0 && !known) {
+    return unreachable ? (
+      <Alert color="warning" role="status" aria-live="polite">
+        {CART_UNREACHABLE_MESSAGE}
+      </Alert>
+    ) : (
+      <div className="skeleton h-60" role="status" aria-label="Loading your cart" />
+    );
+  }
+
   if (lines.length === 0) {
     return (
-      <div
-        className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center"
-        style={{ minHeight: '40vh' }}
-      >
+      <div className="text-base-content grid min-h-[40vh] place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
         <span className="text-[2.5rem] opacity-50" aria-hidden="true">
           🛒
         </span>
         <h2 className="text-base-content text-3xl font-semibold tracking-tight">
           Your cart is empty
         </h2>
-        <p className="text-base-content" style={{ margin: 0 }}>
-          Browse the catalog and add something you like.
-        </p>
-        <Button render={<Link href="/products" style={{ marginTop: '0.5rem' }} />} color="primary">
+        <p className="text-base-content m-0">Browse the catalog and add something you like.</p>
+        <Button render={<Link href="/products" className="mt-2" />} color="primary">
           Shop all products
         </Button>
       </div>
@@ -93,16 +127,15 @@ export function CartView({
                   alt={line.title}
                   fill
                   sizes="88px"
-                  style={{ objectFit: 'cover' }}
+                  className="object-cover"
                 />
               ) : null}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div className="flex flex-col gap-1.5">
               {line.productHandle ? (
                 <Link
                   href={`/products/${line.productHandle}`}
-                  className="card-title text-base-content"
-                  style={{ textDecoration: 'none', color: 'inherit' }}
+                  className="card-title text-base-content no-underline"
                 >
                   {line.title}
                 </Link>
@@ -110,62 +143,87 @@ export function CartView({
                 <span className="card-title text-base-content">{line.title}</span>
               )}
               {line.variantTitle ? (
-                <span className="text-base-content" style={{ fontSize: '0.85rem' }}>
-                  {line.variantTitle}
+                <span className="text-base-content text-sm">{line.variantTitle}</span>
+              ) : null}
+              {line.sku ? <span className="text-base-content text-sm">SKU: {line.sku}</span> : null}
+              {/* A rebuilt part's refundable core deposit (sparx issue 051): charged
+                  on top of the price, so it is said beside the part it belongs to. Or,
+                  bought by sending the old part first, when it ships (issue 057), with
+                  the switch between the two where the part offers both. */}
+              <CoreLine
+                line={line}
+                currency={currency}
+                detail
+                onSwitch={(coreFirst) => setCoreFirst(line.id, coreFirst)}
+              />
+              {line.repeatOptions.length > 0 ? (
+                <RepeatChoice
+                  options={line.repeatOptions}
+                  value={line.repeat}
+                  showNote={false}
+                  onChange={(next) => {
+                    changeRepeat(line.id, next);
+                  }}
+                />
+              ) : line.repeat ? (
+                <span className="text-base-content text-base">{cadenceLabel(line.repeat)}</span>
+              ) : null}
+              {ruleSentence(lineRule(accountRules, line.id)) ? (
+                <span className="text-base-content text-sm">
+                  {ruleSentence(lineRule(accountRules, line.id))}
                 </span>
               ) : null}
-              {line.sku ? (
-                <span className="text-base-content" style={{ fontSize: '0.78rem' }}>
-                  SKU: {line.sku}
-                </span>
-              ) : null}
-              <div style={{ marginTop: '0.25rem' }}>
+              <div className="mt-1">
                 <QuantityStepper
                   value={line.quantity}
+                  min={lineRule(accountRules, line.id)?.start}
+                  step={lineRule(accountRules, line.id)?.step}
+                  max={lineRule(accountRules, line.id)?.maximum ?? undefined}
                   onChange={(q) => {
                     changeQuantity(line.id, q);
                   }}
                   onRemove={() => removeItem(line.id)}
                 />
               </div>
+              {/* This line's amount breaks the account's rule: what is wrong and
+                  the amounts that would work, on the line itself. */}
+              {lineRule(accountRules, line.id)?.problem && refused?.lineId !== line.id ? (
+                <span className="text-warning text-sm font-semibold">
+                  {lineRule(accountRules, line.id)?.problem}
+                </span>
+              ) : null}
               {refused?.lineId === line.id ? (
                 <span className="text-warning text-sm font-semibold">{refused.message}</span>
               ) : null}
               <button
                 type="button"
                 onClick={() => removeItem(line.id)}
-                className="text-base-content"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: '0.82rem',
-                  textAlign: 'left',
-                  textDecoration: 'underline',
-                  width: 'fit-content',
-                }}
+                className="text-base-content w-fit cursor-pointer border-none bg-transparent p-0 text-left text-sm underline"
               >
                 Remove
               </button>
             </div>
-            <div style={{ textAlign: 'right', fontWeight: 600 }}>
+            <div className="text-right font-semibold">
               {formatMoney(line.lineTotalCents, currency)}
-              <div className="text-base-content" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
+              <div className="text-base-content text-sm font-normal">
                 {formatMoney(line.unitPriceCents, currency)} ea
               </div>
             </div>
           </div>
         ))}
+        {/* Keep this basket as a named list on the wholesale account (sparx
+            persona issue 086). Nothing for anyone who cannot order on one. */}
+        <div className="mt-6 empty:hidden">
+          <SaveCartForAccount />
+        </div>
       </div>
 
-      <aside
-        className="rounded-box border-base-300 bg-base-100 flex flex-col gap-3 border p-6"
-        style={{ position: 'sticky', top: '92px' }}
-      >
+      <aside className="rounded-box border-base-300 bg-base-100 sticky top-[92px] flex flex-col gap-3 border p-6">
         <h2 className="text-base-content text-2xl font-semibold">Order summary</h2>
         <div className="text-base-content flex justify-between text-sm">
-          <span>Subtotal ({count} items)</span>
+          <span>
+            Subtotal ({count} {count === 1 ? 'item' : 'items'})
+          </span>
           <span>{formatMoney(totals.subtotalCents, currency)}</span>
         </div>
         {totals.discountTotalCents > 0 ? (
@@ -175,24 +233,15 @@ export function CartView({
           </div>
         ) : null}
         {appliedDiscountCodes.length > 0 ? (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+          <div className="flex flex-wrap gap-1.5">
             {appliedDiscountCodes.map((code) => (
-              <span
-                key={code}
-                className="badge"
-                style={{ position: 'static', display: 'inline-flex', gap: '0.4rem' }}
-              >
+              <span key={code} className="badge static inline-flex gap-1.5">
                 {code}
                 <button
                   type="button"
                   aria-label={`Remove ${code}`}
                   onClick={() => removeDiscount(code)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'inherit',
-                    cursor: 'pointer',
-                  }}
+                  className="cursor-pointer border-none bg-transparent text-inherit"
                 >
                   ×
                 </button>
@@ -204,6 +253,14 @@ export function CartView({
         {/* A gift card is money already paid, not a saving, so it reads as its own
             line. Leaving it out is what made the summary fail to add up: the rows
             a shopper could see came to more than the total under them. */}
+        {/* Refundable core deposits on rebuilt parts (sparx issue 051): inside the
+            total, outside the subtotal, so the rows add up only with it named. */}
+        {totals.coreChargeTotalCents > 0 ? (
+          <div className="text-base-content flex justify-between text-sm">
+            <span>Refundable core deposits</span>
+            <span>{formatMoney(totals.coreChargeTotalCents, currency)}</span>
+          </div>
+        ) : null}
         {totals.giftCardAppliedCents > 0 ? (
           <div className="text-success flex justify-between text-sm">
             <span>Gift card</span>
@@ -213,7 +270,7 @@ export function CartView({
         {appliedGiftCardCodes.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {appliedGiftCardCodes.map((code) => (
-              <span key={code} className="badge inline-flex gap-2" style={{ position: 'static' }}>
+              <span key={code} className="badge static inline-flex gap-2">
                 {code}
                 <button
                   type="button"
@@ -240,7 +297,7 @@ export function CartView({
           <span>Estimated total</span>
           <span>{formatMoney(totals.totalCents, currency)}</span>
         </div>
-        <p className="text-base-content" style={{ fontSize: '0.8rem', margin: 0 }}>
+        <p className="text-base-content m-0 text-sm">
           Shipping &amp; taxes calculated at checkout.
         </p>
 
@@ -251,15 +308,19 @@ export function CartView({
           currency={currency}
           paymentMode={paymentMode}
         />
-        <Button render={<Link href="/checkout" />} color="primary" size="lg" className="w-full">
-          Proceed to checkout
-        </Button>
-        <Button
-          render={<Link href="/products" />}
-          color="neutral"
-          variant="ghost"
-          className="w-full"
-        >
+        {blocked ? (
+          <Alert color={accountRules?.canOrder === false ? 'info' : 'warning'}>{blocked}</Alert>
+        ) : null}
+        {blocked ? (
+          <Button color="primary" size="lg" className="w-full" disabled>
+            Proceed to checkout
+          </Button>
+        ) : (
+          <Button render={<Link href="/checkout" />} color="primary" size="lg" className="w-full">
+            Proceed to checkout
+          </Button>
+        )}
+        <Button render={<Link href="/products" />} variant="ghost" className="w-full">
           Continue shopping
         </Button>
       </aside>

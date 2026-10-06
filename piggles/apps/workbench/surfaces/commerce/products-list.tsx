@@ -39,12 +39,19 @@ import {
   unfindableProductCount,
   usePaymentsReady,
   useProducts,
+  useProductTypesInUse,
   useSearchStatus,
   type ProductRow,
   type ProductSortKey,
   type SortDirection,
 } from './products-data';
-import { FILTERS, targetFor, type FilterValue, type Modifiers } from './products-list-shared';
+import {
+  EVERY_KIND,
+  FILTERS,
+  targetFor,
+  type FilterValue,
+  type Modifiers,
+} from './products-list-shared';
 import { ProductsListToolbar } from './products-list-toolbar';
 import { ProductsListNotices } from './products-list-notices';
 import { ProductsListEmpty } from './products-list-empty';
@@ -54,6 +61,9 @@ import { ProductsBulkActions } from './products-bulk-actions';
 export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterValue>('all');
+  const [kind, setKind] = useState<string>(EVERY_KIND);
+  // Every product the list matches, chosen from the bulk bar (issue 065).
+  const [everyMatch, setEveryMatch] = useState(false);
   // Newest-changed first: a catalog is opened at whatever you were last working
   // on far more often than at the letter A.
   const [sort, setSort] = useState<{ key: ProductSortKey; dir: SortDirection }>({
@@ -69,12 +79,19 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const active = FILTERS.find((entry) => entry.value === filter) ?? FILTERS[0];
   const skip = (page - 1) * pageSize;
-  const narrowed = filter !== 'all' || search.trim() !== '';
-
-  const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useProducts({
-    q: search.trim(),
+  const productType = kind === EVERY_KIND ? undefined : kind;
+  const narrowed = filter !== 'all' || search.trim() !== '' || productType !== undefined;
+  const match = {
+    ...(search.trim() ? { q: search.trim() } : {}),
     ...(active.status ? { status: active.status } : {}),
     ...(active.includeArchived ? { includeArchived: true } : {}),
+    ...(productType ? { productType } : {}),
+  };
+  const kinds = useProductTypesInUse();
+
+  const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useProducts({
+    ...match,
+    q: search.trim(),
     sortBy: sort.key,
     order: sort.dir,
     take,
@@ -126,6 +143,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
     setPage(1);
     setTake(pageSize);
     selection.clear();
+    setEveryMatch(false);
   };
 
   const toggleSort = (key: ProductSortKey) => {
@@ -170,6 +188,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           narrowed={narrowed}
           search={search.trim()}
           filterLabel={filter === 'all' ? null : active.label}
+          kind={productType ?? null}
           onCreate={create}
         />
       );
@@ -181,6 +200,8 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         onSort={toggleSort}
         onOpen={open}
         selection={selection}
+        everyMatch={everyMatch}
+        onLeaveEveryMatch={() => setEveryMatch(false)}
       />
     );
   };
@@ -193,7 +214,13 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           one grid cell, so choosing a row swaps what the strip shows without
           moving the table under the pointer. */}
       <ProductsBulkActions
+        ctx={ctx}
         selection={selection}
+        match={match}
+        total={data?.total}
+        narrowed={narrowed}
+        everyMatch={everyMatch}
+        onEveryMatch={setEveryMatch}
         toolbar={
           <ProductsListToolbar
             search={search}
@@ -204,6 +231,12 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             filter={filter}
             onFilter={(next) => {
               setFilter(next);
+              onNarrow();
+            }}
+            kinds={kinds.data ?? []}
+            kind={kind}
+            onKind={(next) => {
+              setKind(next);
               onNarrow();
             }}
             sort={sort}

@@ -45,6 +45,7 @@ import { useFavorites, useToggleFavorite } from '@/lib/api/shell-data';
 import { getSurface } from '@/lib/surfaces/registry';
 import { useWorkbench } from '@/lib/workbench/context';
 import { usePaneDirty } from '@/lib/workbench/dirty';
+import { TabGlyph } from './tab-glyph';
 import { useOwnerWindowBody } from '@/lib/dock/window-boundary';
 import { useCopyLink, usePaneLink } from '@/components/copy-pane-link';
 
@@ -127,7 +128,6 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
   const paneId = props.params.paneId;
   const descriptor = controller.getDescriptor(paneId);
   const definition = descriptor ? getSurface(descriptor.surface) : undefined;
-  const glyph = definition?.icon;
 
   const dirty = usePaneDirty(paneId);
   const link = usePaneLink(paneId);
@@ -204,11 +204,11 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
           {/* The app's color lives HERE — one small saturated mark rather than
               a flooded bar. It is the same hue the rail uses for the same app,
               so the two read as one system. */}
-          {glyph ? (
-            <Icon glyph={glyph} className="text-module size-4 shrink-0" aria-hidden />
-          ) : (
-            <span className="bg-module size-2 shrink-0 rounded-full" aria-hidden />
-          )}
+          <TabGlyph
+            descriptor={descriptor}
+            className="text-module size-4 shrink-0"
+            fallback={<span className="bg-module size-2 shrink-0 rounded-full" aria-hidden />}
+          />
 
           <span className="min-w-0 flex-1 truncate text-sm font-semibold" title={title}>
             {title}

@@ -13,6 +13,7 @@
 
 import {
   renderSilicaEmail,
+  applyBrandColors,
   buildEmailFrame,
   emailBrandColorDefaults,
   emailBrandDarkColorDefaults,
@@ -173,6 +174,27 @@ export async function buildChrome(
     frame: buildEmailFrame({ brand, marketing: false, footerLinks }),
     colors: emailBrandColorDefaults(brand),
   };
+}
+
+/**
+ * The document the editor draws, painted in the brand the send will use.
+ *
+ * Every color an author has not picked follows the brand (`colorAuto`, `bgAuto`,
+ * …), and the send repaints those fields from the site's brand at render. The
+ * canvas drew the stored value instead, so a booking reminder's button was
+ * near-black in the editor and the business's own orange in every inbox, and the
+ * color box beside it showed the black (persona issue 129). Painted here, by the
+ * same `applyBrandColors` the send runs, with the same brand and fallback as
+ * `buildChrome`, so the editor and the inbox cannot disagree. A color the author
+ * picked carries no `Auto` flag and is left exactly as it is.
+ */
+export async function brandForCanvas(
+  ctx: ServiceContext,
+  doc: SilicaEmailDocument,
+  propertyId?: string | null
+): Promise<SilicaEmailDocument> {
+  const brand = (await resolveEmailBrand(ctx, propertyId)) ?? defaultBrand;
+  return applyBrandColors(doc, brand);
 }
 
 /** The deliverable a staff test-send produces: a fully-rendered email ready to

@@ -389,6 +389,72 @@ describe('buy_box — self-scoping product detail', () => {
     });
   });
 
+  // A rebuilt part a buyer can have two ways: pay the core deposit and get it now, or
+  // send the old part first, pay nothing extra, and get it when the old one arrives
+  // (sparx persona issue 057). Before this the only way to say so was a fake option
+  // that split one part on one shelf into two versions.
+  describe('the old-part choice', () => {
+    const CORED = {
+      ...PRODUCT,
+      coreChoice: {
+        shown: true,
+        pay: 'Pay the $150.00 core deposit now. Your part is ready right away, and we pay the deposit back when your old part comes back.',
+        first: 'Send your old part first. No deposit. Your part is ready once it arrives.',
+      },
+    };
+    // The suite's double reads short refs off the item and nothing deeper; the real
+    // resolver walks a dotted path, and this does the same so `coreChoice.pay` means
+    // what it means on a live page.
+    const dotted = (record: Record<string, unknown>): ResolveHost => ({
+      ...host,
+      resolveBinding: (ref, scope) => {
+        const item = scope.item as Record<string, unknown> | undefined;
+        if (item && ref.includes('.')) {
+          const value = ref
+            .split('.')
+            .reduce<unknown>((at, key) => (at as Record<string, unknown> | undefined)?.[key], item);
+          return { value };
+        }
+        return host.resolveBinding!(ref, scope);
+      },
+      resolveCollection: (ref, scope) =>
+        ref === 'product' ? [record] : (host.resolveCollection?.(ref, scope) ?? []),
+    });
+
+    it('offers both ways, in the business’s own words', () => {
+      const html = toHtml(resolveTree(buyBox(), dotted(CORED)));
+      expect(html).toContain('Your old part');
+      expect(html).toContain(CORED.coreChoice.pay);
+      expect(html).toContain(CORED.coreChoice.first);
+      expect((html.match(/name="coreFirst"/g) ?? []).length).toBe(2);
+    });
+
+    it('pre-chooses paying the deposit, so nobody is held for a part they did not send', () => {
+      const html = toHtml(resolveTree(buyBox(), dotted(CORED)));
+      // Paying posts "" and is checked; sending first posts "1" and is not.
+      expect(html).toMatch(/name="coreFirst" value="" checked/);
+      expect(html).toMatch(/name="coreFirst" value="1"(?! checked)/);
+    });
+
+    it('sits inside the form, before the quantity, so it posts and is read first', () => {
+      const html = toHtml(resolveTree(buyBox(), dotted(CORED)));
+      const form = html.slice(html.indexOf('<form'), html.indexOf('</form>'));
+      expect(form).toContain('name="coreFirst"');
+      expect(form.indexOf('name="coreFirst"')).toBeLessThan(form.indexOf('name="quantity"'));
+    });
+
+    it('draws nothing on a part that can only be bought one way', () => {
+      const html = toHtml(
+        resolveTree(
+          buyBox(),
+          dotted({ ...PRODUCT, coreChoice: { shown: false, pay: '', first: '' } })
+        )
+      );
+      expect(html).not.toContain('coreFirst');
+      expect(html).not.toContain('Your old part');
+    });
+  });
+
   it('marks the form as both a form behavior and the add-to-cart action', () => {
     const html = toHtml(resolveTree(buyBox(), host));
     // `hydrate()` wires the submit handler off data-sui-behavior; the ref that

@@ -219,6 +219,70 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     replaces: 'a live-chat + AI inbox like Intercom',
     addon: true,
   },
+  {
+    key: 'social',
+    name: 'Social',
+    desc: 'Plan, post, see what works',
+    price: 0,
+    elsewhere: 99,
+    long: 'Write a post once and send it to every page you run, on a calendar you can see a month ahead. Comments and messages from those pages land in one inbox, and each post shows how far it went. Free with any plan.',
+    feats: [
+      'One post, every page you run',
+      'A calendar of what goes out when',
+      'Comments and messages in one inbox',
+      'Reach and clicks for every post',
+    ],
+    replaces: 'a social scheduling tool',
+    addon: true,
+  },
+  {
+    key: 'funnels',
+    name: 'Campaigns',
+    desc: 'Promotions, start to result',
+    price: 0,
+    elsewhere: 97,
+    long: 'Run a promotion from the page people land on to the sale or booking it brings in, and see which step loses them. Free, because every part it measures is already in your plan.',
+    feats: [
+      'One place for a whole promotion',
+      'Where people drop off, step by step',
+      'Results in sales and bookings, not clicks',
+      'Built from the pages and emails you already have',
+    ],
+    replaces: 'a landing-page and funnel tool',
+    addon: true,
+  },
+  {
+    key: 'finance',
+    name: 'Finance',
+    desc: 'Spending, bills, profit',
+    price: 29,
+    elsewhere: 35,
+    long: 'What came in and what went out, in one place: card payments and payouts, bills to pay, repeating costs, and the profit on each job. Included free with Commerce or B2B, because you already bought the money-in half.',
+    feats: [
+      'Profit, overall and by job',
+      'Bills and repeating costs',
+      'Payments, payouts and deposits',
+      'Hands the books to your accountant',
+    ],
+    replaces: 'a bookkeeping app for spending',
+    addon: true,
+  },
+  {
+    key: 'staff',
+    name: 'Your team',
+    desc: 'People, schedules, hours',
+    price: 29,
+    elsewhere: 60,
+    long: 'Everyone who works for you, their shifts on a schedule, the hours they actually worked, their time off, and the tickets and licenses that have to stay current. One flat price, however many people you have.',
+    feats: [
+      'A shift schedule everyone can see',
+      'Timesheets from real hours',
+      'Time off requests and approvals',
+      'Licenses and tickets with expiry dates',
+    ],
+    replaces: 'a staff scheduling and timesheet app',
+    addon: true,
+  },
 ];
 
 export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntries(
@@ -229,13 +293,19 @@ export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntri
 //   REQUIRES — a key needs these providers; each is SEPARATELY BILLED and locks
 //     ON while the key is on. Only B2B requires Commerce.
 //   BUNDLED_FREE — a key is on free ($0, "Included") whenever a provider is on;
-//     Invoicing/Inventory ride along with Commerce/B2B, else they're add-ons.
+//     Invoicing/Inventory/Finance ride along with Commerce/B2B, else they're add-ons.
+//
+// A COPY, because the server graph imports the database client and cannot ship to
+// a browser. A copy drifts: Finance went free on the server and stayed $29 here, so
+// setup quoted a charge the bill would never make (sparx persona issue 006).
+// `pnpm check:module-graph` now fails the push when the two disagree.
 const REQUIRES: Record<string, string[]> = {
   b2b: ['commerce'],
 };
 const BUNDLED_FREE: Record<string, string[]> = {
   invoicing: ['b2b', 'commerce'],
   inventory: ['commerce', 'b2b'],
+  finance: ['commerce', 'b2b'],
 };
 
 /** Providers that bundle `key` free and are currently on. */

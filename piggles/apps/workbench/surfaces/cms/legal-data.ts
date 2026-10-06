@@ -339,7 +339,7 @@ export function legalItemStatus(
           `The starter wording has been updated since this page was made.${live ? ' Your live page still shows the older version.' : ''} You can take the new wording: what is on the page now is kept in its history.`
         : productCopy(
             'cms.legal.unreviewed',
-            'This still uses the Piggles starter wording. Read it through, make it fit your business, then mark it reviewed.'
+            'Not marked reviewed yet. It began as the Piggles starter wording: read it through, make it fit your business, then mark it reviewed.'
           ),
       needsReview: true,
       stale,

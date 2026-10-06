@@ -14,6 +14,7 @@
 //   POST   /v1/inventory/purchase-orders/:id/lines         → add/upsert a line
 //   PATCH  /v1/inventory/purchase-orders/:id/lines/:lineId
 //   DELETE /v1/inventory/purchase-orders/:id/lines/:lineId
+//   POST   /v1/inventory/purchase-orders/:id/email         → email it to the supplier
 //   GET    /v1/inventory/purchase-orders/:id/document      → branded print HTML
 
 import type { FastifyPluginAsync } from 'fastify';
@@ -24,9 +25,14 @@ import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
 import { resolvePurchaseOrderBrand } from '../../../lib/purchase-order-render.js';
+import { sendPurchaseOrder } from '../../../lib/purchase-order-mail.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdLine = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
+
+const EmailBody = z.object({
+  to: z.string().trim().email('That is not an email address.').max(255).optional(),
+});
 
 const ListQuery = z.object({
   status: PurchaseOrderStatus.optional(),
@@ -150,6 +156,19 @@ const inventoryPurchaseOrderRoutes: FastifyPluginAsync = async (app) => {
     return reply.send(
       ok(await inventoryService.removePurchaseOrderLine(toInventoryContext(request), id, lineId))
     );
+  });
+
+  // ── Email it to the supplier (sparx persona issue 071) ────────────────────────
+  // `to` sends this one copy somewhere other than the supplier's own address
+  // without changing their record. Refuses a draft, an order waiting for
+  // sign-off and a canceled one, with a sentence that says which.
+  app.post('/v1/inventory/purchase-orders/:id/email', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const body = EmailBody.parse(request.body ?? {});
+    const sent = await sendPurchaseOrder(request, id, body.to ?? null);
+    return reply.send(ok(sent));
   });
 
   // ── Print document (branded HTML → browser PDF) ───────────────────────────────

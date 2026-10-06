@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { Sku } from './common';
 import { CreateProductInput, UpdateProductInput } from './products';
 
 describe('CreateProductInput — defaults fill on create', () => {
@@ -51,5 +52,19 @@ describe('UpdateProductInput — partial update never re-applies create defaults
     expect(parsed.categoryIds).toEqual(['11111111-1111-4111-8111-111111111111']);
     // An explicit empty array is a real "clear" intent and must pass through.
     expect(parsed.propertyIds).toEqual([]);
+  });
+});
+
+describe('a SKU as a business writes it (sparx persona issue 054)', () => {
+  it('takes the part numbers Gillett Diesel really uses', () => {
+    for (const sku of ['07-CC-24V19+', '#80', 'GDS H1/HX', '0281 006414']) {
+      expect(Sku.safeParse(sku).success, sku).toBe(true);
+    }
+  });
+
+  it('refuses what cannot be typed or would hide a space', () => {
+    for (const sku of [' 80', '80 ', 'A\tB', 'A\nB', '']) {
+      expect(Sku.safeParse(sku).success, JSON.stringify(sku)).toBe(false);
+    }
   });
 });

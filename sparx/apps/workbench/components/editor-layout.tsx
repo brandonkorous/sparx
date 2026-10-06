@@ -18,8 +18,13 @@
 // — main first — so fill order and tab order survive the collapse.
 
 /** Apply to the ONE rail child that should pin while the main column scrolls —
- *  the summary. Sticky only once the layout is actually two-column (@4xl). */
-export const EDITOR_RAIL_STICKY = '@4xl:sticky @4xl:top-4';
+ *  the summary. Sticky only once the layout is actually two-column (@4xl).
+ *
+ *  ABOVE what follows it. The rail keeps going under a pinned summary (a quote
+ *  carries Signature, Deposits and History below it), and without a stacking
+ *  order the next card slid OVER the pinned one, so the summary's own text read
+ *  through "Nobody has been asked to sign this yet" (sparx persona issue 085). */
+export const EDITOR_RAIL_STICKY = '@4xl:sticky @4xl:top-4 @4xl:z-10';
 
 interface EditorLayoutProps {
   /** The form itself, in completion order. */

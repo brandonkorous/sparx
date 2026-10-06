@@ -61,6 +61,21 @@ export interface DraftLine {
   appliedMarkup?: LineMarkupSnapshot | null;
   /** Cost basis the server resolved, in cents (for margin display). */
   costCents?: number | null;
+  /**
+   * Refundable core deposit per unit on a rebuilt part (sparx issue 051), in
+   * dollars. `undefined` means "not said": the server then takes the part's own
+   * deposit. `null` takes it off.
+   */
+  coreCharge?: number | null;
+  /**
+   * Where the price came from, in words: "Fleet price: 12% off $600.00" (issue
+   * 077). Null when it is the list price or was typed. Stored in the line's
+   * metadata as `priceNote`; `undefined` means "not said", and the save leaves
+   * the stored bag alone.
+   */
+  priceNote?: string | null;
+  /** The line's stored metadata bag, so a save MERGES the note into it. */
+  metadata?: Record<string, unknown> | null;
 }
 
 /** True when a line prices off a cost basis rather than a typed unit price — its
@@ -81,6 +96,8 @@ export interface DocumentTotals {
   taxTotal: number;
   shippingTotal: number;
   surchargeTotal: number;
+  /** Refundable core deposits: never taxed, outside the subtotal, in the total. */
+  coreChargeTotal: number;
   total: number;
 }
 
@@ -123,12 +140,14 @@ export function computeTotals(
   let subtotal = 0;
   let discountTotal = 0;
   let taxTotal = 0;
+  let coreChargeTotal = 0;
 
   for (const line of lines) {
     const computed = computeLine(line, taxRate);
     subtotal += computed.lineSubtotal;
     discountTotal += line.discountAmount;
     taxTotal += computed.taxAmount;
+    coreChargeTotal += line.coreCharge == null ? 0 : round2(line.coreCharge * line.quantity);
   }
 
   subtotal = round2(subtotal);
@@ -136,6 +155,7 @@ export function computeTotals(
   taxTotal = round2(taxTotal);
   const shipping = round2(shippingTotal);
   const surcharge = round2(surchargeTotal);
+  const cores = round2(coreChargeTotal);
 
   return {
     subtotal,
@@ -143,7 +163,8 @@ export function computeTotals(
     taxTotal,
     shippingTotal: shipping,
     surchargeTotal: surcharge,
-    total: round2(subtotal - discountTotal + taxTotal + shipping + surcharge),
+    coreChargeTotal: cores,
+    total: round2(subtotal - discountTotal + taxTotal + shipping + surcharge + cores),
   };
 }
 

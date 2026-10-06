@@ -111,7 +111,8 @@ function websiteOf(raw: string | undefined): string | undefined {
 export interface ReadAccountRow {
   companyName: string | undefined;
   email: string | undefined;
-  pricingTier: string | undefined;
+  /** The `pricing_tier` cell: the NAME of a tier, linked by `linkTier`. */
+  tierName: string | undefined;
   paymentTerms: PaymentTerms | undefined;
   creditLimit: number | undefined;
   discountPercent: number | undefined;
@@ -162,7 +163,7 @@ export function readAccountRow(row: B2bAccountRow): ReadAccountRow {
   return {
     companyName: blank(row.company_name)?.slice(0, 255),
     email: blank(row.email),
-    pricingTier: blank(row.pricing_tier)?.slice(0, 63),
+    tierName: blank(row.pricing_tier)?.slice(0, 63),
     paymentTerms,
     creditLimit,
     discountPercent,
@@ -201,9 +202,11 @@ async function tierByName(
 /**
  * Point the account at the named pricing tier, so the tier actually prices its orders.
  *
- * The free-text `pricingTier` column is only a label; pricing reads `pricingTierId`.
- * Writing the label alone would show the tier on the account while charging list
- * price, so a name with no matching tier is reported rather than left looking done.
+ * Pricing reads `pricingTierId`, and the id is all that is written. The importer
+ * also used to copy the name into the legacy free-text column, which priced
+ * nothing; a name with no matching tier left the account LOOKING like it was on
+ * that tier while it paid list price (sparx persona issue 086). Now an unmatched
+ * name writes nothing and is reported instead.
  */
 async function linkTier(
   ctx: { tenantId: string },
@@ -215,9 +218,10 @@ async function linkTier(
   if (tierId === null) {
     return `There is no pricing tier called “${name}” yet, so this account is priced at list until you create that tier and choose it on the account.`;
   }
-  await withTenant(ctx, (tx) =>
-    tx.company.update({ where: { id: accountId }, data: { pricingTierId: tierId } })
-  );
+  // Through the company's own save, like every other field this import writes:
+  // one write path, so whatever a save of an account's tier has to do (close
+  // its "Set up prices and terms" task once it is set up, say) happens here too.
+  await companyService.update(ctx, accountId, { pricingTierId: tierId });
   return null;
 }
 
@@ -330,7 +334,6 @@ export async function processB2bAccountRows(
           companyName,
           ...(read.taxId !== undefined ? { taxId: read.taxId } : {}),
           ...(read.website !== undefined ? { website: read.website } : {}),
-          ...(read.pricingTier !== undefined ? { pricingTier: read.pricingTier } : {}),
           ...(read.creditLimit !== undefined ? { creditLimit: read.creditLimit } : {}),
           ...(read.paymentTerms !== undefined ? { paymentTerms: read.paymentTerms } : {}),
           ...(read.discountPercent !== undefined ? { discountPercent: read.discountPercent } : {}),
@@ -346,7 +349,6 @@ export async function processB2bAccountRows(
           companyName,
           taxId: read.taxId ?? null,
           website: read.website ?? null,
-          pricingTier: read.pricingTier ?? null,
           creditLimit: read.creditLimit ?? 0,
           paymentTerms: read.paymentTerms ?? null,
           discountPercent: read.discountPercent ?? 0,
@@ -360,8 +362,8 @@ export async function processB2bAccountRows(
       }
 
       const notes = [...read.setAside];
-      if (read.pricingTier !== undefined) {
-        const note = await linkTier(ctx, tiers, accountId, read.pricingTier);
+      if (read.tierName !== undefined) {
+        const note = await linkTier(ctx, tiers, accountId, read.tierName);
         if (note !== null) notes.push(note);
       }
       if (read.email !== undefined) {

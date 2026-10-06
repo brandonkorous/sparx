@@ -25,6 +25,7 @@ import {
 
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
+import { settleBookingMoney } from '../../../lib/scheduling-payments.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -64,6 +65,9 @@ function occurrenceView(b: Booking) {
     status: b.status,
     startAt: b.startAt.toISOString(),
     endAt: b.endAt.toISOString(),
+    // The clock the occurrence's time is read on. Without it the console printed
+    // each one on the reader's computer's clock (sparx persona issue 086).
+    timezone: b.timezone,
   };
 }
 
@@ -116,10 +120,20 @@ const schedulingSeriesRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/scheduling/series/:id/cancel', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = CancelBookingSeriesInput.parse({ ...(request.body as object), id });
-    const result = await cancelBookingSeries(tenantId, input);
+    const { money, bookingIds, ...result } = await cancelBookingSeries(tenantId, input, userId);
+    // Each booking in the series is a cancellation like any other: its card is
+    // settled once the cancels have committed, and each is announced, so a
+    // freed slot reaches the waitlist (sparx persona issue 087).
+    await settleBookingMoney(request.log, { tenantId, userId }, money);
+    for (const bookingId of bookingIds) {
+      await publishBookingEvent('booking.cancelled', tenantId, userId, {
+        bookingId,
+        reason: input.reason ?? null,
+      });
+    }
     return ok(result);
   });
 };

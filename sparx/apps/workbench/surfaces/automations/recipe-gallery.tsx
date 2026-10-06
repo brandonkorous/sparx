@@ -41,7 +41,7 @@ import {
   useSetAutomationStatus,
   type Automation,
 } from './automations-data';
-import { automationState, parseActions } from './automations-presentation';
+import { automationState, parseActions, PlatformUpdateBadge } from './automations-presentation';
 import { automationHealth } from './automation-health';
 import { deriveModules } from './automations-catalog';
 import {
@@ -175,13 +175,17 @@ function RecipeCard({
           </div>
 
           <div className="mt-auto flex items-center justify-between gap-2 pt-1">
-            <Badge
-              color={health ? health.tone : state.tone}
-              variant="soft"
-              title={health ? health.detail : state.detail}
-            >
-              {health ? health.label : state.label}
-            </Badge>
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+              <Badge
+                color={health ? health.tone : state.tone}
+                variant="soft"
+                title={health ? health.detail : state.detail}
+              >
+                {health ? health.label : state.label}
+              </Badge>
+              {/* Customized, and we have improved it since: Customize is the way in. */}
+              <PlatformUpdateBadge platformUpdateAt={automation.platformUpdateAt} size="md" />
+            </div>
             <Button
               size="sm"
               variant="ghost"

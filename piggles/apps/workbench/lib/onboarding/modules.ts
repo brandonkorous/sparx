@@ -214,6 +214,62 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     replaces: 'a live chat service',
     addon: true,
   },
+  {
+    key: 'social',
+    name: 'Social posts',
+    desc: 'Plan, post, see what works',
+    long: 'Write a post once and send it to every page you run, on a calendar you can see a month ahead. Comments and messages from those pages land in one inbox, and each post shows how far it went.',
+    feats: [
+      'One post, every page you run',
+      'A calendar of what goes out when',
+      'Comments and messages in one inbox',
+      'Reach and clicks for every post',
+    ],
+    replaces: 'a social scheduling tool',
+    addon: true,
+  },
+  {
+    key: 'funnels',
+    name: 'Campaigns',
+    desc: 'Promotions, start to result',
+    long: 'Run a promotion from the page people land on to the sale or booking it brings in, and see which step loses them.',
+    feats: [
+      'One place for a whole promotion',
+      'Where people drop off, step by step',
+      'Results in sales and bookings, not clicks',
+      'Built from the pages and emails you already have',
+    ],
+    replaces: 'a landing-page and funnel tool',
+    addon: true,
+  },
+  {
+    key: 'finance',
+    name: 'Money',
+    desc: 'Spending, bills, profit',
+    long: 'What came in and what went out, in one place: card payments and payouts, bills to pay, repeating costs, and the profit on each job.',
+    feats: [
+      'Profit, overall and by job',
+      'Bills and repeating costs',
+      'Payments, payouts and deposits',
+      'Hands the books to your accountant',
+    ],
+    replaces: 'a bookkeeping app for spending',
+    addon: true,
+  },
+  {
+    key: 'staff',
+    name: 'My Team',
+    desc: 'People, schedules, hours',
+    long: 'Everyone who works for you, their shifts on a schedule, the hours they actually worked, their time off, and the tickets and licenses that have to stay current.',
+    feats: [
+      'A shift schedule everyone can see',
+      'Timesheets from real hours',
+      'Time off requests and approvals',
+      'Licenses and tickets with expiry dates',
+    ],
+    replaces: 'a staff scheduling and timesheet app',
+    addon: true,
+  },
 ];
 
 export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntries(

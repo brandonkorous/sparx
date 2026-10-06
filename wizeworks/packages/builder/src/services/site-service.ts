@@ -2880,6 +2880,18 @@ export async function installSite(
   // `/products/:handle` before `sync` ever sees it, so it lands at its own address.
   const slugForPage = (p: (typeof pages)[number]): string => slugForCollectionPage(p);
 
+  // What is on the site now, to say afterwards which pages the design replaced.
+  // `sync` with `allowReplace` deletes every page the design does not carry and
+  // writes nothing down, so a site's pages could vanish with no record at all:
+  // Devi's main site lost 16 that way, and the trail had to be rebuilt from
+  // timestamps (persona issue 273).
+  const before = await withTenant(ctx, (tx) =>
+    tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { id: true, name: true },
+    })
+  );
+
   await sync(
     ctx,
     {
@@ -2890,6 +2902,29 @@ export async function installSite(
     },
     { allowReplace: true }
   );
+
+  await withTenant(ctx, async (tx) => {
+    const kept = new Set(
+      (
+        await tx.builderPage.findMany({
+          where: { id: { in: before.map((p) => p.id) } },
+          select: { id: true },
+        })
+      ).map((p) => p.id)
+    );
+    for (const gone of before.filter((p) => !kept.has(p.id))) {
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        actorType: 'user',
+        action: 'builder.page.replaced',
+        entityType: 'BuilderPage',
+        entityId: gone.id,
+        diff: { before: { name: gone.name }, after: null },
+      });
+    }
+  });
 
   await withTenant(ctx, async (tx) => {
     for (const p of pages) {

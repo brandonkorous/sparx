@@ -1,14 +1,12 @@
 'use client';
 
 // Step 2 — Blueprint (the work pane). A gallery of complete, themed starting points,
-// FILTERED to the modules the tenant turned on (only blueprints whose every required
-// module is on). Clicking one SELECTS it into the setup card (select-then-confirm);
+// the story's match first. Clicking one SELECTS it into the setup card (select-then-confirm);
 // the card's "Use this blueprint" installs it. "Start from scratch" is the blank
 // path. The install itself is the orchestrator's commit — this body only chooses.
 
 import { useState } from 'react';
 import {
-  Badge,
   Button,
   Field,
   FieldControl,
@@ -18,9 +16,10 @@ import {
   Switch,
   Text,
 } from '@wizeworks/silicaui-react';
-import { faCheck, faPencilRuler } from '@fortawesome/pro-solid-svg-icons';
+import { faPencilRuler } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import type { BlueprintVertical, WizardBlueprint } from '../../../lib/onboarding/types';
+import type { WizardBlueprint } from '../../../lib/onboarding/types';
+import { BlueprintCard, VERTICAL_LABEL } from './blueprint-card';
 
 /** The sentinel the orchestrator reads as "blank canvas, no blueprint". */
 export const SCRATCH = 'scratch';
@@ -33,26 +32,10 @@ export const SCRATCH = 'scratch';
 // `<BRAND>_GOLDEN_BLUEPRINT`; the console reads it as `goldenKey` off
 // `/v1/tenant/onboarding` rather than naming anybody's.
 
-const VERTICAL_LABEL: Record<BlueprintVertical, string> = {
-  retail: 'Shop',
-  b2b: 'Wholesale',
-  content: 'Publication',
-  services: 'Services',
-};
-
-function contentsLine(bp: WizardBlueprint): string {
-  const c = bp.contents;
-  const parts: string[] = [];
-  if (c.products > 0) parts.push(`${c.products} products`);
-  if (c.pages > 0) parts.push(`${c.pages} pages`);
-  else if (c.content > 0) parts.push(`${c.content} pages`);
-  parts.push(`${c.theme} theme`);
-  return parts.join(' · ');
-}
-
 export function StepBlueprint({
   blueprints,
   selectedKey,
+  recommendedKey,
   onSelect,
   sampleData,
   onSampleData,
@@ -61,6 +44,8 @@ export function StepBlueprint({
   blueprints: WizardBlueprint[];
   /** The selected blueprint key, the SCRATCH sentinel, or null. */
   selectedKey: string | null;
+  /** The starting point the story matched, drawn first; null when none. */
+  recommendedKey: string | null;
   onSelect: (key: string) => void;
   /** Whether the chosen starting point brings its examples (issue 098). */
   sampleData: boolean;
@@ -79,7 +64,13 @@ export function StepBlueprint({
     bp.summary.toLowerCase().includes(q) ||
     VERTICAL_LABEL[bp.vertical].toLowerCase().includes(q);
 
-  const shown = blueprints.filter(matchesQ);
+  // The story's match first, keyed on the recommendation (never the click), so the
+  // selection is on screen rather than 22,000px down (sparx persona issue 008).
+  const matched = blueprints.filter(matchesQ);
+  const shown = [
+    ...matched.filter((bp) => bp.key === recommendedKey),
+    ...matched.filter((bp) => bp.key !== recommendedKey),
+  ];
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
@@ -97,39 +88,8 @@ export function StepBlueprint({
         </Text>
       </div>
 
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="border-base-300 bg-base-100 h-64 animate-pulse rounded-xl border"
-            />
-          ))}
-        </div>
-      ) : shown.length === 0 ? (
-        <div className="border-base-300 bg-base-100 flex flex-col items-center gap-2 rounded-xl border px-6 py-12 text-center">
-          <Text className="font-medium">No starting points match</Text>
-          <Text className="max-w-md text-sm">
-            {q
-              ? `Nothing matches “${search}”. Clear the search to see every starting point.`
-              : 'No starting points are available yet. Start from a blank canvas below.'}
-          </Text>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {shown.map((bp) => (
-            <BlueprintCard
-              key={bp.key}
-              blueprint={bp}
-              selected={bp.key === selectedKey}
-              onSelect={() => onSelect(bp.key)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* The examples choice (issue 098). Only when a design is actually
-          chosen: it means nothing on the blank path, which brings nothing. */}
+      {/* Above the gallery: below 190 cards nobody found them (sparx persona issue
+          015). Examples only when a design is chosen; the blank path brings none. */}
       {selectedKey && selectedKey !== SCRATCH ? (
         <div className="border-base-300 bg-base-100 rounded-xl border px-5 py-4">
           <Field>
@@ -170,62 +130,45 @@ export function StepBlueprint({
         </div>
         <Button
           variant={selectedKey === SCRATCH ? 'solid' : 'outline'}
-          color={selectedKey === SCRATCH ? 'module' : 'neutral'}
+          color={selectedKey === SCRATCH ? 'module' : undefined}
           size="sm"
           onClick={() => onSelect(SCRATCH)}
         >
           {selectedKey === SCRATCH ? 'Selected' : 'Start blank'}
         </Button>
       </div>
-    </div>
-  );
-}
 
-function BlueprintCard({
-  blueprint: bp,
-  selected,
-  onSelect,
-}: {
-  blueprint: WizardBlueprint;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      className={`group bg-base-100 flex flex-col overflow-hidden rounded-xl border text-left transition-colors ${
-        selected ? 'border-module ring-module ring-1' : 'border-base-300 hover:border-module'
-      }`}
-    >
-      <div className="border-base-300 bg-base-200 relative aspect-[16/10] w-full border-b">
-        {bp.preview ? (
-          <img
-            src={bp.preview}
-            alt=""
-            className="size-full object-cover object-top"
-            loading="lazy"
-          />
-        ) : null}
-        <span className="absolute top-2.5 right-2.5">
-          {selected ? (
-            <Badge color="module" variant="solid" size="sm">
-              <Icon glyph={faCheck} className="size-3" aria-hidden />
-              Selected
-            </Badge>
-          ) : (
-            <Badge color="neutral" variant="solid" size="sm">
-              {VERTICAL_LABEL[bp.vertical]}
-            </Badge>
-          )}
-        </span>
-      </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <p className="font-medium">{bp.name}</p>
-        <p className="line-clamp-2 text-sm">{bp.summary}</p>
-        <p className="mt-1 text-sm">{contentsLine(bp)}</p>
-      </div>
-    </button>
+      {loading ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="border-base-300 bg-base-100 h-64 animate-pulse rounded-xl border"
+            />
+          ))}
+        </div>
+      ) : shown.length === 0 ? (
+        <div className="border-base-300 bg-base-100 flex flex-col items-center gap-2 rounded-xl border px-6 py-12 text-center">
+          <Text className="font-medium">No starting points match</Text>
+          <Text className="max-w-md text-sm">
+            {q
+              ? `Nothing matches “${search}”. Clear the search to see every starting point.`
+              : 'No starting points are available yet. Start from a blank canvas above.'}
+          </Text>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {shown.map((bp) => (
+            <BlueprintCard
+              key={bp.key}
+              blueprint={bp}
+              selected={bp.key === selectedKey}
+              recommended={bp.key === recommendedKey}
+              onSelect={() => onSelect(bp.key)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

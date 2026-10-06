@@ -115,7 +115,16 @@ export async function handleTickRequest(req: IncomingMessage, res: ServerRespons
   res.end(JSON.stringify(summary));
 }
 
-// ── POST /internal/cron/reconcile-seeds (daily CronJob) ─────────────────────
+// ── POST /internal/cron/reconcile-seeds (daily CronJob + every release) ─────
+//
+// Two callers. The daily CronJob runs the whole pass: the seed reconcile and,
+// in the same slot, the campaign scan. The release pipeline calls it with
+// `?only=seeds` once the new containers are up, so a release that changes a
+// system automation reaches every business at once rather than at 02:07 the
+// next night (CLAUDE.md, "Data is a deploy stage"). It runs the SAME
+// `reconcileSeeds`, nothing of its own. The campaign scan stays daily: it puts
+// people into campaigns by how long they have been quiet, and running it on
+// every release would move that clock to whenever somebody shipped.
 export async function handleReconcileRequest(
   req: IncomingMessage,
   res: ServerResponse
@@ -125,8 +134,15 @@ export async function handleReconcileRequest(
     res.end('Forbidden');
     return;
   }
+  const seedsOnly = new URL(req.url ?? '/', 'http://local').searchParams.get('only') === 'seeds';
   const seeds = await reconcileSeeds(logger);
-  logger.info(seeds, 'reconcile-seeds complete');
+  logger.info({ ...seeds, seedsOnly }, 'reconcile-seeds complete');
+  if (seedsOnly) {
+    res.statusCode = 200;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify(seeds));
+    return;
+  }
   // Same daily slot: put people in campaigns whose first step is "went quiet".
   const campaigns = await scanCampaigns(logger);
   logger.info(campaigns, 'campaign scan complete');
@@ -231,7 +247,8 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
 }
 
 export async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
-  const url = req.url ?? '/';
+  // The path alone: the reconcile route takes a query (`?only=seeds`).
+  const url = (req.url ?? '/').split('?')[0] ?? '/';
 
   if (req.method === 'GET' && (url === '/healthz' || url === '/')) {
     res.statusCode = 200;

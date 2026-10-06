@@ -25,6 +25,7 @@ import {
 } from '@wizeworks/automation';
 
 import {
+  accountSetUpFields,
   B2B_QUOTE_WORKFLOW_SLUG,
   businessTimeZone,
   daysPastDue,
@@ -34,6 +35,7 @@ import {
 // HOW AN ITEM IS NAMED — the one module that answers it, rather than a sixth
 // local attempt built out of `product.title` (issue 861).
 import { variantLabel, VARIANT_LABEL_SELECT } from '@wizeworks/inventory';
+import { resolveSiteOrigin, siteShowingRow, siteUrl } from '@wizeworks/db/site-origin';
 
 import { fieldValueToString } from './entity.js';
 
@@ -176,6 +178,7 @@ const BILLING_SELECT = {
   companyId: true,
   propertyId: true,
   workflow: { select: { slug: true } },
+  stageId: true,
   stage: { select: { stageType: true, name: true } },
   // Whether the customer has actually been given this document. There is no
   // `sent_at` column, so the send route records it in the metadata bag.
@@ -195,6 +198,7 @@ interface BillingLike {
   customerId: string | null;
   companyId: string | null;
   workflow: { slug: string };
+  stageId: string;
   stage: { stageType: string; name: string };
   metadata: unknown;
 }
@@ -231,6 +235,9 @@ function billingFields(d: BillingLike, now: number, timeZone?: string | null): R
     'invoice.assignedUserId': d.assignedUserId,
     'invoice.workflowSlug': d.workflow.slug,
     'invoice.stageType': d.stage.stageType,
+    // The stage itself, so a task opened on it ("was approved: take it to the
+    // next step") knows which stage it waits for the document to leave.
+    'invoice.stageId': d.stageId,
     // ── HAS THE CUSTOMER ACTUALLY BEEN GIVEN THIS? ──────────────────────────
     //
     // Raising an invoice and sending it are two different acts, and the whole
@@ -305,8 +312,10 @@ async function hydrateB2bAccount(ctx: TenantCtx, accountId: string): Promise<Res
     'b2bAccount.id': a.id,
     'b2bAccount.companyName': a.companyName,
     'b2bAccount.status': a.status,
-    'b2bAccount.paymentTerms': a.paymentTerms,
-    'b2bAccount.creditLimit': num(a.creditLimit),
+    // Terms and limit through the same builder the set-up rule reads them with,
+    // so the automation's condition and the check that closes the set-up task
+    // see one value (`ACCOUNT_SET_UP_TO_DO` in @wizeworks/crm-schemas).
+    ...accountSetUpFields(a),
     'b2bAccount.assignedRepId': a.assignedRepId,
     ...(await resolveContact(ctx, { companyId: a.id })),
   };
@@ -951,41 +960,18 @@ function attachmentNames(value: unknown): string[] {
 // executor is entity-agnostic (docs/133 §9). They ALSO fill entity-specific
 // `product.*` / `content.*` fields so a rule can still condition on them.
 
-/** The site's canonical public base URL: its canonical/active domain, else the
- *  `<slug>.sparx.zone` subdomain. Resolves against the given site, or the tenant's
- *  primary site when the entity isn't pinned to one. Best-effort — null if the
- *  tenant somehow has no site (the drafted post then carries no link, and the
- *  human reviewer adds one). Reads the non-RLS `domains` dispatch table + the
- *  tenant-scoped `properties`, both through ctx.tx. */
-async function resolvePropertyBaseUrl(
-  ctx: TenantCtx,
-  propertyId: string | null
-): Promise<string | null> {
-  const property = propertyId
-    ? await ctx.tx.property.findUnique({
-        where: { id: propertyId },
-        select: { id: true, slug: true },
-      })
-    : await ctx.tx.property.findFirst({
-        where: { isPrimary: true },
-        select: { id: true, slug: true },
-      });
-  if (!property) return null;
-  const domain = await ctx.tx.domain.findFirst({
-    where: { propertyId: property.id, status: { in: ['active', 'verified'] } },
-    // Canonical host first; a real custom/purchased domain before the subdomain
-    // ('custom' < 'purchased' < 'subdomain' alphabetically).
-    orderBy: [{ isCanonical: 'desc' }, { type: 'asc' }],
-    select: { host: true },
-  });
-  // No constructed fallback. Every property has a Domain row from the moment it
-  // is provisioned, so `null` here means the row is genuinely missing — and
-  // `${slug}.sparx.zone` was not a recovery from that, it was a guess that named
-  // one brand's zone for tenants of every brand. Returning null lets the caller
-  // skip the link; inventing a host mails somebody a dead one on the wrong
-  // platform.
-  if (!domain?.host) return null;
-  return `https://${domain.host}`;
+/** The site's public base URL (`https://host`, no trailing slash): the one resolver
+ *  every customer-facing link uses (`@wizeworks/db/site-origin`), so a drafted post
+ *  links to the same address as the site's emails, sitemap and sales channels. A
+ *  null `propertyId` is the tenant's primary site.
+ *
+ *  This used to be a second copy of that question with its own order (any active
+ *  domain, canonical first) and no answer at all for a site whose domain row was
+ *  missing; two answers to one question is how sparx persona issue 064 happened.
+ *  The shared resolver never guesses a brand: it mints in the zone read off the
+ *  subdomain the tenant was provisioned on. */
+function resolvePropertyBaseUrl(ctx: TenantCtx, propertyId: string | null): Promise<string> {
+  return resolveSiteOrigin(ctx.tx, ctx.tenantId, propertyId);
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -1080,8 +1066,14 @@ async function hydrateProduct(ctx: TenantCtx, productId: string): Promise<Resolv
   // Pin the post to a single site only when the product is scoped to exactly one
   // (no links = visible on all sites → the tenant's primary site).
   const propertyId = p.propertyLinks.length === 1 ? p.propertyLinks[0]!.propertyId : null;
-  const base = await resolvePropertyBaseUrl(ctx, propertyId);
-  const url = base ? `${base}/products/${encodeURIComponent(p.handle)}` : null;
+  // The link opens on a site that SHOWS the product: a product scoped to several
+  // sites is not necessarily on the primary.
+  const linkSite = siteShowingRow(
+    p.propertyLinks.map((l) => l.propertyId),
+    propertyId
+  );
+  const base = await resolvePropertyBaseUrl(ctx, linkSite);
+  const url = siteUrl(base, `/products/${encodeURIComponent(p.handle)}`);
   const imageAssetId = p.ogImageId ?? p.images[0]?.mediaAssetId ?? null;
   return productAnnounceFields(p, url, imageAssetId, propertyId);
 }
@@ -1169,7 +1161,13 @@ async function hydrateContentEntry(ctx: TenantCtx, entryId: string): Promise<Res
     select: { urlPattern: true },
   });
   const propertyId = e.propertyLinks.length === 1 ? e.propertyLinks[0]!.propertyId : null;
-  const base = await resolvePropertyBaseUrl(ctx, propertyId);
+  const base = await resolvePropertyBaseUrl(
+    ctx,
+    siteShowingRow(
+      e.propertyLinks.map((l) => l.propertyId),
+      propertyId
+    )
+  );
   return contentAnnounceFields(e, type?.urlPattern ?? null, base, propertyId);
 }
 
@@ -1198,6 +1196,13 @@ const B2B_ACCOUNT_EVENTS = ['crm.b2b_account.created'];
 // primary contact as customer.*) exactly like a b2b_account event, plus the
 // overdue/invoice numbers off the payload.
 const B2B_NOTIFICATION_EVENTS = ['b2b.invoice.overdue', 'b2b.account.credit_hold'];
+
+// An invoice issued on an account's terms (checkout, an accepted quote, a signed
+// off order). Its payload carries `invoiceId`, a billing document, so it
+// hydrates exactly like the `crm.billing_document.*` events: `invoice.*` plus
+// whoever it bills as `customer.*`. Without a resolver the automation that
+// emails it had nothing to read (sparx persona issue 085).
+const B2B_INVOICE_EVENTS = ['b2b.invoice.created'];
 
 // Email engagement (Mailgun webhook → platform bus → api-rest republish). Dormant
 // until email.* is teed to the automation fan-in — see hydrateEmailEngagement.
@@ -1246,6 +1251,9 @@ export const installEntityResolvers = installOnce((): void => {
       ev,
       byId(['documentId', 'billingDocumentId', 'quoteId', 'id'], hydrateBillingDocument)
     );
+  }
+  for (const ev of B2B_INVOICE_EVENTS) {
+    registerResolver(ev, byId(['invoiceId', 'documentId', 'id'], hydrateBillingDocument));
   }
   for (const ev of B2B_ACCOUNT_EVENTS) {
     // `crm.b2b_account.created` publishes `{ companyId, ... }` (wizeworks/packages/crm

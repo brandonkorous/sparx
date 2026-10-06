@@ -9,7 +9,7 @@
 // the editor and the read views can never disagree with the engine. Parsing is
 // defensive: a malformed legacy row degrades to a raw view rather than throwing.
 
-import { Badge } from '@wizeworks/silicaui-react';
+import { Badge, type BadgeSize } from '@wizeworks/silicaui-react';
 import {
   Ban,
   Building2,
@@ -65,6 +65,7 @@ import {
   type ModuleSlug,
 } from './automations-catalog';
 import type { Tone } from './automations-data';
+import { PLATFORM_UPDATE_TEXT, type RuleWords } from './platform-version';
 import { scheduleLine, type DailySchedule, type ReaderClock } from './schedule-clock';
 
 // ─── parsing (defensive) ─────────────────────────────────────────────────────
@@ -257,6 +258,26 @@ export function TierBadge({ origin, locked }: { origin: string; locked: boolean 
   return null;
 }
 
+/** Shown on a rule sparx set up whose newer version was held back because the
+ *  business changed it. Warning, not info: it is the one tier state that asks the
+ *  business to look, and it must not read the same as "Set up by sparx". The row
+ *  it sits on opens the editor, where the switch is. */
+export function PlatformUpdateBadge({
+  platformUpdateAt,
+  size = 'sm',
+}: {
+  platformUpdateAt: string | null;
+  /** To sit level with the badge beside it. */
+  size?: BadgeSize;
+}) {
+  if (!platformUpdateAt) return null;
+  return (
+    <Badge color="warning" variant="soft" size={size} title={PLATFORM_UPDATE_TEXT.badgeTitle}>
+      {PLATFORM_UPDATE_TEXT.label}
+    </Badge>
+  );
+}
+
 // ─── condition + action read views ───────────────────────────────────────────
 
 function conditionValueText(value: unknown): string {
@@ -346,6 +367,25 @@ export function actionSummaryText(action: Action): string {
     default:
       return actionLabel(action.type);
   }
+}
+
+/** A rule's parts in the words the flow map uses, for comparing two versions of
+ *  it (`platformVersionChanges`). */
+export function ruleWords(clock: ReaderClock): RuleWords {
+  return {
+    trigger: (triggerType, triggerConfig) => summarizeTrigger(triggerType, triggerConfig, clock),
+    conditions: (group, none) =>
+      group.conditions.length === 0
+        ? [none]
+        : [
+            conditionsHeadline(group),
+            ...group.conditions.map((node) =>
+              isConditionGroup(node) ? 'A group of conditions' : conditionToText(node)
+            ),
+          ],
+    steps: (actions) =>
+      parseActions(actions).map((action, i) => `${String(i + 1)}. ${actionSummaryText(action)}`),
+  };
 }
 
 /** How many steps sit on each side of a branch — what the canvas shows on the

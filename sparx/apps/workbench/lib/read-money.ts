@@ -150,6 +150,40 @@ export function optionalMoneyText(cents: number | undefined): string {
   return cents === undefined ? '' : moneyText(cents);
 }
 
+/**
+ * The text `MoneyInput` shows for an amount in whole units, settled to the cent.
+ *
+ * Null is NOTHING ENTERED and shows as an empty box. The Pricing tab could not
+ * say that: it drew `value={cost ?? 0}`, so 777 versions with no cost on record
+ * each read 0.00, a cost of nothing presented as a measured one (sparx persona
+ * issue 086). [[feedback_never_present_absence_as_measurement]]
+ */
+export function moneyFieldText(value: number | null): string {
+  return value === null ? '' : value.toFixed(2);
+}
+
+/**
+ * What one keystroke in `MoneyInput` should report upward, or null to report
+ * nothing.
+ *
+ * `blank` is what an empty box means: 0 for an amount every record has (a
+ * price, where an empty box is a running total of nothing), null for one that
+ * can be missing (a cost nobody has entered). A typed 0 is 0 either way, which
+ * is the half the Pricing tab got wrong: it mapped a typed 0 to "not set", so a
+ * part that really cost nothing could never be recorded as one.
+ *
+ * Half-typed text reports nothing rather than zero, so a total does not drop to
+ * nothing mid-word on the way from "8," to "8,50".
+ */
+export function readMoneyField(
+  text: string,
+  options: { readonly blank: 0 | null }
+): { readonly value: number | null } | null {
+  if (text.trim() === '') return { value: options.blank };
+  const { amount } = readMoney(text, { allowZero: true });
+  return amount === null ? null : { value: amount };
+}
+
 /** Both readings of what was typed into a money field whose owner stores CENTS. */
 export interface CentsReading {
   /** What to store. Undefined means nothing is set. */

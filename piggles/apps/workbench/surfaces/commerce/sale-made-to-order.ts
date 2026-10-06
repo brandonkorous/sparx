@@ -5,6 +5,7 @@
 // the write.
 
 import type { SaleLine } from './sale-data';
+import { lineCoreDeposit } from './sale-core';
 
 /** The longest notice anything on this sale needs, or null when none does. The
  *  longest and not the sum: two things being made alongside each other are
@@ -31,6 +32,9 @@ export function depositDue(lines: SaleLine[]): number | null {
   let asked = 0;
   let any = false;
   for (const line of lines) {
+    // A rebuilt part's core deposit is taken now, whatever else is on the sale
+    // (sparx issue 061). It is not part of the price a deposit rule divides.
+    asked += lineCoreDeposit(line);
     const rule = line.deposit;
     const lineTotal = (Number(line.price) || 0) * line.quantity;
     if (!rule || rule.type === 'none') {

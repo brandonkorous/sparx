@@ -17,14 +17,14 @@
 //   /v3/vault/setup-tokens    — vault: the shopper approves ONCE
 //   /v3/vault/payment-tokens  — vault: exchange the approved setup token
 
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
 import type {
   ChargeStoredMethodParams,
   CompleteVaultParams,
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
   CreateSetupSessionParams,
+  LookedUpPayment,
+  LookupPaymentParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
@@ -33,13 +33,14 @@ import type {
   RefundResult,
   SetupSession,
   StoredChargeResult,
+  VaultFromPaymentParams,
   VaultedMethod,
   WebhookEvent,
 } from '../gateway';
 import {
   GatewayApiError,
   loadCredentials,
-  orderReference,
+  paymentReference,
   postForm,
   postJson,
   requestJson,
@@ -87,6 +88,7 @@ interface OrderResponse {
   status: string;
   links?: { rel: string; href: string; method?: string }[];
   purchase_units?: {
+    amount?: { value?: string; currency_code?: string };
     payments?: {
       captures?: {
         id: string;
@@ -147,7 +149,7 @@ export class PayPalGateway implements PaymentGateway {
 
   async createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent> {
     const { base, headers } = await this.auth(params.tenantId);
-    const reference = orderReference(params);
+    const reference = paymentReference();
 
     const order = await postJson<OrderResponse>(
       `${base}/v2/checkout/orders`,
@@ -163,10 +165,28 @@ export class PayPalGateway implements PaymentGateway {
             },
           },
         ],
-        ...(params.returnUrl || params.cancelUrl
+        ...(params.returnUrl || params.cancelUrl || params.saveForLater
           ? {
               payment_source: {
                 paypal: {
+                  // Keep this PayPal account for a repeat order (issue 739): the
+                  // same MERCHANT mandate a setup token captures, taken during the
+                  // purchase. `ON_SUCCESS` means nothing is kept unless the
+                  // payment goes through, so an abandoned checkout leaves no token.
+                  ...(params.saveForLater
+                    ? {
+                        attributes: {
+                          ...(params.saveForLater.customerRef
+                            ? { customer: { id: params.saveForLater.customerRef } }
+                            : {}),
+                          vault: {
+                            store_in_vault: 'ON_SUCCESS',
+                            usage_type: 'MERCHANT',
+                            customer_type: 'CONSUMER',
+                          },
+                        },
+                      }
+                    : {}),
                   experience_context: {
                     ...(params.returnUrl ? { return_url: params.returnUrl } : {}),
                     ...(params.cancelUrl ? { cancel_url: params.cancelUrl } : {}),
@@ -201,10 +221,9 @@ export class PayPalGateway implements PaymentGateway {
   //
   // Capture DOES exist for PayPal, but it needs the tenant to mint an access
   // token and the interface signature is `(intentId, amount?)` — the same reason
-  // webhook parsing is `parseWebhookForTenant`. The hosted-return route calls
-  // `captureOrderForTenant` below; the reconciler is driven by the
-  // PAYMENT.CAPTURE.COMPLETED webhook either way, so a shopper who closes the
-  // tab mid-return still gets their order.
+  // webhook parsing is `parseWebhookForTenant`. An approved order is captured
+  // by `lookupPayment`, which checkout completion and the stranded-payment
+  // sweep call; `captureOrderForTenant` below is the same capture on its own.
   confirmPayment(): Promise<PaymentResult> {
     return Promise.resolve({ success: false, errorMessage: 'PayPal confirms on its own page' });
   }
@@ -241,9 +260,16 @@ export class PayPalGateway implements PaymentGateway {
     }
   }
 
+  /**
+   * Give money back. PayPal refunds a CAPTURE, and the reference a checkout
+   * keeps is the ORDER, so every refund was sent an order id where a capture
+   * id belongs and PayPal answered "not found" (issue 917). The order is read
+   * for its capture; a reference that is not an order is taken as the capture.
+   */
   async refund(params: RefundParams): Promise<RefundResult> {
     try {
       const { base, headers } = await this.auth(params.tenantId);
+      const captureId = await this.captureIdFor(base, headers, params.chargeId);
       // A PARTIAL refund needs a currency, and `RefundParams` carries only an
       // amount — so read it off the capture rather than assuming USD, which
       // would silently refund the wrong sum for every non-USD tenant. A full
@@ -252,7 +278,7 @@ export class PayPalGateway implements PaymentGateway {
       if (params.amount !== undefined) {
         const capture = await requestJson<{ amount?: { currency_code?: string } }>(
           'GET',
-          `${base}/v2/payments/captures/${encodeURIComponent(params.chargeId)}`,
+          `${base}/v2/payments/captures/${encodeURIComponent(captureId)}`,
           undefined,
           headers
         );
@@ -264,9 +290,9 @@ export class PayPalGateway implements PaymentGateway {
         };
       }
       const res = await postJson<{ id: string; amount?: { value?: string } }>(
-        `${base}/v2/payments/captures/${encodeURIComponent(params.chargeId)}/refund`,
+        `${base}/v2/payments/captures/${encodeURIComponent(captureId)}/refund`,
         body,
-        { ...headers, 'paypal-request-id': `refund-${params.chargeId}-${params.amount ?? 'full'}` }
+        { ...headers, 'paypal-request-id': `refund-${captureId}-${params.amount ?? 'full'}` }
       );
       return {
         success: true,
@@ -386,12 +412,129 @@ export class PayPalGateway implements PaymentGateway {
       methodRef: vaulted.id,
       customerRef: vaulted.customer?.id ?? params.customerRef ?? '',
       // A saved PayPal ACCOUNT has no brand or last-4. "PayPal" is what the
-      // shopper will recognise in a list of saved methods, and it beats a blank
+      // shopper will recognize in a list of saved methods, and it beats a blank
       // row — the storefront renders `brand` directly.
       brand: card?.brand ?? 'PayPal',
       last4: card?.last_digits ?? null,
       expMonth: expMonth ? Number(expMonth) : null,
       expYear: expYear ? Number(expYear) : null,
+    };
+  }
+
+  /**
+   * Where a payment stands at PayPal, in the words its webhook would use.
+   *
+   * The reference is the PayPal order, which is also what the capture webhook
+   * reports as the charge. The order's capture is the money: completed is paid,
+   * declined is failed, and anything else (not approved yet, or a capture
+   * PayPal is still reviewing) is still on its way. An order the shopper has
+   * approved is captured here, see below. Without this, every PayPal order
+   * stayed unpaid (issue 739).
+   */
+  async lookupPayment(params: LookupPaymentParams): Promise<LookedUpPayment | null> {
+    const { base, headers } = await this.auth(params.tenantId);
+    let order: OrderResponse;
+    try {
+      order = await requestJson<OrderResponse>(
+        'GET',
+        `${base}/v2/checkout/orders/${encodeURIComponent(params.paymentRef)}`,
+        undefined,
+        headers
+      );
+    } catch (err) {
+      if (err instanceof GatewayApiError && err.status === 404) return null;
+      throw err;
+    }
+    // Approved and not yet taken: the shopper pressed Pay Now on PayPal's page
+    // and came back. Taking the money is the step after that, and nothing else
+    // ever took it: `captureOrderForTenant` had no caller, so every PayPal
+    // checkout stopped at "approved" and PayPal let the approval lapse. The
+    // request id makes a second ask return the first capture, not a second one.
+    if (order.status === 'APPROVED' && !firstCapture(order)) {
+      try {
+        order = await postJson<OrderResponse>(
+          `${base}/v2/checkout/orders/${encodeURIComponent(order.id)}/capture`,
+          {},
+          { ...headers, 'paypal-request-id': `capture-${order.id}` }
+        );
+      } catch (err) {
+        // 422 is PayPal refusing the money itself (the funding source declined).
+        if (err instanceof GatewayApiError && err.status === 422) {
+          return {
+            status: 'failed',
+            data: { chargeId: order.id, amountCents: cents(order), currency: currencyOf(order) },
+          };
+        }
+        throw err;
+      }
+    }
+    const capture = firstCapture(order);
+    // The same fields `normalizePayPalEvent` reports: the order as the charge,
+    // amounts turned from PayPal's decimal strings into cents.
+    const data = { chargeId: order.id, amountCents: cents(order), currency: currencyOf(order) };
+    if (capture?.status === 'COMPLETED') return { status: 'succeeded', data };
+    if (capture?.status === 'DECLINED' || capture?.status === 'FAILED') {
+      return { status: 'failed', data };
+    }
+    if (!capture && order.status === 'VOIDED') return { status: 'failed', data };
+    return { status: 'pending', data };
+  }
+
+  /** The capture an order's money is in, or the reference itself when it is
+   *  not an order PayPal knows (a capture id kept from before). */
+  private async captureIdFor(
+    base: string,
+    headers: Record<string, string>,
+    reference: string
+  ): Promise<string> {
+    try {
+      const order = await requestJson<OrderResponse>(
+        'GET',
+        `${base}/v2/checkout/orders/${encodeURIComponent(reference)}`,
+        undefined,
+        headers
+      );
+      return firstCapture(order)?.id ?? reference;
+    } catch (err) {
+      if (err instanceof GatewayApiError && err.status === 404) return reference;
+      throw err;
+    }
+  }
+
+  /**
+   * The PayPal account a captured order kept because it was created with
+   * `saveForLater`. PayPal writes the vault onto the order itself once the
+   * capture succeeds, so this reads the order back rather than minting anything.
+   * A vault whose status is not `VAULTED` (still approving, or refused) is
+   * nothing a renewal could charge.
+   */
+  async vaultFromPayment(params: VaultFromPaymentParams): Promise<VaultedMethod | null> {
+    const { base, headers } = await this.auth(params.tenantId);
+    const order = await requestJson<{
+      status?: string;
+      payment_source?: {
+        paypal?: {
+          email_address?: string;
+          attributes?: { vault?: { id?: string; status?: string; customer?: { id?: string } } };
+        };
+      };
+    }>(
+      'GET',
+      `${base}/v2/checkout/orders/${encodeURIComponent(params.paymentRef)}`,
+      undefined,
+      headers
+    );
+    const vault = order.payment_source?.paypal?.attributes?.vault;
+    if (!vault?.id || vault.status !== 'VAULTED') return null;
+    return {
+      methodRef: vault.id,
+      customerRef: vault.customer?.id ?? params.customerRef ?? '',
+      // A PayPal account, not a card: no brand, no last 4, no expiry. "PayPal"
+      // is what the shopper recognizes in their list, same as completeVault.
+      brand: 'PayPal',
+      last4: null,
+      expMonth: null,
+      expYear: null,
     };
   }
 
@@ -494,23 +637,49 @@ export class PayPalGateway implements PaymentGateway {
 
   async parseWebhookForTenant(tenantId: string, event: WebhookEvent): Promise<ParsedWebhookEvent> {
     const creds = await loadCredentials(tenantId, PAYPAL_ID);
-    const secret = creds.secrets.webhook_secret;
-    if (secret) {
-      const expected = createHmac('sha256', secret).update(event.rawBody).digest('hex');
-      const got = event.signature.replace(/^sha256=/i, '');
-      const ok =
-        got.length === expected.length && timingSafeEqual(Buffer.from(expected), Buffer.from(got));
-      if (!ok) throw new Error('paypal webhook signature mismatch');
-    }
-    return normalizePayPalEvent(
-      JSON.parse(event.rawBody.toString('utf8')) as PayPalEventEnvelope,
-      tenantId
+    // PayPal does not sign with a shared secret. It signs with its own
+    // certificate, and the way to check a message is to hand it back to PayPal
+    // with the webhook's id. This used to compare an HMAC PayPal never sends, so
+    // an owner who filled in the old "Webhook secret" had every real message
+    // refused, and one who left it empty had every forged one accepted.
+    const webhookId = creds.publicMeta.webhook_id;
+    if (!webhookId) throw new Error('paypal webhook refused: no webhook ID is set');
+    const header = (name: string) => event.headers?.[name] ?? '';
+    const body = JSON.parse(event.rawBody.toString('utf8')) as PayPalEventEnvelope;
+    const { base, headers } = await this.auth(tenantId);
+    const verdict = await postJson<{ verification_status?: string }>(
+      `${base}/v1/notifications/verify-webhook-signature`,
+      {
+        auth_algo: header('paypal-auth-algo'),
+        cert_url: header('paypal-cert-url'),
+        transmission_id: header('paypal-transmission-id'),
+        transmission_sig: header('paypal-transmission-sig'),
+        transmission_time: header('paypal-transmission-time'),
+        webhook_id: webhookId,
+        webhook_event: body,
+      },
+      headers
     );
+    if (verdict.verification_status !== 'SUCCESS') {
+      throw new Error('paypal webhook signature mismatch');
+    }
+    return normalizePayPalEvent(body, tenantId);
   }
 }
 
 function linkHref(res: { links?: { rel: string; href: string }[] }, rel: string): string | null {
   return res.links?.find((l) => l.rel === rel)?.href ?? null;
+}
+
+/** The order's amount in cents, from PayPal's decimal string. */
+function cents(order: OrderResponse): number {
+  const amount = firstCapture(order)?.amount ?? order.purchase_units?.[0]?.amount;
+  return Math.round(Number(amount?.value ?? 0) * 100);
+}
+
+function currencyOf(order: OrderResponse): string {
+  const amount = firstCapture(order)?.amount ?? order.purchase_units?.[0]?.amount;
+  return (amount?.currency_code ?? 'USD').toUpperCase();
 }
 
 function firstCapture(order: OrderResponse) {

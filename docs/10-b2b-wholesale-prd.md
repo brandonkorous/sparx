@@ -1,8 +1,8 @@
 # WizeWorks Platform — B2B & Wholesale PRD
 
-**Version:** 1.2  
+**Version:** 1.5  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-07-14
+**Last Updated:** 2026-10-03
 
 ---
 
@@ -218,6 +218,29 @@ When a B2B customer with net terms places an order:
 - If exceeded: order placed as pending, merchant notified, customer shown message
 - Merchant can override per order (with audit log)
 
+### Account Statements
+
+A statement is one account's money for a period, the page its accounts department
+reconciles against. Built 2026-10-02 (persona run P01); detail in
+`docs/brain/features/account-statements.md`.
+
+- **Opening balance:** everything owed at the start of the first day.
+- **Every event in the period, in date order, with a running balance:** each invoice issued
+  (number, date, the buyer's PO number, due date, amount), each payment received (how it
+  was paid, the reference, which invoice), each refund, and each write-off.
+- **Closing balance**, what is due now, and what is still open, each open invoice with its
+  PO number.
+- **Aging** of what is open as of the last day: not yet due, 1 to 30, 31 to 60, 61 to 90,
+  over 90 days late.
+- Only issued bills count (the shared `ISSUED_BILL_WHERE` rule): never a quote, an estimate,
+  a draft, or a document moved to a void stage. A written-off invoice stays, with a
+  write-off row, so one month's statement and the next add up.
+- **Period:** any two days; blank means the first of this month to today, on the business's
+  own calendar.
+- **Where:** the account pane in the workbench (print, or email it to the account's main
+  contact and the address on its latest invoice), and the buyer's own site at
+  `/account/b2b/<id>/statement`, with the same printable page.
+
 ### Overdue Management
 
 - Day of due date: send invoice reminder
@@ -240,13 +263,54 @@ Merchant can configure:
 - All orders require approval
 - Specific account requires approval
 
+### Who signs off
+
+Each spending limit says who signs off the orders it holds (`purchase_approval_rules.sign_off_by`):
+
+- **The business** (the default): anyone on the merchant's team, or one named teammate.
+- **The account's own approvers**: the account's contacts with the role `approver`
+  ("Can approve orders") approve or turn the order down on the site, from their wholesale
+  account pages. This is the buyer's own spending control, so the merchant does not sign
+  it a second time. An account with nobody who can approve (or whose only approver placed
+  the order) falls back to the business, so a held order never waits on nobody.
+
+An order over the account's **credit limit** always needs the business too: that is the
+merchant's money. When both sides are asked, either may sign first; the order goes ahead
+when the last one says yes, and either side turning it down cancels it. Nobody signs off
+an order they placed. The rule lives in `accountOrderGate.signOffState`
+(`wizeworks/packages/crm/src/services/account-order-gate.ts`); see sparx persona issue 087.
+
 ### Approval Flow
 
-1. Buyer places order → status: `pending_approval`
-2. Account manager (approver role) notified
-3. Approver reviews in dashboard: approve or reject with reason
-4. On approval: order proceeds to normal flow, buyer notified
-5. On rejection: buyer notified with reason, order cancelled
+1. Buyer places order → status: `pending_approval`. Checkout says before they place it who
+   will have to approve it, and the confirmation says who it is waiting on.
+2. Whoever is asked is told: the account's approvers by email with a link to the order on
+   the site; the merchant's team by a task, with the order in Wholesale › Approvals.
+3. The approver reviews it (on the site, or in the console for the business): approve, or
+   turn it down with a reason.
+4. On the last approval: order proceeds to normal flow (stock committed, net-terms invoice
+   issued, `order.placed`, a held card charged), buyer notified.
+5. On rejection: buyer notified with who decided and the reason, order cancelled, and the
+   buyer's money given back (below).
+
+### The card on a held order
+
+A card order a spending limit holds is **held, not charged** (sparx persona issue 087). The
+checkout asks the gateway to hold the card when the limit will hold the order, and only
+where the gateway can (`capabilities.capture` in `@wizeworks/payments`: sparx Pay and the
+merchant's own Stripe today). The last approval charges it; turning the order down lets it
+go. Where the gateway cannot hold a card it is charged at checkout as before, and a
+turned-down order is refunded in full through the ordinary refund path, so the order's
+refund rows and totals stay true. A charge still on its way when the order is turned down
+is refunded the moment it lands.
+
+What each card payment needs is decided inside the decision's transaction
+(`heldOrderMoney` in `@wizeworks/crm`); the gateway calls happen after it commits
+(`heldOrderPayments.settle` in `@wizeworks/commerce`), from the console, the site and the
+MCP tools alike. Nothing fails quietly: a hold lasts about seven days, so a card that cannot
+be charged when the order is approved leaves the order placed and unpaid, writes that on
+the order, gives the business a task to send the buyer an invoice, and the buyer's order
+page asks them to pay. A refund that does not go through gives the business a task too.
 
 ---
 
@@ -255,6 +319,7 @@ Merchant can configure:
 B2B customers access a dedicated portal (separate from the retail site) that shows:
 
 - Account dashboard (credit balance, recent orders, outstanding invoices)
+- Account statement for any period, with PO numbers on every line, to print or save as a PDF
 - Order history with invoice downloads
 - Quote history (submit new RFQs, view responses)
 - Account contacts management (if account admin)
@@ -269,7 +334,9 @@ B2B customers access a dedicated portal (separate from the retail site) that sho
 - Account admin can invite contacts, manage roles
 - Viewer: read-only (orders, invoices, products)
 - Buyer: can place orders, submit RFQs
-- Account admin: all above + manage contacts, approve purchases (if configured)
+- Account admin: all above + manage contacts
+- Approver (`approver`, "Can approve orders"): reads the account, and approves or turns
+  down the orders a spending limit set to the account's own approvers holds (§8)
 
 ---
 

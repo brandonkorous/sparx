@@ -31,6 +31,7 @@ import { Alert, Button, Switch } from '@wizeworks/silicaui-react';
 
 import { useCustomer } from '@/components/customer-provider';
 import { beginCardSetup, completeCardSetup, type CardSetupSession } from '@/lib/customer-client';
+import { ACCOUNT_UNREACHABLE_MESSAGE } from '@/lib/shop-reach';
 import { getStripe, PLATFORM_PUBLISHABLE_KEY } from '@/lib/stripe-loader';
 
 const CARDS_HOME = '/account/payment-methods';
@@ -114,6 +115,17 @@ export function SaveCardFlow({ tenantSlug }: { tenantSlug: string }) {
         );
       });
   }, [status, returnedSetupIntent, tenantSlug]);
+
+  // The shop could not be reached to read the session. Not signed out: the
+  // customer provider asks again by itself, and this carries on once it answers
+  // (persona issue 086).
+  if (status === 'unreachable') {
+    return (
+      <Alert color="warning" role="status" aria-live="polite">
+        {ACCOUNT_UNREACHABLE_MESSAGE}
+      </Alert>
+    );
+  }
 
   if (status === 'loading' || (status === 'authenticated' && !session && !error && !saved)) {
     return <div className="skeleton h-[220px]" role="status" aria-label="Loading" />;

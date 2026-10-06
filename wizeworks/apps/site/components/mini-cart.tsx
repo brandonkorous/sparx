@@ -7,15 +7,34 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@wizeworks/silicaui-react';
+import { Alert, Button } from '@wizeworks/silicaui-react';
+import { cadenceLabel } from '@wizeworks/commerce-schemas';
 
+import { checkoutBlock, lineRule, ruleSentence } from '@/lib/account-buying-rules';
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
+import { CART_UNREACHABLE_MESSAGE } from '@/lib/shop-reach';
+import { CoreLine } from './core-choice';
 import { QuantityStepper } from './quantity-stepper';
 
 export function MiniCart() {
-  const { drawerOpen, closeDrawer, lines, totals, count, currency, updateItem, removeItem } =
-    useCart();
+  const {
+    drawerOpen,
+    closeDrawer,
+    lines,
+    totals,
+    count,
+    currency,
+    updateItem,
+    setCoreFirst,
+    removeItem,
+    accountRules,
+    known,
+    unreachable,
+  } = useCart();
+  // A trade account's rules on the basket (sparx persona issue 086), the same
+  // ones the cart page and checkout hold it to.
+  const blocked = checkoutBlock(accountRules);
 
   // Why a quantity change was refused, against the line it was refused on — a
   // shop can run out for the day (issue 026), and a stepper that silently snaps
@@ -63,7 +82,15 @@ export function MiniCart() {
           </button>
         </div>
 
-        {lines.length === 0 ? (
+        {lines.length === 0 && !known && unreachable ? (
+          // Not "Your cart is empty": the cart could not be read yet, and the
+          // provider is asking again (persona issue 086).
+          <div className="flex-1 px-5 py-6">
+            <Alert color="warning" role="status" aria-live="polite">
+              {CART_UNREACHABLE_MESSAGE}
+            </Alert>
+          </div>
+        ) : lines.length === 0 ? (
           <div className="text-base-content grid flex-1 place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
             <span className="text-[2.5rem] opacity-50" aria-hidden="true">
               🛒
@@ -107,12 +134,33 @@ export function MiniCart() {
                     ) : (
                       <span className="card-title text-base-content">{line.title}</span>
                     )}
+                    {line.repeat ? (
+                      <span className="text-base-content text-base">
+                        {cadenceLabel(line.repeat)}
+                      </span>
+                    ) : null}
                     {line.variantTitle ? (
                       <span className="text-base-content text-sm">{line.variantTitle}</span>
+                    ) : null}
+                    {/* The deposit, or "Ready once your old part arrives", and the
+                        switch between them where the part can be bought both ways
+                        (sparx issues 051, 057). */}
+                    <CoreLine
+                      line={line}
+                      currency={currency}
+                      onSwitch={(coreFirst) => setCoreFirst(line.id, coreFirst)}
+                    />
+                    {ruleSentence(lineRule(accountRules, line.id)) ? (
+                      <span className="text-base-content text-sm">
+                        {ruleSentence(lineRule(accountRules, line.id))}
+                      </span>
                     ) : null}
                     <div>
                       <QuantityStepper
                         value={line.quantity}
+                        min={lineRule(accountRules, line.id)?.start}
+                        step={lineRule(accountRules, line.id)?.step}
+                        max={lineRule(accountRules, line.id)?.maximum ?? undefined}
                         onChange={(q) => {
                           setRefused(null);
                           void updateItem(line.id, q).catch((err: unknown) => {
@@ -125,6 +173,10 @@ export function MiniCart() {
                     </div>
                     {refused?.lineId === line.id ? (
                       <span className="text-warning text-sm font-semibold">{refused.message}</span>
+                    ) : lineRule(accountRules, line.id)?.problem ? (
+                      <span className="text-warning text-sm font-semibold">
+                        {lineRule(accountRules, line.id)?.problem}
+                      </span>
                     ) : null}
                   </div>
                   <div className="text-right font-semibold">
@@ -139,17 +191,36 @@ export function MiniCart() {
                 <span>Subtotal</span>
                 <span>{formatMoney(totals.subtotalCents, currency)}</span>
               </div>
+              {/* Not in the subtotal, and charged at checkout: said here so the
+                  checkout total is not a surprise (sparx issue 051). */}
+              {totals.coreChargeTotalCents > 0 ? (
+                <p className="text-base-content m-0 text-sm">
+                  Plus {formatMoney(totals.coreChargeTotalCents, currency)} in refundable core
+                  deposits, paid back when you return your old parts.
+                </p>
+              ) : null}
               <p className="text-base-content m-0 text-sm">
                 Shipping &amp; taxes calculated at checkout.
               </p>
-              <Button
-                render={<Link href="/checkout" onClick={closeDrawer} />}
-                color="primary"
-                size="lg"
-                className="w-full"
-              >
-                Checkout
-              </Button>
+              {blocked ? (
+                <>
+                  <Alert color={accountRules?.canOrder === false ? 'info' : 'warning'}>
+                    {blocked}
+                  </Alert>
+                  <Button color="primary" size="lg" className="w-full" disabled>
+                    Checkout
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  render={<Link href="/checkout" onClick={closeDrawer} />}
+                  color="primary"
+                  size="lg"
+                  className="w-full"
+                >
+                  Checkout
+                </Button>
+              )}
               <Button
                 render={<Link href="/cart" onClick={closeDrawer} />}
                 variant="outline"

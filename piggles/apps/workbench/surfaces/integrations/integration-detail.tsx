@@ -479,8 +479,24 @@ function ManageIntegration({
     );
   }
 
-  if (isPending || !installation) {
+  if (isPending) {
     return <PaneWaiting />;
+  }
+  // An answer with nothing in it is "not here", never "still loading". This
+  // waited for ever when the API sent an empty 200 for another business's id
+  // (persona issue 226).
+  if (!installation) {
+    return (
+      <div className={`${PANE_SHELL} p-2`}>
+        <Card className="min-h-0 flex-1 items-center justify-center">
+          <PaneLoadError
+            reason="missing"
+            noun="connection"
+            title="That connection is no longer here"
+          />
+        </Card>
+      </div>
+    );
   }
 
   const state = installationState(installation);

@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import type { ReactNode } from 'react';
 import { Button, Text } from '@wizeworks/silicaui-react';
 import { Display, getModuleColor, Section, Spark } from './primitives';
@@ -165,9 +167,12 @@ function EmailPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('email-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate Email
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -189,9 +194,12 @@ function EmailCta() {
           off the day you stop, and your data stays yours.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
-          <Button color="module-email" size="xl">
+          <a
+            href={signupHref('email-final')}
+            className={buttonClasses({ color: 'module-email', size: 'xl' })}
+          >
             Activate Email →
-          </Button>
+          </a>
           <a href="#pipeline">
             <Button size="xl" variant="outline">
               See how a send flows

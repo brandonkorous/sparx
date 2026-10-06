@@ -21,37 +21,36 @@
 // at most, and only one of them is required.
 
 import { useState } from 'react';
-import { Button, Input, NativeSelect, useToast } from '@wizeworks/silicaui-react';
-import {
-  orderErrorMessage,
-  useRecordFulfillment,
-  type DeliveryPlan,
-  type Order,
-  type OrderItem,
-} from './data';
+import { Button, Input, NativeSelect, Text, useToast } from '@wizeworks/silicaui-react';
+import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
 import { CARRIERS } from './carriers';
+import type { ShipNow } from './order-ship-gate';
 
-/** Everything still owed on the order, at the quantity still owed. A partial
- *  handover is a real thing, but it is not what this control is for — the
- *  common case by a distance is "all of it, now", and a per-line quantity grid
- *  in front of that is a form standing between her and one button. */
-function outstandingLines(items: OrderItem[]) {
-  return items
-    .map((item) => ({
-      orderItemId: item.id,
-      quantity: item.quantity - item.quantityFulfilled,
-    }))
-    .filter((line) => line.quantity > 0);
-}
-
-export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPlan }) {
+/**
+ * Everything that may go now, at the quantity that may go (order-ship-gate.ts).
+ * A partial handover is a real thing, but it is not what this control is for:
+ * the common case by a distance is "all of it, now", and a per-line quantity
+ * grid in front of that is a form standing between her and one button. What has
+ * to stay behind (a rebuilt part waiting for the customer's old part) is said in
+ * the server's own words above the button, so "Mark it as sent" never claims
+ * more than it sends.
+ */
+export function RecordHandover({
+  order,
+  plan,
+  shipNow,
+}: {
+  order: Order;
+  plan: DeliveryPlan;
+  shipNow: ShipNow;
+}) {
   const record = useRecordFulfillment(order.id);
   const toast = useToast();
   const [carrier, setCarrier] = useState<string>('usps');
   const [tracking, setTracking] = useState('');
   const [note, setNote] = useState('');
 
-  const lines = outstandingLines(order.items ?? []);
+  const lines = shipNow.lines;
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -106,6 +105,11 @@ export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPl
       onSubmit={submit}
       className="border-base-300 mt-4 flex flex-wrap items-end gap-3 border-t pt-4"
     >
+      {shipNow.held.map((why) => (
+        <Text key={why} className="w-full">
+          {why}
+        </Text>
+      ))}
       {plan.collected ? null : (
         <>
           <label className="flex min-w-[9rem] flex-1 flex-col gap-1.5">

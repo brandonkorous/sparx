@@ -1,20 +1,28 @@
 'use client';
 
-// Catalog search-and-select for the quote-request form (docs/10 B2B PRD).
+// Catalog search-and-select for the quote-request form (docs/10 PRD).
 // A quote line can reference a real product/variant (the merchant sees the
 // exact SKU, not a guess from free text) or stay free-text for anything off
-// the catalog — this only handles the product-linked half; the parent page
-// still owns the plain "+ Add another item" free-text path.
+// the catalog. This only handles the product-linked half; the quote request
+// builder (quote-request-builder.tsx) owns the typed-in path.
 
 import { useEffect, useRef, useState } from 'react';
 import { useCustomer } from '@/components/customer-provider';
 import { searchQuoteProducts, type QuoteProductResult } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Input } from '@wizeworks/silicaui-react';
+import { Button, Input } from '@wizeworks/silicaui-react';
 
 const DEBOUNCE_MS = 250;
 
-export function QuoteProductPicker({ onPick }: { onPick: (product: QuoteProductResult) => void }) {
+export function QuoteProductPicker({
+  onPick,
+  currency,
+}: {
+  onPick: (product: QuoteProductResult) => void;
+  /** The shop's currency. Every list price here was printed in dollars, and
+   *  until it is known none is printed (sparx persona issue 085). */
+  currency: string | null;
+}) {
   const { tenantSlug } = useCustomer();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QuoteProductResult[]>([]);
@@ -46,58 +54,34 @@ export function QuoteProductPicker({ onPick }: { onPick: (product: QuoteProductR
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="relative">
       <Input
+        id="quote-product-search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => results.length > 0 && setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
-        placeholder="Search the catalog to add a specific product…"
+        placeholder="Search the catalog by product name"
       />
       {open && results.length > 0 && (
-        <div
-          className="card border-base-300 border"
-          style={{
-            position: 'absolute',
-            zIndex: 10,
-            top: 'calc(100% + 0.25rem)',
-            left: 0,
-            right: 0,
-            maxHeight: '16rem',
-            overflowY: 'auto',
-            padding: '0.25rem',
-          }}
-        >
+        <div className="card border-base-300 bg-base-100 absolute inset-x-0 top-[calc(100%+0.25rem)] z-10 max-h-64 overflow-y-auto border p-1">
           {results.map((r) => (
-            <button
+            <Button
               key={r.productId}
               type="button"
+              variant="ghost"
+              block
+              className="h-auto justify-between gap-3 py-2 text-left font-normal"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => pick(r)}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-                gap: '0.75rem',
-                padding: '0.5rem 0.6rem',
-                border: 'none',
-                background: 'transparent',
-                textAlign: 'left',
-                cursor: 'pointer',
-                borderRadius: '0.375rem',
-              }}
             >
               <span>{r.title}</span>
-              {r.priceCents != null && (
-                <span
-                  className="text-base-content"
-                  style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}
-                >
-                  {formatMoney(r.priceCents, 'USD')}
+              {r.priceCents != null && currency !== null && (
+                <span className="text-sm whitespace-nowrap">
+                  List price {formatMoney(r.priceCents, currency)}
                 </span>
               )}
-            </button>
+            </Button>
           ))}
         </div>
       )}

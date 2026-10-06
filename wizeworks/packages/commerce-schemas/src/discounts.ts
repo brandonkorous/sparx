@@ -152,6 +152,10 @@ export const GrantAccountCreditInput = z.object({
   reason: AccountCreditReason.default('grant'),
   note: z.string().max(2000).nullish(),
   expiresAt: z.string().datetime().optional(),
+  /** What the credit is for, so the ledger line can point at it (a return, a
+   *  returned core). Both or neither. */
+  referenceType: z.string().max(40).nullish(),
+  referenceId: Uuid.nullish(),
 });
 export type GrantAccountCreditInput = z.infer<typeof GrantAccountCreditInput>;
 

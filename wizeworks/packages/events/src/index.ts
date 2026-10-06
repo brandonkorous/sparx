@@ -8,6 +8,7 @@ export type {
   TenantCreatedPayload,
   TenantUpdatedPayload,
   TenantSubscriptionChangedPayload,
+  SiteUpdatedPayload,
   FeedbackSubmittedPayload,
   FeedbackRespondedPayload,
   FormSubmittedPayload,

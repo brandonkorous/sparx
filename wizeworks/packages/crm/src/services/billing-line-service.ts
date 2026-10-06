@@ -15,7 +15,11 @@ import type { BillingDocumentLineType } from '@wizeworks/db';
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
-import { priceBillingLine, type BillingPricingMode } from './billing-line-pricing';
+import {
+  costForRepricing,
+  priceBillingLine,
+  type BillingPricingMode,
+} from './billing-line-pricing';
 import { computeBillingLine } from './billing-totals';
 import { type DocumentWithLines, recomputeTotals } from './billing-document-service';
 
@@ -50,6 +54,10 @@ export async function addLine(
       Number(doc.taxRate)
     );
     const sortOrder = input.sortOrder ?? (await nextSortOrder(tx, documentId));
+    const coreCharge =
+      input.coreCharge !== undefined
+        ? input.coreCharge
+        : await variantCoreCharge(tx, input.variantId ?? null, input.productId ?? null);
 
     const line = await tx.billingDocumentLine.create({
       data: {
@@ -69,6 +77,7 @@ export async function addLine(
         taxAmount: computed.taxAmount,
         lineSubtotal: computed.lineSubtotal,
         lineTotal: computed.lineTotal,
+        coreCharge,
         sortOrder,
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
       },
@@ -130,7 +139,9 @@ export async function updateLine(
       const priced = await priceBillingLine(tx, ctx.tenantId, {
         pricingMode,
         variantId: input.variantId !== undefined ? input.variantId : existing.variantId,
-        explicitCostCents: input.explicitCostCents ?? null,
+        // Not sent means unchanged, so a price edited from the line row keeps
+        // the cost on the line (sparx persona issue 086).
+        explicitCostCents: costForRepricing(input, existing),
         unitPrice: input.unitPrice !== undefined ? input.unitPrice : Number(existing.unitPrice),
         markup: directive,
       });
@@ -172,6 +183,18 @@ export async function updateLine(
         taxAmount: computed.taxAmount,
         lineSubtotal: computed.lineSubtotal,
         lineTotal: computed.lineTotal,
+        // A new part brings its own deposit; an explicit value wins.
+        ...(input.coreCharge !== undefined
+          ? { coreCharge: input.coreCharge }
+          : input.variantId !== undefined || input.productId !== undefined
+            ? {
+                coreCharge: await variantCoreCharge(
+                  tx,
+                  input.variantId !== undefined ? input.variantId : existing.variantId,
+                  input.productId !== undefined ? input.productId : existing.productId
+                ),
+              }
+            : {}),
       },
     });
     await writeAuditLog({
@@ -282,4 +305,23 @@ async function loadWithLines(
     where: { id: documentId },
     include: { lines: { orderBy: { sortOrder: 'asc' } } },
   });
+}
+
+/**
+ * A catalog part's core deposit per unit in dollars, or null (sparx issue 051).
+ * A line naming the product but not a version takes the product's main version,
+ * which is the one a single-version product has.
+ */
+async function variantCoreCharge(
+  tx: Prisma.TransactionClient,
+  variantId: string | null,
+  productId: string | null
+): Promise<number | null> {
+  if (!variantId && !productId) return null;
+  const variant = await tx.productVariant.findFirst({
+    where: variantId ? { id: variantId } : { productId: productId ?? '', deletedAt: null },
+    orderBy: [{ isDefault: 'desc' }, { position: 'asc' }],
+    select: { coreChargeCents: true },
+  });
+  return variant?.coreChargeCents == null ? null : variant.coreChargeCents / 100;
 }

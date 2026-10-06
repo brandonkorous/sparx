@@ -2,17 +2,40 @@
 
 // Acting on several products at once.
 //
-//   POST /v1/commerce/products/bulk-delete
-//   POST /v1/commerce/products/bulk-status
+//   POST /v1/commerce/products/bulk-delete              ticked rows only
+//   POST /v1/commerce/products/bulk-status              ticked rows, or every match
+//   POST /v1/commerce/categories/:id/add-products       into one category, keeping the rest
+//   POST /v1/commerce/categories/:id/remove-products    out of one category, keeping the rest
+//   POST /v1/commerce/fitment/bulk-add                  add what they fit, keeping the rest
+//   POST /v1/commerce/fitment/bulk-remove               take chosen entries off
 //
 // Its own file rather than more of products-data, because these are the only
 // mutations on the list pane that act on a SET, and the set is the whole
 // difference: each one reports how many it actually changed, which the
 // single-product mutations never have to.
+//
+// Every one of them refreshes EVERY product read, not just the list: a product
+// open in another pane is showing the category or the fitment this just changed.
 
-import { useMutation } from '@wizeworks/query';
+import { useMutation, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
-import { useInvalidateProduct, type ProductStatus } from './products-data';
+import { categoryKeys } from './categories-data';
+import { productKeys, type ProductFitmentRange, type ProductStatus } from './products-data';
+import {
+  selectionBody,
+  type BulkTarget,
+  type CategoryBulkResult,
+  type FitmentBulkResult,
+} from './products-bulk-words';
+
+/** Lists, every open product, every facet of them, and the category counts. */
+function useRefreshAfterBulk() {
+  const queryClient = useQueryClient();
+  return () => {
+    void queryClient.invalidateQueries({ queryKey: productKeys.all });
+    void queryClient.invalidateQueries({ queryKey: categoryKeys.all });
+  };
+}
 
 export interface BulkDeleteResult {
   deleted: number;
@@ -22,27 +45,75 @@ export interface BulkDeleteResult {
 }
 
 export function useBulkDeleteProducts() {
-  const invalidate = useInvalidateProduct();
+  const refresh = useRefreshAfterBulk();
   return useMutation({
     mutationFn: (productIds: string[]) =>
       api.post<BulkDeleteResult>('/v1/commerce/products/bulk-delete', { productIds }),
-    onSuccess: () => {
-      invalidate();
-    },
+    onSuccess: refresh,
   });
 }
 
 export interface BulkStatusResult {
   updated: number;
+  /** Only from the selection form: chosen products already in that status. */
+  unchanged?: number;
 }
 
 export function useBulkProductStatus() {
-  const invalidate = useInvalidateProduct();
+  const refresh = useRefreshAfterBulk();
   return useMutation({
-    mutationFn: (input: { productIds: string[]; status: ProductStatus }) =>
-      api.post<BulkStatusResult>('/v1/commerce/products/bulk-status', input),
-    onSuccess: () => {
-      invalidate();
-    },
+    mutationFn: (input: { target: BulkTarget; status: ProductStatus }) =>
+      api.post<BulkStatusResult>(
+        '/v1/commerce/products/bulk-status',
+        input.target.kind === 'ids'
+          ? { productIds: input.target.productIds, status: input.status }
+          : { selection: selectionBody(input.target), status: input.status }
+      ),
+    onSuccess: refresh,
+  });
+}
+
+export function useBulkCategory() {
+  const refresh = useRefreshAfterBulk();
+  return useMutation({
+    mutationFn: (input: { target: BulkTarget; categoryId: string; direction: 'add' | 'remove' }) =>
+      api.post<CategoryBulkResult>(
+        `/v1/commerce/categories/${input.categoryId}/${input.direction === 'add' ? 'add-products' : 'remove-products'}`,
+        { selection: selectionBody(input.target) }
+      ),
+    onSuccess: refresh,
+  });
+}
+
+/** One rule to add, as the server takes it. An open end is null. */
+export interface BulkFitmentRule {
+  domainId: string;
+  nodeId: string | null;
+  ranges: ProductFitmentRange[];
+  notes?: string;
+}
+
+export function useBulkAddFitment() {
+  const refresh = useRefreshAfterBulk();
+  return useMutation({
+    mutationFn: (input: { target: BulkTarget; fitments: BulkFitmentRule[] }) =>
+      api.post<FitmentBulkResult>('/v1/commerce/fitment/bulk-add', {
+        selection: selectionBody(input.target),
+        fitments: input.fitments,
+      }),
+    onSuccess: refresh,
+  });
+}
+
+export function useBulkRemoveFitment() {
+  const refresh = useRefreshAfterBulk();
+  return useMutation({
+    mutationFn: (input: { target: BulkTarget; domainId: string; nodeIds: (string | null)[] }) =>
+      api.post<FitmentBulkResult>('/v1/commerce/fitment/bulk-remove', {
+        selection: selectionBody(input.target),
+        domainId: input.domainId,
+        nodeIds: input.nodeIds,
+      }),
+    onSuccess: refresh,
   });
 }

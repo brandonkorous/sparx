@@ -14,8 +14,13 @@ import {
   type CartHandoff,
   type Customer,
 } from '@/lib/customer-client';
+import { retryDelayMs, statusAfterUnansweredRead, type SessionStatus } from '@/lib/shop-reach';
 
-export type CustomerStatus = 'loading' | 'authenticated' | 'anonymous';
+/** `unreachable`: the session read got no answer (api-rest restarting, a network
+ *  blip) and nothing had answered before it. It is NOT signed out: nothing may
+ *  redirect to sign-in on it, and the provider keeps asking until it hears back
+ *  (sparx persona issue 086). */
+export type CustomerStatus = SessionStatus;
 
 export interface CustomerContextValue {
   /** The active tenant slug — account pages pass it to the customer-client. */
@@ -75,13 +80,39 @@ export function CustomerProvider({
   const [cartHandoff, setCartHandoff] = useState<CartHandoff | null>(null);
   const clearCartHandoff = useCallback(() => setCartHandoff(null), []);
 
-  const refresh = useCallback(async () => {
+  // The offers alone, after a sign-in has already said who this is. A failed
+  // read keeps the defaults rather than signing her back out.
+  const loadOffers = useCallback(async () => {
     try {
       const me = await accountApi.getMe(tenantSlug, propertySlug);
-      setCustomer(me?.customer ?? null);
-      setOffers(me?.offers ?? NO_OFFERS);
-      setStatus(me ? 'authenticated' : 'anonymous');
+      if (me) setOffers(me.offers);
     } catch {
+      // Keep NO_OFFERS: the sign-in itself succeeded.
+    }
+  }, [tenantSlug, propertySlug]);
+
+  // Only a real "nobody is signed in" signs the page out. A read that got no
+  // answer used to land here too, and the account area sent a trade buyer with
+  // a valid session to the sign-in page while api-rest restarted (persona issue
+  // 086). Now it keeps whatever the page already knew, or says it is retrying.
+  //
+  // `misses` counts reads in a row that got no answer. State, not a ref: an
+  // unanswered retry leaves `status` as it was, and this is what schedules the
+  // next one.
+  const [misses, setMisses] = useState(0);
+  const refresh = useCallback(async () => {
+    const read = await accountApi.readSession(tenantSlug, propertySlug);
+    if (read.kind === 'unreachable') {
+      setStatus(statusAfterUnansweredRead);
+      setMisses((n) => n + 1);
+      return;
+    }
+    setMisses(0);
+    if (read.kind === 'signed-in') {
+      setCustomer(read.customer);
+      setOffers(read.offers);
+      setStatus('authenticated');
+    } else {
       setCustomer(null);
       setOffers(NO_OFFERS);
       setStatus('anonymous');
@@ -91,6 +122,24 @@ export function CustomerProvider({
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  // "This page will try again" is a promise, kept here: while the read has no
+  // answer, ask again on a backing-off timer, and at once when the browser comes
+  // back online or the tab is looked at again. Stops the moment anything answers.
+  useEffect(() => {
+    if (status !== 'unreachable') return;
+    const timer = window.setTimeout(() => void refresh(), retryDelayMs(misses - 1));
+    const now = () => {
+      if (document.visibilityState === 'visible') void refresh();
+    };
+    window.addEventListener('online', now);
+    document.addEventListener('visibilitychange', now);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('online', now);
+      document.removeEventListener('visibilitychange', now);
+    };
+  }, [status, misses, refresh]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -103,8 +152,13 @@ export function CustomerProvider({
       setStatus('authenticated');
       if (r) setRecognized(true);
       if (cart) setCartHandoff(cart);
+      // What this shop offers this shopper comes from the account read, which
+      // signing in never made. A trade buyer signed in to a menu with no
+      // wholesale account in it until she reloaded the page (persona issue 084).
+      // Not awaited: the sign-in has succeeded, and a slow read must not hold it.
+      void loadOffers();
     },
-    [tenantSlug, propertySlug]
+    [tenantSlug, propertySlug, loadOffers]
   );
 
   const register = useCallback(
@@ -118,8 +172,13 @@ export function CustomerProvider({
       setStatus('authenticated');
       if (r) setRecognized(true);
       if (cart) setCartHandoff(cart);
+      // What this shop offers this shopper comes from the account read, which
+      // signing in never made. A trade buyer signed in to a menu with no
+      // wholesale account in it until she reloaded the page (persona issue 084).
+      // Not awaited: the sign-in has succeeded, and a slow read must not hold it.
+      void loadOffers();
     },
-    [tenantSlug, propertySlug]
+    [tenantSlug, propertySlug, loadOffers]
   );
 
   const logout = useCallback(async () => {

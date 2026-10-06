@@ -135,7 +135,8 @@ export function StepWorkspace({
 
         {!slugAvailable && !slugUnavailable && check.status !== 'checking' ? (
           <FieldDescription>
-            Your site goes live here the moment you launch: free, and yours to keep.
+            Free, and yours to keep. It already shows a simple starter page; your site replaces it
+            the moment you launch.
           </FieldDescription>
         ) : null}
       </Field>
@@ -148,7 +149,7 @@ export function StepWorkspace({
               color={siteError ? 'error' : 'module'}
               value={siteName}
               onChange={(e) => onSite(e.target.value)}
-              placeholder="Primary"
+              placeholder="Bob's Barbers"
             />
           }
         />

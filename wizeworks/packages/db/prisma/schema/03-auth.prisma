@@ -32,7 +32,7 @@ model User {
   // life. Reads go through the brand-scoped client in @wizeworks/auth, never by
   // hand — an unfiltered `findFirst` on email is how the wrong brand's row gets
   // returned.
-  platformBrand String  @default("sparx") @map("platform_brand") @db.VarChar(20)
+  platformBrand String @default("sparx") @map("platform_brand") @db.VarChar(20)
 
   // Sparx-specific extensions
   tenantId    String    @map("tenant_id") @db.Uuid

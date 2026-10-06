@@ -1,7 +1,7 @@
-// B2B pricing tiers + per-tier product/collection overrides, plus the two price-
-// resolution reads (one account × one variant, and one product's whole trade
-// pricing picture). Extracted verbatim from the api-rest routes so REST and MCP
-// drive the same implementation.
+// B2B pricing tiers + per-tier product/collection overrides, plus one product's
+// whole trade pricing picture. Extracted verbatim from the api-rest routes so
+// REST and MCP drive the same implementation. What one account PAYS is
+// commerce's answer, not this file's: see "Price resolution reads" below.
 //
 // A tier is a named trade discount (percentage or fixed) assigned to accounts; an
 // override pins a specific variant/collection to a price or a deeper discount for
@@ -9,7 +9,7 @@
 // list and resolves it to list price.
 
 import { z } from 'zod';
-import { prisma, withTenant, type Prisma } from '@wizeworks/db';
+import { withTenant, type Prisma } from '@wizeworks/db';
 import { notFound } from '@wizeworks/api-core/errors';
 import type { B2bContext } from './context.js';
 
@@ -23,7 +23,10 @@ export const ListTiersQuery = z.object({
 
 export const TierBody = z.object({
   name: z.string().min(1).max(127),
-  description: z.string().max(2000).optional(),
+  // Null is how the tier pane sends an empty note, and how it clears one. Refusing
+  // it meant no tier could be added without a note: "The problem is with
+  // Description" (sparx persona issue 086).
+  description: z.string().max(2000).nullable().optional(),
   discountType: z.enum(['percentage', 'fixed']),
   discountValue: z.number().min(0),
   productScope: z.enum(['all', 'collections', 'products']).default('all'),
@@ -291,23 +294,17 @@ export async function removeTierOverride(
 }
 
 // ── Price resolution reads ───────────────────────────────────────────────────
-
-/** The effective price one account pays for one variant, via the SQL waterfall
- *  `resolve_b2b_price()` (account override → contract price → tier override →
- *  tier blanket discount → list). */
-export async function resolveB2bPrice(
-  ctx: B2bContext,
-  input: { variantId: string; accountId: string }
-): Promise<{ variantId: string; accountId: string; effectivePriceCents: number | null }> {
-  const result = await prisma.$queryRaw<{ resolve_b2b_price: number | null }[]>`
-    SELECT resolve_b2b_price(${input.variantId}::uuid, ${input.accountId}::uuid)
-  `;
-  return {
-    variantId: input.variantId,
-    accountId: input.accountId,
-    effectivePriceCents: result[0]?.resolve_b2b_price ?? null,
-  };
-}
+//
+// "What does this account pay for this version" is NOT answered here any more.
+// `resolveB2bPrice` called the `resolve_b2b_price()` SQL function directly and
+// said it ran "account override → contract price → tier override → tier blanket
+// discount → list". The function never reads a contract price, so a business
+// with a signed agreement was quoted its group discount while checkout charged
+// it the agreement. It also ran on the bare client, outside the tenant's RLS
+// context, against a SECURITY DEFINER function. The one answer is commerce's
+// `pricingService.resolveForAccount`, which goes through the engine checkout
+// uses; REST (`/v1/b2b/resolve-price`) and MCP (`resolve_b2b_price`, in
+// api-mcp) both call it (sparx persona issue 077).
 
 /** Prisma Decimal → number, preserving null. */
 function toNumber(value: unknown): number | null {
@@ -416,6 +413,8 @@ export async function getProductPricing(ctx: B2bContext, productId: string) {
       discountPercentage: toNumber(o.discountPercentage),
       minOrderQty: o.minOrderQty,
       maxOrderQty: o.maxOrderQty,
+      // The case pack (sparx persona issue 086).
+      orderMultiple: o.orderMultiple,
       notes: o.notes,
     })),
     contractPrices: result.contractPrices.map((c) => ({

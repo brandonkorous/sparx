@@ -57,6 +57,58 @@ export interface AvailabilityLevel {
    *  sale — the on-hand total counts the whole location and availability
    *  subtracts only what is allocated. */
   unsellableOnHand?: number;
+  /** False when the level sits at a location that cannot sell: one switched off
+   *  or archived. Its stock still counts as a MEASUREMENT (the variant is
+   *  tracked), and none of it is for sale. Absent means the location can sell.
+   *
+   *  This is the term the buy box and the allocator behind Add to cart have to
+   *  agree on. The allocator (`pickWarehouseFor`) only ever routes to an active
+   *  location, so a page that summed an archived location's shelf offered a
+   *  button the cart then refused as sold out. Read through
+   *  `AVAILABILITY_LEVEL_SELECT` + `availabilityLevelOf`, so every surface asks
+   *  the database the same question. */
+  locationSellable?: boolean;
+}
+
+/**
+ * The columns `computeAvailability` needs off an `inventory_levels` row, its
+ * location included. Spread into a Prisma `select` by every surface that decides
+ * whether a variant can be bought, and turned into an `AvailabilityLevel` by
+ * `availabilityLevelOf`, so none of them can leave a term out.
+ */
+export const AVAILABILITY_LEVEL_SELECT = {
+  onHand: true,
+  allocated: true,
+  safetyBuffer: true,
+  unsellableOnHand: true,
+  warehouse: { select: { isActive: true, deletedAt: true } },
+} as const;
+
+/** A level row read with `AVAILABILITY_LEVEL_SELECT`, as `computeAvailability`
+ *  takes it. */
+export function availabilityLevelOf(row: {
+  onHand: number;
+  allocated: number;
+  safetyBuffer: number;
+  unsellableOnHand: number;
+  warehouse: { isActive: boolean; deletedAt: Date | null } | null;
+}): AvailabilityLevel {
+  return {
+    onHand: row.onHand,
+    allocated: row.allocated,
+    safetyBuffer: row.safetyBuffer,
+    unsellableOnHand: row.unsellableOnHand,
+    locationSellable: row.warehouse !== null && row.warehouse.isActive && !row.warehouse.deletedAt,
+  };
+}
+
+/** What one level can sell right now: floored at zero, because an oversold
+ *  location is not stock to subtract from another one, and zero at a location
+ *  that cannot sell. The same arithmetic the allocator routes on
+ *  (`sellableUnits`), plus the location term. */
+export function levelSellable(l: AvailabilityLevel): number {
+  if (l.locationSellable === false) return 0;
+  return Math.max(0, l.onHand - l.allocated - (l.safetyBuffer ?? 0) - (l.unsellableOnHand ?? 0));
 }
 
 export interface VariantAvailability {
@@ -84,11 +136,7 @@ export function computeAvailability(
   if (levels.length === 0) {
     return { available: null, inStock: true, tracked: false };
   }
-  const available = levels.reduce(
-    (sum, l) =>
-      sum + Math.max(0, l.onHand - l.allocated - (l.safetyBuffer ?? 0) - (l.unsellableOnHand ?? 0)),
-    0
-  );
+  const available = levels.reduce((sum, l) => sum + levelSellable(l), 0);
   return {
     available,
     inStock: available > 0 || inventoryPolicy !== 'deny',

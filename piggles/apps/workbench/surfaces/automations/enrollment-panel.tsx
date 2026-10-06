@@ -18,6 +18,7 @@
 // says so and offers to fix it.
 
 import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { Table } from '../../components/table';
 import { faArrowTrendDown, faBullseye } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -251,13 +252,25 @@ function StepTable({ steps }: { steps: StepDropOff[] }) {
 }
 
 export function EnrollmentPanel({ automationId }: { automationId: string }) {
-  const { data, isPending, isError } = useEnrollment(automationId);
+  const { data, isPending, isError, error, refetch } = useEnrollment(automationId);
 
   if (isPending) {
     return <Text className="text-base">Working out how this rule has been doing…</Text>;
   }
   if (isError || !data) {
-    return <Text className="text-base">Could not load this rule’s results.</Text>;
+    return (
+      <Card className="min-h-0">
+        <PaneLoadError
+          error={error}
+          noun="rule"
+          title="Could not load this rule’s results"
+          description="This is a problem reaching the server. The rule itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void refetch();
+          }}
+        />
+      </Card>
+    );
   }
   if (data.funnel.entered === 0) {
     return (

@@ -198,7 +198,7 @@ describe('picking and packing — DB-backed', () => {
     );
   });
 
-  it('refuses to pick a cancelled order', async () => {
+  it('refuses to pick a canceled order', async () => {
     const f = await createInventoryFixture(tenantId);
     await receive(f, 5);
     const order = await placeOrder(f, 2);
@@ -206,8 +206,10 @@ describe('picking and packing — DB-backed', () => {
       tx.order.update({ where: { id: order.orderId }, data: { status: 'cancelled' } })
     );
 
+    // The one ship-gate sentence every way out gives (crm-schemas ship-gate.ts),
+    // in American spelling. The stored status stays `cancelled`; the words do not.
     await expect(generatePickList(ctx(), { orderIds: [order.orderId] })).rejects.toThrow(
-      /cancelled/i
+      `Order ${order.orderNumber} was canceled, so nothing on it can be sent.`
     );
   });
 

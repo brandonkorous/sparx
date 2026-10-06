@@ -23,7 +23,7 @@ import {
   type LifecycleStage,
 } from '@wizeworks/crm-schemas';
 import { NEWSLETTER_SEGMENT_SLUG } from '@wizeworks/crm-schemas/builtins';
-import { nameSearchClauses, withTenant } from '@wizeworks/db';
+import { afterCommit, nameSearchClauses, withTenant } from '@wizeworks/db';
 import type { Customer, CustomerAddress, CustomerDocument, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -296,14 +296,60 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
     throw await asDuplicateEmail(ctx, err, input.email ?? null, input.propertyId ?? null, null);
   });
 
-  await publishCrmEvent({
-    tenantId: ctx.tenantId,
-    topic: 'crm.customer.created',
-    payload: { customerId: customer.id, type: customer.type, email: customer.email },
-    dedupeKey: `crm.customer.created:${customer.id}`,
-  });
+  // Through the commit queue rather than straight out: an automation step
+  // composes this into its own transaction (`ctx.tx`), and announcing from in
+  // there sends the search worker to look for a row nobody can see yet.
+  await announceCustomer(ctx.tenantId, 'crm.customer.created', customer);
 
   return customer;
+}
+
+/** The three ways a customer row can come into being or change shape, as the
+ *  rest of the platform hears about it. */
+export type CustomerAnnouncement =
+  'crm.customer.created' | 'crm.customer.captured' | 'crm.customer.updated';
+
+/**
+ * Tell the platform a customer row was written, once it has committed.
+ *
+ * Exported because most new customers are NOT written by this service: the
+ * website's account sign-up, a booking, a guest checkout and a marketplace order
+ * each find-or-create the row inside their own transaction, and every one of
+ * them used to stop there. So search, groups, scores and automations never heard
+ * of the person, and the console's search box told an owner a buyer who had
+ * signed up minutes earlier did not exist (sparx persona issue 086). Writing the
+ * row is half the job; this is the other half.
+ *
+ * Which word to use:
+ *   - `crm.customer.created`: they made an account, or somebody typed them in.
+ *     "Welcome new customers" answers this one.
+ *   - `crm.customer.captured`: they handed details over through a form, a
+ *     booking, a checkout or a marketplace order. A new person, but one who did
+ *     not join anything.
+ *   - `crm.customer.updated`: an existing row was filled in or adopted.
+ *
+ * Safe to call INSIDE the transaction that wrote the row, and that is the
+ * intended place: `afterCommit` holds it until the outermost transaction
+ * commits, drops it on rollback, and runs it at once when none is open.
+ */
+export async function announceCustomer(
+  tenantId: string,
+  topic: CustomerAnnouncement,
+  customer: { id: string; type?: string | null; email?: string | null; updatedAt?: Date }
+): Promise<void> {
+  const payload =
+    topic === 'crm.customer.updated'
+      ? { customerId: customer.id }
+      : { customerId: customer.id, type: customer.type ?? null, email: customer.email ?? null };
+  // An update can happen many times to one person, so its key carries the
+  // moment; an arrival happens once.
+  const dedupeKey =
+    topic === 'crm.customer.updated'
+      ? `${topic}:${customer.id}:${(customer.updatedAt ?? new Date()).toISOString()}`
+      : `${topic}:${customer.id}`;
+  await afterCommit(`publish ${topic}`, () =>
+    publishCrmEvent({ tenantId, topic, payload, dedupeKey })
+  );
 }
 
 // Marketing opt-in from the public storefront (the "Email signup" block,
@@ -977,6 +1023,9 @@ export async function captureLead(
       if (newTags.length > 0) data.tags = [...existing.tags, ...newTags];
       if (Object.keys(data).length === 0) return { customer: existing, created: false };
       const updated = await tx.customer.update({ where: { id: existing.id }, data });
+      // A name or phone filled in, or a deleted row brought back, changes what
+      // search shows for them, and a resurrected row is not in search at all.
+      await announceCustomer(ctx.tenantId, 'crm.customer.updated', updated);
       return { customer: updated, created: false };
     };
 
@@ -1014,6 +1063,11 @@ export async function captureLead(
         entityId: created.id,
         diff: { before: null, after: serializeCustomer(created) },
       });
+      // The audit line above was the ONLY trace this left, so the activity bar
+      // said "Customer added from your site" about somebody search had never
+      // heard of. Registered here, inside the write, so it waits for the commit
+      // whether this transaction is ours or a caller's.
+      await announceCustomer(ctx.tenantId, 'crm.customer.captured', created);
       return { customer: created, created: true };
     } catch (err) {
       if (!isUniqueViolation(err)) throw err;

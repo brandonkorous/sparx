@@ -308,8 +308,8 @@ model Property {
 
   // Origin-site tagging (docs/58 D1) — orders + carts placed on this site. These
   // SetNull on delete (orders outlive their site); they are NOT a fork.
-  orders Order[]
-  carts  Cart[]
+  orders        Order[]
+  carts         Cart[]
   // A standing order signed up on this site. Its renewals inherit the site from
   // here, which is the only record that still knows (issue 878).
   subscriptions Subscription[]

@@ -37,6 +37,14 @@ model Product {
   fulfillmentType String   @default("physical") @map("fulfillment_type") @db.VarChar(20)
   // ^ physical | digital | service | configurable | bundle | subscription
 
+  // How often a SHOPPER may choose to have this delivered again (issue 739), as
+  // `[{ intervalUnit, intervalCount }]` from the fixed set in
+  // commerce-schemas `REPEAT_CADENCE_CHOICES`. Empty = bought once only, which
+  // is almost every product. This is what the product page offers and what the
+  // cart accepts; `fulfillmentType = 'subscription'` above is a label that
+  // nothing in commerce reads and says nothing about cadence.
+  repeatOptions Json @default("[]") @map("repeat_options")
+
   // Defaults inherited by variants when omitted.
   weightGrams      Int?    @map("weight_grams")
   lengthMm         Int?    @map("length_mm")
@@ -65,11 +73,11 @@ model Product {
   // `dailyLimit` is a repeating allowance, not stock: 24 again tomorrow.
   // Counted per ORDER DAY, so it works for a business that tracks no stock at
   // all — which is the kind of business that has one.
-  orderAheadDays     Int?    @map("order_ahead_days")
-  depositType        String  @default("none") @map("deposit_type") @db.VarChar(10)
-  depositAmountCents Int?    @map("deposit_amount_cents")
-  depositPercent     Int?    @map("deposit_percent")
-  dailyLimit         Int?    @map("daily_limit")
+  orderAheadDays     Int?   @map("order_ahead_days")
+  depositType        String @default("none") @map("deposit_type") @db.VarChar(10)
+  depositAmountCents Int?   @map("deposit_amount_cents")
+  depositPercent     Int?   @map("deposit_percent")
+  dailyLimit         Int?   @map("daily_limit")
 
   // SEO.
   seoTitle       String? @map("seo_title") @db.VarChar(255)

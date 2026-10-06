@@ -56,6 +56,9 @@ model Order {
   // amountCents,label}]) so it's reproducible and reversible proportionally on refund.
   surchargeTotal    Decimal @default(0) @map("surcharge_total") @db.Decimal(12, 2)
   appliedSurcharges Json    @default("[]") @map("applied_surcharges")
+  // Refundable core deposits taken on this order (Σ line coreCharge × quantity).
+  // Part of `total` (it is money paid) but never of `subtotal` (it is not a sale).
+  coreChargeTotal   Decimal @default(0) @map("core_charge_total") @db.Decimal(12, 2)
   total             Decimal @default(0) @db.Decimal(12, 2)
   amountPaid        Decimal @default(0) @map("amount_paid") @db.Decimal(12, 2)
   refundTotal       Decimal @default(0) @map("refund_total") @db.Decimal(12, 2)
@@ -144,6 +147,10 @@ model Order {
   pickListLinks    PickListOrder[]
   pickListLines    PickListLine[]
   shipmentPackages ShipmentPackage[]
+
+  // Work about this order (31-crm-tasks.prisma). A task opened to move the order
+  // out of a status closes itself when it leaves that status.
+  tasks Task[]
 
   @@unique([tenantId, orderNumber], map: "orders_tenant_number_unique")
   @@index([tenantId, customerId, placedAt(sort: Desc)])

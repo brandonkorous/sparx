@@ -176,7 +176,7 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     icon: faWarehouse,
     section: 'Where it lives',
     order: 10,
-    keywords: ['warehouses', 'shops', 'sites', 'storage'],
+    keywords: ['warehouses', 'shops', 'sites', 'storage', 'stock locations', 'where stock is kept'],
     component: LocationsListSurface,
     createSurface: 'inventory.warehouses.detail',
     createLabel: 'New location',

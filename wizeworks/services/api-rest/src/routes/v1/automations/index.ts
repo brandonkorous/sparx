@@ -21,6 +21,10 @@
 //   POST   /v1/automations/:id/publish      → promote the staged draft → next version
 //   POST   /v1/automations/:id/restore      → restore a version into the draft
 //   POST   /v1/automations/:id/discard-draft→ throw away the staged draft
+//   POST   /v1/automations/:id/take-platform-version → switch a seeded rule the
+//                                            business changed to the platform's newer
+//                                            version (name + status kept, old version
+//                                            kept in history)
 //   GET    /v1/automations/:id/runs         → recent run history
 //   GET    /v1/automations/:id/runs/:runId  → one run + its steps (gate_log audit)
 //   GET    /v1/automations/:id/enrollment   → the funnel + per-step drop-off (docs/144 §9)
@@ -44,6 +48,7 @@ import {
   restoreAutomationVersion,
   runsTimeseries,
   setAutomationStatus,
+  takePlatformVersion,
   updateAutomation,
   type ServiceCtx,
 } from '@wizeworks/automation';
@@ -269,6 +274,25 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const ctx = ctxFor(request, 'editor');
     const { id } = IdParam.parse(request.params);
     return ok(await discardDraft(ctx, id));
+  });
+
+  // A seeded rule the business changed, whose newer platform version the re-sync
+  // held back (`platformUpdateAt` + `platformDocument` on the row). Editor, like
+  // publish: it IS a publish, of the platform's document instead of a draft. The
+  // refusals (the business's own rule, nothing waiting, unpublished changes) are
+  // a 409 AUTOMATION_PLATFORM_VERSION_UNAVAILABLE carrying the reason.
+  app.post('/v1/automations/:id/take-platform-version', async (request) => {
+    const ctx = ctxFor(request, 'editor');
+    const { id } = IdParam.parse(request.params);
+    const taken = await takePlatformVersion(ctx, id);
+    // Re-index like every other write that moves a rule: what it does changed.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: id,
+    });
+    return ok(taken);
   });
 
   app.get('/v1/automations/:id/runs', async (request) => {

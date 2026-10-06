@@ -61,7 +61,15 @@ export interface GatewayDescriptor {
   recommended?: boolean;
   onboarding: GatewayOnboarding;
   checkout: GatewayCheckout;
-  capabilities: { refunds: boolean; capture: boolean; paymentLinks: boolean; webhooks: boolean };
+  capabilities: {
+    refunds: boolean;
+    capture: boolean;
+    paymentLinks: boolean;
+    webhooks: boolean;
+    /** Can keep a card and charge it later with nobody at the checkout. What a
+     *  repeat order a shopper starts needs (issue 739). The API always sent it. */
+    storedMethods: boolean;
+  };
   credentialFields: CredentialField[];
   environments: boolean;
   sparxFee: boolean;

@@ -203,7 +203,6 @@ function FeeRow({
                   className="max-w-24 tabular-nums"
                   aria-label={`${label}: percentage`}
                   value={fee.percent}
-                  placeholder="50"
                   onChange={(event) => {
                     onChange({ ...fee, percent: event.target.value });
                   }}
@@ -410,7 +409,6 @@ function PolicyEditor({
                   <Input
                     color="module"
                     value={draft.name}
-                    placeholder="Standard terms"
                     onChange={(event) => {
                       set('name', event.target.value);
                     }}
@@ -485,7 +483,6 @@ function PolicyEditor({
                             className="max-w-24 tabular-nums"
                             aria-label="Deposit percentage"
                             value={draft.depositPercent}
-                            placeholder="25"
                             onChange={(event) => {
                               set('depositPercent', event.target.value);
                             }}
@@ -581,7 +578,6 @@ function PolicyEditor({
                     color="module"
                     rows={4}
                     value={draft.policyText}
-                    placeholder="Please give at least 24 hours’ notice to cancel or reschedule. Missed bookings may be charged in full."
                     onChange={(event) => {
                       set('policyText', event.target.value);
                     }}

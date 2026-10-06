@@ -435,11 +435,19 @@ function ManageIntegration({
     );
   }
 
-  if (isPending || !installation) {
+  if (isPending) {
     return (
       <p className="p-4 text-sm" role="status">
         Loading…
       </p>
+    );
+  }
+  // An answer with nothing in it is "not here", never "still loading". This
+  // waited for ever when the API sent an empty 200 for another business's id
+  // (persona issue 226).
+  if (!installation) {
+    return (
+      <PaneLoadError reason="missing" noun="connection" title="That connection is no longer here" />
     );
   }
 

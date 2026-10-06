@@ -32,7 +32,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
       {items.map((c, i) => {
         const last = i === items.length - 1;
         return (
-          <span key={`${c.label}-${i}`} style={{ display: 'inline-flex', gap: '0.5rem' }}>
+          <span key={`${c.label}-${i}`} className="inline-flex gap-2">
             {c.href && !last ? (
               <Link href={c.href} className="text-base-content no-underline hover:underline">
                 {c.label}

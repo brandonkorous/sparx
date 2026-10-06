@@ -13,6 +13,8 @@
 // capability-gated /internal/operator/* handlers.
 
 import { getClient } from './client';
+import { collectionHasField } from './live-fields';
+import { EVERY_PREFIX } from './search';
 import {
   CUSTOMERS_COLLECTION,
   type CustomerSearchDocument,
@@ -52,14 +54,18 @@ async function runCrossTenant<T>(
   const perPage = input.perPage ?? 20;
   // No `filter_by` → the search spans every tenant's documents. Each hit still
   // carries its own `tenant_id` for the operator to attribute the result.
-  const raw = (await getClient().collections(collection).documents().search({
-    q: input.q,
-    query_by: queryBy,
-    query_by_weights: queryByWeights,
-    sort_by: sortBy,
-    page,
-    per_page: perPage,
-  })) as RawSearch<T>;
+  const raw = (await getClient()
+    .collections(collection)
+    .documents()
+    .search({
+      q: input.q,
+      query_by: queryBy,
+      query_by_weights: queryByWeights,
+      sort_by: sortBy,
+      page,
+      per_page: perPage,
+      ...EVERY_PREFIX,
+    })) as RawSearch<T>;
   return {
     hits: (raw.hits ?? []).map((h) => h.document),
     found: raw.found ?? 0,
@@ -68,16 +74,21 @@ async function runCrossTenant<T>(
   };
 }
 
-/** Find orders across ALL tenants by order number, customer name/email, or SKU.
- *  `order_number` is an infix field, so a partial number matches. */
+/** Find orders across ALL tenants by order number, customer name/email, the
+ *  trade account's name, or SKU. `order_number` is an infix field, so a partial
+ *  number matches. The account's name is asked for only once the live
+ *  collection has it (see ./live-fields.ts). */
 export async function searchOrdersCrossTenant(
   input: CrossTenantSearchInput
 ): Promise<CrossTenantSearchResult<OrderSearchDocument>> {
+  const withCompany = await collectionHasField(ORDERS_COLLECTION, 'company');
   return runCrossTenant<OrderSearchDocument>(
     ORDERS_COLLECTION,
     input,
-    'order_number,customer_name,customer_email,item_skus',
-    '5,3,3,2',
+    withCompany
+      ? 'order_number,customer_name,customer_email,company,item_skus'
+      : 'order_number,customer_name,customer_email,item_skus',
+    withCompany ? '5,3,3,3,2' : '5,3,3,2',
     '_text_match:desc,placed_at:desc'
   );
 }

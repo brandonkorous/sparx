@@ -11,6 +11,7 @@
 // consistently so the dashboard doesn't have to juggle two formats.
 
 import { Prisma, withTenant, type TxClient } from '@wizeworks/db';
+import { coresOwed } from '@wizeworks/commerce-schemas';
 import { ORDER_CHANNEL_BUCKETS, channelKeyLabel, deriveChannelKey } from '@wizeworks/crm-schemas';
 
 import type { ServiceContext } from '../errors';
@@ -44,9 +45,34 @@ export interface RevenueSummary {
   ordersCount: number;
   grossRevenueCents: number;
   refundedCents: number;
+  /** Core deposits on rebuilt parts whose old part has not come back yet (sparx
+   *  issue 051): money in hand that is still the customer's, so it is taken off
+   *  `netRevenueCents`. A deposit paid back is a refund; one kept is revenue. */
+  coreDepositsHeldCents: number;
   netRevenueCents: number;
   averageOrderValueCents: number;
   currency: string;
+}
+
+/**
+ * Core deposits still held on the orders matching `where`: Σ deposit × cores
+ * still owed. One rule, shared by every figure that calls money "revenue".
+ */
+export async function heldCoreDepositsCents(
+  tx: TxClient,
+  where: Prisma.OrderWhereInput
+): Promise<number> {
+  const lines = await tx.orderItem.findMany({
+    where: { coreCharge: { not: null }, order: where },
+    select: {
+      coreCharge: true,
+      quantity: true,
+      quantityRefunded: true,
+      coresReturned: true,
+      coresKept: true,
+    },
+  });
+  return lines.reduce((sum, line) => sum + coresOwed(line) * decimalToCents(line.coreCharge), 0);
 }
 
 /** Revenue for one site (docs/131 §6); undefined is every site. */
@@ -58,18 +84,20 @@ export async function revenueSummary(
   const { from, to } = bounds(range);
 
   return withTenant(ctx, async (tx) => {
+    const where: Prisma.OrderWhereInput = {
+      placedAt: { gte: from, lte: to },
+      status: { not: 'cancelled' },
+      ...(propertyId ? { propertyId } : {}),
+    };
     const agg = await tx.order.aggregate({
-      where: {
-        placedAt: { gte: from, lte: to },
-        status: { not: 'cancelled' },
-        ...(propertyId ? { propertyId } : {}),
-      },
+      where,
       _count: { _all: true },
       _sum: { total: true, refundTotal: true },
     });
 
     const gross = decimalToCents(agg._sum.total);
     const refunded = decimalToCents(agg._sum.refundTotal);
+    const held = await heldCoreDepositsCents(tx, where);
     const ordersCount = agg._count._all;
 
     return {
@@ -77,7 +105,8 @@ export async function revenueSummary(
       ordersCount,
       grossRevenueCents: gross,
       refundedCents: refunded,
-      netRevenueCents: gross - refunded,
+      coreDepositsHeldCents: held,
+      netRevenueCents: gross - refunded - held,
       averageOrderValueCents: ordersCount > 0 ? Math.round(gross / ordersCount) : 0,
       currency: DEFAULT_CURRENCY,
     };
@@ -969,7 +998,7 @@ async function aggregateRevenueByDay(
       COALESCE(SUM(refund_total), 0)       AS refunded,
       COALESCE(SUM(total), 0)              AS collected
     FROM orders
-    WHERE status <> 'canceled'
+    WHERE status <> 'cancelled'
       AND placed_at >= ${from}
       AND placed_at < ${toExclusive}
       ${propertyId ? Prisma.sql`AND property_id = ${propertyId}::uuid` : Prisma.empty}
@@ -1002,7 +1031,7 @@ async function aggregateRevenueByDayPerProperty(
       COALESCE(SUM(refund_total), 0)       AS refunded,
       COALESCE(SUM(total), 0)              AS collected
     FROM orders
-    WHERE status <> 'canceled'
+    WHERE status <> 'cancelled'
       AND placed_at >= ${from}
       AND placed_at < ${toExclusive}
     GROUP BY property_id, 2

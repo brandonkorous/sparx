@@ -20,6 +20,8 @@
 // the presentation.
 
 import {
+  Alert,
+  Badge,
   Button,
   Checkbox,
   Dialog,
@@ -28,6 +30,7 @@ import {
   DialogTitle,
   Field,
   FieldControl,
+  FieldDescription,
   FieldLabel,
   FieldStatus,
   Input,
@@ -40,9 +43,11 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { MoneyInput } from '@/components/money-input';
 import { ProductPicker } from './product-picker';
 import { ADHOC, METHOD_META, PASSTHROUGH, type MarkupRuleSummary } from './line-markup';
+import { MarginBadge } from './margin-badge';
 import { useLineForm, type LineTypeOption } from './use-line-form';
 import { type DraftLine } from './totals';
 import { formatMoney } from './types';
+import type { TradeAccount } from './trade-price';
 import type { BandMethod } from '@wizeworks/commerce-schemas';
 
 // Re-exported so existing importers (invoice-editor, line-items) keep their
@@ -56,8 +61,13 @@ interface LineEditorModalProps {
   lineTypes: LineTypeOption[];
   markupRules: MarkupRuleSummary[];
   currency: string;
+  /** The wholesale account whose own prices a picked part takes, or null. */
+  tradeAccount: TradeAccount | null;
   onClose: () => void;
   onSave: (line: DraftLine) => void;
+  /** Opens the markup rules screen beside the document, so a rule can be added
+   *  or changed without losing this line (sparx persona issue 086). */
+  onManageMarkupRules?: () => void;
 }
 
 export function LineEditorModal({
@@ -66,11 +76,13 @@ export function LineEditorModal({
   lineTypes,
   markupRules,
   currency,
+  tradeAccount,
   onClose,
   onSave,
+  onManageMarkupRules,
 }: LineEditorModalProps) {
   const isEdit = Boolean(line?.id ?? line?.description);
-  const form = useLineForm({ open, line, lineTypes, markupRules, onSave });
+  const form = useLineForm({ open, line, lineTypes, markupRules, tradeAccount, onSave });
   const confirm = useConfirm();
 
   // Declares the in-progress line to the PANE, so closing the whole pane while
@@ -158,7 +170,6 @@ export function LineEditorModal({
                   productId={form.productId}
                   variantId={form.variantId}
                   productLabel={form.productLabel}
-                  currency={currency}
                   onPick={form.pickProduct}
                   onClear={form.clearProduct}
                 />
@@ -185,11 +196,11 @@ export function LineEditorModal({
             </Field>
 
             {/* The numbers. Cost lives here in EVERY mode — it is a property of
-                the line, not of the markup. Only Unit price is conditional: it
+                the line, not of the markup. Only Price each is conditional: it
                 is typed here when priced manually, and computed by the markup
                 row below when not. */}
             <div className="flex flex-wrap items-start gap-3">
-              <Field className="w-20">
+              <Field className="w-28">
                 <FieldLabel required>Qty</FieldLabel>
                 <FieldControl
                   render={
@@ -211,43 +222,44 @@ export function LineEditorModal({
                 ) : null}
               </Field>
 
+              {/* Two money boxes side by side and only one bills anybody, so
+                  both say which. "Cost" alone read as the price to charge, and
+                  a figure typed there made a line that billed nothing. */}
               {form.markupMode ? null : (
-                <Field className="w-28">
-                  <FieldLabel>Unit price</FieldLabel>
+                <Field className="w-36">
+                  <FieldLabel>Price each</FieldLabel>
                   <MoneyInput
                     size="md"
                     color="module"
                     value={form.unitPrice}
-                    aria-label="Unit price"
+                    aria-label="Price each"
                     onValueChange={form.setUnitPrice}
                   />
+                  <FieldDescription>What they are charged.</FieldDescription>
                   {form.show(form.errors.unitPrice) ? (
                     <FieldStatus status="error">{form.errors.unitPrice}</FieldStatus>
                   ) : null}
                 </Field>
               )}
 
-              <Field className="w-28">
-                <FieldLabel required={form.markupMode}>Cost</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      className="text-right tabular-nums"
-                      value={form.cost}
-                      onChange={(e) => {
-                        form.setCost(e.target.value);
-                      }}
-                    />
-                  }
+              <Field className="w-36">
+                <FieldLabel required={form.markupMode}>Cost to you</FieldLabel>
+                {/* Money that can be blank (sparx persona issue 086): a number
+                    field read "8,50" as nothing, and its "0.00" placeholder
+                    made an empty cost look like a measured one. */}
+                <MoneyInput
+                  optional
+                  size="md"
+                  color="module"
+                  value={form.costValue}
+                  aria-label="Cost to you"
+                  onValueChange={form.setCostValue}
                 />
                 {form.show(form.errors.cost) ? (
                   <FieldStatus status="error">{form.errors.cost}</FieldStatus>
-                ) : null}
+                ) : (
+                  <FieldDescription>{form.costHelp}</FieldDescription>
+                )}
               </Field>
 
               <Field className="w-28">
@@ -260,7 +272,41 @@ export function LineEditorModal({
                   onValueChange={form.setDiscountAmount}
                 />
               </Field>
+
+              {/* A rebuilt part's refundable core deposit (sparx issue 051), per
+                  unit. Never taxed or discounted; paid back when the old part is
+                  returned. Seeded from the part picked; 0 takes it off. */}
+              <Field className="w-32">
+                <FieldLabel>Core deposit</FieldLabel>
+                <MoneyInput
+                  size="md"
+                  color="module"
+                  value={form.coreCharge ?? 0}
+                  aria-label="Core deposit per unit"
+                  onValueChange={form.setCoreCharge}
+                />
+              </Field>
             </div>
+
+            {/* Where the price came from, for a business on account (issue 077):
+                the sentence the server gave, in wholesale's hue because it is
+                that module's rule setting the number. One message at a time:
+                looking it up, what it is, or why it could not be read. */}
+            {form.pricingLookup && tradeAccount ? (
+              <Text className="text-sm" role="status">
+                {`Looking up ${tradeAccount.name}'s price…`}
+              </Text>
+            ) : form.priceWarning ? (
+              <Alert color="warning" variant="soft">
+                {form.priceWarning}
+              </Alert>
+            ) : form.priceNote ? (
+              <div>
+                <Badge color="module-b2b" variant="soft">
+                  {form.priceNote}
+                </Badge>
+              </div>
+            ) : null}
 
             {/* HOW the price is worked out — the markup directive and its terms,
                 on one line, with the price it produces directly beneath. */}
@@ -287,6 +333,27 @@ export function LineEditorModal({
                       ))}
                       <option value={ADHOC}>Ad-hoc markup…</option>
                     </NativeSelect>
+                    {/* Rules were only reachable through the API, so the
+                        dropdown listed rules nobody could make (sparx persona
+                        issue 086). */}
+                    {onManageMarkupRules ? (
+                      <div className="flex flex-wrap items-baseline gap-x-2">
+                        {markupRules.length === 0 ? (
+                          <Text as="span" className="text-sm">
+                            No saved rules yet.
+                          </Text>
+                        ) : null}
+                        <Button
+                          variant="link"
+                          color="module"
+                          size="sm"
+                          className="px-0"
+                          onClick={onManageMarkupRules}
+                        >
+                          {markupRules.length === 0 ? 'Add a markup rule' : 'Manage markup rules'}
+                        </Button>
+                      </div>
+                    ) : null}
                   </Field>
 
                   {form.markup.source === ADHOC ? (
@@ -311,10 +378,12 @@ export function LineEditorModal({
                         <FieldLabel>{METHOD_META[form.markup.method].label}</FieldLabel>
                         <FieldControl
                           render={
+                            // Text, read like money: a number field read "8,50"
+                            // as nothing (sparx persona issue 086).
                             <Input
                               color="module"
-                              type="number"
-                              step="0.01"
+                              type="text"
+                              inputMode="decimal"
                               className="text-right tabular-nums"
                               value={form.markup.value}
                               onChange={(e) => {
@@ -331,25 +400,36 @@ export function LineEditorModal({
                   ) : null}
                 </div>
 
-                {/* The price the markup produces. Named "Unit price" so it reads
+                {/* The price the markup produces. Named "Price each" so it reads
                     as the same thing the line-item row shows — calculated here
                     rather than typed. Never faded; this is the money charged. */}
                 {form.resolved.preview ? (
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <Text as="span" className="text-sm">
-                      Unit price
+                      Price each
                     </Text>
                     <Text as="span" className="text-lg font-semibold tabular-nums">
                       {formatMoney(form.resolved.preview.priceCents / 100, currency)}
                     </Text>
+                    {/* The margin is the badge below, the same one every line
+                        shows; this says what the markup added on top of cost. */}
                     <Text as="span" className="text-sm tabular-nums">
-                      {form.resolved.preview.marginPct}% margin · {form.resolved.preview.markupPct}%
-                      markup
+                      {form.resolved.preview.markupPct}% markup on cost
                     </Text>
                   </div>
                 ) : null}
               </div>
             ) : null}
+
+            {/* The margin as you price, on every line with a cost, not only a
+                markup line (sparx persona issue 086). Never shown to them. */}
+            <div className="flex flex-wrap items-center gap-2" aria-live="polite">
+              {form.margin ? (
+                <MarginBadge margin={form.margin} currency={currency} />
+              ) : form.cost.trim() === '' ? (
+                <Text className="text-sm">Add what this cost you to see your margin.</Text>
+              ) : null}
+            </div>
 
             <label className="flex items-center gap-2">
               <Checkbox
@@ -369,7 +449,6 @@ export function LineEditorModal({
                 cheap to trigger has to go through the same question every other
                 dismissal does. */}
             <Button
-              color="neutral"
               variant="ghost"
               size="sm"
               onClick={() => {

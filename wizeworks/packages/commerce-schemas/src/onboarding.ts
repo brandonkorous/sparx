@@ -353,6 +353,10 @@ export const STOCK_IMPORT_TARGETS: readonly ColumnTarget[] = [
     aliases: [
       'on hand',
       'onhand',
+      // An online store's own inventory export names the count it holds
+      // "On hand (current)", beside an "On hand (new)" left blank for edits.
+      'on hand current',
+      'current on hand',
       'quantity',
       'qty',
       'quantity on hand',
@@ -479,12 +483,21 @@ export const COLUMN_MATCH_THRESHOLD = 0.62;
  */
 export function matchColumns(
   headers: readonly string[],
-  targets: readonly ColumnTarget[] = STOCK_IMPORT_TARGETS
+  targets: readonly ColumnTarget[] = STOCK_IMPORT_TARGETS,
+  options: {
+    /** Headings with nothing under them in any row. Never guessed and never
+     *  offered: an online store's export carries an "On hand (new)" column left
+     *  blank, and guessing it as the count imported nothing at all (sparx
+     *  persona issue 068). A person can still pick one by hand. */
+    emptyHeaders?: ReadonlySet<string>;
+  } = {}
 ): ColumnMatch[] {
-  const normalizedHeaders = headers.map((header) => ({
-    raw: header,
-    normal: normalizeHeader(header),
-  }));
+  const normalizedHeaders = headers
+    .filter((header) => !options.emptyHeaders?.has(header))
+    .map((header) => ({
+      raw: header,
+      normal: normalizeHeader(header),
+    }));
 
   const squash = (value: string): string => value.replace(/ /g, '');
 
@@ -825,6 +838,21 @@ export const MIGRATION_RECIPES: readonly MigrationRecipe[] = [
       sku: ['plu', 'barcode', 'lookup code'],
       warehouse: ['store', 'shop', 'branch', 'till', 'outlet'],
       onHand: ['stock on hand', 'soh', 'current stock'],
+    },
+    options: { reason: 'recount' },
+  },
+  {
+    key: 'store_export',
+    name: 'An inventory export from your old online store',
+    description:
+      'The inventory file an online store gives you when you leave it: one row per item per location, with what is on hand.',
+    recognisedBy:
+      'Columns like "On hand (current)", "Available" and "Location", and a code column per variant.',
+    extraAliases: {
+      sku: ['variant sku'],
+      name: ['product title'],
+      warehouse: ['location name'],
+      onHand: ['on hand current', 'inventory quantity', 'variant inventory qty', 'inventory qty'],
     },
     options: { reason: 'recount' },
   },

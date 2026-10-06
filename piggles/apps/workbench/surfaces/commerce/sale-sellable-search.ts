@@ -34,11 +34,20 @@ export interface SearchableSellable {
   detail?: string | null;
   /** What is written on the box. */
   sku?: string | null;
+  /**
+   * Anything else the server's search matches that the row does not draw: a
+   * version's own name, when its option values are what the row shows. The
+   * server is asked first now (issue 069), and a row it found for a word must
+   * not then be dropped here for the same word.
+   */
+  keywords?: string | null;
 }
 
 /** Everything about a row that a person might type, as one lowercase haystack. */
 function haystack(item: SearchableSellable): string {
-  return [item.name, item.detail ?? '', item.sku ?? ''].join(' ').toLowerCase();
+  return [item.name, item.detail ?? '', item.sku ?? '', item.keywords ?? '']
+    .join(' ')
+    .toLowerCase();
 }
 
 /**

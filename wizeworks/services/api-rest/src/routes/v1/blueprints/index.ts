@@ -39,6 +39,8 @@ import {
   type InstallResult,
 } from '../../../lib/blueprint-installer.js';
 import { applyUpdate, planUpdate, reportUntouched } from '../../../lib/blueprint-updater.js';
+import { publishSiteUpdated } from '../../../lib/site-events.js';
+import { replacedInstallIds } from '../../../lib/blueprint-replaced.js';
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
@@ -94,14 +96,20 @@ interface InstallRow {
   liveAt: Date | null;
 }
 
-function serializeInstall(row: InstallRow) {
+/** An install's status as its site stands now: `replaced` over `installed` or
+ *  `live` when its pages are gone (see `replacedInstallIds`). */
+function siteStatus(status: string, replaced: boolean): string {
+  return replaced && (status === 'installed' || status === 'live') ? 'replaced' : status;
+}
+
+function serializeInstall(row: InstallRow, replaced = false) {
   const result = (row.result ?? {}) as Partial<InstallResult>;
   return {
     id: row.id,
     property_id: row.propertyId,
     blueprint_key: row.blueprintKey,
     blueprint_version: row.blueprintVersion,
-    status: row.status,
+    status: siteStatus(row.status, replaced),
     // Whether the design's examples came with it (issue 098). On the wire so a
     // console can say which install this is without inferring it from a zero:
     // "0 products" is what a declined install and a failed one both look like.
@@ -114,10 +122,10 @@ function serializeInstall(row: InstallRow) {
 
 /** Detail view — adds the id-map (what was created) so the dashboard "Review &
  *  go live" surface can list each artifact and deep-link into its editor. */
-function serializeInstallDetail(row: InstallRow) {
+function serializeInstallDetail(row: InstallRow, replaced = false) {
   const result = (row.result ?? {}) as Partial<InstallResult>;
   return {
-    ...serializeInstall(row),
+    ...serializeInstall(row, replaced),
     artifacts: {
       pages: result.pages ?? [],
       products: result.products ?? [],
@@ -152,6 +160,10 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       })
     );
     const byKey = new Map(installs.map((i) => [i.blueprintKey, i]));
+    const replaced = await replacedInstallIds(
+      auth.tenantId,
+      installs.map((i) => i.id)
+    );
 
     // Installed-only (docs/54): /builder/blueprints lists ONLY this site's
     // installs, so the catalog query + count are restricted to the installed slugs
@@ -203,14 +215,15 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       const inst = byKey.get(key);
       // Version-drift (§9): when the installed version trails the catalog's, the
       // card offers an upgrade hint (the apply itself is deferred, §13 step 5).
-      return inst
-        ? {
-            id: inst.id,
-            status: inst.status,
-            version: inst.blueprintVersion,
-            update_available: inst.blueprintVersion !== version,
-          }
-        : null;
+      if (!inst) return null;
+      const gone = replaced.has(inst.id);
+      return {
+        id: inst.id,
+        status: siteStatus(inst.status, gone),
+        version: inst.blueprintVersion,
+        // Nothing of a replaced design is left on the site to bring up to date.
+        update_available: !gone && inst.blueprintVersion !== version,
+      };
     };
 
     // No in-code fallback: api-rest publishes sparx's own shelf into these rows at
@@ -312,7 +325,11 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     const installs = await withTenant({ tenantId: auth.tenantId }, (tx) =>
       tx.tenantBlueprintInstall.findMany({ orderBy: { installedAt: 'desc' } })
     );
-    return ok({ installs: installs.map(serializeInstall) });
+    const replaced = await replacedInstallIds(
+      auth.tenantId,
+      installs.map((i) => i.id)
+    );
+    return ok({ installs: installs.map((i) => serializeInstall(i, replaced.has(i.id))) });
   });
 
   app.get('/v1/blueprints/installs/:id', async (request) => {
@@ -322,7 +339,8 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       tx.tenantBlueprintInstall.findFirst({ where: { id } })
     );
     if (!row) throw notFound('Install', id);
-    return ok(serializeInstallDetail(row));
+    const replaced = await replacedInstallIds(auth.tenantId, [row.id]);
+    return ok(serializeInstallDetail(row, replaced.has(row.id)));
   });
 
   app.post('/v1/blueprints/installs/:id/go-live', async (request) => {
@@ -421,6 +439,13 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       bp,
       take_theirs ?? []
     );
+    // An update can rewrite the site's brand, catalog and pages in place, none of
+    // it through a publish, so the website's cached reads are purged here (an
+    // install announces itself as `template.installed`).
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: row.propertyId,
+      changed: ['blueprint-update'],
+    });
     return ok(res);
   });
 
@@ -444,6 +469,12 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       },
       id
     );
+    // The products, pages and theme the install created are gone; without this
+    // the website goes on serving them from its cache.
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: row.propertyId,
+      changed: ['blueprint-removed'],
+    });
     return ok({ id, status: 'deleted' });
   });
 

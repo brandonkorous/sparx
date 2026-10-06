@@ -31,6 +31,7 @@
 // nightly maths forever is a different, larger one, and it lives in Settings
 // where a decision of that size belongs.
 
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
   AlertContent,
@@ -39,7 +40,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Heading,
   Stat,
   StatDesc,
@@ -52,7 +52,6 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import {
-  faBoxOpen,
   faCircleExclamation,
   faLightbulb,
   faSigma,
@@ -97,12 +96,18 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   if (explanation.isError) {
+    // Gone (a 404) and unreachable say different things; the shared screen reads
+    // which from the error instead of one sentence hedging both (persona issue 226).
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
-          icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+        <PaneLoadError
+          error={explanation.error}
+          noun="calculation"
           title="Could not explain this number"
-          description="Nothing has ever stocked this item at this location, or the server could not be reached. Either way there is no calculation to show."
+          description="This is a problem reaching the server. The calculation itself is unaffected. Try again in a moment."
+          onRetry={() => {
+            void explanation.refetch();
+          }}
         />
       </div>
     );

@@ -9,8 +9,10 @@
 
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
-// The dashboard origin the apply/activation funnel hands off to (app.sparx.works).
-export const APP_BASE = process.env.SPARX_APP_URL ?? 'https://app.sparx.works';
+// The workbench origin the apply/activation funnel hands off to: one definition for
+// the whole site, in cta.ts. Re-exported because partner pages import it from here.
+import { APP_BASE } from '@/components/marketing/cta';
+export { APP_BASE };
 
 export type PartnerTier = 'informal' | 'registered' | 'certified';
 export type PartnerKind = 'freelance' | 'agency' | 'developer' | 'other';

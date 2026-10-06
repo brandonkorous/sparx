@@ -6,6 +6,16 @@ export * as pricingTierService from './pricing-tiers.js';
 export * as accountService from './accounts.js';
 export * as approvalService from './approval.js';
 export * as invoiceService from './invoices.js';
+// A trade account's fleet and which parts fit it (sparx persona issue 086).
+export * as fleetService from './fleet.js';
+export {
+  getAccountFleet,
+  findFleetVehicle,
+  fleetFitForProducts,
+  fleetFittedProductIds,
+  type FleetVehicleView,
+  type FleetFitResult,
+} from './fleet.js';
 
 export { resolvePrimaryPropertyId } from './context.js';
 export type { B2bContext } from './context.js';

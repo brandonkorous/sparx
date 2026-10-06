@@ -8,10 +8,18 @@
 // lists / nth-weekday); an unsupported part degrades to the base frequency rather
 // than throwing.
 //
-// Occurrences step the UTC instant directly (start + k·period). For an event whose
-// TZID observes DST, an occurrence can land an hour off its intended wall-clock
-// time across a transition — acceptable for the documented low-fidelity busy
-// import, and exact for the UTC/standard-time series the booking engine creates.
+// `expandRecurrence` steps the UTC instant directly (start + k·period). For an
+// event whose TZID observes DST, an occurrence can land an hour off its intended
+// wall-clock time across a transition, which is acceptable for the documented
+// low-fidelity busy import.
+//
+// It was NOT acceptable for booking series, which used it too (sparx persona issue
+// 086): a 9:00 AM Saturday in Salt Lake City became 8:00 AM the week the clocks
+// went back, a weekday was read in UTC so a 6:00 PM Monday landed on Sunday, and a
+// DATE `UNTIL` meant midnight UTC, the evening before anywhere in the Americas.
+// `expandRecurrenceInZone` steps the WALL clock of the place instead.
+
+import { localWallToUtc, tzOffsetMs } from '@wizeworks/time';
 
 import type { Interval } from './time';
 
@@ -27,6 +35,9 @@ export interface RRuleParts {
   count?: number;
   /** Inclusive UNTIL instant (epoch ms, UTC). */
   until?: number;
+  /** Set when UNTIL was a DATE (`YYYYMMDD`), not a moment: the last day, as
+   *  `YYYY-MM-DD`. A zone-aware expansion reads it as the whole of that day. */
+  untilDay?: string;
   /** Weekly BYDAY as 0=SU..6=SA. Empty → the weekday of DTSTART. */
   byDay: number[];
 }
@@ -59,11 +70,20 @@ export function parseRRule(value: string): RRuleParts | null {
   const interval = Math.max(1, Number(parts.INTERVAL ?? '1') || 1);
   const count = parts.COUNT ? Math.max(0, Number(parts.COUNT) || 0) : undefined;
   const until = parts.UNTIL ? parseIcsInstant(parts.UNTIL) : undefined;
+  const dateOnly = /^(\d{4})(\d{2})(\d{2})$/.exec(parts.UNTIL?.trim() ?? '');
+  const untilDay = dateOnly ? `${dateOnly[1]}-${dateOnly[2]}-${dateOnly[3]}` : undefined;
   const byDay = (parts.BYDAY ?? '')
     .split(',')
     .map((d) => WEEKDAY_INDEX[d.trim().slice(-2).toUpperCase()])
     .filter((n): n is number => n !== undefined);
-  return { freq, interval, count, until: until ?? undefined, byDay };
+  return {
+    freq,
+    interval,
+    count,
+    until: until ?? undefined,
+    byDay,
+    ...(untilDay ? { untilDay } : {}),
+  };
 }
 
 /** Parse an iCal instant used in UNTIL / EXDATE: `YYYYMMDD`, `YYYYMMDDTHHMMSS`, or
@@ -162,6 +182,56 @@ export function expandRecurrence(
     if (exDates.has(occStart)) continue;
     const occEnd = occStart + durationMs;
     // Overlaps the window? (half-open: a block ending exactly at windowStart is out)
+    if (occEnd > windowStart && occStart < windowEnd) {
+      out.push({ start: occStart, end: occEnd });
+    }
+  }
+  return out;
+}
+
+/**
+ * The same expansion, stepped on the WALL clock of `tz` rather than in UTC: the
+ * one a booking series wants, because a weekly 9:00 AM appointment is 9:00 AM
+ * every week where the business is, whatever the clocks did in between.
+ *
+ * Done by moving into "wall time read as if it were UTC", where every day is 24
+ * hours and every weekday is the local one, expanding there with the plain rule,
+ * and bringing each occurrence back with the two-pass DST resolution the
+ * availability engine already uses. A DATE `UNTIL` is the whole of that day where
+ * the business is; a moment `UNTIL` is that moment.
+ */
+export function expandRecurrenceInZone(
+  start: number,
+  durationMs: number,
+  rule: RRuleParts,
+  windowStart: number,
+  windowEnd: number,
+  tz: string
+): Interval[] {
+  if (windowEnd <= windowStart || durationMs <= 0) return [];
+  const toWall = (utc: number): number => utc + tzOffsetMs(utc, tz);
+  const fromWall = (wall: number): number => {
+    const d = new Date(wall);
+    const minuteOfDay = d.getUTCHours() * 60 + d.getUTCMinutes();
+    return (
+      localWallToUtc(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate(), minuteOfDay, tz) +
+      d.getUTCSeconds() * 1000
+    );
+  };
+  const untilWall =
+    rule.untilDay !== undefined
+      ? Date.parse(`${rule.untilDay}T23:59:59Z`)
+      : rule.until !== undefined
+        ? toWall(rule.until)
+        : undefined;
+  const wallRule: RRuleParts = { ...rule, until: untilWall };
+  // A day of slack on the window end: the window is an instant, the expansion is
+  // in wall time, and the two differ by the zone's offset.
+  const wallEnd = toWall(windowEnd) + DAY_MS;
+  const out: Interval[] = [];
+  for (const wall of occurrenceStarts(toWall(start), wallRule, wallEnd)) {
+    const occStart = fromWall(wall);
+    const occEnd = occStart + durationMs;
     if (occEnd > windowStart && occStart < windowEnd) {
       out.push({ start: occStart, end: occEnd });
     }

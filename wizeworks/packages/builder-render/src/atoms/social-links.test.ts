@@ -26,6 +26,29 @@ describe('a platform with no glyph', () => {
   });
 });
 
+describe('a platform with a glyph', () => {
+  it('is named properly too, because the name is its spoken label', () => {
+    // sparx persona issue 039: the icon's aria-label is this name, and a screen
+    // reader read the raw keys off a live footer.
+    expect(socialLabel('facebook')).toBe('Facebook');
+    expect(socialLabel('linkedin')).toBe('LinkedIn');
+    expect(socialLabel('youtube')).toBe('YouTube');
+    expect(socialLabel('twitter')).toBe('X');
+    for (const platform of [
+      'instagram',
+      'facebook',
+      'x',
+      'tiktok',
+      'youtube',
+      'linkedin',
+      'pinterest',
+      'threads',
+    ]) {
+      expect(socialLabel(platform)).toMatch(/^[A-Z]/);
+    }
+  });
+});
+
 describe('a platform the owner typed herself', () => {
   it('keeps her own words', () => {
     // "Other" in the editor carries a free-text label as the platform, so this
@@ -37,9 +60,8 @@ describe('a platform the owner typed herself', () => {
 
 describe('the names a person shortens things to', () => {
   it('normalizes before looking, the way the glyph lookup does', () => {
-    // These resolve to platforms that DO have a glyph, so the label is never
-    // reached on a real site. Pinned anyway: the two lookups share one
-    // normalization, and a change to it must not move only one of them.
+    // The glyph lookup and the name share one normalization, and a change to it
+    // must not move only one of them.
     expect(socialLabel('WhatsApp')).toBe('WhatsApp');
     expect(socialLabel('Whats App')).toBe('WhatsApp');
   });

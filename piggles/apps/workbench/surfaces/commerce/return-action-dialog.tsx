@@ -1,15 +1,8 @@
 'use client';
 
-// Shared chrome for a return's action modals.
-//
-// They are modals rather than panes on purpose: a return action is seconds of
-// work with nothing to draft and nothing to come back to, the same class as
-// inviting a teammate. Abandon one and nothing is lost — the return is
-// untouched and you reopen and redo. That is the ONLY kind of modal this app
-// allows.
-//
-// A modal here belongs to that ONE return via PaneScope, so acting on a return
-// in one pane never blacks out the return open in the pane beside it.
+// Shared chrome for a return's (and a core's) action modals: seconds of work with
+// nothing to draft, so abandoning one loses nothing. PaneScope keeps each modal to
+// its own pane, so acting in one never blacks out the pane beside it.
 
 import {
   Button,
@@ -38,8 +31,55 @@ export const CONDITIONS = [
   'destroyed',
 ] as const;
 
+type SubmitColor = 'module' | 'danger' | 'success' | 'warning';
+
+function ActionFooter(props: {
+  submitLabel: string;
+  submitColor: SubmitColor;
+  submitDisabled?: boolean | undefined;
+  busy: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <DialogFooter>
+      <Button
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        disabled={props.busy}
+        onClick={props.onClose}
+      >
+        Cancel
+      </Button>
+      <Button
+        color={props.submitColor}
+        size="sm"
+        loading={props.busy}
+        disabled={props.submitDisabled}
+        onClick={props.onSubmit}
+      >
+        {props.submitLabel}
+      </Button>
+    </DialogFooter>
+  );
+}
+
 /** The popup box, its scrolling body, and a Cancel / primary footer. Keeps every
  *  form visually identical so they read as one family of moves on a return. */
+interface ActionDialogProps {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  description: string;
+  submitLabel: string;
+  submitColor?: SubmitColor;
+  submitDisabled?: boolean;
+  busy: boolean;
+  onSubmit: () => void;
+  children: React.ReactNode;
+}
+
 export function ActionDialog({
   open,
   onClose,
@@ -51,18 +91,7 @@ export function ActionDialog({
   busy,
   onSubmit,
   children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  description: string;
-  submitLabel: string;
-  submitColor?: 'module' | 'danger' | 'success';
-  submitDisabled?: boolean;
-  busy: boolean;
-  onSubmit: () => void;
-  children: React.ReactNode;
-}) {
+}: ActionDialogProps) {
   return (
     <PaneScope>
       <Dialog
@@ -79,20 +108,14 @@ export function ActionDialog({
             {children}
           </div>
 
-          <DialogFooter>
-            <Button color="neutral" variant="ghost" size="sm" disabled={busy} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              color={submitColor}
-              size="sm"
-              loading={busy}
-              disabled={submitDisabled}
-              onClick={onSubmit}
-            >
-              {submitLabel}
-            </Button>
-          </DialogFooter>
+          <ActionFooter
+            submitLabel={submitLabel}
+            submitColor={submitColor}
+            submitDisabled={submitDisabled}
+            busy={busy}
+            onClose={onClose}
+            onSubmit={onSubmit}
+          />
         </DialogContent>
       </Dialog>
     </PaneScope>

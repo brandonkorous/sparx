@@ -14,11 +14,13 @@
 // leaving the operator to guess which is real. Money is never faded — a total
 // someone is about to charge a customer is the opposite of de-emphasised.
 
+import { useEffect, useState } from 'react';
 import {
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
+  FieldStatus,
   Heading,
   Input,
   Text,
@@ -26,6 +28,8 @@ import {
 import { EDITOR_RAIL_STICKY } from '../../components/editor-layout';
 import { computeTotals, type DraftLine } from './totals';
 import { formatMoney } from './types';
+import { parsePercent, percentText } from './tax-rate';
+import { MarginSummary } from './margin-summary';
 
 interface SavedFigures {
   total: number;
@@ -76,6 +80,61 @@ function Row({
   );
 }
 
+/**
+ * The tax rate, typed as the percentage an owner knows it by ("8.75") and stored
+ * as the fraction the document holds (issue 077). The box keeps its own TEXT, so
+ * it can be cleared and retyped, and "8." can be on its way to "8.75", without
+ * the stored number snapping back into it mid-keystroke.
+ */
+function TaxRateField({
+  taxRate,
+  readOnly,
+  onTaxRateChange,
+}: {
+  taxRate: number;
+  readOnly: boolean | undefined;
+  onTaxRateChange: (rate: number) => void;
+}) {
+  const [text, setText] = useState(() => percentText(taxRate));
+  // Follow a rate set from elsewhere (the document loading), never the one this
+  // box just sent: that would rewrite what is being typed.
+  useEffect(() => {
+    if (parsePercent(text) !== taxRate) setText(percentText(taxRate));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `text` is read to compare, not followed: following it would undo every keystroke that is not yet a whole rate.
+  }, [taxRate]);
+  const parsed = parsePercent(text);
+  return (
+    <Field>
+      <FieldLabel>Tax rate (%)</FieldLabel>
+      <FieldControl
+        render={
+          <Input
+            color="module"
+            type="text"
+            inputMode="decimal"
+            value={text}
+            disabled={readOnly}
+            className="text-right tabular-nums"
+            onChange={(event) => {
+              setText(event.target.value);
+              const rate = parsePercent(event.target.value);
+              if (rate !== null) onTaxRateChange(rate);
+            }}
+          />
+        }
+      />
+      {parsed === null ? (
+        <FieldStatus status="error">Type the rate as a number up to 100, like 8.75.</FieldStatus>
+      ) : (
+        <FieldDescription>
+          The percentage you charge, the way you would say it: type 8.75 for 8.75%. Leave it at 0 if
+          you do not charge tax.
+        </FieldDescription>
+      )}
+    </Field>
+  );
+}
+
 export function InvoiceSummary({
   lines,
   taxRate,
@@ -99,33 +158,7 @@ export function InvoiceSummary({
         Summary
       </Heading>
 
-      {/* Asked as a PERCENTAGE, which is the only form anybody knows their tax
-          rate in. It is stored as a fraction, so the conversion happens here
-          rather than in the head of someone who came to send an invoice. */}
-      <Field>
-        <FieldLabel>Tax rate</FieldLabel>
-        <FieldControl
-          render={
-            <Input
-              color="module"
-              type="number"
-              step={0.01}
-              min={0}
-              max={100}
-              value={Number((taxRate * 100).toFixed(4))}
-              disabled={readOnly}
-              className="text-right tabular-nums"
-              onChange={(event) => {
-                onTaxRateChange((Number(event.target.value) || 0) / 100);
-              }}
-            />
-          }
-        />
-        <FieldDescription>
-          Out of a hundred. Type 8.75 for eight and three-quarter percent. Leave it at 0 if you do
-          not charge tax.
-        </FieldDescription>
-      </Field>
+      <TaxRateField taxRate={taxRate} readOnly={readOnly} onTaxRateChange={onTaxRateChange} />
 
       <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
         <Row label="Subtotal" value={formatMoney(totals.subtotal, currency)} />
@@ -136,21 +169,28 @@ export function InvoiceSummary({
           label={taxRate > 0 ? `Tax (${taxPct}%)` : 'Tax'}
           value={formatMoney(totals.taxTotal, currency)}
         />
-        {/* Only when there is one, the same rule the printed invoice follows: a
-            "Delivery $0.00" row on a shop that does not deliver is a number
-            nobody set. A charge that IS on the bill has to be visible, though --
-            it was on none of these screens, so nine dollars simply appeared in
-            the total with nothing to point at. */}
+        {/* Each charge only when there is one, as on the printed invoice: a
+            "Delivery $0.00" row is a number nobody set, but a charge that IS on
+            the bill must be visible beside the total it changes. */}
         {totals.shippingTotal > 0 ? (
           <Row label="Delivery" value={formatMoney(totals.shippingTotal, currency)} />
         ) : null}
         {totals.surchargeTotal > 0 ? (
           <Row label="Surcharge" value={formatMoney(totals.surchargeTotal, currency)} />
         ) : null}
+        {totals.coreChargeTotal > 0 ? (
+          <Row
+            label="Refundable core deposits"
+            value={formatMoney(totals.coreChargeTotal, currency)}
+          />
+        ) : null}
         <div className="border-base-300 mt-1 border-t pt-2">
           <Row label="Total" value={formatMoney(totals.total, currency)} strong />
         </div>
       </div>
+
+      {/* What it makes, under what it charges (issue 086). Staff only. */}
+      <MarginSummary lines={lines} currency={currency} />
 
       {differs ? (
         <Text className="text-warning text-sm">

@@ -15,14 +15,20 @@ import type {
   CreateBookingSeriesInput,
 } from '@wizeworks/scheduling-schemas';
 
+import { localCalendarParts } from '@wizeworks/time';
+
+import { findBookingPlaceTx } from './booking-receipt';
+import type { BookingMoney } from './booking-money';
 import { cancelBooking, createBooking } from './booking-service';
 import {
+  BookingNotFoundError,
   BookingSeriesNotFoundError,
+  InvalidBookingStateError,
   InvalidRecurrenceError,
   ServiceNotFoundError,
   SlotUnavailableError,
 } from './errors';
-import { expandRecurrence, parseRRule } from './rrule';
+import { expandRecurrenceInZone, parseRRule } from './rrule';
 
 const MINUTE_MS = 60_000;
 const DAY_MS = 24 * 60 * MINUTE_MS;
@@ -73,6 +79,15 @@ interface SeriesContext {
   series: BookingSeries;
   durationMs: number;
   existingStarts: number[];
+  /** The clock the series repeats on: the place its service happens at, by the
+   *  same rule that gives each occurrence its zone (`findBookingPlaceTx`). */
+  timezone: string;
+}
+
+/** `YYYY-MM-DD` of an instant on the series' own clock. */
+function localDayKey(utcMs: number, tz: string): string {
+  const p = localCalendarParts(utcMs, tz);
+  return `${String(p.year)}-${String(p.month1).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`;
 }
 
 async function loadSeriesContext(tenantId: string, seriesId: string): Promise<SeriesContext> {
@@ -89,10 +104,12 @@ async function loadSeriesContext(tenantId: string, seriesId: string): Promise<Se
       select: { startAt: true },
       orderBy: { startAt: 'asc' },
     });
+    const place = await findBookingPlaceTx(tx, { serviceId: series.serviceId });
     return {
       series,
       durationMs: service.durationMinutes * MINUTE_MS,
       existingStarts: existing.map((b) => b.startAt.getTime()),
+      timezone: place?.timezone ?? 'UTC',
     };
   });
 }
@@ -123,16 +140,26 @@ export async function materializeSeries(
   if (dtstartMs == null) return { created: [], skipped: [] }; // active but no anchor yet
 
   const horizonEnd = opts.horizonEnd ?? defaultHorizon();
-  const occ = expandRecurrence(dtstartMs, ctx.durationMs, rule, dtstartMs, horizonEnd).map(
-    (i) => i.start
-  );
+  const occ = expandRecurrenceInZone(
+    dtstartMs,
+    ctx.durationMs,
+    rule,
+    dtstartMs,
+    horizonEnd,
+    ctx.timezone
+  ).map((i) => i.start);
   const existingSet = new Set(ctx.existingStarts);
+  // A series makes at most one booking a day, so a day that already has one is
+  // done, whatever its exact minute. Matching by instant alone would book a
+  // second visit an hour off on every day a series made before it learned the
+  // clock changes (sparx persona issue 086), and those days already have theirs.
+  const existingDays = new Set(ctx.existingStarts.map((s) => localDayKey(s, ctx.timezone)));
 
   const created: Booking[] = [];
   const skipped: SkippedOccurrence[] = [];
   let confirmationDone = ctx.existingStarts.length > 0;
   for (const start of occ) {
-    if (existingSet.has(start)) continue;
+    if (existingSet.has(start) || existingDays.has(localDayKey(start, ctx.timezone))) continue;
     try {
       const r = await createBooking(
         tenantId,
@@ -290,6 +317,12 @@ export async function getBookingSeries(tenantId: string, id: string): Promise<Bo
 export interface CancelledSeries {
   id: string;
   cancelled: number;
+  /** The bookings this canceled, for the caller to announce each one. */
+  bookingIds: string[];
+  /** What the card on each of them needs. The caller settles it once this has
+   *  returned, the same as canceling one booking (sparx persona issue 087):
+   *  every booking in a canceled series used to keep its hold and its deposit. */
+  money: BookingMoney[];
 }
 
 /** Cancel a series and its still-cancellable child bookings. `future` (default)
@@ -297,7 +330,8 @@ export interface CancelledSeries {
  *  ones. The series is marked cancelled either way so the tick stops materializing. */
 export async function cancelBookingSeries(
   tenantId: string,
-  input: CancelBookingSeriesInput
+  input: CancelBookingSeriesInput,
+  actorId?: string
 ): Promise<CancelledSeries> {
   const targetIds = await withTenant({ tenantId }, async (tx: TxClient) => {
     const series = await tx.bookingSeries.findUnique({ where: { id: input.id } });
@@ -317,15 +351,30 @@ export async function cancelBookingSeries(
 
   // Reuse cancelBooking per child (its own tx) so each releases its allocation +
   // gets a cancellation notice through the normal lifecycle.
-  let cancelled = 0;
+  // Each one's card is decided inside its own cancel, by the same rules as
+  // canceling it on its own, waived fee included.
+  const bookingIds: string[] = [];
+  const money: BookingMoney[] = [];
   for (const id of targetIds) {
-    await cancelBooking(tenantId, {
-      id,
-      reason: input.reason ?? null,
-      waiveFee: false,
-      notifyCustomer: true,
-    });
-    cancelled += 1;
+    try {
+      const ended = await cancelBooking(
+        tenantId,
+        {
+          id,
+          reason: input.reason ?? null,
+          waiveFee: input.waiveFee,
+          notifyCustomer: true,
+        },
+        actorId
+      );
+      bookingIds.push(id);
+      if (ended.money) money.push(ended.money);
+    } catch (err) {
+      // Ended by someone else between the read above and now: that path
+      // settled its card. Anything else is a real failure.
+      if (err instanceof InvalidBookingStateError || err instanceof BookingNotFoundError) continue;
+      throw err;
+    }
   }
-  return { id: input.id, cancelled };
+  return { id: input.id, cancelled: bookingIds.length, bookingIds, money };
 }

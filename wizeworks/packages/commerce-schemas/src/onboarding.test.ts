@@ -100,6 +100,24 @@ describe('matchColumns', () => {
       expect(cost?.confidence).toBeGreaterThanOrEqual(COLUMN_MATCH_THRESHOLD);
   });
 
+  it("reads an online store's export: the count it holds, not the blank edit column", () => {
+    const headers = ['SKU', 'Location', 'On hand (current)', 'On hand (new)'];
+    const matches = matchColumns(headers, undefined, {
+      emptyHeaders: new Set(['On hand (new)']),
+    });
+    expect(matches.find((m) => m.key === 'onHand')?.header).toBe('On hand (current)');
+    expect(matches.find((m) => m.key === 'onHand')?.reason).toBe('exact');
+  });
+
+  it('never guesses or offers a column that is empty in every row', () => {
+    const matches = matchColumns(['SKU', 'On hand (new)'], undefined, {
+      emptyHeaders: new Set(['On hand (new)']),
+    });
+    const onHand = matches.find((m) => m.key === 'onHand');
+    expect(onHand?.header).toBeNull();
+    expect(onHand?.alternatives.map((a) => a.header)).not.toContain('On hand (new)');
+  });
+
   it('is case- and punctuation-insensitive', () => {
     expect(matchColumns(['sku']).find((m) => m.key === 'sku')?.reason).toBe('exact');
     expect(matchColumns(['S.K.U.']).find((m) => m.key === 'sku')?.reason).toBe('exact');

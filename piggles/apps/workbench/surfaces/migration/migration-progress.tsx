@@ -49,7 +49,7 @@ function EntityCard({ entity, dryRun }: { entity: RunEntityRollup; dryRun: boole
         {(entity.imported + entity.updated).toLocaleString()}
       </Text>
       <Text className="text-sm">
-        of {entity.rowCount.toLocaleString()} {dryRun ? 'would come over' : 'brought over'}
+        of {entity.rowCount.toLocaleString()} rows {dryRun ? 'would come over' : 'brought over'}
         {entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}
       </Text>
       {breakdown === null ? null : <Text className="text-sm">{breakdown}</Text>}

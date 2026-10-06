@@ -1,6 +1,7 @@
 'use client';
 
-// Single order detail — line items, totals, shipping address, status.
+// Single order detail: line items, totals, shipping address, status. A
+// wholesale buyer can Order again from here (sparx persona issue 086).
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -11,12 +12,18 @@ import { OrderTimeline, orderStatusLabel, orderStatusTone } from '@/components/o
 import {
   getOrder,
   getReturnable,
+  reorderOwnOrder,
   AccountError,
   type OrderDetail,
   type OrderReturnability,
 } from '@/lib/customer-client';
+import { CORE_RETURN_HEADING, coreReturnSentence, orderCoreLine } from '@/lib/core-choice-copy';
+import { cardNotChargedSentence } from '@/lib/sign-off-words';
 import { formatMoney } from '@/lib/format';
+import { orderedWord } from '@/lib/order-status-words';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
+import { FillCartButton } from '@/components/account/order-again-button';
+import { useOrderingAccounts } from '@/components/account/ordering-accounts';
 
 /** What happened to her money, in her words. `partially_paid` is one code over two
  *  opposite situations — she still owes, or some came back — and only the refund
@@ -50,6 +57,50 @@ function addressLine(addr: Record<string, unknown> | null): string | null {
   return parts.length ? parts.join(' · ') : null;
 }
 
+/**
+ * A rebuilt part's old part, and what the buyer still has to do about it (sparx
+ * persona issues 051, 057). A deposit line comes back when the old part does, so it
+ * says how many are still to send. A line bought by sending the old part first had no
+ * deposit and is HELD until that part arrives, so it says how many units are waiting
+ * and that they ship when it does. The words live in `lib/core-choice-copy`.
+ */
+function CoreLine({ item, order }: { item: OrderDetail['items'][number]; order: OrderDetail }) {
+  const said = orderCoreLine(item, order.orderNumber, order.currency);
+  if (said === null) return null;
+  return <span className="text-base-content block text-sm">{said}</span>;
+}
+
+/**
+ * Where old parts go, once for the whole order, whenever any line still owes one.
+ *
+ * The address is the business's own, from its Business details. When it has none the
+ * page says to ask rather than printing half an address, because a parcel sent to
+ * "Springfield" goes nowhere.
+ */
+function CoreReturn({ order }: { order: OrderDetail }) {
+  if (!order.items.some((it) => it.coresOwed > 0)) return null;
+  const to = order.coreReturnTo;
+  return (
+    <Alert color="info" className="mb-6">
+      <div className="flex flex-col gap-2">
+        <strong>{CORE_RETURN_HEADING}</strong>
+        {to ? (
+          <address className="not-italic">
+            {[to.name, ...to.lines]
+              .filter((line) => line.trim() !== '')
+              .map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+          </address>
+        ) : null}
+        <span>{coreReturnSentence(order.orderNumber, to !== null)}</span>
+      </div>
+    </Alert>
+  );
+}
+
 /** The money breakdown — subtotal, optional discount/tax, shipping, total. */
 function OrderTotals({ order }: { order: OrderDetail }) {
   return (
@@ -72,6 +123,12 @@ function OrderTotals({ order }: { order: OrderDetail }) {
         <div className="text-base-content flex justify-between text-sm">
           <span>Tax</span>
           <span>{formatMoney(order.taxTotalCents, order.currency)}</span>
+        </div>
+      ) : null}
+      {order.coreChargeTotalCents > 0 ? (
+        <div className="text-base-content flex justify-between text-sm">
+          <span>Refundable core deposits</span>
+          <span>{formatMoney(order.coreChargeTotalCents, order.currency)}</span>
         </div>
       ) : null}
       <div className="border-base-300 text-base-content flex justify-between border-t pt-3 text-lg font-semibold">
@@ -97,7 +154,7 @@ function OrderTotals({ order }: { order: OrderDetail }) {
 }
 
 export default function OrderDetailPage() {
-  const { tenantSlug } = useCustomer();
+  const { tenantSlug, customer } = useCustomer();
   const params = useParams<{ orderId: string }>();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +162,8 @@ export default function OrderDetailPage() {
   // her find out elsewhere that she is allowed one. A failure here is silent: it
   // costs a button, and must never take the order page down with it.
   const [returnable, setReturnable] = useState<OrderReturnability | null>(null);
+  // Order again is for a contact who can order on a wholesale account.
+  const { accounts } = useOrderingAccounts();
 
   useEffect(() => {
     let active = true;
@@ -156,13 +215,25 @@ export default function OrderDetailPage() {
         </Badge>
       </div>
       <p className="text-base-content mb-6">
-        Placed {formatDate(order.placedAt)} · {paymentLine(order)}
+        {/* A held wholesale order is not placed until it is signed off, and one
+            turned down never was; the timeline below says who it is waiting on
+            (sparx persona issue 087). */}
+        {orderedWord(order.status)} {formatDate(order.placedAt)} · {paymentLine(order)}
       </p>
+
+      {/* Approved, but the card held for it could not be charged, so it is
+          unpaid: "Not paid yet" alone would not say why, or what happens next
+          (sparx persona issue 087). */}
+      {order.cardNotCharged ? (
+        <Alert color="warning" role="status" className="mb-6">
+          {cardNotChargedSentence()}
+        </Alert>
+      ) : null}
 
       {/* Order status timeline — the lifecycle at a glance. */}
       <div className="card border-base-300 mb-6 border p-6">
         <h2 className="text-base-content mb-5 text-2xl font-semibold">Order status</h2>
-        <OrderTimeline order={order} />
+        <OrderTimeline order={order} viewerId={customer?.id ?? null} />
       </div>
 
       <div className="mb-6 flex flex-col gap-3">
@@ -180,6 +251,7 @@ export default function OrderDetailPage() {
                   {formatMoney(it.discountAmountCents, order.currency)} off
                 </span>
               ) : null}
+              <CoreLine item={it} order={order} />
             </span>
             <strong className="text-base-content">
               {formatMoney(it.lineSubtotalCents, order.currency)}
@@ -188,7 +260,20 @@ export default function OrderDetailPage() {
         ))}
       </div>
 
+      <CoreReturn order={order} />
+
       <OrderTotals order={order} />
+
+      {/* Today's prices for their account, never the ones above. */}
+      {accounts.length > 0 ? (
+        <div className="mt-6">
+          <FillCartButton
+            label="Order again"
+            busyLabel="Adding to your cart…"
+            run={(cartId) => reorderOwnOrder(tenantSlug, order.id, cartId)}
+          />
+        </div>
+      ) : null}
 
       {/* Offered where she is already looking at what she bought. Only when there
           is something left to send back — the page it leads to explains the other

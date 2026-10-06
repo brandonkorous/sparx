@@ -45,7 +45,7 @@ describe('eachTimeNote', () => {
 
   it('counts one thing in words', () => {
     expect(eachTimeNote([{ unitPriceCents: 5800, quantity: 1 }], money)).toBe(
-      'One thing goes out each time, coming to $58.00.'
+      'One thing goes out each time, coming to $58.00 plus postage and tax.'
     );
   });
 
@@ -58,7 +58,7 @@ describe('eachTimeNote', () => {
         ],
         money
       )
-    ).toBe('3 things go out each time, coming to $244.00.');
+    ).toBe('3 things go out each time, coming to $244.00 plus postage and tax.');
   });
 });
 
@@ -196,7 +196,7 @@ describe('addressLine', () => {
         region: 'Avon',
         postalCode: 'BS1 4TR',
       })
-    ).toBe('12 Juniper Row, Flat 2, Bristol, Avon, BS1 4TR');
+    ).toBe('12 Juniper Row, Flat 2, Bristol, Avon BS1 4TR');
   });
 
   it('never leaves a dangling comma from a blank field', () => {

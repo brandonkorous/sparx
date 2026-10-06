@@ -52,7 +52,7 @@ import {
   type TransferRow,
   type TransferStatus,
 } from './transfers-data';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -87,6 +87,7 @@ function emptyAdvice(
 }
 
 export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('inventory.transfers.list');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<TransferStatus | ''>('');
   const [locationId, setLocationId] = useState('');
@@ -160,7 +161,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
             actions: (
               <Button size="sm" color="module" onClick={openNew}>
                 <Icon glyph={faPlus} className="size-4" aria-hidden />
-                Start a move
+                {createLabel}
               </Button>
             ),
           }}
@@ -266,7 +267,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Start a move',
+          label: createLabel,
           icon: faPlus,
           onClick: openNew,
         }}

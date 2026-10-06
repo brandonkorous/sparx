@@ -34,7 +34,12 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { ConversionFunnelReport } from './conversion-funnel';
-import { BestSellersSection, ChannelsSection, DayByDaySection } from './report-sections';
+import {
+  BestSellersSection,
+  ChannelsSection,
+  DayByDaySection,
+  RevenueNotes,
+} from './report-sections';
 
 /** Registry module for this pane, so the brand draws Sell's own picture rather
  *  than the generic one. */
@@ -175,12 +180,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                     </Stat>
                   </Stats>
 
-                  {data.refundedCents > 0 ? (
-                    <Text className="text-sm">
-                      {formatCents(data.refundedCents, currency)} was refunded in this period,
-                      already taken off the revenue above.
-                    </Text>
-                  ) : null}
+                  <RevenueNotes data={data} currency={currency} />
 
                   <DayByDaySection
                     series={series.data}

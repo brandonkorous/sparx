@@ -3,6 +3,7 @@
 // drafts), and the public on-platform RSVP that drops a lead into the host
 // partner's CRM. Reads for the public directory live in directory.ts.
 
+import { customerService } from '@wizeworks/crm';
 import { withSystem, withTenant, type TxClient } from '@wizeworks/db';
 import { badRequest, forbidden, notFound } from '@wizeworks/api-core/errors';
 import {
@@ -182,24 +183,30 @@ export const bootcampService = {
       const status = atCapacity ? 'waitlisted' : 'registered';
 
       // Best-effort lead into the host partner's CRM (the dogfood win, docs/114 §B.5).
+      //
+      // Through the CRM's own lead capture, composed into this transaction. It
+      // files a fresh lead the way every site form does (retail relationship,
+      // `lead` stage, `new` work-state, docs/137) and ANNOUNCES them once this
+      // commits. Writing the row here by hand announced nothing, so the host's
+      // search box never found anybody who signed up (sparx persona issue 086).
+      //
+      // It also finds the person first. The hand-written insert did not, so an
+      // address already in the host's book, or the same person signing up for a
+      // second cohort, broke the one-address-per-business rule, and inside a
+      // transaction that failure poisons every statement after it: the catch
+      // below kept the error and lost the RSVP.
       let crmCustomerId: string | null = null;
       try {
-        const parts = input.name.trim().split(/\s+/);
-        const customer = await tx.customer.create({
-          data: {
-            tenantId: hostTenantId,
-            // A bootcamp signup is a fresh lead to work (docs/137): retail
-            // relationship, `lead` stage, `new` work-state.
-            type: 'retail',
-            lifecycleStage: 'lead',
-            leadStatus: 'new',
+        const { customer } = await customerService.captureLead(
+          { tenantId: hostTenantId, tx },
+          {
+            propertyId: null,
             email: input.email,
-            firstName: parts[0] ?? input.name,
-            lastName: parts.length > 1 ? parts.slice(1).join(' ') : null,
+            name: input.name,
+            source: 'bootcamp',
             tags: ['bootcamp'],
-          },
-          select: { id: true },
-        });
+          }
+        );
         crmCustomerId = customer.id;
       } catch {
         // A CRM write hiccup (schema/RLS) must not block the RSVP — the

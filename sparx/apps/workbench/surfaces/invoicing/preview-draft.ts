@@ -27,6 +27,11 @@ import type { BillingDocument } from './types';
 /** The header fields this editor actually edits. */
 export interface DraftShape {
   customerId: string | null;
+  /** The wholesale account billed: set when a customer is picked here, else
+   *  as stored, else undefined (see `InvoiceHeader.companyId`). */
+  companyId?: string | null;
+  /** The buyer's purchase order number, '' for none (issue 077). */
+  poNumber: string;
   billTo: { name: string; email: string; address: string };
   taxRate: number;
   notes: string;
@@ -38,6 +43,7 @@ export interface DraftShape {
 
 export const EMPTY_DRAFT: DraftShape = {
   customerId: null,
+  poNumber: '',
   billTo: { name: '', email: '', address: '' },
   taxRate: 0,
   notes: '',

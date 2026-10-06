@@ -78,12 +78,20 @@ export interface BuilderFormResult {
   };
 }
 
+/** How a line goes into the cart, beyond which thing and how many. */
+export interface BuilderAddOptions {
+  /** Send the old part first and pay no core deposit (sparx issue 057). */
+  coreFirst?: boolean;
+}
+
 export interface BuilderRuntime {
-  /** Add a resolved variant to the active cart (and surface the cart drawer). */
-  addToCart: (variantId: string, quantity: number) => Promise<void>;
+  /** Add a resolved variant to the active cart (and surface the cart drawer).
+   *  `coreFirst` buys a rebuilt part by sending the old part first instead of paying
+   *  its core deposit (sparx issue 057). */
+  addToCart: (variantId: string, quantity: number, opts?: BuilderAddOptions) => Promise<void>;
   /** Add a resolved variant and proceed straight to checkout (the "Buy now" path).
    *  Live navigates to the cart/checkout; the canvas leaves it inert. */
-  buyNow: (variantId: string, quantity: number) => Promise<void>;
+  buyNow: (variantId: string, quantity: number, opts?: BuilderAddOptions) => Promise<void>;
   /** Subscribe an email address to the tenant's list via the public capture endpoint. */
   subscribeEmail: (email: string, nodeId?: string) => Promise<void>;
   /** Submit a ContactForm to the public forms endpoint. Live posts + resolves the

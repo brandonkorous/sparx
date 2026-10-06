@@ -83,6 +83,16 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
       'pipedrive',
       'ghost',
       'substack',
+      // An owner's own words for the errand (sparx persona issue 052): "import
+      // products" reached only the dropshipping supplier list, and "move my
+      // products from shopify" reached nothing.
+      'import products',
+      'import customers',
+      'import orders',
+      'move my products from another shop',
+      'move my customers from another shop',
+      'move my orders from another shop',
+      'bring my products over',
     ],
     order: 3,
   },

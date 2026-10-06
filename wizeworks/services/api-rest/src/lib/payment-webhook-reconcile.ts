@@ -18,11 +18,16 @@
 import type { FastifyBaseLogger } from 'fastify';
 
 import { prisma, withTenant } from '@wizeworks/db';
-import { billingPaymentService, orderPaymentsService } from '@wizeworks/crm';
+import { billingPaymentService, heldOrderMoney, orderPaymentsService } from '@wizeworks/crm';
+import { heldOrderPayments } from '@wizeworks/commerce';
 import { publish } from '@wizeworks/api-core/pubsub';
-import type { NormalizedPaymentData, ParsedWebhookEvent } from '@wizeworks/payments';
+import { gatewayRegistry } from '@wizeworks/payments';
+import type {
+  LookedUpPayment,
+  NormalizedPaymentData,
+  ParsedWebhookEvent,
+} from '@wizeworks/payments';
 
-import { sendTenantEmailByKey } from './tenant-email.js';
 import { reconcileSparxPayAccount } from './payments-onboarding.js';
 
 interface ReconcileOptions {
@@ -108,6 +113,9 @@ export async function reconcilePaymentEvent(
     case 'payment.succeeded':
       await handleSucceeded(log, tenantId, opts.gatewayId, data);
       break;
+    case 'payment.authorized':
+      await handleAuthorized(log, tenantId, data);
+      break;
     case 'payment.failed':
       await handleFailed(log, tenantId, opts.gatewayId, data);
       break;
@@ -139,7 +147,9 @@ export async function reconcileCompletedCheckoutPayment(
   log: FastifyBaseLogger,
   tenantId: string,
   gatewayId: string,
-  paymentRef: string
+  paymentRef: string,
+  /** False skips asking the gateway, for the sweep's older payments. */
+  askGateway = true
 ): Promise<boolean> {
   const intent = await withTenant({ tenantId }, (tx) =>
     tx.paymentIntent.findFirst({
@@ -147,17 +157,48 @@ export async function reconcileCompletedCheckoutPayment(
       select: { amount: true, currency: true, status: true },
     })
   );
-  // Only a `succeeded` ledger row means "the charge cleared but the order wasn't
-  // marked." Any other status: the charge hasn't cleared yet — the normal webhook
-  // will reconcile it when `payment_intent.succeeded` arrives. Nothing to recover.
-  if (intent?.status !== 'succeeded') return false;
+  // A `succeeded` ledger row means the webhook heard and the order was not marked.
+  if (intent?.status === 'succeeded') {
+    const outcome = await handleSucceeded(log, tenantId, gatewayId, {
+      chargeId: paymentRef,
+      amountCents: intent.amount,
+      currency: intent.currency,
+    });
+    return outcome === 'captured';
+  }
 
-  const outcome = await handleSucceeded(log, tenantId, gatewayId, {
-    chargeId: paymentRef,
-    amountCents: intent.amount,
-    currency: intent.currency,
-  });
-  return outcome === 'captured';
+  // Nothing has heard, so ask the gateway. This used to stop here and wait for
+  // the webhook, and only the webhook ever writes `succeeded`, so a shop with no
+  // webhook set up (the console calls its signing secret optional) left every
+  // card order unpaid for ever: no "paid", no card kept, no repeat order
+  // started. Found on Juniper Row with "Your own Stripe" (issue 739). The answer
+  // goes through the same handlers the webhook uses, so the two cannot disagree.
+  if (!askGateway) return false;
+  const found = await lookupAtGateway(log, tenantId, gatewayId, paymentRef);
+  if (found?.status === 'succeeded') {
+    return (await handleSucceeded(log, tenantId, gatewayId, found.data)) === 'captured';
+  }
+  if (found?.status === 'authorized') await handleAuthorized(log, tenantId, found.data);
+  return false;
+}
+
+/** The gateway's own answer about a payment, or null when it cannot give one:
+ *  a gateway with no lookup, an unknown gateway id, or the call failing. Never
+ *  throws, because a checkout is already placed when this runs. */
+async function lookupAtGateway(
+  log: FastifyBaseLogger,
+  tenantId: string,
+  gatewayId: string,
+  paymentRef: string
+): Promise<LookedUpPayment | null> {
+  try {
+    const gateway = gatewayRegistry.get(gatewayId);
+    if (!gateway.lookupPayment) return null;
+    return await gateway.lookupPayment({ tenantId, paymentRef });
+  } catch (err) {
+    log.warn({ err, tenantId, gatewayId, paymentRef }, 'payment lookup at the gateway failed');
+    return null;
+  }
 }
 
 /**
@@ -178,15 +219,25 @@ export async function sweepStrandedCheckoutPayments(
   tenantId: string
 ): Promise<{ scanned: number; recovered: number }> {
   const cutoff = new Date(Date.now() - 2 * 60_000);
+  // `authorized` too: a held card charged when its order was approved (sparx
+  // persona issue 087) sits there, not at `pending`, once the hold was recorded.
   const pending = await withTenant({ tenantId }, (tx) =>
     tx.orderPayment.findMany({
-      where: { status: 'pending', processorRef: { not: null }, createdAt: { lt: cutoff } },
-      select: { processor: true, processorRef: true },
+      where: {
+        status: { in: ['pending', 'authorized'] },
+        processorRef: { not: null },
+        createdAt: { lt: cutoff },
+      },
+      select: { processor: true, processorRef: true, createdAt: true },
       orderBy: { createdAt: 'asc' },
       take: 200,
     })
   );
 
+  // The gateway is asked only about recent payments. One still pending after
+  // three days is not going to clear on its own, and asking about it on every
+  // tick for ever would be a call per stuck payment per tick.
+  const askSince = Date.now() - 3 * 24 * 60 * 60_000;
   let recovered = 0;
   for (const p of pending) {
     if (!p.processorRef) continue;
@@ -195,7 +246,8 @@ export async function sweepStrandedCheckoutPayments(
         log,
         tenantId,
         p.processor,
-        p.processorRef
+        p.processorRef,
+        p.createdAt.getTime() >= askSince
       );
       if (didCapture) recovered += 1;
     } catch (err) {
@@ -307,7 +359,15 @@ async function handleSucceeded(
   const result = await withTenant({ tenantId }, async (tx) => {
     const payment = await tx.orderPayment.findFirst({
       where: { processorRef: data.chargeId },
-      select: { id: true, orderId: true, status: true },
+      select: {
+        id: true,
+        orderId: true,
+        status: true,
+        metadata: true,
+        processor: true,
+        amount: true,
+        currency: true,
+      },
     });
     // The ledger row (informational source of truth for "what sparx earned").
     await tx.paymentIntent.updateMany({
@@ -320,19 +380,29 @@ async function handleSucceeded(
 
     const order = await tx.order.findFirst({
       where: { id: payment.orderId },
-      select: {
-        id: true,
-        orderNumber: true,
-        customerId: true,
-        propertyId: true,
-        customer: { select: { email: true } },
-      },
+      select: { id: true, orderNumber: true, customerId: true },
     });
 
     const now = new Date();
     await tx.orderPayment.update({
       where: { id: payment.id },
-      data: { status: 'captured', capturedAt: now },
+      data: {
+        status: 'captured',
+        capturedAt: now,
+        // The gateway's own transaction id, where it differs from the reference
+        // we matched on. A repeat order reads the card this payment saved from
+        // exactly this transaction (issue 739), and nothing else records it.
+        ...(data.transactionRef
+          ? {
+              metadata: {
+                ...(payment.metadata && typeof payment.metadata === 'object'
+                  ? (payment.metadata as Record<string, unknown>)
+                  : {}),
+                transactionRef: data.transactionRef,
+              },
+            }
+          : {}),
+      },
     });
 
     // DERIVE the order's payment state from its captured payments rather than
@@ -348,14 +418,49 @@ async function handleSucceeded(
       payment.orderId
     );
 
+    // A wholesale order still waiting for sign-off is paid, but not placed
+    // (sparx persona issue 087). A gateway that charges on its own page cannot
+    // hold the card, so the money lands before anybody has approved the order.
+    // It is recorded as paid; it is not announced. The sign-off that places it
+    // announces `order.paid` (`placedEvents` in @wizeworks/b2b), or the refund
+    // gives the money back if it is turned down. Read AFTER the rollup, which
+    // writes the order row: that write waits for an approval writing the same
+    // row, so this read sees it, and exactly one of the two announces.
+    const placedNow = await tx.order.findUnique({
+      where: { id: payment.orderId },
+      select: { status: true },
+    });
+    const waitingForSignOff = placedNow?.status === 'pending_approval';
+
+    // A charge that lands on an order turned down while it was still on its way
+    // goes straight back (sparx persona issue 087): the gateway could not hold
+    // the card, so it was charged at checkout, and the order was turned down
+    // before the charge was recorded. Read before anything is announced, so a
+    // turned-down order is never confirmed or counted as paid.
+    const refundWhenPaid =
+      typeof payment.metadata === 'object' &&
+      payment.metadata !== null &&
+      (payment.metadata as Record<string, unknown>)[heldOrderMoney.REFUND_WHEN_PAID_KEY] === true;
+
     return {
       kind: 'captured' as const,
       orderId: payment.orderId,
       orderNumber: order?.orderNumber ?? '',
-      email: order?.customer?.email ?? null,
-      customerId: order?.customerId ?? null,
-      propertyId: order?.propertyId ?? null,
       becamePaid,
+      waitingForSignOff,
+      giveBack: refundWhenPaid
+        ? {
+            action: 'refund' as const,
+            paymentId: payment.id,
+            orderId: payment.orderId,
+            orderNumber: order?.orderNumber ?? '',
+            customerId: order?.customerId ?? '',
+            processor: payment.processor,
+            paymentRef: data.chargeId,
+            amountCents: Math.round(Number(payment.amount) * 100),
+            currency: payment.currency,
+          }
+        : null,
     };
   });
 
@@ -364,8 +469,9 @@ async function handleSucceeded(
     // A scheduling deposit/prepay charge confirmed (docs/79 §9): the booking's
     // intent carries metadata.booking_id. Advance the booking's deposit from `held`
     // (set at creation) to `captured`. A card hold is captured by us in
-    // settleBookingPayment (which already sets `captured`), so the guard makes this
-    // a no-op there; this branch is the real confirmation for deposit/prepay.
+    // `bookingPayments.settle` (@wizeworks/commerce, which already sets `captured`),
+    // so the guard makes this a no-op there; this branch is the real confirmation
+    // for deposit/prepay.
     const bookingId = data.bookingId;
     if (bookingId) {
       const moved = await withTenant({ tenantId }, (tx) =>
@@ -417,8 +523,35 @@ async function handleSucceeded(
     providerSlug: gatewayId,
   });
 
+  if (result.giveBack) {
+    // Refunded in full through the same path as any turned-down order, which
+    // records the refund on the order. No receipt, no `order.paid`: the order
+    // is cancelled, and telling the buyer it is confirmed would be untrue.
+    const [settled] = await heldOrderPayments.settle({ tenantId }, [result.giveBack]);
+    if (settled?.ok) {
+      log.info({ orderId: result.orderId }, 'payment webhook: turned-down order refunded');
+    } else {
+      log.error(
+        { orderId: result.orderId, error: settled?.error },
+        'payment webhook: turned-down order could not be refunded (task given to the business)'
+      );
+    }
+    return 'captured';
+  }
+
+  if (result.waitingForSignOff) {
+    // Paid, recorded, and quiet until it is decided: no `order.paid` for the
+    // listeners to act on, and no "order confirmed" to a buyer whose order
+    // nobody has approved yet.
+    log.info(
+      { orderId: result.orderId },
+      'payment webhook: paid while waiting for sign-off, announced when it is placed'
+    );
+    return 'captured';
+  }
+
   // Drives the paid-order automations + any paid-order consumer. Best-effort: a missed
-  // trigger is recoverable and must not block the confirmation email.
+  // trigger is recoverable.
   //
   // Only on the edge where the balance actually cleared. A deposit order has
   // taken real money and still owes some, so announcing `order.paid` would set
@@ -435,24 +568,46 @@ async function handleSucceeded(
     }
   }
 
-  // Order-confirmation email — the tenant's Builder-authored tree, rendered by key.
-  if (result.email) {
-    try {
-      await sendTenantEmailByKey(log, tenantId, {
-        key: 'order-confirmation',
-        to: result.email,
-        propertyId: result.propertyId,
-        ref: { customerId: result.customerId, orderId: result.orderId },
-      });
-    } catch (err) {
-      log.error(
-        { err, orderId: result.orderId },
-        'payment webhook: order-confirmation send failed'
-      );
-    }
-  }
-
+  // No "order confirmed" email from here (sparx persona issue 087). The one
+  // confirmation is the tenant's "Order confirmation: email" automation on
+  // `order.placed`, which fires once per order (at checkout, or at sign-off for
+  // a held one) and sends whether or not the business has the email module: an
+  // order confirmation is transactional, and only campaigns wait on that module.
+  // This used to send its own on every captured payment, so a card order got
+  // two, a held order a second one when its card was charged at approval, and a
+  // deposit order another when the balance came in.
   return 'captured';
+}
+
+// ─── payment.authorized ────────────────────────────────────────────────────────
+
+/**
+ * A card held for an order waiting for sign-off (sparx persona issue 087): the
+ * shopper confirmed it and the gateway holds the amount, and nothing is charged
+ * until the order is approved. Recorded as held on the order's payment and on
+ * our ledger. It never marks the order paid and never touches the order's own
+ * status: a held order stays held until somebody decides it.
+ */
+async function handleAuthorized(
+  log: FastifyBaseLogger,
+  tenantId: string,
+  data: NormalizedPaymentData
+): Promise<void> {
+  const moved = await withTenant({ tenantId }, async (tx) => {
+    await tx.paymentIntent.updateMany({
+      where: { externalId: data.chargeId, status: { notIn: ['succeeded', 'canceled'] } },
+      data: { status: 'requires_capture' },
+    });
+    // Only from `pending`: a payment already charged, failed or let go is past
+    // being held, and a late delivery must not wind it back.
+    return tx.orderPayment.updateMany({
+      where: { processorRef: data.chargeId, status: 'pending' },
+      data: { status: 'authorized', authorizedAt: new Date() },
+    });
+  });
+  if (moved.count > 0) {
+    log.info({ chargeId: data.chargeId }, 'payment webhook: card held until the order is decided');
+  }
 }
 
 // ─── payment.failed ────────────────────────────────────────────────────────────
@@ -545,23 +700,33 @@ async function handleRefunded(
       select: { id: true, status: true },
     });
     const now = new Date();
-    if (refundRow && refundRow.status !== 'completed') {
-      await tx.orderRefund.update({
-        where: { id: refundRow.id },
-        data: { status: 'completed', refundedAt: now },
-      });
-    }
-
-    const order = await tx.order.findFirst({ where: { id: orderId }, select: { total: true } });
-    if (order) {
-      const totalCents = Math.round(Number(order.total) * 100);
-      await tx.order.update({
-        where: { id: orderId },
-        data: {
-          paymentStatus: refundedCents >= totalCents ? 'refunded' : 'partially_paid',
-          refundTotal: refundedCents / 100,
-        },
-      });
+    if (refundRow) {
+      if (refundRow.status !== 'completed') {
+        await tx.orderRefund.update({
+          where: { id: refundRow.id },
+          data: { status: 'completed', refundedAt: now },
+        });
+      }
+      // The one place an order's money is derived, so the webhook and the refund
+      // that raised it can never write two different answers.
+      await orderPaymentsService.recomputeOrderPaymentRollup(tx, tenantId, orderId);
+    } else {
+      // A refund made outside sparx (in the gateway's own dashboard) has no row
+      // here, so the charge's own refunded figure is all there is. It writes
+      // "refunded" only when all of it went back. A part refund leaves the status
+      // alone: this used to write `partially_paid`, which every reader takes to
+      // mean money is still owed, on an order that was paid in full.
+      const order = await tx.order.findFirst({ where: { id: orderId }, select: { total: true } });
+      if (order) {
+        const totalCents = Math.round(Number(order.total) * 100);
+        await tx.order.update({
+          where: { id: orderId },
+          data: {
+            ...(refundedCents >= totalCents ? { paymentStatus: 'refunded' } : {}),
+            refundTotal: refundedCents / 100,
+          },
+        });
+      }
     }
 
     log.info({ orderId, refundId }, 'payment webhook: charge refunded');

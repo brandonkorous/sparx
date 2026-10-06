@@ -8,16 +8,25 @@ import {
   projectAllCollectionRulesForTenant,
   projectCollectionRules,
   projectInventoryCollectionRulesForTenant,
+  listCustomerIdsForAccount,
+  listOrderIdsForAccount,
+  listOrderIdsForBillingDocument,
+  listOrderIdsForCustomer,
   projectCustomer,
   projectOrder,
+  projectOrders,
   projectProduct,
   productIdForVariant,
 } from '@wizeworks/commerce';
 import {
+  bulkUpsertOrders,
+  type CustomerSearchDocument,
   deleteCustomer,
   deleteEntity,
   deleteOrder,
   deleteProduct,
+  getCustomerDocument,
+  getEntity,
   upsertCustomer,
   upsertEntity,
   upsertOrder,
@@ -27,6 +36,7 @@ import type { Logger as PinoLogger } from 'pino';
 
 import { runReindex } from './reindex.js';
 import { REGISTRY } from './registry.js';
+import { SAME_ROW } from './same-row.js';
 
 export interface CommerceEventEnvelope {
   type: string;
@@ -152,21 +162,23 @@ export async function handleEvent(
     }
 
     // ── Customers (crm.customer.* — the CRM bus, bridged to Pub/Sub) ──
+    //
+    // `captured` and `subscribed` are new people too, arriving from the site
+    // rather than from somebody's keyboard, and they carry the same `customerId`
+    // (sparx persona issue 086).
     case 'crm.customer.created':
-    case 'crm.customer.updated': {
+    case 'crm.customer.updated':
+    case 'crm.customer.captured':
+    case 'crm.customer.subscribed': {
       const customerId = stringProp(event.data, 'customerId');
       if (!customerId) {
         logger.warn({ type: event.type }, 'customer event missing customerId; skipping');
         return { outcome: 'skipped' };
       }
-      const { document } = await projectCustomer(ctx, customerId);
-      if (!document) {
-        // Soft-deleted between publish and processing — remove from index.
-        await deleteCustomer(tenantId, customerId);
-        return { outcome: 'deleted', details: { customerId } };
-      }
-      await upsertCustomer(document);
-      return { outcome: 'indexed', details: { customerId } };
+      // Soft-deleted between publish and processing comes back 'deleted'. Their
+      // orders follow when the write moved anything those documents copy.
+      const outcome = await reindexCustomer(ctx, customerId, false, true);
+      return { outcome, details: { customerId } };
     }
 
     case 'crm.customer.deleted': {
@@ -189,6 +201,11 @@ export async function handleEvent(
         const { document } = await projectCustomer(ctx, primaryId);
         if (document) await upsertCustomer(document);
         else await deleteCustomer(tenantId, primaryId);
+        // The merge moved the duplicates' orders onto the survivor, and a SQL
+        // move raises no order event, so their documents still named the
+        // duplicate: their buyer, their account. Every order the survivor now
+        // holds is re-read. A merge is rare and deliberate, so this is not gated.
+        await reindexOrders(ctx, await listOrderIdsForCustomer(ctx, primaryId));
       }
       return { outcome: 'indexed', details: { primaryId, merged: duplicateIds.length } };
     }
@@ -212,12 +229,21 @@ export async function handleEvent(
     // there. Searching a real order number in the console answered "Nothing
     // matches that", while the activity bar in the same window said the checkout
     // had completed on it sixteen minutes earlier.
+    //
+    // An order held for sign-off publishes `b2b.order.pending_approval`
+    // INSTEAD of `order.placed`, and turning it down publishes
+    // `b2b.order.rejected` instead of `order.cancelled`. Without these two, a
+    // held order could not be found by its number while it waited for
+    // somebody to sign it off, and a rejected one never could (sparx persona
+    // issue 086). Approving one already publishes `order.placed`.
     case 'order.placed':
     case 'order.paid':
     case 'order.cancelled':
     case 'order.fulfilled':
     case 'order.delivered':
-    case 'order.refunded': {
+    case 'order.refunded':
+    case 'b2b.order.pending_approval':
+    case 'b2b.order.rejected': {
       const orderId = stringProp(event.data, 'orderId');
       if (!orderId) {
         logger.warn({ type: event.type }, 'order event missing orderId; skipping');
@@ -265,22 +291,71 @@ export async function handleEvent(
         );
         return { outcome: 'skipped' };
       }
-      const projector = REGISTRY.get(entityType);
-      if (!projector) {
+      // A CUSTOMER lives in its own rich collection, not in `entities`, so it has
+      // no projector in the registry. It still has to be re-read when something
+      // that is not the customer row changes what its document says: being added
+      // to or switched off a trade account's contact list writes only a
+      // `b2b_account_contacts` row, and the customer's document carries that
+      // account's name (see `companyWords` in @wizeworks/commerce). Without this
+      // branch the signal was dropped as "no projector", and a contact added on
+      // the account's screen could not be found by the account's name until
+      // somebody happened to edit them (Gillett Diesel, 2026-10-03).
+      if (entityType === 'customer') {
+        const outcome = await reindexCustomer(ctx, recordId, op === 'delete', true);
+        return { outcome, details: { customerId: recordId } };
+      }
+      if (!REGISTRY.get(entityType)) {
         logger.warn({ type: event.type, entityType }, 'no projector for entity_type; skipping');
         return { outcome: 'skipped' };
       }
-      if (op === 'delete') {
-        await deleteEntity(tenantId, entityType, recordId);
-        return { outcome: 'deleted', details: { entityType, recordId } };
+      // An account's orders carry its name too (see `orderAccount` in
+      // @wizeworks/commerce), so a renamed or removed account re-reads them. Only
+      // then: routine account writes (a credit limit, a terms change, the daily
+      // near-the-limit signal) leave the name alone and would otherwise re-read
+      // every order the account ever placed. This runs BEFORE the account's own
+      // entry is overwritten, because that entry is how the change is seen: if
+      // re-reading the orders fails, the redelivered event still sees the old
+      // name and tries again.
+      if (entityType === 'b2b_account' && (await accountNameMoved(ctx, recordId, op))) {
+        await reindexOrders(ctx, await listOrderIdsForAccount(ctx, recordId));
       }
-      const doc = await projector.project(ctx, recordId);
-      if (!doc) {
-        await deleteEntity(tenantId, entityType, recordId);
-        return { outcome: 'deleted', details: { entityType, recordId } };
+      // Every kind read from this row, not just the one the event named: the
+      // kind the row IS gets indexed, and any other kind gets its stale entry
+      // deleted. See SAME_ROW.
+      let indexedAs: string | null = null;
+      for (const kind of SAME_ROW[entityType] ?? [entityType]) {
+        const projector = REGISTRY.get(kind);
+        if (!projector) continue;
+        const doc = op === 'delete' ? null : await projector.project(ctx, recordId);
+        if (doc) {
+          await upsertEntity(doc);
+          indexedAs = kind;
+        } else {
+          await deleteEntity(tenantId, kind, recordId);
+        }
       }
-      await upsertEntity(doc);
-      return { outcome: 'indexed', details: { entityType, recordId } };
+      // Every person on a trade account carries the account's name in their own
+      // document, so a renamed or removed account has to take those documents
+      // with it. Otherwise typing the new name finds the account and none of its
+      // people, and the old name goes on finding people of a business that is
+      // gone.
+      // A quote or invoice can be where an order takes its account from (the
+      // account it was quoted or invoiced to), so the order it bills, or the one
+      // it became, is re-read with it. An invoice raised on an order that was
+      // filed under the buyer's pricing account moves it to the invoiced one.
+      if (entityType === 'billing_document' || entityType === 'quote') {
+        await reindexOrders(ctx, await listOrderIdsForBillingDocument(ctx, recordId));
+      }
+      if (entityType === 'b2b_account') {
+        const customerIds = await listCustomerIdsForAccount(ctx, recordId);
+        for (const customerId of customerIds) {
+          // Their orders were re-read above when the name moved; not again here.
+          await reindexCustomer(ctx, customerId, false, false);
+        }
+      }
+      return indexedAs
+        ? { outcome: 'indexed', details: { entityType: indexedAs, recordId } }
+        : { outcome: 'deleted', details: { entityType, recordId } };
     }
 
     case 'search.reindex.requested': {
@@ -291,6 +366,87 @@ export async function handleEvent(
     default:
       logger.debug({ type: event.type }, 'event type not routed; skipping');
       return { outcome: 'skipped' };
+  }
+}
+
+/** Re-read one customer into the customers collection: upserted when the row is
+ *  live, deleted when it is gone or the signal says so.
+ *
+ *  `ordersFollow`: each of their order documents copies their name, email and
+ *  account, so when the write moved one of those their orders are re-read too.
+ *  Before the customer's own document is overwritten, because that document is
+ *  how the change is seen; a failure leaves it as it was for the retry. */
+async function reindexCustomer(
+  ctx: { tenantId: string },
+  customerId: string,
+  remove: boolean,
+  ordersFollow: boolean
+): Promise<'indexed' | 'deleted'> {
+  const { document } = remove ? { document: null } : await projectCustomer(ctx, customerId);
+  if (!document) {
+    await deleteCustomer(ctx.tenantId, customerId);
+    return 'deleted';
+  }
+  if (ordersFollow && (await orderWordsMoved(ctx.tenantId, document))) {
+    await reindexOrders(ctx, await listOrderIdsForCustomer(ctx, customerId));
+  }
+  await upsertCustomer(document);
+  return 'indexed';
+}
+
+/**
+ * Whether a customer write changed anything their order documents copy: the
+ * name, the email, the pricing account, or the employer they typed. Compared
+ * with the document search holds now, so the many writes that touch none of
+ * these (a tag, a phone number, the order counters every checkout bumps) re-read
+ * no orders. No document yet counts as changed: a new customer has no orders to
+ * read, and one missing from search may have orders that are stale.
+ */
+async function orderWordsMoved(tenantId: string, next: CustomerSearchDocument): Promise<boolean> {
+  const before = await getCustomerDocument(tenantId, next.customer_id);
+  if (!before) return true;
+  return (
+    before.full_name !== next.full_name ||
+    before.email !== next.email ||
+    before.b2b_account_id !== next.b2b_account_id ||
+    before.company !== next.company
+  );
+}
+
+/**
+ * Whether an account signal changes the NAME its orders answer to: renamed,
+ * removed, or not in search yet. Compares the account's entry in search with
+ * what the account projects to now.
+ */
+async function accountNameMoved(
+  ctx: { tenantId: string },
+  accountId: string,
+  op: string
+): Promise<boolean> {
+  const before = await getEntity(ctx.tenantId, 'b2b_account', accountId);
+  const projector = REGISTRY.get('b2b_account');
+  const after = op === 'delete' || !projector ? null : await projector.project(ctx, accountId);
+  return (before?.title ?? null) !== (after?.title ?? null);
+}
+
+/** How many order documents one write to search carries. */
+const ORDER_BATCH = 250;
+
+/**
+ * Re-read these orders into the orders collection, a batch at a time. Throws
+ * when search refuses any of them, so the event is retried rather than acked
+ * over documents that still say the old thing.
+ */
+async function reindexOrders(ctx: { tenantId: string }, orderIds: string[]): Promise<void> {
+  for (let i = 0; i < orderIds.length; i += ORDER_BATCH) {
+    const docs = await projectOrders(ctx, orderIds.slice(i, i + ORDER_BATCH));
+    const res = await bulkUpsertOrders(docs);
+    const first = res.errors[0];
+    if (first) {
+      throw new Error(
+        `search refused ${String(res.errors.length)} of ${String(docs.length)} order documents: ${first.error}`
+      );
+    }
   }
 }
 

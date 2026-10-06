@@ -11,6 +11,7 @@ import { OnboardingLayout, type StepMark } from '../onboarding-layout';
 import { StoryGetPaid } from './story-get-paid';
 import { StoryGoLive } from './story-go-live';
 import { StoryExtras, storyPlanItems } from './story-summary';
+import { apiErrorMessage } from '../../../lib/api-error';
 
 // The story onboarding's TAIL. Once the story is committed, the SAME page continues
 // IN-PAGE through the "get paid" and "go live" chapters — it never bounces to the
@@ -81,7 +82,9 @@ export function StoryTail({
         setPending(false);
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+        setError(
+          apiErrorMessage(err, 'We could not save this step just now. Try again in a moment.')
+        );
         setPending(false);
       });
   };
@@ -98,7 +101,12 @@ export function StoryTail({
         else onFinished();
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+        setError(
+          apiErrorMessage(
+            err,
+            'We could not put your site live just now. Nothing is lost. Try again in a moment.'
+          )
+        );
         setPending(false);
       });
   };

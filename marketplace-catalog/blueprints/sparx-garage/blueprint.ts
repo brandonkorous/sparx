@@ -16,10 +16,10 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-garage',
-  version: '1.5.1',
+  version: '1.5.2',
   name: 'Garage',
   summary:
-    'The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Garage look, tuned for vehicle service, repair, and parts. Install it, make it yours, and launch a polished working site in minutes.',
+    'A complete starter in the Garage look, tuned for vehicle service, repair, and parts: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

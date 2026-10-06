@@ -13,6 +13,7 @@ import { configuratorService, fitmentService } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { scopeProductSelection } from '../../../lib/product-selection-scope.js';
 
 // Fitment ids are generated/seeded uuids; z.guid() validates the 8-4-4-4-12
 // shape without RFC-9562 version pedantry (some seeded ids zero the version
@@ -165,10 +166,30 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     return ok({ productId, updated: true });
   });
 
+  // REPLACES each listed product's fitment. For importers; nothing in either
+  // console calls it. An owner adding to what products fit uses bulk-add.
   app.post('/v1/commerce/fitment/bulk-assign', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
     return ok(await fitmentService.bulkAssign(toCommerceContext(request), request.body));
+  });
+
+  // ADD rules to many products, keeping what each already fits; a rule a product
+  // already has is skipped. Body `{ selection, fitments }`.
+  app.post('/v1/commerce/fitment/bulk-add', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = await scopeProductSelection(request, auth, request.body);
+    return ok(await fitmentService.addToProducts(toCommerceContext(request), body));
+  });
+
+  // Take rules at exactly these entries off many products, whatever years they
+  // carried. Body `{ selection, domainId, nodeIds }`.
+  app.post('/v1/commerce/fitment/bulk-remove', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = await scopeProductSelection(request, auth, request.body);
+    return ok(await fitmentService.removeFromProducts(toCommerceContext(request), body));
   });
 
   app.delete('/v1/commerce/fitment/:fitmentId', async (request, reply) => {

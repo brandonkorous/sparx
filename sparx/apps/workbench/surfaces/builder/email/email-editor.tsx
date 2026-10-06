@@ -120,7 +120,7 @@ import { emailInspectorPanels } from './email-asset-panel';
 import { PaneScope } from '../../../lib/dock/window-boundary';
 import { useConfirm } from '../../../lib/confirm';
 import { useDirtySource } from '../../../lib/workbench/dirty';
-import { useActiveSiteId, useSites } from '../../../lib/api/shell-data';
+import { useActivePropertyId, useSites } from '../../../lib/api/shell-data';
 import type { SurfaceContext } from '../../../lib/surfaces/registry';
 import {
   effectiveTenantBrand,
@@ -265,7 +265,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
   const { data: emails, isPending, isError, refetch } = useEmails();
   const { data: sites } = useSites();
-  const { data: activeSite } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
 
   // Everything the canvas needs to render the email as it SHIPS, resolved server-side
   // from the active site's EMAIL brand (docs/impl transactional-email §7): the inert
@@ -293,7 +293,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     if (chrome.data?.colors) return emailColorsToTheme(chrome.data.colors);
     if (!brand.data || !siteConfig.data) return FALLBACK_THEME;
     try {
-      const property = siteBrands.data?.find((s) => s.id === activeSite?.propertyId);
+      const property = siteBrands.data?.find((s) => s.id === currentSiteId);
       const effective = effectiveTenantBrand(brand.data, property?.brandOverride);
       const compiled = compileThemeForTenant({
         // The site's OWN theme under the brand — so the email canvas paints in the
@@ -312,7 +312,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     } catch {
       return FALLBACK_THEME;
     }
-  }, [chrome.data, brand.data, siteConfig.data, siteBrands.data, activeSite?.propertyId]);
+  }, [chrome.data, brand.data, siteConfig.data, siteBrands.data, currentSiteId]);
 
   // The email being edited. Starts unresolved; an effect settles it once the
   // catalog loads — to the deep-linked id, else the first email. `{id:'new'}`
@@ -698,10 +698,10 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const onCustomize = async () => {
-    if (!active?.key || !activeSite?.propertyId) return;
+    if (!active?.key || !currentSiteId) return;
     const key = active.key;
     try {
-      const override = await customize.mutateAsync({ propertyId: activeSite.propertyId, key });
+      const override = await customize.mutateAsync({ propertyId: currentSiteId, key });
       setActiveId(override.id);
       toast.add({
         title: 'Made a version for this site',
@@ -919,7 +919,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           color="neutral"
           loading={customize.isPending}
           disabled={busy}
-          title={`Make a version of this email just for ${sites?.find((s) => s.id === activeSite?.propertyId)?.name ?? 'this site'}`}
+          title={`Make a version of this email just for ${sites?.find((s) => s.id === currentSiteId)?.name ?? 'this site'}`}
           onClick={() => {
             void onCustomize();
           }}

@@ -24,6 +24,7 @@ import {
   deleteAutomation,
   publishAutomation,
   setAutomationStatus,
+  takePlatformVersion,
   updateAutomation,
 } from '../service/automation-service';
 
@@ -115,10 +116,24 @@ export const deleteAutomationTool: McpToolDefinition = {
   },
 };
 
+export const takePlatformVersionTool: McpToolDefinition = {
+  name: 'take_platform_version',
+  description:
+    "Switch a platform-seeded automation the business changed to the platform's newer version of it. Only for a rule whose `platformUpdateAt` is set: the re-sync never writes over a business's edit, so a newer platform version waits in `platformDocument` until the business takes it. Replaces the description, trigger, conditions, actions, goal and maxDepth with that version and publishes it as the next version. The rule's NAME and on/off STATUS are kept exactly as they are, and the business's current version stays in the version history (restore it to go back). Refused (AUTOMATION_PLATFORM_VERSION_UNAVAILABLE) for a rule the business made, a rule with no newer version waiting, or a rule with unpublished draft changes (publish or discard them first). Compare `platformDocument` with the live rule and tell the person what changes before calling this.",
+  scope: 'write:automations',
+  confirmation: true,
+  input: z.object({ automationId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { automationId } = input as { automationId: string };
+    return takePlatformVersion(ctx, automationId);
+  },
+};
+
 export const writeTools = [
   createAutomationTool,
   updateAutomationTool,
   setAutomationStatusTool,
   cloneAutomationTool,
   deleteAutomationTool,
+  takePlatformVersionTool,
 ];

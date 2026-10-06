@@ -18,7 +18,7 @@
 import { useMemo, useState } from 'react';
 import { Badge, Button, EmptyState, Heading, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { ExternalLink, GlobeLock, Plus, ShoppingBag } from 'lucide-react';
-import { useActiveSiteId } from '../../lib/api/shell-data';
+import { useActivePropertyId } from '../../lib/api/shell-data';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../sites/data';
@@ -94,10 +94,10 @@ function AddressRow({
 export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: domains, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDomains();
   const { data: sites } = useSites();
-  const { data: active } = useActiveSiteId();
+  const currentSiteId = useActivePropertyId();
   const [search, setSearch] = useState('');
 
-  const activeId = active?.propertyId ?? sites?.find((site) => site.isPrimary)?.id ?? null;
+  const activeId = currentSiteId;
 
   // A disconnected domain is kept as a row so history survives, but it is not an
   // address anyone can reach — showing it here would be listing something that

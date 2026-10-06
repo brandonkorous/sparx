@@ -17,6 +17,23 @@ import { PrismaClient } from '@prisma/client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { reconcileSystemSeeds } from '../../src/index.js';
+import { B2B_OVERDUE_ESCALATION } from '../../src/seeds/b2b.js';
+import { SYSTEM_AUTOMATIONS } from '../../src/seeds/index.js';
+
+// The names the seeds install, READ FROM THE SEEDS. These lists were typed out
+// by hand, and every seed was later renamed for the owner ("B2B overdue
+// escalation" became "Chase overdue wholesale invoices"), so the suite asserted
+// names no seed carried any more, failing against the database while CI, which
+// skips it, stayed green. A display name is a label, not an identity: it is
+// read from where it is defined (sparx persona issue 085).
+const ALWAYS_ON = SYSTEM_AUTOMATIONS.filter((seed) => seed.module === null)
+  .map((seed) => seed.spec.name)
+  .sort();
+const B2B_AND_ALWAYS_ON = SYSTEM_AUTOMATIONS.filter(
+  (seed) => seed.module === 'b2b' || seed.module === null
+)
+  .map((seed) => seed.spec.name)
+  .sort();
 
 const ownerDb = new PrismaClient({
   datasourceUrl:
@@ -82,25 +99,15 @@ describe('reconcileSystemSeeds (backfill)', () => {
     // reminder, account approved, + the two order-approval outcomes) — plus the
     // always-on (`module: null`) seeds, which reconcile installs for every tenant.
     const active = await systemAutomations(activeTenant);
-    expect(active.map((a) => a.name).sort()).toEqual([
-      'B2B account approved',
-      'B2B invoice due reminder',
-      'B2B order approved: email',
-      'B2B order rejected: email',
-      'B2B overdue escalation',
-      'B2B quote expiring',
-      'B2B quote received',
-      'Handle form submissions',
-      'New B2B account onboarding task',
-    ]);
-    const dunning = active.find((a) => a.name === 'B2B overdue escalation');
+    expect(active.map((a) => a.name).sort()).toEqual(B2B_AND_ALWAYS_ON);
+    const dunning = active.find((a) => a.name === B2B_OVERDUE_ESCALATION.name);
     expect(dunning?.locked).toBe(true);
     expect(dunning?.status).toBe('active');
 
     // The b2b-inactive tenant gets NO b2b seed — only the always-on ones, which
     // are deliberately module-independent (any tenant can have a site form).
     const inactive = await systemAutomations(inactiveTenant);
-    expect(inactive.map((a) => a.name).sort()).toEqual(['Handle form submissions']);
+    expect(inactive.map((a) => a.name).sort()).toEqual(ALWAYS_ON);
 
     // The summary reports a b2b module pass that covered at least our tenant
     // (the cross-tenant scan may also pick up other suites' residue — assert a
@@ -108,7 +115,10 @@ describe('reconcileSystemSeeds (backfill)', () => {
     const b2b = summary.modules.find((m) => m.module === 'b2b');
     expect(b2b).toBeDefined();
     expect(b2b!.tenants).toBeGreaterThanOrEqual(1);
-  });
+    // The same cross-tenant scan as the idempotent test below, so the same
+    // budget: on a dev database with 100+ tenants it overran the 30s default
+    // under the full suite, on time and not on a finding.
+  }, 120_000);
 
   it('a tenant that vanished mid-pass is skipped, not fatal', async () => {
     // Discovery and seeding are separate steps, so a tenant can be deleted in the
@@ -141,17 +151,7 @@ describe('reconcileSystemSeeds (backfill)', () => {
 
     // The live tenant behind the dead one still got its full catalog — the proof
     // that the pass carried on rather than aborting at the first failure.
-    expect((await systemAutomations(live)).map((a) => a.name).sort()).toEqual([
-      'B2B account approved',
-      'B2B invoice due reminder',
-      'B2B order approved: email',
-      'B2B order rejected: email',
-      'B2B overdue escalation',
-      'B2B quote expiring',
-      'B2B quote received',
-      'Handle form submissions',
-      'New B2B account onboarding task',
-    ]);
+    expect((await systemAutomations(live)).map((a) => a.name).sort()).toEqual(B2B_AND_ALWAYS_ON);
 
     // The skip is REPORTED, not swallowed: one on each pass (module + always-on).
     expect(summary.tenantsSkipped).toBe(2);
@@ -176,9 +176,9 @@ describe('reconcileSystemSeeds (backfill)', () => {
     await reconcileSystemSeeds(appDb);
     await reconcileSystemSeeds(appDb);
 
-    // The eight B2B seeds + the always-on form handler, installed once — a second
-    // pass adds no duplicate.
+    // Every B2B seed + the always-on form handler, installed once: a second pass
+    // adds no duplicate. Counted from the seeds, not typed in (see above).
     const rows = await systemAutomations(tenantId);
-    expect(rows).toHaveLength(9);
+    expect(rows).toHaveLength(B2B_AND_ALWAYS_ON.length);
   }, 120_000);
 });

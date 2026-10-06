@@ -54,7 +54,15 @@ const VALID_TYPES: EntityType[] = ['builder_page', 'cms_page', 'product', 'colle
 /* ── The surface ─────────────────────────────────────────────────────────── */
 
 function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType; id: string }) {
-  const { data: card, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAudit(type, id);
+  const {
+    data: card,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useAudit(type, id);
   const fixAction = useFixAction(ctx, type, id);
 
   const worthFixing = useMemo(
@@ -116,9 +124,16 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
         {isError ? (
           <div className={`${PANE_SHELL} p-2`}>
             <Card className="min-h-0 flex-1 items-center justify-center">
+              {/* Gone (a 404) and unreachable say different things; the shared
+                  screen reads which from the error (persona issue 226). */}
               <PaneLoadError
+                error={error}
+                noun="page"
                 title="Could not score this page"
-                description="This is a problem reaching the server, or the page no longer exists. Nothing about the page itself has changed."
+                description="This is a problem reaching the server. Nothing about the page itself has changed."
+                onRetry={() => {
+                  void refetch();
+                }}
               />
             </Card>
           </div>

@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
@@ -74,9 +76,12 @@ function BuilderHero() {
           </Text>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button color="primary" size="lg">
+            <a
+              href={signupHref('builder-hero')}
+              className={buttonClasses({ color: 'primary', size: 'lg' })}
+            >
               Start your site →
-            </Button>
+            </a>
             <a href="#how">
               <Button size="lg" variant="outline">
                 See how it works
@@ -477,9 +482,12 @@ function BuilderPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="primary" size="lg">
+          <a
+            href={signupHref('builder-pricing')}
+            className={buttonClasses({ color: 'primary', size: 'lg' })}
+          >
             Activate Builder
-          </Button>
+          </a>
         </div>
       </div>
     </Section>
@@ -500,9 +508,12 @@ function BuilderCta() {
           The site you start today is yours to keep and grow for years.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
-          <Button size="xl" variant="solid">
+          <a
+            href={signupHref('builder-final')}
+            className={buttonClasses({ size: 'xl', variant: 'solid' })}
+          >
             Start your site →
-          </Button>
+          </a>
           <a href="#how">
             <Button size="xl" variant="outline">
               See how it works

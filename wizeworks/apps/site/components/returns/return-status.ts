@@ -83,7 +83,7 @@ const STATES: Record<string, ReturnState> = {
     actionNeeded: false,
   },
   cancelled: {
-    label: 'Cancelled',
+    label: 'Canceled',
     hint: 'This request was stopped and nothing happened.',
     tone: 'warning',
     actionNeeded: false,

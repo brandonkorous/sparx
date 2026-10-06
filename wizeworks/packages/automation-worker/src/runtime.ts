@@ -107,6 +107,12 @@ export async function runTick(logger: Logger): Promise<TickSummary> {
  * the `find_tenants_with_active_module` SECURITY DEFINER scan).
  */
 export async function reconcileSeeds(logger: Logger): Promise<ReconcileSummary> {
+  // The reconcile closes tasks whose reason is gone, and each close is a crm.*
+  // event. It runs first thing on a fresh pod after every release, before any
+  // tick has installed the bridge, so those events went to the default
+  // LoggingPublisher and were discarded: three sign-off tasks closed on Gillett
+  // stayed "open" in the search box, and nothing else heard of them either.
+  ensureEngineInstalled(logger);
   return reconcileSystemSeeds(prisma, logger);
 }
 

@@ -37,13 +37,29 @@ describe('priceBillingLine (arithmetic modes)', () => {
     expect(r).toEqual({ unitPrice: 120, costCents: 12000, appliedMarkup: null });
   });
 
-  it('honours an explicit unit price on a catalog line without reading the variant', async () => {
+  it('honours an explicit unit price on a catalog line, keeping a typed cost', async () => {
     const r = await priceBillingLine(noTx, 'tenant', {
       pricingMode: 'catalog',
       unitPrice: 49.99,
-      variantId: 'ignored',
+      variantId: 'v1',
+      explicitCostCents: 3100,
     });
-    expect(r).toEqual({ unitPrice: 49.99, costCents: null, appliedMarkup: null });
+    expect(r).toEqual({ unitPrice: 49.99, costCents: 3100, appliedMarkup: null });
+  });
+
+  it("keeps the variant's cost under an explicit unit price on a catalog line", async () => {
+    // This used to assert `costCents: null`, which was the defect: a trade or
+    // typed price threw the line's cost away, so no margin could show on it
+    // (sparx persona issue 086). The price still wins over the list price.
+    const variantTx = {
+      productVariant: { findFirst: () => Promise.resolve({ costCents: 3250, priceCents: 5999 }) },
+    } as unknown as Prisma.TransactionClient;
+    const r = await priceBillingLine(variantTx, 'tenant', {
+      pricingMode: 'catalog',
+      unitPrice: 49.99,
+      variantId: 'v1',
+    });
+    expect(r).toEqual({ unitPrice: 49.99, costCents: 3250, appliedMarkup: null });
   });
 
   it('rejects a labor line with no rate', async () => {

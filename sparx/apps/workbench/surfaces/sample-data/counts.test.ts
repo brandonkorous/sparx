@@ -25,6 +25,8 @@ const NONE: SampleDataCounts = {
   reviews: 0,
   questions: 0,
   bookings: 0,
+  services: 0,
+  resources: 0,
   deals: 0,
   tickets: 0,
   billingDocuments: 0,
@@ -34,6 +36,12 @@ const NONE: SampleDataCounts = {
   aiPrompts: 0,
   toolCalls: 0,
 };
+
+describe('services and people are counted, because Remove takes them (issue 085)', () => {
+  it('adds them to the removable total', () => {
+    expect(countsTotal({ ...NONE, services: 7, resources: 6 })).toBe(13);
+  });
+});
 
 describe('sample locations are kept, never "removed"', () => {
   it('leaves them out of the removable total', () => {

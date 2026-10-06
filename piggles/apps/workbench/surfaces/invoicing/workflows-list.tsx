@@ -32,7 +32,7 @@ import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { stageTone, type DocumentWorkflowDetail } from './types';
 import { useWorkflows, workflowErrorMessage, type WorkflowSortKey } from './workflow-data';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -66,6 +66,7 @@ function chainText(workflow: DocumentWorkflowDetail): string {
 type Sort = { key: WorkflowSortKey; dir: 'asc' | 'desc' } | null;
 
 export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('invoicing.workflows');
   const [search, setSearch] = useState('');
   const [state, setState] = useState<StateFilter>('active');
   const [sort, setSort] = useState<Sort>(null);
@@ -157,12 +158,12 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Set up a path',
+          label: createLabel,
           icon: faPlus,
           onClick: (event) => {
             ctx.open('invoicing.workflow.edit', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Set up a path: hold Shift to open alongside, Alt for a new window',
+          title: `${createLabel}: hold Shift to open alongside, Alt for a new window`,
         }}
         filters={[
           {

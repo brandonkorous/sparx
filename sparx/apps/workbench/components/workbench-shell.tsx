@@ -17,7 +17,7 @@
 // yet" to the primary site so the layout key is stable ever after.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SidebarProvider } from '@wizeworks/silicaui-react';
+import { Loading, SidebarProvider, Text } from '@wizeworks/silicaui-react';
 import { mintWindowId, openBus } from '../lib/bus';
 import { useWorkbenchTheme } from '../lib/use-theme';
 import { useActiveSiteId, useSites } from '../lib/api/shell-data';
@@ -157,7 +157,11 @@ export function WorkbenchShell({
   // ── First-run gate: has this tenant finished setup? ──────────────────────
   // Onboarding is tenant-level, not site-level, so this resolves independently
   // of the site key above and gates the entire shell (see the branch below).
-  const { data: onboarding, isError: onboardingError } = useOnboarding();
+  const {
+    data: onboarding,
+    isError: onboardingError,
+    failureCount: onboardingFailures,
+  } = useOnboarding();
 
   // The cookie names a site, or nothing. Nothing means api-rest scopes to the
   // primary property, so the primary's id IS the honest key for that state —
@@ -251,8 +255,24 @@ export function WorkbenchShell({
   // away from a tenant who has not onboarded. On ERROR we fail OPEN — a hiccup on
   // this one endpoint must never brick the workbench for a tenant who has long
   // since finished; the gate only shows on a state we actually read.
+  // A server blip is retried until it clears (lib/onboarding/reads.ts), so the
+  // hold says so once the first try has failed rather than sitting blank.
   if (onboarding === undefined && !onboardingError) {
-    return <div className="bg-base-300 h-dvh w-full" aria-busy />;
+    return (
+      <div
+        className="bg-base-300 flex h-dvh w-full items-center justify-center gap-3 px-4"
+        aria-busy
+      >
+        {onboardingFailures > 0 ? (
+          <>
+            <Loading size="sm" />
+            <Text role="status">
+              Reconnecting. Your work is safe, and this page carries on by itself.
+            </Text>
+          </>
+        ) : null}
+      </div>
+    );
   }
   if (onboarding && !isOnboardingFinished(onboarding)) {
     // No WorkbenchProvider: the gate is not a pane and touches no controller,

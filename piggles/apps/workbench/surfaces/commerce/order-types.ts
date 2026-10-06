@@ -1,12 +1,8 @@
 'use client';
 
-// The shape of an order on the wire, and the one coercion it needs.
-//
-// Every money column is a Prisma Decimal, and Decimal serializes to JSON as a
-// STRING — "409.44", not 409.44. `Number()` at render time is not enough:
-// "9.00" < "100.00" is TRUE as a string comparison, so anything that compares or
-// sums raw wire values is quietly wrong. Coercion happens once, at the fetch
-// boundary, through `normalizeOrder`.
+// The shape of an order on the wire, and the one coercion it needs: money arrives
+// as Decimal STRINGS ("9.00" < "100.00" is true as text), so `normalizeOrder`
+// turns every amount into a number once, at the fetch boundary.
 
 /** How the buyer is joined onto both list rows and a single order — enough to
  *  name them without a lookup per row. */
@@ -18,16 +14,9 @@ export interface OrderCustomer {
   companyName: string | null;
   email: string | null;
   companyId: string | null;
-  /**
-   * The wholesale business this order is for.
-   *
-   * NOT `company`. That name belongs to the customer's TYPED employer on the
-   * wire, and the Prisma client publishes it as a computed field which shadows
-   * the relation of the same name — so the join the order service used to make
-   * came back null on every order ever placed, and the "Wholesale customer"
-   * line below has never rendered for anybody (issue 751). The service attaches
-   * this after the query, under a name nothing can shadow.
-   */
+  /** The wholesale business this order is for. NOT `company`: that name is the
+   *  typed employer, and a computed field shadowed the relation, so it came back
+   *  null on every order (issue 751). Attached after the query instead. */
   b2bAccount: {
     id: string;
     companyName: string;
@@ -66,6 +55,17 @@ export interface OrderItem {
   lineTotal: number;
   quantityFulfilled: number;
   quantityRefunded: number;
+  /** Refundable core deposit per unit on a rebuilt part, or null (issue 051). */
+  coreCharge: number | null;
+  /** Old parts that came back, their deposits refunded. */
+  coresReturned: number;
+  /** Deposits the business kept: the core never came back, or could not be used. */
+  coresKept: number;
+  /** Bought by sending the old part first: no deposit, and the line ships only as
+   *  its old parts arrive (issue 057). */
+  coreFirst: boolean;
+  /** When the business chose to ship a send-first line without waiting. */
+  coreHoldReleasedAt: string | null;
 }
 
 export interface Order {
@@ -85,9 +85,14 @@ export interface Order {
   shippingTotal: number;
   discountTotal: number;
   surchargeTotal: number;
+  /** Refundable core deposits on the lines; in `total`, never in `subtotal`. */
+  coreChargeTotal: number;
   total: number;
   amountPaid: number;
   refundTotal: number;
+  /** Of `refundTotal`, how much went back as returned core deposits: the happy
+   *  end of a rebuilt-part sale, not a refund anybody asked for. */
+  depositsReturned: number;
   currency: string;
 
   shippingAddress: OrderAddress | null;
@@ -108,10 +113,9 @@ export interface Order {
   customerNote: string | null;
   internalNote: string | null;
 
-  /** Everything checkout froze onto the order that has no column of its own --
-   *  which is where HOW THE ORDER LEAVES lives (`shippingRateRef`,
-   *  `shippingProviderSlug`, `shippingDescription`). Read it through
-   *  `deliveryPlan()`; nothing else should be poking at raw keys. */
+  /** What checkout froze onto the order with no column of its own, including HOW
+   *  THE ORDER LEAVES (`shippingRateRef`, `shippingProviderSlug`, …). Read it
+   *  through `deliveryPlan()`, never by raw key. */
   metadata?: Record<string, unknown> | null;
 
   /** Only on a single order — the list route does not join items. */
@@ -179,6 +183,11 @@ function normalizeItem(raw: OrderItem): OrderItem {
     lineTotal: num(raw.lineTotal),
     quantityFulfilled: num(raw.quantityFulfilled),
     quantityRefunded: num(raw.quantityRefunded),
+    coreCharge: raw.coreCharge == null ? null : num(raw.coreCharge),
+    coresReturned: num(raw.coresReturned ?? 0),
+    coresKept: num(raw.coresKept ?? 0),
+    coreFirst: raw.coreFirst === true,
+    coreHoldReleasedAt: raw.coreHoldReleasedAt ?? null,
   };
 }
 
@@ -190,52 +199,21 @@ export function normalizeOrder(raw: Order): Order {
     shippingTotal: num(raw.shippingTotal),
     discountTotal: num(raw.discountTotal),
     surchargeTotal: num(raw.surchargeTotal),
+    coreChargeTotal: num(raw.coreChargeTotal ?? 0),
     total: num(raw.total),
     amountPaid: num(raw.amountPaid),
     refundTotal: num(raw.refundTotal),
+    depositsReturned: num(raw.depositsReturned ?? 0),
     readyOn: calendarDay(raw.readyOn),
     ...(raw.items ? { items: raw.items.map(normalizeItem) } : {}),
   };
 }
 
-/** A DATE column arrives as a full instant at UTC midnight. Take the calendar
- *  part off the string rather than through a Date: parsing it and formatting it
- *  locally turns the baker's Saturday into a Friday for anyone west of
- *  Greenwich, which is the whole point of storing a day and not a moment. */
+/** A DATE column arrives as an instant at UTC midnight. Take the day off the
+ *  string, not through a Date: a local parse turns Saturday into Friday for
+ *  anyone west of Greenwich. */
 function calendarDay(value: string | null | undefined): string | null {
   return typeof value === 'string' && value.length >= 10 ? value.slice(0, 10) : null;
 }
 
-/** The rate ref checkout writes when a shopper chooses to come and get it.
- *  Mirrors COLLECTION_RATE_REF in @wizeworks/commerce (collection-option.ts);
- *  copied rather than imported because that package is server-side and would
- *  drag Prisma into the browser bundle. */
-const COLLECTION_RATE_REF = 'collection:in-person';
-
-export interface DeliveryPlan {
-  /** True when the customer is coming to fetch it -- so there is nothing to
-   *  post, no carrier to name, and no warehouse walk that makes sense. */
-  collected: boolean;
-  /** What the shopper chose, in their words. Null when the order predates
-   *  checkout recording it, which is NOT the same as "collection" -- an old
-   *  order with no record must not be presented as one or the other. */
-  description: string | null;
-}
-
-/**
- * How this order leaves, according to what the shopper picked at checkout.
- *
- * Reads the metadata checkout froze on. `collected` is deliberately keyed on
- * the RATE REF rather than the absence of a shipping address: a collection
- * order still carries an address (it is the billing address, and the shop may
- * well want it), so "no address" would call every one of them a despatch.
- */
-export function deliveryPlan(order: Order): DeliveryPlan {
-  const meta = order.metadata ?? {};
-  const ref = typeof meta.shippingRateRef === 'string' ? meta.shippingRateRef : null;
-  const described =
-    typeof meta.shippingDescription === 'string' && meta.shippingDescription.trim()
-      ? meta.shippingDescription.trim()
-      : null;
-  return { collected: ref === COLLECTION_RATE_REF, description: described };
-}
+export { deliveryPlan, type DeliveryPlan } from './order-delivery';

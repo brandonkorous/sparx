@@ -209,6 +209,35 @@ export async function jobProfitability(
             select: { referenceId: true, costConsumedCents: true },
           })
         : [];
+    // Core deposits on rebuilt parts whose old part has not come back yet (sparx
+    // issue 051). Money in hand that is still the customer's, so not revenue: a
+    // deposit paid back is already in `refundTotal`, and one kept is earned.
+    const coreLines =
+      orderIds.length > 0
+        ? await tx.orderItem.findMany({
+            where: { orderId: { in: orderIds }, coreCharge: { not: null } },
+            select: {
+              orderId: true,
+              coreCharge: true,
+              quantity: true,
+              quantityRefunded: true,
+              coresReturned: true,
+              coresKept: true,
+            },
+          })
+        : [];
+    const heldById = new Map<string, number>();
+    for (const line of coreLines) {
+      const owed = Math.max(
+        0,
+        line.quantity - line.quantityRefunded - line.coresReturned - line.coresKept
+      );
+      heldById.set(
+        line.orderId,
+        (heldById.get(line.orderId) ?? 0) + owed * toCents(line.coreCharge ?? 0)
+      );
+    }
+
     const cogsById = new Map<string, number>();
     for (const m of movements) {
       if (!m.referenceId) continue;
@@ -233,7 +262,8 @@ export async function jobProfitability(
     const rows: JobProfit[] = [];
 
     for (const order of orders) {
-      const revenueCents = toCents(order.total) - toCents(order.refundTotal);
+      const revenueCents =
+        toCents(order.total) - toCents(order.refundTotal) - (heldById.get(order.id) ?? 0);
       const cogsCents = cogsById.get(order.id) ?? 0;
       const feeCents = order.channelFeeCents ?? 0;
       const allocatedCents = allocatedById.get(`order:${order.id}`) ?? 0;

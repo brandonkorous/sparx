@@ -5,6 +5,7 @@
 import type Stripe from 'stripe';
 
 import type {
+  LookedUpPayment,
   NormalizedPaymentData,
   ParsedWebhookEvent,
   PaymentIntent,
@@ -21,9 +22,10 @@ export function mapIntentStatus(s: Stripe.PaymentIntent.Status): PaymentIntentSt
     case 'requires_action':
       return 'requires_action';
     case 'requires_capture':
-      // The interface has no explicit capture state; manual-capture callers poll/act
-      // on the same path as requires_confirmation.
-      return 'requires_confirmation';
+      // Held, not charged. It used to read as `requires_confirmation`, which said a
+      // card the shopper HAD confirmed was still waiting on them (sparx persona
+      // issue 087).
+      return 'requires_capture';
     case 'processing':
       return 'processing';
     case 'succeeded':
@@ -62,6 +64,14 @@ export function toPaymentResult(intent: Stripe.PaymentIntent): PaymentResult {
   };
 }
 
+/** A released hold, as a result. `toPaymentResult` counts only a charge as a
+ *  success, so a cancel that worked came back `success: false`: the ledger was
+ *  never marked canceled and every caller read a released card as a failure. */
+export function toCancelResult(intent: Stripe.PaymentIntent): PaymentResult {
+  const result = toPaymentResult(intent);
+  return { ...result, success: result.status === 'canceled' };
+}
+
 function meta(obj: unknown): Record<string, string> {
   return (obj as { metadata?: Record<string, string> } | null)?.metadata ?? {};
 }
@@ -79,6 +89,41 @@ function intentData(intent: Stripe.PaymentIntent): NormalizedPaymentData {
     ...(err?.code ? { failureCode: err.code } : {}),
     ...(err?.message ? { failureMessage: err.message } : {}),
   };
+}
+
+/**
+ * Where an intent stands, in the words the webhook would have used for it, so
+ * the reconcile handlers cannot tell which of the two told them. The amounts
+ * follow `normalizeStripeEvent` exactly: received for a charge, capturable for
+ * a hold.
+ */
+export function lookedUpIntent(intent: Stripe.PaymentIntent): LookedUpPayment {
+  const data = intentData(intent);
+  switch (intent.status) {
+    case 'succeeded':
+      return { status: 'succeeded', data };
+    case 'requires_capture':
+      return {
+        status: 'authorized',
+        data: { ...data, amountCents: intent.amount_capturable || intent.amount },
+      };
+    case 'requires_payment_method':
+      // Back to asking for a card after a try: the card was declined. Never
+      // tried at all is still pending.
+      return { status: intent.last_payment_error ? 'failed' : 'pending', data };
+    default:
+      return { status: 'pending', data };
+  }
+}
+
+/** Look a payment up on the account `stripe` is built for. Only an intent id
+ *  can be looked up; anything else is a reference this gateway did not mint. */
+export async function lookupStripePayment(
+  stripe: Stripe,
+  paymentRef: string
+): Promise<LookedUpPayment | null> {
+  if (!paymentRef.startsWith('pi_')) return null;
+  return lookedUpIntent(await stripe.paymentIntents.retrieve(paymentRef));
 }
 
 function chargeRefundData(charge: Stripe.Charge): NormalizedPaymentData {
@@ -107,6 +152,19 @@ export function normalizeStripeEvent(event: Stripe.Event): ParsedWebhookEvent {
         type: 'payment.succeeded',
         tenantId: meta(event.data.object).tenantId,
         data: intentData(event.data.object),
+      };
+    case 'payment_intent.amount_capturable_updated':
+      // A manual-capture intent the shopper confirmed: the card is held for the
+      // amount and nothing is charged until it is captured (sparx persona issue
+      // 087). `amount_received` is 0 here, so the held amount is the intent's.
+      return {
+        ...base,
+        type: 'payment.authorized',
+        tenantId: meta(event.data.object).tenantId,
+        data: {
+          ...intentData(event.data.object),
+          amountCents: event.data.object.amount_capturable || event.data.object.amount,
+        },
       };
     case 'payment_intent.payment_failed':
       return {

@@ -30,7 +30,7 @@ import { Database, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import {
   useContentTypeList,
   useEntryCountsByType,
@@ -59,6 +59,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('cms.types.list');
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<KindFilterValue>('all');
 
@@ -114,11 +115,11 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Define a new kind of content. Hold Shift to open alongside, Alt for a new window"
+            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @2xl:inline">New type</span>
+            <span className="hidden @2xl:inline">{createLabel}</span>
           </Button>
         }
         controls={
@@ -201,7 +202,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Plus className="size-4" aria-hidden />
-                    New type
+                    {createLabel}
                   </Button>
                 ),
               }}
@@ -217,7 +218,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               emptyHint={
                 kind === 'built_in'
                   ? null
-                  : 'You have not defined any of your own yet. Use “New type” above to make one.'
+                  : `You have not defined any of your own yet. Use “${createLabel}” above to make one.`
               }
               onOpen={open}
             />

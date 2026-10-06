@@ -74,7 +74,7 @@ function money(cents: number, currency: string): string {
 /** Shared chrome for every action modal — the popup box, its scrolling body, and
  *  a Cancel / primary footer. Keeps every form visually identical so they read
  *  as one family of moves on a return. */
-function ActionDialog({
+export function ActionDialog({
   open,
   onClose,
   title,
@@ -91,7 +91,7 @@ function ActionDialog({
   title: string;
   description: string;
   submitLabel: string;
-  submitColor?: 'module' | 'danger' | 'success';
+  submitColor?: 'module' | 'danger' | 'success' | 'warning';
   submitDisabled?: boolean;
   busy: boolean;
   onSubmit: () => void;
@@ -454,6 +454,7 @@ export function RefundReturnModal({
   detail,
   currency,
   suggestedCents,
+  coreBackCents = 0,
   open,
   onClose,
 }: {
@@ -462,6 +463,9 @@ export function RefundReturnModal({
   /** A starting amount worked out from the accepted lines, when the order's
    *  prices are known. Zero when they are not — the operator then types it. */
   suggestedCents: number;
+  /** Core deposits that go back with the parts (issue 051). The server adds
+   *  them on its own; shown so the figure on the button is the one paid. */
+  coreBackCents?: number;
   open: boolean;
   onClose: () => void;
 }) {
@@ -481,7 +485,8 @@ export function RefundReturnModal({
 
   const amountCents = Math.round((Number(amount) || 0) * 100);
   const feeCents = fee.trim() ? Math.round((Number(fee) || 0) * 100) : undefined;
-  const valid = amountCents > 0;
+  const valid = amountCents > 0 || coreBackCents > 0;
+  const backCents = amountCents + coreBackCents;
 
   const submit = () => {
     refund.mutate(
@@ -493,7 +498,7 @@ export function RefundReturnModal({
       {
         onSuccess: () => {
           toast.add({
-            title: `${money(amountCents, currency)} given back`,
+            title: `${money(backCents, currency)} given back`,
             type: 'success',
           });
           onClose();
@@ -524,7 +529,7 @@ export function RefundReturnModal({
           ? `${who} gets this as store credit to spend with you later. This settles the return and cannot be undone.`
           : `${who} gets this back the way they paid. This moves real money and cannot be undone.`
       }
-      submitLabel={valid ? `Give back ${money(amountCents, currency)}` : 'Give the money back'}
+      submitLabel={valid ? `Give back ${money(backCents, currency)}` : 'Give the money back'}
       submitColor="danger"
       submitDisabled={!valid}
       busy={refund.isPending}
@@ -551,6 +556,13 @@ export function RefundReturnModal({
           }
         />
       </Field>
+
+      {coreBackCents > 0 ? (
+        <Text>
+          Plus {money(coreBackCents, currency)} in core deposits, which go back with the parts: a
+          part that comes back is its own core.
+        </Text>
+      ) : null}
 
       <Field className="w-40">
         <FieldLabel>Restocking fee kept</FieldLabel>

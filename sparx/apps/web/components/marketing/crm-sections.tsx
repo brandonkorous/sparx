@@ -1,3 +1,5 @@
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { signupHref } from './cta';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
@@ -86,9 +88,12 @@ export function CrmHero() {
               {lede}
             </p>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
-              <Button color="primary" size="lg">
+              <a
+                href={signupHref('crm-hero')}
+                className={buttonClasses({ color: 'primary', size: 'lg' })}
+              >
                 Activate CRM →
-              </Button>
+              </a>
               <a href="#record">
                 <Button size="lg" variant="outline">
                   See a customer record

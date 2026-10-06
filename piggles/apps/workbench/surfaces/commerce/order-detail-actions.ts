@@ -96,11 +96,14 @@ export function useOrderRisk(orderId: string) {
   const askToCancel = async (order: Order) => {
     const currency = order.currency;
     const items = order.items ?? [];
+    // Pieces, not lines: two turbos on one line are 2 items to the person
+    // reading this, not "1 item worth $4,758.30".
+    const units = items.reduce((sum, item) => sum + item.quantity, 0);
     const ok = await confirm({
       title: `Cancel order ${order.orderNumber}?`,
       description:
         `This marks the order as canceled for ${customerName(order.customer)}: ` +
-        `${String(items.length)} ${items.length === 1 ? 'item' : 'items'} worth ` +
+        `${String(units)} ${units === 1 ? 'item' : 'items'} worth ` +
         `${formatMoney(order.total, currency)} will no longer be sent. ` +
         (order.amountPaid > 0
           ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this. You refund that separately.`

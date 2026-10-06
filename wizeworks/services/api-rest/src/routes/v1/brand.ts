@@ -22,6 +22,8 @@ import { Prisma } from '@prisma/client';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 
+import { publishSiteUpdated } from '../../lib/site-events.js';
+
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const hex = z.string().regex(HEX, 'Use a 6-digit hex color, e.g. #6366F1');
 
@@ -175,6 +177,14 @@ const brandRoutes: FastifyPluginAsync = async (app) => {
         update: data,
       })
     );
+    // The tenant brand is what every site without its own override shows: the
+    // logo, the colors, the business name. All of it rides in the website's
+    // cached business payload, so without this a new logo reached visitors only
+    // when that cache expired (sparx persona issue 040). Tenant-wide, so no site.
+    await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {
+      propertyId: null,
+      changed: Object.keys(data).length > 0 ? ['brand'] : [],
+    });
     return ok(toView(auth.tenantId, row));
   });
 };

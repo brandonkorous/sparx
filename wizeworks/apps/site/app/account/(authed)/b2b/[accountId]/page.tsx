@@ -1,16 +1,29 @@
 'use client';
 
-// B2B account dashboard — credit summary, invoice summary, and recent orders
-// for one B2B account the customer has access to.
+// Wholesale account dashboard: credit, what is owed, and recent orders for one
+// trade account the signed-in customer buys for.
+//
+// The buyer reads words, never codes: her role and terms read "Buyer · Pay
+// within 30 days", not "buyer · NET30", and money reads "$4,753.60", not
+// "$4,753.6" (sparx persona issue 084). Credit figures arrive in DOLLARS from
+// the portal API; everything named `...Cents` is cents.
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
+import { ApprovalsWaiting } from '@/components/account/approvals-waiting';
+import { ServiceEntryButton } from '@/components/account/service-entry-button';
 import { useCustomer } from '@/components/customer-provider';
-import { orderStatusTone } from '@/components/order-timeline';
-import { getB2bSummary, type B2bPortalSummary } from '@/lib/customer-client';
+import { orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
+import { getB2bSummary, ORDERING_ROLES, type B2bPortalSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import {
+  accountStatusTone,
+  accountStatusWords,
+  contactRoleWords,
+  paymentTermsWords,
+} from '@/lib/trade-account-words';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 function formatDate(iso: string): string {
@@ -21,18 +34,15 @@ function formatDate(iso: string): string {
   });
 }
 
-/** Semantic tone for a B2B account status. */
-function accountStatusTone(status: string) {
-  switch (status) {
-    case 'credit_hold':
-      return 'warning';
-    case 'suspended':
-      return 'danger';
-    case 'inactive':
-      return 'neutral';
-    default:
-      return 'success';
-  }
+/** Credit amounts are stored in major units; the formatter takes cents. In the
+ *  business's own currency, which the summary now carries: every figure here was
+ *  printed in dollars whatever the shop traded in (sparx persona issue 085). */
+function major(amount: number, currency: string): string {
+  return formatMoney(Math.round(amount * 100), currency);
+}
+
+function invoiceCount(n: number): string {
+  return n === 1 ? '1 invoice' : `${n} invoices`;
 }
 
 export default function B2bAccountPage() {
@@ -46,7 +56,7 @@ export default function B2bAccountPage() {
     let active = true;
     getB2bSummary(tenantSlug, accountId)
       .then((s) => active && setSummary(s))
-      .catch(() => active && setError('Could not load account details.'));
+      .catch(() => active && setError('Your wholesale account could not be loaded just now.'));
     return () => {
       active = false;
     };
@@ -58,111 +68,110 @@ export default function B2bAccountPage() {
         {error}
       </Alert>
     );
-  if (!summary) return <div className="skeleton" style={{ height: 300 }} />;
+  if (!summary) return <div className="skeleton h-75" />;
 
   const { account, invoiceSummary, recentOrders } = summary;
-  const overdueAmount = invoiceSummary.overdueCents + invoiceSummary.unpaidCents;
+  const terms = paymentTermsWords(account.paymentTerms);
+  const openInvoices = invoiceSummary.unpaidCount + invoiceSummary.overdueCount;
+  // An account with no credit line does not trade on credit: a row of $0.00
+  // cards would read as a limit of nothing rather than as no limit at all.
+  const hasCredit = account.creditLimit > 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <h1
-            className="text-base-content text-3xl font-semibold tracking-tight"
-            style={{ marginBottom: '0.25rem' }}
-          >
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-base-content text-3xl font-semibold tracking-tight">
             {account.companyName}
           </h1>
-          <p className="text-base-content" style={{ fontSize: '0.9rem' }}>
-            {account.role.replace('_', ' ')}
-            {account.paymentTerms ? ` · ${account.paymentTerms.toUpperCase()}` : ''}
+          <p className="text-base-content">
+            {contactRoleWords(account.role)}
+            {terms ? ` · ${terms}` : ''}
           </p>
         </div>
         {account.status !== 'active' && (
           <Badge color={accountStatusTone(account.status)} variant="soft">
-            {account.status.replace('_', ' ')}
+            {accountStatusWords(account.status)}
           </Badge>
         )}
       </div>
 
-      {/* Credit summary */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-          gap: '0.75rem',
-        }}
-      >
-        <div className="card border-base-300 border" style={{ padding: '1rem' }}>
-          <div
-            className="text-base-content"
-            style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
-          >
-            Credit limit
-          </div>
-          <strong style={{ fontSize: '1.1rem' }}>${account.creditLimit.toLocaleString()}</strong>
-        </div>
-        <div className="card border-base-300 border" style={{ padding: '1rem' }}>
-          <div
-            className="text-base-content"
-            style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
-          >
-            Credit used
-          </div>
-          <strong style={{ fontSize: '1.1rem' }}>${account.creditUsed.toLocaleString()}</strong>
-        </div>
-        <div className="card border-base-300 border" style={{ padding: '1rem' }}>
-          <div
-            className="text-base-content"
-            style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
-          >
-            Available
-          </div>
-          <strong
-            className={account.creditAvailable > 0 ? 'text-success' : 'text-danger'}
-            style={{ fontSize: '1.1rem' }}
-          >
-            ${account.creditAvailable.toLocaleString()}
-          </strong>
-        </div>
-        {account.discountPercent > 0 && (
-          <div className="card border-base-300 border" style={{ padding: '1rem' }}>
-            <div
-              className="text-base-content"
-              style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
-            >
-              Your discount
-            </div>
-            <strong style={{ fontSize: '1.1rem' }}>{account.discountPercent}%</strong>
-          </div>
-        )}
-      </div>
+      {/* An approver's first job on this page: the account's orders waiting
+          for their yes (sparx persona issue 087). Asked for only for an
+          approver; the server refuses everyone else. */}
+      {account.role === 'approver' && (
+        <ApprovalsWaiting tenantSlug={tenantSlug} accountId={accountId} />
+      )}
 
-      {/* Invoice alerts */}
-      {(invoiceSummary.overdueCount > 0 || invoiceSummary.unpaidCount > 0) && (
-        <Alert color="warning">
-          <strong>
-            {invoiceSummary.overdueCount > 0
-              ? `${invoiceSummary.overdueCount} overdue ${invoiceSummary.overdueCount === 1 ? 'invoice' : 'invoices'}`
-              : `${invoiceSummary.unpaidCount} unpaid ${invoiceSummary.unpaidCount === 1 ? 'invoice' : 'invoices'}`}
-          </strong>
-          {', '}
-          {formatMoney(overdueAmount, 'USD')} outstanding.{' '}
-          <Link href={`/account/b2b/${accountId}/invoices`}>View invoices →</Link>
+      {(hasCredit || account.discountPercent > 0) && (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
+          {hasCredit && (
+            <>
+              <div className="card border-base-300 gap-1 border p-4">
+                <span className="text-base-content text-sm">Credit limit</span>
+                <strong className="text-lg">{major(account.creditLimit, account.currency)}</strong>
+              </div>
+              <div className="card border-base-300 gap-1 border p-4">
+                <span className="text-base-content text-sm">Credit used</span>
+                <strong className="text-lg">{major(account.creditUsed, account.currency)}</strong>
+              </div>
+              <div className="card border-base-300 gap-1 border p-4">
+                <span className="text-base-content text-sm">Available to spend</span>
+                <strong
+                  className={
+                    account.creditAvailable > 0 ? 'text-success text-lg' : 'text-danger text-lg'
+                  }
+                >
+                  {major(account.creditAvailable, account.currency)}
+                </strong>
+              </div>
+            </>
+          )}
+          {account.discountPercent > 0 && (
+            <div className="card border-base-300 gap-1 border p-4">
+              <span className="text-base-content text-sm">Your discount</span>
+              <strong className="text-lg">{account.discountPercent}% off</strong>
+            </div>
+          )}
+        </div>
+      )}
+
+      {openInvoices > 0 && (
+        <Alert color={invoiceSummary.overdueCount > 0 ? 'danger' : 'warning'}>
+          <span>
+            {invoiceSummary.overdueCount > 0 && (
+              <>
+                <strong>
+                  {invoiceCount(invoiceSummary.overdueCount)}{' '}
+                  {invoiceSummary.overdueCount === 1 ? 'is' : 'are'} overdue:{' '}
+                  {formatMoney(invoiceSummary.overdueCents, account.currency)}.
+                </strong>{' '}
+              </>
+            )}
+            {invoiceSummary.unpaidCount > 0 && (
+              <>
+                {invoiceCount(invoiceSummary.unpaidCount)}{' '}
+                {invoiceSummary.unpaidCount === 1 ? 'is' : 'are'} not yet paid:{' '}
+                {formatMoney(invoiceSummary.unpaidCents, account.currency)}.{' '}
+              </>
+            )}
+            <Link href={`/account/b2b/${accountId}/invoices`} className="link">
+              See your invoices
+            </Link>
+          </span>
         </Alert>
       )}
 
-      {/* Quick links */}
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap gap-3">
         <Button
           render={<Link href={`/account/b2b/${accountId}/invoices`} />}
           color="primary"
           variant="outline"
         >
           Invoices
-          {invoiceSummary.unpaidCount + invoiceSummary.overdueCount > 0 && (
+          {openInvoices > 0 && (
             <Badge color="danger" size="sm" className="ml-2">
-              {invoiceSummary.unpaidCount + invoiceSummary.overdueCount}
+              {openInvoices}
             </Badge>
           )}
         </Button>
@@ -180,53 +189,73 @@ export default function B2bAccountPage() {
         >
           Quotes
         </Button>
+        {/* The account's named lists, for whoever on it can order (sparx
+            persona issue 086). */}
+        {ORDERING_ROLES.has(account.role) && (
+          <Button
+            render={<Link href={`/account/b2b/${accountId}/saved-carts`} />}
+            color="primary"
+            variant="outline"
+          >
+            Saved carts
+          </Button>
+        )}
+        {/* What was owed, billed and paid in a period, with the PO number on
+            every line: the page an accounts department reconciles against. */}
+        <Button
+          render={<Link href={`/account/b2b/${accountId}/statement`} />}
+          color="primary"
+          variant="outline"
+        >
+          Statement
+        </Button>
+        {/* The vehicles the account runs, and the parts that fit each one
+            (sparx persona issue 086). */}
+        <Button
+          render={<Link href={`/account/b2b/${accountId}/fleet`} />}
+          color="primary"
+          variant="outline"
+        >
+          Fleet
+        </Button>
+        {/* Book service for the fleet: only when the shop takes bookings
+            (sparx persona issue 086). */}
+        <ServiceEntryButton accountId={accountId} />
       </div>
 
-      {/* Recent orders */}
       {recentOrders.length > 0 && (
-        <div>
-          <h2
-            className="text-base-content text-xl font-semibold"
-            style={{ marginBottom: '0.75rem' }}
-          >
-            Recent orders
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-base-content text-xl font-semibold">Recent orders</h2>
+          <div className="flex flex-col gap-2">
             {recentOrders.map((o) => (
               <div
                 key={o.id}
-                className="card border-base-300 border"
-                style={{
-                  padding: '0.75rem 1rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '1rem',
-                }}
+                className="card border-base-300 flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 border px-4 py-3"
               >
-                <div>
-                  <strong>#{o.orderNumber}</strong>
-                  <span
-                    className="text-base-content"
-                    style={{ fontSize: '0.85rem', marginLeft: '0.5rem' }}
+                <div className="min-w-0">
+                  {/* An order number is one token: it must not break across lines. */}
+                  <Link
+                    href={`/account/b2b/${accountId}/orders/${o.id}`}
+                    className="link link-primary font-semibold whitespace-nowrap"
                   >
-                    {formatDate(o.createdAt)}
-                  </span>
+                    {o.orderNumber}
+                  </Link>
+                  <div className="text-base-content text-sm">{formatDate(o.createdAt)}</div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="flex items-center gap-3">
                   <Badge color={orderStatusTone(o.status)} variant="soft">
-                    {o.status}
+                    {orderStatusLabel(o.status)}
                   </Badge>
-                  <strong>{formatMoney(o.totalCents, o.currency)}</strong>
+                  <strong className="whitespace-nowrap">
+                    {formatMoney(o.totalCents, o.currency)}
+                  </strong>
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ marginTop: '0.75rem' }}>
-            <Link href={`/account/b2b/${accountId}/orders`} className="link link-primary">
-              View all orders →
-            </Link>
-          </div>
+          <Link href={`/account/b2b/${accountId}/orders`} className="link link-primary">
+            See all orders
+          </Link>
         </div>
       )}
     </div>

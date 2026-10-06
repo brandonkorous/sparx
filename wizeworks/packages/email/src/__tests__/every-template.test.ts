@@ -98,8 +98,13 @@ describe('every coded template renders', () => {
     // pins the count so a silent drop is visible.
     expect(new Set(IDS).size).toBe(IDS.length);
     // 39 since `gated-delivery` — the signed, expiring link to a file somebody
-    // gave their address for (docs/152 C4).
-    expect(IDS.length).toBe(39);
+    // gave their address for (docs/152 C4). 40 since `purchase-order-sent` —
+    // a placed order, emailed to the supplier (sparx persona issue 071).
+    // 41 since `account-statement`: a trade account's statement, with the
+    // buyer's PO number on every open invoice. 42 since `order-approval-request`:
+    // a trade account's own approver, asked to sign off a colleague's order
+    // (sparx persona issue 087).
+    expect(IDS.length).toBe(42);
   });
 });
 
@@ -138,10 +143,10 @@ describe('every coded template renders', () => {
 /**
  * THE TENANT IS WRITING, AND WE ARE THE POST.
  *
- * These four reach somebody who has never heard of us: the customer being
+ * These five reach somebody who has never heard of us: the customer being
  * billed, the visitor who swapped an email address for a download, the visitor
  * who filled in a contact form, the customer asked to put their name to a
- * document. They get the SHOP's identity and, at the very bottom, "Sent with
+ * document, the supplier being sent an order. They get the SHOP's identity and, at the very bottom, "Sent with
  * <product>" — the same quiet credit `silica/frame.ts` has always given.
  *
  * Everything else here is written to somebody who holds an account with us (an
@@ -156,6 +161,9 @@ describe('every coded template renders', () => {
  */
 const TENANT_TO_THEIR_CUSTOMER = new Set<TemplateId>([
   'invoice-sent',
+  'account-statement',
+  'purchase-order-sent',
+  'order-approval-request',
   'gated-delivery',
   'form-submission-confirmation',
   'document-signature-request',

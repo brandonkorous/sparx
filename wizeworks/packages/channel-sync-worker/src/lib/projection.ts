@@ -13,19 +13,24 @@
 
 import type { Logger } from 'pino';
 import { withTenant } from '@wizeworks/db';
+import { resolveSiteOrigin, siteShowingRow, siteUrl } from '@wizeworks/db/site-origin';
 import type { ChannelProductInput, ChannelProductVariantInput } from '@wizeworks/channels';
 
-// Storefront base, mirroring the email path's siteLink (SPARX_SITE_BASE with a
-// {slug} placeholder, e.g. https://{slug}.sparx.zone). Custom-domain resolution is
-// deferred platform-wide (same as email-data.ts); a feed needs an ABSOLUTE URL, so
-// with no base configured the product is skipped, never fed a broken link.
-const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
-
-function storefrontUrl(tenantSlug: string, handle: string): string | null {
-  if (!SITE_BASE) return null;
-  const base = SITE_BASE.replace('{slug}', tenantSlug).replace(/\/$/, '');
-  return `${base}/products/${encodeURIComponent(handle)}`;
-}
+// ── THE PRODUCT PAGE A CHANNEL SENDS SHOPPERS TO ───────────────────────────
+//
+// Every feed (Google Shopping, Meta, Pinterest, Faire, ...) requires an ABSOLUTE
+// link to the product's page. It used to be `SPARX_SITE_BASE` with the tenant slug
+// substituted, and the push was skipped when that was unset. Nothing sets it, so no
+// product was ever pushed to any channel (sparx persona issue 064). The link is now
+// the site's real address, from the one resolver every customer-facing link uses.
+//
+// WHICH SITE. A channel connection belongs to one business (docs/131 §4), so the
+// link opens on the connection's site. A connection with no site is tenant-wide, and
+// the product then links to a site that shows it (the primary, unless it was scoped
+// to particular sites). A product scoped only to a DIFFERENT business than the
+// connection's is not that shop's product at all, so it is not pushed there: its
+// page on the connection's site would be a 404, and its page anywhere else would be
+// another business's listing under this shop's name.
 
 function mediaUrl(key: string): string {
   if (/^https?:\/\//i.test(key)) return key;
@@ -74,9 +79,10 @@ export async function sellableForVariant(
   return sellable(levels);
 }
 
-/** Load the product (+ variants/options/inventory), the tenant slug, and the
- *  product-level image asset keys in one RLS-scoped read. */
-function loadProductData(tenantId: string, productId: string) {
+/** Load the product (+ variants/options/inventory), the absolute URL of its page on
+ *  the channel's site, and the product-level image asset keys in one RLS-scoped
+ *  read. `productUrl` is null when the product is not shown on that site. */
+function loadProductData(tenantId: string, productId: string, channelSiteId: string | null) {
   return withTenant({ tenantId }, async (tx) => {
     const product = await tx.product.findFirst({
       where: { id: productId, tenantId, deletedAt: null },
@@ -88,6 +94,8 @@ function loadProductData(tenantId: string, productId: string) {
         productType: true,
         vendor: true,
         tags: true,
+        // Which sites show it (none = every site).
+        propertyLinks: { select: { propertyId: true } },
         variants: {
           where: { deletedAt: null },
           orderBy: { position: 'asc' },
@@ -122,7 +130,15 @@ function loadProductData(tenantId: string, productId: string) {
       },
     });
     if (!product) return null;
-    const tenant = await tx.tenant.findUnique({ where: { id: tenantId }, select: { slug: true } });
+    const linked = product.propertyLinks.map((l) => l.propertyId);
+    const shownOnChannelSite =
+      channelSiteId === null || linked.length === 0 || linked.includes(channelSiteId);
+    const productUrl = shownOnChannelSite
+      ? siteUrl(
+          await resolveSiteOrigin(tx, tenantId, siteShowingRow(linked, channelSiteId)),
+          `/products/${encodeURIComponent(product.handle)}`
+        )
+      : null;
     const assetIds = product.images.map((i) => i.mediaAssetId);
     // mediaAssetId is a soft pointer (no FK) — resolve keys with a second read.
     const assets = assetIds.length
@@ -131,31 +147,30 @@ function loadProductData(tenantId: string, productId: string) {
           select: { id: true, key: true },
         })
       : [];
-    return { product, slug: tenant?.slug ?? null, assets };
+    return { product, productUrl, assets };
   });
 }
 
+/** The listing to push for one product to the channels of ONE site (`channelSiteId`,
+ *  the connection's `propertyId`; null = a tenant-wide connection). Null when there
+ *  is nothing to push there, with the reason logged. */
 export async function buildChannelProduct(
   tenantId: string,
   productId: string,
+  channelSiteId: string | null,
   log: Logger
 ): Promise<ChannelProductInput | null> {
-  const data = await loadProductData(tenantId, productId);
+  const data = await loadProductData(tenantId, productId, channelSiteId);
 
   if (!data?.product) {
     log.debug({ productId }, 'channel-sync: product not found / deleted, skipping');
     return null;
   }
-  const { product, slug, assets } = data;
-  if (!slug) {
-    log.warn({ productId, tenantId }, 'channel-sync: tenant slug unresolved, skipping push');
-    return null;
-  }
-  const productUrl = storefrontUrl(slug, product.handle);
+  const { product, productUrl, assets } = data;
   if (!productUrl) {
-    log.warn(
-      { productId },
-      'channel-sync: SPARX_SITE_BASE unset, cannot build an absolute product URL, skipping'
+    log.debug(
+      { productId, channelSiteId },
+      "channel-sync: product is not shown on this channel's site, skipping"
     );
     return null;
   }

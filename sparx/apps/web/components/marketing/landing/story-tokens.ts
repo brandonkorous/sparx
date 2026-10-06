@@ -4,6 +4,7 @@ import {
   TENSE,
   connector,
   industryOf,
+  lineLead,
   tintStyle,
 } from '@wizeworks/story-schemas';
 import type { StoryState } from '@wizeworks/story-schemas';
@@ -134,7 +135,7 @@ export function storyTokens(story: StoryState): StoryTokens | null {
   body.push({ t: 'text', s: '.' });
 
   story.lines.forEach((line, li) => {
-    body.push({ t: 'text', s: li === 0 ? ' I’ll ' : ' I also ' }, ...clauseList(line, story));
+    body.push({ t: 'text', s: ` ${lineLead(story.tense, li)} ` }, ...clauseList(line, story));
     body.push({ t: 'text', s: '.' });
   });
 

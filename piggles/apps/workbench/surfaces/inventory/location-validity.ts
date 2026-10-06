@@ -7,7 +7,7 @@
 // is the whole reason this is not a single `required` flag.
 
 import { useMemo } from 'react';
-import { addressChanged, BLANK, type Draft } from './location-draft';
+import { addressChanged, type Draft } from './location-draft';
 
 export function useLocationValidity(draft: Draft, initial: Draft, isNew: boolean) {
   const nameOk = draft.name.trim() !== '';
@@ -24,7 +24,11 @@ export function useLocationValidity(draft: Draft, initial: Draft, isNew: boolean
   // Show the "needs a little more" note once the person has engaged the form —
   // on a new location that is the moment they name it or touch an address field,
   // so a disabled Create button always has a reason on screen next to it.
-  const anyAddressTyped = Boolean(draft.line1.trim() || draft.city.trim() || draft.country.trim());
+  // Against the STARTING values: a new location opens with the business's country
+  // already in it, which is not the person engaging the form (sparx issue 043).
+  const anyAddressTyped = Boolean(
+    draft.line1.trim() || draft.city.trim() || draft.country.trim() !== initial.country.trim()
+  );
   const showAddrWarning =
     addrRequired && !addrOk && (isNew ? nameOk || codeOk || anyAddressTyped : true);
 
@@ -33,8 +37,8 @@ export function useLocationValidity(draft: Draft, initial: Draft, isNew: boolean
       return (
         draft.name.trim() !== '' ||
         draft.code.trim() !== '' ||
-        addressChanged(draft, BLANK) ||
-        draft.type !== BLANK.type
+        addressChanged(draft, initial) ||
+        draft.type !== initial.type
       );
     }
     return (

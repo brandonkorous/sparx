@@ -9,6 +9,7 @@ import { withTenant } from '@wizeworks/db';
 import {
   getChannel,
   type ChannelAdapter,
+  type ChannelProductInput,
   type ChannelProductRef,
   type ChannelSlug,
 } from '@wizeworks/channels';
@@ -20,6 +21,9 @@ const msg = (err: unknown): string => (err instanceof Error ? err.message : Stri
 // A tenant connection (with its token material) paired with its registered adapter.
 interface ChannelTarget extends ConnectionTokenRow {
   channel: string;
+  /** The site whose products this connection sells (docs/131 §4); null = the whole
+   *  tenant. Decides which site a pushed listing links to. */
+  propertyId: string | null;
   adapter: ChannelAdapter;
 }
 
@@ -31,6 +35,7 @@ async function resolveTargets(tenantId: string): Promise<ChannelTarget[]> {
       select: {
         id: true,
         channel: true,
+        propertyId: true,
         externalId: true,
         accessTokenEnc: true,
         refreshTokenEnc: true,
@@ -123,10 +128,23 @@ export async function handleCatalogSync(
     log.debug({ productId }, 'channel-sync: no connected channel with an adapter, skipping');
     return;
   }
-  const product = await buildChannelProduct(tenantId, productId, log);
-  if (!product) return; // projection logged the reason (deleted / no url / no variants)
+  // One listing per SITE, not one per tenant: its link opens on the connection's own
+  // site, and two connections for one site share the build.
+  const bySite = new Map<string, Promise<ChannelProductInput | null>>();
+  const listingFor = (siteId: string | null) => {
+    const key = siteId ?? '';
+    let built = bySite.get(key);
+    if (!built) {
+      built = buildChannelProduct(tenantId, productId, siteId, log);
+      bySite.set(key, built);
+    }
+    return built;
+  };
 
   for (const t of targets) {
+    // Null: deleted, not shown on this connection's site, or no variants (logged).
+    const product = await listingFor(t.propertyId);
+    if (!product) continue;
     const auth = await resolveChannelAuth(tenantId, t, t.adapter, log);
     if (!auth) continue;
     try {

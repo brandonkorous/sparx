@@ -18,9 +18,14 @@ function one(v: string | string[] | undefined): string | undefined {
 export function ProductListing({
   site,
   searchParams,
+  asPageTitle,
 }: {
   site: ResolvedSite;
   searchParams: SearchParams;
+  /** `/products` only: its shell has no heading, so this one is the page's. On a
+   *  page that brings its own (a Shop page), a second heading straight under the
+   *  first only repeated it (persona issue 273). */
+  asPageTitle: boolean;
 }) {
   // The heading is query-dependent, so the core owns it (not the shell).
   const q = one(searchParams.q);
@@ -29,7 +34,7 @@ export function ProductListing({
       site={site}
       searchParams={searchParams}
       basePath="/products"
-      heading={q ? `Results for “${q}”` : 'All products'}
+      {...(asPageTitle ? { heading: q ? `Results for “${q}”` : 'All products' } : {})}
     />
   );
 }

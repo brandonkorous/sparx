@@ -20,7 +20,8 @@ export interface BookingNotice {
   type: string;
   /** email | sms | push */
   channel: string;
-  /** pending | sent | failed | cancelled */
+  /** pending | sent | failed | cancelled | not_set_up | opted_out | no_address,
+   *  see `BookingNoticeStatus`. Only `failed` is a failure. */
   status: string;
   /** When it is (or was) due to go out. */
   scheduledFor: string;

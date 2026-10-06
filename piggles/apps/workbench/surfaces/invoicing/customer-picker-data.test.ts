@@ -138,7 +138,10 @@ describe('the screens that name a person', () => {
   });
 
   it('the bill-to field still prints the business on the document', () => {
-    expect(read('surfaces/invoicing/bill-to.tsx')).toContain('billingName(');
+    // Decided in bill-to-party since issue 077, which bills a wholesale
+    // customer as their account and everyone else through `billingName`.
+    expect(read('surfaces/invoicing/bill-to-party.ts')).toContain('billingName(');
+    expect(read('surfaces/invoicing/bill-to.tsx')).toContain('fetchBilledParty(');
   });
 
   it('the picker resolves the business a buyer is filed under', () => {

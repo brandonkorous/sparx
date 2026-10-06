@@ -93,10 +93,11 @@ describe('what pressing Place order really does', () => {
 
   it('keeps the ordinary words when nothing holds it', () => {
     const words = placingWords(order, null, money);
-    // Placing sends nothing to the supplier (submitPurchaseOrder only changes
-    // the status), so the words must not say it does.
+    // Placing itself sends nothing (submitPurchaseOrder only changes the
+    // status). Whether it is EMAILED is the dialog's own choice, worded by
+    // `placeAndEmailWords`, so this sentence must not claim either way.
     expect(words.description).toContain('This places the order and locks it');
-    expect(words.description).toContain('Nothing is sent to the supplier');
+    expect(words.description).not.toMatch(/sends|sent|emailed/i);
     expect(words.toastDescription).not.toContain('has gone');
     expect(words.confirmLabel).toBe('Place the order');
     expect(words.toastTitle).toBe('PO-000004 placed');

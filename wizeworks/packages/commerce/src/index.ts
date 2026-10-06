@@ -20,6 +20,7 @@ export { commerceMcpTools } from './mcp';
 export type { AnyMcpTool, McpScope, McpToolDefinition } from './mcp';
 export type { ServiceContext } from './errors';
 export {
+  CommerceCartBoughtError,
   CommerceConflictError,
   CommerceNotFoundError,
   CommerceOutOfStockError,

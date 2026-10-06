@@ -12,14 +12,18 @@
 // payment value at all — a canceled order carries 'unpaid' and is owed by
 // nobody, so it asks the named question instead (issue 859).
 //
+// It leads with **Take a sale** (issue 061): a parts counter, a garage or a salon
+// sells most of what it sells in the room, so an order arriving from a website is
+// one way in, not the way.
+//
 // SECOND: it lives in a pane of unknown width — 320px beside an order, or the
 // whole window. Columns disclose with @container, never a viewport query: pane
 // width and screen width are unrelated here, and a viewport breakpoint leaves a
 // narrow pane on a wide monitor rendering six columns into 300px.
 
 import { useState } from 'react';
-import { Badge, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, ShoppingBag } from 'lucide-react';
+import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { ArrowDown, ArrowUp, Banknote, ShoppingBag } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -116,6 +120,11 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('commerce.order.detail', { id: order.id }, { target: targetFor(event) });
   };
 
+  // The same words as the `+` on this pane's nav row: one action, one name.
+  const takeASale = () => {
+    ctx.open('commerce.sale.new', {}, { target: 'tab' });
+  };
+
   return (
     // Surfaces, not one slab: the pane is base-200, the toolbar and table are
     // base-100 cards lifted onto it. The gutter shrinks to nothing under 30rem —
@@ -150,9 +159,14 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             neutralValue: 'all',
           },
         ]}
+        primary={
+          <Button color="module" size="sm" className="shrink-0" onClick={takeASale}>
+            <Banknote className="size-4" aria-hidden />
+            Take a sale
+          </Button>
+        }
         refresh={
           <RefreshButton
-            className="ml-auto"
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
             onRefresh={() => {
@@ -183,7 +197,15 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               filtered
                 ? emptyAdvice(search.trim(), filter === 'all' ? null : active.label)
-                : 'When someone buys from you, the order shows up here with what they bought and what they owe.'
+                : 'Sales show up here with what was bought and what is owed: the ones people place on your website, and the ones you take in person.'
+            }
+            actions={
+              filtered ? undefined : (
+                <Button color="module" size="sm" onClick={takeASale}>
+                  <Banknote className="size-4" aria-hidden />
+                  Take a sale
+                </Button>
+              )
             }
           />
         ) : (

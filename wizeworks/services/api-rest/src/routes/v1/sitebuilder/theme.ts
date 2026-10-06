@@ -16,6 +16,7 @@ import {
   toSitebuilderPropertyContext,
 } from '../../../lib/sitebuilder-context.js';
 import { resolveThemePreset } from '../../../lib/marketplace/resolve.js';
+import { publishSiteUpdated } from '../../../lib/site-events.js';
 
 const themeRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/sitebuilder/themes', async (request) => {
@@ -46,10 +47,19 @@ const themeRoutes: FastifyPluginAsync = (app) => {
   app.patch('/v1/sitebuilder/config/settings', async (request) => {
     requireRole(request, 'editor');
     await requireSitebuilderModule(request);
-    const config = await themeService.updateSettings(
-      await toSitebuilderPropertyContext(request),
-      request.body
+    const ctx = await toSitebuilderPropertyContext(request);
+    const config = await themeService.updateSettings(ctx, request.body);
+    // Most of this lands in the DRAFT and waits for a publish, but the logo and
+    // favicon are written straight to the site's live brand override, which the
+    // website reads out of its cached business payload. Only those are announced.
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    const identity = ['logoLightMediaId', 'logoDarkMediaId', 'faviconMediaId'].filter(
+      (key) => body[key] !== undefined
     );
+    await publishSiteUpdated(request.log, ctx.tenantId, ctx.userId ?? null, {
+      propertyId: ctx.propertyId,
+      changed: identity.length > 0 ? ['logo'] : [],
+    });
     return ok(config);
   });
 

@@ -4,9 +4,12 @@
 // free. Its own file so the create form stays one screenful (RULE #0.5).
 
 import { Checkbox, Text } from '@wizeworks/silicaui-react';
+import { Icon } from '@piggles/ui';
 
 import { FormSection } from '../../components/form-section';
 import type { ResourceLite } from './bookings-data';
+import { resourceKindIcon } from './resource-kind-icon';
+import { resourceKindLabel } from './setup-data';
 
 export function BookingResourcePicker({
   resourceList,
@@ -50,9 +53,14 @@ export function BookingResourcePicker({
                     toggleResource(resource.id);
                   }}
                 />
+                <Icon
+                  glyph={resourceKindIcon(resource.kind)}
+                  className="size-4 shrink-0"
+                  aria-hidden
+                />
                 <span className="min-w-0 flex-1 font-medium">{resource.name}</span>
-                <Text as="span" className="shrink-0 text-sm capitalize">
-                  {resource.kind}
+                <Text as="span" className="shrink-0 text-sm">
+                  {resourceKindLabel(resource.kind)}
                 </Text>
               </label>
             );

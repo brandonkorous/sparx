@@ -85,7 +85,7 @@ export function SummaryCard({
             <div key={item.key} className="flex items-baseline justify-between gap-3 text-sm">
               <span>{item.name}</span>
               <span className="tabular-nums">
-                {item.included ? 'Included' : `${money(item.price)}/mo`}
+                {item.included ? 'Included' : item.price === 0 ? 'Free' : `${money(item.price)}/mo`}
               </span>
             </div>
           ))

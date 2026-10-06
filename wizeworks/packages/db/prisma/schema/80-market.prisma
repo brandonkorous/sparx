@@ -74,7 +74,8 @@ model MarketListing {
   // sparx-curated placement (admin-set, mirrors commerce_products.market_featured).
   featured           Boolean @default(false)
   // Absolute URL of the product's page on the seller's own storefront (the
-  // "Visit their store" link), resolved from SPARX_SITE_BASE + handle.
+  // "Visit their store" link): the site's own address + handle
+  // (@wizeworks/db/site-origin).
   productUrl         String? @map("product_url") @db.Text
   // Lowercased title + description + merchant + category, the source of the
   // generated `search_tsv` tsvector (added in the migration; Prisma can't model it).

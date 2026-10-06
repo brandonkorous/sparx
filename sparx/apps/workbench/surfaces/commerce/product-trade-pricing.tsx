@@ -34,6 +34,15 @@
 //
 // ── One create, no modal ─────────────────────────────────────────────────
 //
+// ── Buying rules ride on the price for one business ───────────────────────
+//
+// A business can also be held to a minimum, a maximum and a case pack on a
+// version (sparx persona issue 086). They live on the same row as its price for
+// that version (one row per business and version), so they are set in the same
+// form, with "Keep their usual price" for a rule with no price change, and are
+// changed in place on the row. The website shows them beside the quantity box
+// and the cart and checkout refuse any other amount.
+//
 // Adding a group price is three fields and it commits to the server, so it is an
 // inline form in the pane rather than a dialog: a dialog here would be invisible
 // to the dirty-tracking every other editor in the app participates in, for no
@@ -42,7 +51,7 @@
 // "edit" on a rule with a fixed-price/percentage XOR is a form that has to
 // re-derive which half it is in.
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import {
   Badge,
   Button,
@@ -61,6 +70,17 @@ import { useConfirm } from '../../lib/confirm';
 import { dayBoxProblem, dayEndUtc, todayIso, todayStartUtc } from '../../lib/today';
 import { DayInput } from '../../components/day-input';
 import { STRENGTH_ORDER_SENTENCE } from './trade-price-order';
+import { groupPaysNowCents, newTradePriceSentence } from './trade-price-now';
+import {
+  buyingRuleEffect,
+  buyingRuleProblem,
+  buyingRuleWords,
+  hasBuyingRule,
+  readRuleBox,
+  type BuyingRuleValues,
+} from './trade-buying-rules';
+import { fetchTradePrice } from '../invoicing/trade-price';
+import { useQuery } from '@wizeworks/query';
 import { Building2, Plus, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -78,8 +98,10 @@ import {
   useRemoveContractPrice,
   useRemoveTierOverride,
   useTradeAccounts,
+  useUpdateAccountOverride,
   useTradePricing,
   type Product,
+  type TradeAccountOverride,
   type TradePricing,
   type TradePricingVariant,
 } from './products-data';
@@ -95,6 +117,15 @@ const MODE_ITEMS = {
   percent: 'A percentage off the normal price',
   fixed: 'A fixed price',
 };
+
+/** For one business, a row can carry buying rules and no price of its own
+ *  (sparx persona issue 086). */
+const BUSINESS_MODE_ITEMS = {
+  ...MODE_ITEMS,
+  keep: 'Keep their usual price',
+};
+
+type PriceMode = 'fixed' | 'percent' | 'keep';
 
 /** How much cheaper a rule is than list, as a phrase. Returned separately from
  *  the cash figure because "$42.00" alone does not say whether that is a good
@@ -120,6 +151,8 @@ function RuleRow({
   beaten,
   onRemove,
   removing,
+  noPriceLabel,
+  extra,
 }: {
   who: string;
   detail: string | null;
@@ -132,6 +165,10 @@ function RuleRow({
   beaten: string | null;
   onRemove: () => void;
   removing: boolean;
+  /** What the price column says for a row that sets no price of its own. */
+  noPriceLabel?: string;
+  /** Anything that belongs under the row, such as its buying rules editor. */
+  extra?: ReactNode;
 }) {
   const listCents = variant?.priceCents ?? 0;
   const saving = ruleCents !== null ? savingLabel(ruleCents, listCents) : null;
@@ -169,12 +206,15 @@ function RuleRow({
         )}
         {detail ? <Text className="text-sm">{detail}</Text> : null}
         {beaten ? <Text className="text-sm">{beaten}</Text> : null}
+        {extra}
       </div>
 
       <div className="flex items-center gap-2">
         <div className="text-right">
           <Text as="span" className="text-lg font-semibold">
-            {ruleCents === null ? '—' : formatCents(ruleCents, variant?.currency ?? 'USD')}
+            {ruleCents === null
+              ? (noPriceLabel ?? '—')
+              : formatCents(ruleCents, variant?.currency ?? 'USD')}
           </Text>
           {saving ? <Text className="text-sm">{saving}</Text> : null}
         </div>
@@ -234,6 +274,7 @@ function SetAPrice({
   const addTier = useAddTierOverride(productId);
   const addAccount = useAddAccountOverride(productId);
   const addContract = useAddContractPrice(productId);
+  const updateAccount = useUpdateAccountOverride(productId);
 
   const liveTiers = data.tiers;
   // Only asked for once there is something on the product worth pricing, so a
@@ -289,8 +330,13 @@ function SetAPrice({
   const [tierId, setTierId] = useState('');
   const [accountId, setAccountId] = useState('');
   const [variantId, setVariantId] = useState('');
-  const [mode, setMode] = useState<'fixed' | 'percent'>('percent');
+  const [mode, setMode] = useState<PriceMode>('percent');
   const [amount, setAmount] = useState('');
+  // Buying rules for one business (sparx persona issue 086). Held as text, so an
+  // empty box means "no rule" and a half-typed one can be said to be wrong.
+  const [minText, setMinText] = useState('');
+  const [maxText, setMaxText] = useState('');
+  const [caseText, setCaseText] = useState('');
   const [until, setUntil] = useState('');
   // The box's own half-typed state, which its `value` cannot express. See
   // `DayInput`.
@@ -315,35 +361,88 @@ function SetAPrice({
         ? 'business'
         : who;
 
+  // "Keep their usual price" is an answer only for one business: a group row
+  // with no price would do nothing.
+  const priceMode: PriceMode = effectiveWho === 'group' && mode === 'keep' ? 'percent' : mode;
+  const keepsPrice = priceMode === 'keep';
+
+  // One row per business and version (sparx persona issue 086), so a business
+  // that already has one for this version has it CHANGED by this form.
+  const existingOverride: TradeAccountOverride | null =
+    effectiveWho === 'business'
+      ? (data.accountOverrides.find(
+          (o) => o.accountId === chosenAccount && o.variantId === chosenVariantId
+        ) ?? null)
+      : null;
+  const chosenAccountName =
+    accountRows.find((a) => a.id === chosenAccount)?.companyName ?? 'This business';
+
+  const ruleBoxes = {
+    min: readRuleBox(minText),
+    max: readRuleBox(maxText),
+    caseOf: readRuleBox(caseText),
+  };
+  const ruleError = effectiveWho === 'business' ? buyingRuleProblem(ruleBoxes) : null;
+  const typedRules: BuyingRuleValues = {
+    minOrderQty: typeof ruleBoxes.min === 'number' ? ruleBoxes.min : null,
+    maxOrderQty: typeof ruleBoxes.max === 'number' ? ruleBoxes.max : null,
+    orderMultiple: typeof ruleBoxes.caseOf === 'number' ? ruleBoxes.caseOf : null,
+  };
+  const anyRuleTyped = effectiveWho === 'business' && hasBuyingRule(typedRules);
+
   // An agreement is a price, not a percentage: the server's contract price
   // carries `priceCents` and nothing else. So the end date is only offered once
   // a fixed price is being set for one business.
-  const datable = effectiveWho === 'business' && mode === 'fixed';
+  const datable = effectiveWho === 'business' && priceMode === 'fixed';
   const endDate = datable ? until : '';
   const dateError = datable ? dayBoxProblem(until, untilHalfTyped) : null;
 
   const numeric = Number(amount);
+  const priceValid =
+    keepsPrice ||
+    (amount.trim() !== '' &&
+      Number.isFinite(numeric) &&
+      numeric > 0 &&
+      (priceMode === 'fixed' || numeric <= 100));
   const valid =
     chosenVariantId !== '' &&
     (effectiveWho === 'group' ? chosenTier !== '' : chosenAccount !== '') &&
-    amount.trim() !== '' &&
-    Number.isFinite(numeric) &&
-    numeric > 0 &&
-    (mode === 'fixed' || numeric <= 100) &&
+    priceValid &&
+    // Keeping the price only means something with a rule to set.
+    (!keepsPrice || anyRuleTyped) &&
+    ruleError === null &&
     dateError === null;
 
   const preview =
-    valid && chosenVariant
-      ? mode === 'fixed'
+    valid && chosenVariant && !keepsPrice
+      ? priceMode === 'fixed'
         ? Math.round(numeric * 100)
         : Math.round(chosenVariant.priceCents * (1 - numeric / 100))
       : null;
 
-  const pending = addTier.isPending || addAccount.isPending || addContract.isPending;
+  // What they pay for this version TODAY, to compare the new price with. One
+  // business is asked of the server, through the engine checkout charges with;
+  // a group is worked out from the rules this pane already holds.
+  const accountNow = useQuery({
+    queryKey: ['b2b', 'resolve-price', chosenVariantId, chosenAccount],
+    queryFn: () =>
+      fetchTradePrice({ variantId: chosenVariantId, accountId: chosenAccount, quantity: 1 }),
+    enabled: effectiveWho === 'business' && chosenVariantId !== '' && chosenAccount !== '',
+  });
+  const nowCents = !chosenVariant
+    ? null
+    : effectiveWho === 'group'
+      ? chosenTier === ''
+        ? null
+        : groupPaysNowCents(chosenTier, chosenVariant, data.tiers, data.tierOverrides)
+      : (accountNow.data?.effectivePriceCents ?? null);
+
+  const pending =
+    addTier.isPending || addAccount.isPending || addContract.isPending || updateAccount.isPending;
 
   const failed = (error: unknown) => {
     toast.add({
-      title: 'Could not set that price',
+      title: 'Could not save that',
       description: productErrorMessage(error, 'Nothing was changed.'),
       type: 'error',
     });
@@ -352,13 +451,53 @@ function SetAPrice({
     setAmount('');
     setUntil('');
     setUntilHalfTyped(false);
+    setMinText('');
+    setMaxText('');
+    setCaseText('');
     toast.add({ title, type: 'success' });
+  };
+
+  /** The rule boxes as a write: only what was typed, so an empty box on a row
+   *  that already has a rule leaves that rule alone. */
+  const ruleWrite = {
+    ...(typedRules.minOrderQty !== null ? { minOrderQty: typedRules.minOrderQty } : {}),
+    ...(typedRules.maxOrderQty !== null ? { maxOrderQty: typedRules.maxOrderQty } : {}),
+    ...(typedRules.orderMultiple !== null ? { orderMultiple: typedRules.orderMultiple } : {}),
+  };
+
+  /** Write this business's row for the version: change the one it has, or add it. */
+  const saveBusinessRow = (
+    price: { priceCents?: number; discountPercentage?: number },
+    title: string
+  ) => {
+    if (existingOverride) {
+      updateAccount.mutate(
+        {
+          accountId: chosenAccount,
+          overrideId: existingOverride.id,
+          // A new price replaces the old one whole: the other half is cleared.
+          ...(price.priceCents !== undefined
+            ? { priceCents: price.priceCents, discountPercentage: null }
+            : {}),
+          ...(price.discountPercentage !== undefined
+            ? { discountPercentage: price.discountPercentage, priceCents: null }
+            : {}),
+          ...ruleWrite,
+        },
+        { onSuccess: done(title), onError: failed }
+      );
+      return;
+    }
+    addAccount.mutate(
+      { accountId: chosenAccount, variantId: chosenVariantId, ...price, ...ruleWrite },
+      { onSuccess: done(title), onError: failed }
+    );
   };
 
   const submit = () => {
     if (!valid) return;
-    const priceCents = mode === 'fixed' ? Math.round(numeric * 100) : undefined;
-    const discountPercentage = mode === 'percent' ? numeric : undefined;
+    const priceCents = priceMode === 'fixed' ? Math.round(numeric * 100) : undefined;
+    const discountPercentage = priceMode === 'percent' ? numeric : undefined;
 
     if (effectiveWho === 'group') {
       addTier.mutate(
@@ -382,14 +521,23 @@ function SetAPrice({
           validFrom: todayStartUtc(),
           validTo,
         },
-        { onSuccess: done('Agreement recorded'), onError: failed }
+        {
+          // The agreement carries the price; buying rules typed beside it go on
+          // the business's own row for the version, with no price of its own.
+          onSuccess: anyRuleTyped
+            ? () => {
+                saveBusinessRow({}, 'Agreement and buying rules recorded');
+              }
+            : done('Agreement recorded'),
+          onError: failed,
+        }
       );
       return;
     }
 
-    addAccount.mutate(
-      { accountId: chosenAccount, variantId: chosenVariantId, priceCents, discountPercentage },
-      { onSuccess: done('Price set'), onError: failed }
+    saveBusinessRow(
+      keepsPrice ? {} : { priceCents, discountPercentage },
+      keepsPrice ? 'Buying rules set' : existingOverride ? 'Price changed' : 'Price set'
     );
   };
 
@@ -535,10 +683,10 @@ function SetAPrice({
           render={
             <Select
               color="module"
-              value={mode}
-              items={MODE_ITEMS}
+              value={priceMode}
+              items={effectiveWho === 'business' ? BUSINESS_MODE_ITEMS : MODE_ITEMS}
               onValueChange={(next) => {
-                setMode(next === 'fixed' ? 'fixed' : 'percent');
+                setMode(next === 'fixed' ? 'fixed' : next === 'keep' ? 'keep' : 'percent');
               }}
               aria-label="How the price is worked out"
             />
@@ -546,33 +694,36 @@ function SetAPrice({
         />
       </Field>
 
-      <Field>
-        <FieldLabel>{mode === 'fixed' ? 'They pay' : 'Percentage off'}</FieldLabel>
-        <FieldControl
-          render={
-            <Input
-              color="module"
-              type="number"
-              inputMode="decimal"
-              min={0}
-              max={mode === 'percent' ? 100 : undefined}
-              step={mode === 'fixed' ? 0.01 : 0.5}
-              value={amount}
-              placeholder={mode === 'fixed' ? '39.99' : '15'}
-              onChange={(event) => {
-                setAmount(event.target.value);
-              }}
-            />
-          }
-        />
-        <FieldDescription>
-          {preview !== null && chosenVariant
-            ? `They would pay ${formatCents(preview, chosenVariant.currency)} instead of ${formatCents(chosenVariant.priceCents, chosenVariant.currency)}.`
-            : mode === 'fixed'
-              ? 'The whole price they pay, not the amount taken off.'
-              : 'Between 0 and 100.'}
-        </FieldDescription>
-      </Field>
+      {keepsPrice ? null : (
+        <Field>
+          <FieldLabel>{priceMode === 'fixed' ? 'They pay' : 'Percentage off'}</FieldLabel>
+          <FieldControl
+            render={
+              <Input
+                color="module"
+                type="number"
+                inputMode="decimal"
+                min={0}
+                max={priceMode === 'percent' ? 100 : undefined}
+                step={priceMode === 'fixed' ? 0.01 : 0.5}
+                value={amount}
+                onChange={(event) => {
+                  setAmount(event.target.value);
+                }}
+              />
+            }
+          />
+          <FieldDescription>
+            {preview !== null && chosenVariant
+              ? newTradePriceSentence(preview, nowCents, (cents) =>
+                  formatCents(cents, chosenVariant.currency)
+                )
+              : priceMode === 'fixed'
+                ? 'The whole price they pay, not the amount taken off.'
+                : 'Between 0 and 100.'}
+          </FieldDescription>
+        </Field>
+      )}
 
       {datable ? (
         <Field>
@@ -602,15 +753,234 @@ function SetAPrice({
         </Field>
       ) : null}
 
+      {effectiveWho === 'business' ? (
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <Field>
+              <FieldLabel>Sold in cases of</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    step={1}
+                    value={caseText}
+                    aria-label="Sold in cases of"
+                    onChange={(event) => {
+                      setCaseText(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Least at once</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    step={1}
+                    value={minText}
+                    aria-label="Least they can order at once"
+                    onChange={(event) => {
+                      setMinText(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Most at once</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    step={1}
+                    value={maxText}
+                    aria-label="Most they can order at once"
+                    onChange={(event) => {
+                      setMaxText(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+          </div>
+          <Text className="text-sm">
+            {ruleError ??
+              (anyRuleTyped
+                ? `${buyingRuleWords(typedRules) ?? ''}. ${buyingRuleEffect(typedRules, chosenAccountName)}`
+                : keepsPrice
+                  ? `Fill in at least one box. ${chosenAccountName} keeps paying what they pay now.`
+                  : 'Optional. Leave these empty and they can order any amount of this version.')}
+          </Text>
+          {existingOverride ? (
+            <Text className="text-sm">
+              {chosenAccountName} already has a row for this version, listed above
+              {buyingRuleWords(existingOverride)
+                ? ` (${buyingRuleWords(existingOverride) ?? ''})`
+                : ''}
+              . Saving changes that row; a box left empty keeps the rule it already has.
+            </Text>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="flex justify-end">
         <Button color="module" size="sm" disabled={!valid} loading={pending} onClick={submit}>
           <Plus className="size-4" aria-hidden />
-          {endDate === '' ? 'Set this price' : 'Record this agreement'}
+          {endDate !== ''
+            ? 'Record this agreement'
+            : keepsPrice
+              ? 'Set these buying rules'
+              : existingOverride
+                ? 'Change their price'
+                : 'Set this price'}
         </Button>
       </div>
     </FormSection>
   );
 }
+/**
+ * Change one business's buying rules on a version, in place on its row (sparx
+ * persona issue 086). An empty box clears that rule. The same checks the server
+ * makes are said while typing, so Save is never where staff first hear them.
+ */
+function BuyingRulesEditor({ rule, productId }: { rule: TradeAccountOverride; productId: string }) {
+  const toast = useToast();
+  const update = useUpdateAccountOverride(productId);
+  const [open, setOpen] = useState(false);
+  const text = (n: number | null) => (n === null ? '' : String(n));
+  const [caseText, setCaseText] = useState(text(rule.orderMultiple));
+  const [minText, setMinText] = useState(text(rule.minOrderQty));
+  const [maxText, setMaxText] = useState(text(rule.maxOrderQty));
+
+  const boxes = {
+    min: readRuleBox(minText),
+    max: readRuleBox(maxText),
+    caseOf: readRuleBox(caseText),
+  };
+  const problem = buyingRuleProblem(boxes);
+  const next: BuyingRuleValues = {
+    minOrderQty: typeof boxes.min === 'number' ? boxes.min : null,
+    maxOrderQty: typeof boxes.max === 'number' ? boxes.max : null,
+    orderMultiple: typeof boxes.caseOf === 'number' ? boxes.caseOf : null,
+  };
+  // A row with no price of its own exists only for its rules, so clearing them
+  // all would leave a row that does nothing. Removing it is the honest action.
+  const emptied =
+    !hasBuyingRule(next) && rule.priceCents === null && rule.discountPercentage === null;
+  const changed =
+    next.minOrderQty !== rule.minOrderQty ||
+    next.maxOrderQty !== rule.maxOrderQty ||
+    next.orderMultiple !== rule.orderMultiple;
+
+  if (!open) {
+    return (
+      <div>
+        <Button
+          size="sm"
+          variant="outline"
+          color="module"
+          onClick={() => {
+            setCaseText(text(rule.orderMultiple));
+            setMinText(text(rule.minOrderQty));
+            setMaxText(text(rule.maxOrderQty));
+            setOpen(true);
+          }}
+        >
+          {hasBuyingRule(rule) ? 'Change buying rules' : 'Add buying rules'}
+        </Button>
+      </div>
+    );
+  }
+
+  const box = (label: string, value: string, set: (v: string) => void) => (
+    <Field>
+      <FieldLabel>{label}</FieldLabel>
+      <FieldControl
+        render={
+          <Input
+            color="module"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            step={1}
+            value={value}
+            aria-label={`${label} for ${rule.accountName}`}
+            onChange={(event) => {
+              set(event.target.value);
+            }}
+          />
+        }
+      />
+    </Field>
+  );
+
+  return (
+    <div className="border-base-300 mt-2 flex flex-col gap-3 border-t pt-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {box('Sold in cases of', caseText, setCaseText)}
+        {box('Least at once', minText, setMinText)}
+        {box('Most at once', maxText, setMaxText)}
+      </div>
+      <Text className="text-sm">
+        {problem ??
+          (emptied
+            ? `With every box empty this row would change nothing for ${rule.accountName}. Remove the row instead.`
+            : hasBuyingRule(next)
+              ? `${buyingRuleWords(next) ?? ''}. ${buyingRuleEffect(next, rule.accountName)}`
+              : `${rule.accountName} will be able to order any amount of this version.`)}
+      </Text>
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            setOpen(false);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          size="sm"
+          color="module"
+          disabled={problem !== null || emptied || !changed}
+          loading={update.isPending}
+          onClick={() => {
+            update.mutate(
+              { accountId: rule.accountId, overrideId: rule.id, ...next },
+              {
+                onSuccess: () => {
+                  setOpen(false);
+                  toast.add({ title: 'Buying rules saved', type: 'success' });
+                },
+                onError: (error: unknown) => {
+                  toast.add({
+                    title: 'Could not save the buying rules',
+                    description: productErrorMessage(error, 'Nothing was changed.'),
+                    type: 'error',
+                  });
+                },
+              }
+            );
+          }}
+        >
+          Save buying rules
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function TradePricingBody({
   ctx,
   product,
@@ -717,8 +1087,11 @@ function TradePricingBody({
                     {tier.accountCount === 1
                       ? '1 business is in this group'
                       : `${String(tier.accountCount)} businesses are in this group`}
+                    {/* The minimum is a floor on every order these businesses place on
+                        your website, not a condition on the discount (sparx persona
+                        issue 086): checkout refuses an order below it. */}
                     {tier.minOrderCents > 0
-                      ? ` · only on orders over ${formatCents(tier.minOrderCents)}`
+                      ? ` · their orders must come to at least ${formatCents(tier.minOrderCents)}`
                       : ''}
                   </Text>
                 </div>
@@ -780,13 +1153,10 @@ function TradePricingBody({
 
             {data.accountOverrides.map((rule) => {
               const variant = variantById.get(rule.variantId ?? '');
-              const limits = [
-                rule.minOrderQty !== null ? `must buy at least ${String(rule.minOrderQty)}` : null,
-                rule.maxOrderQty !== null ? `no more than ${String(rule.maxOrderQty)}` : null,
-                rule.notes,
-              ]
-                .filter(Boolean)
-                .join(' · ');
+              // The buying rules this business is held to on the website (sparx
+              // persona issue 086): the case pack, the least and the most.
+              const limits = [buyingRuleWords(rule), rule.notes].filter(Boolean).join(' · ');
+              const ownPrice = rule.priceCents !== null || rule.discountPercentage !== null;
               return (
                 <RuleRow
                   key={rule.id}
@@ -801,14 +1171,21 @@ function TradePricingBody({
                       : `Just this business · account ${rule.accountStatus}`
                   }
                   beaten={
-                    coveredByAgreement.get(`${rule.accountId}|${rule.variantId ?? ''}`) ?? null
+                    ownPrice
+                      ? (coveredByAgreement.get(`${rule.accountId}|${rule.variantId ?? ''}`) ??
+                        null)
+                      : null
+                  }
+                  noPriceLabel="Their usual price"
+                  extra={
+                    rule.variantId ? <BuyingRulesEditor rule={rule} productId={productId} /> : null
                   }
                   removing={removeAccount.isPending}
                   onRemove={() => {
                     void (async () => {
                       const ok = await confirmRemove(
                         rule.accountName,
-                        `${rule.accountName} goes back to whatever their group pays for ${product.title}, which may be the normal price. Orders they have already placed keep the price they were charged.`
+                        `${rule.accountName} goes back to whatever their group pays for ${product.title}, which may be the normal price${hasBuyingRule(rule) ? ', and can order any amount of it' : ''}. Orders they have already placed keep the price they were charged.`
                       );
                       if (!ok) return;
                       removeAccount.mutate(

@@ -11,6 +11,7 @@
 // leaves no trace.
 
 import { paymentService, StoredMethodsUnsupportedError } from '@wizeworks/payments';
+import type { VaultedMethod } from '@wizeworks/payments';
 import { withTenant } from '@wizeworks/db';
 import type { CustomerPaymentMethod, TxClient } from '@wizeworks/db';
 
@@ -170,20 +171,67 @@ export async function completeSetup(
   // simply nothing to save.
   if (!vaulted) return null;
 
+  return persistVaulted(ctx, input.customerId, vaulted, input.makeDefault === true);
+}
+
+/**
+ * Keep the card a checkout payment was made with (issue 739), once that payment
+ * has cleared. The repeat order started from the same order is renewed on it.
+ *
+ * Null when the payment kept nothing: it was made some other way, or the
+ * gateway declined to keep it. The caller decides what a repeat order does
+ * without a card; this only reports that there is none.
+ */
+export async function keepFromPayment(
+  ctx: ServiceContext,
+  input: { customerId: string; paymentRef: string; chargeRef?: string }
+): Promise<SavedPaymentMethod | null> {
+  const existingRef = await withTenant(ctx, (tx) =>
+    tx.customerPaymentMethod.findFirst({
+      where: { customerId: input.customerId, customerRef: { not: null } },
+      select: { customerRef: true },
+      orderBy: { createdAt: 'desc' },
+    })
+  );
+  const billing = await resolveBillingIdentity(ctx, input.customerId);
+  const vaulted = await paymentService.vaultFromPayment({
+    tenantId: ctx.tenantId,
+    customerId: input.customerId,
+    paymentRef: input.paymentRef,
+    ...(input.chargeRef ? { chargeRef: input.chargeRef } : {}),
+    ...(existingRef?.customerRef ? { customerRef: existingRef.customerRef } : {}),
+    ...(billing.cardholderName ? { cardholderName: billing.cardholderName } : {}),
+    ...(billing.postalCode ? { postalCode: billing.postalCode } : {}),
+  });
+  if (!vaulted) return null;
+  return persistVaulted(ctx, input.customerId, vaulted, false);
+}
+
+/**
+ * Write a vaulted method onto the customer. Idempotent on (tenant, gateway,
+ * token), so a second read of the same card updates the row rather than
+ * minting another.
+ */
+async function persistVaulted(
+  ctx: ServiceContext,
+  customerId: string,
+  vaulted: VaultedMethod,
+  makeDefault: boolean
+): Promise<SavedPaymentMethod> {
   const gateway = await paymentService.getGatewayForTenant(ctx.tenantId);
 
   const row = await withTenant(ctx, async (tx) => {
     const existingCount = await tx.customerPaymentMethod.count({
-      where: { customerId: input.customerId, status: 'active' },
+      where: { customerId, status: 'active' },
     });
     // The first card a customer saves is their default whether they asked or
     // not — a saved card that is nobody's default would never be picked up by a
     // subscription that did not name one explicitly.
-    const isDefault = input.makeDefault === true || existingCount === 0;
+    const isDefault = makeDefault || existingCount === 0;
 
     if (isDefault) {
       await tx.customerPaymentMethod.updateMany({
-        where: { customerId: input.customerId, isDefault: true },
+        where: { customerId, isDefault: true },
         data: { isDefault: false },
       });
     }
@@ -198,7 +246,7 @@ export async function completeSetup(
       },
       create: {
         tenantId: ctx.tenantId,
-        customerId: input.customerId,
+        customerId,
         gatewayId: gateway.id,
         methodRef: vaulted.methodRef,
         customerRef: vaulted.customerRef,

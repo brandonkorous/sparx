@@ -98,6 +98,12 @@ const COSTS: Record<string, string> = {
   backInStock: 'When you know the day a sold-out thing comes back, your page cannot tell anybody.',
   'madeToOrder.shown':
     'If something is made to order, your page cannot say how long it takes or that a deposit is due.',
+  'coreDeposit.shown':
+    'If you sell rebuilt parts with a core deposit, your page cannot say so. A customer sees the price and is charged more.',
+  'coreChoice.shown':
+    'If a rebuilt part can be bought by sending the old part first, your page cannot offer that. Every customer is charged the core deposit.',
+  'repeat.shown':
+    'If you offer something on repeat, your page cannot offer it. Customers can only buy it once.',
 };
 
 /**

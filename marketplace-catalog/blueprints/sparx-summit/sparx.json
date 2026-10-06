@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-summit",
   "name": "Summit",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "tagline": "A complete multi-module starter in the Summit look, for consulting and B2B agencies.",
-  "description": "The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Summit look, tuned for consulting and B2B agencies. Install it, make it yours, and launch a polished working site in minutes.",
+  "description": "A complete starter in the Summit look, tuned for consulting and B2B agencies: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",

@@ -134,6 +134,104 @@ export type UpdateDocumentLineTypeInput = z.infer<typeof UpdateDocumentLineTypeI
 // `taxRate` is a fraction (0.0875 = 8.75%) applied to taxable lines (§7).
 const Address = z.record(z.string(), z.unknown());
 
+// ── The buyer's purchase order number ───────────────────────────────────────
+//
+// The number the CUSTOMER's own books give this purchase ("WFUC-24-0817"). A
+// business buying on account will not pay an invoice its accounts department
+// cannot match to a purchase order, so the number has to ride on the quote, the
+// order made from it, and the invoice, and be printed on all of them (sparx
+// persona issue 077).
+//
+// It has no column. Web checkout already writes it to `order.metadata.poNumber`,
+// so a billing document keeps it in the same place on its own metadata, and
+// every reader goes through `poNumberOf` rather than poking at the bag. Same
+// length limit as checkout's, so a number taken at checkout always fits here.
+export const PoNumber = z
+  .string()
+  .trim()
+  .max(63, 'A purchase order number is at most 63 characters.');
+
+/** The buyer's PO number in a metadata bag (a document's or an order's), or
+ *  null when there is none. Blank counts as none. */
+export function poNumberOf(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
+  const value = (metadata as Record<string, unknown>).poNumber;
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
+}
+
+/**
+ * A metadata bag with the PO number set, or removed when blank.
+ *
+ * MERGED, never replaced: the same bag carries `sentAt` / `sentTo` (the send
+ * route) and `source` / `orderId` (the AR path), and a header save that wrote
+ * `{ poNumber }` over it would make a sent invoice read as never sent.
+ */
+export function withPoNumber(
+  metadata: unknown,
+  poNumber: string | null | undefined
+): Record<string, unknown> {
+  const base =
+    metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+      ? { ...(metadata as Record<string, unknown>) }
+      : {};
+  const trimmed = poNumber?.trim() ?? '';
+  if (trimmed === '') {
+    delete base.poNumber;
+    return base;
+  }
+  return { ...base, poNumber: trimmed };
+}
+
+// ── What the buyer needs about delivery ─────────────────────────────────────
+//
+// A trade buyer's request carries when they need it, where it goes, and any
+// other word about getting it there (sparx persona issue 086). Like the PO
+// number it has no column: it rides in the quote's metadata bag under
+// `delivery`, and every reader goes through `deliveryNeedsOf`.
+
+export interface DeliveryNeeds {
+  /** A calendar day, `YYYY-MM-DD`, or null when they did not say. */
+  neededBy: string | null;
+  deliverTo: string | null;
+  notes: string | null;
+}
+
+const CALENDAR_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+function cleanText(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
+}
+
+/** The delivery needs in a metadata bag, or null when none were given. */
+export function deliveryNeedsOf(metadata: unknown): DeliveryNeeds | null {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
+  const raw = (metadata as Record<string, unknown>).delivery;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const bag = raw as Record<string, unknown>;
+  const neededBy =
+    typeof bag.neededBy === 'string' && CALENDAR_DAY.test(bag.neededBy) ? bag.neededBy : null;
+  const needs = { neededBy, deliverTo: cleanText(bag.deliverTo), notes: cleanText(bag.notes) };
+  return needs.neededBy || needs.deliverTo || needs.notes ? needs : null;
+}
+
+/** A metadata bag with the delivery needs set, MERGED like `withPoNumber`.
+ *  Nothing said means no `delivery` key at all. */
+export function withDeliveryNeeds(
+  metadata: unknown,
+  needs: DeliveryNeeds
+): Record<string, unknown> {
+  const base =
+    metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+      ? { ...(metadata as Record<string, unknown>) }
+      : {};
+  const clean = deliveryNeedsOf({ delivery: needs });
+  if (!clean) {
+    delete base.delivery;
+    return base;
+  }
+  return { ...base, delivery: clean };
+}
+
 export const CreateBillingDocumentInput = z
   .object({
     workflowId: z.string().uuid(),
@@ -173,6 +271,9 @@ export const CreateBillingDocumentInput = z
     // account's payment terms (§8); settable by hand for an explicit term.
     dueAt: z.string().datetime().optional().nullable(),
     metadata: z.record(z.string(), z.unknown()).optional(),
+    // The buyer's purchase order number, kept in `metadata.poNumber` (see
+    // `PoNumber`). Blank or null means none.
+    poNumber: PoNumber.optional().nullable(),
   })
   .refine((v) => Boolean(v.customerId) || Boolean(v.companyId), {
     message: 'A billing document must bill a customer or a B2B account.',
@@ -201,6 +302,9 @@ export const UpdateBillingDocumentInput = z
     validUntil: z.string().datetime().nullable(),
     dueAt: z.string().datetime().nullable(),
     metadata: z.record(z.string(), z.unknown()),
+    // Merged into `metadata.poNumber`; blank or null removes it. Never replaces
+    // the rest of the bag (see `withPoNumber`).
+    poNumber: PoNumber.nullable(),
   })
   .partial();
 export type UpdateBillingDocumentInput = z.infer<typeof UpdateBillingDocumentInput>;
@@ -353,6 +457,10 @@ export const BillingLineWriteCore = z.object({
   technicianUserId: z.string().uuid().optional().nullable(),
   // Defaults to the line type's `defaultTaxable` when omitted.
   taxable: z.boolean().optional(),
+  // Core charge per unit on a rebuilt part: a refundable deposit, printed as its
+  // own row and never taxed (sparx issue 051). Omitted on a catalog line, it is the
+  // variant's own; null takes it off.
+  coreCharge: z.number().positive().optional().nullable(),
   discountAmount: z.number().min(0),
   sortOrder: z.number().int().min(0).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),

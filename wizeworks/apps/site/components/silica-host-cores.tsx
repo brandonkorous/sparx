@@ -86,6 +86,10 @@ export interface HostCoreContext {
    *  block is offered on every page, and it used to emit an `<h1>` wherever it
    *  landed (issue 095). */
   bookingHeadingIsPageTitle?: boolean;
+  /** True only on `/products`, whose shell has no heading, so the listing's own
+   *  "All products" is the page's `<h1>`. A Shop page brings its own heading, and
+   *  the listing printed "All products" straight under it (persona issue 273). */
+  listingHeadingIsPageTitle?: boolean;
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -103,7 +107,13 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
       case HOST_KEYS.commerceSearch:
         return <SearchExperience site={ctx.site} searchParams={ctx.searchParams ?? {}} />;
       case HOST_KEYS.commercePlp:
-        return <ProductListing site={ctx.site} searchParams={ctx.searchParams ?? {}} />;
+        return (
+          <ProductListing
+            site={ctx.site}
+            searchParams={ctx.searchParams ?? {}}
+            asPageTitle={ctx.listingHeadingIsPageTitle ?? false}
+          />
+        );
       case HOST_KEYS.commerceCollections:
         return <CollectionIndex site={ctx.site} />;
       case HOST_KEYS.commerceCategories:

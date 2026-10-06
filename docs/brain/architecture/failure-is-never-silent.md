@@ -10,6 +10,7 @@ sources:
   - sparx/apps/workbench/components/root-boundary.tsx
   - sparx/apps/workbench/components/write-failure-reporter.tsx
   - sparx/apps/workbench/components/crash-listeners.tsx
+  - wizeworks/packages/query/src/recovery.ts
   - sparx/apps/workbench/lib/api/write-failure.ts
   - sparx/apps/workbench/lib/api/write-meta.ts
   - sparx/apps/workbench/app/error.tsx
@@ -27,9 +28,10 @@ Five layers, and each exists because the one above it structurally cannot see wh
 
 **The panes hold the unsaved work, so nothing above them may take them down.** Pane LAYOUT is persisted and comes back; pane DRAFTS are in memory and do not (`lib/drafts.ts`). Before the chrome was isolated, a status-bar chip failing to render discarded a half-written invoice in a pane that was working perfectly — and both offered recoveries, `reset()` and Reload, discarded it again.
 
-**Boundaries catch renders. Two whole classes of failure never reach one**, and they are covered separately:
+**Boundaries catch renders. Three whole classes of failure never reach one**, and they are covered separately:
 
 - **A failed WRITE** (`components/write-failure-reporter.tsx`) rejects inside a promise. Every boundary stays green while the operator's change quietly did not happen — the worst failure the app has, because the screen still shows what they typed. One subscription to the mutation cache is the floor under all 132 call sites: always report, but announce only if the mutation has no `onError` of its own, since a call site that handles it says something better. Offline writes are NOT a failure — TanStack's default `networkMode: 'online'` pauses and resumes them, and the status bar already says so.
+- **A failed READ that never settles** (`wizeworks/packages/query/src/recovery.ts`, installed by `makeQueryClient` in the browser). TanStack holds a retry while the page reports itself hidden, and for a read with no data a held retry IS `status: 'pending'`, so a pane's `isError` branch never runs and it says "Loading…" for as long as the tab looks hidden (a covered window, a test-driven browser). One query-cache subscription makes the held retry anyway on the query's own budget and backoff, and probes a read that failed on a 5xx or no answer until the API answers (up to ten minutes) without flashing the pane back to Loading. A browser that is really offline is left to TanStack. Static checks cannot see this; `recovery.test.ts` reproduces it (sparx persona issue 086).
 - **Everything reaching `window`** (`components/crash-listeners.tsx` → `ChunkReloadGuard`'s `onUnhandled`) — an unawaited rejection, a throw in a timer or listener. Stale-build chunk errors are excluded: they recover themselves and would bury real bugs under one entry per deploy per open tab.
 
 **Every boundary RECOVERS, so every boundary must also REPORT** (`reportCrash` in `lib/analytics.ts`). A recovered crash produces no unhandled rejection and nothing autocapture sees — the better the recovery, the more invisible the bug. Reports carry which boundary and what it was showing; "the workbench threw" is true of all of them and useful about none.
