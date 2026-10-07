@@ -19,12 +19,12 @@ to hold a mark, so they stay.
 
 At Halo & Hem today:
 
-| Booking rule | Services using it |
-|---|---|
-| Standard | 1 |
-| Salon cancellation | 6 |
-| Standard booking | **0** |
-| Colour deposit | 3 |
+| Booking rule       | Services using it |
+| ------------------ | ----------------- |
+| Standard           | 1                 |
+| Salon cancellation | 6                 |
+| Standard booking   | **0**             |
+| Colour deposit     | 3                 |
 
 "Standard booking" is the Salon (Editorial) design's example rule. Nothing uses
 it, and it sits in her list of rules beside her own. On a business that installs

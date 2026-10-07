@@ -27,7 +27,7 @@ Her Domains list had three more problems.
    because it believed they "still answer and redirect". In production they do
    neither. The site app refuses a Piggles business on sparx's domain
    (`wizeworks/apps/site/lib/site-context.ts`: `if (brandZone && brandZone !==
-   claimedZone) return null;`), and nothing on the platform sends one address to
+claimedZone) return null;`), and nothing on the platform sends one address to
    another. The rows' only effect was this false line in her list. Opening one
    repeated "It can never be removed, because it is your site's permanent back-up
    address", which is not true of it either.

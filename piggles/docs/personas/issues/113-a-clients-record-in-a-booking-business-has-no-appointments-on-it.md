@@ -100,6 +100,7 @@ summed, because a booking keeps no price of its own. In a business with no shop,
 the orders row is hidden for anyone who never ordered.
 
 **Two more found on the way.**
+
 - Opening a booking looped: two pieces of code set the tab title to different
   words and undid each other until React stopped with "Maximum update depth
   exceeded". The older one (the service name) is removed; the tab keeps
@@ -110,6 +111,7 @@ the orders row is hidden for anyone who never ordered.
 ## Proof
 
 At Halo & Hem, as the owner:
+
 - Priyanka's record leads with Last visit "a month ago", Aug 28 · Full head
   highlights, 1 visit so far, then her orders row with "Paid for orders $67.00".
 - "Probe Only", a lead with nothing on her record, was booked for Cut and finish
