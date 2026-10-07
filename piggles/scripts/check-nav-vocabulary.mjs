@@ -186,7 +186,7 @@ const SECTION_FILE = 'lib/console/section-names.ts';
 const surfaceNames = pairs(read(VOCAB_FILE), VOCAB_FILE, 'PIGGLES_SURFACES');
 const sectionNames = pairs(read(SECTION_FILE), SECTION_FILE, 'PIGGLES_SECTIONS');
 const hidden = new Set(
-  [...read('lib/console/product.tsx').matchAll(/^ {2}'([\w.*-]+)',$/gm)].map((m) => m[1])
+  [...read('lib/console/hidden.ts').matchAll(/^ {2}'([\w.*-]+)',$/gm)].map((m) => m[1])
 );
 
 /** `hiddenSurfaces` takes a trailing wildcard (`partner.*` hides the whole
@@ -444,8 +444,8 @@ for (const path of shownFiles) hiddenFiles.delete(path);
 const hiddenFeatures = new Set(
   [
     ...(
-      /const hiddenFeatures = new Set\(\[([\s\S]*?)\]\)/.exec(
-        read('lib/console/product.tsx')
+      /PIGGLES_HIDDEN_FEATURES[^=]*= new Set\(\[([\s\S]*?)\]\)/.exec(
+        read('lib/console/hidden.ts')
       )?.[1] ?? ''
     ).matchAll(/'([\w.-]+)'/g),
   ].map((m) => m[1])
@@ -573,6 +573,6 @@ for (const h of hits) {
   console.error(`  [${h.word}] ${h.kind.padEnd(8)} "${h.text}"  ${h.key}  (${h.file})`);
 }
 console.error(
-  '\nName it in lib/console/vocabulary.ts, or hide the surface in lib/console/product.tsx.'
+  '\nName it in lib/console/vocabulary.ts, or hide the surface in lib/console/hidden.ts.'
 );
 process.exit(1);

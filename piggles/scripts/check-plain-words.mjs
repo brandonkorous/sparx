@@ -89,7 +89,7 @@ for (const root of SCAN_ROOTS) {
 /**
  * Screens this brand does not have, so their words are never read HERE.
  *
- * `hiddenSurfaces` in lib/console/product.tsx removes whole surfaces from the
+ * `PIGGLES_HIDDEN_SURFACES` in lib/console/hidden.ts removes whole surfaces from the
  * Piggles console because they are about a sparx PRODUCT: what a business pays
  * WizeWorks, turning priced modules on and off, the reseller programme. Their
  * files still sit in this tree — the two consoles share a surface set — and
@@ -104,7 +104,7 @@ for (const root of SCAN_ROOTS) {
  * kept an eighth partner screen from being missed.
  */
 function hiddenSurfaceDirs() {
-  const file = join(PIGGLES, 'apps', 'workbench', 'lib', 'console', 'product.tsx');
+  const file = join(PIGGLES, 'apps', 'workbench', 'lib', 'console', 'hidden.ts');
   if (!existsSync(file)) {
     console.error(`check:plain-words — the brand adapter is missing: ${file}`);
     console.error('It moved or was renamed. Fix this parser rather than deleting the check.');
@@ -115,11 +115,11 @@ function hiddenSurfaceDirs() {
   // rail's plan card", "sparx's reseller programme" — so a naive scan for
   // quoted strings reads the prose BETWEEN two of them as a surface key. The
   // lexicon parser two functions up learned the same lesson.
-  const block = /const hiddenSurfaces = new Set\(\[([\s\S]*?)\]\);/.exec(
+  const block = /PIGGLES_HIDDEN_SURFACES[^=]*= new Set\(\[([\s\S]*?)\]\);/.exec(
     stripComments(readFileSync(file, 'utf8'))
   );
   if (!block) {
-    console.error('check:plain-words — hiddenSurfaces is not where this expects it.');
+    console.error('check:plain-words — PIGGLES_HIDDEN_SURFACES is not where this expects it.');
     process.exit(1);
   }
   const keys = new Set([...block[1].matchAll(/'([^']+)'/g)].map((m) => m[1]));

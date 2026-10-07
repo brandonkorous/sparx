@@ -77,7 +77,7 @@ const CONSOLES = [
     name: 'piggles',
     workbench: join(REPO, 'piggles', 'apps', 'workbench'),
     vocabulary: 'lib/console/vocabulary.ts',
-    hiddenFrom: 'lib/console/product.tsx',
+    hiddenFrom: 'lib/console/hidden.ts',
     // Piggles groups by APP, and one app fronts several modules.
     headings: { file: join(REPO, 'piggles', 'packages', 'config', 'src', 'apps.ts') },
   },
