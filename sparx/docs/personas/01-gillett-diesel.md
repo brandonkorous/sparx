@@ -215,6 +215,27 @@ WFUC-24-0906): $1,007.60 + $73.05 tax = $1,380.65, waiting for Teodora's sign-of
 email (blocked: Stripe test onboarding is Brandon's). Migrations 0030 and 0031 applied
 locally; no new ones since.
 
+**Act 10 (2026-10-06, in progress):** The overdue reminder. "Invoice overdue (7, 14, 30
+days)" could never send for a wholesale invoice on account, so no fleet of Gillett's had
+ever been reminded ([139], fixed). Reading the scheduler found a daily rule running
+twice per Denver day ([140]), the email counting days differently from the rule ([141]),
+and the automation tests running real tenants' rules a day early ([142]); all fixed.
+Proof: Doty raised 4459 for Wasatch Front (an old bill, $2,119.60, due Sep 29), it
+went to Renée by itself, and a minute later "Invoice overdue (7 days)" ran once, on its
+own, at 11:15pm Denver time. **Act 10's done-when holds**, with one gap: the event-worker
+prints the email to Brandon's terminal, which cannot be read from here, so the email
+was rebuilt with the code the sender uses and read that way. Reading it found the
+footer's dead link and "&middot;" ([143]) and a "Pay now" button that opened a page
+with no way to pay ([144]); both fixed, the button is now "See your invoice" and
+opens 4459, which Renée opened on the site. That page printed "Issued Oct 7" for a
+bill raised on Oct 6 ([145], fixed); the statement has the same shape ([146], open,
+act 11). Paying an invoice online from an email does not exist: listed for Brandon in
+[144]. Starting the broadcast: "send an email to customers" found no way to write one
+([147], fixed in both consoles, the `+` now says "Write an email"; not yet seen on
+screen, the browser kept losing its tabs). Still to do in act 10: the broadcast to the
+fleets, a drafted post, a campaign, a customer message answered. Machine timezone:
+America/Los_Angeles (PDT).
+
 **Act 3 status (2026-10-01 evening):** [057] proved on screen end to end:
 all 84 faked core choices converted (one part each, a real deposit, send-first on);
 the live product page offers both ways once [060] (the console never said his live

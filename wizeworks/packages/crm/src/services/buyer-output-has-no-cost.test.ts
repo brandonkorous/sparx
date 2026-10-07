@@ -150,6 +150,8 @@ const tx = {
   customer: { findUnique: vi.fn(() => Promise.resolve(null)) },
   property: { findUnique: vi.fn(() => Promise.resolve(null)) },
   tenant: { findUnique: vi.fn(() => Promise.resolve({ name: 'Gillett Diesel' })) },
+  // The printed issue date is read on the business's clock (issue 145).
+  tenantBusiness: { findUnique: vi.fn(() => Promise.resolve(null)) },
 };
 
 vi.mock('@wizeworks/db', async (importOriginal) => ({

@@ -72,6 +72,10 @@ const PHRASES: [string, string][] = [
   ['cost plus', 'commerce.markup-rules.list'],
   ['margin', 'commerce.markup-rules.list'],
   ['price from cost', 'commerce.markup-rules.list'],
+  // Writing one email to customers reached only "newsletter" (sparx persona
+  // issue 147, the same catalog shape here).
+  ['send an email to customers', 'email.broadcasts.list'],
+  ['email my customers', 'email.broadcasts.list'],
 ];
 
 function literalProp(node: ts.ObjectLiteralExpression, name: string): ts.Expression | undefined {

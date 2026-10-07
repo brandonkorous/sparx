@@ -1,6 +1,6 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.44
+**Version:** 6.46
 **Author:** Brandon Korous
 **Last Updated:** 2026-10-06
 
@@ -17288,3 +17288,23 @@ empty Expected box, and it came out `mm / dd / 2026`
 On the way to 2026 the box hands over the years 2, 20 and 202; one helper turned
 2 into 1902, the other could not write 202, and the box reset. The fix for 670
 had brought it back. Both helpers now keep any year, and 10/20/2026 stays.
+
+Then Photos and files, Ease 6. Her library is mostly other designs' sample
+pictures, and the grid could not say which ones anything used; it printed
+"Stored somewhere else" under 74 of 87 tiles. Drawing where each is used showed
+the count was wrong underneath
+([932](issues/932-a-picture-on-her-home-page-counted-as-unused.md)): it never
+looked at site pages, and 20 of her 87 pictures are on them, so a picture on her
+Journal's home page read as unused and could be deleted. The count now covers
+site pages, headers and footers, the logo, collections, reviews, social posts
+and record files, and the delete guard and the clean-up use it too. Each tile
+says where its picture is used; trio-founder.jpeg says "Home on Juniper Row
+Journal" and will not delete; and a **Use** filter finds the 12 files nothing
+uses.
+
+On a picture's own page, **Where it is used** now names each product, article
+and page and opens it. The first press opened "This page isn't here any more"
+on a page one of her sites over, so a page on another site now switches site
+first. Then Ready-made sites: 170 designs and no way to look for one
+([934](issues/934-a-hundred-and-seventy-designs-and-no-way-to-look-for-one.md)).
+"fashion" now finds 5, and **Selling things** narrows them to 4.

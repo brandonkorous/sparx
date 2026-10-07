@@ -66,6 +66,14 @@ describe('a design that is live on a dark site', () => {
     expect(state.detail).toContain('the moment your site is back');
   });
 
+  it('does not call a design on a public site drafts only she can see (issue 939)', () => {
+    const state = installState('installed', false, true);
+    expect(state.label).toBe('Added');
+    expect(state.detail).not.toContain('Only you can see it');
+    expect(state.detail).toContain('Your site is public');
+    expect(installState('installed', false, false).detail).toContain('Only you can see it');
+  });
+
   it('leaves every other install state alone, dark or not', () => {
     for (const status of ['installed', 'running', 'failed', 'anything-else']) {
       expect(installState(status, true), status).toEqual(installState(status, false));

@@ -60,9 +60,18 @@ export function BlueprintTargetSection(props: TargetSectionProps) {
   const replacing = impact.replaces && !props.newSite.chosen;
 
   return (
+    // Once the chosen site HAS this design, the section is about that site, not
+    // about adding: it used to keep its "Add it to a site" heading and the
+    // sentence "adding this design replaces all 11 of its pages" right above a
+    // button reading "Publish it live on Thistle & Rye", so the one safe button
+    // on the pane read as the one that wipes the site (persona issue 939).
     <FormSection
-      title="Add it to a site"
-      description="Pick which site this design goes into. You can add it to more than one."
+      title={current ? `On ${targetName}` : 'Add it to a site'}
+      description={
+        current
+          ? 'Pick another site to add it there as well.'
+          : 'Pick which site this design goes into. You can add it to more than one.'
+      }
     >
       <Field>
         <FieldLabel>Site</FieldLabel>
@@ -88,7 +97,9 @@ export function BlueprintTargetSection(props: TargetSectionProps) {
         <FieldDescription>
           {props.newSite.chosen
             ? 'A new site is made for it, so the site you have now is left exactly as it is. Everything arrives as drafts only you can see.'
-            : impact.sentence}
+            : current
+              ? `This design is already on ${targetName}, so nothing here replaces anything.`
+              : impact.sentence}
         </FieldDescription>
       </Field>
 

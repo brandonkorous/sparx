@@ -72,6 +72,7 @@ import {
 } from './data';
 import { productCopy, productName } from '../../lib/product';
 import { SaveFailure } from '@/components/save-failure';
+import { addressOrigin } from './address-origin';
 
 /** The one column everything in this pane sits in. Centred and capped, because a
  *  pane torn onto a second monitor is otherwise 2000px of dead grey with a
@@ -270,9 +271,11 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
  * came from, whether it can change, which address customers are actually sent,
  * and how to get a proper one. So: those.
  *
- * Where it came from is told from the HOST, not from the business name. Older
- * businesses were given a made-up name (issue 010), so "made from your business's
- * name" would be false for exactly the people most likely to wonder.
+ * Where it came from is told from the host and its age, not from the business
+ * name: most owners typed theirs, older ones were given one, and the oldest were
+ * given a made-up name (issue 010). "Piggles gave your business this address"
+ * was told to all three, and read as the product having picked for the ones who
+ * picked it themselves. See address-origin.ts.
  */
 function FreeAddress({
   ctx,
@@ -284,25 +287,18 @@ function FreeAddress({
   /** Every address of this site, this one included. */
   siblings: Domain[];
 }) {
-  const product = productName();
-  // `<business>.<zone>` for the first site, `<site>.<business>.<zone>` after it.
-  const labels = domain.host.split('.');
-  const sitePart = labels.length >= 4 ? labels[0] : null;
   const main = siblings.find((other) => other.isCanonical && other.id !== domain.id);
   const hasOwnDomain = siblings.some((other) => other.type !== 'subdomain');
 
   return (
     <>
       <FormSection title="Where this address comes from">
-        <Text className="text-sm">
-          {sitePart
-            ? `${product} gave this site its address when it was added. The first part, ${sitePart}, is the site's own; the rest is your business's.`
-            : `${product} gave your business this address when you signed up.`}{' '}
-          It never changes and cannot be removed, so a link to it keeps working for as long as the
-          site exists.
+        <Text>
+          {addressOrigin(domain.host, domain.createdAt, productName())} It never changes and cannot
+          be removed, so a link to it keeps working for as long as the site exists.
         </Text>
         {main ? (
-          <Text className="text-sm">
+          <Text>
             This site&apos;s main address is <span className="font-semibold">{main.host}</span>.
             That is the one in the links your customers are sent and in your sitemap. This one opens
             the same site.
@@ -326,7 +322,7 @@ function FreeAddress({
             </Button>
           }
         >
-          <Text className="text-sm">
+          <Text>
             If you own an address like yourbusiness.com, you can point it at this site.{' '}
             {domain.host} keeps working beside it, so nothing goes dark while you set it up.
           </Text>

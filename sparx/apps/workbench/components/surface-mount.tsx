@@ -94,7 +94,6 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
           </Button>
         ) : (
           <Button
-            color="neutral"
             variant="outline"
             size="sm"
             onClick={() => {
@@ -110,15 +109,28 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
   }
 }
 
-export function MissingSurface({ surface }: { surface: string }) {
+/**
+ * A tab whose screen is not here any more: saved in a layout, then taken out of
+ * this console or replaced. It used to print the screen's code name
+ * (`workbench.onboarding`) under a sentence saying the feature "has since
+ * moved", which named a place nobody could follow and a word nobody uses
+ * (Piggles persona issue 935). The one thing to do with it is close it, so that is the
+ * button.
+ */
+export function MissingSurface({ paneId }: { paneId: string }) {
+  const { controller } = useWorkbench();
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
-      <p className="font-medium">This panel is no longer available</p>
-      <p className="max-w-sm text-sm">
-        It was saved in your workspace but the feature it showed has since moved. You can close this
-        panel: the rest of your layout is unaffected.
-      </p>
-      <code className="mt-1 font-mono text-sm">{surface}</code>
+    <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+      <div>
+        <p className="font-medium">This screen is not here any more</p>
+        <p className="mt-1 max-w-md">
+          It was open the last time you used {productName()}, and it has since been taken out or
+          replaced. Closing this tab changes nothing else in your workspace.
+        </p>
+      </div>
+      <Button color="primary" size="sm" onClick={() => controller.close(paneId)}>
+        Close this tab
+      </Button>
     </div>
   );
 }
@@ -168,9 +180,9 @@ export function SurfaceBody({ paneId }: { paneId: string }) {
   const reachable = useReachableModules();
   const known = useKnownModules();
 
-  if (!descriptor) return <MissingSurface surface={paneId} />;
+  if (!descriptor) return <MissingSurface paneId={paneId} />;
   const definition = getSurface(descriptor.surface);
-  if (!definition) return <MissingSurface surface={descriptor.surface} />;
+  if (!definition) return <MissingSurface paneId={paneId} />;
 
   // The module gate, asked ONCE for every surface rather than in each of them.
   // The rail hides a switched-off module, so nobody arrives here by clicking —
@@ -209,10 +221,10 @@ export function SurfaceMount({
   const { controller } = useWorkbench();
   const descriptor = controller.getDescriptor(paneId);
 
-  if (!descriptor) return <MissingSurface surface={paneId} />;
+  if (!descriptor) return <MissingSurface paneId={paneId} />;
 
   const definition = getSurface(descriptor.surface);
-  if (!definition) return <MissingSurface surface={descriptor.surface} />;
+  if (!definition) return <MissingSurface paneId={paneId} />;
 
   const inner = (
     // DirtyScope wraps the whole pane body so ANY descendant — the surface, a

@@ -486,7 +486,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
     '{rows} we have never seen before. Add them as new items, point them at items you already have, or leave them out. Either way, what you decide is recorded with the import.',
   'migration.helpSubject': 'I cannot connect Piggles to {vendor}',
   'sampleData.loadConfirm':
-    'This fills {scope} with a full, realistic {pack} set (products, customers, orders and more) so you can see how everything works with records that look real. It is all clearly marked as samples and can be removed in one go.',
+    'This fills {scope} with a full, realistic {pack} set (products, customers, orders and more) so you can see how everything works with records that look real. Every record it adds is tagged as practice behind the scenes, so it can all be removed in one go.',
   'sampleData.packSummary':
     'A {pack} set, built to show everything working with records that look real.',
   // The blank line matters: this is a FILE somebody opens months later, and

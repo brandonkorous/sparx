@@ -176,7 +176,13 @@ function BlueprintBody({
 
           {blueprint.summary ? <Text>{blueprint.summary}</Text> : null}
 
-          {current ? <InstallStatusAlert install={current} targetName={targetName} /> : null}
+          {current ? (
+            <InstallStatusAlert
+              install={current}
+              targetName={targetName}
+              sitePublished={target.targetPublished}
+            />
+          ) : null}
 
           {/* A newer version is in the catalog. Its own prompt, not folded into the
               status line, because it is an ACTION rather than a state. */}

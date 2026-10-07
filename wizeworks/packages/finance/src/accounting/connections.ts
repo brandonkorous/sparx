@@ -57,25 +57,42 @@ export interface AccountingProviderDescriptor {
  * do" is a better one than an empty list.
  */
 export function accountingCatalog(): AccountingProviderDescriptor[] {
+  // Direct sync that is not built. Its FILE is: every provider here has a
+  // layout in export.ts, and the export panel offers all of them, so the
+  // reason names where to pick it.
   const soon = (
     provider: AccountingProvider,
     name: string,
-    connect: 'oauth' | 'file',
     blurb: string
   ): AccountingProviderDescriptor => ({
     provider,
     name,
-    connect,
+    connect: 'oauth',
     availability: 'coming_soon',
     // NO DIRECTION WORD. This sentence is written in the finance package and
     // rendered by a console that decides where the export card sits, so "below"
     // was a guess — and a wrong one: both consoles put the export ABOVE this
     // list, and the section's own heading already says "the export above".
     // "On this screen" stays true wherever it is placed.
-    unavailableReason:
-      connect === 'oauth'
-        ? `Direct ${name} sync is not switched on yet. The spreadsheet export on this screen already imports into ${name} today.`
-        : `A one-click ${name} layout is not ready yet. The spreadsheet export on this screen works with it today.`,
+    unavailableReason: `Direct ${name} sync is not switched on yet. Choose ${name} under Laid out for, and the file from this screen imports into ${name} today.`,
+    blurb,
+    exportColumns: exportColumns(provider),
+  });
+
+  // A file-only destination. These were registered as `coming_soon` with "a
+  // one-click layout is not ready yet" while their layouts sat finished in
+  // export.ts and the export route built them on request; only the console's
+  // picker, which offered `available` entries, kept them out of reach (Piggles
+  // persona issue 938). There is nothing to switch on for a file.
+  const file = (
+    provider: AccountingProvider,
+    name: string,
+    blurb: string
+  ): AccountingProviderDescriptor => ({
+    provider,
+    name,
+    connect: 'file',
+    availability: 'available',
     blurb,
     exportColumns: exportColumns(provider),
   });
@@ -120,16 +137,29 @@ export function accountingCatalog(): AccountingProviderDescriptor[] {
       'Send stock journals straight to QuickBooks Online.'
     ),
     live('xero', 'Xero', 'Send stock journals straight to Xero.'),
-    soon(
+    file(
       'quickbooks_desktop',
       'QuickBooks Desktop',
-      'file',
       'A file laid out for QuickBooks Desktop’s import.'
     ),
-    soon('sage50', 'Sage 50 (Peachtree)', 'file', 'A file laid out for Sage 50’s import.'),
-    soon('freshbooks', 'FreshBooks', 'oauth', 'Send expenses straight to FreshBooks.'),
-    soon('wave', 'Wave', 'oauth', 'Send expenses straight to Wave.'),
+    file('sage50', 'Sage 50 (Peachtree)', 'A file laid out for Sage 50’s import.'),
+    soon('freshbooks', 'FreshBooks', 'Send expenses straight to FreshBooks.'),
+    soon('wave', 'Wave', 'Send expenses straight to Wave.'),
   ];
+}
+
+/**
+ * Whether a connection row may be kept for this provider at all.
+ *
+ * A row holds two things: a direct-sync grant, and the settings for its FILE
+ * (the books-closed date and the category to account-code map). The file works
+ * for every provider in the catalog whether or not its sync is switched on, so
+ * the row does too. Signing in is guarded separately, by the connect route
+ * asking the adapter whether it is configured.
+ */
+export function assertProviderKnown(provider: AccountingProvider): void {
+  const descriptor = accountingCatalog().find((d) => d.provider === provider);
+  if (!descriptor) throw new AccountingProviderUnavailableError(provider, 'Unknown provider');
 }
 
 export function assertProviderAvailable(provider: AccountingProvider): void {
@@ -257,7 +287,7 @@ export async function upsertConnection(
   tenantId: string,
   input: UpsertConnectionInput
 ): Promise<FinanceAccountingConnection> {
-  assertProviderAvailable(input.provider);
+  assertProviderKnown(input.provider);
   const propertyId = input.propertyId ?? null;
 
   return withTenant({ tenantId }, async (tx) => {

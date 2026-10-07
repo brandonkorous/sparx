@@ -157,6 +157,20 @@ export function dueDayAfter(from: Date, days: number, timeZone?: string | null):
 }
 
 /**
+ * The day a moment fell on for the BUSINESS, as noon UTC on that day: the form a
+ * due date is stored in, so every surface that prints a document date in UTC
+ * prints this day.
+ *
+ * For the printed "Issued" date. It was the UTC date of the moment the document
+ * was made, so a shop in Denver raising a bill after 6pm printed tomorrow's date
+ * on it: Gillett's 4459, raised on Oct 6, read "Issued Oct 7, 2026" (sparx
+ * persona issue 145), beside a Net 30 due date counted from Oct 6.
+ */
+export function businessDayOf(at: Date, timeZone?: string | null): Date {
+  return new Date(zoneDay(at, timeZone) + DAY_MS / 2);
+}
+
+/**
  * Midnight at the start of the business's current day, as a Date.
  *
  * The query boundary that matches `daysPastDue`: "due before today" has to mean

@@ -205,7 +205,7 @@ const b2bInvoiceDue = (): BuilderNode =>
     heading('Invoice {{invoice.number}}'),
     para('A reminder that invoice {{invoice.number}} is due in {{invoice.daysUntilDue}} days.'),
     para('Amount due: {{invoice.balance}} · Due {{invoice.dueDate}}'),
-    button('Pay now', '{{invoice.payUrl}}'),
+    conditional('invoice.viewUrl', [button('See your invoice', '{{invoice.viewUrl}}')]),
   ]);
 
 const b2bQuoteExpiring = (): BuilderNode =>
@@ -226,7 +226,7 @@ const invoicingReminder = (): BuilderNode =>
     ),
     lineItems('invoice.items'),
     para('Balance due: {{invoice.balance}} · Due {{invoice.dueDate}}'),
-    button('Pay invoice', '{{invoice.payUrl}}'),
+    conditional('invoice.viewUrl', [button('See your invoice', '{{invoice.viewUrl}}')]),
   ]);
 
 const invoicingOverdue = (): BuilderNode =>
@@ -236,7 +236,7 @@ const invoicingOverdue = (): BuilderNode =>
       'Invoice {{invoice.number}} was due on {{invoice.dueDate}} and is now {{invoice.overdueDays}} days overdue. Please submit payment at your earliest convenience.'
     ),
     para('Amount due: {{invoice.balance}} · {{invoice.overdueDays}} days overdue'),
-    button('Pay now', '{{invoice.payUrl}}'),
+    conditional('invoice.viewUrl', [button('See your invoice', '{{invoice.viewUrl}}')]),
   ]);
 
 const invoicingOverdue2 = (): BuilderNode =>
@@ -246,7 +246,7 @@ const invoicingOverdue2 = (): BuilderNode =>
       'Our records show invoice {{invoice.number}} remains unpaid and is now {{invoice.overdueDays}} days overdue. Please arrange payment to keep your account in good standing.'
     ),
     para('Amount due: {{invoice.balance}} · {{invoice.overdueDays}} days overdue'),
-    button('Pay now', '{{invoice.payUrl}}'),
+    conditional('invoice.viewUrl', [button('See your invoice', '{{invoice.viewUrl}}')]),
   ]);
 
 const invoicingOverdueFinal = (): BuilderNode =>
@@ -261,7 +261,7 @@ const invoicingOverdueFinal = (): BuilderNode =>
         'If payment isn’t received, your account may be placed on credit hold and outstanding orders paused.'
       ),
     ]),
-    button('Pay now', '{{invoice.payUrl}}'),
+    conditional('invoice.viewUrl', [button('See your invoice', '{{invoice.viewUrl}}')]),
   ]);
 
 const invoicingReceipt = (): BuilderNode =>

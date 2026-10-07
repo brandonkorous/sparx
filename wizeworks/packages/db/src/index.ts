@@ -32,6 +32,7 @@ export {
   loadSampleData,
   clearSampleData,
   sampleDataStatus,
+  countOwnRecords,
   resolveSamplePack,
   getSamplePack,
   packModules,
@@ -39,7 +40,12 @@ export {
   SAMPLE_DATA_PACKS,
   GENERIC_INDUSTRY,
 } from './sample-data';
-export type { SampleDataPack, SampleDataCounts, SampleDataStatus } from './sample-data';
+export type {
+  SampleDataPack,
+  SampleDataCounts,
+  SampleDataStatus,
+  OwnRecordKind,
+} from './sample-data';
 export { isSampleRow, SAMPLE_SETTINGS } from './sample-data/markers';
 
 export type {

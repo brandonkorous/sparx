@@ -99,14 +99,18 @@ export async function runAutomationTick(
       SELECT id, tenant_id, automation_id, cause_depth, cursor_index, trigger_event
       FROM find_due_automation_runs(${batch}::int)
     `;
-      const due: DueRun[] = rows.map((r) => ({
-        id: r.id,
-        tenantId: r.tenant_id,
-        automationId: r.automation_id,
-        causeDepth: r.cause_depth,
-        cursorIndex: r.cursor_index,
-        triggerEvent: r.trigger_event,
-      }));
+      // A test serves only its own tenants (`EngineDeps.onlyTenants`, issue 142).
+      const only = deps.onlyTenants;
+      const due: DueRun[] = rows
+        .filter((r) => !only || only.has(r.tenant_id))
+        .map((r) => ({
+          id: r.id,
+          tenantId: r.tenant_id,
+          automationId: r.automation_id,
+          causeDepth: r.cause_depth,
+          cursorIndex: r.cursor_index,
+          triggerEvent: r.trigger_event,
+        }));
 
       const result: TickResult = {
         acquired: true,

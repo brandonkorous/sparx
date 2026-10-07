@@ -280,8 +280,18 @@ export function rankRecords(entries: Entry[], query: string): Entry[] {
  * ranks stay in registry order.
  */
 export function rankEntries(entries: Entry[], query: string): Entry[] {
+  // Word by word is the fallback for a phrase NOTHING answers whole, and only
+  // that. Run beside whole-phrase matches it lets one leftover word bring in
+  // every screen it happens to start: "set up" drops "up" as filler, "set"
+  // starts "settings", and a business three minutes old typed "set up" and got
+  // fifteen settings screens above Get set up (persona issue 935). A screen
+  // whose name holds the whole phrase is the answer; the rest is a coincidence.
+  const whole = /\s/.test(query.trim()) && entries.some((entry) => score(entry, query) > 0);
   const scored = entries
-    .map((entry) => ({ entry, rank: scoreQuery(entry, query) }))
+    .map((entry) => ({
+      entry,
+      rank: whole && score(entry, query) === 0 ? 0 : scoreQuery(entry, query),
+    }))
     .filter((row) => row.rank > 0);
 
   const best = new Map<string, number>();

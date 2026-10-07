@@ -95,6 +95,7 @@ export function usePublishState() {
       api.get<SitePublishState>('/v1/builder/site/publish-state').catch<SitePublishState>(() => ({
         hasUnpublished: false,
         unpublishedPages: 0,
+        unpublishedPageList: [],
         frameUnpublished: false,
         lastPublishedAt: null,
         neverPublished: false,

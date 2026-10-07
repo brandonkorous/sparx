@@ -155,33 +155,92 @@ export const SIGNALS: Signal[] = [
 ];
 
 /** What a person can start from here, in the order a day tends to need them. */
-export const ACTIONS: {
+export interface HomeAction {
   label: string;
   surface: string;
   module: string;
   params?: Record<string, string>;
-}[] = [
+  /** The signup answer it belongs to ("web", "sell" …). */
+  answer: string;
+}
+
+export const ACTIONS: HomeAction[] = [
+  {
+    label: 'Write something',
+    surface: 'cms.content.detail',
+    module: 'cms',
+    params: { id: 'new' },
+    answer: 'web',
+  },
   {
     label: 'Add a product',
     surface: 'commerce.product.detail',
     module: 'commerce',
     params: { id: 'new' },
+    answer: 'sell',
   },
   {
     label: 'Send an invoice',
     surface: 'invoicing.invoice.edit',
     module: 'invoicing',
     params: { id: 'new' },
+    answer: 'money',
   },
-  { label: 'Add a customer', surface: 'crm.customer.detail', module: 'crm', params: { id: 'new' } },
-  { label: 'Work on my site', surface: 'builder.site', module: 'builder' },
+  {
+    label: 'Add a customer',
+    surface: 'crm.customer.detail',
+    module: 'crm',
+    params: { id: 'new' },
+    answer: 'people',
+  },
+  { label: 'Work on my site', surface: 'builder.site', module: 'builder', answer: 'web' },
 ];
+
+/**
+ * The Start something buttons for what the business said it does.
+ *
+ * A journal that ticked nothing about selling was offered "Add a product" first
+ * and "Send an invoice" second (Piggles persona issue 941). A business that
+ * answered gets the buttons for its answer; one that never did keeps the four
+ * it always had, which never included writing.
+ */
+export function actionsForAnswer(does: readonly string[] | null | undefined): HomeAction[] {
+  const answered = (does ?? []).length > 0;
+  const picked = answered ? ACTIONS.filter((action) => does?.includes(action.answer)) : [];
+  if (picked.length > 0) return picked;
+  return ACTIONS.filter((action) => action.label !== 'Write something');
+}
 
 /** A count that is asking for a person: a real non-zero number, or a failure to
  *  produce one. Not-knowing belongs in the list — see the file header. */
 export function needsYou(count: AttentionCount): boolean {
   if (count.state === 'error' || count.state === 'unknown') return true;
   return count.state === 'ready' && (count.value ?? 0) > 0;
+}
+
+/** The signup answer each signal's app belongs to. */
+const ANSWER_BY_MODULE: Record<string, string> = {
+  commerce: 'sell',
+  inventory: 'sell',
+  invoicing: 'money',
+  chat: 'people',
+  scheduling: 'people',
+  builder: 'web',
+};
+
+/**
+ * Whether a CLEAR signal belongs in the all-clear sentence for this business.
+ *
+ * Only the reassurance is filtered, never a count that needs her: a journal
+ * that one day takes an order is told so. What it is spared is "nothing is sold
+ * out and nothing is running low" read out every morning about a shop it said
+ * it does not have (Piggles persona issue 941). A business that never answered
+ * hears all of them, as before.
+ */
+export function reassuresFor(module: string, does: readonly string[] | null | undefined): boolean {
+  if (!does || does.length === 0) return true;
+  const answer = ANSWER_BY_MODULE[module];
+  return answer === undefined || does.includes(answer);
 }
 
 /** A real, measured zero. Nothing else qualifies. */

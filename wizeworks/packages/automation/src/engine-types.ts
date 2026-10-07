@@ -37,6 +37,16 @@ export interface EngineLogger {
 export interface EngineDeps {
   publisher: Publisher;
   logger: EngineLogger;
+  /**
+   * Only these tenants' rules and runs. The worker leaves it unset and serves
+   * every tenant. A test sets it to the tenants it made, because the database it
+   * runs against holds real businesses too: a test's schedule tick with a clock
+   * a day ahead ran Gillett's overdue ladder for tomorrow, and a test's run tick
+   * would carry out another business's waiting run with the test's fake email
+   * sender (sparx persona issue 142). A live set, so a test can add a tenant
+   * after building its deps.
+   */
+  onlyTenants?: ReadonlySet<string>;
 }
 
 /**

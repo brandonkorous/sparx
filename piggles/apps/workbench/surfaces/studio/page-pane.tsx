@@ -23,6 +23,7 @@ import { useStudioBinding } from '../../lib/studio/provider';
 import { useJustPublished } from '../../lib/studio/just-published';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PagesList } from './pages-list';
+import { PublishedLine } from './published-line';
 import { useHistoryAction, usePreviewAction } from './open-history';
 import { SaveAsPiece } from './save-as-piece';
 import { usePageDocument, type PageDocumentState } from './use-page-document';
@@ -105,6 +106,7 @@ function PagePaneBody({
       attention={doc.unpublished}
       statusBar={
         <PageStatus
+          ctx={ctx}
           dirty={unsaved}
           stored={state.stored}
           starter={state.starter}
@@ -157,6 +159,7 @@ function SavePage({ state, unsaved }: { state: PageDocumentState; unsaved: boole
 
 /** What is true right now, in the order someone worries about it. */
 function PageStatus({
+  ctx,
   dirty,
   stored,
   starter,
@@ -165,6 +168,7 @@ function PageStatus({
   publishedAt,
   error,
 }: {
+  ctx: SurfaceContext;
   dirty: boolean;
   stored: boolean;
   starter: boolean;
@@ -197,7 +201,5 @@ function PageStatus({
   if (unpublished) return <span>Saved. Visitors still see the last published version.</span>;
   // "Saved and live" the instant the API returned was a claim about the visitor
   // made from the console's own state.
-  if (catchingUp)
-    return <span>Published. Your site shows it in a few seconds, a few minutes at most.</span>;
-  return <span>Saved and live.</span>;
+  return <PublishedLine what="This page" ctx={ctx} catchingUp={catchingUp} />;
 }

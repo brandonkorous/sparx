@@ -25,6 +25,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import { useJustPublished } from '../../lib/studio/just-published';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { PublishedLine } from './published-line';
 import { useHistoryAction, usePreviewAction } from './open-history';
 import { ThemeLibrary } from './theme-library';
 import { useThemeDocument } from './use-theme-document';
@@ -105,6 +106,7 @@ function ThemePaneBody({
       attention={doc.unpublished}
       statusBar={
         <ThemeStatus
+          ctx={ctx}
           dirty={dirty}
           unpublished={doc.unpublished}
           publishedAt={doc.publishedAt}
@@ -162,11 +164,13 @@ function SaveTheme({
 
 /** What is true right now, in the order someone worries about it. */
 function ThemeStatus({
+  ctx,
   dirty,
   unpublished,
   publishedAt,
   applied,
 }: {
+  ctx: SurfaceContext;
   dirty: boolean;
   unpublished: boolean;
   publishedAt: string | null;
@@ -177,7 +181,5 @@ function ThemeStatus({
   if (dirty) return <span>Not saved yet</span>;
   if (!applied) return <span>Saved. Your site is using a different look.</span>;
   if (unpublished) return <span>Saved. Visitors still see the last published look.</span>;
-  if (catchingUp)
-    return <span>Published. Your site shows it in a few seconds, a few minutes at most.</span>;
-  return <span>Saved and live.</span>;
+  return <PublishedLine what="The look" ctx={ctx} catchingUp={catchingUp} />;
 }

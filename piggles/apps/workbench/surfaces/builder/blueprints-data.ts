@@ -97,6 +97,10 @@ export interface BlueprintInstall {
 
 export interface BlueprintQuery {
   installedOnly: boolean;
+  /** Words to find in a design's name or description; '' for none. */
+  q?: string;
+  /** One kind of business ('retail', 'services', 'content', 'b2b'), or 'all'. */
+  vertical?: string;
   take: number;
   skip: number;
 }
@@ -120,6 +124,8 @@ export function useBlueprints(query: BlueprintQuery) {
     queryFn: () =>
       api.list<Blueprint>('/v1/blueprints', {
         ...(query.installedOnly ? { installed: 'true' } : {}),
+        ...(query.q ? { q: query.q } : {}),
+        ...(query.vertical && query.vertical !== 'all' ? { vertical: query.vertical } : {}),
         take: query.take,
         skip: query.skip,
       }),

@@ -122,6 +122,7 @@ export {
   AccountingProviderUnavailableError,
   accountingCatalog,
   assertProviderAvailable,
+  assertProviderKnown,
   listConnections,
   // Prefer these two in anything that reaches a browser — `listConnections`
   // returns the row, tokens and all. See the note on `PublicAccountingConnection`.

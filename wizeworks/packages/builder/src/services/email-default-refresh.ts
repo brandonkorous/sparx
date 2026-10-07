@@ -147,6 +147,7 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'b2b-invoice-due': new Set([
     '85a3c8839930e20b0fa0151d2b8ca8d73e9a4a2d0b1202cca40b0c524d2c957e',
     '083da5f21ae88b77d41b8d81aa299ba3674fb6fe38d2248fec3266bbb1255e0d',
+    '2f828611c2d3941734d51a9237c4afc69eb9c85827a133348653bcd72ec259da',
   ]),
   'b2b-quote-expiring': new Set([
     'aefeec5abf93f72567f8b76d5cb46cb92efdaa2eef0a29cb603bcd1212b511a4',
@@ -159,18 +160,22 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'invoicing-reminder': new Set([
     '46b9d6105ab16f7d4eb50251653b1edcf41d31b38483c1cc7cf43441988f2e28',
     '0a3dfa7b575c880242d9287167c5ce83f344262c50f0f4eed7b6e73bef59e8c2',
+    '0cd68c927f2d1507dafba5bec8a26afa8399a521cb5080c805d2e4d33af88abb',
   ]),
   'invoicing-overdue': new Set([
     'fe853edb1970b843a3f225ed12ffae750c8f8cb4022ef842eeb4c3e546ac4962',
     '03b3faa55e7925fe95c5d734a60cd85819177cfcda05e2229c730ea7f3925eea',
+    '6fe024918529f636acd51a4235470fbbe64066cfaf110c0bc19fdf412780d71b',
   ]),
   'invoicing-overdue-2': new Set([
     'bfbe0e4ed804ef9df1404e59bca2525f1c89a45621c95f88ef06bde5e55b024d',
     'c28abc8212ab3d2689b527b62e52af88b63fb0bea53300edf4d70ddf513e9a57',
+    '48eba24ae332eeb6288efc7a717aaa37c78215f93badd29dec35d4336623869c',
   ]),
   'invoicing-overdue-final': new Set([
     'c1e4513b4182d5f479b04af2c025faad1c5b190f7c3d4c7959f69b43eee58064',
     '549b4b6ac7c278f22cdeae890c2a52723efa03ae2ff59c51ec383f428e6709c9',
+    '2ce23bd1dd324d754721fa5c25dc966582cd2462e069611060334ac2dbfb00bf',
   ]),
   'invoicing-receipt': new Set([
     'e042ec5c9968ae990c6c3c561c38deeab1cf1df7cd1aae613cfb3d70cc43b613',

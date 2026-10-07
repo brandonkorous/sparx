@@ -34,7 +34,9 @@ import type {
   BillingRenderPaymentRow,
   BillingRenderTotals,
 } from './billing-document-html';
+import { businessDayOf } from './billing-ar';
 import { withCoreRows } from './billing-document-html';
+import { businessTimeZone } from './business-clock';
 import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
 import type { BillingSnapshotPayload } from './billing-snapshot';
 
@@ -125,7 +127,11 @@ export async function buildRenderData(
       number: doc.number,
       status: doc.status,
       currency: doc.currency,
-      issuedAt: (doc.finalizedAt ?? doc.createdAt).toISOString(),
+      // On the business's calendar (issue 145).
+      issuedAt: businessDayOf(
+        doc.finalizedAt ?? doc.createdAt,
+        await businessTimeZone(tx, ctx.tenantId)
+      ).toISOString(),
       dueAt: doc.dueAt ? doc.dueAt.toISOString() : null,
       validUntil: doc.validUntil ? doc.validUntil.toISOString() : null,
       poNumber: poNumberOf(doc.metadata),
@@ -216,7 +222,10 @@ export async function buildRenderDataFromSnapshot(
       number: snap.documentNumber ?? payload.document.number,
       status: payload.document.status,
       currency: payload.document.currency,
-      issuedAt: snap.createdAt.toISOString(),
+      issuedAt: businessDayOf(
+        snap.createdAt,
+        await businessTimeZone(tx, ctx.tenantId)
+      ).toISOString(),
       dueAt: null,
       validUntil: payload.document.validUntil,
       poNumber: payload.document.poNumber ?? null,

@@ -6,17 +6,41 @@
 
 import type { EmailDocument, EmailNode } from '@wizeworks/silicaui-builder/email';
 
+// Every named entity the platform's own chrome or a typical body writes. The
+// frame separates its footer links with `&middot;`, which was not here, so the
+// plain-text copy of every email read "Your account (…) &middot; Privacy Policy"
+// (sparx persona issue 143). Numeric entities are decoded generally below.
 const ENTITIES: Record<string, string> = {
-  '&amp;': '&',
-  '&lt;': '<',
-  '&gt;': '>',
-  '&quot;': '"',
-  '&#39;': "'",
-  '&nbsp;': ' ',
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: ' ',
+  middot: '·',
+  bull: '•',
+  ndash: '–',
+  mdash: '—',
+  hellip: '…',
+  lsquo: '‘',
+  rsquo: '’',
+  ldquo: '“',
+  rdquo: '”',
+  copy: '©',
+  reg: '®',
+  trade: '™',
+  times: '×',
+  deg: '°',
 };
 
 function decodeEntities(value: string): string {
-  return value.replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (m) => ENTITIES[m] ?? m);
+  return value.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, body: string) => {
+    if (body.startsWith('#')) {
+      const code = /^#x/i.test(body) ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
+      return Number.isFinite(code) && code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : m;
+    }
+    return ENTITIES[body.toLowerCase()] ?? m;
+  });
 }
 
 /** Inline-safe HTML (a `text`/`html` node's body) → plain text: links become

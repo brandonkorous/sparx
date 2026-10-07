@@ -36,6 +36,7 @@ import {
   useSampleDataStatus,
 } from './data';
 import { CountsGrid } from './counts-grid';
+import { onePerApp } from './one-per-app';
 import { productCopy, productCopyWith, productSurfaceTitle } from '../../lib/product';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
@@ -87,7 +88,8 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   const loaded = data?.loaded ?? false;
-  const modules = data?.modules ?? [];
+  // One chip per APP, not per module (issue 937).
+  const modules = onePerApp(data?.modules ?? [], moduleLabel);
 
   const onLoad = async () => {
     if (!data) return;
@@ -95,10 +97,10 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: loaded ? 'Replace the practice data with a fresh set?' : 'Load practice data?',
       description: loaded
-        ? `This clears the current practice records and stamps a fresh ${data.packLabel.toLowerCase()} set across ${scope}. Every record it adds is marked as practice, and none of your real records are touched.`
+        ? `This clears the current practice records and stamps a fresh ${data.packLabel.toLowerCase()} set across ${scope}. Every record it adds is tagged as practice, and none of your real records are touched.`
         : productCopyWith(
             'sampleData.loadConfirm',
-            `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how Piggles works with real-looking records. Everything it adds is clearly marked as practice and can be removed in one step.`,
+            `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how Piggles works with real-looking records. Every record it adds is tagged as practice behind the scenes, so it can all be removed in one go.`,
             { scope, pack: data.packLabel.toLowerCase() }
           ),
       confirmLabel: loaded ? 'Replace it' : 'Load practice data',
@@ -201,14 +203,14 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className={COLUMN}>
             <div className="flex flex-col gap-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge color={loaded ? 'success' : 'neutral'} variant="soft" size="sm">
+                <Badge color={loaded ? 'success' : undefined} variant="soft" size="sm">
                   {loaded ? 'Loaded' : 'Not loaded'}
                 </Badge>
               </div>
               <Text>
                 Fill your account with realistic made-up records so you can try things out before
-                your real ones exist. Everything added is clearly marked as practice, and you can
-                remove it all whenever you like.
+                your real ones exist. Each one is tagged as practice behind the scenes, so you can
+                remove them all in one go, whenever you like, without touching a real record.
               </Text>
             </div>
 
@@ -291,7 +293,8 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <p className="shrink-0 px-1 text-xs">
         <Icon glyph={faFlask} className="mr-1 inline size-3 align-[-2px]" aria-hidden />
-        Sample records are marked behind the scenes, so removing them never catches your real data.
+        Practice records are marked behind the scenes, so removing them never catches your real
+        data.
       </p>
     </div>
   );

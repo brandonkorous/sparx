@@ -36,6 +36,7 @@ export const SCOPEABLE_MODULES = [
   'commerce',
   'cms',
   'crm',
+  'scheduling',
   'email',
   'b2b',
   'dropship',
@@ -52,9 +53,12 @@ export type ScopeableModule = (typeof SCOPEABLE_MODULES)[number];
  * `/account/orders` belongs to Selling — the table is sorted at module load
  * rather than relying on the order somebody happened to type it in.
  *
- * `/book`, `/booking` and `/meet` are absent on purpose: scheduling is not one of
- * the eight switches, so nothing here may hide them. A path with no owner is
- * always reachable.
+ * Bookings became a switch with Piggles persona issue 944: a journal that takes
+ * no bookings could switch off its shop and still carried "Book" in its header.
+ * `/book` and `/meet` belong to it. `/booking/<token>` does not, on purpose: that
+ * is a customer's own link to a booking already made, from an email, and a
+ * switch on the site must not strand somebody holding one. A path with no owner
+ * is always reachable.
  */
 const OWNED_PATHS: { module: ScopeableModule; prefix: string }[] = [
   // Selling. The shop itself, plus the parts of a customer's account that only
@@ -78,6 +82,9 @@ const OWNED_PATHS: { module: ScopeableModule; prefix: string }[] = [
   { module: 'crm', prefix: '/sign' },
   // Wholesale. Longer than `/account/orders`, so it is matched first.
   { module: 'b2b', prefix: '/account/b2b' },
+  // Bookings: where a visitor picks something to book, and a meeting link.
+  { module: 'scheduling', prefix: '/book' },
+  { module: 'scheduling', prefix: '/meet' },
 ];
 
 const BY_LENGTH = [...OWNED_PATHS].sort((a, b) => b.prefix.length - a.prefix.length);
@@ -125,7 +132,8 @@ export function moduleForPath(href: string): ScopeableModule | null {
  * Both are already namespaced by module — `commerce.cart`, `commerce.plp`,
  * `cms.article-body`, `commerce.product`, `scheduling.services` — so the owner
  * is the first segment and there is no second table to keep in step with the
- * first. A prefix nothing scopes (`site.`, `scheduling.`) owns nothing here.
+ * first. A prefix nothing scopes (`site.`) owns nothing here; `scheduling.` does
+ * since issue 944, so the booking list block goes with the switch.
  *
  * `commerce.auth` is the ONE exception. It is the sign-in panel, and a visitor
  * still signs in on a site that sells nothing: to ask a question, to look at a

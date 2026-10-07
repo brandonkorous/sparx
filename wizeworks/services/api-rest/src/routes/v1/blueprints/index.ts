@@ -51,6 +51,14 @@ const ListQuery = z.object({
   // /builder/blueprints view), so the list + pager total reflect what's installed
   // rather than the whole marketplace (eval Finding 8).
   installed: queryBool.optional(),
+  // Words to find in a design's name, line or description. The catalog passed
+  // 170 designs with no way to look for one, and the console said so in a
+  // comment: a search over a loaded page would answer "not on this page"
+  // (issue 934). Searched here, before paging, so the count is the whole answer.
+  q: z.string().trim().max(120).optional(),
+  // One kind of business the design is set up for ('retail', 'services',
+  // 'content', 'b2b').
+  vertical: z.string().trim().max(40).optional(),
 });
 // Install target (docs/49 Phase 8): an explicit site to install into. Optional —
 // absent falls back to the active site (header) then primary. The body itself is
@@ -185,6 +193,16 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       status: 'published' as const,
       visibility: 'public' as const,
       ...(Object.keys(slugFilter).length ? { slug: slugFilter } : {}),
+      ...(q.vertical ? { vertical: q.vertical } : {}),
+      ...(q.q
+        ? {
+            OR: [
+              { name: { contains: q.q, mode: 'insensitive' as const } },
+              { tagline: { contains: q.q, mode: 'insensitive' as const } },
+              { description: { contains: q.q, mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
     };
     const [rows, total] = await Promise.all([
       // The catalog IS the marketplace rows — sparx's own blueprints and a

@@ -32,7 +32,20 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     module: 'email',
     icon: faPaperPlane,
     order: 1,
-    keywords: ['newsletter', 'campaign', 'send', 'blast', 'marketing'],
+    // What an owner types to write one: 'send an email to customers', 'email my
+    // customers' reached nothing until these (sparx persona issue 147).
+    keywords: [
+      'newsletter',
+      'campaign',
+      'send',
+      'blast',
+      'marketing',
+      'email customers',
+      'send an email',
+      'write an email',
+      'announcement',
+      'mailing',
+    ],
     component: BroadcastsListSurface,
     createSurface: 'email.broadcasts.detail',
     createLabel: 'New broadcast',

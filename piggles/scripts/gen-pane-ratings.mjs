@@ -8,7 +8,7 @@
 //   catalog/*.ts          every registered surface
 //   console/vocabulary.ts what Piggles CALLS it — a raw catalog title is sparx's
 //                         word for it, and the exercise judges what she reads
-//   console/product.tsx   hiddenSurfaces, which are not Piggles panes at all
+//   console/hidden.ts     PIGGLES_HIDDEN_SURFACES, which are not Piggles panes at all
 //
 // Grouped by app through `modules` and `claims` in packages/config/src/apps.ts,
 // so Partners shows the supplier screens it claims from Stock rather than none.
@@ -39,10 +39,7 @@ const CATALOG = join(ROOT, 'piggles/apps/workbench/lib/surfaces/catalog');
 const EXTRA_CATALOGS = [join(ROOT, 'piggles/apps/workbench/lib/surfaces/piggles-catalog.ts')];
 const RATING = join(ROOT, 'piggles/docs/personas/rating.md');
 const APPS_SRC = readFileSync(join(ROOT, 'piggles/packages/config/src/apps.ts'), 'utf8');
-const PRODUCT_SRC = readFileSync(
-  join(ROOT, 'piggles/apps/workbench/lib/console/product.tsx'),
-  'utf8'
-);
+const HIDDEN_SRC = readFileSync(join(ROOT, 'piggles/apps/workbench/lib/console/hidden.ts'), 'utf8');
 // What Piggles CALLS each screen. A raw catalog title is sparx's word for it,
 // and the whole exercise judges what a person reads.
 const VOCAB_SRC = readFileSync(
@@ -58,10 +55,18 @@ const vocab = new Map(
 );
 
 // ── hidden surfaces ─────────────────────────────────────────────────────────
-const hiddenBlock = PRODUCT_SRC.slice(
-  PRODUCT_SRC.indexOf('const hiddenSurfaces'),
-  PRODUCT_SRC.indexOf('const hiddenFeatures')
-);
+// Read by its NAME, and refused if the name is not there. This read the list out
+// of product.tsx by `indexOf` until the list moved to hidden.ts (issue 935), and
+// `slice(-1, -1)` is an empty string, so a moved list would have regenerated the
+// table with every hidden screen back in it and no word said.
+const HIDDEN_START = HIDDEN_SRC.indexOf('export const PIGGLES_HIDDEN_SURFACES');
+const HIDDEN_END = HIDDEN_SRC.indexOf('export const PIGGLES_HIDDEN_FEATURES');
+if (HIDDEN_START === -1 || HIDDEN_END <= HIDDEN_START) {
+  throw new Error(
+    'gen-pane-ratings: cannot find PIGGLES_HIDDEN_SURFACES in lib/console/hidden.ts. Point this script at the list before regenerating.'
+  );
+}
+const hiddenBlock = HIDDEN_SRC.slice(HIDDEN_START, HIDDEN_END);
 const hidden = new Set([...hiddenBlock.matchAll(/'([a-z0-9_.-]+)'/g)].map((m) => m[1]));
 
 // ── app registry ────────────────────────────────────────────────────────────

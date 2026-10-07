@@ -171,6 +171,19 @@ function socialLinks(brand: BrandTokens): FooterLink[] {
     });
 }
 
+/** Where the footer's business name links: the site this send is on behalf of. */
+const SITE_HOME = '{{site.url}}';
+
+/**
+ * Every merge token the frame itself writes. The frame is composed onto every
+ * send, but the data for a send is looked up from what the AUTHOR's body
+ * mentions, so a body that never names the site left `{{site.url}}` blank: the
+ * business name in the footer linked nowhere, and the plain-text copy read
+ * "Gillett Diesel Service ()" under an overdue notice (sparx persona issue 143).
+ * Whatever resolves a send's data looks these up too.
+ */
+export const EMAIL_FRAME_TOKENS: readonly string[] = [SITE_HOME];
+
 /** `?ref=powered-by` on the product's home, whatever query it already carries. */
 function withPoweredByRef(url: string): string {
   return `${url}${url.includes('?') ? '&' : '?'}ref=powered-by`;
@@ -235,7 +248,7 @@ function footerSection(
     // the same site this send is on behalf of, so the sign-off links home.
     name
       ? `<p style="margin:0 0 12px;font-size:15px;font-weight:bold;line-height:1.4;${base}">` +
-        `<a href="{{site.url}}" style="color:inherit;text-decoration:none">${name}</a></p>`
+        `<a href="${SITE_HOME}" style="color:inherit;text-decoration:none">${name}</a></p>`
       : '',
     // Utility + legal links (account, contact, privacy, terms…) then socials — both
     // in the brand link color so the two rows read as one link block.

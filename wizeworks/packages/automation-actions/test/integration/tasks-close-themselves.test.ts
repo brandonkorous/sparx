@@ -55,7 +55,10 @@ const appDb = new PrismaClient({
 });
 
 const noop = (): void => undefined;
+// The tenants this file made: its ticks serve only these (issue 142).
+const ourTenants = new Set<string>();
 const deps: EngineDeps = {
+  onlyTenants: ourTenants,
   publisher: { publish: () => Promise.resolve() },
   logger: { debug: noop, info: noop, warn: noop, error: noop },
 };
@@ -77,6 +80,7 @@ async function seedTenant(): Promise<{ tenantId: string; userId: string }> {
     },
     select: { id: true },
   });
+  ourTenants.add(tenant.id);
   createdTenants.push(tenant.id);
   const user = await ownerDb.user.create({
     data: { tenantId: tenant.id, email: `${slug}-kim@sparx.test`, name: 'Kim Lee', role: 'owner' },

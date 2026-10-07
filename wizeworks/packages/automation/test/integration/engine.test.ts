@@ -573,4 +573,44 @@ describe('engine — scheduled (predicate) triggers', () => {
     expect(recordedFor(t)).toHaveLength(1);
     expect(recordedFor(t)[0]?.fields['customer.id']).toBe(stale);
   });
+
+  // A test tick with a clock a day ahead ran a real business's overdue ladder
+  // in the shared database and used up its next day (sparx persona issue 142).
+  // Both ticks serve only the tenants named in `onlyTenants`.
+  it('leaves a tenant outside `onlyTenants` alone, in both ticks', async () => {
+    const mine = await tenant();
+    const theirs = await tenant();
+    const winBack = {
+      name: 'win-back',
+      trigger: {
+        kind: 'schedule' as const,
+        schedule: { cadence: 'daily' as const, atMinuteUtc: 0 },
+        predicate: {
+          entity: 'customer',
+          where: {
+            logic: 'AND' as const,
+            conditions: [
+              { field: 'customer.daysSinceLastOrder', operator: 'gte' as const, value: 30 },
+            ],
+          },
+        },
+      },
+      actions: [{ type: 'crm.add_tag' as const, config: { tag: 'winback' } }],
+    };
+    await seedCustomer(mine, { lastOrderDaysAgo: 90 });
+    await seedCustomer(theirs, { lastOrderDaysAgo: 90 });
+    const myRule = await activeAutomation(mine, winBack);
+    const theirRule = await activeAutomation(theirs, winBack);
+
+    const onlyMine = { ...deps, onlyTenants: new Set([mine]) };
+    await runScheduleTick(onlyMine, appDb);
+    expect(await runsFor(myRule)).toHaveLength(1);
+    expect(await runsFor(theirRule)).toHaveLength(0);
+
+    // Their run, waiting, is not carried out by a tick that is not theirs.
+    await runScheduleTick({ ...deps, onlyTenants: new Set([theirs]) }, appDb);
+    await runAutomationTick(onlyMine, appDb);
+    expect((await runsFor(myRule))[0]?.status).toBe('completed');
+    expect((await runsFor(theirRule))[0]?.status).toBe('running');
+  });
 });

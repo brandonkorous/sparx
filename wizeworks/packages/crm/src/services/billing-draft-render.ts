@@ -23,7 +23,9 @@ import type {
   BillingRenderLine,
   BillingRenderTotals,
 } from './billing-document-html';
+import { businessDayOf } from './billing-ar';
 import { withCoreRows } from './billing-document-html';
+import { businessTimeZone } from './business-clock';
 import { computeBillingTotals } from './billing-totals';
 import { payerTermsOf } from './billing-document-stage-service';
 import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
@@ -167,7 +169,9 @@ export async function buildRenderDataFromDraft(
       currency: draft.currency ?? 'USD',
       // A draft has no finalizedAt; preview it as issued today so the date block
       // renders rather than collapsing to an empty row mid-edit.
-      issuedAt: draft.issuedAt ?? new Date().toISOString(),
+      issuedAt:
+        draft.issuedAt ??
+        businessDayOf(new Date(), await businessTimeZone(tx, ctx.tenantId)).toISOString(),
       dueAt: draft.dueAt ?? null,
       validUntil: draft.validUntil ?? null,
       poNumber: draft.poNumber?.trim() ? draft.poNumber.trim() : null,

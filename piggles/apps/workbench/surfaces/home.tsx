@@ -70,7 +70,15 @@ import type { SurfaceContext } from '@/lib/surfaces/registry';
 import { ModuleScope } from '@/components/module-scope';
 import { useFirstName } from '@/lib/api/shell-data';
 import { FirstRunPanel } from './first-run';
-import { ACTIONS, isClear, needsYou, quietLine, SIGNALS } from './home/signals';
+import {
+  actionsForAnswer,
+  isClear,
+  needsYou,
+  quietLine,
+  reassuresFor,
+  SIGNALS,
+} from './home/signals';
+import { useRailPreference } from '@/lib/console/rail';
 import { TemplateUpdatePanel } from './home/template-update';
 import { SiteRefreshPanel } from './home/site-refresh';
 import { StillTheExamplePanel } from './home/still-the-example';
@@ -84,10 +92,14 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
   // date may change under somebody mid-sentence because an unrelated re-render
   // happened to cross noon or midnight.
   const now = useMemo(() => new Date(), []);
+  const rail = useRailPreference();
+  const actions = actionsForAnswer(rail.data?.does);
 
   const live = SIGNALS.filter((signal) => attention[signal.key].state !== 'off');
   const waiting = live.filter((signal) => needsYou(attention[signal.key]));
-  const clear = live.filter((signal) => isClear(attention[signal.key]));
+  const clear = live.filter(
+    (signal) => isClear(attention[signal.key]) && reassuresFor(signal.module, rail.data?.does)
+  );
   const counting = live.some((signal) => attention[signal.key].state === 'loading');
 
   // Three states, and they are genuinely different sentences. "Nothing needs
@@ -203,7 +215,7 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
               grid item stretches by default, so `block` is the container's job
               and no Button has to name a width. */}
           <div className="mt-4 grid grid-cols-1 gap-3 lg:flex lg:flex-wrap">
-            {ACTIONS.map((action) => (
+            {actions.map((action) => (
               <ModuleScope key={action.label} module={action.module as never}>
                 <Button
                   color="module"

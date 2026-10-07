@@ -254,43 +254,65 @@ export async function countAssetUsage(
   return usage;
 }
 
-/** One site page or header and footer that shows an asset. */
-export interface SitePlaceUsingAsset {
-  kind: 'page' | 'layout';
+/** One place that shows an asset, named, so a screen can open it. */
+export interface PlaceUsingAsset {
+  kind: 'product' | 'entry' | 'page' | 'layout';
+  id: string;
   name: string;
-  /** The site it belongs to. A business can have several, and a page called
-   *  "Home" says nothing until it says whose. */
-  site: string;
+  /** The site a page or a header and footer belongs to. A business can have
+   *  several, and a page called "Home" says nothing until it says whose. Null
+   *  for a product or an article. */
+  site: string | null;
+  /** That site's id, so a screen standing in another site can switch to it
+   *  before opening the page. Opened from the wrong site, a page id resolves to
+   *  nothing and the editor says the page "isn't here any more". */
+  siteId: string | null;
 }
 
+/** How many of each kind are named. The count beside them is complete; this is
+ *  the list a person can work through, and a picture on 300 products does not
+ *  need 300 buttons. */
+const NAMED_PER_KIND = 25;
+
 /**
- * WHICH pages and headers and footers show one asset, for its own page. The
- * count says "1 site page"; somebody about to delete the file needs to know
- * which one to open (issue 932). Same search as the count: the id or the
- * address, within the asset's own business.
+ * WHICH products, articles, site pages and headers and footers show one asset,
+ * for its own page. The count says "2 product photos and 1 site page"; somebody
+ * about to delete or replace the file needs to open each one (issue 932, and the
+ * pane's gap since act 116). Pages are searched the way the count searches them:
+ * the id or the address, within the asset's own business.
  */
-export async function sitePlacesUsingAsset(
-  tx: TxClient,
-  assetId: string
-): Promise<SitePlaceUsingAsset[]> {
+export async function placesUsingAsset(tx: TxClient, assetId: string): Promise<PlaceUsingAsset[]> {
   const asset = await tx.mediaAsset.findFirst({
     where: { id: assetId },
     select: { id: true, key: true, tenantId: true },
   });
   if (!asset) return [];
-  return tx.$queryRaw<SitePlaceUsingAsset[]>`
-    SELECT 'page' AS kind, p.name, s.name AS site
-    FROM builder_pages p JOIN properties s ON s.id = p.property_id
-    WHERE p.tenant_id = ${asset.tenantId}::uuid
-      AND (position(${asset.id} IN coalesce(p.draft_tree::text, '') || coalesce(p.published_tree::text, '') || coalesce(p.silica_draft_tree::text, '') || coalesce(p.silica_published_tree::text, '')) > 0
-        OR position(${asset.key} IN coalesce(p.draft_tree::text, '') || coalesce(p.published_tree::text, '') || coalesce(p.silica_draft_tree::text, '') || coalesce(p.silica_published_tree::text, '')) > 0)
+  return tx.$queryRaw<PlaceUsingAsset[]>`
+    (SELECT 'product' AS kind, p.id::text AS id, p.title AS name, NULL::text AS site, NULL::text AS "siteId"
+       FROM commerce_products p
+      WHERE p.deleted_at IS NULL
+        AND p.id IN (SELECT product_id FROM commerce_variant_images WHERE media_asset_id = ${asset.id}::uuid)
+      ORDER BY p.title LIMIT ${NAMED_PER_KIND})
     UNION ALL
-    SELECT 'layout' AS kind, l.name, s.name AS site
-    FROM builder_layouts l JOIN properties s ON s.id = l.property_id
-    WHERE l.tenant_id = ${asset.tenantId}::uuid
-      AND (position(${asset.id} IN coalesce(l.draft_tree::text, '') || coalesce(l.published_tree::text, '') || coalesce(l.silica_draft_tree::text, '') || coalesce(l.silica_published_tree::text, '')) > 0
-        OR position(${asset.key} IN coalesce(l.draft_tree::text, '') || coalesce(l.published_tree::text, '') || coalesce(l.silica_draft_tree::text, '') || coalesce(l.silica_published_tree::text, '')) > 0)
-    ORDER BY site, name
+    (SELECT 'entry', e.id::text, coalesce(nullif(e.body->>'title', ''), nullif(e.body->>'name', ''), e.slug, 'Untitled'), NULL, NULL
+       FROM content_entries e
+      WHERE e.deleted_at IS NULL
+        AND e.id IN (SELECT from_entry_id FROM content_references WHERE to_asset_id = ${asset.id}::uuid)
+      ORDER BY 3 LIMIT ${NAMED_PER_KIND})
+    UNION ALL
+    (SELECT 'page', p.id::text, p.name, s.name, s.id::text
+       FROM builder_pages p JOIN properties s ON s.id = p.property_id
+      WHERE p.tenant_id = ${asset.tenantId}::uuid
+        AND (position(${asset.id} IN coalesce(p.draft_tree::text, '') || coalesce(p.published_tree::text, '') || coalesce(p.silica_draft_tree::text, '') || coalesce(p.silica_published_tree::text, '')) > 0
+          OR position(${asset.key} IN coalesce(p.draft_tree::text, '') || coalesce(p.published_tree::text, '') || coalesce(p.silica_draft_tree::text, '') || coalesce(p.silica_published_tree::text, '')) > 0)
+      ORDER BY 4, 3 LIMIT ${NAMED_PER_KIND})
+    UNION ALL
+    (SELECT 'layout', l.id::text, l.name, s.name, s.id::text
+       FROM builder_layouts l JOIN properties s ON s.id = l.property_id
+      WHERE l.tenant_id = ${asset.tenantId}::uuid
+        AND (position(${asset.id} IN coalesce(l.draft_tree::text, '') || coalesce(l.published_tree::text, '') || coalesce(l.silica_draft_tree::text, '') || coalesce(l.silica_published_tree::text, '')) > 0
+          OR position(${asset.key} IN coalesce(l.draft_tree::text, '') || coalesce(l.published_tree::text, '') || coalesce(l.silica_draft_tree::text, '') || coalesce(l.silica_published_tree::text, '')) > 0)
+      ORDER BY 4, 3 LIMIT ${NAMED_PER_KIND})
   `;
 }
 

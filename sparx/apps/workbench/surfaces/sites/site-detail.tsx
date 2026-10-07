@@ -53,7 +53,19 @@ import { moduleLabel } from '../../lib/surfaces/nav';
 
 /** Modules a site can be told not to show. `builder` is absent on purpose — it
  *  is what BUILDS the site, so hiding it from one site is meaningless. */
-const SCOPEABLE = ['commerce', 'cms', 'crm', 'email', 'b2b', 'dropship', 'inventory', 'ai'];
+// Bookings joined with Piggles persona issue 944, in step with SCOPEABLE_MODULES
+// in apps/site/lib/site-modules.ts.
+const SCOPEABLE = [
+  'commerce',
+  'cms',
+  'crm',
+  'scheduling',
+  'email',
+  'b2b',
+  'dropship',
+  'inventory',
+  'ai',
+];
 
 // The names come from `lib/surfaces/nav.ts`. This file kept its own, one of six
 // across the two consoles; see the note there.

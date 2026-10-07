@@ -2317,10 +2317,11 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
     // visitors are served. Counting only the tree would let "no header on this page" sit
     // in the editor with Publish greyed out, which is the same silence the staged
     // pointer exists to end.
-    const unpublishedPages = pages.filter(
+    const waiting = pages.filter(
       (r) =>
         treeDiffers(r.silicaDraftTree, r.silicaPublishedTree) || r.frameId !== r.publishedFrameId
-    ).length;
+    );
+    const unpublishedPages = waiting.length;
     // ANY layout, not just the live one — an edit to a named layout is unpublished work
     // a visitor is not seeing, and a signal that only watched the default shell would
     // tell the author there is nothing to publish while a page renders the old one.
@@ -2343,6 +2344,7 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
     return {
       hasUnpublished: unpublishedPages > 0 || frameUnpublished,
       unpublishedPages,
+      unpublishedPageList: waiting.map((r) => ({ id: r.id, name: r.name, slug: r.slug })),
       frameUnpublished,
       lastPublishedAt: last?.toISOString() ?? null,
       neverPublished: last === null,

@@ -17,7 +17,12 @@ export function installState(
   /** Whether the public site is currently dark. A suspended account serves the
    *  "Temporarily unavailable" overlay instead of its pages, so nobody is
    *  looking at the design however published it is. */
-  siteIsDark = false
+  siteIsDark = false,
+  /** Whether the site this install sits in has any page a visitor is shown.
+   *  An install keeps `installed` until its own Publish button is pressed, and
+   *  publishing the SITE from anywhere else does not move it, so a bakery
+   *  public for six weeks read "Only you can see it" (persona issue 939). */
+  sitePublished = false
 ): { label: string; tone: Tone; detail: string } {
   switch (status) {
     case 'live':
@@ -29,6 +34,14 @@ export function installState(
           : 'This design has been published: visitors see it on your site now.',
       };
     case 'installed':
+      if (sitePublished) {
+        return {
+          label: 'Added',
+          tone: 'info',
+          detail:
+            'Your site is public, so visitors see the pages you have published, this design’s among them. Anything it added that you have not published yet, an update included, is a draft only you can see.',
+        };
+      }
       return {
         label: 'Added as drafts',
         tone: 'info',

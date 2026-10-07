@@ -53,6 +53,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { MediaUsedBy } from './media-used-by';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -60,7 +61,6 @@ import {
   dimensionsLabel,
   durationLabel,
   sizeLabel,
-  sitePlacesLine,
   usedInLabel,
   formatDateTime,
   mediaErrorMessage,
@@ -578,11 +578,9 @@ function ManageAsset({
                 {usedInLabel(asset) ??
                   'Nothing we can see: no site page, header or footer, product, article, logo, category, review, post or record. An email design, a saved section or a theme is not checked, so look there before deleting it.'}
               </Fact>
-              {/* Which pages, by name, after the count: "1 site page" does not
-                  say which one to open before deleting (issue 932). */}
-              {asset.usedOnSite && sitePlacesLine(asset.usedOnSite) ? (
-                <Fact label="On your site">{sitePlacesLine(asset.usedOnSite)}</Fact>
-              ) : null}
+              {/* Which ones, by name, each opening beside this pane: the count
+                  above says how many, and she has to open them to act (issue 932). */}
+              {asset.usedBy ? <MediaUsedBy ctx={ctx} places={asset.usedBy} /> : null}
               {asset.previewUrl ? (
                 <Fact label="Original">
                   <a

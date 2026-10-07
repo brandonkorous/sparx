@@ -36,7 +36,10 @@ const appDb = new PrismaClient({
 });
 
 const noop = (): void => undefined;
+// The tenants this file made: its ticks serve only these (issue 142).
+const ourTenants = new Set<string>();
 const deps: EngineDeps = {
+  onlyTenants: ourTenants,
   publisher: { publish: () => Promise.resolve() },
   logger: { debug: noop, info: noop, warn: noop, error: noop },
 };
@@ -61,6 +64,7 @@ async function seedCustomerAutomation(opts: { doNotContact?: boolean } = {}): Pr
     },
     select: { id: true },
   });
+  ourTenants.add(tenant.id);
   createdTenants.push(tenant.id);
 
   const email = `buyer-${slug}@example.com`;

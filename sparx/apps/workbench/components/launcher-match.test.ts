@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { rankRecords, recordRank, scoreQuery, type Entry } from './launcher-match';
+import { rankEntries, rankRecords, recordRank, scoreQuery, type Entry } from './launcher-match';
 
 /** A record row, shaped the way `useRecordEntries` builds one. */
 function record(label: string, group: string, subtitle?: string): Entry {
@@ -183,5 +183,32 @@ describe('a number in what was typed', () => {
 
   it('still leaves short filler words out', () => {
     expect(scoreQuery(units, 'a units')).toBeGreaterThan(0);
+  });
+});
+
+describe('a phrase some screens answer whole', () => {
+  const screen = (id: string, group: string, label: string): Entry => ({
+    id,
+    group,
+    label,
+    run: () => undefined,
+  });
+  const entries = [
+    screen('inventory.planning', 'Stock', 'Planning settings'),
+    screen('inventory.setup', 'Stock', 'Set up your stock'),
+    screen('commerce.settings', 'Sell', 'Selling settings'),
+    screen('workbench.welcome', 'Home', 'Get set up'),
+  ];
+
+  it('leaves out screens that only match one leftover word', () => {
+    // Piggles persona issue 935: "set up" drops "up" as filler, and "set" alone started
+    // every "settings" screen, so Get set up came sixteenth.
+    const labels = rankEntries(entries, 'set up').map((entry) => entry.label);
+    expect(labels).toEqual(['Set up your stock', 'Get set up']);
+  });
+
+  it('still goes word by word when nothing holds the whole phrase', () => {
+    const labels = rankEntries(entries, 'stock planning').map((entry) => entry.label);
+    expect(labels).toEqual(['Planning settings']);
   });
 });

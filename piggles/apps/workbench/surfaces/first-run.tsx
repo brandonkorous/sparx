@@ -35,6 +35,7 @@ import { PigglesMascot } from '@piggles/mascot/react';
 import type { SurfaceContext } from '@/lib/surfaces/registry';
 import { ModuleScope } from '@/components/module-scope';
 import { useFirstRun, type FirstRunKey, type StepState } from '@/lib/console/first-run';
+import { useSampleDataStatus } from './sample-data/data';
 
 interface Step {
   key: FirstRunKey;
@@ -51,6 +52,15 @@ interface Step {
 
 const STEPS: Step[] = [
   {
+    key: 'article',
+    module: 'cms',
+    label: 'Publish your first piece',
+    detail: 'An article, a news post, a recipe: whatever you write for people to read.',
+    surface: 'cms.content.detail',
+    params: { id: 'new' },
+    doneLabel: 'You have published something',
+  },
+  {
     key: 'product',
     module: 'commerce',
     label: 'Add the first thing you sell',
@@ -63,7 +73,8 @@ const STEPS: Step[] = [
     key: 'customer',
     module: 'crm',
     label: 'Add someone you work with',
-    detail: 'Once they are here, their orders, messages and invoices gather in one place.',
+    detail:
+      'Once they are here, everything between you gathers in one place: messages, bookings, orders.',
     surface: 'crm.customer.detail',
     params: { id: 'new' },
     doneLabel: 'You have your first customer',
@@ -81,6 +92,7 @@ const STEPS: Step[] = [
 
 export function FirstRunPanel({ ctx }: { ctx: SurfaceContext }) {
   const { steps, finished } = useFirstRun();
+  const practice = useSampleDataStatus();
 
   // Its whole job is to leave. Once every applicable step is genuinely done it
   // never renders again — see lib/console/first-run.ts for why `finished` is
@@ -99,9 +111,29 @@ export function FirstRunPanel({ ctx }: { ctx: SurfaceContext }) {
               Let us get you going
             </Heading>
             <Text className="text-base text-pretty">
-              Three things and your business is running here. Nothing else is waiting on them, so do
-              them in any order, or none.
+              {thingsLine(live.length)} Nothing else is waiting on them, so do them in any order, or
+              none.
             </Text>
+            {/* The practice pack signup loads is why "What needs you" can say two
+                invoices are late on a business three minutes old. The form on
+                getpiggles said it would happen; this is the first screen after
+                it, so it says it again, and says why these ticks ignore them. */}
+            {practice.data?.loaded ? (
+              <Text className="mt-2 text-base text-pretty">
+                The products, customers, orders and invoices already here are practice ones, so you
+                can try anything without a real customer. These three tick when you add your own.{' '}
+                <button
+                  type="button"
+                  className="link link-primary"
+                  onClick={() => {
+                    ctx.open('platform.settings.sample-data');
+                  }}
+                >
+                  Clear the practice ones
+                </button>{' '}
+                whenever you are ready.
+              </Text>
+            ) : null}
           </div>
           {/* Small, and only on a pane with room: this is a nudge, not an event. */}
           <PigglesMascot
@@ -132,6 +164,14 @@ export function FirstRunPanel({ ctx }: { ctx: SurfaceContext }) {
  * product sits one tab away. So an unsettled step gets a plain grey ring in the
  * chassis color: visibly not an answer.
  */
+/** How many jobs are on the list, said the way a person counts them. The list
+ *  is shaped by what the business does (issue 941), so it is not always three. */
+function thingsLine(count: number): string {
+  if (count === 1) return 'One thing and your business is running here.';
+  const words = ['', '', 'Two', 'Three', 'Four'];
+  return `${words[count] ?? String(count)} things and your business is running here.`;
+}
+
 function markerClass(state: StepState): string {
   if (state === 'done') {
     return 'bg-success text-success-content flex size-8 shrink-0 items-center justify-center rounded-full';

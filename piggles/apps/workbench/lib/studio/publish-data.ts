@@ -23,6 +23,9 @@ export const RELEASES_KEY = ['builder', 'releases'];
 export interface PublishState {
   hasUnpublished: boolean;
   unpublishedPages: number;
+  /** Which pages those are. Absent from an api-rest older than issue 939, which
+   *  the pane reads as "not named" rather than as none. */
+  unpublishedPageList?: { id: string; name: string; slug: string | null }[];
   frameUnpublished: boolean;
   lastPublishedAt: string | null;
   neverPublished: boolean;

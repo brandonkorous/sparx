@@ -160,7 +160,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
       title: loaded ? 'Replace the sample data with a fresh set?' : 'Load sample data?',
       description: loaded
         ? `This clears the current sample records and stamps a fresh ${data.packLabel.toLowerCase()} set across ${scope}. Every record it adds is marked as a sample, and none of your real records are touched.`
-        : `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how sparx works with real-looking records. Everything it adds is clearly marked as a sample and can be removed in one step.`,
+        : `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how sparx works with real-looking records. Every record it adds is tagged as a sample behind the scenes, so it can all be removed in one go.`,
       confirmLabel: loaded ? 'Replace it' : 'Load sample data',
       cancelLabel: 'Not now',
       color: 'primary',
@@ -273,14 +273,14 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Heading level={1} className="text-2xl font-semibold">
                   Sample data
                 </Heading>
-                <Badge color={loaded ? 'success' : 'neutral'} variant="soft" size="sm">
+                <Badge color={loaded ? 'success' : undefined} variant="soft" size="sm">
                   {loaded ? 'Loaded' : 'Not loaded'}
                 </Badge>
               </div>
               <Text>
                 Fill your account with realistic made-up records so you can try things out before
-                your real ones exist. Everything added is clearly marked as a sample, and you can
-                remove it all whenever you like.
+                your real ones exist. Each one is tagged as a sample behind the scenes, so you can
+                remove them all in one go, whenever you like, without touching a real record.
               </Text>
             </div>
 

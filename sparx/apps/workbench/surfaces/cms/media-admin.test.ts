@@ -10,7 +10,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   formatBytes,
-  sitePlacesLine,
+  placeLabel,
+  placeTarget,
   sizeLabel,
   tileSizeLine,
   tileUseLine,
@@ -166,18 +167,43 @@ describe('what a tile says under its filename', () => {
   });
 });
 
-describe('which site pages show a file (issue 932)', () => {
-  it('names the pages, grouped by site', () => {
-    expect(
-      sitePlacesLine([
-        { kind: 'page', name: 'Home', site: 'Juniper Row' },
-        { kind: 'page', name: 'About', site: 'Juniper Row' },
-        { kind: 'layout', name: 'Main', site: 'Lookbook' },
-      ])
-    ).toBe('Home and About on Juniper Row; the header and footer “Main” on Lookbook');
+describe('the places a file is used, by name (issue 932)', () => {
+  const page = {
+    kind: 'page',
+    id: 'p1',
+    name: 'Home',
+    site: 'Juniper Row Journal',
+    siteId: 's2',
+  } as const;
+  const product = {
+    kind: 'product',
+    id: 'x1',
+    name: 'Ash Overshirt',
+    site: null,
+    siteId: null,
+  } as const;
+  const layout = {
+    kind: 'layout',
+    id: 'l1',
+    name: 'Main',
+    site: 'Lookbook',
+    siteId: 's3',
+  } as const;
+
+  it('says whose site a page is on', () => {
+    expect(placeLabel(page)).toBe('Home (site page on Juniper Row Journal)');
   });
 
-  it('says nothing when no page shows it', () => {
-    expect(sitePlacesLine([])).toBeNull();
+  it('opens a product, an article and a page', () => {
+    expect(placeTarget(product)).toEqual({
+      surface: 'commerce.product.detail',
+      params: { id: 'x1' },
+    });
+    expect(placeTarget(page)).toEqual({ surface: 'builder.page', params: { pageId: 'p1' } });
+  });
+
+  it('opens a header and footer in the site editor', () => {
+    expect(placeTarget(layout)).toEqual({ surface: 'builder.layout', params: {} });
+    expect(placeLabel(layout)).toBe('Header and footer “Main” on Lookbook');
   });
 });

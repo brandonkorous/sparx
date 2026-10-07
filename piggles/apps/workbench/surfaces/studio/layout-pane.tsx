@@ -26,6 +26,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { useStudioBinding } from '../../lib/studio/provider';
 import { useJustPublished } from '../../lib/studio/just-published';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { PublishedLine } from './published-line';
 import { useHistoryAction, usePreviewAction } from './open-history';
 import { SaveAsPiece } from './save-as-piece';
 import { useLayoutDocument, type LayoutDocumentState } from './use-layout-document';
@@ -84,6 +85,7 @@ function LayoutPaneBody({
       attention={doc.unpublished}
       statusBar={
         <LayoutStatus
+          ctx={ctx}
           dirty={unsaved}
           stored={state.stored}
           unpublished={doc.unpublished}
@@ -134,12 +136,14 @@ function SaveLayout({ state, unsaved }: { state: LayoutDocumentState; unsaved: b
 
 /** What is true right now, in the order someone worries about it. */
 function LayoutStatus({
+  ctx,
   dirty,
   stored,
   unpublished,
   publishedAt,
   error,
 }: {
+  ctx: SurfaceContext;
   dirty: boolean;
   stored: boolean;
   unpublished: boolean;
@@ -157,7 +161,5 @@ function LayoutStatus({
     return <span>Saved, but never published: visitors still see the starter header.</span>;
   }
   if (unpublished) return <span>Saved. Visitors still see the last published header.</span>;
-  if (catchingUp)
-    return <span>Published. Your site shows it in a few seconds, a few minutes at most.</span>;
-  return <span>Saved and live.</span>;
+  return <PublishedLine what="The header and footer" ctx={ctx} catchingUp={catchingUp} />;
 }

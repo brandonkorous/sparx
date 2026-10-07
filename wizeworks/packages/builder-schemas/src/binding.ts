@@ -766,7 +766,11 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('dueDate', 'Due date'),
       text('daysUntilDue', 'Days until due'),
       text('overdueDays', 'Days overdue'),
-      text('payUrl', 'Pay link'),
+      // The invoice itself, on the customer's account: only a trade account has
+      // one, so it is empty for anyone else. `payUrl` is kept resolving for an
+      // email a business wrote with it, and is not offered: nothing on the site
+      // takes a payment there (sparx persona issue 144).
+      text('viewUrl', 'Invoice link'),
       lineItems(),
     ],
   },

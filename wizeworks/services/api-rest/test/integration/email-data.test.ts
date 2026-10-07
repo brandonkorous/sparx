@@ -16,7 +16,7 @@ import {
   getDefaultEmailTemplate,
   type BuilderNode,
 } from '@wizeworks/builder-schemas';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { resolveSilicaEmailData, applyEntitySnapshot } from '../../src/lib/email-data.js';
 import { createTestTenant, dropTestTenant, type TestTenant } from '../helpers.js';
@@ -131,6 +131,115 @@ describe('resolveSilicaEmailData — invoice template', () => {
       quantity: '2',
       lineTotal: '$600.00',
     });
+  });
+
+  // Sparx persona issue 144. A reminder's button opens the invoice itself: the
+  // trade account's page for it, or nothing for anyone else (there is no page).
+  it('links a trade invoice to its own page, and a retail one to nothing', async () => {
+    const ctx = { tenantId: fixture.tenantId };
+    const tpl = getDefaultEmailTemplate('invoicing-overdue')!;
+    const ref = { email: 'ar@buyer.test', customerId, billingDocumentId };
+    const retail = (await resolveSilicaEmailData(ctx, tpl.doc, ref)).invoice as Record<
+      string,
+      unknown
+    >;
+    expect(retail.viewUrl).toBe('');
+
+    const companyId = await withTenant(ctx, async (tx) => {
+      const company = await tx.company.create({
+        data: { tenantId: ctx.tenantId, companyName: 'Wasatch Front Utility Contractors, LLC' },
+        select: { id: true },
+      });
+      await tx.billingDocument.update({
+        where: { id: billingDocumentId },
+        data: { companyId: company.id },
+      });
+      return company.id;
+    });
+    try {
+      const trade = (await resolveSilicaEmailData(ctx, tpl.doc, ref)).invoice as Record<
+        string,
+        unknown
+      >;
+      expect(String(trade.viewUrl)).toMatch(
+        new RegExp(`/account/b2b/${companyId}/documents/${billingDocumentId}$`)
+      );
+    } finally {
+      await withTenant(ctx, (tx) =>
+        tx.billingDocument.update({ where: { id: billingDocumentId }, data: { companyId: null } })
+      );
+    }
+  });
+
+  // Sparx persona issue 143. The frame links the business name to `{{site.url}}`
+  // on every send; the overdue notice's body never names the site, so nothing
+  // looked it up and the footer read "Gillett Diesel Service ()".
+  it('looks up the site for the frame even when the body never names it', async () => {
+    const tpl = getDefaultEmailTemplate('invoicing-overdue')!;
+    expect(JSON.stringify(tpl.doc)).not.toContain('{{site.');
+    const data = await resolveSilicaEmailData({ tenantId: fixture.tenantId }, tpl.doc, {
+      email: 'ar@buyer.test',
+      customerId,
+      billingDocumentId,
+    });
+    const site = data.site as { url?: string } | undefined;
+    expect(site?.url ?? '').toMatch(/^https?:\/\//);
+  });
+
+  // Sparx persona issue 141. The rule that sends "due in 3 days" counts calendar
+  // days on the business's clock; the email counted 24-hour periods to noon UTC
+  // on the due day. For a Denver shop at 6pm on Oct 31 (00:00 UTC Nov 1), a bill
+  // due Nov 3 was picked as 3 days out and described as "due in 2 days".
+  it('counts the days the way the rule that sent it did, on the business clock', async () => {
+    const ctx = { tenantId: fixture.tenantId };
+    const dueNov3 = new Date('2026-11-03T12:00:00.000Z');
+    const original = await withTenant(ctx, async (tx) => {
+      const before = await tx.billingDocument.findUniqueOrThrow({
+        where: { id: billingDocumentId },
+        select: { dueAt: true },
+      });
+      await tx.billingDocument.update({
+        where: { id: billingDocumentId },
+        data: { dueAt: dueNov3 },
+      });
+      await tx.tenantBusiness.upsert({
+        where: { tenantId: ctx.tenantId },
+        create: { tenantId: ctx.tenantId, timezone: 'America/Denver' },
+        update: { timezone: 'America/Denver' },
+      });
+      return before.dueAt;
+    });
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      const tpl = getDefaultEmailTemplate('b2b-invoice-due')!;
+      const invoiceAt = async (iso: string) => {
+        vi.setSystemTime(new Date(iso));
+        const data = await resolveSilicaEmailData(ctx, tpl.doc, {
+          email: 'ar@buyer.test',
+          customerId,
+          billingDocumentId,
+        });
+        return data.invoice as Record<string, unknown>;
+      };
+      // 6:00pm Oct 31 in Denver: the moment the daily rule runs.
+      expect((await invoiceAt('2026-11-01T00:00:00Z')).daysUntilDue).toBe('3');
+      // 9:00am Nov 4 in Denver: one day late, though not 24 hours past noon UTC.
+      const late = await invoiceAt('2026-11-04T16:00:00Z');
+      expect(late.daysUntilDue).toBe('-1');
+      expect(late.overdueDays).toBe('1');
+    } finally {
+      vi.useRealTimers();
+      await withTenant(ctx, async (tx) => {
+        await tx.billingDocument.update({
+          where: { id: billingDocumentId },
+          data: { dueAt: original },
+        });
+        await tx.tenantBusiness.update({
+          where: { tenantId: ctx.tenantId },
+          data: { timezone: null },
+        });
+      });
+    }
   });
 
   it('hydrates customer + tenant when a tree references those tokens', async () => {

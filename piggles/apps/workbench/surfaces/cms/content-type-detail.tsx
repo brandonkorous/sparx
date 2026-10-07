@@ -212,11 +212,11 @@ function createPayload(draft: TypeDraft): CreateTypeInput {
 
 /** The first thing stopping a save, in plain words, or null when it is ready. */
 function metaProblem(draft: TypeDraft, forCreate: boolean): string | null {
-  if (draft.name.trim() === '') return 'Give this type a name.';
+  if (draft.name.trim() === '') return 'Give this kind a name.';
   if (draft.pluralName.trim() === '') return 'Fill in the plural name.';
   if (forCreate) {
     const key = draft.key.trim();
-    if (key === '') return 'Give this type a short id.';
+    if (key === '') return 'Give this kind a short id.';
     if (!TYPE_KEY_RE.test(key)) {
       return 'The id must start with a lowercase letter and use only lowercase letters, numbers and underscores.';
     }
@@ -520,7 +520,7 @@ function EditType({
               equal weight to the definition above it. */}
           <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
             <div className="flex min-w-0 flex-col">
-              <Text className="font-medium">Delete this type</Text>
+              <Text className="font-medium">Delete this kind</Text>
               <Text className="text-sm">{deleteTypeRowNote(counts, type.key)}</Text>
             </div>
             <Button
@@ -662,7 +662,7 @@ function MetaForm({
   };
 
   return (
-    <FormSection title="About this type" description="What you call it and where it lives.">
+    <FormSection title="About this kind" description="What you call it and where it lives.">
       <div className="grid gap-4 @lg:grid-cols-2">
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -760,7 +760,7 @@ function MetaForm({
           }
         />
         <FieldDescription>
-          A small symbol shown next to this type in menus, such as an emoji. Optional.
+          A small symbol shown next to this kind in menus, such as an emoji. Optional.
         </FieldDescription>
       </Field>
 

@@ -247,21 +247,29 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
           onChange={onChange}
         />
       ) : (
-        <NativeSelect
-          color="module"
-          value={asString(value)}
-          disabled={disabled}
-          onChange={(event) => {
-            onChange(event.target.value || undefined);
-          }}
-        >
-          <option value="">Choose…</option>
-          {field.options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </NativeSelect>
+        // Inside FieldControl like every other control here, which is what ties
+        // it to the label above. Bare, a "Section" list was a dropdown with no
+        // name to a screen reader or to anyone driving the page by its labels
+        // (persona issue 942's run).
+        <FieldControl
+          render={
+            <NativeSelect
+              color="module"
+              value={asString(value)}
+              disabled={disabled}
+              onChange={(event) => {
+                onChange(event.target.value || undefined);
+              }}
+            >
+              <option value="">Choose…</option>
+              {field.options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
+          }
+        />
       );
 
     case 'reference':
@@ -440,21 +448,25 @@ function ReferenceField({
   }
 
   return (
-    <NativeSelect
-      color="module"
-      value={asString(value)}
-      disabled={disabled}
-      onChange={(event) => {
-        onChange(event.target.value || undefined);
-      }}
-    >
-      <option value="">Choose…</option>
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </NativeSelect>
+    <FieldControl
+      render={
+        <NativeSelect
+          color="module"
+          value={asString(value)}
+          disabled={disabled}
+          onChange={(event) => {
+            onChange(event.target.value || undefined);
+          }}
+        >
+          <option value="">Choose…</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </NativeSelect>
+      }
+    />
   );
 }
 

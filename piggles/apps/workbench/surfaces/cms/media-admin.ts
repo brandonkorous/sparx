@@ -117,9 +117,9 @@ interface MediaAssetWire {
     other_records?: number;
   } | null;
   original_url: string | null;
-  /** Which site pages and headers and footers show it, by name. Only on the
+  /** Which products, articles and site pages show it, by name. Only on the
    *  single read (issue 932). */
-  used_on_site?: SitePlace[];
+  used_by?: UsePlace[];
   variants: MediaVariantWire[];
   created_at: string;
   updated_at: string;
@@ -173,32 +173,51 @@ export interface MediaAsset {
    *  asset ids in plain JSON with no index beside them. */
   usage: AssetUsageBreakdown | null;
   /** Null where it was not asked for (the list). */
-  usedOnSite: SitePlace[] | null;
+  usedBy: UsePlace[] | null;
   createdAt: string;
   updatedAt: string;
 }
 
 /** Where an asset is used, by kind — the same six api-rest counts. */
-/** A site page or header and footer that shows a file, and whose site it is. */
-export interface SitePlace {
-  kind: 'page' | 'layout';
+/** One place that shows a file, named, so the file's page can open it. */
+export interface UsePlace {
+  kind: 'product' | 'entry' | 'page' | 'layout';
+  id: string;
   name: string;
-  site: string;
+  /** The site a page or a header and footer belongs to; null otherwise. */
+  site: string | null;
+  /** That site's id, to switch to it before opening the page. */
+  siteId: string | null;
 }
 
-/** "Home and About on Juniper Row; the header and footer on Lookbook". The kind
- *  is said only for a header and footer, because a page is what a person
- *  expects a picture to be on. */
-export function sitePlacesLine(places: readonly SitePlace[]): string | null {
-  if (places.length === 0) return null;
-  const bySite = new Map<string, string[]>();
-  for (const place of places) {
-    const label = place.kind === 'layout' ? `the header and footer “${place.name}”` : place.name;
-    bySite.set(place.site, [...(bySite.get(place.site) ?? []), label]);
+/** How a place reads in the list: what it is, and for a page, whose site. A
+ *  business with seven sites has seven pages called Home (issue 932). */
+export function placeLabel(place: UsePlace): string {
+  switch (place.kind) {
+    case 'product':
+      return `${place.name} (product)`;
+    case 'entry':
+      return `${place.name} (page or article)`;
+    case 'page':
+      return `${place.name} (site page on ${place.site ?? 'your site'})`;
+    case 'layout':
+      return `Header and footer “${place.name}” on ${place.site ?? 'your site'}`;
   }
-  const joinAnd = (parts: string[]) =>
-    parts.length <= 1 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)!}`;
-  return [...bySite].map(([site, names]) => `${joinAnd(names)} on ${site}`).join('; ');
+}
+
+/** The pane that opens a place. A page or a header and footer on another site
+ *  is opened after switching to that site (see media-used-by). */
+export function placeTarget(place: UsePlace): { surface: string; params: Record<string, string> } {
+  switch (place.kind) {
+    case 'product':
+      return { surface: 'commerce.product.detail', params: { id: place.id } };
+    case 'entry':
+      return { surface: 'cms.content.detail', params: { id: place.id } };
+    case 'page':
+      return { surface: 'builder.page', params: { pageId: place.id } };
+    case 'layout':
+      return { surface: 'builder.layout', params: {} };
+  }
 }
 
 export interface AssetUsageBreakdown {
@@ -268,7 +287,7 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
           otherRecords: wire.usage_breakdown.other_records ?? 0,
         }
       : null,
-    usedOnSite: wire.used_on_site ?? null,
+    usedBy: wire.used_by ?? null,
     createdAt: wire.created_at,
     updatedAt: wire.updated_at,
   };
@@ -284,6 +303,7 @@ export interface MediaListQuery {
   status: 'all' | 'ready' | 'uploading' | 'failed';
   /** Whether anything uses the file (issue 932). */
   usage: 'all' | 'used' | 'unused';
+  sort: 'recent' | 'oldest' | 'name' | 'largest';
   take: number;
   skip: number;
 }
@@ -311,6 +331,7 @@ export function useMediaAssetsList(query: MediaListQuery) {
           : {}),
         ...(query.status !== 'all' ? { status: query.status } : {}),
         ...(query.usage !== 'all' ? { usage: query.usage } : {}),
+        ...(query.sort !== 'recent' ? { sort: query.sort } : {}),
         take: query.take,
         skip: query.skip,
       });

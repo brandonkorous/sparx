@@ -383,6 +383,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     dueDate: 'Jun 30, 2026',
     daysUntilDue: '5',
     overdueDays: '0',
+    viewUrl: '#',
     payUrl: '#',
     items: [
       {

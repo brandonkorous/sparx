@@ -149,7 +149,7 @@ export const xeroAdapter: AccountingAdapter = {
   // and the section's own heading already says "the export above". Six rows sent
   // a reader the other way. "On this screen" stays true wherever it is placed.
   unavailableReason() {
-    return 'Direct Xero sync is not switched on for this installation. The spreadsheet export on this screen already imports into Xero today.';
+    return 'Direct Xero sync is not switched on for this installation. Choose Xero under Laid out for, and the file from this screen imports into Xero today.';
   },
 
   authorizeUrl({ state, redirectUri }) {

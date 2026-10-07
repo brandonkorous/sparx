@@ -57,8 +57,14 @@ class CapturingPublisher implements Publisher {
 }
 
 const noop = (): void => undefined;
+// The tenants this file made: its ticks serve only these (issue 142).
+const ourTenants = new Set<string>();
 function makeDeps(publisher: Publisher): EngineDeps {
-  return { publisher, logger: { debug: noop, info: noop, warn: noop, error: noop } };
+  return {
+    publisher,
+    logger: { debug: noop, info: noop, warn: noop, error: noop },
+    onlyTenants: ourTenants,
+  };
 }
 
 const createdTenants: string[] = [];
@@ -85,6 +91,7 @@ async function seedAccountWithInvoice(opts: {
     },
     select: { id: true },
   });
+  ourTenants.add(tenant.id);
   createdTenants.push(tenant.id);
 
   // The issuing business — every billing document is issued by a site (docs/131

@@ -23,7 +23,7 @@ import { mediaSiteVisibilityWhere, resolveListScope } from '../../../lib/propert
 import { conflict, notFound } from '@wizeworks/api-core/errors';
 import {
   countAssetUsage,
-  sitePlacesUsingAsset,
+  placesUsingAsset,
   countOneAssetUsage,
   describeUsage,
   type AssetUsage,
@@ -72,6 +72,10 @@ const ListQuery = z.object({
   // matching set is counted whole and paged afterwards (issue 932). A library
   // runs to thousands of files at most, and the count is grouped queries.
   usage: z.enum(['used', 'unused']).optional(),
+  // The library's order. Absent is recently changed, as it always was; the rest
+  // answer "what did I add first", "where is the one called…" and "what is
+  // taking the room" (issue 932).
+  sort: z.enum(['recent', 'oldest', 'name', 'largest']).optional(),
   // `limit` is a legacy alias for `take`, still used by the asset-picker
   // modal's single bulk fetch — offset pagination (`take`/`skip` + `total`)
   // is what the media library list page uses, matching every other list.
@@ -258,12 +262,21 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
       ...(scope ? mediaSiteVisibilityWhere(scope) : {}),
     };
 
+    const orderBy: Prisma.MediaAssetOrderByWithRelationInput[] =
+      q.sort === 'oldest'
+        ? [{ createdAt: 'asc' }, { id: 'asc' }]
+        : q.sort === 'name'
+          ? [{ originalFilename: 'asc' }, { id: 'asc' }]
+          : q.sort === 'largest'
+            ? [{ byteSize: 'desc' }, { id: 'desc' }]
+            : [{ updatedAt: 'desc' }, { id: 'desc' }];
+
     const [page, total] = await withRequestTenant(request, async (tx) => {
       if (q.usage) {
         // Every match, in the list's own order, then narrowed by its count.
         const all = await tx.mediaAsset.findMany({
           where,
-          orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+          orderBy,
           select: { id: true },
         });
         const counts = await countAssetUsage(
@@ -281,7 +294,7 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
       return Promise.all([
         tx.mediaAsset.findMany({
           where,
-          orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+          orderBy,
           take,
           skip,
         }),
@@ -348,13 +361,13 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
         asset: row,
         variants: vs,
         usage: await countOneAssetUsage(tx, id),
-        places: await sitePlacesUsingAsset(tx, id),
+        places: await placesUsingAsset(tx, id),
       };
     });
 
-    // Which pages, by name, on the single read only: the list counts, and a
-    // person about to delete a file opens it first (issue 932).
-    return ok({ ...serializeAsset(asset, variants, usage), used_on_site: places });
+    // Which products, articles and pages, by name, on the single read only: the
+    // list counts, and a person about to delete a file opens it first (issue 932).
+    return ok({ ...serializeAsset(asset, variants, usage), used_by: places });
   });
 
   // ──────────────────────────────────────────────────────────────────────

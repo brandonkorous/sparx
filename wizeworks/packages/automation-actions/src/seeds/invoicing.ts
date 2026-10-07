@@ -1,11 +1,18 @@
 // Invoicing system-automation seeds (docs/90 §3b). The Managed defaults that ship
 // on Invoicing activation: a task when a user-authored document is approved, the
-// dunning ladder for user invoices — a friendly 3-day reminder and three
-// overdue notices (7 / 14 / 30 days) — and a payment receipt. The dunning ladder
-// + approval task are partitioned to USER workflows (`workflowSlug !=
-// 'net-terms-ar'`, the B2B AR substrate) so they never double up with the B2B
-// credit-hold escalation, which owns net-terms AR dunning; the receipt fires for
-// every workflow, B2B AR included.
+// dunning ladder — a friendly 3-day reminder and three overdue notices (7 / 14 /
+// 30 days) — and a payment receipt.
+//
+// The 3-day reminder and the approval task are for USER workflows only
+// (`workflowSlug != 'net-terms-ar'`): a wholesale invoice on terms has its own
+// "due soon" email (`B2B_INVOICE_DUE_NUDGE`), and is not a document to advance by
+// hand. The overdue notices and the receipt are for EVERY invoice, wholesale on
+// terms included. The notices used to skip wholesale invoices too, "so they never
+// double up with the B2B credit-hold escalation, which owns net-terms AR dunning".
+// That escalation changes the ACCOUNT's standing and tells the business; it has
+// never written a word to the buyer. So a fleet 40 days late on account was never
+// reminded at all, under a pricing page promising "Automatic overdue reminders"
+// (sparx persona issue 139).
 //
 // Each dunning seed is a daily scan over the `billing_document` scanner; the
 // exact-day predicate (`daysUntilDue == 3`, `overdueDays == 7/14/30`) fires it once
@@ -21,7 +28,8 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 
 import type { ConditionGroup } from '@wizeworks/automation-schemas';
 
-// USER-workflow guard shared by every dunning seed — excludes the B2B AR ledger.
+// USER-workflow guard for the 3-day reminder: excludes the B2B AR ledger, which
+// has its own. Never on an overdue notice (issue 139, above).
 const USER_INVOICE = {
   field: 'invoice.workflowSlug',
   operator: 'neq',
@@ -51,7 +59,13 @@ const HAS_EMAIL = { field: 'customer.email', operator: 'is_set' } as const;
  */
 const WAS_SENT = { field: 'invoice.sentAt', operator: 'is_set' } as const;
 
-/** Build the predicate for a dunning step keyed on an exact overdue-day window. */
+/**
+ * Build the predicate for a dunning step keyed on an exact overdue-day window.
+ *
+ * `overdue` is an open balance too. The wholesale ladder ("Chase overdue
+ * wholesale invoices") marks a wholesale invoice `overdue` the day it goes late,
+ * so a list of only `unpaid` and `partial` would miss every one of them by day 7.
+ */
 function overduePredicate(overdueDays: number): { entity: string; where: ConditionGroup } {
   return {
     entity: 'billing_document',
@@ -59,8 +73,7 @@ function overduePredicate(overdueDays: number): { entity: string; where: Conditi
       logic: 'AND',
       conditions: [
         { field: 'invoice.overdueDays', operator: 'eq', value: overdueDays },
-        { field: 'invoice.status', operator: 'in', value: ['unpaid', 'partial'] },
-        USER_INVOICE,
+        { field: 'invoice.status', operator: 'in', value: ['unpaid', 'partial', 'overdue'] },
         HAS_EMAIL,
         WAS_SENT,
       ],

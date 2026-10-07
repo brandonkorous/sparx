@@ -9,12 +9,12 @@
 // line where it doesn't, and carries its own state badge; a table would flatten
 // all of that into cells and invent columns to justify themselves.
 //
-// NO free-text search box here, deliberately. The catalog endpoint has no query
-// parameter, so a search could only filter the page already loaded — which would
-// answer "is there a restaurant design?" with "not on this page", the exact
-// half-truth to avoid. The catalog is a small curated set, so the honest filter
-// is the server-backed one below (everything vs. what this site has installed),
-// with real pages under it.
+// A SEARCH AND A KIND, both on the server (issue 934). This said "no free-text
+// search box here, deliberately", because the catalog endpoint took no query and
+// a search over the loaded page would answer "is there a restaurant design?"
+// with "not on this page". The reasoning was right; the conclusion went stale at
+// 170 designs and seven pages. The endpoint now takes `q` and `vertical`, so the
+// count under a search is the whole answer.
 //
 // The "Installed" filter reflects the SITE you are working in — a blueprint
 // installs per-site, and this list reads the active site's install rows.
@@ -23,7 +23,7 @@ import { useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, Filter, FilterItem, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Heading, Text, SearchInput } from '@wizeworks/silicaui-react';
 import { faTableLayout } from '@fortawesome/pro-solid-svg-icons';
 
 import { Icon } from '@piggles/ui';
@@ -35,6 +35,7 @@ import { useBlueprints, type Blueprint } from './blueprints-data';
 import { contentsSummary, installState, verticalLabel } from './blueprints-words';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { useSiteIsDark } from '../../lib/billing/site-live';
+import { useActiveSitePublished } from './blueprint-detail-state';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -55,7 +56,10 @@ function BlueprintCard({
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const siteIsDark = useSiteIsDark();
-  const state = blueprint.install ? installState(blueprint.install.status, siteIsDark) : null;
+  const sitePublished = useActiveSitePublished();
+  const state = blueprint.install
+    ? installState(blueprint.install.status, siteIsDark, sitePublished)
+    : null;
   const updateAvailable = blueprint.install?.update_available ?? false;
   const vertical = verticalLabel(blueprint.vertical);
   const summary = contentsSummary(blueprint.contents);
@@ -118,8 +122,21 @@ function BlueprintCard({
 
 type FilterValue = 'all' | 'installed';
 
+/** What a design is set up to do. Shorter than the card's own line ("For
+ *  selling things"), because the bar's dropdown is a fixed width and cut the
+ *  longer words off mid-word. */
+const VERTICAL_OPTIONS = [
+  { value: 'all', label: 'All kinds' },
+  { value: 'retail', label: 'Selling things' },
+  { value: 'services', label: 'Taking bookings' },
+  { value: 'content', label: 'Publishing' },
+  { value: 'b2b', label: 'Selling wholesale' },
+];
+
 export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [filter, setFilter] = useState<FilterValue>('all');
+  const [search, setSearch] = useState('');
+  const [vertical, setVertical] = useState('all');
   const [pageSize, setPageSize] = useState<PageSize>(25);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState<number>(25);
@@ -129,9 +146,12 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useBlueprints({
     installedOnly,
+    q: search.trim(),
+    vertical,
     take,
     skip,
   });
+  const narrowed = search.trim() !== '' || vertical !== 'all';
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -156,21 +176,44 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </Text>
           ) : null
         }
-        controls={
-          <Filter
-            color="module"
-            value={filter}
+        search={
+          <SearchInput
+            size="sm"
+            aria-label="Search the designs"
+            placeholder="Find a design…"
+            value={search}
             onValueChange={(next) => {
-              setFilter((next as FilterValue | null) ?? 'all');
+              setSearch(next);
               resetWindow();
             }}
-            showReset={false}
-            aria-label="Which designs to show"
-          >
-            <FilterItem value="all">All designs</FilterItem>
-            <FilterItem value="installed">Added to this site</FilterItem>
-          </Filter>
+          />
         }
+        filters={[
+          {
+            label: 'Which designs to show',
+            key: 'installed',
+            value: filter,
+            onValueChange: (next) => {
+              setFilter(next as FilterValue);
+              resetWindow();
+            },
+            options: [
+              { value: 'all', label: 'All designs' },
+              { value: 'installed', label: 'Added to this site' },
+            ],
+          },
+          {
+            label: 'What it is for',
+            key: 'vertical',
+            present: 'select',
+            value: vertical,
+            onValueChange: (next) => {
+              setVertical(next);
+              resetWindow();
+            },
+            options: VERTICAL_OPTIONS,
+          },
+        ]}
         views={{
           target: '/builder/blueprints',
           params: { installed: installedOnly ? '1' : '' },
@@ -207,6 +250,32 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : isLoading ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneWaiting />
+          </Card>
+        ) : rows.length === 0 && narrowed ? (
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneEmpty
+              module={MODULE}
+              icon={<Icon glyph={faTableLayout} className="size-6" aria-hidden />}
+              title="No design matches that"
+              description={
+                installedOnly
+                  ? 'Nothing added to this site matches. Clear the search to see what is, or switch to All designs.'
+                  : 'Try fewer words, or another kind of business.'
+              }
+              actions={
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={() => {
+                    setSearch('');
+                    setVertical('all');
+                    resetWindow();
+                  }}
+                >
+                  Clear the search
+                </Button>
+              }
+            />
           </Card>
         ) : rows.length === 0 ? (
           <Card className="min-h-0 flex-1 items-center justify-center">

@@ -10,6 +10,7 @@ export {
 export {
   composeSendDocument,
   buildEmailFrame,
+  EMAIL_FRAME_TOKENS,
   type EmailCompliance,
   type ComposeOptions,
   type FooterLink,

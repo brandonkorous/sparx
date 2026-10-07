@@ -6,7 +6,7 @@
 //   PUT    /v1/tenant/modules                      → bulk-set { slug: enabled } (owner/admin)
 //   PATCH  /v1/tenant/modules/:slug                → toggle enabled (owner/admin)
 //   POST   /v1/tenant/modules/reconcile            → all-on, brands that include them (owner/admin)
-//   GET    /v1/tenant/rail                         → { apps } — the rail preference
+//   GET    /v1/tenant/rail                         → { apps, does } — the rail preference
 //   PUT    /v1/tenant/rail                         → set it (owner/admin)
 //   GET    /v1/tenant/onboarding                   → raw state + the brand's golden key
 //   PATCH  /v1/tenant/onboarding                   → patch onboarding state
@@ -326,6 +326,24 @@ const RailPut = z.object({
 
 /** The rail preference, or `null` when this business has never set one — which
  *  the client reads as "use your defaults", never as "an empty rail". */
+/**
+ * What the business said it does at signup ("I need a website", "I sell things"
+ * …), as the groups it ticked. Null when it was never asked.
+ *
+ * Not the rail: the rail starts with every default app on whatever was ticked
+ * (issue #011), so it cannot tell a journal that never sells from a shop. The
+ * Home checklist asks this instead, and stopped telling a journal to "Add the
+ * first thing you sell" (Piggles persona issue 941).
+ */
+function readRailAnswer(settings: unknown): string[] | null {
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return null;
+  const piggles = (settings as Record<string, unknown>).piggles;
+  if (!piggles || typeof piggles !== 'object' || Array.isArray(piggles)) return null;
+  const groups = (piggles as Record<string, unknown>).railGroups;
+  if (!Array.isArray(groups)) return null;
+  return groups.filter((group): group is string => typeof group === 'string');
+}
+
 function readRailApps(settings: unknown): string[] | null {
   if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return null;
   const rail = (settings as Record<string, unknown>).rail;
@@ -867,7 +885,10 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       where: { id: auth.tenantId },
       select: { settings: true },
     });
-    return ok({ apps: readRailApps(row?.settings ?? null) });
+    return ok({
+      apps: readRailApps(row?.settings ?? null),
+      does: readRailAnswer(row?.settings ?? null),
+    });
   });
 
   // Owner/admin, mirroring the module routes: what the rail carries is a

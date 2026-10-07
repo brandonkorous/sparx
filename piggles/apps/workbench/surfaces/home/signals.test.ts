@@ -6,7 +6,7 @@ import { FILTERS, parseOrderFilter } from '../commerce/orders-list-filters';
 import { parseLevel } from '../inventory/stock-list-level';
 import { parseLate } from '../invoicing/invoice-list-filters';
 import { parseBookingStatus } from '../scheduling/bookings-list-filters';
-import { SIGNALS } from './signals';
+import { SIGNALS, actionsForAnswer, reassuresFor } from './signals';
 
 /**
  * "4 ORDERS ARE WAITING TO GO OUT" OPENED EVERY ORDER THE SHOP HAD TAKEN.
@@ -130,3 +130,32 @@ describe('a sentence on Home opens the screen showing its number', () => {
 function sortKeys(query: Query): Query {
   return Object.fromEntries(Object.entries(query).sort(([a], [b]) => a.localeCompare(b)));
 }
+
+describe('Start something follows what the business said it does (issue 941)', () => {
+  it('offers a journal writing and its site, never a product or an invoice', () => {
+    const labels = actionsForAnswer(['web', 'people']).map((action) => action.label);
+    expect(labels).toEqual(['Write something', 'Add a customer', 'Work on my site']);
+  });
+
+  it('keeps the four it always had for a business that never answered', () => {
+    const labels = actionsForAnswer(null).map((action) => action.label);
+    expect(labels).toEqual([
+      'Add a product',
+      'Send an invoice',
+      'Add a customer',
+      'Work on my site',
+    ]);
+  });
+});
+
+describe('the all-clear sentence follows what the business said it does (issue 941)', () => {
+  it('spares a journal the stock and order reassurance', () => {
+    expect(reassuresFor('inventory', ['web', 'people'])).toBe(false);
+    expect(reassuresFor('commerce', ['web', 'people'])).toBe(false);
+    expect(reassuresFor('scheduling', ['web', 'people'])).toBe(true);
+  });
+
+  it('says all of it to a business that never answered', () => {
+    expect(reassuresFor('inventory', null)).toBe(true);
+  });
+});

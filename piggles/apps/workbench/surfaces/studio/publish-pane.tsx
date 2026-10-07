@@ -27,9 +27,10 @@ import { PublishChecks } from './publish-checks';
 import { PublishGaps } from './publish-gaps';
 import { PublishReleases } from './publish-releases';
 import { waitingLine } from './publish-words';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useSiteIsDark } from '../../lib/billing/site-live';
 
-export function PublishPaneSurface() {
+export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   const state = usePublishState();
   const publish = usePublishSite();
   const check = useSiteCheck();
@@ -70,7 +71,14 @@ export function PublishPaneSurface() {
 
   return (
     <div className="bg-base-200 flex h-full min-h-0 flex-col gap-4 overflow-auto p-4 [&>*]:shrink-0">
-      <Waiting state={state.data ?? null} publishing={publish.isPending} onPublish={goLive} />
+      <Waiting
+        state={state.data ?? null}
+        publishing={publish.isPending}
+        onPublish={goLive}
+        onOpenPage={(pageId) => {
+          ctx.open('builder.page', { pageId });
+        }}
+      />
       <PublishGaps state={state.data ?? null} />
       <PublishChecks report={report} running={check.isPending} onRun={runCheck} />
       <PublishReleases />
@@ -83,11 +91,14 @@ function Waiting({
   state,
   publishing,
   onPublish,
+  onOpenPage,
 }: {
   state: PublishState | null;
   publishing: boolean;
   onPublish: () => void;
+  onOpenPage: (pageId: string) => void;
 }) {
+  const pages = state?.unpublishedPageList ?? [];
   // Every sentence on this pane is written about VISITORS, and a suspended site
   // serves an overlay rather than its pages — so there are none to speak of.
   const siteIsDark = useSiteIsDark();
@@ -102,6 +113,33 @@ function Waiting({
           {publishing ? 'Publishing…' : 'Publish everything'}
         </Button>
       </div>
+      {/* WHICH pages, not only how many. "13 pages have changes" went to an owner
+          who had edited five, and Publish everything was the only thing on offer:
+          publish all thirteen unseen, or none (persona issue 939). Each opens, so
+          she can look before she publishes. */}
+      {pages.length > 0 ? (
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {pages.map((page) => (
+            <li key={page.id}>
+              <Button
+                size="sm"
+                variant="soft"
+                color="module"
+                onClick={() => {
+                  onOpenPage(page.id);
+                }}
+              >
+                {page.name}
+                {page.slug ? (
+                  <span className="ms-1 font-mono">
+                    {page.slug.startsWith('/') ? page.slug : `/${page.slug}`}
+                  </span>
+                ) : null}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {state && !state.hasUnpublished ? (
         <Alert color="success" variant="soft" className="mt-3">
           There is nothing waiting. Anything you change from here will need publishing again.

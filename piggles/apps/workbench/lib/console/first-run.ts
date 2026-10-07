@@ -31,6 +31,8 @@
 import { useQuery } from '@wizeworks/query';
 import { api } from '@/lib/api/client';
 import { useReachableModules } from '@/lib/surfaces/use-visible-nav';
+import { stepsForAnswer, type FirstRunKey } from './first-run-steps';
+import { useRailPreference } from './rail';
 
 /** What we know about one first-run job. */
 export type StepState =
@@ -43,11 +45,12 @@ export type StepState =
   | 'done'
   | 'todo';
 
-export type FirstRunKey = 'product' | 'customer' | 'invoice';
+export type { FirstRunKey } from './first-run-steps';
 
 interface Source {
   module: string;
-  path: string;
+  /** Which of the business's own records to count. */
+  kind: FirstRunKey;
   /**
    * The query key, deliberately nested UNDER the key root each list already
    * invalidates when something is created.
@@ -70,42 +73,53 @@ interface Source {
   key: readonly string[];
 }
 
-// The same endpoints the real list screens use, so a tick here and a row over
-// there can never disagree. `take: 1` because only `total` is wanted.
+// One endpoint for all three, and it is NOT the list's.
 //
-// TWO OF THESE THREE WERE WRONG and the checklist could not say so. They read
-// `/v1/products` and `/v1/customers`; the console's own list panes call
-// `/v1/commerce/products` (products-data.ts) and `/v1/crm/customers`
-// (customers-data.ts). The requests failed, `useStep` turned the failure into
-// `unknown`, and `unknown` drew the same empty ring as `todo` — so a business
-// that had just added its first product was told, in a panel about first
-// products, that it had not added one. Check any new path against the LIST that
-// owns it, never against the shape of its neighbours.
+// Each step used to read the list screen's own `total`, so a tick here and a
+// row over there could never disagree. Then signup started loading a practice
+// pack, and the list totals were a hundred products, seven customers and eight
+// invoices on a business three minutes old: every step read "done", `finished`
+// went true, and the checklist retired itself before the owner had seen it
+// (persona issue 935). A practice product is not the first thing she sells.
+//
+// `/v1/sample-data/own` counts what the business made itself, by the same
+// markers Clear removes practice rows by, and leaves out a design's example
+// products too. The keys stay under each list's root, so creating the first
+// real product still refreshes its tick with no second invalidation.
+//
+// (Two of the old paths were also wrong once, `/v1/products` for
+// `/v1/commerce/products`, and a failed read drew the same ring as "not done".
+// `unknown` has its own marker now; see first-run.tsx.)
+const OWN_PATH = '/v1/sample-data/own';
+
 const SOURCES: Record<FirstRunKey, Source> = {
+  // Under the content list's key, which every publish refreshes.
+  article: {
+    module: 'cms',
+    kind: 'article',
+    key: ['cms', 'content', 'entries', 'list', 'first-run'],
+  },
   product: {
     module: 'commerce',
-    path: '/v1/commerce/products',
+    kind: 'product',
     key: ['commerce', 'products', 'list', 'first-run'],
   },
-  customer: { module: 'crm', path: '/v1/crm/customers', key: ['crm', 'customers', 'first-run'] },
-  invoice: {
-    module: 'invoicing',
-    path: '/v1/invoicing/documents',
-    key: ['invoicing', 'documents', 'first-run'],
-  },
+  customer: { module: 'crm', kind: 'customer', key: ['crm', 'customers', 'first-run'] },
+  invoice: { module: 'invoicing', kind: 'invoice', key: ['invoicing', 'documents', 'first-run'] },
 };
 
-function useStep(key: FirstRunKey): StepState {
+function useStep(key: FirstRunKey, asked: boolean): StepState {
   const source = SOURCES[key];
   const reachable = useReachableModules();
   // `null` means the activation list has not arrived. Treat that as ON so the
   // query runs and the step settles, rather than blinking the whole checklist
-  // out and back on every load.
-  const enabled = reachable === null || reachable.has(source.module);
+  // out and back on every load. A job this business was not asked to do is off
+  // the same way a switched-off app is.
+  const enabled = asked && (reachable === null || reachable.has(source.module));
 
   const result = useQuery({
     queryKey: source.key,
-    queryFn: () => api.list<unknown>(source.path, { take: 1, skip: 0 }),
+    queryFn: () => api.get<{ total: number }>(OWN_PATH, { kind: source.kind }),
     enabled,
     // Long, but NOT Infinity. A first product cannot un-happen, so there is
     // nothing to poll for — but "never re-ask" was how the answer got stuck at
@@ -138,10 +152,13 @@ export interface FirstRun {
  * screen, because hiding it would be the same lie as ticking it.
  */
 export function useFirstRun(): FirstRun {
+  const rail = useRailPreference();
+  const asked = new Set(stepsForAnswer(rail.data?.does));
   const steps: Record<FirstRunKey, StepState> = {
-    product: useStep('product'),
-    customer: useStep('customer'),
-    invoice: useStep('invoice'),
+    article: useStep('article', asked.has('article')),
+    product: useStep('product', asked.has('product')),
+    customer: useStep('customer', asked.has('customer')),
+    invoice: useStep('invoice', asked.has('invoice')),
   };
 
   const applicable = Object.values(steps).filter((state) => state !== 'off');

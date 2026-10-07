@@ -112,7 +112,12 @@ function ExportPanel({
   const countLine = periodCountLine(counts);
   const emptyReason = explainEmptyPeriod(counts, period === 'last_month');
   const descriptor = catalog.find((entry) => entry.provider === provider);
-  const usable = catalog.filter((entry) => entry.availability === 'available');
+  // Every destination with a file layout, whether or not its direct sync is
+  // switched on. This was `availability === 'available'`, which is about SYNC,
+  // so a deployment with no QuickBooks app offered one layout, Spreadsheet,
+  // while six more were built and every row below said the export "already
+  // imports into QuickBooks today" (Piggles persona issue 938).
+  const layouts = catalog.filter((entry) => entry.exportColumns.length > 0);
   const existing = connections.find((connection) => connection.provider === provider);
 
   /**
@@ -130,9 +135,10 @@ function ExportPanel({
    * It belongs on the EXPORT panel rather than in that list because the list is
    * about automatic sending and this is not automatic — it is the settings for
    * the file you are about to download, offered where somebody is standing when
-   * they care about them. Only providers in `usable` can be chosen above, and
-   * `upsertConnection` refuses anything not available, so this cannot offer a
-   * setup that would throw.
+   * they care about them. Any layout in `layouts` can hold codes:
+   * `upsertConnection` keeps a row for every provider in the catalog, because
+   * the row is the FILE's settings as much as the sync's, and signing in is
+   * refused separately where sync is not switched on.
    */
   const setUpCodes = () => {
     if (!descriptor) return;
@@ -257,7 +263,7 @@ function ExportPanel({
                   setProvider(event.target.value);
                 }}
               >
-                {usable.map((entry) => (
+                {layouts.map((entry) => (
                   <option key={entry.provider} value={entry.provider}>
                     {entry.name}
                   </option>
@@ -1009,8 +1015,9 @@ function ConnectionCard({
   onSignIn,
 }: {
   connection: AccountingConnection;
-  /** Whether this provider signs in at all. A spreadsheet layout does not — its
-   *  row exists only to hold the books-closed date and the account mapping. */
+  /** Whether this row signs in here. A spreadsheet layout does not, and neither
+   *  does a sync whose switch is off: either row exists only to hold the
+   *  books-closed date and the account mapping for the file. */
   isOauth: boolean;
   signingIn: boolean;
   onSignIn: () => void;
@@ -1158,7 +1165,6 @@ function ConnectionCard({
               <Button
                 size="sm"
                 variant="outline"
-                color="neutral"
                 loading={signOut.isPending}
                 onClick={() => {
                   void onSignOut();
@@ -1264,43 +1270,23 @@ function ConnectionCard({
 /* ── The pane ───────────────────────────────────────────────────────────────*/
 
 export function AccountingSurface() {
-  const toast = useToast();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccounting();
   const categories = useExpenseCategories();
-  const addRow = useSaveConnection();
   const oauth = useAccountingConnect();
 
   const catalog = data?.catalog ?? [];
   const connections = data?.connections ?? [];
   const rowByProvider = new Map(connections.map((connection) => [connection.provider, connection]));
-  const isOauthProvider = (provider: string) =>
-    catalog.find((entry) => entry.provider === provider)?.connect === 'oauth';
-
-  /** A spreadsheet layout has no sign-in. Its row exists purely to hold the
-   *  books-closed date and the category → account-code mapping, both of which
-   *  the export reads — so setting one up is a single write and nothing else. */
-  const setUpFileLayout = (provider: AccountingProvider) => {
-    addRow.mutate(
-      { provider: provider.provider, displayName: provider.name, syncCadence: 'manual' },
-      {
-        onSuccess: () => {
-          afterPaneChange(() => {
-            toast.add({
-              title: `${provider.name} set up`,
-              description:
-                'Set your books-closed date and map your categories so the export lands in the right accounts.',
-              type: 'success',
-            });
-          });
-        },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not set that up',
-            description: spendErrorMessage(error, 'Nothing was changed.'),
-            type: 'error',
-          });
-        },
-      }
+  // Whether this row's card offers a sign-in. Not just "is it an OAuth
+  // provider": a Xero row kept for the account codes of its FILE, on an
+  // installation where Xero sync is not switched on, offered Sign in, and the
+  // connect route refuses exactly that (Piggles persona issue 938). Until sync
+  // is on it is an export layout, and says so. A row already signed in keeps
+  // its Sign out whatever the switch says now.
+  const signsIn = (connection: AccountingConnection) => {
+    const entry = catalog.find((item) => item.provider === connection.provider);
+    return (
+      entry?.connect === 'oauth' && (entry.availability === 'available' || connection.connected)
     );
   };
 
@@ -1397,7 +1383,7 @@ export function AccountingSurface() {
                   <ConnectionCard
                     key={connection.id}
                     connection={connection}
-                    isOauth={isOauthProvider(connection.provider)}
+                    isOauth={signsIn(connection)}
                     signingIn={
                       oauth.pendingProvider === connection.provider ||
                       (oauth.isFinishing && oauth.pendingProvider !== null)
@@ -1419,12 +1405,15 @@ export function AccountingSurface() {
               description="Direct sync means sparx posts each cost for you instead of you moving a file. Where it is not switched on yet, the export above already works with that package today."
             >
               <ul className="flex flex-col gap-2">
+                {/* Sync only. A file layout is chosen under Laid out for, so
+                    listing one here as "Ready" with a Set up button made the
+                    same choice in two places under a heading about sending
+                    automatically, which a file never does. */}
                 {catalog
-                  .filter((entry) => entry.connect === 'oauth' || entry.provider !== 'csv')
+                  .filter((entry) => entry.connect === 'oauth')
                   .map((entry) => {
                     const ready = entry.availability === 'available';
                     const row = rowByProvider.get(entry.provider);
-                    const isOauth = entry.connect === 'oauth';
                     const signedIn = row?.connected ?? false;
                     const busy = oauth.pendingProvider === entry.provider;
 
@@ -1432,15 +1421,14 @@ export function AccountingSurface() {
                     // a row that already exists but was never signed in used to
                     // be disabled, which left the only way forward looking like
                     // a dead end.
-                    const label = !isOauth
-                      ? row
-                        ? 'Set up'
-                        : 'Set up'
-                      : signedIn
-                        ? 'Signed in'
-                        : row
-                          ? 'Finish signing in'
-                          : 'Connect';
+                    // "Finish signing in" only where signing in can happen: a
+                    // row kept for a file's account codes, with sync off, read
+                    // "Finish signing in" on a button that could not be pressed.
+                    const label = signedIn
+                      ? 'Signed in'
+                      : row && ready
+                        ? 'Finish signing in'
+                        : 'Connect';
 
                     return (
                       <li
@@ -1450,14 +1438,14 @@ export function AccountingSurface() {
                         <div className="flex min-w-0 flex-col gap-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <Text className="font-medium">{entry.name}</Text>
-                            <Badge color={ready ? 'success' : 'neutral'} variant="soft" size="sm">
+                            <Badge color={ready ? 'success' : undefined} variant="soft" size="sm">
                               {ready ? 'Ready' : 'Not yet'}
                             </Badge>
                             {signedIn ? (
                               <Badge color="module" variant="soft" size="sm">
                                 Signed in
                               </Badge>
-                            ) : row ? (
+                            ) : row && ready ? (
                               <Badge color="warning" size="sm">
                                 Not signed in
                               </Badge>
@@ -1470,19 +1458,15 @@ export function AccountingSurface() {
                         <Button
                           size="sm"
                           variant={signedIn ? 'outline' : 'solid'}
-                          color={signedIn ? 'neutral' : 'module'}
-                          disabled={!ready || signedIn || (!isOauth && row !== undefined)}
-                          loading={isOauth ? busy : addRow.isPending}
+                          color={signedIn ? undefined : 'module'}
+                          disabled={!ready || signedIn}
+                          loading={busy}
                           onClick={() => {
-                            if (isOauth) {
-                              oauth.begin({
-                                provider: entry.provider,
-                                displayName: entry.name,
-                                ...(row ? { connectionId: row.id } : {}),
-                              });
-                            } else {
-                              setUpFileLayout(entry);
-                            }
+                            oauth.begin({
+                              provider: entry.provider,
+                              displayName: entry.name,
+                              ...(row ? { connectionId: row.id } : {}),
+                            });
                           }}
                         >
                           {signedIn ? (

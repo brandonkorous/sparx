@@ -73,10 +73,17 @@ describe('which module owns a path', () => {
   });
 
   it('leaves alone what no switch owns', () => {
-    // Scheduling is not one of the eight switches, so nothing here may hide it.
-    for (const path of ['/', '/book', '/book/fitting', '/booking/abc', '/meet/devi', '/about']) {
+    for (const path of ['/', '/about', '/bookshop', '/meeting-notes']) {
       expect(moduleForPath(path), path).toBeNull();
     }
+  });
+
+  it('gives the booking pages to Bookings, and never a customer own booking link', () => {
+    // Persona issue 944: a journal could switch its shop off and still say Book.
+    for (const path of ['/book', '/book/fitting', '/meet/devi']) {
+      expect(moduleForPath(path), path).toBe('scheduling');
+    }
+    expect(moduleForPath('/booking/abc')).toBeNull();
   });
 
   it('reads a path out of a full URL, and ignores query and hash', () => {
@@ -173,10 +180,13 @@ describe('which module owns a core or a record type', () => {
   });
 
   it('owns nothing a site cannot switch off', () => {
-    // The chrome's own cores, and a module that is not one of the eight.
+    // The chrome's own cores.
     expect(moduleForKey('site.brand')).toBeNull();
     expect(moduleForKey('site.legal-links')).toBeNull();
-    expect(moduleForKey('scheduling.services')).toBeNull();
+  });
+
+  it('takes the booking list block off with the Bookings switch', () => {
+    expect(moduleForKey('scheduling.services')).toBe('scheduling');
   });
 
   it('never hides the sign-in panel', () => {

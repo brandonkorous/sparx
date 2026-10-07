@@ -1,21 +1,22 @@
 # P09 — Rosalind Pike · The Marrow Review
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-10-06
 
-**Status:** not started
-**Run:** —
+**Status:** in progress
+**Run:** started 2026-10-06 (P03's act 325 working the low-score list reached her site row; her run had never begun)
 **Trade:** Something else (`generic`) · **Rail groups:** web · people
 
 ## Account
 
-| Field         | Value                       |
-| ------------- | --------------------------- |
-| Email         | `p09.rosalind@piggles.test` |
-| Tenant id     | —                           |
-| Subdomain     | —                           |
-| Published URL | —                           |
+| Field         | Value                                                                                         |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| Email         | `p09.rosalind@piggles.test`                                                                   |
+| Tenant id     | `a4a12945-5721-4599-a0ca-631a9e9a8afe`                                                        |
+| Subdomain     | `the-marrow-review.piggles.site` (`marrow-review` was taken by issue 010's slug-check tenant) |
+| Published URL | — (act 6)                                                                                     |
+| Signed up     | 2026-10-07 06:49Z · trade Something else, `industry` absent · look Longform Literary          |
 
 ## The person
 
@@ -265,25 +266,29 @@ what every trade the picker does not list will get.
 
 ## Verification
 
-| Check                                                          | Result |
-| -------------------------------------------------------------- | ------ |
-| No screen required a product, price or shipping rule           | —      |
-| First-run guidance makes sense for a publisher                 | —      |
-| Article and Contributor structures built without jargon        | —      |
-| Six pieces in three correct states                             | —      |
-| Bylines and photo credits correct, long name intact            | —      |
-| Scheduled piece invisible before its time                      | —      |
-| Link preview card renders with title, image and excerpt        | —      |
-| Body type ≥16px and readable at 390px                          | —      |
-| Search finds a piece by a word in its body                     | —      |
-| Newsletter merge tags resolve; unsubscribed address excluded   | —      |
-| Edit republishes without changing the URL; history recoverable | —      |
+| Check                                                          | Result                                                                                                                                               |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No screen required a product, price or shipping rule           | —                                                                                                                                                    |
+| First-run guidance makes sense for a publisher                 | **Pass after [941](issues/941-a-journal-was-told-to-add-the-first-thing-it-sells.md).** It asked her to sell and invoice; it now asks her to publish |
+| Article and Contributor structures built without jargon        | —                                                                                                                                                    |
+| Six pieces in three correct states                             | —                                                                                                                                                    |
+| Bylines and photo credits correct, long name intact            | —                                                                                                                                                    |
+| Scheduled piece invisible before its time                      | —                                                                                                                                                    |
+| Link preview card renders with title, image and excerpt        | —                                                                                                                                                    |
+| Body type ≥16px and readable at 390px                          | —                                                                                                                                                    |
+| Search finds a piece by a word in its body                     | —                                                                                                                                                    |
+| Newsletter merge tags resolve; unsubscribed address excluded   | —                                                                                                                                                    |
+| Edit republishes without changing the URL; history recoverable | —                                                                                                                                                    |
 
 ## Run log
 
-| Date | Act | What happened |
-| ---- | --- | ------------- |
-| —    | —   | —             |
+| Date       | Act | What happened                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-06 | 1   | Signed up and onboarded through getpiggles. Address `the-marrow-review` (the plain one belongs to the slug-check tenant from issue 010, which is the "Marrow Review" the P09 site row had been scoring). Ticked I need a website · I deal with customers. Look: **Longform Literary**, a serif long-form design, rather than the first magazine card (Culture Bold, loud and dark), because her brief is restrained and typographic. `industry` is **absent**, not `generic`; the generic pack loaded anyway.                                                                                                                                                                                                                                                                           |
+| 2026-10-06 | 2   | Home told a journal to **Add the first thing you sell** and **Send your first invoice**, offered **Add a product** first, and read "nothing is sold out and nothing is running low" when clear. [941](issues/941-a-journal-was-told-to-add-the-first-thing-it-sells.md), fixed: the checklist, Start something and the all-clear line now follow her answer, and her first job is **Publish your first piece**. The rail keeps Sell, Stock, Invoices and Money by the issue 011 rule. Cleared the practice data (7 products, 10 orders, 6 customers and 123 more).                                                                                                                                                                                                                      |
+| 2026-10-07 | 3   | **Article** kind built in Content › Kinds of content: Title, Standfirst, Body, Hero image, Hero caption, Photograph by, Section (Field · Table · Ledger), web address `/articles/{slug}`. Contributors are Authors (name, bio; entries carry a built-in author and a scheduled time). The screens said "type" in three headings; now "kind". **No portraits:** the only portraits in the repo are Pexels photos whose licence forbids naming the person shown.                                                                                                                                                                                                                                                                                                                          |
+| 2026-10-07 | 4   | Six pieces, 621 to 748 words each, pasted from drafts: four published, one draft, one scheduled. Hero photos from the repo's trade photographs (bakery, market, café counter, florist, a desk at night). Scheduling found [942](issues/942-thursday-at-six-on-whose-clock.md): Thursday 06:00 was read on this computer's Pacific clock and stored for 13:00 UTC, nothing said whose clock, and a schedule could not be moved. Fixed; she set London in Business details and moved it to 06:00 BST (`05:00 UTC`). The Section list had no accessible name; fixed.                                                                                                                                                                                                                       |
+| 2026-10-07 | 6   | Before building: her public site was the standard starter selling ten design example products ([943](issues/943-a-journal-was-selling-a-magazines-tote-before-it-published-a-page.md), fixed: new installs keep products as drafts until the design's Publish). She retired the ten. **What this site shows** listed Sell three times and had no Bookings switch ([944](issues/944-sell-sell-and-sell-and-no-way-to-hide-book.md), fixed); she switched off the shop, Bookings, wholesale, dropshipping and stock, and her header is now Home, About, Account, Journal, Contact. **Stopped:** her Article kind has no public page. A page template can show products or blog posts, never a kind she defined, so `/articles/the-last-mill-on-the-nene` is a 404. Waiting on a decision. |
 
 ## Standing checks
 
@@ -341,6 +346,9 @@ leave it, not from memory at the end.
 Filed, fixed and re-proved from the screen during the run (CLAUDE.md RULE #3).
 A row with no confirmation is not a fixed defect.
 
-| #   | Severity | What (in her words) | Fixed | Confirmed by |
-| --- | -------- | ------------------- | ----- | ------------ |
-| —   | —        | —                   | —     | —            |
+| #   | Severity | What (in her words)                                | Fixed                         | Confirmed by                         |
+| --- | -------- | -------------------------------------------------- | ----------------------------- | ------------------------------------ |
+| 941 | major    | "It told my journal to add the first thing I sell" | yes                           | P09, act 2, her Home                 |
+| 942 | major    | "Thursday at six, but whose six?"                  | yes                           | P09, act 4, rescheduled to 06:00 BST |
+| 943 | major    | "My journal was selling somebody's tote"           | yes                           | P03's Mending test, drafts then live |
+| 944 | major    | "Sell, Sell and Sell, and no way to hide Book"     | yes, `/book` route still open | P09, act 6, her header               |

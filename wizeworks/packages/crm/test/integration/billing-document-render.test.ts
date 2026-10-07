@@ -20,6 +20,8 @@ import {
   documentWorkflowService,
   renderBillingDocumentHtml,
 } from '../../src/services/index.js';
+import { formatDate } from '../../src/services/billing-document-html.js';
+import { withTenant } from '@wizeworks/db';
 import { DEFAULT_DOCUMENT_LINE_TYPES } from '@wizeworks/crm-schemas/builtins';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
 
@@ -109,6 +111,40 @@ describe('billing document render', () => {
     expect(html).toContain('<!DOCTYPE html>');
     expect(html).toContain(data.number!);
     expect(html).toContain('Diagnostic');
+  });
+
+  // Sparx persona issue 145. Gillett Diesel (America/Denver) raised 4459 at
+  // 11:14pm on Oct 6, which is 05:14 UTC on Oct 7. The printed copy read
+  // "Issued Oct 7, 2026": the UTC date of the moment, not the shop's day.
+  it('prints the issue date on the business calendar', async () => {
+    const doc = await billingDocumentService.create(test.ctx, {
+      workflowId: invoiceWorkflowId,
+      customerId,
+      taxRate: 0,
+    });
+    await withTenant(test.ctx, async (tx) => {
+      await tx.billingDocument.update({
+        where: { id: doc.id },
+        data: { createdAt: new Date('2026-10-07T05:14:38Z'), finalizedAt: null },
+      });
+      await tx.tenantBusiness.upsert({
+        where: { tenantId: test.ctx.tenantId },
+        create: { tenantId: test.ctx.tenantId, timezone: 'America/Denver' },
+        update: { timezone: 'America/Denver' },
+      });
+    });
+    try {
+      const data = await billingRenderService.buildRenderData(test.ctx, doc.id);
+      expect(formatDate(data.issuedAt)).toBe('Oct 6, 2026');
+      expect(renderBillingDocumentHtml(data)).toContain('Oct 6, 2026');
+    } finally {
+      await withTenant(test.ctx, (tx) =>
+        tx.tenantBusiness.update({
+          where: { tenantId: test.ctx.tenantId },
+          data: { timezone: null },
+        })
+      );
+    }
   });
 
   it('prefers an author-set billTo JSON over the customer fallback', async () => {

@@ -282,6 +282,11 @@ export interface SitePublishState {
   /** Pages whose body differs from the published one, INCLUDING pages never
    *  published at all (a new page no visitor can reach yet). */
   unpublishedPages: number;
+  /** Which pages those are, by the name the owner gave each, so a screen can say
+   *  WHICH pages wait rather than only how many (Piggles persona issue 939: "13
+   *  pages have changes" to an owner who had edited five). Same filter as the
+   *  count, so the two never disagree. */
+  unpublishedPageList: { id: string; name: string; slug: string | null }[];
   /** Whether the site chrome (header/footer) differs from the published frame. */
   frameUnpublished: boolean;
   /** When the site was last published; null if it never has been. */

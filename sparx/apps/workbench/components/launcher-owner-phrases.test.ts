@@ -94,6 +94,12 @@ const PHRASES: [string, string][] = [
   ['cost plus', 'commerce.markup-rules.list'],
   ['margin', 'commerce.markup-rules.list'],
   ['price from cost', 'commerce.markup-rules.list'],
+  // P01 act 10: one email to his fleet customers. The screen is "Broadcasts",
+  // which only "newsletter" reached (sparx persona issue 147). Its own button
+  // and its `+` both say "Write an email", and typing that opens one.
+  ['send an email to customers', 'email.broadcasts.list'],
+  ['email my customers', 'email.broadcasts.list'],
+  ['write an email', 'create:email.broadcasts.list'],
 ];
 
 /**

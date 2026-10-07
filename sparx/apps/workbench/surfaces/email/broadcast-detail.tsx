@@ -176,7 +176,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
   const currentId = broadcast?.id ?? createdId;
 
   useEffect(() => {
-    ctx.setTitle(broadcast ? broadcast.name : 'New broadcast');
+    ctx.setTitle(broadcast ? broadcast.name : 'New email');
   }, [ctx, broadcast]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {

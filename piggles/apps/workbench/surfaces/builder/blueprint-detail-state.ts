@@ -31,6 +31,9 @@ export interface BlueprintTarget {
   /** Pages already on that site — what an install would replace. Undefined until
    *  the sites list lands, which the impact wording handles without guessing. */
   targetPageCount: number | undefined;
+  /** Whether that site shows a visitor any page at all. False while uncounted,
+   *  so the words fall back to the draft sentence rather than claim it is live. */
+  targetPublished: boolean;
   chooseSite: (id: string) => void;
   /** This design's install in the chosen site, if it has one. */
   current: BlueprintInstall | undefined;
@@ -47,6 +50,15 @@ export interface BlueprintTarget {
   newSite: NewSiteTarget;
   installsFetching: boolean;
   refetchInstalls: () => void;
+}
+
+/** Whether the site being worked in shows a visitor any page, for the gallery
+ *  card's install badge. Same reading as `targetPublished`, for the active site. */
+export function useActiveSitePublished(): boolean {
+  const { data: sites } = useSites();
+  const activeSiteId = useActivePropertyId();
+  const row = (sites ?? []).find((site) => site.id === activeSiteId);
+  return (row?.publishedPageCount ?? 0) > 0;
 }
 
 export function useBlueprintTarget(blueprint: Blueprint): BlueprintTarget {
@@ -82,8 +94,10 @@ export function useBlueprintTarget(blueprint: Blueprint): BlueprintTarget {
   // the number can never describe two different sites. A site that does not
   // exist yet has no pages, and that is a fact rather than a default — it is why
   // the option is there.
-  const targetPageCount =
-    targetSite === NEW_SITE ? 0 : (sites ?? []).find((site) => site.id === targetSite)?.pageCount;
+  const targetRow =
+    targetSite === NEW_SITE ? undefined : (sites ?? []).find((site) => site.id === targetSite);
+  const targetPageCount = targetSite === NEW_SITE ? 0 : targetRow?.pageCount;
+  const targetPublished = (targetRow?.publishedPageCount ?? 0) > 0;
 
   // The catalog list only knows the ACTIVE site's install state; this is what
   // lets the pane speak truthfully about whichever site is pointed at.
@@ -120,9 +134,10 @@ export function useBlueprintTarget(blueprint: Blueprint): BlueprintTarget {
     targetSite,
     targetName: targetSite === NEW_SITE ? newSite.label : (siteItems[targetSite] ?? 'this site'),
     targetPageCount,
+    targetPublished,
     chooseSite: setChosen,
     current,
-    status: current ? installState(current.status, siteIsDark) : null,
+    status: current ? installState(current.status, siteIsDark, targetPublished) : null,
     updateAvailable,
     plan,
     offModules,

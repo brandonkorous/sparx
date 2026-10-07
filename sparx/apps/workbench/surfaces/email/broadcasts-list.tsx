@@ -116,13 +116,13 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New broadcast: hold Shift to open alongside, Alt for a new window"
+            title="Write an email: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">New broadcast</span>
+            <span className="hidden @lg:inline">Write an email</span>
           </Button>
         }
         controls={
@@ -200,7 +200,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Plus className="size-4" aria-hidden />
-                  New broadcast
+                  Write an email
                 </Button>
               ),
             }}

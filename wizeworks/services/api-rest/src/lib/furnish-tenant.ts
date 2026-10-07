@@ -62,6 +62,7 @@ import {
 import { blueprintVisibleTo } from './marketplace/brand-scope.js';
 import { resolveBlueprintManifest } from './marketplace/resolve.js';
 import { applyModuleWrites, readModuleFlags } from './module-toggle.js';
+import { requestSearchRebuild } from './search-rebuild.js';
 import { tenantPlatformBrand } from './tenant-brand.js';
 
 export interface FurnishTenantSpec {
@@ -231,6 +232,11 @@ export async function furnishTenant(
     const pack = resolveSamplePack(spec.industry);
     if (pack) sample = await loadSampleData(ctx, pack, enabledModules);
   }
+
+  // Everything above writes in bulk and announces nothing row by row, so the
+  // search box has none of it until somebody asks. The console's Load button
+  // always asked; this, the path EVERY new business takes, did not.
+  await requestSearchRebuild(logger, spec.tenantId, ids.ownerUserId, false);
 
   return { tenantId: spec.tenantId, enabledModules, starter, blueprint, sample };
 }

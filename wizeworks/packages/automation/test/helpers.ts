@@ -52,8 +52,12 @@ export class CapturingPublisher implements Publisher {
   }
 }
 
+/** Every tenant these helpers made. A test's ticks serve only these, never the
+ *  real businesses in the same database (sparx persona issue 142). */
+export const testTenants = new Set<string>();
+
 export function makeDeps(publisher: Publisher = new CapturingPublisher()): EngineDeps {
-  return { publisher, logger: silentLogger };
+  return { publisher, logger: silentLogger, onlyTenants: testTenants };
 }
 
 export interface CreateTenantOpts {
@@ -79,6 +83,7 @@ export async function createTenant(opts: CreateTenantOpts = {}): Promise<string>
       settings: settings as Prisma.InputJsonValue,
     },
   });
+  testTenants.add(tenant.id);
   return tenant.id;
 }
 

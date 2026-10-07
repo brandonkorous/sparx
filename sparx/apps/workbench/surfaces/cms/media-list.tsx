@@ -27,6 +27,7 @@ import {
   EmptyState,
   Filter,
   FilterItem,
+  NativeSelect,
   SearchInput,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -78,6 +79,16 @@ const USAGE_FILTERS = [
   { value: 'unused', label: 'No use found' },
 ] as const satisfies readonly { value: UsageFilter; label: string }[];
 
+type SortOrder = MediaListQuery['sort'];
+
+/** The library's order. "Recently changed" is what it always was. */
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Recently changed' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'name', label: 'Name A to Z' },
+  { value: 'largest', label: 'Largest first' },
+] as const satisfies readonly { value: SortOrder; label: string }[];
+
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -125,6 +136,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [kind, setKind] = useState<MediaKind | 'all'>('all');
   const [status, setStatus] = useState<StatusFilter>('all');
   const [usage, setUsage] = useState<UsageFilter>('all');
+  const [sort, setSort] = useState<SortOrder>('recent');
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -136,6 +148,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
     kind,
     status,
     usage,
+    sort,
     take,
     skip,
   });
@@ -285,6 +298,23 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </FilterItem>
               ))}
             </Filter>
+            <NativeSelect
+              size="sm"
+              color="module"
+              className="w-40"
+              aria-label="Sort by"
+              value={sort}
+              onChange={(event) => {
+                setSort(event.target.value as SortOrder);
+                resetWindow();
+              }}
+            >
+              {SORT_OPTIONS.map((entry) => (
+                <option key={entry.value} value={entry.value}>
+                  {entry.label}
+                </option>
+              ))}
+            </NativeSelect>
             <input
               ref={fileRef}
               type="file"

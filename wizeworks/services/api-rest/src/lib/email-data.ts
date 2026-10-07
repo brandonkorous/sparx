@@ -24,6 +24,8 @@
 import { withTenant } from '@wizeworks/db';
 import { COLLECTION_RATE_REF, discountService, productService } from '@wizeworks/commerce';
 import { carrierLabel } from '@wizeworks/commerce-schemas';
+import { billingDocumentMail, businessTimeZone, daysPastDue } from '@wizeworks/crm';
+import { EMAIL_FRAME_TOKENS } from '@wizeworks/email/silica';
 import { ALL_MODULES, listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
 import {
   addressMergeValue,
@@ -380,8 +382,6 @@ export function orderHandover(
   }
   return 'delivery';
 }
-
-const MS_PER_DAY = 86_400_000;
 
 async function tenantRow(
   ctx: ServiceContext
@@ -1085,34 +1085,49 @@ async function resolveInvoice(
   site: EmailSite
 ): Promise<Record<string, unknown>> {
   if (!ref?.billingDocumentId) return {};
-  const doc = await withTenant(ctx, (tx) =>
-    tx.billingDocument.findUnique({
-      where: { id: ref.billingDocumentId! },
-      select: {
-        number: true,
-        total: true,
-        balance: true,
-        dueAt: true,
-        companyId: true,
-        lines: {
-          orderBy: { sortOrder: 'asc' },
-          select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+  const [doc, timeZone] = await withTenant(ctx, (tx) =>
+    Promise.all([
+      tx.billingDocument.findUnique({
+        where: { id: ref.billingDocumentId! },
+        select: {
+          number: true,
+          total: true,
+          balance: true,
+          dueAt: true,
+          companyId: true,
+          lines: {
+            orderBy: { sortOrder: 'asc' },
+            select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+          },
         },
-      },
-    })
+      }),
+      businessTimeZone(tx, ctx.tenantId),
+    ])
   );
   if (!doc) return {};
-  const now = Date.now();
-  const dueMs = doc.dueAt ? doc.dueAt.getTime() : null;
-  const daysUntilDue = dueMs !== null ? Math.floor((dueMs - now) / MS_PER_DAY) : '';
-  const overdueDays = dueMs !== null && dueMs < now ? Math.floor((now - dueMs) / MS_PER_DAY) : 0;
+  // The count the rule that sent this email used: calendar days on the
+  // business's clock, through the same `daysPastDue`. This was whole 24-hour
+  // periods to noon UTC on the due day, so the "due in 3 days" rule sent an
+  // email reading "due in 2 days" from 6pm in Denver (sparx persona issue 141).
+  const past = doc.dueAt ? daysPastDue(doc.dueAt, new Date(), timeZone) : null;
+  const daysUntilDue = past === null ? '' : String(-past);
+  const overdueDays = past === null ? 0 : Math.max(0, past);
+  const viewPath = billingDocumentMail.documentViewPath({
+    id: ref.billingDocumentId,
+    companyId: doc.companyId,
+  });
   return {
     number: doc.number ?? '',
     total: money(doc.total),
     balance: money(doc.balance),
     dueDate: dateLabel(doc.dueAt),
-    daysUntilDue: String(daysUntilDue),
+    daysUntilDue,
     overdueDays: String(overdueDays),
+    // The invoice itself, the page the email that sent it links to; empty when
+    // there is none (sparx persona issue 144).
+    viewUrl: viewPath ? site.link(viewPath) : '',
+    // Kept for an email a business wrote with it. Nothing on the site takes a
+    // payment here: it is the trade account's invoice LIST, or the account home.
     payUrl: doc.companyId
       ? site.link(`/account/b2b/${doc.companyId}/invoices`)
       : site.link('/account'),
@@ -1426,7 +1441,9 @@ export async function resolveSilicaEmailData(
 ): Promise<DataSources> {
   return loadEmailSources(
     ctx,
-    collectSilicaEmailSourceKeys(doc, extraStrings),
+    // The branded frame goes round every send, so its own tokens are always
+    // looked up, whatever the body mentions (sparx persona issue 143).
+    collectSilicaEmailSourceKeys(doc, [...extraStrings, ...EMAIL_FRAME_TOKENS]),
     ref,
     propertyId,
     origin

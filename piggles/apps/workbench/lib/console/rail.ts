@@ -31,6 +31,9 @@ export const RAIL_KEY = ['tenant', 'rail'];
  *  everything" — never as an empty rail. */
 interface RailPreference {
   apps: string[] | null;
+  /** What the business ticked at signup, as groups ("web", "sell" …); null when
+   *  it was never asked. Not the rail: see first-run-steps.ts. */
+  does?: string[] | null;
 }
 
 /** The app that cannot be put away: Home is where the checklist, the attention

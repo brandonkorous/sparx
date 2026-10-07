@@ -56,12 +56,15 @@ export function BlueprintPreview({ blueprint }: { blueprint: Blueprint }) {
 export function InstallStatusAlert({
   install,
   targetName,
+  sitePublished,
 }: {
   install: BlueprintInstall;
   targetName: string;
+  /** Whether the site shows visitors any page; see `installState`. */
+  sitePublished: boolean;
 }) {
   const siteIsDark = useSiteIsDark();
-  const state = installState(install.status, siteIsDark);
+  const state = installState(install.status, siteIsDark, sitePublished);
   const when =
     install.status === 'live' && install.live_at
       ? ` Live since ${formatDate(install.live_at)}.`

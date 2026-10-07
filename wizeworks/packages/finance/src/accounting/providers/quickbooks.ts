@@ -156,7 +156,7 @@ export const quickbooksAdapter: AccountingAdapter = {
   // and the section's own heading already says "the export above". Six rows sent
   // a reader the other way. "On this screen" stays true wherever it is placed.
   unavailableReason() {
-    return 'Direct QuickBooks sync is not switched on for this installation. The spreadsheet export on this screen already imports into QuickBooks today.';
+    return 'Direct QuickBooks sync is not switched on for this installation. Choose QuickBooks Online under Laid out for, and the file from this screen imports into QuickBooks today.';
   },
 
   authorizeUrl({ state, redirectUri }) {

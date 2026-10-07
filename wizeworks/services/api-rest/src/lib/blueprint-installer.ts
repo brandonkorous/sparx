@@ -102,7 +102,14 @@ export interface InstallResult {
   /** `reused: true` — the product already existed under this handle and the install only
    *  wired it into this site (`linkProductRelations`). Uninstall unlinks it from the site
    *  instead of soft-deleting a product another site still sells. */
-  products: { handle: string; id: string; reused?: boolean }[];
+  products: {
+    handle: string;
+    id: string;
+    reused?: boolean;
+    /** The status the design gave it. Install writes every new product as a
+     *  draft and go-live applies this, the same arrangement as `content`. */
+    declaredStatus?: string;
+  }[];
   theme: { id: string; name: string } | null;
   pages: {
     name: string;
@@ -1289,7 +1296,13 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
       title: p.title,
       handle: p.handle,
       description: p.description,
-      status: p.status,
+      // A DRAFT, whatever the design says, until its Publish is pressed. Written
+      // with the design's own status, a new journal that picked a magazine design
+      // at signup was selling that magazine's tote, mug and membership on its
+      // public shop before it had published a page, under a pane promising
+      // "nothing is live until you publish it" (Piggles persona issue 943).
+      // Articles have worked this way since issue 377.
+      status: 'draft',
       productType: p.productType,
       // Typed product type + attributes (docs/143). The service validates the
       // attribute bag against the resolved type (built-in or the blueprint's own,
@@ -1313,7 +1326,7 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
       // Scope to the installed site so it doesn't bleed into other sites.
       propertyIds: [propertyId],
     });
-    result.products.push({ handle: p.handle, id: created.id });
+    result.products.push({ handle: p.handle, id: created.id, declaredStatus: p.status });
 
     // Options → value id map keyed by `${name}::${value}`.
     const valueIds = new Map<string, string>();
@@ -1790,8 +1803,11 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
       .publish(propCtx)
       .catch((err) => logger.warn({ err, installId }, 'site publish failed'));
   }
-  // Products → active.
+  // Products → active: the ones the design meant to be on sale. Results recorded
+  // before `declaredStatus` existed were installed active already, so an absent
+  // value changes nothing for them.
   for (const p of r.products ?? []) {
+    if (p.declaredStatus !== undefined && p.declaredStatus !== 'active') continue;
     await productService
       .publish(ctx, p.id)
       .catch((err) => logger.warn({ err, id: p.id }, 'product publish failed'));

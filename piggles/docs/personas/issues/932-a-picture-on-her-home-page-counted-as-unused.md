@@ -53,13 +53,21 @@ part-finder icons. Platform-wide, 9 live files are held only by those today.
 - **"No use found"**, not "Not used anywhere": an email design, a saved
   section or a theme can still hold an address, and those are not searched.
   None of Juniper Row's pictures is in one. The file's own page says so.
-- **Which page**: a file's own page adds **On your site**, naming each page and
-  header and footer that shows it, with its site ("Home on Juniper Row
-  Journal"). A business with seven sites has seven pages called Home.
+- **Where it is used**: a file's own page lists each product, article, site
+  page and header and footer that shows it, by name, with its site for a page
+  ("Home (site page on Juniper Row Journal)"). Each opens beside the file. A
+  page on another site switches to that site first, asking before it drops
+  unsaved work, the same way a saved piece's Where it's used does: opened from
+  the wrong site, a page id resolves to nothing and the editor says "This page
+  isn't here any more" about a page that is one site over. That happened on
+  the first try and is why the switch is there.
 - **A Use filter** on the grid: Any use, In use, No use found. Usage is counted,
   not stored, so with the filter on, the server counts the whole matching set
   and pages it afterwards. State and Use sit on the bar as dropdowns, so the
   three questions fit beside the search instead of folding into a menu.
+- **Sort by**: Recently changed (as before), Oldest first, Name A to Z, Largest
+  first. The library could only be read newest first, so 87 files were a
+  scroll.
 
 ## Proof
 
@@ -73,9 +81,13 @@ part-finder icons. Platform-wide, 9 live files are held only by those today.
 - On screen, as Devi: the first page of the grid went from 16 "No use found" to
   5, with 12 "In … site page" and 2 "… category or collection" among the rest.
   trio-founder.jpeg reads "Used in 1 site page", and Delete is off with "It is
-  used by 1 site page. Remove it from there first", and **On your site: Home on
-  Juniper Row Journal**.
+  used by 1 site page. Remove it from there first", and **Where it is used:
+  Home (site page on Juniper Row Journal)**. Pressing it moved the console to
+  Juniper Row Journal and opened that Home page in the editor.
 - **No use found** showed 12 files; **In use** showed 75; 87 in all.
+- **Name A to Z** began anthology-cover.jpeg, ash-overshirt-bone.jpg,
+  ash-overshirt-bone.jpg; **Largest first** began with her own linen
+  shirtdress and knit photographs.
 - The sparx console's half is typechecked and tested, not driven.
 
 ## Not changed

@@ -9,12 +9,12 @@
 // line where it doesn't, and carries its own state badge; a table would flatten
 // all of that into cells and invent columns to justify themselves.
 //
-// NO free-text search box here, deliberately. The catalog endpoint has no query
-// parameter, so a search could only filter the page already loaded — which would
-// answer "is there a restaurant design?" with "not on this page", the exact
-// half-truth to avoid. The catalog is a small curated set, so the honest filter
-// is the server-backed one below (everything vs. what this site has installed),
-// with real pages under it.
+// A SEARCH AND A KIND, both on the server (issue 934). This said "no free-text
+// search box here, deliberately", because the catalog endpoint took no query and
+// a search over the loaded page would answer "is there a restaurant design?"
+// with "not on this page". The reasoning was right; the conclusion went stale at
+// 170 designs and seven pages. The endpoint now takes `q` and `vertical`, so the
+// count under a search is the whole answer.
 //
 // The "Installed" filter reflects the SITE you are working in — a blueprint
 // installs per-site, and this list reads the active site's install rows.
@@ -27,6 +27,8 @@ import {
   Filter,
   FilterItem,
   Heading,
+  NativeSelect,
+  SearchInput,
   Text,
 } from '@wizeworks/silicaui-react';
 import { LayoutTemplate } from 'lucide-react';
@@ -45,10 +47,22 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-/** Title-cased vertical for the card's quiet meta line. Rendered as plain text,
- *  never a badge — a category chip introducing the name would read as an eyebrow. */
+/** What a design is set up to do. The catalog stores four values, and
+ *  title-casing them printed "B2b" on twelve designs; these are the words the
+ *  Piggles console settled on for the same four. */
+const VERTICAL_WORDS: Record<string, string> = {
+  retail: 'For selling things',
+  services: 'For taking bookings',
+  content: 'For publishing',
+  b2b: 'For selling to other businesses',
+};
+
+/** The vertical for the card's quiet meta line. Rendered as plain text, never a
+ *  badge — a category chip introducing the name would read as an eyebrow. */
 function verticalLabel(vertical: string | null): string | null {
   if (!vertical) return null;
+  const known = VERTICAL_WORDS[vertical.toLowerCase()];
+  if (known) return known;
   return vertical
     .split(/[-_\s]+/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -125,8 +139,18 @@ function BlueprintCard({
 
 type FilterValue = 'all' | 'installed';
 
+const VERTICAL_OPTIONS = [
+  { value: 'all', label: 'All kinds' },
+  { value: 'retail', label: 'Selling things' },
+  { value: 'services', label: 'Taking bookings' },
+  { value: 'content', label: 'Publishing' },
+  { value: 'b2b', label: 'Selling wholesale' },
+];
+
 export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [filter, setFilter] = useState<FilterValue>('all');
+  const [search, setSearch] = useState('');
+  const [vertical, setVertical] = useState('all');
   const [pageSize, setPageSize] = useState<PageSize>(25);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState<number>(25);
@@ -136,9 +160,12 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useBlueprints({
     installedOnly,
+    q: search.trim(),
+    vertical,
     take,
     skip,
   });
+  const narrowed = search.trim() !== '' || vertical !== 'all';
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -156,6 +183,18 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Blueprints controls"
+        search={
+          <SearchInput
+            size="sm"
+            aria-label="Search the designs"
+            placeholder="Find a design…"
+            value={search}
+            onValueChange={(next) => {
+              setSearch(next);
+              resetWindow();
+            }}
+          />
+        }
         controls={
           <>
             <Filter
@@ -171,6 +210,23 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <FilterItem value="all">All designs</FilterItem>
               <FilterItem value="installed">Added to this site</FilterItem>
             </Filter>
+            <NativeSelect
+              size="sm"
+              color="module"
+              className="w-44"
+              aria-label="What it is for"
+              value={vertical}
+              onChange={(event) => {
+                setVertical(event.target.value);
+                resetWindow();
+              }}
+            >
+              {VERTICAL_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </NativeSelect>
             {typeof total === 'number' ? (
               <Text className="ml-auto hidden shrink-0 text-sm whitespace-nowrap @md:block">
                 {total === 1 ? '1 design' : `${String(total)} designs`}
@@ -206,6 +262,31 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <p className="p-4 text-sm" role="status">
             Loading…
           </p>
+        ) : rows.length === 0 && narrowed ? (
+          <div className="flex h-full items-center justify-center p-8">
+            <EmptyState
+              icon={<LayoutTemplate className="size-6" aria-hidden />}
+              title="No design matches that"
+              description={
+                installedOnly
+                  ? 'Nothing added to this site matches. Clear the search to see what is, or switch to All designs.'
+                  : 'Try fewer words, or another kind of business.'
+              }
+              actions={
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={() => {
+                    setSearch('');
+                    setVertical('all');
+                    resetWindow();
+                  }}
+                >
+                  Clear the search
+                </Button>
+              }
+            />
+          </div>
         ) : rows.length === 0 ? (
           <div className="flex h-full items-center justify-center p-8">
             <EmptyState

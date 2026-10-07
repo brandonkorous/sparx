@@ -91,6 +91,14 @@ import {
 } from './data';
 import { useSiteIsDark } from '../../lib/billing/site-live';
 import { SiteScopeField } from '../../components/site-scope-field';
+import { useReaderClock } from '../../lib/business-timezone';
+import {
+  clockNote,
+  isoToWallClock,
+  onClock,
+  summaryOnClock,
+  wallClockToIso,
+} from './publish-clock';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -640,6 +648,8 @@ function ManageBody({
   const del = useDeleteEntry(id);
 
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   const siteIsDark = useSiteIsDark();
   const state = entryStatusState(entry.status, siteIsDark);
@@ -806,25 +816,26 @@ function ManageBody({
                 {isScheduled ? 'Publish now' : 'Publish'}
               </Button>
             ) : null}
-            {!isPublished && !isScheduled ? (
+            {/* On a scheduled piece this is how the time changes. It used to be
+                drafts only, so moving a piece from 2pm to 6am meant cancelling
+                the schedule and starting again (issue 942). */}
+            {!isPublished ? (
               <Button
                 size="sm"
                 variant="outline"
-                color="neutral"
                 disabled={lifecycleBusy}
                 onClick={() => {
                   setScheduleOpen(true);
                 }}
               >
                 <Icon glyph={faCalendarClock} className="size-4" aria-hidden />
-                Schedule…
+                {isScheduled ? 'Change the time…' : 'Schedule…'}
               </Button>
             ) : null}
             {isPublished || isScheduled ? (
               <Button
                 size="sm"
                 variant="outline"
-                color="neutral"
                 loading={unpublish.isPending}
                 onClick={() => {
                   void onUnpublish();
@@ -849,7 +860,7 @@ function ManageBody({
               <AlertTitle>{state.label}</AlertTitle>
               <AlertDescription>
                 {isScheduled && entry.scheduled_at
-                  ? `Goes live ${formatDateTime(entry.scheduled_at)}.`
+                  ? `Goes live ${onClock(entry.scheduled_at, clock)}.`
                   : isPublished && entry.published_at
                     ? `Live since ${formatDateTime(entry.published_at)}.`
                     : state.detail}
@@ -937,6 +948,7 @@ function ManageBody({
 
       <ScheduleDialog
         open={scheduleOpen}
+        current={isScheduled ? entry.scheduled_at : null}
         busy={publish.isPending || update.isPending}
         onOpenChange={setScheduleOpen}
         onConfirm={(iso) => {
@@ -946,7 +958,7 @@ function ManageBody({
                 setScheduleOpen(false);
                 toast.add({
                   title: `${entryTitle(entry)} scheduled`,
-                  description: `It will go live ${formatDateTime(iso)}.`,
+                  description: `It will go live ${onClock(iso, clock)}.`,
                   type: 'success',
                 });
               },
@@ -974,6 +986,8 @@ function RevisionHistory({
   id: string;
   onRestored: (restored: ContentEntry) => void;
 }) {
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
   const toast = useToast();
   const confirm = useConfirm();
   const { data: revisions, isPending, isError } = useRevisions(id);
@@ -1031,7 +1045,7 @@ function RevisionHistory({
                 </Text>
                 <Text className="text-sm">
                   {formatDateTime(revision.created_at)}
-                  {revision.summary ? ` · ${revision.summary}` : ''}
+                  {revision.summary ? ` · ${summaryOnClock(revision.summary, clock)}` : ''}
                 </Text>
               </div>
               {index === 0 ? null : (
@@ -1064,28 +1078,34 @@ function RevisionHistory({
 // nothing lost if abandoned. Anything longer than this belongs in the pane.
 function ScheduleDialog({
   open,
+  current,
   busy,
   onOpenChange,
   onConfirm,
 }: {
   open: boolean;
+  /** The time it is scheduled for now, so a change starts from it. */
+  current: string | null;
   busy: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (iso: string) => void;
 }) {
   const [local, setLocal] = useState('');
+  const reader = useReaderClock();
+  // Read on the business's clock, or this computer's when it has none, and the
+  // note below the box says which (issue 942).
+  const clock = reader.zone ?? reader.device;
 
   useEffect(() => {
-    if (open) setLocal('');
-  }, [open]);
+    if (open) setLocal(current ? isoToWallClock(current, clock) : '');
+  }, [open, current, clock]);
 
   const iso = useMemo(() => {
-    if (local.trim() === '') return null;
-    const date = new Date(local);
-    if (Number.isNaN(date.getTime())) return null;
-    if (date.getTime() <= Date.now()) return null;
-    return date.toISOString();
-  }, [local]);
+    const at = wallClockToIso(local, clock);
+    if (at === null) return null;
+    if (new Date(at).getTime() <= Date.now()) return null;
+    return at;
+  }, [local, clock]);
 
   return (
     <PaneScope>
@@ -1113,11 +1133,15 @@ function ScheduleDialog({
             {local.trim() !== '' && iso === null ? (
               <FieldDescription>Choose a time in the future.</FieldDescription>
             ) : null}
+            {reader.zone === undefined ? null : (
+              <FieldDescription>
+                {clockNote(reader.zone, reader.device, new Date())}
+              </FieldDescription>
+            )}
           </Field>
           <DialogFooter>
             <Button
               variant="ghost"
-              color="neutral"
               onClick={() => {
                 onOpenChange(false);
               }}

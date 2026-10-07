@@ -15,10 +15,21 @@ import { FormSection } from '../../components/form-section';
 import type { Site } from './data';
 import { moduleLabel } from '../../lib/surfaces/nav';
 import type { WorkbenchModule } from '../../components/module-scope';
+import { scopeLine } from './site-scope-words';
 
 /** Modules a site can be told not to show. `builder` is absent on purpose — it
  *  is what BUILDS the site, so hiding it from one site is meaningless. */
-const SCOPEABLE = ['commerce', 'cms', 'crm', 'email', 'b2b', 'dropship', 'inventory', 'ai'];
+const SCOPEABLE = [
+  'commerce',
+  'cms',
+  'crm',
+  'scheduling',
+  'email',
+  'b2b',
+  'dropship',
+  'inventory',
+  'ai',
+];
 
 // The names come from `lib/surfaces/nav.ts`, which resolves them through the
 // brand's app registry. This file kept its own, saying "Selling", "Email", "AI"
@@ -59,17 +70,23 @@ export function SiteScope({
         </Text>
       ) : (
         available.map((slug) => (
-          <label key={slug} className="flex items-center gap-2">
+          <label key={slug} className="flex items-start gap-2">
             <Checkbox
               color="module"
+              className="mt-1"
               checked={!site.moduleScope.includes(slug)}
               disabled={saving}
-              aria-label={moduleLabel(slug as WorkbenchModule)}
+              aria-label={`${moduleLabel(slug as WorkbenchModule)}: ${scopeLine(slug)}`}
               onChange={(event) => {
                 onToggle(slug, event.target.checked);
               }}
             />
-            <Text as="span">{moduleLabel(slug as WorkbenchModule)}</Text>
+            <span className="flex min-w-0 flex-col">
+              <Text as="span" className="font-medium">
+                {moduleLabel(slug as WorkbenchModule)}
+              </Text>
+              <Text as="span">{scopeLine(slug)}</Text>
+            </span>
           </label>
         ))
       )}

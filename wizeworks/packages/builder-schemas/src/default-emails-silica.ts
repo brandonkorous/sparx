@@ -199,6 +199,18 @@ const chatSatisfaction = (): SectionNode[] => [
   ]),
 ];
 
+/**
+ * The button on an invoice reminder: it opens the invoice they are being reminded
+ * about, the page the email that first sent it links to. Gone when there is no
+ * such page (only a trade account has one).
+ *
+ * It said "Pay now" and opened a list of invoices that nothing on the site can pay,
+ * for every business, while Gillett Diesel takes no card payments at all (sparx
+ * persona issue 144). The words above it already ask for payment.
+ */
+const seeYourInvoice = (): SectionNode =>
+  copyWhen('invoice.viewUrl', [button('See your invoice', '{{invoice.viewUrl}}', 'center')]);
+
 // ── B2B ──────────────────────────────────────────────────────────────────────
 
 const b2bAccountApproved = (): SectionNode[] => [
@@ -271,7 +283,7 @@ const b2bInvoiceDue = (): SectionNode[] => [
     ],
     { status: { label: 'Due soon', role: 'info' } }
   ),
-  copyBlock([button('Pay now', '{{invoice.payUrl}}', 'center')]),
+  seeYourInvoice(),
 ];
 
 // ── Invoicing + dunning ──────────────────────────────────────────────────────
@@ -292,7 +304,7 @@ const invoicingReminder = (): SectionNode[] => [
     { status: { label: 'Due soon', role: 'info' } }
   ),
   ...itemsTable('invoice.items'),
-  copyBlock([button('Pay invoice', '{{invoice.payUrl}}', 'center')]),
+  seeYourInvoice(),
 ];
 
 /** The three dunning notices differ only in tone + escalation, so they share a shape:
@@ -315,7 +327,7 @@ const dunning = (
     { status }
   ),
   ...(tail ?? []),
-  copyBlock([button('Pay now', '{{invoice.payUrl}}', 'center')]),
+  seeYourInvoice(),
 ];
 
 const invoicingOverdue = (): SectionNode[] =>

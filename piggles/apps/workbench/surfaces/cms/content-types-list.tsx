@@ -190,7 +190,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (
           <div className="flex w-full flex-col gap-6">
             <TypeGroup
-              title="Your types"
+              title="Your kinds"
               description="The kinds of content you defined. Open one to change its fields."
               types={custom}
               counts={counts}
@@ -202,7 +202,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               onOpen={open}
             />
             <TypeGroup
-              title="Built-in types"
+              title="Built-in kinds"
               description={productCopy(
                 'cms.contentTypes.builtIn',
                 'Shared types that come with Piggles. You can look at how they are built, but they cannot be changed or removed.'

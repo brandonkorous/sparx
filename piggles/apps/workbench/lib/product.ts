@@ -288,8 +288,13 @@ export function productLoadingMark(): ComponentType<ProductLoadingMarkProps> | n
  * sparx's bootcamp editor (issue #002).
  */
 export function productHidesSurface(key: string): boolean {
-  if (adapter.hiddenSurfaces.has(key)) return true;
-  for (const entry of adapter.hiddenSurfaces) {
+  return hiddenBy(adapter.hiddenSurfaces, key);
+}
+
+/** Whether `hidden` names `key`, by itself or by its `module.*` namespace. */
+export function hiddenBy(hidden: ReadonlySet<string>, key: string): boolean {
+  if (hidden.has(key)) return true;
+  for (const entry of hidden) {
     if (entry.endsWith('.*') && key.startsWith(entry.slice(0, -1))) return true;
   }
   return false;

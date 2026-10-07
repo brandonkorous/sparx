@@ -4,46 +4,20 @@
 // admin-only (they provision across modules + are reversible-but-bulk); status is
 // viewer-readable.
 
-import crypto from 'node:crypto';
-
-import type { FastifyBaseLogger, FastifyPluginAsync } from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
-import { publish } from '@wizeworks/api-core/pubsub';
 
 import {
   clearTenantSampleData,
+  countTenantOwnRecords,
   getSampleDataStatus,
   loadTenantSampleData,
 } from '../../lib/sample-data.js';
+import { requestSearchRebuild } from '../../lib/search-rebuild.js';
 
-/**
- * Ask the search worker to rebuild this tenant's index from its real records.
- *
- * The engine writes every sample customer, order and product in one bulk
- * transaction, and none of them is announced one at a time, so without this the
- * console's search box answered "Nothing in your records matches" about sample
- * customers in plain view, and went on finding cleared ones that no longer
- * existed (sparx persona issue 086). One request covers a whole load. A clear
- * drops the tenant's entries first, because a rebuild from what is left cannot
- * remove an entry for a row that is gone. Never fails the load or the clear: the
- * search box's own "Put them back" still heals a missed rebuild.
- */
-async function requestSearchRebuild(
-  logger: FastifyBaseLogger,
-  tenantId: string,
-  actorId: string | null,
-  dropStale: boolean
-): Promise<void> {
-  try {
-    await publish(logger, 'search.reindex.requested', tenantId, actorId, {
-      runId: `reindex_${crypto.randomUUID().replace(/-/g, '')}`,
-      dropStale,
-    });
-  } catch (err) {
-    logger.error({ err, tenantId }, 'sample data: search rebuild request failed');
-  }
-}
+const ownQuery = z.object({ kind: z.enum(['product', 'customer', 'invoice', 'article']) });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync demands async; route registration is sync.
 const sampleDataRoutes: FastifyPluginAsync = async (app) => {
@@ -52,6 +26,21 @@ const sampleDataRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     const auth = requireAuth(request);
     return ok(await getSampleDataStatus({ tenantId: auth.tenantId, userId: auth.actorId }));
+  });
+
+  // How many products, customers or invoices are the business's OWN: not a
+  // practice row, not a design's example product. A list total cannot say, once
+  // a pack has loaded a hundred of each, and the Home checklist that read those
+  // totals ticked itself off before a new owner saw it (Piggles persona issue
+  // 935). One kind per request so each answer can sit under the cache key of the
+  // list whose writes should refresh it.
+  app.get('/v1/sample-data/own', async (request) => {
+    requireRole(request, 'viewer');
+    const auth = requireAuth(request);
+    const { kind } = ownQuery.parse(request.query);
+    return ok({
+      total: await countTenantOwnRecords({ tenantId: auth.tenantId, userId: auth.actorId }, kind),
+    });
   });
 
   // Load the industry pack (idempotent — clears prior sample rows first). 201.

@@ -8,11 +8,13 @@ import { listEnabledModules } from '@wizeworks/auth';
 import type { Prisma } from '@wizeworks/db';
 import {
   clearSampleData,
+  countOwnRecords,
   loadSampleData,
   prisma,
   resolveSamplePack,
   sampleDataStatus,
   withTenant,
+  type OwnRecordKind,
   type SampleDataCounts,
   type SampleDataStatus,
   type TenantContext,
@@ -88,4 +90,10 @@ export async function clearTenantSampleData(ctx: TenantContext): Promise<SampleD
   const counts = await clearSampleData(ctx);
   await writeAudit(ctx, 'tenant.sample_data.cleared', { counts });
   return counts;
+}
+
+/** How many of `kind` the business made itself, leaving out practice rows and a
+ *  design's example products. What the Home checklist asks "is it done?" of. */
+export function countTenantOwnRecords(ctx: TenantContext, kind: OwnRecordKind): Promise<number> {
+  return countOwnRecords(ctx, kind);
 }

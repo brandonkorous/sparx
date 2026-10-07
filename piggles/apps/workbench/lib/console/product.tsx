@@ -48,6 +48,7 @@ import { PIGGLES_COPY } from './copy';
 import { PIGGLES_SECTIONS } from './section-names';
 import { PIGGLES_CREATE_LABELS, PIGGLES_ENTITY_LABELS, PIGGLES_SURFACES } from './vocabulary';
 import { PigglesStateArt } from './state-art';
+import { PIGGLES_HIDDEN_FEATURES, PIGGLES_HIDDEN_SURFACES } from './hidden';
 
 /**
  * Module names, DERIVED from the app registry rather than restated here.
@@ -83,91 +84,15 @@ function PigglesLoadingMark(_props: ProductLoadingMarkProps) {
   return <Mark className="piggles-mark-breathe text-primary h-16 w-16" title="Loading" />;
 }
 
-/**
- * Shared surfaces that are about a sparx PRODUCT rather than a capability.
- *
- * `commerce.market` is registered with the literal title "sparx.market" and no
- * `listed: false`, so it was appearing in this console's Sell panel and in ⌘K —
- * a nav row naming another company's marketplace, which a Piggles customer
- * cannot join and has never heard of.
- *
- * It is HIDDEN rather than renamed on purpose. The other three fields translate
- * a surface into Piggles' words; this one cannot be translated, because there is
- * no Piggles marketplace to translate it to. Substituting the brand name would
- * invent "Piggles.market" — a product nobody can sign up for, which is a worse
- * lie than the leak.
- *
- * Add a key here only when the surface is about a product this brand does not
- * have. A surface that merely says "sparx" in its copy is a different bug with a
- * different fix: `productName()`.
- */
-const hiddenSurfaces = new Set([
-  'commerce.market',
-
-  // What a business pays WizeWorks. `finance.subscription` is registered as
-  // "Your sparx bill" under a section called "What you pay sparx", and there is
-  // no Piggles screen to rename it INTO: platform billing deliberately lives on
-  // getpiggles.com and never in the operating console (piggles/CLAUDE.md, "The
-  // three surfaces"). The rail's plan card already says which phase the account
-  // is in and links out to the one place allowed to talk about money.
-  'finance.subscription',
-
-  // Turning modules on and off, priced per module. Piggles has no module pricing
-  // (RULE #2) and its answer to "what else is there" is the All apps door in the
-  // rail — a list with no prices, where adding one is a tap. A settings screen
-  // built around the other model would contradict it on the same account.
-  'platform.settings.modules',
-
-  // sparx's RESELLER PROGRAMME — referrals, commissions, tier, bootcamps, and a
-  // listing in the sparx partner directory. Named in piggles/CLAUDE.md as a
-  // sparx product, and the default for those is exclude.
-  //
-  // Note what this does NOT remove. Piggles HAS a Partners app; it is about the
-  // reader's own suppliers, exactly as meetpiggles.com/apps/partners describes
-  // it. The app used to front this module by mistake, so somebody clicking
-  // Partners for their suppliers got another company's affiliate scheme. It now
-  // fronts the supplier and purchase-order surfaces instead — see `claims` in
-  // @piggles/config.
-  //
-  // Hidden as a NAMESPACE, not as seven keys. The seven were written out once and
-  // the eighth — `partner.bootcamp.detail`, the bootcamps list's own editor — was
-  // missed, so a Piggles business could deep-link into sparx's partner training
-  // programme (issue #002). `partner.*` cannot miss the ninth.
-  'partner.*',
-  // ...and the tenant-side half of it: granting a sparx partner agency access.
-  'platform.settings.partner',
-]);
-
-/**
- * Blocks inside a shared surface that belong to a sparx PRODUCT.
- *
- * Same rule as above, one level down (piggles/CLAUDE.md, "A sparx PRODUCT is not
- * a Piggles capability"): exclude, never rename, never ask.
- *
- *   commerce.channels.market      the "offer it on the sparx marketplace" card
- *                                 on a product's Channels tab. The rest of that
- *                                 tab — Etsy, TikTok Shop, your own site — is a
- *                                 real shared capability and stays.
- *   commerce.payments.sparx_pay   WizeWorks' first-party gateway, operated under
- *                                 the sparx brand. A Piggles customer cannot
- *                                 sign up for it, so listing it would be a row
- *                                 that opens onto a dead end. Every
- *                                 bring-your-own processor stays.
- *
- * If Piggles ever gets its own first-party gateway, this entry comes out and the
- * copy gets written — but that needs a real thing behind it, not a rename.
- */
-const hiddenFeatures = new Set(['commerce.channels.market', 'commerce.payments.sparx_pay']);
-
 configureProduct({
   name: 'Piggles',
   moduleLabels,
   LoadingMark: PigglesLoadingMark,
-  hiddenSurfaces,
+  hiddenSurfaces: PIGGLES_HIDDEN_SURFACES,
   // Written by hand, in Piggles' voice — see copy.ts for why this is not the
   // sparx sentence with the name swapped, and why it never becomes that.
   copy: PIGGLES_COPY,
-  hiddenFeatures,
+  hiddenFeatures: PIGGLES_HIDDEN_FEATURES,
   // What every screen and every group heading is CALLED. The shortest copy in
   // the product and the most-read, written under the same rule as the sentences
   // above — see vocabulary.ts.

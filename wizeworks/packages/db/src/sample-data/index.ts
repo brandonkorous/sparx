@@ -27,6 +27,7 @@ import { applySupportRequests } from './engine/support';
 import { hasPhysicalGoods, withFallbacks } from './engine/fallbacks';
 import { clearSampleDataOnTx } from './engine/clear';
 import { countsTotal, summarizeSampleDataOnTx } from './engine/summarize';
+import { countOwnRecordsOnTx, type OwnRecordKind } from './engine/own-records';
 import { type ApplyCtx, emptyCounts } from './engine/context';
 import type { SampleDataCounts, SampleDataPack, SampleDataStatus } from './types';
 
@@ -43,6 +44,7 @@ import { genericPack } from './packs/generic';
 
 export * from './types';
 export { countsTotal } from './engine/summarize';
+export type { OwnRecordKind } from './engine/own-records';
 
 /** Every industry pack, keyed by `settings.industry`. */
 export const SAMPLE_DATA_PACKS: Record<string, SampleDataPack> = {
@@ -281,4 +283,10 @@ export async function sampleDataStatus(
     loaded: countsTotal(counts) > 0,
     counts,
   };
+}
+
+/** How many of `kind` the business made itself: not a practice row, and not an
+ *  example product a design brought. See engine/own-records.ts. */
+export async function countOwnRecords(ctx: TenantContext, kind: OwnRecordKind): Promise<number> {
+  return withTenant(ctx, (tx) => countOwnRecordsOnTx(tx, ctx.tenantId, kind));
 }

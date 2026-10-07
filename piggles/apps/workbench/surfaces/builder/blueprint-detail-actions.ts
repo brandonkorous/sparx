@@ -165,7 +165,9 @@ export function useBlueprintActions(input: ActionsInput) {
     if (!current) return;
     const ok = await confirm({
       title: `Publish “${blueprint.name}” on ${targetName}?`,
-      description: `This makes everything the design added (its pages, look, and anything else it created) live on ${targetName} for visitors to see. You can still edit any of it afterwards.`,
+      // It publishes the SITE, not only the design's part of it: go-live runs the
+      // one site publish, which takes every saved change of hers along.
+      description: `This publishes ${targetName}: everything the design added (its pages, look, and anything else it created), and any change of yours you have saved and not published yet. Visitors see all of it. You can still edit any of it afterwards.`,
       confirmLabel: 'Publish it live',
       cancelLabel: 'Not yet',
       color: 'module',
