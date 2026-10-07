@@ -211,7 +211,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
                       ctx.open('crm.settings', {}, { target: 'tab' });
                     }}
                   >
-                    How the CRM behaves
+                    How this app behaves
                   </Button>
                 )
               }
