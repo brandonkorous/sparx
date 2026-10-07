@@ -36,7 +36,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const PIGGLES = join(HERE, '..');
 const CONFIG = join(PIGGLES, 'packages/config/src');
 const CATALOG = join(PIGGLES, 'apps/workbench/lib/surfaces/catalog');
-const PRODUCT = join(PIGGLES, 'apps/workbench/lib/console/product.tsx');
+const HIDDEN = join(PIGGLES, 'apps/workbench/lib/console/hidden.ts');
 
 /** Read a file that MUST exist. A check whose input silently vanished reports
  *  green over nothing, which is how five of these went blind in one tree move. */
@@ -91,9 +91,9 @@ if (iconKeys.size === 0) {
 
 // What this brand excludes outright, read from the one list that decides it.
 const hidden = [
-  ...(must(PRODUCT).match(/hiddenSurfaces = new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? '').matchAll(
-    /'([a-z.*-]+)'/g
-  ),
+  ...(
+    must(HIDDEN).match(/PIGGLES_HIDDEN_SURFACES[^=]*= new Set\(\[([\s\S]*?)\n\]\);/)?.[1] ?? ''
+  ).matchAll(/'([a-z.*-]+)'/g),
 ].map((m) => m[1]);
 if (hidden.length === 0) {
   console.error('check:piggles-apps — parsed ZERO hidden surfaces. The parser is broken.');
