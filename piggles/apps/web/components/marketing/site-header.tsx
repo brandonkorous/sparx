@@ -46,7 +46,7 @@ export function SiteHeader() {
               header (issue 003). No `color` leaves silica on base-content. */}
           <a
             className={`${buttonClasses({ variant: 'ghost' })} max-sm:hidden`}
-            href={accountUrl('sign-in')}
+            href={accountUrl('sign-in', 'header-sign-in')}
           >
             Sign in
           </a>

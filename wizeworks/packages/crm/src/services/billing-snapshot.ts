@@ -4,7 +4,7 @@
 // freeze to the same payload. Decimals are normalized to numbers (lossless at
 // the (12,2)/(12,3) scales the schema uses) so the frozen record is plain JSON.
 
-import { poNumberOf } from '@wizeworks/crm-schemas';
+import { paymentTermsOf, poNumberOf } from '@wizeworks/crm-schemas';
 import type { BillingDocument, BillingDocumentLine, DocumentStage } from '@wizeworks/db';
 
 export interface BillingSnapshotLine {
@@ -41,6 +41,9 @@ export interface BillingSnapshotPayload {
     /** The buyer's purchase order number (issue 077). Absent on snapshots
      *  frozen before it was carried. */
     poNumber?: string | null;
+    /** The terms it was issued on, as stored (`net45`), issue 103. Absent on
+     *  snapshots frozen before it was carried. */
+    paymentTerms?: string | null;
     totals: {
       subtotal: number;
       discountTotal: number;
@@ -98,6 +101,7 @@ export function buildSnapshotPayload(
       notes: document.notes,
       validUntil: document.validUntil ? document.validUntil.toISOString() : null,
       poNumber: poNumberOf(document.metadata),
+      paymentTerms: paymentTermsOf(document.metadata),
       totals: {
         subtotal: Number(document.subtotal),
         discountTotal: Number(document.discountTotal),

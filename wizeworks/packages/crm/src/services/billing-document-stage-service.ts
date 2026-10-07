@@ -21,7 +21,11 @@
 // create, §9). Snapshots are append-only — a void/correction adds a new row, it
 // never rewrites one.
 
-import { AdvanceBillingDocumentInput } from '@wizeworks/crm-schemas';
+import {
+  AdvanceBillingDocumentInput,
+  paymentTermsOf,
+  withPaymentTerms,
+} from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type {
   BillingDocument,
@@ -34,7 +38,8 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent, type CrmTopic } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
-import { netTermsDays } from './billing-ar';
+import { dueDayAfter, netTermsDays } from './billing-ar';
+import { businessTimeZone } from './business-clock';
 import { buildSnapshotPayload } from './billing-snapshot';
 import type { DocumentWithLines } from './billing-document-service';
 import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
@@ -76,16 +81,39 @@ async function payerCompanyId(
  */
 export async function dueDateFromTerms(
   tx: Prisma.TransactionClient,
-  document: { companyId: string | null; customerId: string | null },
+  document: { tenantId: string; companyId: string | null; customerId: string | null },
   receivedOn: Date
 ): Promise<Date> {
+  // A DAY on the business's calendar, stored at midday (`dueDayAfter`). Adding
+  // the days to the moment put a bill sent at 7 PM in Denver one day later
+  // than its terms, because UTC was already on tomorrow (issue 099).
+  const [days, timeZone] = await Promise.all([
+    termsDaysFor(tx, document),
+    businessTimeZone(tx, document.tenantId),
+  ]);
+  return dueDayAfter(receivedOn, days, timeZone);
+}
+
+/** The payer's agreed terms as stored (`net30`): the account the bill is for,
+ *  else the employer of the person it is for. Null when nobody agreed any. */
+export async function payerTermsOf(
+  tx: Prisma.TransactionClient,
+  document: { companyId: string | null; customerId: string | null }
+): Promise<string | null> {
   const companyId = document.companyId ?? (await payerCompanyId(tx, document.customerId));
   const account = companyId
     ? await tx.company.findUnique({ where: { id: companyId }, select: { paymentTerms: true } })
     : null;
-  const due = new Date(receivedOn);
-  due.setUTCDate(due.getUTCDate() + netTermsDays(account?.paymentTerms));
-  return due;
+  return account?.paymentTerms ?? null;
+}
+
+/** How many days the payer's agreed terms give, or 0 ("due on receipt") when
+ *  nobody agreed any. */
+export async function termsDaysFor(
+  tx: Prisma.TransactionClient,
+  document: { companyId: string | null; customerId: string | null }
+): Promise<number> {
+  return netTermsDays(await payerTermsOf(tx, document));
 }
 
 /**
@@ -302,6 +330,14 @@ export async function applyStageEntryEffects(
     data.issuedBy = await snapshotIssuer(tx, ctx.tenantId, document.propertyId);
   }
 
+  // The terms it is issued on, frozen beside its PO number and printed as
+  // "Net 45" next to the due date (sparx persona issue 103). A bill that
+  // already carries terms keeps them.
+  if (becomingPayable && paymentTermsOf(document.metadata) === null) {
+    const metadata = withPaymentTerms(document.metadata, await payerTermsOf(tx, document));
+    if (paymentTermsOf(metadata) !== null) data.metadata = metadata as Prisma.InputJsonValue;
+  }
+
   if (becomingPayable && document.dueAt === null) {
     // A REAL WINDOW ONLY. `dueDateFromTerms` answers for everyone, including a
     // walk-in with no terms, but a zero-day answer anchored HERE would be wrong:
@@ -310,10 +346,11 @@ export async function applyStageEntryEffects(
     // agreed window is left with no date until the send route sets one from the
     // day it actually goes out. Anyone on terms gets theirs now, so the deadline
     // is on screen before she sends it.
-    const raisedAt = new Date();
-    const due = await dueDateFromTerms(tx, document, raisedAt);
-    if (due.getTime() > raisedAt.getTime()) {
-      data.dueAt = due;
+    // Asked as a count of days, not by comparing the date with now: a due DAY
+    // is stored at midday, so "today" would compare as later than now all
+    // morning and date a walk-in's bill on the day it was raised.
+    if ((await termsDaysFor(tx, document)) > 0) {
+      data.dueAt = await dueDateFromTerms(tx, document, new Date());
     }
   }
   if (stage.stageType === 'void') {

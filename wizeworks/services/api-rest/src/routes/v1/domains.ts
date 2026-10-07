@@ -57,6 +57,7 @@ import {
   CNAME_TARGET,
 } from '../../lib/domain.js';
 import { buildSparxDnsRecords, getRegistrar, RegistrarError } from '../../lib/registrar.js';
+import { strandedZoneAddressIds } from '../../lib/stranded-zone-address.js';
 import { chargeForDomain, refundDomainCharge } from '../../lib/domain-billing.js';
 import { env } from '../../env.js';
 
@@ -147,6 +148,21 @@ interface DomainPurchaseView {
   type: string;
   status: string;
   createdAt: string;
+}
+
+/** Whether one row is an old free address in another brand's zone, beside one in
+ *  the tenant's own (issue 927). Reads only that site's free addresses. */
+async function isStranded(
+  tenantId: string,
+  row: { id: string; propertyId: string; type: string },
+  zone: string
+): Promise<boolean> {
+  if (row.type !== 'subdomain') return false;
+  const siblings = await prisma.domain.findMany({
+    where: { tenantId, propertyId: row.propertyId, type: 'subdomain' },
+    select: { id: true, propertyId: true, host: true, type: true },
+  });
+  return strandedZoneAddressIds(siblings, zone).has(row.id);
 }
 
 function toView(
@@ -566,8 +582,11 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     // `rows.map(toView)` would hand `.map`'s INDEX to the new second parameter —
     // the classic point-free trap, caught here only because the parameter is
     // typed. One zone lookup for the whole list, not one per row.
-    const cname = cnameTargetFor(await tenantZone(auth.tenantId));
-    return ok(rows.map((row) => toView(row, cname)));
+    const zone = await tenantZone(auth.tenantId);
+    const cname = cnameTargetFor(zone);
+    // An old free address in another brand's zone opens nothing (issue 927).
+    const stranded = strandedZoneAddressIds(rows, zone);
+    return ok(rows.filter((row) => !stranded.has(row.id)).map((row) => toView(row, cname)));
   });
 
   // ── GET /v1/domains/:id ───────────────────────────────────────────────────
@@ -576,7 +595,9 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const { id } = IdParam.parse(request.params);
     const row = await prisma.domain.findFirst({ where: { id, tenantId: auth.tenantId } });
     if (!row) throw notFound('Domain', id);
-    return ok(toView(row, cnameTargetFor(await tenantZone(auth.tenantId))));
+    const zone = await tenantZone(auth.tenantId);
+    if (await isStranded(auth.tenantId, row, zone)) throw notFound('Domain', id);
+    return ok(toView(row, cnameTargetFor(zone)));
   });
 
   // Connect a domain the tenant already owns. Mints a TXT proof token and stores
@@ -705,6 +726,13 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     if (!row) throw notFound('Domain', id);
     if (row.status !== 'active' && row.status !== 'verified') {
       throw conflict('Verify this domain before making it canonical.', { field: 'status' });
+    }
+    // Every link a customer is sent is built on the main address, and this one
+    // opens nothing (issue 927).
+    if (await isStranded(auth.tenantId, row, await tenantZone(auth.tenantId))) {
+      throw conflict('That address no longer opens your site, so it cannot be the main one.', {
+        field: 'host',
+      });
     }
     const updated = await prisma.$transaction(async (tx) => {
       await tx.domain.updateMany({

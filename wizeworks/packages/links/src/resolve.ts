@@ -349,6 +349,40 @@ export function pathForEntity(
 }
 
 /**
+ * Where a search hit opens: the record's own pane wherever there is one.
+ *
+ * An entity whose home is a list can still have a detail pane per KIND: an
+ * invoice on account opens on the wholesale invoice, any other invoice in the
+ * invoice editor, and the type alone cannot say which. The search entry stores
+ * the address its projector worked out from the row, so that address is used
+ * when it names THIS record on a pane the table knows. Anything else (an old
+ * address, a list, another record) falls back to the entity's home, so a stale
+ * stored address can never open the wrong record.
+ *
+ * Gillett's INV-000009 opened the whole wholesale invoices list from the
+ * search box, with eight quotes in it, rather than the invoice (sparx persona
+ * issue 094).
+ */
+export function recordDestination(
+  entityType: string,
+  recordId: string,
+  storedUrl?: string,
+  brand?: string
+): MatchedLink | null {
+  const route = byEntity.get(entityType);
+  if (!route) return null;
+  if (!routeAcceptsId(route) && storedUrl !== undefined && storedUrl !== '') {
+    const [pathname = '', search] = storedUrl.split('?', 2);
+    const matched = matchPath(pathname, search, brand);
+    if (matched && Object.values(matched.params).includes(recordId)) return matched;
+  }
+  return {
+    surface: route.surface,
+    params: routeAcceptsId(route) ? { id: recordId } : {},
+  };
+}
+
+/**
  * An absolute link for a surface — what a service puts in an email.
  *
  * `origin` is required here (unlike buildPath, where a relative path is the

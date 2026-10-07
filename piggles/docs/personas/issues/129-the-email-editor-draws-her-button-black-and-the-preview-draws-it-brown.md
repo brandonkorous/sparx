@@ -1,11 +1,11 @@
 # 129 — The email editor draws her button black and the preview draws it brown
 
-**Status:** fixed (act 324): the colors; the header the inbox shows is still not on the canvas
+**Status:** fixed (act 324 the colors, act 325 the header and footer)
 **Severity:** minor
 **Found by:** P02 · Halo & Hem · act 9
 **Surface:** mypiggles › My Site › Email designs › the editor canvas
 **Filed:** 2026-08-23
-**Fixed:** —
+**Fixed:** 2026-10-06
 **Confirmed by:** P03 · Juniper Row · act 324, on her own Booking reminder
 **Blocked on:** —
 
@@ -79,6 +79,27 @@ opened, because the page stopped answering the browser at that point.
 drawn by the send around the body, and the studio's email canvas has no
 notion of them, so the canvas shows the body alone. That is a canvas addition
 (drawing `buildChrome`'s `frame` as inert chrome), not a color fix.
+
+## Act 325: the header and footer
+
+The canvas did have a notion of them, one step away. The API's
+`/v1/builder/emails/frame` has always answered with the frame AND the colors,
+and the sparx console's editor draws that frame. Piggles' studio read only the
+colors from the same answer and dropped the frame (`useEmailColors`).
+
+Now `useEmailChrome` keeps both, the studio host carries `emailFrame`, and the
+email canvas draws the header above the body and the footer below it, styled by
+the same stylesheet rules. They are inert: a click on them selects nothing, a
+drop on them lands nowhere, and nothing in them can be dragged. Hovering says
+"Every email gets this header and footer from your brand. It is not part of
+this email, so it cannot be edited here."
+
+Seen on screen in Devi's Booking reminder: her orange bar and "Juniper Row" on
+top; below the body her name, the legal links, Instagram and Pinterest, and
+"Sent with Piggles". A click on the footer selected nothing; a click on the
+email's own sentence selected it. No console errors. `frame.test.ts`: 5 tests;
+the old renderer fails 2 (nothing drawn), and removing the inert rule fails the
+third. Studio 197 tests, typecheck, ESLint clean.
 
 A side finding, filed as [919](919-her-automatic-emails-are-stuck-on-an-older-wording.md):
 her Booking reminder still says "Hi Alex — a friendly reminder", although the

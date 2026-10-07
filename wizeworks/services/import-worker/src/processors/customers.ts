@@ -1,8 +1,9 @@
 // Customer row processor for CSV import.
 //
-// Natural key: email. Upsert semantics:
-//   - Row has a matching email → update first/last name, company, phone, type, tags.
-//   - No matching email → create new customer.
+// Natural key: email; for a row with no email, name and phone together
+// (`existingByNameAndPhone`, sparx persona issue 106). Upsert semantics:
+//   - Row matches someone here → update first/last name, company, phone, type, tags.
+//   - No match → create new customer.
 //
 // Required columns: email (for upsert lookup; otherwise creates a no-email prospect).
 //
@@ -393,6 +394,8 @@ export async function processCustomerRows(
             select: { id: true, doNotContact: true },
           })
         );
+      } else {
+        existing = await existingByNameAndPhone(ctx, row);
       }
 
       const consent = consentFrom(row.accepts_marketing);
@@ -487,6 +490,46 @@ export async function processCustomerRows(
   return results;
 }
 
+/** A phone number's digits, the last ten: "(801) 555-0193" and "+18015550193"
+ *  are the same line. Null for something too short to be one. */
+export function phoneDigits(phone: string | null | undefined): string | null {
+  const digits = (phone ?? '').replace(/\D/g, '');
+  return digits.length >= 7 ? digits.slice(-10) : null;
+}
+
+/**
+ * The customer a row with NO email is, when one is already here: the same name
+ * and the same phone number.
+ *
+ * Email was the only match, so a walk-in with only a phone came over as a new
+ * person every time the file was imported: Gillett's Desmond Achterberg twice
+ * after one re-import (sparx persona issue 106). The file check already treats
+ * phone as an identity; this is the write agreeing. The name has to match as
+ * well, because a household or a shop shares one phone between people.
+ */
+export async function existingByNameAndPhone(
+  ctx: { tenantId: string },
+  row: CustomerRow
+): Promise<{ id: string; doNotContact: boolean } | null> {
+  const digits = phoneDigits(row.phone);
+  const { firstName, lastName } = namesOf(row);
+  if (digits === null || (firstName ?? '').trim() === '') return null;
+  const candidates = await withTenant(ctx, (tx) =>
+    tx.customer.findMany({
+      where: {
+        tenantId: ctx.tenantId,
+        deletedAt: null,
+        firstName: { equals: (firstName ?? '').trim(), mode: 'insensitive' },
+        lastName: { equals: (lastName ?? '').trim(), mode: 'insensitive' },
+      },
+      select: { id: true, doNotContact: true, phone: true },
+      take: 20,
+    })
+  );
+  const match = candidates.find((candidate) => phoneDigits(candidate.phone) === digits);
+  return match ? { id: match.id, doNotContact: match.doNotContact } : null;
+}
+
 /**
  * What each row WOULD do, resolved against the contacts already here.
  *
@@ -527,6 +570,15 @@ export async function previewCustomerRows(
     }
   }
 
+  // A row with no email is matched by name and phone, as the write matches it,
+  // or the practice run promises a new person the import then updates.
+  const byPhone = new Map<number, { suppressed: boolean }>();
+  for (const [rowIndex, row] of rows.entries()) {
+    if ((row.email?.trim() ?? '') !== '') continue;
+    const found = await existingByNameAndPhone(ctx, row);
+    if (found) byPhone.set(rowIndex, { suppressed: found.doNotContact });
+  }
+
   return rows.map((row, rowIndex) => {
     const email = row.email?.trim().toLowerCase();
     const key = email === undefined || email === '' ? {} : { naturalKey: email };
@@ -540,7 +592,7 @@ export async function previewCustomerRows(
     const refusal = wouldRefuse(row);
     if (refusal !== null) return { rowIndex, action: 'error' as const, errorMsg: refusal, ...key };
 
-    const known = email === undefined || email === '' ? undefined : here.get(email);
+    const known = email === undefined || email === '' ? byPhone.get(rowIndex) : here.get(email);
     if (known === undefined) return { rowIndex, action: 'create' as const, ...key };
     if (!opts.upsert) {
       return {

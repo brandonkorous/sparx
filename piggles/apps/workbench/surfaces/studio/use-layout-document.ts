@@ -18,6 +18,7 @@ import {
   type LayoutRow,
 } from '../../lib/studio/layout-data';
 import { useActivePropertyId } from '../../lib/api/shell-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /** The one store this layout lives in, however many panes are looking at it. */
 function useOpenLayout(row: LayoutRow | null, propertyId: string | null) {
@@ -74,7 +75,7 @@ function useLayoutWrites(
 
   const error = useMemo(() => {
     const failure = publishLayout.error ?? saveLayout.error;
-    return failure instanceof Error ? failure.message : null;
+    return failure ? failureMessage(failure, 'That did not go through. Try again.') : null;
   }, [saveLayout.error, publishLayout.error]);
 
   return {

@@ -11,6 +11,7 @@ import {
   ENTITIES_COLLECTION,
   type UniversalSearchDocument,
   GLOBAL_SITE_SCOPE,
+  EVERY_FITMENT_YEAR,
   ORDERS_COLLECTION,
   type OrderSearchDocument,
   PRODUCTS_COLLECTION,
@@ -112,7 +113,9 @@ function buildProductFilter(input: ProductSearchInput): string {
     parts.push(`fitment_engines:=[${input.fitmentEngines.map((s) => `\`${s}\``).join(',')}]`);
   }
   if (input.fitmentYear) {
-    parts.push(`fitment_years:=${input.fitmentYear}`);
+    // A fit with no year range fits every year: those products carry the
+    // EVERY_FITMENT_YEAR sentinel (sparx persona issue 125).
+    parts.push(`fitment_years:=[${EVERY_FITMENT_YEAR},${input.fitmentYear}]`);
   }
   if (input.onlyProductIds) {
     const ids = input.onlyProductIds.length > 0 ? input.onlyProductIds : [NO_PRODUCT];

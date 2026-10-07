@@ -30,6 +30,10 @@ export interface RecordHit {
   title: string;
   /** Secondary line (email, status, owner) — shown, never faded out. */
   subtitle?: string;
+  /** The address the search entry stored for this record, when it has one: the
+   *  pane for its kind, where the type alone cannot say (an invoice on account
+   *  or any other invoice). */
+  url?: string;
 }
 
 /** Shape of a /v1/search/all row (the universal `entities` document). */
@@ -38,6 +42,7 @@ interface UniversalDoc {
   record_id: string;
   title: string;
   subtitle?: string;
+  url?: string;
 }
 
 /** The two rich-collection rows we lift from /v1/search. */
@@ -160,6 +165,7 @@ export function useRecordSearch(query: string, pages = 1): RecordSearchResult {
         recordId: doc.record_id,
         title: doc.title,
         subtitle: doc.subtitle,
+        ...(doc.url ? { url: doc.url } : {}),
       });
     }
 

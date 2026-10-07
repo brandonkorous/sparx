@@ -25,6 +25,7 @@ import {
 
 import { anyBillingConfigured, getBillingStripe, isBillingConfigured } from './client';
 import { isPlatformTenant, resolveBillingPhase, type BillingPhaseView } from './gate';
+import { isSpentCouponError, openOfferDiscount } from './offer';
 import { planFor, type BillingPlan, type PlanShape } from './plans';
 import {
   MODULE_MONTHLY_CENTS,
@@ -321,8 +322,8 @@ export type CheckoutSessionResult =
  * Open a Stripe Checkout Session that BIRTHS the tenant's platform subscription —
  * the trial-conversion / first-card path. `mode: 'subscription'` with one line item
  * per explicitly-enabled billable module, the trial pinned to the signup clock, and
- * `allow_promotion_codes: true` so the tenant can type a discount (promotion) code
- * on Stripe's hosted page. The resulting `customer.subscription.created` webhook
+ * either the plan's open offer applied on its own or, once it is gone, a box on
+ * Stripe's hosted page to type a discount (promotion) code. The resulting `customer.subscription.created` webhook
  * reconciles status + items + module flags (see reconcileFromSubscription) — this
  * function persists nothing itself.
  *
@@ -382,14 +383,10 @@ export async function createCheckoutSession(
     subscriptionData.trial_settings = { end_behavior: { missing_payment_method: 'pause' } };
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const base: Stripe.Checkout.SessionCreateParams = {
     mode: 'subscription',
     customer: customerId,
     line_items: lineItems,
-    // The discount-code box the tenant asked for: Stripe renders + validates it,
-    // redeeming a PROMOTION CODE (created off a coupon, @wizeworks/billing operator.ts)
-    // against its restrictions. No custom field or redemption logic on our side.
-    allow_promotion_codes: true,
     // Collect the card now even while trialing — the whole point of this path is
     // putting a payment method on file so the trial converts instead of pausing.
     payment_method_collection: 'always',
@@ -397,9 +394,40 @@ export async function createCheckoutSession(
     success_url: opts.successUrl,
     cancel_url: opts.cancelUrl,
     metadata: { sparx_tenant_id: tenantId },
-  });
+  };
 
+  const session = await createSessionWithOffer(stripe, plan, base);
   return session.url ? { url: session.url } : { url: null, reason: 'unconfigured' };
+}
+
+/** The session with Stripe's discount-code box. Stripe forbids `discounts` and
+ *  `allow_promotion_codes` together, so a session carries the offer OR the box. */
+function withCodeBox(
+  params: Stripe.Checkout.SessionCreateParams
+): Stripe.Checkout.SessionCreateParams {
+  // Stripe renders + validates promotion codes (created off a coupon in
+  // operator.ts) on its hosted page. No redemption logic on our side.
+  return { ...params, allow_promotion_codes: true };
+}
+
+/**
+ * Open the session with the plan's open offer applied, or with the code box once
+ * the offer is gone. If the last place is taken between the read and the create,
+ * Stripe refuses the discount and the person still gets a checkout, at full price.
+ */
+async function createSessionWithOffer(
+  stripe: Stripe,
+  plan: BillingPlan,
+  params: Stripe.Checkout.SessionCreateParams
+): Promise<Stripe.Checkout.Session> {
+  const discounts = await openOfferDiscount(stripe, plan);
+  if (!discounts) return stripe.checkout.sessions.create(withCodeBox(params));
+  try {
+    return await stripe.checkout.sessions.create({ ...params, discounts });
+  } catch (err) {
+    if (!isSpentCouponError(err)) throw err;
+    return stripe.checkout.sessions.create(withCodeBox(params));
+  }
 }
 
 export interface BillingStateView {

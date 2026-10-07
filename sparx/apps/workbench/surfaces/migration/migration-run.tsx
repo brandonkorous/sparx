@@ -50,12 +50,14 @@ import {
 } from 'lucide-react';
 import {
   bringInLabel,
+  leftBehind,
   summarize,
   type CanonicalEntity,
   type MappedEntity,
   type ValidationIssue,
 } from '@wizeworks/migration';
 import { ColumnMapper } from './column-mapper';
+import { landedBreakdown, landedTotals, runHeadline } from './run-outcome';
 import { LiveConnection, type LivePull } from './live-connection';
 import { ReportProblemButton } from '../../components/feedback/report-problem-button';
 import { ModuleScope } from '../../components/module-scope';
@@ -66,7 +68,6 @@ import {
   entityLabel,
   loadFile,
   problemsCsv,
-  runTone,
   sentenceList,
   useMigrationRun,
   useMigrationVendors,
@@ -104,6 +105,8 @@ function IssueRow({ issue }: { issue: ValidationIssue }) {
  */
 function EntityReport({ mapped }: { mapped: MappedEntity }) {
   const { entity, rows, report } = mapped;
+  // In the file's own words, with what nothing read (issue 104).
+  const behind = leftBehind(report);
 
   return (
     <section className="border-base-300 bg-base-100 flex flex-col gap-2 rounded-xl border p-4">
@@ -141,14 +144,9 @@ function EntityReport({ mapped }: { mapped: MappedEntity }) {
         </Text>
       ) : null}
 
-      {report.unmappedColumns.length > 0 ? (
+      {behind.length > 0 ? (
         <Text className="text-sm">
-          {report.unmappedColumns.length}{' '}
-          {report.unmappedColumns.length === 1
-            ? 'column in this file has'
-            : 'columns in this file have'}{' '}
-          no home here and will be left behind: {report.unmappedColumns.slice(0, 6).join(', ')}
-          {report.unmappedColumns.length > 6 ? '…' : ''}
+          {`Left behind, with nowhere here to keep ${behind.length === 1 ? 'it' : 'them'}: ${behind.slice(0, 8).join(', ')}${behind.length > 8 ? `, and ${String(behind.length - 8)} more` : ''}.`}
         </Text>
       ) : null}
     </section>
@@ -211,39 +209,17 @@ function RunProgress({ runId }: { runId: string }) {
   if (isPending || data === undefined) return <Text>Starting…</Text>;
 
   const { run, problems } = data;
-  const running = run.status === 'running';
+  // What the run is CALLED, and how much of it was new, lives in run-outcome,
+  // the same rule the Piggles console uses (sparx persona issue 106).
+  const landed = landedTotals(run.entities);
+  const headline = runHeadline(run, landed);
 
   return (
     <div className="flex flex-col gap-4">
-      <Alert color={runTone(run.status)} variant="soft">
+      <Alert color={headline.tone} variant="soft">
         <AlertContent>
-          <AlertTitle>
-            {/* A practice run must not claim to be moving anything WHILE it runs.
-                The finished state said "nothing was saved" correctly, but for the
-                minute before that the screen read "Bringing your business over…"
-                — which is the one sentence a nervous person is watching for, and
-                it was not true. */}
-            {running
-              ? run.dryRun
-                ? 'Trying it out: nothing is being saved…'
-                : 'Bringing your business over…'
-              : run.status === 'failed'
-                ? 'Some of this did not land'
-                : run.dryRun
-                  ? 'Practice run finished: nothing was saved'
-                  : 'Your business is here'}
-          </AlertTitle>
-          <AlertDescription>
-            {running
-              ? run.dryRun
-                ? 'We are checking every row against what you already have. Nothing is being written to your business.'
-                : 'You can close this and come back. It keeps going without you.'
-              : run.status === 'failed'
-                ? 'The rest did come across. Nothing below has to be done again: bringing the same file in a second time updates what is here rather than duplicating it.'
-                : run.dryRun
-                  ? 'This is exactly what a real import would do. Run it for real when you are ready.'
-                  : 'Everything below is now in your account.'}
-          </AlertDescription>
+          <AlertTitle>{headline.title}</AlertTitle>
+          <AlertDescription>{headline.description}</AlertDescription>
           {/* A part-landed migration is the worst thing to leave someone alone with:
               they can see a number that is wrong and have no way to know which half
               of their business is missing. The run id is what lets us answer that
@@ -303,10 +279,11 @@ function RunProgress({ runId }: { runId: string }) {
               {(entity.imported + entity.updated).toLocaleString()}
             </Text>
             <Text className="text-sm">
-              of {entity.rowCount.toLocaleString()} rows{' '}
-              {run.dryRun ? 'would come over' : 'brought over'}
-              {entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}
+              {`of ${entity.rowCount.toLocaleString()} rows ${run.dryRun ? 'would come over' : 'brought over'}${entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}`}
             </Text>
+            {landedBreakdown(entity, run.dryRun) === null ? null : (
+              <Text className="text-sm">{landedBreakdown(entity, run.dryRun)}</Text>
+            )}
           </div>
         ))}
       </div>

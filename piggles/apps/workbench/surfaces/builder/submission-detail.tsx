@@ -64,6 +64,7 @@ import {
 } from './form-submissions-words';
 import { submissionCsvName, submissionToCsv } from './form-submissions-csv';
 import { contextRow } from './submission-context-words';
+import { readFailureMessage } from '../../lib/api/write-failure';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -470,7 +471,7 @@ function Attachments({ id, attachments }: { id: string; attachments: SubmissionA
     } catch (error) {
       toast.add({
         title: 'Could not download this file',
-        description: error instanceof Error ? error.message : 'Try again in a moment.',
+        description: readFailureMessage(error, 'Try again in a moment.'),
         type: 'error',
       });
     } finally {

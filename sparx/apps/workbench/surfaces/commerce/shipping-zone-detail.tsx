@@ -44,6 +44,7 @@ import {
   useShippingZone,
   useUpdateShippingZone,
   type ShippingZone,
+  regionCoverageError,
 } from './shipping-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -51,16 +52,26 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 interface Draft {
   name: string;
+  /** Delivers only to chosen countries. Its own field, not "countries is
+   *  non-empty": read that way, turning the switch off left the list empty, so
+   *  the switch flipped straight back on and the country picker never appeared.
+   *  No new region could be limited to a country (sparx persona issue 127). */
+  limited: boolean;
   countries: string[];
   priority: number;
 }
 
 function toDraft(zone: ShippingZone): Draft {
-  return { name: zone.name, countries: zone.targeting.countries, priority: zone.priority };
+  return {
+    name: zone.name,
+    limited: zone.targeting.countries.length > 0,
+    countries: zone.targeting.countries,
+    priority: zone.priority,
+  };
 }
 
 function emptyDraft(): Draft {
-  return { name: '', countries: [], priority: 0 };
+  return { name: '', limited: false, countries: [], priority: 0 };
 }
 
 export function ShippingZoneDetailSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -122,11 +133,13 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
   };
 
   const nameError = draft.name.trim() === '' ? 'Give this region a name.' : null;
+  const coverageError = regionCoverageError(draft);
 
   const dirty = isNew
     ? draft.name.trim() !== '' || draft.countries.length > 0 || draft.priority !== 0
     : draft.name !== saved.name ||
       draft.priority !== saved.priority ||
+      draft.limited !== saved.limited ||
       draft.countries.join(',') !== saved.countries.join(',');
 
   const saving = create.isPending || update.isPending;
@@ -147,11 +160,15 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
       : null;
 
   const submit = () => {
-    if (nameError) return;
+    if (nameError || coverageError) return;
     const input = {
       name: draft.name.trim(),
       priority: draft.priority,
-      targeting: { countries: draft.countries, regions: [], postalCodeRanges: [] },
+      targeting: {
+        countries: draft.limited ? draft.countries : [],
+        regions: [],
+        postalCodeRanges: [],
+      },
     };
     if (isNew) {
       create.mutate(input, {
@@ -202,7 +219,7 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
     });
   };
 
-  const everywhere = draft.countries.length === 0;
+  const everywhere = !draft.limited;
 
   return (
     <div className={PANE_SHELL}>
@@ -214,7 +231,7 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
             size="sm"
             className="ml-auto"
             loading={saving}
-            disabled={Boolean(nameError) || (!isNew && !dirty)}
+            disabled={Boolean(nameError) || Boolean(coverageError) || (!isNew && !dirty)}
             onClick={submit}
           >
             {isNew ? 'Create region' : 'Save'}
@@ -292,7 +309,12 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
                     color="module"
                     checked={everywhere}
                     onCheckedChange={(next: boolean) => {
-                      set('countries', next ? [] : draft.countries);
+                      setTouched(true);
+                      setDraft((current) => ({
+                        ...current,
+                        limited: !next,
+                        countries: next ? [] : current.countries,
+                      }));
                     }}
                   />
                 }
@@ -321,9 +343,11 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
                     />
                   }
                 />
-                <FieldDescription>
-                  Start typing to find a country. Choose none and this region reaches everywhere.
-                </FieldDescription>
+                {coverageError ? (
+                  <FieldStatus status="error">{coverageError}</FieldStatus>
+                ) : (
+                  <FieldDescription>Start typing to find a country.</FieldDescription>
+                )}
               </Field>
             )}
 
@@ -355,8 +379,8 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
           >
             {isNew ? (
               <Text className="text-sm">
-                Create this region first (use Save above), then its delivery options can be added
-                here.
+                Create this region first (use Create region above), then its delivery options can be
+                added here.
               </Text>
             ) : (
               <ZoneRatesEditor zoneId={id} />

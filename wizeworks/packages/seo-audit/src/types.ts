@@ -33,6 +33,15 @@ export interface AuditableEntity {
   // ── Title & meta ──────────────────────────────────────────────
   /** Effective `<title>` (author SEO title if set, else the resolved fallback). */
   title: string | null;
+  /**
+   * The title as a search result actually shows it, when that differs from
+   * `title`: the site adds its own name to every page but the home page, unless
+   * the title already names it (`servedTitle` in @wizeworks/builder-schemas).
+   * The length check measures this one. Gillett Diesel's 54-character title was
+   * served as 79 characters and the check called it a good length (sparx persona
+   * issue 134). Absent: `title` is what is served.
+   */
+  servedTitle?: string | null;
   /** The meta description (author SEO description), or null when unset. */
   description: string | null;
 

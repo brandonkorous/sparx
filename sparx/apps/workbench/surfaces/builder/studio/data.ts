@@ -431,6 +431,9 @@ export interface PageSettingsDto {
   /** `singleton` (a specific page) or `collection` (a template rendering every record
    *  of `recordType`). Read-only here — set through the page's targeting, not this panel. */
   kind: 'singleton' | 'collection';
+  /** The page's address. A slugless singleton is the home page, whose title the site
+   *  serves as written; every other page's title gets the site's name added. */
+  slug: string | null;
   /** The source a collection template renders (`commerce.product`, `cms.blog_post`, …),
    *  or null for a plain page. Read-only here; drives whether the product-type target shows. */
   recordType: string | null;

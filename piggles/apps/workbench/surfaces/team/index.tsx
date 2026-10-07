@@ -49,6 +49,7 @@ import {
   DialogTitle,
   EmptyState,
   Field,
+  FieldDescription,
   FieldLabel,
   FieldStatus,
   Input,
@@ -92,6 +93,7 @@ import {
   canManageTeam,
   personInitials,
   personName,
+  roleDescription,
   roleLabel,
 } from './roles';
 
@@ -278,6 +280,10 @@ function InviteModal({ open, onClose }: { open: boolean; onClose: () => void }) 
                   </option>
                 ))}
               </NativeSelect>
+              {/* What the chosen role can and cannot do. The sentences were
+                  written for this choice and the dialog never showed them
+                  (sparx persona issue 120). */}
+              <FieldDescription>{roleDescription(role)}</FieldDescription>
             </Field>
 
             {/* The one thing people get wrong about invitations, said once,
@@ -289,7 +295,7 @@ function InviteModal({ open, onClose }: { open: boolean; onClose: () => void }) 
           </form>
 
           <DialogFooter>
-            <Button color="neutral" variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={onClose}>
               Cancel
             </Button>
             {/* Associated with the form by id rather than nested inside it: the

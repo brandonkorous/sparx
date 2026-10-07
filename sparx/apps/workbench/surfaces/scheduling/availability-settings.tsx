@@ -71,6 +71,7 @@ import {
 } from './season-window';
 import { FALLBACK_BLOCK, hoursForNewDay, type HoursBlock, type WeekDraft } from './weekly-hours';
 import { HoursCopy } from './availability-copy';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -690,12 +691,15 @@ function Closures({
 
 /* ── The surface ────────────────────────────────────────────────────────── */
 
-export function AvailabilitySurface() {
+export function AvailabilitySurface({ ctx }: { ctx?: SurfaceContext }) {
   const confirm = useConfirm();
   const toast = useToast();
 
   const resources = useResources({ activeOnly: false });
-  const [resourceId, setResourceId] = useState<string | null>(null);
+  // Opened from a person or thing with no hours ("Set its hours"), it starts on
+  // that one rather than the first in the list (sparx persona issue 118).
+  const presetId = typeof ctx?.params.resourceId === 'string' ? ctx.params.resourceId : null;
+  const [resourceId, setResourceId] = useState<string | null>(presetId);
 
   // Default to the first resource once they load; stay put after that.
   const resourceList = resources.data?.items ?? [];

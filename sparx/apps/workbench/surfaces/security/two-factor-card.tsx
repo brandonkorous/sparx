@@ -46,6 +46,7 @@ import {
   useVerifyTwoFactor,
   type TwoFactorSetup,
 } from './security-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /** Server: totpOptions.digits. */
 const CODE_LENGTH = 6;
@@ -222,7 +223,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
         setStep('scan');
       },
       onError: (err) => {
-        setError(err instanceof Error ? err.message : 'Could not start setup. Please try again.');
+        setError(failureMessage(err, 'Could not start setup. Please try again.'));
       },
     });
   }
@@ -242,7 +243,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
       },
       onError: (err) => {
         setCode('');
-        setError(err instanceof Error ? err.message : 'That code did not work.');
+        setError(failureMessage(err, 'That code did not work.'));
       },
     });
   }
@@ -274,7 +275,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
         });
       },
       onError: (err) => {
-        setError(err instanceof Error ? err.message : 'Could not turn it off.');
+        setError(failureMessage(err, 'Could not turn it off.'));
       },
     });
   }
@@ -296,7 +297,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
         });
       },
       onError: (err) => {
-        setError(err instanceof Error ? err.message : 'Could not create new codes.');
+        setError(failureMessage(err, 'Could not create new codes.'));
       },
     });
   }

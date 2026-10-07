@@ -24,7 +24,12 @@ import { Table } from '../../components/table';
 import { faCalendarClock, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
-import { parseBookingStatus, STATUS_OPTIONS } from './bookings-list-filters';
+import {
+  parseBookingStatus,
+  statusQuery,
+  STATUS_OPTIONS,
+  type ListStatus,
+} from './bookings-list-filters';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { DownloadButton } from '../../components/download-button';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -39,7 +44,6 @@ import {
   useBookings,
   type Booking,
   type BookingOrder,
-  type BookingStatus,
   type BookingType,
 } from './bookings-data';
 
@@ -67,16 +71,16 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   // Seeded from the address so "3 bookings need confirming" opens on those
   // three. Read ONCE: after the first render the picker owns it.
-  const [status, setStatus] = useState<BookingStatus | ''>(() =>
-    parseBookingStatus(ctx.params.status)
-  );
+  const [status, setStatus] = useState<ListStatus>(() => parseBookingStatus(ctx.params.status));
+  // "Happened" is measured from when the list opened, not from every render.
+  const [openedAt] = useState(() => new Date().toISOString());
   const [type, setType] = useState<BookingType | ''>('');
   const [order, setOrder] = useState<BookingOrder>('desc');
   const [page, setPage] = useState(0);
 
   const query = {
     q: search.trim() || undefined,
-    status,
+    ...statusQuery(status, openedAt),
     bookingType: type,
     order,
     take: PAGE_SIZE,
@@ -153,7 +157,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
               className="w-auto"
               value={status}
               onChange={(event) => {
-                onFilter(setStatus)(event.target.value as BookingStatus | '');
+                onFilter(setStatus)(event.target.value as ListStatus);
               }}
             >
               {STATUS_OPTIONS.map((option) => (
@@ -206,7 +210,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
           params: { q: search.trim(), status, type, sort: order },
           onApply: (next) => {
             setSearch(next.q ?? '');
-            setStatus((next.status ?? '') as BookingStatus | '');
+            setStatus(parseBookingStatus(next.status));
             setType((next.type ?? '') as BookingType | '');
             setOrder(next.sort === 'asc' ? 'asc' : 'desc');
             setPage(0);

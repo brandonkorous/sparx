@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@wizeworks/auth';
 import { AuthWrapper } from '../../components/auth/auth-wrapper';
 import { safeInternalPath } from '../../lib/safe-path';
+import { joiningFrom } from '../../lib/invite-joining';
 
 export const metadata: Metadata = { title: 'Sign in · sparx Workbench' };
 export const dynamic = 'force-dynamic';
@@ -30,11 +31,15 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
   const session = await getSession();
   if (session) redirect(next);
 
+  // On the way to accept an invitation: name the business being joined.
+  const joining = await joiningFrom(next);
+
   return (
     <AuthWrapper
       initialMode="signIn"
       googleClientId={process.env.GOOGLE_CLIENT_ID}
       callbackURL={next}
+      joining={joining}
     />
   );
 }

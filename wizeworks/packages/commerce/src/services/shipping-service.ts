@@ -379,12 +379,18 @@ export async function createRate(ctx: ServiceContext, rawInput: unknown): Promis
   assertRateInputCoherent(input);
   return withTenant(ctx, async (tx) => {
     await assertZoneExists(tx, input.zoneId);
-    await assertProfileExists(tx, input.profileId);
+    let profileId = input.profileId;
+    if (profileId) {
+      await assertProfileExists(tx, profileId);
+    } else {
+      // No group named: the shop's default, made on first need (issue 128).
+      profileId = (await defaultProfileId(tx)) ?? (await createDefaultProfile(tx, ctx));
+    }
     const created = await tx.shippingRate.create({
       data: {
         tenantId: ctx.tenantId,
         zoneId: input.zoneId,
-        profileId: input.profileId,
+        profileId,
         name: input.name,
         type: input.type,
         amountCents: input.amountCents ?? null,
@@ -578,6 +584,9 @@ export async function rateShipment(
         anyConfigured: zones.length > 0,
         matching: zones.filter((z) => zoneMatchesAddress(z.targeting, request.toAddress.country)),
         fallbackProfileId: await defaultProfileId(tx, request.propertyId),
+        offersCollection: request.propertyId
+          ? await siteOffersCollection(tx, request.propertyId)
+          : false,
       };
     }),
     tryLiveRates(ctx, request),
@@ -626,6 +635,13 @@ export async function rateShipment(
   // the thing every business with a counter can actually do.
   if (out.length === 0 && !zoneRead.anyConfigured) {
     return [collectionOption(request.currency)];
+  }
+  // A shop that delivers may ALSO hand orders over in person, when it says so.
+  // Before this, setting up delivery took collecting away, though the shop's
+  // counter was still open (sparx persona issue 129). Offered for any address,
+  // including one outside every delivery region: collecting needs none.
+  if (zoneRead.anyConfigured && zoneRead.offersCollection) {
+    out.push(collectionOption(request.currency));
   }
 
   return out.sort((a, b) => a.amountCents - b.amountCents);
@@ -998,6 +1014,85 @@ function serializeZone(row: ShippingZone & { _count: { rates: number } }): Shipp
     rateCount: row._count.rates,
     updatedAt: row.updatedAt.toISOString(),
   };
+}
+
+/** Whether this site also offers collecting in person while it delivers. */
+async function siteOffersCollection(tx: TxClient, propertyId: string): Promise<boolean> {
+  const row = await tx.commerceSiteSettings.findFirst({
+    where: { propertyId },
+    select: { offersCollection: true },
+  });
+  return row?.offersCollection ?? false;
+}
+
+/** Read this site's collecting choice, for the Shipping screen. */
+export async function getCollectionSetting(
+  ctx: ServiceContext & { propertyId: string }
+): Promise<{ offersCollection: boolean }> {
+  return withTenant(ctx, async (tx) => ({
+    offersCollection: await siteOffersCollection(tx, ctx.propertyId),
+  }));
+}
+
+/** Turn collecting in person on or off for this site, beside its delivery. */
+export async function setCollectionSetting(
+  ctx: ServiceContext & { propertyId: string },
+  offersCollection: boolean
+): Promise<{ offersCollection: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    await tx.commerceSiteSettings.upsert({
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
+      create: { tenantId: ctx.tenantId, propertyId: ctx.propertyId, offersCollection },
+      update: { offersCollection },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.collection.updated',
+      entityType: 'CommerceSiteSettings',
+      entityId: ctx.propertyId,
+      diff: { after: { offersCollection } },
+    });
+    return { offersCollection };
+  });
+}
+
+/**
+ * The default product group, for a shop that has none: "All products". Made when
+ * the shop adds its first delivery option, because an option has to belong to a
+ * group and the Shipping screen rightly tells a shop it needs no group of its
+ * own until some products ship differently (sparx persona issue 128).
+ */
+async function createDefaultProfile(tx: TxClient, ctx: ServiceContext): Promise<string> {
+  const input = CreateShippingProfileInput.parse({
+    name: 'All products',
+    description: 'Everything you sell, unless you put it in another group.',
+  });
+  const created = await tx.shippingProfile.create({
+    data: {
+      tenantId: ctx.tenantId,
+      name: input.name,
+      description: input.description ?? null,
+      allowedCarrierServices: input.allowedCarrierServices,
+      hazmatClassesAllowed: input.hazmatClassesAllowed,
+      requiresSignature: input.requiresSignature,
+      requiresFreight: input.requiresFreight,
+    },
+    select: { id: true },
+  });
+  await writeAuditLog({
+    tx,
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    actorType: ctx.userId ? 'user' : 'system',
+    action: 'commerce.shipping_profile.created',
+    entityType: 'ShippingProfile',
+    entityId: created.id,
+    diff: { after: { name: input.name, reason: 'first delivery option' } },
+  });
+  return created.id;
 }
 
 /**

@@ -7,8 +7,10 @@
 //     (customers, orders, quotes, deals, variants, products),
 //   - `source = 'sample'` on inventory movements (append-only ledger),
 //   - `settings.sample = true` on scheduling services/resources,
+//   - `source = 'sample'` on bookings, which may sit on the business's own
+//     services (issue 085; older ones are found by their sample customer),
 //   - parent-linkage for child rows that have none of the above (returns hang off
-//     a sample order; bookings off a sample service; PO lines off a sample PO).
+//     a sample order; PO lines off a sample PO).
 //
 // Clear walks the FK graph parent-first so cascades remove children: carts →
 // orders (→ items/payments/returns) → quotes/deals → bookings → content → products
@@ -48,6 +50,11 @@ export const SAMPLE_MOVEMENT_SOURCE = 'sample';
  *  made the tier theirs, and Clear then leaves it alone. */
 export const SAMPLE_TIER_DESCRIPTION =
   'Sample data: the price tier the sample wholesale account buys on. Clearing sample data removes it.';
+
+/** The `source` value on practice bookings. A booking's own mark rather than its
+ *  service's, because practice bookings now use the menu the business already
+ *  has instead of bringing a second one (persona issue 085). */
+export const SAMPLE_BOOKING_SOURCE = 'sample';
 
 /** The `settings.sample` marker on scheduling services/resources. */
 export const SAMPLE_SETTINGS = { sample: true } as const;

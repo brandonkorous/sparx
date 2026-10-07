@@ -135,7 +135,11 @@ function emptyAdvice(search: string, locationName: string | null): string {
 
 export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [locationId, setLocationId] = useState('');
+  // Seeded from the address so a location's "See what is here" opens this on
+  // that place (issue 929). Read ONCE, like `level` below.
+  const [locationId, setLocationId] = useState(() =>
+    typeof ctx.params.location === 'string' ? ctx.params.location : ''
+  );
   // Seeded from the address so "3 sold out" on the stock report can open this
   // showing exactly those. Read ONCE: after the first render the control owns
   // it, and re-reading would fight a person who has since changed it.

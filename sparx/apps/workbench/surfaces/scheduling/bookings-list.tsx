@@ -35,25 +35,20 @@ import {
   useBookings,
   type Booking,
   type BookingOrder,
-  type BookingStatus,
   type BookingType,
 } from './bookings-data';
+import {
+  parseBookingStatus,
+  statusQuery,
+  STATUS_OPTIONS,
+  type ListStatus,
+} from './bookings-list-filters';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
 }
-
-const STATUS_OPTIONS: { value: BookingStatus | ''; label: string }[] = [
-  { value: '', label: 'Any status' },
-  { value: 'requested', label: 'Awaiting confirmation' },
-  { value: 'confirmed', label: 'Confirmed' },
-  { value: 'in_progress', label: 'In progress' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Canceled' },
-  { value: 'no_show', label: 'Did not turn up' },
-];
 
 const TYPE_OPTIONS: { value: BookingType | ''; label: string }[] = [
   { value: '', label: 'Every kind' },
@@ -67,14 +62,17 @@ const PAGE_SIZE = 50;
 
 export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<BookingStatus | ''>('');
+  // Seeded from the address, so By job's "Show them" opens on those (issue 926).
+  const [status, setStatus] = useState<ListStatus>(() => parseBookingStatus(ctx.params.status));
+  // "Happened" is measured from when the list opened, not from every render.
+  const [openedAt] = useState(() => new Date().toISOString());
   const [type, setType] = useState<BookingType | ''>('');
   const [order, setOrder] = useState<BookingOrder>('desc');
   const [page, setPage] = useState(0);
 
   const query = {
     q: search.trim() || undefined,
-    status,
+    ...statusQuery(status, openedAt),
     bookingType: type,
     order,
     take: PAGE_SIZE,
@@ -142,7 +140,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
               className="w-auto"
               value={status}
               onChange={(event) => {
-                onFilter(setStatus)(event.target.value as BookingStatus | '');
+                onFilter(setStatus)(event.target.value as ListStatus);
               }}
             >
               {STATUS_OPTIONS.map((option) => (

@@ -286,3 +286,27 @@ describe('storedDayText, what a date box is handed', () => {
     expect(storedDayText('soon')).toBe('soon');
   });
 });
+
+describe('a year typed one digit at a time', () => {
+  // A date box reports a value as soon as month, day and year each hold a
+  // number, so typing 2026 hands the form the years 2, 20 and 202 first. Each
+  // has to go to the stored value and come back unchanged, or the box resets.
+  // Year 2 came back as 1902, and year 202 failed the YYYY-MM-DD check and
+  // wiped the month and day she had typed (issue 931).
+  it.each([2, 20, 202, 2026])('keeps the year %i through a save and a read', (year) => {
+    const typed = new Date(2000, 9, 20);
+    typed.setFullYear(year);
+    const stored = pickedDayUtc(typed);
+    expect(stored).not.toBeNull();
+    const back = dayFromStored(stored);
+    expect(back?.getFullYear()).toBe(year);
+    expect(back?.getMonth()).toBe(9);
+    expect(back?.getDate()).toBe(20);
+  });
+
+  it('writes a short year with four digits', () => {
+    const typed = new Date(2000, 9, 20);
+    typed.setFullYear(202);
+    expect(dayIso(typed)).toBe('0202-10-20');
+  });
+});

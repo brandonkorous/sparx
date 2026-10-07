@@ -27,7 +27,7 @@ import { ModuleScope } from '../../components/module-scope';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
-  invoiceState,
+  documentRowState,
   type BillingDocument,
 } from '../invoicing/types';
 import {
@@ -247,7 +247,7 @@ export function CustomerInvoicesTab({
           </thead>
           <tbody>
             {rows.map((row) => {
-              const state = invoiceState(row.status);
+              const state = documentRowState(row);
               return (
                 <tr
                   key={row.id}
@@ -274,7 +274,7 @@ export function CustomerInvoicesTab({
                     {formatInvoiceMoney(row.total, row.currency)}
                   </td>
                   <td className="text-right font-mono text-sm tabular-nums">
-                    {formatInvoiceMoney(row.balance, row.currency)}
+                    {row.priceOffer ? '—' : formatInvoiceMoney(row.balance, row.currency)}
                   </td>
                 </tr>
               );
@@ -305,7 +305,7 @@ export function CustomerDealsTab({ ctx, customerId }: { ctx: SurfaceContext; cus
         <thead>
           <tr>
             <th>Deal</th>
-            <th>Stage</th>
+            <th>Step</th>
             <th className="text-right">Value</th>
           </tr>
         </thead>
@@ -385,7 +385,7 @@ export function CustomerTasksTab({ ctx, customerId }: { ctx: SurfaceContext; cus
                 </td>
                 <td className="hidden text-sm @md:table-cell">{shortDate(task.dueAt)}</td>
                 <td>
-                  <Badge color={meta.tone} variant="soft" size="sm">
+                  <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                     {meta.label}
                   </Badge>
                 </td>
@@ -402,13 +402,14 @@ export function CustomerTasksTab({ ctx, customerId }: { ctx: SurfaceContext; cus
 
 const SUB_STATUS_META: Record<
   SubscriptionStatus,
-  { label: string; tone: 'success' | 'info' | 'danger' | 'warning' | 'neutral' }
+  { label: string; tone: 'success' | 'info' | 'danger' | 'warning' | undefined }
 > = {
   trialing: { label: 'Trialing', tone: 'info' },
   active: { label: 'Active', tone: 'success' },
   past_due: { label: 'Past due', tone: 'danger' },
   paused: { label: 'Paused', tone: 'warning' },
-  cancelled: { label: 'Canceled', tone: 'neutral' },
+  // A canceled subscription is a real outcome with no tone: colorless, never grey.
+  cancelled: { label: 'Canceled', tone: undefined },
 };
 
 function subNextDate(iso: string | null): string {
@@ -450,7 +451,7 @@ export function CustomerSubscriptionsTab({
           </thead>
           <tbody>
             {rows.map((sub) => {
-              const meta = SUB_STATUS_META[sub.status] ?? { label: sub.status, tone: 'neutral' };
+              const meta = SUB_STATUS_META[sub.status] ?? { label: sub.status, tone: undefined };
               return (
                 <tr
                   key={sub.id}
@@ -469,7 +470,7 @@ export function CustomerSubscriptionsTab({
                     {subNextDate(sub.nextOccurrenceAt)}
                   </td>
                   <td>
-                    <Badge color={meta.tone} variant="soft" size="sm">
+                    <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                       {meta.label}
                     </Badge>
                   </td>

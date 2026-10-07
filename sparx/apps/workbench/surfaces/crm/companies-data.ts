@@ -282,3 +282,13 @@ export function useCompanyDomainMatch(email: string, enabled = true) {
 export function accountErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
 }
+
+/** A new request from a company: already naming who asked when only one
+ *  person works there. With several, the form asks. */
+export function newRequestParams(people: readonly { id: string }[]): {
+  id: 'new';
+  customerId?: string;
+} {
+  const only = people.length === 1 ? people[0] : undefined;
+  return only ? { id: 'new', customerId: only.id } : { id: 'new' };
+}

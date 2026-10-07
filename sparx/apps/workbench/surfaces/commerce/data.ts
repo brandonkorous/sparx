@@ -271,33 +271,41 @@ export interface OrderQuery {
    *  endpoint (`GET /v1/orders?customer_id=`) is the join; there is no separate
    *  per-customer orders route. */
   customerId?: string;
+  /** Scope the list to one company: every order placed by anyone who works
+   *  there (`b2b_account_id`, the customer's `companyId`). */
+  companyId?: string;
   sortBy: OrderSortKey;
   order: SortDirection;
   take: number;
   skip: number;
 }
 
+/** The query string for one window of `/v1/orders`. Split out so a test can
+ *  see a company page ask for its company's orders (sparx persona issue 112). */
+export function orderListParams(query: OrderQuery): Record<string, string | number> {
+  return {
+    ...(query.q ? { q: query.q } : {}),
+    ...(query.status ? { status: query.status } : {}),
+    ...(query.countedOnly ? { counted_only: 'true' } : {}),
+    ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
+    ...(query.owing ? { owing: 'true' } : {}),
+    ...(query.customerId ? { customer_id: query.customerId } : {}),
+    ...(query.companyId ? { b2b_account_id: query.companyId } : {}),
+    sort_by: query.sortBy,
+    order: query.order,
+    take: query.take,
+    skip: query.skip,
+  };
+}
+
 export function useOrders(query: OrderQuery) {
   return useQuery({
     queryKey: [...ORDERS_KEY, query],
     queryFn: () =>
-      api
-        .list<Order>('/v1/orders', {
-          ...(query.q ? { q: query.q } : {}),
-          ...(query.status ? { status: query.status } : {}),
-          ...(query.countedOnly ? { counted_only: 'true' } : {}),
-          ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
-          ...(query.owing ? { owing: 'true' } : {}),
-          ...(query.customerId ? { customer_id: query.customerId } : {}),
-          sort_by: query.sortBy,
-          order: query.order,
-          take: query.take,
-          skip: query.skip,
-        })
-        .then((result) => ({
-          items: result.items.map(normalizeOrder),
-          total: result.total,
-        })),
+      api.list<Order>('/v1/orders', orderListParams(query)).then((result) => ({
+        items: result.items.map(normalizeOrder),
+        total: result.total,
+      })),
     // Keeps the current window on screen while the next one loads, so paging and
     // re-sorting don't blink the table out to an empty state and back.
     placeholderData: (previous) => previous,

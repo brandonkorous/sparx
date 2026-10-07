@@ -50,8 +50,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
-import { useCustomers } from './customers-data';
-import { customerName } from './customer-display';
+import { CustomerPicker } from '../invoicing/customer-picker';
 import { EngagementComposer } from './engagement-composer';
 import { usePipelines } from './pipelines-data';
 import { SaveFailure } from '@/components/save-failure';
@@ -219,7 +218,6 @@ function TicketEditor({
   const remove = useDeleteTicket(id);
 
   const { members: roster } = useTeamRoster();
-  const { data: customers } = useCustomers({});
   const { data: policies } = useSlaPolicies();
   // The support queue's own stages. `objectKey: 'ticket'` matters: without it
   // this picker would offer the SALES pipeline's stages, and a request could be
@@ -260,14 +258,6 @@ function TicketEditor({
       ? 'This request has not been opened yet. Close anyway?'
       : 'This request has unsaved changes. Close anyway?'
   );
-
-  const customerItems = useMemo(() => {
-    const items: Record<string, string> = { '': 'Not linked to anyone on file' };
-    for (const c of customers?.items ?? []) items[c.id] = customerName(c);
-    if (draft.customerId && !items[draft.customerId])
-      items[draft.customerId] = 'A removed customer';
-    return items;
-  }, [customers, draft.customerId]);
 
   const assigneeItems = useMemo(() => {
     const items: Record<string, string> = { '': 'Nobody yet' };
@@ -559,13 +549,16 @@ function TicketEditor({
               </Field>
               <Field>
                 <FieldLabel>Who asked</FieldLabel>
-                <Select
-                  color="module"
-                  aria-label="Which customer asked"
-                  value={draft.customerId}
-                  items={customerItems}
-                  onValueChange={(next) => {
-                    set('customerId', next as string);
+                {/* Searches every customer. A list of the first 100 could not
+                    name the rest, the limit the deal form dropped already
+                    (sparx persona issue 116). */}
+                <CustomerPicker
+                  value={draft.customerId || null}
+                  onSelect={(customer) => {
+                    set('customerId', customer.id);
+                  }}
+                  onClear={() => {
+                    set('customerId', '');
                   }}
                 />
               </Field>

@@ -8,11 +8,11 @@
     "there is only one plan in it. There is deliberately no annual price either —",
     "'Piggles is $99/month' is the whole sentence the marketing site says.",
     "",
-    "A FOUNDING-MEMBER RATE IS NOT A SECOND PLAN AND MUST NOT BECOME ONE. It is a",
-    "Stripe coupon applied to this same base price, announced on the header notice",
-    "(authored in the WizeWorks admin console, stored in platform_notices). Nothing",
-    "in this file changes for it — adding a second `base` here is how the one-plan",
-    "promise quietly turns into tiers.",
+    "A FOUNDING-MEMBER RATE IS NOT A SECOND PLAN AND MUST NOT BECOME ONE. It is",
+    "`offer`: a Stripe coupon on this same base price, $50 off for as long as the",
+    "subscription runs, for the first 100. The provisioner creates the coupon and",
+    "checkout applies it on its own while places are left. Adding a second `base`",
+    "here is how the one-plan promise quietly turns into tiers; a coupon is not.",
     "",
     "It lives here and not in @wizeworks/billing because a plan's shape and prices are",
     "brand policy: the platform owns the engine, the brand owns what it charges",
@@ -37,6 +37,11 @@
     "lookupKey": "piggles_base_monthly",
     "priceEnv": "PIGGLES_STRIPE_PRICE_BASE_MONTHLY",
     "monthlyCents": 9900
+  },
+  "offer": {
+    "coupon": "FOUNDER",
+    "amountOffCents": 5000,
+    "limit": 100
   },
   "included": {
     "businesses": 1,

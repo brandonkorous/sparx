@@ -17,6 +17,8 @@ export interface FleetServiceType {
   description: string | null;
   durationMinutes: number;
   priceCents: number;
+  /** Priced after looking at the job; the site says so instead of a price. */
+  priceOnQuote?: boolean;
   currency: string;
   requiresApproval: boolean;
   requiresAsset: boolean;

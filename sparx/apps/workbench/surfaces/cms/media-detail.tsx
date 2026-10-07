@@ -54,6 +54,7 @@ import {
   useDeleteAsset,
   useMediaAsset,
   useUpdateAsset,
+  sitePlacesLine,
   usedInLabel,
   type MediaAsset,
   type MediaKind,
@@ -569,8 +570,13 @@ function ManageAsset({
                   editor has no reference row to count (see `MediaAsset.usage`). */}
               <Fact label="Used in">
                 {usedInLabel(asset) ??
-                  'Nothing we can see. A picture placed straight into a page in the site editor is not counted here, so check there before deleting it.'}
+                  'Nothing we can see: no site page, header or footer, product, article, logo, category, review, post or record. An email design, a saved section or a theme is not checked, so look there before deleting it.'}
               </Fact>
+              {/* Which pages, by name, after the count: "1 site page" does not
+                  say which one to open before deleting (issue 932). */}
+              {asset.usedOnSite && sitePlacesLine(asset.usedOnSite) ? (
+                <Fact label="On your site">{sitePlacesLine(asset.usedOnSite)}</Fact>
+              ) : null}
               {asset.previewUrl ? (
                 <Fact label="Original">
                   <a
@@ -596,7 +602,7 @@ function ManageAsset({
               <Text className="text-sm">
                 {inUse
                   ? `It is used by ${usedInLabel(asset) ?? 'something on your site'}. Remove it from there first, then you can delete it.`
-                  : 'Removes it from your library for good. This cannot be undone. Check the site editor first: a picture placed straight into a page is not counted above.'}
+                  : 'Removes it from your library for good. This cannot be undone. An email design, a saved section or a theme is not checked above, so look there first.'}
               </Text>
             </div>
             <Button

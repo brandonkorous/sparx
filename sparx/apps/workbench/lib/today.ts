@@ -28,7 +28,12 @@ const pad = (n: number): string => String(n).padStart(2, '0');
 
 /** Any instant, as the calendar day it falls on WHERE THE READER IS. */
 export function dayIso(at: Date): string {
-  return `${String(at.getFullYear())}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`;
+  // Four digits for the year, always. A date box reports a value as soon as all
+  // three parts hold a number, so while somebody types "2026" it hands over the
+  // years 2, 20 and 202 on the way. Unpadded, "202-10-20" failed the YYYY-MM-DD
+  // check, the stored value fell to null, and the box wiped the month and day
+  // she had already typed (issue 931).
+  return `${String(at.getFullYear()).padStart(4, '0')}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`;
 }
 
 /** The reader's own calendar day, as `YYYY-MM-DD`. */
@@ -227,7 +232,12 @@ export function dayFromStored(iso: string | null | undefined): Date | null {
   if (!iso) return null;
   const at = new Date(iso);
   if (Number.isNaN(at.getTime())) return null;
-  return new Date(at.getUTCFullYear(), at.getUTCMonth(), at.getUTCDate());
+  // NOT `new Date(year, month, day)`: that constructor reads a year from 0 to 99
+  // as 1900-1999, so a half-typed year 2 came back as 1902 and the box showed it
+  // (issue 931). `setFullYear` takes the year as given.
+  const day = new Date(2000, 0, 1);
+  day.setFullYear(at.getUTCFullYear(), at.getUTCMonth(), at.getUTCDate());
+  return day;
 }
 
 /**

@@ -2,16 +2,26 @@
 // JSONB; soft-delete keeps historical bookings' service reference valid.
 
 import type { Prisma } from '@wizeworks/db';
-import { withTenant, type SchedulingService } from '@wizeworks/db';
+import { withTenant, type SchedulingService, type TxClient } from '@wizeworks/db';
 import type { CreateServiceInput, UpdateServiceInput } from '@wizeworks/scheduling-schemas';
 
 import { ServiceNotFoundError } from './errors';
+
+/** The booking rules a new service starts with: the business's oldest, which is the
+ *  `Standard` set the module seeds (`provisioning.ts`), or none when there are none. */
+async function defaultPolicyId(tx: TxClient): Promise<string | null> {
+  const policy = await tx.bookingPolicy.findFirst({
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+  return policy?.id ?? null;
+}
 
 export async function createService(
   tenantId: string,
   input: CreateServiceInput
 ): Promise<SchedulingService> {
-  return withTenant({ tenantId }, (tx) =>
+  return withTenant({ tenantId }, async (tx) =>
     tx.schedulingService.create({
       data: {
         tenantId,
@@ -25,12 +35,19 @@ export async function createService(
         durationMinutes: input.durationMinutes,
         bufferBeforeMin: input.bufferBeforeMin,
         bufferAfterMin: input.bufferAfterMin,
-        priceCents: input.priceCents,
+        // A quoted service carries no price: nothing to charge or take a deposit
+        // on until the job has been looked at (sparx persona issue 117).
+        priceCents: input.priceOnQuote ? 0 : input.priceCents,
+        priceOnQuote: input.priceOnQuote,
         currency: input.currency,
         capacity: input.capacity,
         assignmentStrategy: input.assignmentStrategy,
         resourceRequirements: input.resourceRequirements,
-        policyId: input.policyId ?? null,
+        // Left out: the business's first booking rules, the ones the module seeds
+        // with reminders 24 hours and 2 hours before. An explicit null still means
+        // none. Every service used to start with none, so no booking ever got a
+        // reminder while the site promised one (sparx persona issue 135).
+        policyId: input.policyId === undefined ? await defaultPolicyId(tx) : input.policyId,
         intakeFormId: input.intakeFormId ?? null,
         locationId: input.locationId ?? null,
         minLeadMinutes: input.minLeadMinutes,
@@ -56,10 +73,15 @@ export async function updateService(
   return withTenant({ tenantId }, async (tx) => {
     const existing = await tx.schedulingService.findFirst({ where: { id, deletedAt: null } });
     if (!existing) throw new ServiceNotFoundError(id);
+    const quoted = rest.priceOnQuote ?? existing.priceOnQuote;
     return tx.schedulingService.update({
       where: { id },
       data: {
         ...rest,
+        // Quoted wins over a price sent alongside it, as on create.
+        ...(quoted && (rest.priceOnQuote === true || rest.priceCents !== undefined)
+          ? { priceCents: 0 }
+          : {}),
         ...(resourceRequirements !== undefined
           ? { resourceRequirements: resourceRequirements }
           : {}),

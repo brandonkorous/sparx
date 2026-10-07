@@ -19,9 +19,15 @@ export function ProductListing({
   site,
   searchParams,
   asPageTitle,
+  basePath = '/products',
 }: {
   site: ResolvedSite;
   searchParams: SearchParams;
+  /** The page the listing sits on. Its filters submit back to that page: on a
+   *  tenant's own Shop page they used to submit to `/products`, so a shopper who
+   *  picked a make left "Shop" for a different page called "All products"
+   *  (sparx persona issue 125). */
+  basePath?: string;
   /** `/products` only: its shell has no heading, so this one is the page's. On a
    *  page that brings its own (a Shop page), a second heading straight under the
    *  first only repeated it (persona issue 273). */
@@ -33,7 +39,7 @@ export function ProductListing({
     <ScopedProductBrowser
       site={site}
       searchParams={searchParams}
-      basePath="/products"
+      basePath={basePath}
       {...(asPageTitle ? { heading: q ? `Results for “${q}”` : 'All products' } : {})}
     />
   );

@@ -21,6 +21,8 @@ import {
 
 import {
   B2B_ACCOUNT_APPROVED,
+  B2B_ACCOUNT_CREDIT_HOLD_NOTICE,
+  B2B_ACCOUNT_SUSPENDED_NOTICE,
   B2B_INVOICE_DUE_NUDGE,
   B2B_NEW_ACCOUNT_TASK,
   B2B_ORDER_APPROVED_EMAIL,
@@ -157,6 +159,9 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'commerce', spec: RETURN_DENIED_EMAIL },
   // B2B
   { module: 'b2b', spec: B2B_OVERDUE_ESCALATION },
+  // What that ladder did, told to the business (sparx persona issue 101).
+  { module: 'b2b', spec: B2B_ACCOUNT_SUSPENDED_NOTICE },
+  { module: 'b2b', spec: B2B_ACCOUNT_CREDIT_HOLD_NOTICE },
   { module: 'b2b', spec: B2B_NEW_ACCOUNT_TASK },
   { module: 'b2b', spec: B2B_ACCOUNT_APPROVED },
   { module: 'b2b', spec: B2B_QUOTE_RECEIVED },

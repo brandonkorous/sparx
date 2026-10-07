@@ -87,6 +87,17 @@ export function formatDate(value: string | null | undefined): string {
   return new Date(value).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
+/**
+ * A due date, printed as the DAY it is: its UTC calendar day, the way invoicing
+ * stores and counts one (`daysPastDue`). `formatDate` reads a moment in the
+ * reader's zone, which put INV-000014 on Nov 2 here and Nov 3 on Owed to you,
+ * the same bill on two screens (sparx persona issue 099).
+ */
+export function formatDueDay(value: string | null | undefined): string {
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
+}
+
 /* ── Queries ────────────────────────────────────────────────────────────── */
 
 export interface InvoiceListQuery {
@@ -125,7 +136,11 @@ export function useInvoice(id: string) {
 export function useInvoiceAccountChoices() {
   return useQuery({
     queryKey: [...invoiceKeys.all, 'account-choices'],
-    queryFn: () => api.list<{ id: string; companyName: string }>('/v1/b2b/accounts', { take: 250 }),
+    queryFn: () =>
+      api.list<{ id: string; companyName: string; paymentTerms: string | null }>(
+        '/v1/b2b/accounts',
+        { take: 250 }
+      ),
     staleTime: 60_000,
   });
 }

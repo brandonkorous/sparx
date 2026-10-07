@@ -14,7 +14,7 @@ import type { CanonicalRow } from '../canonical';
 import { clean } from '../coerce';
 import type { SourceRow } from '../parse/csv';
 import type { VendorAdapter } from '../types';
-import { pick, row, tags } from './_helpers';
+import { markRead, pick, row, tags } from './_helpers';
 
 const FRAMER_SYSTEM = new Set(
   ['Slug', 'Title', 'Name', 'Published', 'Draft', 'Date', 'Updated', 'Created'].map((header) =>
@@ -47,6 +47,7 @@ function mapContent(rows: SourceRow[]): CanonicalRow[] {
       const text = clean(value);
       if (text === '' || mapped[header] !== undefined) continue;
       mapped[`custom:${header}`] = text;
+      markRead(header);
     }
 
     return mapped;

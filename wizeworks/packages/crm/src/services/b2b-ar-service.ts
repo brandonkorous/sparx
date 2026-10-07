@@ -21,7 +21,7 @@
 // authority — it derives totals/balance/status AND re-syncs the account's
 // `credit_used`, so every AR mutation keeps credit utilisation consistent.
 
-import { poNumberOf, withPoNumber } from '@wizeworks/crm-schemas';
+import { poNumberOf, withPaymentTerms, withPoNumber } from '@wizeworks/crm-schemas';
 import { NET_TERMS_AR_WORKFLOW, NET_TERMS_AR_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { withTenant } from '@wizeworks/db';
 import type { DocumentStage, Prisma } from '@wizeworks/db';
@@ -35,7 +35,8 @@ import {
   type DocumentWithLines,
 } from './billing-document-service';
 import { buildSnapshotPayload } from './billing-snapshot';
-import { quoteLinesForOrder } from './ar-invoice-lines';
+import { accountContactBilling } from './account-contact-billing';
+import { itemizedFromOrder, quoteLinesForOrder } from './ar-invoice-lines';
 import { snapshotIssuer } from './billing-document-stage-service';
 import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
 import { closeWhenDocumentMovesOn } from './task-service';
@@ -148,8 +149,9 @@ export interface CreateOrderArInput {
  *
  * The account's last issued bill is the best answer: whoever its accounts
  * department asked invoices to go to, usually an accounts-payable inbox, and
- * the address on it. Failing that, the person who placed the order, the same
- * fallback a statement uses when an account has no invoice address yet.
+ * the address on it. Failing that, the person who placed the order, and then
+ * the account's own people, the rule its statement is addressed by
+ * (`accountContactBilling`).
  */
 async function defaultOrderBillTo(
   tx: Prisma.TransactionClient,
@@ -166,8 +168,15 @@ async function defaultOrderBillTo(
       ? (latest.billTo as Record<string, unknown>)
       : {};
   const lastEmail = typeof last.email === 'string' && last.email.trim() ? last.email.trim() : null;
-  const email = lastEmail ?? (orderedBy?.trim() ? orderedBy.trim() : null);
-  const address = typeof last.address === 'string' && last.address.trim() ? last.address : null;
+  const lastAddress = typeof last.address === 'string' && last.address.trim() ? last.address : null;
+  // The account's own people, the way its statement is addressed, for whatever
+  // the last bill and the order did not say: a first bill raised by hand has
+  // neither (sparx persona issue 100).
+  const contacts = lastEmail && lastAddress ? null : await accountContactBilling(tx, account.id);
+  const email =
+    lastEmail ?? (orderedBy?.trim() ? orderedBy.trim() : null) ?? contacts?.email ?? null;
+  const address =
+    lastAddress ?? (contacts && contacts.lines.length > 0 ? contacts.lines.join('\n') : null);
   return {
     name: account.companyName,
     ...(email ? { email } : {}),
@@ -177,8 +186,9 @@ async function defaultOrderBillTo(
 
 /**
  * Create a finalised net-terms AR document for a B2B account. Builds the document
- * at the Invoice stage with one synthetic line carrying the receivable (or, for an
- * order made from a quote, the quote's own lines and costs; ar-invoice-lines.ts), derives
+ * at the Invoice stage with the order's lines (the quote's own lines and costs for an
+ * order made from one, else the order's items; ar-invoice-lines.ts), or one line
+ * carrying the receivable when there is no order or its lines do not fit, derives
  * totals/balance/status (→ unpaid, balance = amount), freezes the Invoice
  * snapshot, and re-syncs the account's credit utilisation. Composes into the
  * caller's transaction (`ctx.tx`) so it's atomic with order placement.
@@ -190,7 +200,7 @@ export async function createOrderArDocument(
   return withTenant(ctx, async (tx) => {
     const account = await tx.company.findUnique({
       where: { id: input.companyId },
-      select: { id: true, companyName: true },
+      select: { id: true, companyName: true, paymentTerms: true },
     });
     if (!account) throw new CrmNotFoundError('Company', input.companyId);
 
@@ -205,19 +215,40 @@ export async function createOrderArDocument(
     // The order it bills: its PO number below, and the quote it came from. An
     // order made from a quote is invoiced with the quote's own lines and their
     // costs, so the invoice shows the margin the quote did (sparx persona issue
-    // 086). Any other order, or a quote that no longer comes to the order total,
-    // keeps the single order line (see ar-invoice-lines.ts).
+    // 086). Any other order is invoiced with its own items (issue 095). Lines
+    // that no longer come to the order total keep the single order line (see
+    // ar-invoice-lines.ts).
     const order = input.orderId
       ? await tx.order.findUnique({
           where: { id: input.orderId },
           select: {
             metadata: true,
             convertedFromDocumentId: true,
+            customerId: true,
             customer: { select: { email: true } },
+            shippingTotal: true,
+            surchargeTotal: true,
+            items: {
+              orderBy: { createdAt: 'asc' },
+              select: {
+                name: true,
+                sku: true,
+                quantity: true,
+                unitPrice: true,
+                lineSubtotal: true,
+                discountAmount: true,
+                taxAmount: true,
+                coreCharge: true,
+                productId: true,
+                variantId: true,
+              },
+            },
           },
         })
       : null;
-    const itemized = await quoteLinesForOrder(tx, order?.convertedFromDocumentId, amount);
+    const itemized =
+      (await quoteLinesForOrder(tx, order?.convertedFromDocumentId, amount)) ??
+      (order ? itemizedFromOrder(order, amount) : null);
 
     const doc = await tx.billingDocument.create({
       data: {
@@ -232,6 +263,10 @@ export async function createOrderArDocument(
         // terms could be billed twice (sparx persona issue 084). Every one of
         // the platform's order invoices was written this way: 4 of 4.
         orderId: input.orderId ?? null,
+        // The buyer who placed it, so the bill is in their history as well as the
+        // account's. "Make an invoice" always set it; this path never did, and
+        // the full bill opened with an empty Customer box (issue 095).
+        customerId: order?.customerId ?? null,
         currency: input.currency ?? 'USD',
         number,
         numberSeq: seq,
@@ -252,12 +287,17 @@ export async function createOrderArDocument(
         // accounts department will match it against (issue 077). Checkout puts
         // it on the order; it is read from there rather than passed in so every
         // caller of this function carries it without being told to.
-        metadata: input.orderId
-          ? (withPoNumber(
-              { source: 'b2b_order', orderId: input.orderId },
-              poNumberOf(order?.metadata)
-            ) as Prisma.InputJsonValue)
-          : { source: 'b2b_manual' },
+        // And the account's terms, frozen beside it and printed as "Net 45"
+        // (issue 103).
+        metadata: withPaymentTerms(
+          input.orderId
+            ? withPoNumber(
+                { source: 'b2b_order', orderId: input.orderId },
+                poNumberOf(order?.metadata)
+              )
+            : { source: 'b2b_manual' },
+          account.paymentTerms
+        ) as Prisma.InputJsonValue,
         // Itemized from the quote: its rate and delivery, so the totals worked
         // out from its lines are the order's (checked in ar-invoice-lines.ts).
         ...(itemized

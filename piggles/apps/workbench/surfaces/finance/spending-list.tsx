@@ -29,6 +29,7 @@ import {
   Badge,
   Button,
   Card,
+  Checkbox,
   Heading,
   Input,
   NativeSelect,
@@ -57,6 +58,7 @@ import {
 import { quickCostProblem } from './quick-cost';
 import { todayStartUtc } from '../../lib/today';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
+import { quietPeriod } from './spending-quiet';
 import { billState, formatCents, formatDay, kindColor, sourceLabel } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
@@ -81,9 +83,15 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 /* ── Quick entry ────────────────────────────────────────────────────────────
  *
- * Three fields and a button. Everything else an expense can carry has a sensible
- * default (today, unpaid, no vendor), and a person entering a shoebox of
+ * Three fields, a tick and a button. Everything else an expense can carry has a
+ * sensible default (today, no vendor), and a person entering a shoebox of
  * receipts should not be asked about any of it.
+ *
+ * A receipt is proof of payment, so the row records PAID unless she says not.
+ * It recorded every cost unpaid: Devi's horn buttons from the Saturday market,
+ * paid in cash, sat on Bills to pay as money she owed (issue 930). The tick
+ * stays as she left it, like the category, because a run of receipts is a run
+ * of the same kind of thing.
  */
 
 /** Ties the line under the row to the button it explains, so a screen reader
@@ -104,6 +112,7 @@ function QuickEntry({
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [alreadyPaid, setAlreadyPaid] = useState(true);
 
   const amountCents = parseMoneyToCents(amount);
   const canSave =
@@ -126,7 +135,7 @@ function QuickEntry({
         // Saturday purchase is what the full pane is for; the common case is
         // today, and asking every time would cost more than it saves.
         incurredAt: todayStartUtc(),
-        paidAt: null,
+        paidAt: alreadyPaid ? todayStartUtc() : null,
         dueAt: null,
         paymentMethod: null,
         reference: null,
@@ -143,7 +152,10 @@ function QuickEntry({
           // friction this whole row exists to remove.
           amountRef.current?.focus();
           afterPaneChange(() => {
-            toast.add({ title: 'Cost recorded', type: 'success' });
+            toast.add({
+              title: alreadyPaid ? 'Cost recorded as paid' : 'Cost recorded as not yet paid',
+              type: 'success',
+            });
           });
         },
         onError: (error) => {
@@ -208,6 +220,18 @@ function QuickEntry({
           ))}
         </NativeSelect>
         <div className="flex items-center gap-2">
+          <label className="flex shrink-0 items-center gap-1.5 text-sm">
+            <Checkbox
+              color="module"
+              size="sm"
+              checked={alreadyPaid}
+              aria-label="Already paid"
+              onChange={(event) => {
+                setAlreadyPaid(event.target.checked);
+              }}
+            />
+            Paid
+          </label>
           <Button
             size="sm"
             color="module"
@@ -219,7 +243,7 @@ function QuickEntry({
             <Icon glyph={faPlus} className="size-4" aria-hidden />
             Record
           </Button>
-          <Button size="sm" variant="ghost" color="neutral" onClick={onOpenFull}>
+          <Button size="sm" variant="ghost" onClick={onOpenFull}>
             More detail
           </Button>
         </div>
@@ -238,9 +262,11 @@ function QuickEntry({
 function ExpenseRow({
   item,
   onOpen,
+  showSource,
 }: {
   item: Expense;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
+  showSource: boolean;
 }) {
   // The business's day, not this computer's. Shares one cached read across
   // every row, and keeps a bill's badge agreeing with the aging report.
@@ -280,9 +306,11 @@ function ExpenseRow({
           {state.label}
         </Badge>
       </td>
-      <td className="hidden text-sm @4xl:table-cell">
-        {item.source === 'manual' ? null : sourceLabel(item.source)}
-      </td>
+      {showSource ? (
+        <td className="hidden text-sm @4xl:table-cell">
+          {item.source === 'manual' ? null : sourceLabel(item.source)}
+        </td>
+      ) : null}
       <td className="text-right font-medium tabular-nums">
         {formatCents(item.amountCents, item.currency)}
       </td>
@@ -314,6 +342,12 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useExpenses(filters);
+  // The newest cost of any date. An empty period then says when the last one
+  // was, rather than "Nothing recorded yet" to a business with five costs in
+  // the month before (issue 930).
+  const newest = useExpenses({ limit: 1 });
+  const latest = newest.data ? (newest.data.items[0] ?? null) : undefined;
+  const quiet = quietPeriod(period, latest);
 
   // `unpaidOnly: false` would mean "only paid" server-side, but the schema's
   // nullish boolean makes "all" and "paid" indistinguishable over a query
@@ -325,6 +359,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [data?.items, paid]);
 
   const isFiltered = search.trim() !== '' || categoryId !== '' || vendorId !== '' || paid !== 'all';
+  const showSource = rows.some((item) => item.source !== 'manual');
   const hasMore = data?.nextCursor !== null && limit < MAX_ROWS;
 
   const clearFilters = () => {
@@ -490,23 +525,45 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
                     description:
                       'Try a wider period, or clear the filters to see everything you have recorded.',
                     actions: (
-                      <Button size="sm" variant="outline" color="neutral" onClick={clearFilters}>
+                      <Button size="sm" variant="outline" onClick={clearFilters}>
                         Clear filters
                       </Button>
                     ),
                   }}
-                  firstRun={{
-                    icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,
-                    title: 'Nothing recorded yet',
-                    description:
-                      'Record what the business pays for (parts, wages, rent, software, fuel) and it will be counted against what you earn. Use the row above for a quick one, or open the full form for a bill with a due date and a receipt.',
-                    actions: (
-                      <Button size="sm" color="module" onClick={openNew}>
-                        <Icon glyph={faPlus} className="size-4" aria-hidden />
-                        Record a cost
-                      </Button>
-                    ),
-                  }}
+                  firstRun={
+                    quiet
+                      ? {
+                          icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,
+                          title: quiet.title,
+                          description: quiet.last
+                            ? `Your last cost was ${formatDay(quiet.last.incurredAt)}: ${quiet.last.description}, ${formatCents(quiet.last.amountCents, quiet.last.currency)}.`
+                            : 'Looking for the last cost you recorded.',
+                          actions: quiet.show ? (
+                            <Button
+                              size="sm"
+                              color="module"
+                              onClick={() => {
+                                if (quiet.show) setPeriod(quiet.show);
+                                setLimit(PAGE);
+                              }}
+                            >
+                              {quiet.showLabel}
+                            </Button>
+                          ) : undefined,
+                        }
+                      : {
+                          icon: <Icon glyph={faReceipt} className="size-6" aria-hidden />,
+                          title: 'Nothing recorded yet',
+                          description:
+                            'Record what the business pays for (materials, rent, wages, software) and it will be counted against what you earn. Use the row above for a quick one, or open the full form for a bill with a due date and a receipt.',
+                          actions: (
+                            <Button size="sm" color="module" onClick={openNew}>
+                              <Icon glyph={faPlus} className="size-4" aria-hidden />
+                              Record a cost
+                            </Button>
+                          ),
+                        }
+                  }
                 />
               </Card>
             ) : (
@@ -518,7 +575,10 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <th>What for</th>
                       <th className="hidden @lg:table-cell">Category</th>
                       <th className="hidden @2xl:table-cell">State</th>
-                      <th className="hidden @4xl:table-cell">Where from</th>
+                      {/* Only when a cost came from somewhere other than her own
+                          hands: on an account that types every cost in, the
+                          column was empty on every row (issue 930). */}
+                      {showSource ? <th className="hidden @4xl:table-cell">Where from</th> : null}
                       <th className="text-right">Amount</th>
                     </tr>
                   </thead>
@@ -527,6 +587,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <ExpenseRow
                         key={item.id}
                         item={item}
+                        showSource={showSource}
                         onOpen={(event) => {
                           open(item, event);
                         }}
@@ -541,7 +602,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
               <Button
                 size="sm"
                 variant="outline"
-                color="neutral"
+
                 loading={isFetching}
                 onClick={() => {
                   setLimit((current) => Math.min(current + PAGE, MAX_ROWS));

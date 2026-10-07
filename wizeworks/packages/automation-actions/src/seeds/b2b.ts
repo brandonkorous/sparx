@@ -38,6 +38,71 @@ export const B2B_OVERDUE_ESCALATION: SystemAutomationSpec = {
   status: 'active',
 };
 
+/** Tell the business when the late-payment ladder above stops a customer
+ *  ordering: a notice in the owners' bell that opens the account.
+ *
+ *  The ladder suspended O'Malley Ranch the morning a 40-day-old bill was moved
+ *  in, and nothing said so: no task, nothing in the bell, and the account page
+ *  read "Suspended" over help text about credit holds. The ladder published
+ *  `b2b.account.suspended` and nothing listened (sparx persona issue 101).
+ *  Suspension is lifted by hand once they have paid (docs/10 §9), so the notice
+ *  says how. A credit hold gets the same, in its own words. A notice and not a
+ *  task: it reports what happened, and a task would stay open after the account
+ *  is opened again. Managed. */
+export const B2B_ACCOUNT_SUSPENDED_NOTICE: SystemAutomationSpec = {
+  key: 'b2b.account-suspended-notice',
+  name: 'Wholesale customer suspended: tell me',
+  description:
+    'Tells you when a wholesale customer is suspended for paying late, so you know they cannot order and can open them again once they have paid.',
+  trigger: { kind: 'event', eventType: 'b2b.account.suspended' },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'platform.notify',
+      config: {
+        kind: 'b2b.account.suspended',
+        audience: 'owners',
+        severity: 'danger',
+        module: 'b2b',
+        title:
+          '{{b2bAccount.companyName}} can no longer order: a bill is {{b2bAccount.overdueDays}} days late',
+        body: 'Once they have paid, open their account and set Standing back to Open for orders.',
+        entityType: 'b2b_account',
+        entityId: '{{b2bAccount.id}}',
+      },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+export const B2B_ACCOUNT_CREDIT_HOLD_NOTICE: SystemAutomationSpec = {
+  key: 'b2b.account-credit-hold-notice',
+  name: 'Wholesale customer on credit hold: tell me',
+  description:
+    'Tells you when a wholesale customer is put on credit hold for paying late, so you know new orders on account are stopped.',
+  trigger: { kind: 'event', eventType: 'b2b.account.credit_hold' },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'platform.notify',
+      config: {
+        kind: 'b2b.account.credit_hold',
+        audience: 'owners',
+        severity: 'warning',
+        module: 'b2b',
+        title:
+          '{{b2bAccount.companyName}} is on credit hold: a bill is {{b2bAccount.overdueDays}} days late',
+        body: 'New orders on account are stopped. Chase the bill, or open their account and set Standing back to Open for orders.',
+        entityType: 'b2b_account',
+        entityId: '{{b2bAccount.id}}',
+      },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
 /** Open a set-up task when a new wholesale customer is added. Assigned to their
  *  rep, falling back to the tenant owner. Managed (no email).
  *

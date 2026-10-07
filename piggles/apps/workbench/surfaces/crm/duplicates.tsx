@@ -50,6 +50,7 @@ import {
   useMergeCustomers,
   type DuplicateGroup,
 } from './duplicates-data';
+import { duplicatesCheckedWords, useCrmSettings } from './workspace-data';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -91,9 +92,16 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
   // A business with one site is not helped by being told its customers are kept
   // per site; a business with seven needs to know, because the same person on
   // two of them is two records here and nothing on this screen can pair them.
+  // What the check compared, from the business's own rules: it named email and
+  // name-and-company whatever was switched on (sparx persona issue 108).
+  const settings = useCrmSettings();
+  const checked = duplicatesCheckedWords(
+    settings.data?.duplicateMatchRules ?? ['email', 'name_company']
+  );
+  const notChecked = checked.notChecked === null ? '' : ` ${checked.notChecked}`;
   const emptyDescription = oneSite
-    ? 'Nobody shares an email address, or a name and company. We check again whenever you reopen this, so come back after a busy spell.'
-    : `Nobody in ${activeSite?.name ?? 'this site'}'s customers shares an email address, or a name and company. Each of your sites keeps its own customers, so somebody who bought from two of them is two records here on purpose. We check again whenever you reopen this.`;
+    ? `${checked.checked}${notChecked} We check again whenever you reopen this, so come back after a busy spell.`
+    : `${checked.checked.replace('Nobody shares', `Nobody in ${activeSite?.name ?? 'this site'}'s customers shares`)}${notChecked} Each of your sites keeps its own customers, so somebody who bought from two of them is two records here on purpose. We check again whenever you reopen this.`;
   const bulkMerge = useBulkMerge();
   const toast = useToast();
   const confirm = useConfirm();
@@ -194,6 +202,19 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
               // same email on its main site and its archive, and every screen
               // told her nobody shared an email address.
               description={emptyDescription}
+              actions={
+                checked.notChecked === null ? undefined : (
+                  <Button
+                    size="sm"
+                    color="module"
+                    onClick={() => {
+                      ctx.open('crm.settings', {}, { target: 'tab' });
+                    }}
+                  >
+                    How the CRM behaves
+                  </Button>
+                )
+              }
             />
           </Card>
         ) : (
@@ -374,7 +395,7 @@ function CandidateRow({
         <Button
           size="sm"
           variant={isPrimary ? 'soft' : 'outline'}
-          color={isPrimary ? 'success' : 'neutral'}
+          {...(isPrimary ? { color: 'success' } : {})}
           className="shrink-0"
           aria-pressed={isPrimary}
           onClick={onKeep}
@@ -410,9 +431,11 @@ function CandidateRow({
               {meta.label}
             </Badge>
           ) : null}
+          {/* What the flag means, in the customer page's words. Most are set by an
+              import whose opt-in column did not say yes; nobody asked (issue 108). */}
           {customer.doNotContact ? (
             <Badge color="warning" variant="soft" size="sm">
-              Asked not to be contacted
+              Do not send marketing
             </Badge>
           ) : null}
         </div>

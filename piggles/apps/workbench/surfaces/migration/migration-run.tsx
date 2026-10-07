@@ -31,6 +31,7 @@ import {
   useStartMigration,
   type LoadedFile,
 } from './data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4 overflow-y-auto';
 
@@ -145,7 +146,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
       } catch (error) {
         toast.add({
           title: 'That did not start',
-          description: error instanceof Error ? error.message : 'Try again in a moment.',
+          description: failureMessage(error, 'Try again in a moment.'),
           type: 'error',
         });
       }

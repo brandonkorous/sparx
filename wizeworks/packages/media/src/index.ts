@@ -6,8 +6,10 @@ export {
   countAssetUsage,
   countOneAssetUsage,
   describeUsage,
+  sitePlacesUsingAsset,
   UNCOUNTED,
   type AssetUsage,
+  type SitePlaceUsingAsset,
 } from './asset-usage.js';
 
 export {

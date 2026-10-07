@@ -9,6 +9,8 @@
 // — swallow quota/blocked errors, degrade to the default, never throw. A lost
 // preference is a mild annoyance; a crash on a private-mode browser is not.
 
+import { personalKey } from './workbench/storage-owner';
+
 const KEY = 'piggles-console-list-view';
 
 export type ListView = 'board' | 'table';
@@ -19,7 +21,7 @@ type ViewMap = Record<string, ListView>;
 function read(): ViewMap {
   if (typeof localStorage === 'undefined') return {};
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(personalKey(KEY));
     return raw ? (JSON.parse(raw) as ViewMap) : {};
   } catch {
     return {};
@@ -34,7 +36,7 @@ export function readListView(surfaceKey: string, fallback: ListView): ListView {
 export function writeListView(surfaceKey: string, view: ListView): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(KEY, JSON.stringify({ ...read(), [surfaceKey]: view }));
+    localStorage.setItem(personalKey(KEY), JSON.stringify({ ...read(), [surfaceKey]: view }));
   } catch {
     // Storage full or blocked — the choice just won't survive a reload.
   }

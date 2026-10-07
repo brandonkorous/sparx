@@ -344,7 +344,12 @@ function BlueprintBody({
     if (!current) return;
     const ok = await confirm({
       title: `Remove “${blueprint.name}” from ${targetName}?`,
-      description: `This tears the whole design back out of ${targetName}: the pages, content, products and email designs it added are deleted, and its look is cleared. This cannot be undone. Anything you created yourself is left alone.`,
+      // A design whose pages are gone no longer owns the header, footer and look
+      // the site wears, so removing it leaves those alone (persona issue 273).
+      description:
+        current.status === 'replaced'
+          ? `This clears what is left of the design on ${targetName}: the content, products and email designs it added are deleted. The header, footer and look ${targetName} has now stay as they are. This cannot be undone. Anything you created yourself is left alone.`
+          : `This tears the whole design back out of ${targetName}: the pages, content, products and email designs it added are deleted, and its look is cleared. This cannot be undone. Anything you created yourself is left alone.`,
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',

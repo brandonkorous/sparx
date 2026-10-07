@@ -82,6 +82,7 @@ import { detachEverywhereTx } from './detach-instances';
 import { newOpBatch, pageCreateOp, pageDeleteOp, savedThemesSetOp, themeSetOp } from './silica-ops';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
+import { indexSitePages, withPageSearch } from './page-search';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
 
@@ -309,11 +310,14 @@ async function healPagesTx(tx: TxClient, pages: BuilderPage[]): Promise<BuilderP
  *  defaults the same way `starterPages` does (Commerce on, Scheduling and CMS off), so
  *  a caller that has no flags to hand — a test, a script — behaves predictably rather
  *  than seeding a publisher a product page. */
-export function load(
+export async function load(
   ctx: PropertyContext,
   modules: SiteChromeOptions = {}
 ): Promise<StoredSilicaSite | null> {
-  return withTenant(ctx, async (tx) => {
+  // The record pages this read may create are pages like any other, so search is
+  // told once they are committed (`page-search.ts`).
+  let seededRecordPages = false;
+  const stored = await withTenant(ctx, async (tx) => {
     let allPages = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
@@ -333,6 +337,7 @@ export function load(
       // hit `(tenant_id, property_id, slug)` and 500'd every builder load in production.
       const seeded = await ensureRecordPagesTx(tx, ctx, allPages, modules);
       if (seeded) {
+        seededRecordPages = true;
         allPages = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
           orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
@@ -350,6 +355,8 @@ export function load(
     ]);
     return rowsToStoredSite(await healPagesTx(tx, pages), await healFramesTx(tx, layouts), site);
   });
+  if (seededRecordPages) await indexSitePages(ctx);
+  return stored;
 }
 
 // ── Public storefront reads (docs/118 Stage 6, the render cutover) ────────────
@@ -1254,7 +1261,14 @@ export interface SiteSyncResult {
   relay: { batchId: string; seq: number; ops: BuilderOpEnvelope[] } | null;
 }
 
-export async function sync(
+/** `syncWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function sync(
+  ...args: Parameters<typeof syncWrite>
+): Promise<Awaited<ReturnType<typeof syncWrite>>> {
+  return withPageSearch(args[0], () => syncWrite(...args));
+}
+
+async function syncWrite(
   ctx: PropertyContext,
   rawInput: unknown,
   opts: SyncOptions = {}
@@ -1609,6 +1623,13 @@ function syncTx(
   });
 }
 
+/** `resetWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function reset(
+  ...args: Parameters<typeof resetWrite>
+): Promise<Awaited<ReturnType<typeof resetWrite>>> {
+  return withPageSearch(args[0], () => resetWrite(...args));
+}
+
 /**
  * Discard the property's silica site so the next `load` returns null and the
  * editor re-opens on the CURRENT starter seed — the "re-seed, not backfill"
@@ -1632,7 +1653,7 @@ function syncTx(
  *     away the tenant's brand, and "reset my layout" should not silently force
  *     them to re-pick a theme.
  */
-export async function reset(ctx: PropertyContext): Promise<void> {
+async function resetWrite(ctx: PropertyContext): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     // `hasSilicaContent`, not `isSilica`. Reset is the tool for "take this silica content
@@ -2184,6 +2205,13 @@ export function loadPage(
   });
 }
 
+/** `publishPageWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function publishPage(
+  ...args: Parameters<typeof publishPageWrite>
+): Promise<Awaited<ReturnType<typeof publishPageWrite>>> {
+  return withPageSearch(args[0], () => publishPageWrite(...args));
+}
+
 /**
  * Publish ONE page.
  *
@@ -2191,7 +2219,7 @@ export function loadPage(
  * publish sends them — a body that reached production without its frame pointer
  * would render inside a header its author had already moved it away from.
  */
-export async function publishPage(
+async function publishPageWrite(
   ctx: PropertyContext,
   id: string
 ): Promise<{ pageId: string; publishedAt: string; release: { id: string; hash: string } }> {
@@ -2346,11 +2374,18 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
  *  published columns stay authoritative for rendering until Phase 6 flips reads
  *  onto the artifacts — the two are written in the same transaction, so they
  *  cannot disagree. */
+/** `publishWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function publish(
+  ...args: Parameters<typeof publishWrite>
+): Promise<Awaited<ReturnType<typeof publishWrite>>> {
+  return withPageSearch(args[0], () => publishWrite(...args));
+}
+
 /** The release, plus HOW MUCH went live — the count is the only part of this a
  *  person reads, and it was computed here and then thrown away. The console's
  *  toast invented a `pages` field to say it with, which does not exist on the
  *  wire, so a successful publish told the owner "undefined pages are live". */
-export async function publish(
+async function publishWrite(
   ctx: PropertyContext
 ): Promise<{ id: string; hash: string; pages: number }> {
   let publishedPageCount = 0;
@@ -2841,6 +2876,13 @@ export interface InstallSiteInput {
   symbols?: Record<string, unknown> | null;
 }
 
+/** `installSiteWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function installSite(
+  ...args: Parameters<typeof installSiteWrite>
+): Promise<Awaited<ReturnType<typeof installSiteWrite>>> {
+  return withPageSearch(args[0], () => installSiteWrite(...args));
+}
+
 /**
  * Lay a whole authored site down over this property — the blueprint install seam.
  *
@@ -2860,7 +2902,7 @@ export interface InstallSiteInput {
  * model them, so a page created by `sync` alone would be a plain singleton with no
  * SEO — a collection template would silently never bind to its recordType.
  */
-export async function installSite(
+async function installSiteWrite(
   ctx: PropertyContext,
   input: InstallSiteInput
 ): Promise<{ pageIds: string[] }> {
@@ -2948,6 +2990,13 @@ export async function installSite(
   return { pageIds: pages.map((p) => p.id) };
 }
 
+/** `addPageWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function addPage(
+  ...args: Parameters<typeof addPageWrite>
+): Promise<Awaited<ReturnType<typeof addPageWrite>>> {
+  return withPageSearch(args[0], () => addPageWrite(...args));
+}
+
 /**
  * Add ONE page to the property's silica site, leaving every existing page untouched —
  * the blueprint UPDATE seam for a page a later version introduced (docs/55: a design
@@ -2962,7 +3011,7 @@ export async function installSite(
  * record-address slug is derived here for a collection template, identical to `installSite`
  * — a slugless product page would otherwise land at `''`/`null` and collide with Home.
  */
-export async function addPage(ctx: PropertyContext, page: InstallPageInput): Promise<string> {
+async function addPageWrite(ctx: PropertyContext, page: InstallPageInput): Promise<string> {
   const current = (await load(ctx)) ?? emptySite();
   const id = defaultMakeId();
   const slug = slugForCollectionPage(page);

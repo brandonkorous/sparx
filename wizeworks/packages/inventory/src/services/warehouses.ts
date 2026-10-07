@@ -3,7 +3,7 @@
 
 import { CreateWarehouseInput, UpdateWarehouseInput } from '@wizeworks/commerce-schemas';
 import { isSampleRow, withTenant } from '@wizeworks/db';
-import type { Prisma, Warehouse } from '@wizeworks/db';
+import type { Prisma, TxClient, Warehouse } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 import { indexInventoryEntity } from '../events';
+import { CHANNEL_CANDIDATE_SELECT, channelDefaultId } from './channel-default';
 
 export interface WarehouseRow {
   id: string;
@@ -52,9 +53,73 @@ export interface WarehouseRow {
    *
    * NULL when the caller did not ask for it, never 0: "nobody counted" and
    * "nothing here" are different answers and a zero would assert the second.
+   * The list and a single read both count; an audit snapshot does not. The
+   * single read did not either, until its pane had to say what is there
+   * (issue 929).
    */
   onHand: number | null;
   binCount: number | null;
+  /**
+   * Online orders ship from here: postage is priced from this address and a
+   * label is bought from it. The same answer `resolveDefaultWarehouseId` gives,
+   * so the screen and the courier cannot disagree (issue 929). The column it
+   * mostly comes from, `defaultForChannel`, is not enough on its own: with no
+   * location named, a fallback still ships, and the screen has to say which.
+   *
+   * NULL when the caller did not work it out (an audit snapshot).
+   */
+  shipsOnline: boolean | null;
+}
+
+/** The location online orders ship from, by the resolver's own rule. */
+async function storefrontShipFromIdOnTx(tx: TxClient): Promise<string | null> {
+  const candidates = await tx.warehouse.findMany({
+    where: { isActive: true, deletedAt: null },
+    select: CHANNEL_CANDIDATE_SELECT,
+  });
+  return channelDefaultId(candidates, 'storefront');
+}
+
+/**
+ * A channel ships from ONE place. Naming a location for a channel takes the
+ * channel off every other location, in the same transaction, with an audit line
+ * for each. Without this, two locations could both claim it and the resolver
+ * would pick the older without a word.
+ */
+async function releaseChannelsOnTx(
+  tx: TxClient,
+  ctx: ServiceContext,
+  keepId: string,
+  channels: readonly string[]
+): Promise<void> {
+  if (channels.length === 0) return;
+  const others = await tx.warehouse.findMany({
+    where: { deletedAt: null, NOT: { id: keepId } },
+  });
+  for (const other of others) {
+    const list = Array.isArray(other.defaultForChannel)
+      ? (other.defaultForChannel as string[])
+      : [];
+    const kept = list.filter((channel) => !channels.includes(channel));
+    if (kept.length === list.length) continue;
+    const updated = await tx.warehouse.update({
+      where: { id: other.id },
+      data: { defaultForChannel: kept },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'inventory.warehouse.updated',
+      entityType: 'Warehouse',
+      entityId: other.id,
+      diff: {
+        before: serializeWarehouse(other) as unknown as Record<string, unknown>,
+        after: serializeWarehouse(updated) as unknown as Record<string, unknown>,
+      },
+    });
+  }
 }
 
 export async function listWarehouses(
@@ -122,13 +187,18 @@ export async function listWarehouses(
       levels.map((row) => [row.warehouseId, row._sum.onHand ?? 0])
     );
     const binsBy = new Map<string, number>(bins.map((row) => [row.warehouseId, row._count._all]));
+    const shipsFrom = await storefrontShipFromIdOnTx(tx);
 
     return {
       items: rows.map((row) =>
-        serializeWarehouse(row, {
-          onHand: onHandBy.get(row.id) ?? 0,
-          binCount: binsBy.get(row.id) ?? 0,
-        })
+        serializeWarehouse(
+          row,
+          {
+            onHand: onHandBy.get(row.id) ?? 0,
+            binCount: binsBy.get(row.id) ?? 0,
+          },
+          row.id === shipsFrom
+        )
       ),
       total,
     };
@@ -139,11 +209,18 @@ export async function getWarehouse(
   ctx: ServiceContext,
   warehouseId: string
 ): Promise<WarehouseRow> {
-  const row = await withTenant(ctx, (tx) =>
-    tx.warehouse.findFirst({ where: { id: warehouseId, deletedAt: null } })
-  );
-  if (!row) throw new InventoryNotFoundError('Warehouse', warehouseId);
-  return serializeWarehouse(row);
+  const found = await withTenant(ctx, async (tx) => {
+    const row = await tx.warehouse.findFirst({ where: { id: warehouseId, deletedAt: null } });
+    if (!row) return null;
+    const [levels, binCount, shipsFrom] = await Promise.all([
+      tx.inventoryLevel.aggregate({ where: { warehouseId }, _sum: { onHand: true } }),
+      tx.inventoryBin.count({ where: { warehouseId } }),
+      storefrontShipFromIdOnTx(tx),
+    ]);
+    return { row, counts: { onHand: levels._sum.onHand ?? 0, binCount }, shipsFrom };
+  });
+  if (!found) throw new InventoryNotFoundError('Warehouse', warehouseId);
+  return serializeWarehouse(found.row, found.counts, found.row.id === found.shipsFrom);
 }
 
 export async function createWarehouse(
@@ -181,6 +258,7 @@ export async function createWarehouse(
         isActive: input.isActive,
       },
     });
+    await releaseChannelsOnTx(tx, ctx, warehouse.id, input.defaultForChannel);
 
     await writeAuditLog({
       tx,
@@ -255,6 +333,7 @@ export async function updateWarehouse(
         ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
       },
     });
+    await releaseChannelsOnTx(tx, ctx, updated.id, input.defaultForChannel ?? []);
 
     await writeAuditLog({
       tx,
@@ -270,12 +349,12 @@ export async function updateWarehouse(
       },
     });
 
-    return updated;
+    return { updated, shipsFrom: await storefrontShipFromIdOnTx(tx) };
   });
 
   await indexInventoryEntity(ctx, 'warehouse', warehouseId);
 
-  return serializeWarehouse(result);
+  return serializeWarehouse(result.updated, undefined, result.updated.id === result.shipsFrom);
 }
 
 export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string): Promise<void> {
@@ -406,11 +485,13 @@ export async function bootstrapDefaultWarehouse(
 
 export function serializeWarehouse(
   w: Warehouse,
-  counts?: { onHand: number; binCount: number }
+  counts?: { onHand: number; binCount: number },
+  shipsOnline?: boolean
 ): WarehouseRow {
   return {
     onHand: counts?.onHand ?? null,
     binCount: counts?.binCount ?? null,
+    shipsOnline: shipsOnline ?? null,
     id: w.id,
     name: w.name,
     code: w.code,

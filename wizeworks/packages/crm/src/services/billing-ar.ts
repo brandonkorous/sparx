@@ -140,6 +140,23 @@ function zoneDay(at: Date, timeZone: string | null | undefined): number {
 }
 
 /**
+ * A DUE DAY, as it is stored: the business's calendar day `days` after `from`,
+ * at midday UTC.
+ *
+ * A due date is a day (`daysPastDue` below), printed as its UTC calendar day,
+ * and invoicing stores a typed one at midday so it is that day in every zone
+ * anybody uses. The writers that worked one out from terms added the days to
+ * the MOMENT instead, so an order placed on account at 10:11 PM in Denver on
+ * Oct 3 was due at 05:11 UTC on Nov 3: Net 30 printed as Nov 3, one day more
+ * than the terms, while the wholesale list read the same moment as Nov 2
+ * (sparx persona issue 099). Counting from the business's own day and storing
+ * midday fixes both: the printed day is the day the terms give.
+ */
+export function dueDayAfter(from: Date, days: number, timeZone?: string | null): Date {
+  return new Date(zoneDay(from, timeZone) + Math.max(0, Math.trunc(days)) * DAY_MS + DAY_MS / 2);
+}
+
+/**
  * Midnight at the start of the business's current day, as a Date.
  *
  * The query boundary that matches `daysPastDue`: "due before today" has to mean

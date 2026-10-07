@@ -18,6 +18,9 @@
 
 import { withTenant } from '@wizeworks/db';
 
+import { endOfDayExclusive } from './rollup';
+import { ORDER_MOVEMENT_REFERENCE } from './stock-movements';
+
 export type JobType = 'order' | 'booking';
 
 /** Where a row's revenue figure came from — see the file header. */
@@ -38,8 +41,21 @@ export interface JobProfit {
   currency: string;
   revenueCents: number;
   revenueBasis: RevenueBasis;
-  /** Cost of the goods consumed, from the inventory movement ledger. */
+  /** Cost of the goods consumed, from the inventory movement ledger: the part
+   *  that was RECORDED. See `uncostedLines` for the part that was not. */
   cogsCents: number;
+  /**
+   * Things sold on this job whose cost was never recorded: a goods line whose
+   * stock movement carries no cost, or no stock movement at all.
+   *
+   * The ledger stamps a sale with what the units cost, and when nothing about
+   * that was ever written down it stamps 0 (`costOfGoods` falls back to zero).
+   * So `cogsCents` alone cannot tell "cost nothing" from "nobody said". A row
+   * with one of these has no margin to report: `marginRate` is null and the
+   * surface says "Not recorded" rather than a 100% (persona issue 924). A line
+   * whose product the owner explicitly costed at 0 counts as recorded.
+   */
+  uncostedLines: number;
   /** What a marketplace kept. Zero for a job that never touched one. */
   feeCents: number;
   /** Ledger spend pinned to this job — parts bought for it, a subcontractor. */
@@ -76,6 +92,10 @@ export function jobMargin(input: {
 
 export interface JobProfitQuery {
   from: Date;
+  /** The last calendar DAY of the range, inclusive. It was compared as an instant
+   *  (`lte`), so a period ending today dropped everything done today: a sale
+   *  written down at the till was missing from "This month" until tomorrow
+   *  (persona issue 924, the same as Spending's 462). */
   to: Date;
   propertyId?: string | null;
   /** Which kinds of work to include. Default: both. */
@@ -122,7 +142,7 @@ export async function jobProfitability(
     const orders = wantsOrders
       ? await tx.order.findMany({
           where: {
-            placedAt: { gte: query.from, lte: query.to },
+            placedAt: { gte: query.from, lt: endOfDayExclusive(query.to) },
             // A cancelled order is not a job anyone did — including it would
             // rank a row whose costs were never incurred.
             status: { notIn: ['cancelled'] },
@@ -151,7 +171,7 @@ export async function jobProfitability(
     const bookings = wantsBookings
       ? await tx.booking.findMany({
           where: {
-            startAt: { gte: query.from, lte: query.to },
+            startAt: { gte: query.from, lt: endOfDayExclusive(query.to) },
             status: 'completed',
             deletedAt: null,
             ...siteFilter,
@@ -202,11 +222,21 @@ export async function jobProfitability(
       orderIds.length > 0
         ? await tx.inventoryMovement.findMany({
             where: {
-              referenceType: 'order',
+              referenceType: ORDER_MOVEMENT_REFERENCE,
               referenceId: { in: orderIds },
               costConsumedCents: { not: null },
             },
-            select: { referenceId: true, costConsumedCents: true },
+            select: { referenceId: true, variantId: true, costConsumedCents: true },
+          })
+        : [];
+    /* The goods each order sold, to tell a recorded cost from a missing one. A
+     * line with no variant is a service or a one-off written in by hand: there
+     * are no goods, so there is nothing to have recorded. */
+    const goodsLines =
+      orderIds.length > 0
+        ? await tx.orderItem.findMany({
+            where: { orderId: { in: orderIds }, variantId: { not: null } },
+            select: { orderId: true, variantId: true, variant: { select: { costCents: true } } },
           })
         : [];
     // Core deposits on rebuilt parts whose old part has not come back yet (sparx
@@ -239,9 +269,17 @@ export async function jobProfitability(
     }
 
     const cogsById = new Map<string, number>();
+    const costedLine = new Set<string>();
     for (const m of movements) {
       if (!m.referenceId) continue;
       cogsById.set(m.referenceId, (cogsById.get(m.referenceId) ?? 0) + (m.costConsumedCents ?? 0));
+      if ((m.costConsumedCents ?? 0) > 0) costedLine.add(`${m.referenceId}:${m.variantId}`);
+    }
+    const uncostedById = new Map<string, number>();
+    for (const line of goodsLines) {
+      const recorded =
+        costedLine.has(`${line.orderId}:${line.variantId ?? ''}`) || line.variant?.costCents === 0;
+      if (!recorded) uncostedById.set(line.orderId, (uncostedById.get(line.orderId) ?? 0) + 1);
     }
 
     /* This module's own contribution: ledger spend pinned to each job. */
@@ -267,12 +305,17 @@ export async function jobProfitability(
       const cogsCents = cogsById.get(order.id) ?? 0;
       const feeCents = order.channelFeeCents ?? 0;
       const allocatedCents = allocatedById.get(`order:${order.id}`) ?? 0;
-      const { marginCents, marginRate } = jobMargin({
+      const uncostedLines = uncostedById.get(order.id) ?? 0;
+      const margin = jobMargin({
         revenueCents,
         cogsCents,
         feeCents,
         allocatedCents,
       });
+      const { marginCents } = margin;
+      // No rate over a cost that is partly unknown: 100% here is the absence of
+      // a number, not a measurement of one.
+      const marginRate = uncostedLines > 0 ? null : margin.marginRate;
       rows.push({
         type: 'order',
         id: order.id,
@@ -284,6 +327,7 @@ export async function jobProfitability(
         revenueCents,
         revenueBasis: 'collected',
         cogsCents,
+        uncostedLines,
         feeCents,
         allocatedCents,
         marginCents,
@@ -316,6 +360,7 @@ export async function jobProfitability(
         revenueCents,
         revenueBasis: 'list_price',
         cogsCents: 0,
+        uncostedLines: 0,
         feeCents: 0,
         allocatedCents,
         marginCents,
@@ -326,6 +371,34 @@ export async function jobProfitability(
     sortJobs(rows, query.sort ?? 'margin_asc');
     return rows.slice(0, limit);
   });
+}
+
+/**
+ * Appointments in the range that have happened and were never closed.
+ *
+ * By job counts an appointment once it is marked completed: an open one may
+ * have been a no-show, and a no-show made nothing. But nothing marks a past
+ * appointment done on its own, so a salon that never presses Complete saw "No
+ * completed work in this period" over a month of appointments. Halo & Hem: 23
+ * appointments in August, 22 still "confirmed" and one "in progress" since
+ * (persona issue 926). The surface says how many and opens them.
+ */
+export async function openPastBookingCount(
+  tenantId: string,
+  query: Pick<JobProfitQuery, 'from' | 'to' | 'propertyId'>,
+  now: Date = new Date()
+): Promise<number> {
+  const end = endOfDayExclusive(query.to);
+  return withTenant({ tenantId }, (tx) =>
+    tx.booking.count({
+      where: {
+        startAt: { gte: query.from, lt: end < now ? end : now },
+        status: { in: ['confirmed', 'in_progress'] },
+        deletedAt: null,
+        ...(query.propertyId ? { propertyId: query.propertyId } : {}),
+      },
+    })
+  );
 }
 
 function personName(
@@ -339,11 +412,19 @@ function personName(
   return person.email ?? null;
 }
 
-/** In place — the caller owns the array and slices it straight after. */
+/** In place — the caller owns the array and slices it straight after.
+ *
+ *  A job whose goods cost was not recorded goes AFTER every measured one in
+ *  either margin order. Its margin is high only because nothing was taken off,
+ *  so ranked by it, it sat at the top of Best first and the bottom of Worst
+ *  first, and pushed the one honest row to look like the worst job of the month
+ *  (persona issue 924). */
 export function sortJobs(rows: JobProfit[], sort: NonNullable<JobProfitQuery['sort']>): void {
+  const unmeasuredLast = (a: JobProfit, b: JobProfit): number =>
+    Number(a.uncostedLines > 0) - Number(b.uncostedLines > 0);
   switch (sort) {
     case 'margin_desc':
-      rows.sort((a, b) => b.marginCents - a.marginCents);
+      rows.sort((a, b) => unmeasuredLast(a, b) || b.marginCents - a.marginCents);
       return;
     case 'revenue_desc':
       rows.sort((a, b) => b.revenueCents - a.revenueCents);
@@ -353,6 +434,6 @@ export function sortJobs(rows: JobProfit[], sort: NonNullable<JobProfitQuery['so
       return;
     case 'margin_asc':
     default:
-      rows.sort((a, b) => a.marginCents - b.marginCents);
+      rows.sort((a, b) => unmeasuredLast(a, b) || a.marginCents - b.marginCents);
   }
 }

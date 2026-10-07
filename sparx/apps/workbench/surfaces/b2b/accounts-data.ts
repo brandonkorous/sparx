@@ -440,3 +440,26 @@ export function useUpdateContact(id: string) {
 export function accountErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
 }
+
+/**
+ * What the chosen standing means, under the Standing box.
+ *
+ * It read "Put them on credit hold to stop new orders until they've paid what
+ * they owe." in every state. O'Malley Ranch was suspended by the late-payment
+ * ladder over a bill 40 days late, and the page said only "Suspended" above a
+ * line about credit holds: not who did it, not why, not what to do (sparx
+ * persona issue 101). Both holds stop orders on the account's terms; paying up
+ * front still works (`accountStandingRefusal`).
+ */
+export function standingHelp(status: AccountStatus): string {
+  switch (status) {
+    case 'credit_hold':
+      return 'They cannot order on account until this is lifted. Paying up front still works. This is set on its own when a bill is 14 days late. Set Open for orders when you are ready.';
+    case 'suspended':
+      return 'They cannot order on account until this is lifted. Paying up front still works. This is set on its own when a bill is 30 days late. Once they have paid, set Open for orders.';
+    case 'inactive':
+      return 'They no longer buy from you on account. Their orders and invoices are kept.';
+    default:
+      return 'Put them on credit hold to stop new orders until they have paid what they owe.';
+  }
+}

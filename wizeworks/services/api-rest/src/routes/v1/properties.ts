@@ -42,6 +42,7 @@ import { indexEntity } from '@wizeworks/events';
 import { mintZoneHost, tenantZone } from '../../lib/domain.js';
 import { PropertyBrandOverrideSchema, parseBrandOverride } from '../../lib/property-brand.js';
 import { publishSiteUpdated } from '../../lib/site-events.js';
+import { withoutBusinessName } from '../../lib/site-handle.js';
 
 // A stable per-tenant property handle from a display name: lowercase, hyphenated,
 // ≤63 chars. Mirrors the tenant slugify in @wizeworks/auth.
@@ -294,13 +295,13 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/properties', async (request) => {
     const auth = requireRole(request, 'editor');
     const input = CreateProperty.parse(request.body);
-    const slug = slugifyProperty(input.slug ?? input.name);
-    if (!slug) {
+    const derived = slugifyProperty(input.slug ?? input.name);
+    if (!derived) {
       throw validationError('Name must contain letters or numbers.', [
         { field: 'name', message: 'Could not derive a URL handle.' },
       ]);
     }
-    if (slug === 'primary') {
+    if (derived === 'primary') {
       throw validationError('”primary” is reserved for your main site.', [
         { field: 'slug', message: 'Choose a different handle.' },
       ]);
@@ -324,6 +325,7 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       select: { slug: true },
     });
     if (!tenant) throw notFound('Tenant', auth.tenantId);
+    const slug = input.slug ? derived : withoutBusinessName(derived, tenant.slug);
     // The tenant's OWN zone, read off the subdomain it already has rather than
     // decided from its brand. A Piggles business adding a second site was
     // getting `<site>.<tenant>.sparx.zone` — one business with two sites in two
@@ -619,6 +621,12 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
         });
         if (!existing) return { error: 'not_found' as const };
         if (existing.isPrimary) return { error: 'primary' as const };
+        // Read before the cascade takes them: each page has its own search entry
+        // (sparx persona issue 130), and nothing else will name them afterwards.
+        const pages = await tx.builderPage.findMany({
+          where: { propertyId: id },
+          select: { id: true },
+        });
         await tx.property.delete({ where: { id } });
         // What it WAS. The row is gone and the cascade has taken its pages and
         // its domains with it, so the log is the only place left that can say
@@ -627,7 +635,7 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
         await logSite(tx, auth, 'deleted', id, {
           before: { name: existing.name, slug: existing.slug },
         });
-        return { ok: true as const };
+        return { ok: true as const, pageIds: pages.map((p) => p.id) };
       }
     );
     if ('error' in result) {
@@ -643,6 +651,15 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       recordId: id,
       op: 'delete',
     });
+    for (const pageId of result.pageIds) {
+      await indexEntity({
+        tenantId: auth.tenantId,
+        actorId: auth.actorId,
+        entityType: 'builder_page',
+        recordId: pageId,
+        op: 'delete',
+      });
+    }
     // A deleted site's cached payload would otherwise go on answering for it
     // until it expired.
     await publishSiteUpdated(request.log, auth.tenantId, auth.actorId, {

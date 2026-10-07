@@ -40,7 +40,7 @@ export {
   GENERIC_INDUSTRY,
 } from './sample-data';
 export type { SampleDataPack, SampleDataCounts, SampleDataStatus } from './sample-data';
-export { isSampleRow } from './sample-data/markers';
+export { isSampleRow, SAMPLE_SETTINGS } from './sample-data/markers';
 
 export type {
   Tenant,

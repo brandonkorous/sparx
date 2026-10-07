@@ -17,6 +17,8 @@ export interface BookingQuery {
   serviceId?: string;
   /** ISO instant; bookings that start at or after it. 'What is still to come'. */
   from?: string;
+  /** ISO instant; bookings that start before it. "What has already happened". */
+  to?: string;
   /** Any of these statuses. A cancelled appointment in the future is not one
    *  that is still to come, so counting what is ahead has to say which. */
   statusIn?: BookingStatus[];

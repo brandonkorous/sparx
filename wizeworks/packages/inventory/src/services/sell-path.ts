@@ -37,6 +37,7 @@ import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
 
 import { cancelBackordersForHolderOnTx, recordBackorderOnTx } from './backorders';
+import { CHANNEL_CANDIDATE_SELECT, channelDefaultId } from './channel-default';
 import { recordOversellIncidentOnTx } from './integrity';
 import { consumePreorderOnTx } from './preorders';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
@@ -908,9 +909,11 @@ export async function reverseOrderSale(
 }
 
 /**
- * The default warehouse for a channel: the channel-default active warehouse, else
- * the first active one. Returns null when the tenant has no active warehouse.
- * Used by returns restock when an inspection records no explicit location.
+ * The location a channel ships from: the one named for it, else a settled
+ * fallback (see `channelDefaultId`). Returns null when the tenant has no active
+ * location. Postage, labels and returns read their ship-from address through
+ * this, and the Locations screen marks the same row, so the two cannot
+ * disagree. It used to end in `candidates[0]` of an unordered query (issue 929).
  */
 export async function resolveDefaultWarehouseId(
   ctx: ServiceContext,
@@ -919,13 +922,8 @@ export async function resolveDefaultWarehouseId(
   return withTenant(ctx, async (tx) => {
     const candidates = await tx.warehouse.findMany({
       where: { isActive: true, deletedAt: null },
-      select: { id: true, defaultForChannel: true },
+      select: CHANNEL_CANDIDATE_SELECT,
     });
-    if (candidates.length === 0) return null;
-    const match = candidates.find((w) => {
-      const list = Array.isArray(w.defaultForChannel) ? (w.defaultForChannel as string[]) : [];
-      return list.includes(channel);
-    });
-    return (match ?? candidates[0])!.id;
+    return channelDefaultId(candidates, channel);
   });
 }

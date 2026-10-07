@@ -36,6 +36,9 @@ export const CreateServiceInput = z.object({
   bufferBeforeMin: z.number().int().min(0).max(1440).default(0),
   bufferAfterMin: z.number().int().min(0).max(1440).default(0),
   priceCents: z.number().int().min(0).default(0),
+  // Priced after looking at the job (a rebuild, a set of injectors). The site
+  // says so instead of "Free", and nothing is charged at booking.
+  priceOnQuote: z.boolean().default(false),
   currency: z
     .string()
     .regex(/^[A-Za-z]{3}$/, 'A currency code is three letters, like USD or GBP')

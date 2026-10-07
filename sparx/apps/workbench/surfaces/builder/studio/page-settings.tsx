@@ -76,7 +76,7 @@ import {
   Textarea,
 } from '@wizeworks/silicaui-react';
 import { ChevronDown, ImageOff, ImagePlus, Trash2 } from 'lucide-react';
-import { FRAME_NONE } from '@wizeworks/builder-schemas';
+import { FRAME_NONE, servedPageTitle } from '@wizeworks/builder-schemas';
 import { useMediaPicker } from '../../cms/media-picker';
 import { usePageSettings, useProductTypeChoices, type PageSettingsDto } from './data';
 
@@ -163,16 +163,95 @@ function sameDraft(a: PageSettingsDraft, b: PageSettingsDraft): boolean {
   );
 }
 
+/** The home page: the slugless singleton, as `isHomeRow` in @wizeworks/builder says. */
+function isHomePage(page: Pick<PageSettingsDto, 'kind' | 'slug'> | undefined): boolean {
+  return page?.kind === 'singleton' && ['', '/'].includes(page.slug ?? '');
+}
+
+/** What a page is titled when its search title is left empty, for the box's grey
+ *  hint: its name, or on the home page the business name (`servedPageTitle`). */
+export function titleFallback(
+  pageName: string,
+  siteName: string,
+  page: Pick<PageSettingsDto, 'kind' | 'slug'> | undefined
+): string {
+  return isHomePage(page) ? siteName.trim() || pageName : pageName || siteName;
+}
+
+/** A page's title as search shows it, by the site's own rule (`servedPageTitle`):
+ *  the business name added on every page but the home page unless the title names
+ *  it, and an empty title falling back to the page name, or on the home page to the
+ *  business name. */
+export function shownTitle(
+  seoTitle: string,
+  pageName: string,
+  siteName: string,
+  page: Pick<PageSettingsDto, 'kind' | 'slug'> | undefined
+): string {
+  return servedPageTitle({ seoTitle, pageName, siteName, home: isHomePage(page) });
+}
+
+/**
+ * The title hint, measured as search shows the title (sparx persona issue 134): the
+ * site adds ` · <site>` to every page but the home page unless the title already
+ * names the business. Gillett Diesel typed 54 characters and the site served 79.
+ */
+export function titleLengthHint(
+  title: string,
+  siteName: string,
+  page: Pick<PageSettingsDto, 'kind' | 'slug'> | undefined
+): { text: string; over: boolean } | null {
+  const typed = title.trim();
+  if (typed === '') return null;
+  const shown = shownTitle(typed, typed, siteName, page);
+  const added = shown !== typed;
+  const n = shown.length;
+  if (n > 60) {
+    return {
+      text: added
+        ? `${n} characters as search shows it, with “ · ${siteName.trim()}” added: the end may be cut off. Shorten it, or write your business name into it yourself and nothing is added.`
+        : `${n} characters: the end may be cut off in search results`,
+      over: true,
+    };
+  }
+  return {
+    text: added
+      ? `${n} characters as search shows it, with “ · ${siteName.trim()}” added`
+      : `${n} characters`,
+    over: false,
+  };
+}
+
 /** Length guidance, phrased as an outcome rather than a rule. Search engines cut a
  *  title around 60 characters and a description around 160 — worth saying plainly,
  *  never worth blocking on. */
-function lengthHint(value: string, ideal: number): { text: string; over: boolean } | null {
+export function lengthHint(value: string, ideal: number): { text: string; over: boolean } | null {
   const n = value.trim().length;
   if (n === 0) return null;
   if (n > ideal) {
     return { text: `${n} characters: the end may be cut off in search results`, over: true };
   }
   return { text: `${n} characters`, over: false };
+}
+
+const RECORD_WORDING: Record<string, { each: string; where: string }> = {
+  'commerce.product': { each: 'product', where: 'the product itself, under Selling' },
+  'commerce.collection': { each: 'collection', where: 'the collection itself, under Selling' },
+  'commerce.category': { each: 'category', where: 'the category itself, under Selling' },
+  'scheduling.service': { each: 'service', where: 'the service itself, under Scheduling' },
+  'cms.blog_post': { each: 'post', where: 'the post itself, under Content' },
+};
+
+/** For a page that designs many records (one product page serves the whole catalog),
+ *  what each record is called and where its own search words are set. Undefined for
+ *  an ordinary page, whose words are its own. Also read by the SEO page check, so the
+ *  two places that offer these fields agree on which pages have them. */
+export function recordWordingFor(
+  page: Pick<PageSettingsDto, 'kind' | 'recordType'> | undefined
+): { each: string; where: string } | undefined {
+  return page?.kind === 'collection' && page.recordType
+    ? RECORD_WORDING[page.recordType]
+    : undefined;
 }
 
 /** One labelled field in the rail: label, one line of plain-language help, control.
@@ -242,9 +321,10 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
     set('ogImage', picked.url);
   };
 
-  const titleHint = lengthHint(draft.seoTitle, 60);
+  const titleHint = titleLengthHint(draft.seoTitle, siteName, stored.data);
   const descHint = lengthHint(draft.seoDescription, 160);
-  const previewTitle = draft.seoTitle.trim() || pageName || siteName;
+  // As search shows it, with the business name the site adds.
+  const previewTitle = shownTitle(draft.seoTitle, pageName, siteName, stored.data);
   const previewDescription = draft.seoDescription.trim();
 
   // The product-type target (docs/143 Option B) only applies to a product-page
@@ -269,17 +349,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
   // words actually come from. What stays is what genuinely still applies: the
   // header/footer choice (`findPageFrameId` resolves the frame for `/products/x` from
   // this row) and the product-type target above.
-  const recordWording: Record<string, { each: string; where: string }> = {
-    'commerce.product': { each: 'product', where: 'the product itself, under Selling' },
-    'commerce.collection': { each: 'collection', where: 'the collection itself, under Selling' },
-    'commerce.category': { each: 'category', where: 'the category itself, under Selling' },
-    'scheduling.service': { each: 'service', where: 'the service itself, under Scheduling' },
-    'cms.blog_post': { each: 'post', where: 'the post itself, under Content' },
-  };
-  const record =
-    stored.data?.kind === 'collection' && stored.data.recordType
-      ? recordWording[stored.data.recordType]
-      : undefined;
+  const record = recordWordingFor(stored.data);
 
   return (
     <div className="flex flex-col gap-4">
@@ -366,7 +436,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
             <Input
               size="sm"
               value={draft.seoTitle}
-              placeholder={pageName || siteName}
+              placeholder={titleFallback(pageName, siteName, stored.data)}
               onChange={(event) => {
                 set('seoTitle', event.target.value);
               }}

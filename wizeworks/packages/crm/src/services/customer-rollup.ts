@@ -85,6 +85,10 @@
 // evangelist keeps that, a cancelled order never demotes anyone, and a stage a
 // person set by hand on the customer's own pane is never walked back — the one
 // thing it does is stop a buyer being filed as a stranger.
+//
+// A booking is the other door, for a business that sells time: the same rule,
+// forward only, lives in `recognizeBookedCustomers` (@wizeworks/scheduling),
+// which cannot import this package (persona issue 113). Change one, change both.
 
 import { UNCOUNTED_ORDER_STATUS } from '@wizeworks/crm-schemas';
 import type { TxClient } from '@wizeworks/db';

@@ -23,6 +23,7 @@ import {
   expensesForTarget,
   getExpense,
   jobProfitability,
+  openPastBookingCount,
   listExpenses,
   setExpensePaid,
   updateExpense,
@@ -270,15 +271,22 @@ const financeExpenseRoutes: FastifyPluginAsync = async (app) => {
       request.headers['x-sparx-property-id']
     );
     const propertyId = propertyIds?.length === 1 ? propertyIds[0] : null;
-    const jobs = await jobProfitability(tenantId, {
-      from: query.from,
-      to: query.to,
-      propertyId,
-      types: query.types,
-      sort: query.sort,
-      limit: query.limit,
-    });
-    return ok({ jobs });
+    const wantsBookings = !query.types || query.types.includes('booking');
+    const [jobs, openBookings] = await Promise.all([
+      jobProfitability(tenantId, {
+        from: query.from,
+        to: query.to,
+        propertyId,
+        types: query.types,
+        sort: query.sort,
+        limit: query.limit,
+      }),
+      // Past appointments nobody closed, which By job leaves out (issue 926).
+      wantsBookings
+        ? openPastBookingCount(tenantId, { from: query.from, to: query.to, propertyId })
+        : Promise.resolve(0),
+    ]);
+    return ok({ jobs, openBookings });
   });
 
   // Everything charged to one job — the cost half of job profitability. Reached

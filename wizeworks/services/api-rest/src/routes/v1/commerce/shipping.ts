@@ -6,6 +6,7 @@ import { shippingService, taxService } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { toBuilderContext } from '../../../lib/builder-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ZoneParam = z.object({ zoneId: z.string().uuid() });
@@ -27,6 +28,26 @@ const ExemptionHolderQuery = z
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const shippingRoutes: FastifyPluginAsync = async (app) => {
+  // Collecting in person beside delivery, for the ACTIVE site (sparx persona
+  // issue 129). Per site: each business under one owner has its own counter.
+  app.get('/v1/commerce/shipping/collection', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(await shippingService.getCollectionSetting(await toBuilderContext(request)));
+  });
+
+  app.put('/v1/commerce/shipping/collection', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = z.object({ offersCollection: z.boolean() }).parse(request.body);
+    return ok(
+      await shippingService.setCollectionSetting(
+        await toBuilderContext(request),
+        body.offersCollection
+      )
+    );
+  });
+
   // Live-rate readiness — whether a connected carrier can actually produce live
   // rates, or is silently degrading to manual because the ship-from is missing.
   // The Shipping surface reads this to warn the merchant (docs/bugs/BUG-010).

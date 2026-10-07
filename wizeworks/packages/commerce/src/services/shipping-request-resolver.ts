@@ -30,6 +30,35 @@ import type { ServiceContext } from '../errors';
 export const DEFAULT_ITEM_WEIGHT_GRAMS = 500;
 const DEFAULT_ITEM_DIMENSION_MM = 100; // 10cm cube — used only when a merchant hasn't set real dims.
 
+/** The ship-from parts a courier needs, in the words the location form uses.
+ *  These sentences reach the owner on Shipping and when a label is refused,
+ *  and they used to print the column names ("missing line1, postalCode") and
+ *  send her to "Inventory → Warehouses", a screen neither console has
+ *  (issue 929). */
+const SHIP_FROM_PARTS = {
+  line1: 'a street address',
+  city: 'a town or city',
+  postalCode: 'a postal code',
+  country: 'a country',
+} as const;
+
+/** "a, b and c". */
+function listOf(parts: readonly string[]): string {
+  if (parts.length <= 1) return parts.join('');
+  return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+}
+
+/** Why the ship-from cannot be priced, naming exactly what is missing. Exported
+ *  so the guard can pin the sentence without a database. */
+export function shipFromIncompleteMessage(
+  name: string,
+  missing: readonly (keyof typeof SHIP_FROM_PARTS)[]
+): string {
+  return `${name}, the location your online orders ship from, needs ${listOf(
+    missing.map((field) => SHIP_FROM_PARTS[field])
+  )} before a courier can price postage or print a label. Add them under Locations.`;
+}
+
 /** Resolves the tenant's ship-from address from their default (or an
  *  explicitly named) warehouse. Throws a friendly, actionable error when
  *  no warehouse is configured or its address is incomplete — callers that
@@ -45,7 +74,7 @@ export async function resolveShipFromAddress(
     (await inventoryService.resolveDefaultWarehouseId(ctx, opts.channel ?? 'storefront'));
   if (!warehouseId) {
     throw new CommerceValidationError(
-      'No active warehouse is configured. Add one under Inventory → Warehouses to enable live carrier rates.'
+      'You have no location in use to ship from. Add one under Locations before a courier can price postage or print a label.'
     );
   }
   const [warehouse, tenant] = await withTenant(ctx, (tx) =>
@@ -67,15 +96,15 @@ export async function resolveShipFromAddress(
     ])
   );
   if (!warehouse) {
-    throw new CommerceValidationError('The configured default warehouse no longer exists.');
+    throw new CommerceValidationError(
+      'The location your online orders ship from no longer exists. Choose another under Locations.'
+    );
   }
   const missing = (['line1', 'city', 'postalCode', 'country'] as const).filter(
     (field) => !warehouse[field]
   );
   if (missing.length > 0) {
-    throw new CommerceValidationError(
-      `Your ship-from warehouse address is incomplete (missing ${missing.join(', ')}). Finish it under Inventory → Warehouses to enable live carrier rates.`
-    );
+    throw new CommerceValidationError(shipFromIncompleteMessage(warehouse.name, missing));
   }
   return {
     recipientName: warehouse.name,

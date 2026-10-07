@@ -129,3 +129,73 @@ export function useMergeCustomers() {
 export function mergeErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
 }
+
+/**
+ * What a merge will NOT carry over, in words, for the record being retired.
+ *
+ * The server fills only what the kept record is missing (merge-service.ts step
+ * 4), so when both have an email address the retired one's is gone. Brynn moved
+ * and came back with a new email and phone (sparx persona issue 109): whoever
+ * merges her has to know which address the next receipt goes to.
+ */
+export function mergeDropsWords(
+  keep: { email: string | null; phone: string | null },
+  other: { email: string | null; phone: string | null }
+): string[] {
+  const words: string[] = [];
+  const differs = (a: string | null, b: string | null): boolean =>
+    Boolean(a?.trim()) && Boolean(b?.trim()) && a!.trim().toLowerCase() !== b!.trim().toLowerCase();
+  if (differs(keep.email, other.email)) {
+    words.push(`Emails go to ${keep.email!.trim()}. ${other.email!.trim()} is not kept.`);
+  }
+  const digits = (raw: string | null): string | null =>
+    raw ? raw.replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '') || null : null;
+  if (differs(digits(keep.phone), digits(other.phone))) {
+    words.push(`The phone number is ${keep.phone!.trim()}. ${other.phone!.trim()} is not kept.`);
+  }
+  return words;
+}
+
+interface MergeSide {
+  name: string;
+  email: string | null;
+  phone: string | null;
+}
+
+/**
+ * The confirm box for a hand merge.
+ *
+ * Two records of one person usually carry one name, and "Merge Brynn
+ * O'Hara-Løvdal into Brynn O'Hara-Løvdal?" told the owner nothing about which
+ * one goes (sparx persona issue 109). When the names match, each side is named by
+ * its email (or phone) instead.
+ */
+export function mergeConfirmWords(
+  keep: MergeSide,
+  retire: MergeSide
+): { title: string; description: string; action: string } {
+  const moves = 'Their orders, invoices, spending, notes and addresses move onto';
+  const ends = 'is then retired and drops out of your lists. This cannot be undone.';
+  if (keep.name !== retire.name) {
+    return {
+      title: `Merge ${retire.name} into ${keep.name}?`,
+      description: `${moves} ${keep.name}. ${retire.name} ${ends}`,
+      action: `Merge into ${keep.name}`,
+    };
+  }
+  // An empty string is not a way to tell them apart, so it falls through too.
+  const tell = (side: MergeSide): string | null => {
+    const email = side.email?.trim();
+    if (email) return email;
+    const phone = side.phone?.trim();
+    if (phone) return phone;
+    return null;
+  };
+  const keepTag = tell(keep);
+  const retireTag = tell(retire);
+  return {
+    title: `Merge the two records for ${keep.name}?`,
+    description: `${moves} the one ${keepTag ? `with ${keepTag}` : 'you are keeping'}. The one ${retireTag && retireTag !== keepTag ? `with ${retireTag}` : 'you are not keeping'} ${ends}`,
+    action: 'Merge the two records',
+  };
+}

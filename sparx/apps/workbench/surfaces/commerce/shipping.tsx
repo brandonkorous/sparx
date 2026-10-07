@@ -29,6 +29,7 @@ import { Boxes, Plus, ServerCrash, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { CollectionSetting } from './collection-setting';
 import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { coverageSummary } from '../../lib/geo';
 import {
@@ -67,7 +68,7 @@ function ZoneRow({ zone, onOpen }: { zone: ShippingZone; onOpen: RowOpen }) {
           No delivery options yet
         </Badge>
       ) : (
-        <Badge color="neutral" variant="soft" size="sm">
+        <Badge color="success" variant="soft" size="sm">
           {zone.rateCount === 1 ? '1 option' : `${String(zone.rateCount)} options`}
         </Badge>
       )}
@@ -296,6 +297,8 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 )}
               </FormSection>
 
+              <CollectionSetting delivers={zoneRows.length > 0} />
+
               <FormSection
                 title="Product groups"
                 description="Most shops need just one. Add another only if some products ship differently (bulky freight, or anything that needs a signature) so they can be priced on their own."
@@ -303,7 +306,6 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Button
                     size="sm"
                     variant="outline"
-                    color="neutral"
                     onClick={(event) => {
                       open('commerce.shipping.profile.detail', 'new', event);
                     }}

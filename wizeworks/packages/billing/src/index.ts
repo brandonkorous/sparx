@@ -34,8 +34,11 @@ export {
   resetBillingPlansForTesting,
   type BillingPlan,
   type CapacityBlock,
+  type PlanOffer,
   type PlanShape,
 } from './plans';
+
+export { heldDiscount, offerStanding, type HeldDiscount, type OfferStanding } from './offer';
 
 export {
   resolveBillingPhase,

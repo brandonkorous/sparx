@@ -332,6 +332,12 @@ export interface CartAccountRules {
   /** How much more the basket needs to reach the minimum; 0 when it is met. */
   shortfallCents: number;
   shortfallMessage: string | null;
+  /**
+   * The account's payment terms ("net30"), or null. An account on day terms is
+   * billed, not charged, so its buyers can order while the shop takes no card
+   * payments on its website (sparx persona issue 136).
+   */
+  paymentTerms: string | null;
 }
 
 /**
@@ -387,6 +393,10 @@ export async function cartAccountRules(
 
   const minimumOrderCents = await minimumOrderCentsOf(tx, ordering.accountId);
   const goods = goodsCents(cart);
+  const account = await tx.company.findFirst({
+    where: { id: ordering.accountId },
+    select: { paymentTerms: true },
+  });
   return {
     accountName: ordering.accountName,
     canOrder: ordering.canOrder,
@@ -395,6 +405,7 @@ export async function cartAccountRules(
     minimumOrderCents,
     shortfallCents: minimumOrderCents === null ? 0 : Math.max(0, minimumOrderCents - goods),
     shortfallMessage: minimumOrderSentence(minimumOrderCents, goods, cart.currency),
+    paymentTerms: account?.paymentTerms ?? null,
   };
 }
 

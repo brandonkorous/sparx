@@ -46,7 +46,7 @@ export default async function CookieChoicesPage({
   const params = await searchParams;
   const next = safeInternalPath(params.next, '/account');
 
-  const consent = await readConsent(session.user.id, session.user.tenantId);
+  const consent = await readConsent(session.user.id, session.user.homeTenantId);
   const first = consent === null;
 
   // An older record can carry an empty `at`, and `new Date('')` renders the

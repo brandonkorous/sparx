@@ -61,6 +61,7 @@ export async function WorkbenchEntry({ address }: { address: string }) {
 
   return (
     <WorkbenchShell
+      userId={session.user.id}
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
       initialSiteKey={initialSiteKey}

@@ -71,6 +71,17 @@ describe('renderBillingDocumentHtml', () => {
     );
   });
 
+  // Salt Lake County is on Net 45, and Gillett's own footer said Net 30: the
+  // bill states the account's terms itself (sparx persona issue 103).
+  it('prints the terms beside the due date, on a bill only', () => {
+    const html = renderBillingDocumentHtml(baseData({ paymentTerms: 'Net 45' }));
+    expect(html).toContain('<span>Terms</span>Net 45');
+    expect(renderBillingDocumentHtml(baseData())).not.toContain('<span>Terms</span>');
+    expect(
+      renderBillingDocumentHtml(baseData({ paymentTerms: 'Net 45', priceOffer: true }))
+    ).not.toContain('<span>Terms</span>');
+  });
+
   it('shows the tax row with its rate and the balance due', () => {
     const html = renderBillingDocumentHtml(baseData());
     expect(html).toContain('Tax (8.75%)');

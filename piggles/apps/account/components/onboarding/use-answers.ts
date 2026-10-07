@@ -20,22 +20,16 @@ export interface Answers {
   setLook: (value: string) => void;
   picked: PigglesGroup[];
   toggle: (group: PigglesGroup) => void;
+  heard: string;
+  setHeard: (value: string) => void;
   /** Bumped on every failed attempt. Key the fields with it — see below. */
   attempt: number;
 }
 
 /**
- * The three answers, the look, and a key that survives a failed attempt.
- *
- * React resets a form's DOM after every `<form action>` finishes, failures
- * included, and then re-applies only the props that CHANGED — so after a failure
- * nothing changed, and each field keeps whatever the reset left it holding.
- * Controlled is not enough on its own: `apparel === apparel` writes nothing, and
- * the trade came back reading "Food & drink", the first option a browser can
- * land on when the empty one is disabled (issue 163).
- *
- * So the answers live here, out of reach of the reset, and `attempt` re-mounts
- * the fields with them.
+ * The answers, held out of reach of the reset React does after every form action
+ * (it re-applies only CHANGED props, so a failed attempt lost them, issue 163).
+ * `attempt` re-mounts the fields with these values.
  */
 export function useOnboardingAnswers(suggestedName: string, state: OnboardingState): Answers {
   const [name, setName] = useState(suggestedName);
@@ -44,6 +38,7 @@ export function useOnboardingAnswers(suggestedName: string, state: OnboardingSta
   const [ownAddress, setOwnAddress] = useState(false);
   const [look, setLook] = useState(SHOWCASE_KEY);
   const [picked, setPicked] = useState<PigglesGroup[]>([]);
+  const [heard, setHeard] = useState('');
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -70,6 +65,8 @@ export function useOnboardingAnswers(suggestedName: string, state: OnboardingSta
     picked,
     toggle: (group: PigglesGroup) =>
       setPicked((cur) => (cur.includes(group) ? cur.filter((x) => x !== group) : [...cur, group])),
+    heard,
+    setHeard,
     attempt,
   };
 }

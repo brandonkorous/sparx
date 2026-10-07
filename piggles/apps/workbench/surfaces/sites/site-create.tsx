@@ -29,7 +29,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { conflictField, isBuilderRequired, useCreateSite } from './data';
-import { useNewSiteAddress } from './site-address';
+import { useNewSiteAddress, useSiteAddressBase, withoutBusinessName } from './site-address';
 import { slugify as slugifyWebSegment, slugifyTyping } from '../../lib/slugify';
 
 /** A handle is the part of the web address that identifies this site, so it is
@@ -51,7 +51,9 @@ export function CreateSite({ ctx }: { ctx: SurfaceContext }) {
 
   // The handle follows the name until someone edits it themselves, at which
   // point it is theirs and typing more of the name must not overwrite it.
-  const effectiveHandle = touchedHandle ? handle : slugify(name);
+  // Without the business's name in front, which the address already ends with.
+  const businessBase = useSiteAddressBase();
+  const effectiveHandle = touchedHandle ? handle : withoutBusinessName(slugify(name), businessBase);
   const { base, host, problem } = useNewSiteAddress(effectiveHandle);
 
   const dirty = name.trim() !== '' || touchedHandle;

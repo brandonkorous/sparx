@@ -14,7 +14,9 @@ import {
   orderService,
   b2bArService,
   accountOrderGate,
+  businessTimeZone,
   customerService,
+  dueDayAfter,
   heldOrderMoney,
 } from '@wizeworks/crm';
 import {
@@ -1630,8 +1632,10 @@ export async function complete(
         select: { paymentTerms: true },
       });
       const dueDays = parseDueDays(account?.paymentTerms ?? session.paymentTermsRequested);
-      const dueAt = new Date();
-      dueAt.setDate(dueAt.getDate() + dueDays);
+      // A due DAY on the business's calendar, stored at midday, not this moment
+      // plus days: an order placed at 10:11 PM in Denver was due a day late
+      // (sparx persona issue 099).
+      const dueAt = dueDayAfter(new Date(), dueDays, await businessTimeZone(tx, ctx.tenantId));
       // The invoice is issued by the SITE the order was placed on (docs/131
       // §3.6) — that decides whose books the number comes from and whose
       // letterhead is frozen onto it. `Order.propertyId` is nullable (SetNull:
@@ -2064,7 +2068,13 @@ export async function quoteTaxForSession(
     shippingAmountCents: number;
   }
 ): Promise<TaxBreakdown | null> {
-  const to = input.shippingAddress;
+  const from = await resolveShipFromAddress(ctx).catch(() => null);
+  // An order collected at the counter has no delivery address: it is sold where
+  // the shop is, so the shop's own address is where it is taxed. It used to come
+  // back as "no tax" for every collection, so Gillett Diesel's Utah sales tax,
+  // switched on and "Collecting", was charged on none of its counter pickups
+  // (sparx persona issue 137).
+  const to = input.shippingAddress ?? from;
   if (!to) return null;
 
   const read = await withTenant(ctx, async (tx) => {
@@ -2098,13 +2108,13 @@ export async function quoteTaxForSession(
   });
   if (!read || read.items.length === 0) return null;
 
-  const from = await resolveShipFromAddress(ctx).catch(() => ({ country: 'US' }) as const);
+  const origin = from ?? { country: 'US', region: undefined };
 
   return taxService.calculate(ctx, {
     shipFrom: {
-      country: from.country,
-      ...(taxRegionCode(from.country, 'region' in from ? from.region : undefined)
-        ? { region: taxRegionCode(from.country, 'region' in from ? from.region : undefined) }
+      country: origin.country,
+      ...(taxRegionCode(origin.country, origin.region ?? undefined)
+        ? { region: taxRegionCode(origin.country, origin.region ?? undefined) }
         : {}),
     },
     shipTo: {

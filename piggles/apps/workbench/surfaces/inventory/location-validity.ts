@@ -38,7 +38,8 @@ export function useLocationValidity(draft: Draft, initial: Draft, isNew: boolean
         draft.name.trim() !== '' ||
         draft.code.trim() !== '' ||
         addressChanged(draft, initial) ||
-        draft.type !== initial.type
+        draft.type !== initial.type ||
+        draft.shipsOnline !== initial.shipsOnline
       );
     }
     return (
@@ -46,6 +47,7 @@ export function useLocationValidity(draft: Draft, initial: Draft, isNew: boolean
       draft.code !== initial.code ||
       draft.type !== initial.type ||
       draft.isActive !== initial.isActive ||
+      draft.shipsOnline !== initial.shipsOnline ||
       addressChanged(draft, initial)
     );
   }, [draft, initial, isNew]);

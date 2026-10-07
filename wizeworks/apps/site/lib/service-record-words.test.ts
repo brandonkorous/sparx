@@ -10,6 +10,7 @@ import {
   partOrderHref,
   recordsForVehicle,
   serviceStatusTone,
+  servicePriceWords,
   serviceStatusWords,
   serviceTypeSummary,
 } from './service-record-words';
@@ -106,5 +107,28 @@ describe("a vehicle's history", () => {
 
   it('is the visits filed under that vehicle, in the order given', () => {
     expect(recordsForVehicle(records, 'v1').map((r) => r.id)).toEqual(['a', 'd']);
+  });
+});
+
+// Sparx persona issue 117: a turbo rebuild priced by quote read "Free" on the
+// booking list and showed no price on its own page.
+describe('what a service costs', () => {
+  it('says a quoted service is quoted, never Free', () => {
+    expect(servicePriceWords({ priceCents: 0, currency: 'usd', priceOnQuote: true })).toBe(
+      'Quoted after we look'
+    );
+    expect(
+      serviceTypeSummary({
+        durationMinutes: 240,
+        priceCents: 0,
+        currency: 'usd',
+        priceOnQuote: true,
+      })
+    ).toBe('4 hr · Quoted after we look');
+  });
+
+  it('prints a set price, and Free only for a free service', () => {
+    expect(servicePriceWords({ priceCents: 19500, currency: 'usd' })).toBe('$195.00');
+    expect(servicePriceWords({ priceCents: 0, currency: 'usd' })).toBe('Free');
   });
 });

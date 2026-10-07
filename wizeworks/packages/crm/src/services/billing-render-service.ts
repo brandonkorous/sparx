@@ -23,7 +23,7 @@
 // customer / B2B account record.
 
 import { withTenant } from '@wizeworks/db';
-import { poNumberOf } from '@wizeworks/crm-schemas';
+import { paymentTermsOf, paymentTermsWords, poNumberOf } from '@wizeworks/crm-schemas';
 import { billingDocumentNoun, isPriceOfferWorkflow } from '@wizeworks/crm-schemas/builtins';
 
 import type { ServiceContext } from '../errors';
@@ -129,6 +129,7 @@ export async function buildRenderData(
       dueAt: doc.dueAt ? doc.dueAt.toISOString() : null,
       validUntil: doc.validUntil ? doc.validUntil.toISOString() : null,
       poNumber: poNumberOf(doc.metadata),
+      paymentTerms: paymentTermsWords(paymentTermsOf(doc.metadata)),
       billTo,
       shipTo,
       lines,
@@ -219,6 +220,7 @@ export async function buildRenderDataFromSnapshot(
       dueAt: null,
       validUntil: payload.document.validUntil,
       poNumber: payload.document.poNumber ?? null,
+      paymentTerms: paymentTermsWords(payload.document.paymentTerms),
       billTo,
       shipTo,
       lines,

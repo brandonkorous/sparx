@@ -108,8 +108,19 @@ interface MediaAssetWire {
     authors: number;
     staff_documents: number;
     expenses: number;
+    /** Absent from an api-rest older than issue 932. */
+    site_pages?: number;
+    site_layouts?: number;
+    branding?: number;
+    catalog?: number;
+    reviews?: number;
+    social_posts?: number;
+    other_records?: number;
   } | null;
   original_url: string | null;
+  /** Which site pages and headers and footers show it, by name. Only on the
+   *  single read (issue 932). */
+  used_on_site?: SitePlace[];
   variants: MediaVariantWire[];
   created_at: string;
   updated_at: string;
@@ -168,11 +179,35 @@ export interface MediaAsset {
    *  a page in the site editor is not counted, because a builder tree keeps its
    *  asset ids in plain JSON with no index beside them. */
   usage: AssetUsageBreakdown | null;
+  /** Null where it was not asked for (the list). */
+  usedOnSite: SitePlace[] | null;
   createdAt: string;
   updatedAt: string;
 }
 
 /** Where an asset is used, by kind: the same six api-rest counts. */
+/** A site page or header and footer that shows a file, and whose site it is. */
+export interface SitePlace {
+  kind: 'page' | 'layout';
+  name: string;
+  site: string;
+}
+
+/** "Home and About on Juniper Row; the header and footer on Lookbook". The kind
+ *  is said only for a header and footer, because a page is what a person
+ *  expects a picture to be on. */
+export function sitePlacesLine(places: readonly SitePlace[]): string | null {
+  if (places.length === 0) return null;
+  const bySite = new Map<string, string[]>();
+  for (const place of places) {
+    const label = place.kind === 'layout' ? `the header and footer “${place.name}”` : place.name;
+    bySite.set(place.site, [...(bySite.get(place.site) ?? []), label]);
+  }
+  const joinAnd = (parts: string[]) =>
+    parts.length <= 1 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)!}`;
+  return [...bySite].map(([site, names]) => `${joinAnd(names)} on ${site}`).join('; ');
+}
+
 export interface AssetUsageBreakdown {
   products: number;
   content: number;
@@ -180,6 +215,13 @@ export interface AssetUsageBreakdown {
   authors: number;
   staffDocuments: number;
   expenses: number;
+  sitePages: number;
+  siteLayouts: number;
+  branding: number;
+  catalog: number;
+  reviews: number;
+  socialPosts: number;
+  otherRecords: number;
 }
 
 /** The smallest rendition at least `minWidth` across (sharp on a tile without
@@ -224,8 +266,16 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
           authors: wire.usage_breakdown.authors,
           staffDocuments: wire.usage_breakdown.staff_documents,
           expenses: wire.usage_breakdown.expenses,
+          sitePages: wire.usage_breakdown.site_pages ?? 0,
+          siteLayouts: wire.usage_breakdown.site_layouts ?? 0,
+          branding: wire.usage_breakdown.branding ?? 0,
+          catalog: wire.usage_breakdown.catalog ?? 0,
+          reviews: wire.usage_breakdown.reviews ?? 0,
+          socialPosts: wire.usage_breakdown.social_posts ?? 0,
+          otherRecords: wire.usage_breakdown.other_records ?? 0,
         }
       : null,
+    usedOnSite: wire.used_on_site ?? null,
     createdAt: wire.created_at,
     updatedAt: wire.updated_at,
   };
@@ -239,6 +289,8 @@ export interface MediaListQuery {
   q: string;
   kind: MediaKind | 'all';
   status: 'all' | 'ready' | 'uploading' | 'failed';
+  /** Whether anything uses the file (issue 932). */
+  usage: 'all' | 'used' | 'unused';
   take: number;
   skip: number;
 }
@@ -265,6 +317,7 @@ export function useMediaAssetsList(query: MediaListQuery) {
           ? { type: kindToTypeParam(query.kind) }
           : {}),
         ...(query.status !== 'all' ? { status: query.status } : {}),
+        ...(query.usage !== 'all' ? { usage: query.usage } : {}),
         take: query.take,
         skip: query.skip,
       });
@@ -364,6 +417,32 @@ export function sizeLabel(asset: Pick<MediaAsset, 'byteSize' | 'linked'>): strin
   return asset.linked ? 'Stored somewhere else' : 'Size not recorded';
 }
 
+/**
+ * The line under a tile's filename: where the picture is used, or that nothing
+ * uses it.
+ *
+ * The grid used to say the file's size there, and on 74 of Devi's 87 pictures
+ * that read "Stored somewhere else": the same words on almost every tile, while
+ * the fact that differed, and the one she needs before she deletes anything, was
+ * already on every row the list fetched and drawn only on the detail (issue
+ * 932). A library full of a design's sample pictures is cleared by finding the
+ * ones nothing uses.
+ */
+export function tileUseLine(asset: Pick<MediaAsset, 'usageCount' | 'usage'>): string {
+  const used = usedInLabel(asset);
+  // "No use found", not "Not used anywhere": an email design, a saved section
+  // or a theme can still hold a picture's address, and none of those is counted.
+  return used === null ? 'No use found' : `In ${used}`;
+}
+
+/** The size, for a tile, only when it says something: a measured size, or the
+ *  fault of a stored file nobody weighed. A picture kept somewhere else has no
+ *  size of ours, and its own page says why. */
+export function tileSizeLine(asset: Pick<MediaAsset, 'byteSize' | 'linked'>): string | null {
+  if (asset.byteSize === null && asset.linked) return null;
+  return sizeLabel(asset);
+}
+
 export function formatBytes(bytes: number): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return '0 bytes';
   const units = ['bytes', 'KB', 'MB', 'GB'];
@@ -430,6 +509,13 @@ export function usedInLabel(asset: Pick<MediaAsset, 'usageCount' | 'usage'>): st
   add(u.authors, 'author profile', 'author profiles');
   add(u.staffDocuments, 'staff document', 'staff documents');
   add(u.expenses, 'expense', 'expenses');
+  add(u.sitePages, 'site page', 'site pages');
+  add(u.siteLayouts, 'site header or footer', 'site headers and footers');
+  add(u.branding, 'logo or site icon', 'logos and site icons');
+  add(u.catalog, 'category or collection', 'categories and collections');
+  add(u.reviews, 'customer review', 'customer reviews');
+  add(u.socialPosts, 'social post', 'social posts');
+  add(u.otherRecords, 'other record', 'other records');
   if (parts.length === 0) return `${String(asset.usageCount)} places on your site`;
   if (parts.length === 1) return parts[0]!;
   return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)!}`;

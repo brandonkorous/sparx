@@ -197,7 +197,8 @@ export async function loadSampleData(
         property.id,
         enabledModules
       );
-      await clearSampleDataOnTx(tx, ctx.tenantId);
+      // A reload keeps the booking menu and books onto it again (issue 085).
+      await clearSampleDataOnTx(tx, ctx.tenantId, { keepMenu: true });
       await applyPack(applyCtx, pack);
       await recordSampleData(tx, ctx, 'loaded', applyCtx.counts, pack.industry);
       return applyCtx.counts;

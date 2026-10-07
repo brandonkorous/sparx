@@ -27,7 +27,7 @@ import type { FastifyRequest } from 'fastify';
 
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { notFound } from '@wizeworks/api-core/errors';
-import { prisma, withTenant } from '@wizeworks/db';
+import { withTenant } from '@wizeworks/db';
 import { isModuleEnabled } from '@wizeworks/auth';
 import {
   AVAILABILITY_LEVEL_SELECT,
@@ -775,17 +775,26 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
                   // Descendant-by-name: "Ford" matches a product attached at the
                   // Ford node OR any model/engine under it (node.pathNames).
                   ...(q.fitmentMake ? { node: { pathNames: { has: q.fitmentMake } } } : {}),
-                  // Numeric narrowing against the rule's range windows.
+                  // Numeric narrowing against the rule's range windows. A rule
+                  // with no window at all fits every year, the same reading as
+                  // collection-rules and fitment-service. Requiring a window
+                  // emptied a shop fitted by engine alone the moment a shopper
+                  // picked a year (sparx persona issue 125).
                   ...(q.fitmentYear
                     ? {
-                        ranges: {
-                          some: {
-                            AND: [
-                              { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
-                              { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
-                            ],
+                        OR: [
+                          { ranges: { none: {} } },
+                          {
+                            ranges: {
+                              some: {
+                                AND: [
+                                  { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
+                                  { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
+                                ],
+                              },
+                            },
                           },
-                        },
+                        ],
                       }
                     : {}),
                 },
@@ -1543,19 +1552,25 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       .parse(request.query);
     const { domainId } = z.object({ domainId: z.guid() }).parse(request.params);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const rows = await prisma.fitmentNode.findMany({
-      where: { domainId, tenantId, parentId: q.parentId ?? null, deletedAt: null },
-      orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        dimensionKey: true,
-        depth: true,
-        position: true,
-        _count: { select: { children: { where: { deletedAt: null } } } },
-      },
-    });
+    // Inside withTenant: `commerce_fitment_nodes` forces row-level security, and a
+    // bare read with no tenant set matches nothing and reports success. The drill
+    // answered "[]" for every shop, so a site showed only a Year box and never a
+    // make, model or engine (sparx persona issue 125).
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.fitmentNode.findMany({
+        where: { domainId, tenantId, parentId: q.parentId ?? null, deletedAt: null },
+        orderBy: [{ position: 'asc' }, { name: 'asc' }],
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          dimensionKey: true,
+          depth: true,
+          position: true,
+          _count: { select: { children: { where: { deletedAt: null } } } },
+        },
+      })
+    );
     return ok(
       rows.map((r) => ({
         id: r.id,

@@ -63,7 +63,7 @@ import { thisComputersTimezone } from '../../lib/business-timezone';
 import { instantFromWall, wallClockHint, wallProblem, wallValue } from '../../lib/wall-clock';
 import { useBookingZone } from './booking-zone';
 import { resourceKindGlyph } from './resource-kind-icon';
-import { resourceKindLabel, usePolicy } from './setup-data';
+import { resourceKindLabel, servicePriceSuffix, usePolicy } from './setup-data';
 import { depositLine } from './booking-money';
 import { BookingMoneyLine } from './booking-money-line';
 import {
@@ -71,7 +71,6 @@ import {
   bookingStateMeta,
   bookingTypeLabel,
   bookingWhoLabel,
-  formatMoney,
   formatWhen,
   isTerminalBooking,
   schedulingErrorMessage,
@@ -259,9 +258,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
                 <FieldDescription>
                   {bookingTypeLabel(chosenService.bookingType)} · {chosenService.durationMinutes}{' '}
                   minutes
-                  {chosenService.priceCents > 0
-                    ? ` · ${formatMoney(chosenService.priceCents, chosenService.currency)}`
-                    : ''}
+                  {servicePriceSuffix(chosenService)}
                 </FieldDescription>
               ) : (
                 <FieldDescription>The service this time is set aside for.</FieldDescription>

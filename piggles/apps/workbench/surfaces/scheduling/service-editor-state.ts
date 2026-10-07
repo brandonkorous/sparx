@@ -63,7 +63,8 @@ export function useServiceEditor(
 
   // A price nobody can read must not be saved as free (086) — the field says
   // what is wrong and Save waits until it is.
-  const priceProblem = moneyProblem(draft.price);
+  // A quoted service has no price to check (sparx persona issue 117).
+  const priceProblem = draft.priceOnQuote ? null : moneyProblem(draft.price);
   const changed = useMemo(() => !draftsEqual(draft, initial), [draft, initial]);
   const busy = create.isPending || update.isPending;
 

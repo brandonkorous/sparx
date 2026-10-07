@@ -7,6 +7,8 @@ import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';
 import { SignInForm } from '@/components/sign-in-form';
 import { googleSignInAvailable } from '@/lib/social';
+import { joiningFrom } from '@/lib/invite-joining';
+import { withSource } from '@/lib/signup-source';
 
 export const metadata: Metadata = { title: 'Sign in' };
 export const dynamic = 'force-dynamic';
@@ -22,10 +24,22 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
 
   if (await getSession()) redirect(next);
 
+  // Google makes an account when the email is new, so the source rides along to
+  // the junction, which records it and sends a new business to setup.
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? (v[0] ?? '') : (v ?? ''));
+  const formNext = next === '/' ? withSource('/', one(sp.from), one(sp.a)) : next;
+
+  // On the way to accept an invitation: name the business being joined.
+  const joining = await joiningFrom(next);
+
   return (
     <AuthShell
-      heading="Welcome back."
-      lede="Good to see you. Let's get back to it."
+      heading={joining ? `Sign in to join ${joining.orgName}` : 'Welcome back.'}
+      lede={
+        joining
+          ? `Use ${joining.email}, the address your invitation went to.`
+          : "Good to see you. Let's get back to it."
+      }
       // The marketing site's own closing line, which is the right one here: a
       // returning customer is not being sold to, they are being let back in to
       // get on with the day.
@@ -44,11 +58,11 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
           >
             Create an account
           </Link>
-          . Fourteen days free, no card.
+          {joining ? '.' : '. Fourteen days free, no card.'}
         </p>
       }
     >
-      <SignInForm next={next} google={googleSignInAvailable()} />
+      <SignInForm next={formNext} google={googleSignInAvailable()} />
     </AuthShell>
   );
 }

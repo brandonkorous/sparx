@@ -60,6 +60,7 @@ import {
   type VendorCard,
 } from './data';
 import { productCopyWith } from '../../lib/product';
+import { readFailureMessage } from '../../lib/api/write-failure';
 
 /** What a pull is doing right now, per entity, so the number on screen moves. */
 interface Progress {
@@ -279,9 +280,7 @@ export function LiveConnection({
 
       onReady({ account: connected.account.account, entities: gathered });
     } catch (error) {
-      setPullError(
-        error instanceof Error ? error.message : 'We lost the connection partway through.'
-      );
+      setPullError(readFailureMessage(error, 'We lost the connection partway through.'));
     }
   }, [chosen, connected, onReady, values, vendor.slug]);
 

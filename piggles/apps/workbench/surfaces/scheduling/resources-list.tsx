@@ -105,10 +105,10 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="People and equipment controls"
         primaryAction={{
-          label: 'Add one',
+          label: 'Add a person or equipment',
           icon: faPlus,
           onClick: openNew,
-          title: 'Add one: hold Shift to open alongside, Alt for a new window',
+          title: 'Add a person or equipment: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <>

@@ -34,12 +34,13 @@ export interface SearchFacetsProps {
 
 // Facet field → heading + the query param the search page reads. Order here is
 // the render order in the sidebar.
+// What it fits comes first (sparx persona issue 125).
 const FACET_GROUPS: { field: string; label: string; param: keyof SearchFacetValues }[] = [
-  { field: 'vendor', label: 'Brand', param: 'vendor' },
-  { field: 'product_type', label: 'Type', param: 'productType' },
   { field: 'fitment_makes', label: 'Fits', param: 'fitmentMakes' },
   { field: 'fitment_models', label: 'Model', param: 'fitmentModels' },
   { field: 'fitment_engines', label: 'Engine', param: 'fitmentEngines' },
+  { field: 'vendor', label: 'Brand', param: 'vendor' },
+  { field: 'product_type', label: 'Type', param: 'productType' },
 ];
 
 export function SearchFacets({ action, facets, values }: SearchFacetsProps) {

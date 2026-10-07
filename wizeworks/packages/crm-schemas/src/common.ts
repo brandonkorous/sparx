@@ -150,6 +150,21 @@ export function stageTypesFor(objectKey: string): readonly StageType[] {
   return StageType.options;
 }
 
+/**
+ * The chance of winning on a FINISHED stage is a fact, not a guess: a won deal
+ * was 100% likely, and anything otherwise finished was 0%. Null for an open
+ * stage, whose chance is the business's own estimate.
+ *
+ * Applied wherever a stage is written, because moving a deal copies the stage's
+ * chance onto the deal: a hand-made "Won" step left at the editor's 0% made every
+ * deal won on it read "0% likely" on the deal, in reports and in scoring (sparx
+ * persona issue 110).
+ */
+export function fixedStageChance(stageType: StageType | (string & {})): number | null {
+  if (stageType === 'open') return null;
+  return stageType === 'won' ? 100 : 0;
+}
+
 // Service requests (docs/144 §7). Priority selects which SLA target applies, so
 // it is not a decoration — changing it recomputes what was promised.
 export const TicketPriority = z.enum(['low', 'medium', 'high', 'urgent']);

@@ -26,6 +26,7 @@ import { BookingServices, toHeadingText } from '@/components/booking/booking-ser
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
 import { ProductReviewsCore } from '@/components/products/product-reviews-core';
 import { ProductSaveCore } from '@/components/products/product-save-core';
+import { ProductFitmentCore } from '@/components/products/product-fitment-core';
 import { ProductQuestionsCore } from '@/components/products/product-questions-core';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { AccountLink } from '@/components/account/account-link';
@@ -112,6 +113,7 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             site={ctx.site}
             searchParams={ctx.searchParams ?? {}}
             asPageTitle={ctx.listingHeadingIsPageTitle ?? false}
+            {...(ctx.basePath ? { basePath: ctx.basePath } : {})}
           />
         );
       case HOST_KEYS.commerceCollections:
@@ -185,6 +187,16 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             handle={ctx.recordHandle ?? ''}
             label={toHeadingText(node.props?.label, 'Save for later')}
             savedLabel={toHeadingText(node.props?.savedLabel, 'Saved')}
+          />
+        );
+      case HOST_KEYS.commerceProductFitment:
+        // Per-record: what this product fits, from its fit rules. Draws nothing for a
+        // product with none (persona issue 126).
+        return (
+          <ProductFitmentCore
+            tenantSlug={ctx.site.slug}
+            handle={ctx.recordHandle ?? ''}
+            heading={toHeadingText(node.props?.heading, 'What it fits')}
           />
         );
       case HOST_KEYS.schedulingServiceDetail:

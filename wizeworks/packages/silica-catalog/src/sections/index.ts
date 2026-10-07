@@ -264,7 +264,7 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         make: process.howItWorks,
       },
       {
-        key: 'timeline',
+        key: 'process_timeline',
         label: 'Timeline',
         icon: 'calendar',
         hint: 'Dated stages. Your history, or how a project will run.',

@@ -22,7 +22,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { Prisma } from '@wizeworks/db';
-import { withRequestTenant } from '@wizeworks/api-core/db';
+import { withOwnUserRow, withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import { prisma, withSystem } from '@wizeworks/db';
@@ -214,7 +214,8 @@ const meRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/me/preferences', async (request) => {
     const auth = requireAuth(request);
     const input = PreferencesPatch.parse(request.body);
-    const next = await withRequestTenant(request, async (tx) => {
+    const next = await withOwnUserRow(request, async (tx) => {
+      // Their own row, written from their home business (issue 122).
       const before = await tx.user.findUnique({
         where: { id: auth.actorId },
         select: { preferences: true },

@@ -1,6 +1,6 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 6.35
+**Version:** 6.44
 **Author:** Brandon Korous
 **Last Updated:** 2026-10-06
 
@@ -17110,3 +17110,181 @@ emails, across 44 kinds and nearly every business, are stuck on older wordings
 because the refresh does not recognize them
 ([919](issues/919-her-automatic-emails-are-stuck-on-an-older-wording.md)).
 Another session is mid-change in the same file, so it is written up, not fixed.
+
+### Act 325 · The ones that were waiting
+
+The other sessions' work landed, so the three items held for it opened up.
+
+[919](issues/919-her-automatic-emails-are-stuck-on-an-older-wording.md), her
+reminder on old wording: every version of every default email was rebuilt from
+the code at each of the 18 commits that shaped them. 55 shipped versions had
+never been listed for the refresh, plus three return emails the dev database
+had copied before they were committed. Listed now, and a history file with two
+tests stops the list slipping again. Stuck copies: 870 before, 82 after, and
+the 82 are old-editor conversions, dead keys and one-off edits. Her reminder
+changes at the next 6-hourly refresh.
+
+[113](issues/113-a-clients-record-in-a-booking-business-has-no-appointments-on-it.md),
+Halo & Hem's booked client filed as a lead with nothing on her record: a booking
+now makes a customer in the same write, the way an order does, and a migration
+(written, not run) moves the 65 people the two rules never reached, Priyanka
+among them with two paid orders. Her record leads with a Visits row: last visit
+a month ago, the August highlights. A lead booked in on screen for October 15
+turned to Customer and led with that visit and $65.00 booked ahead. The orders
+row says "Paid for orders" now, and "Customer since" is "Known since". Opening
+that booking had looped until React gave up; two title setters were undoing
+each other, and the stale one is gone.
+
+[085](issues/085-her-price-list-had-two-of-everything-at-two-different-prices.md),
+Halo & Hem's two menus: the design's booking examples now carry the practice
+mark, the practice pack books onto the menu a business already has instead of
+adding one, and Remove takes practice bookings by their own mark and never a
+real client's, which it used to. Proven with the real salon design: 7 services,
+not 18. The design's booking rules and place have nowhere to hold a mark and
+stay behind ([920](issues/920-removing-practice-data-left-the-designs-booking-rules-behind.md)).
+
+[129](issues/129-the-email-editor-draws-her-button-black-and-the-preview-draws-it-brown.md),
+the last part: her Booking reminder's canvas now shows her orange bar and name
+above the email and her legal footer below it, as the inbox does. The answer
+the canvas asked for always held them; only the colors were read. They cannot
+be clicked into, and hovering says why.
+
+On the way, the sparx console's Remove warning for a design whose pages are
+gone now says the header, footer and look stay, as Piggles' does
+([273](issues/273-her-shop-page-was-not-in-her-list-of-pages.md)).
+
+[920](issues/920-removing-practice-data-left-the-designs-booking-rules-behind.md),
+found while closing 085 and closed in the same act: the design's example
+booking rules and place are now removed with the rest of the practice data,
+found through the design's install record since they have no column for a
+mark, and only while nothing real uses them. Halo & Hem's unused "Standard
+booking" would go; her "Colour deposit", which three of her services use,
+stays. The Remove sentence also stopped saying "1 products".
+
+[302](issues/302-she-published-and-two-pages-of-her-own-shop-disagreed-about-it.md),
+two pages of her shop disagreeing after a publish: another session built the
+missing cache purge into the event worker, every step this file asked for, and
+never told the file. Recorded, with the running worker and its broker consumer
+read in dev. Then seen: a visitor had her `/blog` cached, Devi retitled her
+knitwear post and saved, and the visitor's page showed it 9 seconds later; she
+put it back and it followed in 8. That closes
+[056](issues/056-she-published-and-her-site-showed-the-old-page-for-eight-minutes.md)
+too, whose same change once took two hours. The Publish message now says "a few
+seconds, a few minutes at most" instead of "within a few minutes".
+
+Then the half of 302 I had only read in the code: the header and footer. She
+changed one footer sentence, "in runs of six" to "in small runs of six", and
+published from Header & footer. The pane said "a few seconds". A visitor's cart
+page took **4 minutes 29 seconds**, the cache running out to the second. The
+purge worker never heard: a header, footer, single page or look published from
+its own pane sends the builder's own event, and the worker listened only for
+the whole-site one. Its test had called those names "plausible ones nobody
+emitted"; the broker held every one
+([921](issues/921-she-published-her-footer-and-her-site-took-five-minutes.md)).
+It listens now, a look's publish sends one too, and a build check stops the two
+lists drifting. Her footer change reached the visitor in **2 seconds**, and back
+in 2. Her own sentence is live again.
+
+On the way, three small ones. One publish hit the server mid-restart and the
+pane said only **Failed to fetch**; 39 places in the two consoles printed a
+failure's raw words, and now use the plain sentence the console already had,
+which also stopped telling her to "save again" under a greyed-out Save
+([922](issues/922-a-failed-publish-said-failed-to-fetch.md)). The launcher said
+Header & footer and the tab it opened said **Site layout**, a name nobody types;
+and the editor's link box offered a clothes shop the example **cakes**
+([923](issues/923-the-launcher-said-header-and-footer-and-the-tab-said-site-layout.md)).
+
+Seen twice and not filed: the address bar read `/` instead of the pane's
+address. Both times the dev server was rebuilding files I had just changed. On a
+clean page with the server unreachable, the address held.
+
+Then the pane the ratings said had never seen a real booking: Money › By job,
+opened as Nia at Halo & Hem and then as Devi. Three faults, one under the other
+([924](issues/924-every-sale-showed-a-hundred-percent-margin.md)). No order in
+the platform had ever shown a goods cost: the sell path files a sale's stock
+movement as `Order` and finance asked for `order`, so every sale read 100%, and
+the daily Profit filed all goods cost under no site. A period ending today left
+out today: Devi sold a $72.00 belt at the till and "This month" did not have
+it. And with the belt's $29.00 cost finally counted, the screen decided the
+margins were measured and put her two uncosted dress orders back to 100% with
+no warning. Each row now says for itself: the belt reads Kept $43.00, 59.7%; the
+dresses read Not recorded and sit at the bottom, under a note with a **Put in
+what they cost** button. The stored profit was rebuilt for all 64 businesses
+with Money on; production needs the same once.
+
+At Halo & Hem, "All time" listed one of her three orders. Two August till sales
+had no site, so a one-site screen skipped them, while her Orders list showed
+them ([925](issues/925-her-till-sales-from-august-were-not-on-her-money-screens.md)).
+A business with one site now has its old site-less orders, bookings and repeat
+orders filed under it; 11 businesses in dev. One with several sites keeps them
+unfiled, as 878 decided. All three of Nia's orders are on By job now.
+
+The last thing By job showed at Halo & Hem: one completed appointment out of 23
+in August. The other 22 were still Confirmed, one In progress since August 30,
+because nothing closes a past appointment and nothing asked her to
+([926](issues/926-a-month-of-appointments-and-no-completed-work.md)). By job now
+says "25 appointments have happened and are still open" with **Show them**,
+which opens Bookings on a new choice, **Happened, still open**: exactly 25.
+Nia marked Bilal Osei's August 31 cut Completed, and By job went to 5 jobs and
+24 open.
+
+Then the lowest score left in the table: her free web address, Ease 4. It said
+"Always on", then "Nothing to set up", then explained there was nothing to set
+up, and had no button
+([927](issues/927-her-free-address-said-nothing-to-set-up-and-nothing-else.md)).
+Her list was worse: three addresses on sparx's domain, each "Always on", which
+issue 648 kept because it thought they redirected. Nothing redirects, and in
+production the site app refuses a Piggles business on sparx's domain, so they
+opened nothing. They are no longer listed: 11 addresses became 8. The free
+address now says where it came from and that it never changes, and offers
+**Connect a domain** with the site already picked. "Make main address" no
+longer promises a redirect. And a new site named "Juniper Row Bridal" is now
+offered `bridal.juniper-row.piggles.site`, not the business's name twice, the way
+her Lookbook got `juniper-row-lookbook.juniper-row.piggles.site`.
+
+Then Preorders, Ease 4, whose gap said nothing led to it from a product. On the
+Linen Shirtdress, "When you run out of this one" offers **Take pre-orders for
+it**, and on its own that did what "Keep selling it and owe it" does: no ship
+date on the page, no limit
+([928](issues/928-take-pre-orders-for-it-took-no-pre-orders.md)). Choosing it now
+says whether an offer is running, with a button that opens Preorders on that very
+item. L · Chalk read "Taking preorders. Ships March 10, 2027 · 20 left." Under it
+was a worse one: an offer's limit was only checked on items set to "Take
+pre-orders", and her Colette Tennis Bracelet is set to "Keep selling it". Now
+every hold checks it. Searching Preorders for the Studio Hoodie, which lives on
+her Press site, now says which site it looked in.
+
+Then Stock › Locations, Ease 5. The sample row from 174 now says **Sample**.
+What was still wrong was her own Main Warehouse: every parcel leaves from it,
+and its address was "US" and nothing else, because it was made on August 23 and
+she typed her business address on September 8
+([929](issues/929-her-parcels-left-from-a-place-with-no-address.md)). No courier
+could price a parcel from it and no label could be bought, and nothing said so.
+57 of 58 main locations in the database are the same. The location now says
+"Your online orders ship from here" and what a courier still needs. **Is it at
+your business address?** offered 1184 SE Ash St, Portland, OR 97214; one press
+filled it and Save kept it. The list marks it **Ships online orders**. She can
+now choose another place to ship from, which the server allowed and no screen
+did, and with none chosen the platform no longer picks one at random. The pane
+also says "484 units · no shelves" now, with **See what is here** and **See its
+shelves** opening Stock and Shelves on that place.
+
+Then Spending, Ease 5. On October 6 it opened on This month and said "Nothing
+recorded yet" to a business with five costs in September
+([930](issues/930-a-quiet-month-said-she-had-never-spent-anything.md)). It now
+says "Nothing recorded this month", names the horn buttons from September 16,
+and **Show last month** showed all five, $2,158.70. The quick row had recorded
+every one of them as unpaid, receipts included; it now has a **Paid** tick, on
+by default, and her padded mailers from the post office went in as paid. On
+Bills to pay the table was wider than its card, so marking a row scrolled the
+names off the left edge; it fits now, and the button says **Mark paid**. She
+marked the horn buttons, the chalk and pins, and the thread and buttons paid,
+and left the Ashcombe Mills linen owing.
+
+Order to a supplier was still held at Ease 4 for a date box fix that had
+shipped on September 19. Before raising it, she typed a date into a new order's
+empty Expected box, and it came out `mm / dd / 2026`
+([931](issues/931-the-date-box-forgot-the-month-while-she-typed-the-year.md)).
+On the way to 2026 the box hands over the years 2, 20 and 202; one helper turned
+2 into 1902, the other could not write 202, and the box reset. The fix for 670
+had brought it back. Both helpers now keep any year, and 10/20/2026 stays.

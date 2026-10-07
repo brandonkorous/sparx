@@ -16,51 +16,15 @@ import {
 } from '@wizeworks/silicaui-react';
 import { marketingUrl, PRODUCT } from '@piggles/config';
 import { signUpAction, type SignUpState } from '@/app/signup/actions';
+import { googleReturnPath } from '@/lib/signup-source';
 import { AuthDivider, GoogleButton } from './social-sign-in';
 
-// Three fields, and one question that is not a field.
-//
-// The onboarding goal is a working business in under five minutes, and every
-// field here is one the platform genuinely cannot proceed without. Notably
-// ABSENT: the business name. `signUpMerchant` derives a placeholder workspace
-// name and the person renames it in onboarding, where they have context for the
-// question — asking "what is your business called?" before somebody has seen the
-// product is asking them to commit to a decision in a form.
-//
-// ── THE CHECKBOX, WHICH IS HERE TO STOP A SCREEN EXISTING ───────────────────
-//
-// The console runs one optional tracker, and somebody has to be asked about it
-// before they get there. The gate is /handoff — the single door from this domain
-// into the console — and if it finds no answer on the account, it asks with a
-// screen of its own. This box is how that screen never appears for anybody
-// signing up with a password: the question is answered in passing, in the place
-// they were already looking, and the door finds a record waiting.
-//
-// It is UNTICKED, and not by oversight. A pre-ticked consent box collects an
-// agreement nobody made; leaving it alone is a complete and honest "no", and it
-// is recorded as one so the person is not asked again.
-//
-// The Google path cannot carry it — that button leaves the site mid-form — so
-// those signups meet the gate's screen instead. One question, two places it can
-// be answered, one record.
-//
-// ── IT IS NOT THE ONLY THING BEING RECORDED, AND IT SAYS SO ─────────────────
-//
-// This box governs the CONSOLE's tracker and nothing else. Separately, the form
-// carries whatever meetpiggles.com noted about how somebody got here — the
-// campaign, and the advert if they allowed that too — in a hidden field, on a
-// permission given over there. Both are legitimate; the failure mode is a page
-// that mentions one and stays quiet about the other while saying "never
-// advertising" next to a field holding a click id. So when a payload is present,
-// the page says so, in the place it is happening.
-//
-// `size="lg"` on every control: 58px, inside Piggles' 56–60 comfort target. One
-// decision, stated per form (DESIGN.md §5).
+// Three fields and one consent box. No business name: setup asks it, once the
+// person has context. The box is UNTICKED (a pre-ticked box is an agreement nobody
+// made), and the page says so whenever a marketing source rides along with it.
 
 function Submit() {
-  // `useFormStatus` reads the pending state of the enclosing <form>, which is
-  // why this is its own component — a hook cannot see a form it is rendered
-  // alongside rather than inside.
+  // Its own component: `useFormStatus` only sees a form it is rendered INSIDE.
   const { pending } = useFormStatus();
   return (
     <Button type="submit" color="primary" size="lg" block loading={pending}>
@@ -83,25 +47,17 @@ export function SignUpForm({
   google: boolean;
 }) {
   const [state, action] = useActionState<SignUpState, FormData>(signUpAction, { error: null });
-  // Google's failures arrive outside the server action, so they need their own
-  // channel. One <Alert> renders whichever is set — two stacked error boxes for
-  // two ways of failing at the same task is noise.
+  // Google fails outside the server action; one <Alert> shows whichever failed.
   const [socialError, setSocialError] = useState<string | null>(null);
   const error = socialError ?? state.error;
 
   return (
     <div className="flex flex-col gap-6">
       <form action={action} className="flex flex-col gap-6">
-        {/* The placement that sent them here, carried from the marketing link and
-            captured first-party. Hidden because it is telemetry, not an answer. */}
+        {/* The button that sent them, and (with permission) the campaign before it. */}
         <input type="hidden" name="from" value={from} />
-        {/* Where they came from BEFORE that click — the campaign, the referrer,
-            the ad. Recorded on meetpiggles.com with permission and handed over in
-            the link, because three registrable domains cannot share a cookie. */}
         <input type="hidden" name="a" value={attribution} />
-        {/* Where to land afterwards. The server action is what navigates, so it
-            has to be told — a destination the page knows and the action does not
-            is a destination nobody honors. */}
+        {/* The action navigates, so it must be told where to. */}
         <input type="hidden" name="next" value={next} />
 
         {error ? (
@@ -112,11 +68,7 @@ export function SignUpForm({
 
         <Field>
           <FieldLabel>Your name</FieldLabel>
-          {/* `FieldControl render={<Input/>}`, never a bare `<Input>`. Base UI's
-              Field mints one id, puts it on the CONTROL and in the label's
-              `for`; only FieldControl registers for it. A bare Input renders no
-              id at all, so the label points at nothing and a screen reader
-              announces an unnamed text box. Issue #006. */}
+          {/* Through FieldControl, or the label points at nothing (issue #006). */}
           <FieldControl render={<Input size="lg" />} name="name" autoComplete="name" required />
         </Field>
 
@@ -134,9 +86,7 @@ export function SignUpForm({
 
         <Field>
           <FieldLabel>Password</FieldLabel>
-          {/* A real password field with a reveal toggle, not a bare text input
-              with `type="password"` — people mistype on phones and a blocked
-              reveal is the single most common reason a signup is abandoned. */}
+          {/* With a reveal toggle: a mistyped phone password is why signups are abandoned. */}
           <FieldControl
             render={<PasswordInput size="lg" />}
             name="password"
@@ -144,33 +94,19 @@ export function SignUpForm({
             required
             minLength={8}
           />
-          {/* THE RULE, BEFORE IT IS BROKEN. `minLength` and the server both
-              enforce eight characters and neither said so until somebody had
-              already typed something shorter and pressed the button — a rule
-              that only ever arrives as a refusal. Three new-password fields
-              across two screens were doing this. */}
+          {/* The rule stated before it is broken, not only as a refusal. */}
           <FieldDescription>At least 8 characters.</FieldDescription>
         </Field>
 
-        {/* A label bound to a real checkbox, with the text as DIRECT children of
-            a two-column grid — the same construction onboarding's choices use,
-            for the same reason: the whole row is the hit target and the
-            accessible name sits where a screen reader looks for it.
-            `rounded-box` BY ROLE (18px, DESIGN.md §4) — this is a panel inside
-            the card, so it takes the panel radius rather than a literal. */}
+        {/* The whole row is the hit target and the accessible name. `rounded-box`
+            by role: a panel inside the card (DESIGN.md §4). */}
         <label
           htmlFor="analytics"
           className="border-base-300 bg-base-200 rounded-box grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-4 gap-y-1 border p-5"
         >
           <Checkbox id="analytics" name="analytics" color="primary" className="row-span-2 mt-0.5" />
           <span className="text-base font-bold">Help us fix what is confusing</span>
-          {/* SCOPED to what this box actually governs. It read "never
-              advertising" flatly, which was true of the tracker and misleading
-              on this page: the form below carries whatever the marketing site
-              noted about how you got here, and that can include an advert. A
-              blanket "never advertising" beside a hidden field holding a click
-              id is the kind of true-but-wrong sentence that costs more trust
-              than the thing it was reassuring about. */}
+          {/* Scoped to the workspace tracker only: the hidden source above can name an advert. */}
           <span className="text-base">
             This one is about the workspace: which screens get used inside {PRODUCT.name}, so we can
             find the confusing ones. Never sold, never used to advertise to you, and never anything
@@ -178,10 +114,7 @@ export function SignUpForm({
           </span>
         </label>
 
-        {/* Only when something actually came with them. It names what is in the
-            hidden field above rather than describing the policy in general —
-            somebody who arrived from an advert should be told so on the page
-            that is about to record it, not left to find it in a cookie policy. */}
+        {/* Only when a source came with them: told on the page that records it. */}
         {attribution ? (
           <p className="text-base">
             You came here from a link that told us where you found us, because you agreed to that on{' '}
@@ -197,30 +130,12 @@ export function SignUpForm({
         <Submit />
       </form>
 
-      {/* Outside the <form> on purpose. Google is a navigation away from this
-          page, not a submission of it, and nesting a second way out inside the
-          form is how a stray Enter key ends up leaving mid-typing. */}
+      {/* Outside the <form>: Google is a navigation, and a stray Enter must not leave. */}
       {google ? (
         <>
           <AuthDivider />
-          {/* `/onboarding`, NOT `/`. This said `/`, and `/` is a junction that
-              sends a signed-in person to /account — so somebody who created
-              their account with Google was never shown setup at all. They
-              landed on the account home with the tenant exactly as provisioning
-              left it: a derived placeholder name, a generated web address
-              (quiet-haven-3783.piggles.site), no trade, no sample data, and no
-              modules switched on, because furnishing is what switches them on
-              and furnishing only runs from setup. The password path next to
-              this one redirects to /onboarding on success; this one did not.
-              [[feedback_a_fix_leaves_its_neighbour_behind]]
-
-              Latent rather than live: MEASURED 2026-09-25, all eight Piggles
-              accounts were made with a password, so nobody has been through it.
-
-              Safe for somebody who already has an account and presses this
-              button on the signup page by mistake: /onboarding now bounces a
-              finished business to /account (see app/onboarding/page.tsx). */}
-          <GoogleButton next={next} onError={setSocialError} />
+          {/* To setup (never `/`, which skips it), carrying the source along. */}
+          <GoogleButton next={googleReturnPath(next, from, attribution)} onError={setSocialError} />
         </>
       ) : null}
     </div>

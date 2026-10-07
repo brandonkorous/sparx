@@ -227,7 +227,7 @@ function EntryFields({
                   color="module"
                   rows={2}
                   value={seoString('description')}
-                  placeholder="A sentence or two summarising this page"
+                  placeholder="A sentence or two summarizing this page"
                   onChange={(event) => {
                     onSeo('description', event.target.value);
                   }}

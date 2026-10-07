@@ -100,7 +100,7 @@ export function OpenTasks({ ctx, tasks }: { ctx: SurfaceContext; tasks: Task[] }
               }}
             >
               <span className="min-w-0 flex-1 truncate font-medium">{task.title}</span>
-              <Badge color={meta.tone} variant="soft" size="sm">
+              <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                 {meta.label}
               </Badge>
               <span className="w-16 shrink-0 text-right text-sm">{taskDue(task.dueAt)}</span>

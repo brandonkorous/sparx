@@ -174,6 +174,16 @@ export function BrowseFacets({
        *  `q` on the wire. */}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
+      {/* What it FITS comes first. For a shop that set up fitment it is the question
+          a buyer arrives with ("does it fit my truck?", "is it my size?"), and at the bottom it sat
+          two screens down, below every brand, type and tag (sparx persona issue 125). */}
+      <FitmentFacet
+        domains={domains}
+        activeDomain={activeDomain}
+        levels={levels}
+        values={{ fitmentDomain: values.fitmentDomain, fitmentRanges: values.fitmentRanges }}
+      />
+
       <div>
         <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">Price</h4>
         <div className="flex items-center gap-2">
@@ -259,14 +269,6 @@ export function BrowseFacets({
           ))}
         </div>
       ))}
-
-      {/* The generic fitment applicability drill (whatever domain the tenant configured). */}
-      <FitmentFacet
-        domains={domains}
-        activeDomain={activeDomain}
-        levels={levels}
-        values={{ fitmentDomain: values.fitmentDomain, fitmentRanges: values.fitmentRanges }}
-      />
 
       <div className="flex gap-2">
         <Button type="submit" color="primary" className="flex-1">

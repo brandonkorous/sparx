@@ -7,6 +7,8 @@
 // live audits. Both the live endpoint and the reindex reuse this.
 
 import type { Prisma, TxClient } from '@wizeworks/db';
+import { pageService } from '@wizeworks/builder';
+import { servedPageTitle, servedTitle } from '@wizeworks/builder-schemas';
 import { isRecordAddress } from '@wizeworks/silica-catalog';
 import { normalizePath } from '@wizeworks/site-lint';
 import {
@@ -112,6 +114,28 @@ async function siteOfAuditedEntity(
   return page?.propertyId ?? null;
 }
 
+/**
+ * The title as search shows it, for the length check (sparx persona issue 134): the
+ * site adds its own name to every page but the home page. A builder page belongs to
+ * one site and is served under that site's name. A product, a collection or a CMS
+ * page can show on several sites, so it is measured under the primary site's name,
+ * the one most businesses have only.
+ */
+async function primarySiteName(tx: TxClient): Promise<string | null> {
+  const site = await tx.property.findFirst({
+    where: { isPrimary: true },
+    select: { name: true },
+  });
+  return site?.name ?? null;
+}
+
+/** A product, collection or CMS page's title as served: never the home page. */
+function asServed(title: string | null, siteName: string | null): string | null {
+  const name = siteName?.trim();
+  if (!title || !name) return null;
+  return servedTitle(title, name);
+}
+
 export async function buildAuditableEntity(
   tx: TxClient,
   type: EntityType,
@@ -135,6 +159,7 @@ export async function buildAuditableEntity(
           canonical: true,
           ogImage: true,
           noindex: true,
+          property: { select: { name: true } },
         },
       });
       if (!page) return null;
@@ -149,9 +174,16 @@ export async function buildAuditableEntity(
       // the only signal a non-technical owner has about whether their page can be found.
       const signals =
         silicaSignalsFor(page) ?? extractBuilderTreeSignals(page.publishedTree ?? page.draftTree);
+      const title = emptyToNull(page.seoTitle) ?? page.name;
       return {
         entityType: 'builder_page',
-        title: emptyToNull(page.seoTitle) ?? page.name,
+        title,
+        servedTitle: servedPageTitle({
+          seoTitle: page.seoTitle,
+          pageName: page.name,
+          siteName: page.property.name,
+          home: pageService.isHomeRow(page),
+        }),
         description: emptyToNull(page.seoDescription),
         noindex: page.noindex,
         canonical: emptyToNull(page.canonical),
@@ -181,9 +213,11 @@ export async function buildAuditableEntity(
       const seo = rec(entry.seoJson) ?? {};
       const body = rec(entry.body);
       const signals = extractCmsDocSignals(entry.body);
+      const title = emptyToNull(str(seo.title)) ?? emptyToNull(str(body?.title));
       return {
         entityType: 'cms_page',
-        title: emptyToNull(str(seo.title)) ?? emptyToNull(str(body?.title)),
+        title,
+        servedTitle: asServed(title, await primarySiteName(tx)),
         description: emptyToNull(str(seo.description)),
         noindex: /noindex/i.test(str(seo.robots)),
         canonical: emptyToNull(str(seo.canonical)),
@@ -214,9 +248,11 @@ export async function buildAuditableEntity(
       const imageCount = product.images.length;
       const imagesMissingAlt = product.images.filter((im) => words(str(im.alt)) === 0).length;
       const descText = stripHtml(product.description ?? '');
+      const title = emptyToNull(product.seoTitle) ?? product.title;
       return {
         entityType: 'product',
-        title: emptyToNull(product.seoTitle) ?? product.title,
+        title,
+        servedTitle: asServed(title, await primarySiteName(tx)),
         description: emptyToNull(product.seoDescription) ?? emptyToNull(descText),
         noindex: false,
         canonical: null,
@@ -248,9 +284,11 @@ export async function buildAuditableEntity(
       });
       if (!collection) return null;
       const descText = stripHtml(collection.description ?? '');
+      const title = emptyToNull(collection.seoTitle) ?? collection.name;
       return {
         entityType: 'collection',
-        title: emptyToNull(collection.seoTitle) ?? collection.name,
+        title,
+        servedTitle: asServed(title, await primarySiteName(tx)),
         description: emptyToNull(collection.seoDescription) ?? emptyToNull(descText),
         noindex: false,
         canonical: null,

@@ -46,6 +46,7 @@ import { Alert, AlertContent, AlertDescription, AlertTitle, Text } from '@wizewo
 import { Info } from 'lucide-react';
 import type { WorkbenchModule } from './module-scope';
 import { isBetaModule } from '../lib/surfaces/nav';
+import { personalKey } from '../lib/workbench/storage-owner';
 
 interface BetaNotice {
   title: string;
@@ -92,7 +93,7 @@ const KEY = 'sparx-workbench-beta-read';
 function readAll(): Set<string> {
   if (typeof localStorage === 'undefined') return new Set();
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(personalKey(KEY));
     return new Set(raw ? (JSON.parse(raw) as string[]) : []);
   } catch {
     return new Set();
@@ -131,7 +132,7 @@ function dismiss(module: WorkbenchModule): void {
   dismissed = next;
   if (typeof localStorage !== 'undefined') {
     try {
-      localStorage.setItem(KEY, JSON.stringify([...next]));
+      localStorage.setItem(personalKey(KEY), JSON.stringify([...next]));
     } catch {
       // Storage full or blocked — the dismissal still holds for this session.
     }

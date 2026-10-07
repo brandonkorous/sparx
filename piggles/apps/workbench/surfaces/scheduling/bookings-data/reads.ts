@@ -29,9 +29,11 @@ import {
 /** One window of the booking list. Every narrowing (search, status, type, order,
  *  paging) is a SERVER filter: filtering only the loaded page in the browser would
  *  answer "the soonest ten requested" with the wrong ten. */
-export function useBookings(query: BookingQuery) {
+export function useBookings(query: BookingQuery, opts: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: bookingKeys.list(query),
+    // Off when the caller knows the Bookings app is not there to ask.
+    enabled: opts.enabled ?? true,
     queryFn: () =>
       api.list<Booking>('/v1/scheduling/bookings', {
         ...(query.q ? { q: query.q } : {}),
@@ -40,6 +42,7 @@ export function useBookings(query: BookingQuery) {
         ...(query.customerId ? { customerId: query.customerId } : {}),
         ...(query.serviceId ? { serviceId: query.serviceId } : {}),
         ...(query.from ? { from: query.from } : {}),
+        ...(query.to ? { to: query.to } : {}),
         ...(query.statusIn?.length ? { statusIn: query.statusIn.join(',') } : {}),
         order: query.order,
         take: query.take,

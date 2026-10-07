@@ -21,7 +21,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant, type TxClient } from '@wizeworks/db';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
-import { OWED_DOCUMENT_WHERE, companyService } from '@wizeworks/crm';
+import { ISSUED_BILL_WHERE, OWED_DOCUMENT_WHERE, companyService } from '@wizeworks/crm';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
@@ -367,7 +367,10 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     return withTenant(ctx, async (tx) => {
       const groups = await tx.billingDocument.groupBy({
         by: ['companyId'],
-        where: { companyId: { not: null }, deletedAt: null },
+        // Bills only. A quote is an offer, and the order it becomes is invoiced
+        // separately, so counting both counted the same $4,075.60 twice for
+        // Wasatch Front (sparx persona issue 094).
+        where: { companyId: { not: null }, deletedAt: null, ...ISSUED_BILL_WHERE },
         _sum: { total: true },
         _count: { _all: true },
         orderBy: { _sum: { total: 'desc' } },

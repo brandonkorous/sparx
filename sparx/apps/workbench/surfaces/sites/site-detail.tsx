@@ -37,6 +37,7 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SiteTraffic, TRAFFIC_WINDOW_DAYS } from './traffic';
 import { slugify as slugifyWebSegment } from '../../lib/slugify';
+import { useSiteAddressBase, withoutBusinessName } from './site-handle';
 import {
   conflictField,
   isBuilderRequired,
@@ -76,7 +77,9 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
 
   // The handle follows the name until someone edits it themselves, at which
   // point it is theirs and typing more of the name must not overwrite it.
-  const effectiveHandle = touchedHandle ? handle : slugify(name);
+  // Without the business's name in front, which the address already ends with.
+  const businessBase = useSiteAddressBase();
+  const effectiveHandle = touchedHandle ? handle : withoutBusinessName(slugify(name), businessBase);
   const dirty = name.trim() !== '' || touchedHandle;
   useDirtySource(
     dirty && !create.isSuccess,

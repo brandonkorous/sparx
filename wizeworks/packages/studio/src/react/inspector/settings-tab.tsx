@@ -256,14 +256,14 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
             String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')
           )}
           defaultValue={String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')}
-          placeholder="cakes"
+          placeholder="opening-hours"
           onBlur={(event) => {
             setAttr('id', partName(event.currentTarget.value));
           }}
         />
         <FieldDescription>
           Give this part a short name and any button can jump straight to it. Put the name after a{' '}
-          <code>#</code> in its Goes to box, like <code>#cakes</code>.
+          <code>#</code> in its Goes to box, like <code>#opening-hours</code>.
         </FieldDescription>
       </Field>
 

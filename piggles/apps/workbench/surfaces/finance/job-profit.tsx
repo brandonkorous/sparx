@@ -23,6 +23,7 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
+  Button,
   Card,
   Filter,
   FilterItem,
@@ -38,7 +39,15 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useJobProfit, type JobProfit } from './spend-data';
 import { useUncostedStock } from '../inventory/uncosted-data';
-import { marginHeadline, marginSubline, uncostedMarginNote } from './job-margin-words';
+import { SET_COSTS_SURFACE } from '../inventory/set-costs-action';
+import { ModuleScope } from '../../components/module-scope';
+import {
+  marginHeadline,
+  marginSubline,
+  openBookingsBody,
+  openBookingsTitle,
+  uncostedMarginNote,
+} from './job-margin-words';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import {
   formatCents,
@@ -79,7 +88,10 @@ function JobRow({
   job: JobProfit;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const lost = job.marginCents < 0;
+  // Sold something nobody ever costed: what it cost, and so what it kept, are
+  // not known. Said in words rather than as $0.00 and 100%.
+  const unmeasured = job.uncostedLines > 0;
+  const lost = !unmeasured && job.marginCents < 0;
   const costCents = job.cogsCents + job.feeCents + job.allocatedCents;
 
   return (
@@ -115,17 +127,31 @@ function JobRow({
         {formatCents(job.revenueCents, job.currency)}
       </td>
       <td className="hidden text-right tabular-nums @2xl:table-cell">
-        {formatCents(costCents, job.currency)}
+        {unmeasured ? (
+          <span className="text-warning">Not recorded</span>
+        ) : (
+          formatCents(costCents, job.currency)
+        )}
       </td>
       <td className="text-right">
-        <span className={`font-medium tabular-nums ${lost ? 'text-error' : 'text-success'}`}>
-          {formatCentsSigned(job.marginCents, job.currency)}
-        </span>
+        {unmeasured ? (
+          <span className="text-warning">Not known</span>
+        ) : (
+          <span className={`font-medium tabular-nums ${lost ? 'text-error' : 'text-success'}`}>
+            {formatCentsSigned(job.marginCents, job.currency)}
+          </span>
+        )}
       </td>
       <td className="text-right">
-        <Badge color={lost ? 'danger' : 'success'} variant="soft" size="sm">
-          {formatRate(job.marginRate)}
-        </Badge>
+        {unmeasured ? (
+          <Badge color="warning" variant="soft" size="sm">
+            Not measured
+          </Badge>
+        ) : (
+          <Badge color={lost ? 'danger' : 'success'} variant="soft" size="sm">
+            {formatRate(job.marginRate)}
+          </Badge>
+        )}
       </td>
     </tr>
   );
@@ -148,21 +174,29 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
   // Memoized rather than `data?.jobs ?? []`: the fallback literal is a NEW
   // array every render, which made the summary below recompute every time.
   const jobs = useMemo(() => data?.jobs ?? [], [data?.jobs]);
+  const openBookings = type === 'order' ? 0 : (data?.openBookings ?? 0);
 
   const summary = useMemo(() => {
     let losing = 0;
     let losingCents = 0;
     let estimated = 0;
-    let cogsCents = 0;
+    let unmeasured = 0;
     for (const job of jobs) {
-      if (job.marginCents < 0) {
+      if (job.uncostedLines > 0) {
+        // Its "margin" is revenue with nothing taken off: never a loss, never
+        // a win, so it is counted apart rather than in either.
+        unmeasured += 1;
+      } else if (job.marginCents < 0) {
         losing += 1;
         losingCents += job.marginCents;
       }
       if (job.revenueBasis === 'list_price') estimated += 1;
-      cogsCents += job.cogsCents;
     }
-    return { losing, losingCents, estimated, cogsCents };
+    // With some unmeasured, the card's number is the measured ones: the line
+    // under it says "2 more jobs", which must add to it, not repeat it.
+    const headlineJobs =
+      unmeasured > 0 && unmeasured < jobs.length ? jobs.length - unmeasured : jobs.length;
+    return { losing, losingCents, estimated, unmeasured, headlineJobs };
   }, [jobs]);
 
   // WHETHER THESE MARGINS REST ON ANYTHING. A shop with no costs on its shelves
@@ -173,7 +207,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
   const uncosted = useUncostedStock(1, 0);
   const costEvidence = {
     jobs: jobs.length,
-    cogsCents: summary.cogsCents,
+    unmeasuredJobs: summary.unmeasured,
     uncostedItems: uncosted.data?.total ?? 0,
     uncostedUnits: uncosted.data?.uncostedUnits ?? 0,
   };
@@ -270,7 +304,33 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
               module={MODULE}
               icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
               title="No completed work in this period"
-              description="Once orders are placed or appointments completed, each one appears here with what it made after the goods, the fees and any costs you charged to it. Try a wider period."
+              description={
+                openBookings > 0
+                  ? `${openBookingsTitle(openBookings)}. ${openBookingsBody(openBookings)}`
+                  : 'Once orders are placed or appointments completed, each one appears here with what it made after the goods, the fees and any costs you charged to it. Try a wider period.'
+              }
+              actions={
+                openBookings > 0 ? (
+                  <ModuleScope module="scheduling">
+                    <div>
+                      <Button
+                        size="sm"
+                        color="module"
+                        variant="soft"
+                        onClick={() => {
+                          ctx.open(
+                            'scheduling.bookings.list',
+                            { status: 'still_open' },
+                            { target: 'tab' }
+                          );
+                        }}
+                      >
+                        Show them
+                      </Button>
+                    </div>
+                  </ModuleScope>
+                ) : undefined
+              }
             />
           </Card>
         ) : (
@@ -303,7 +363,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
                       uncostedNote ? 'text-warning' : 'text-success'
                     }`}
                   >
-                    {jobs.length === 1 ? '1 job' : `${String(jobs.length)} jobs`}
+                    {summary.headlineJobs === 1 ? '1 job' : `${String(summary.headlineJobs)} jobs`}
                   </Heading>
                   <Text className="mt-1 text-sm">{marginSubline(costEvidence)}</Text>
                 </>
@@ -318,8 +378,59 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
                   aria-hidden
                 />
                 <div className="flex min-w-0 flex-col gap-1">
-                  <Text className="font-medium">These margins are not measured yet</Text>
+                  <Text className="font-medium">
+                    {summary.unmeasured >= jobs.length
+                      ? 'These margins are not measured yet'
+                      : 'Some of these margins are not measured yet'}
+                  </Text>
                   <Text className="text-sm">{uncostedNote}</Text>
+                  {/* The way out, in the Stock app's own color: it opens there. */}
+                  <ModuleScope module="inventory">
+                    <div>
+                      <Button
+                        size="sm"
+                        color="module"
+                        variant="soft"
+                        onClick={() => {
+                          ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
+                        }}
+                      >
+                        Put in what they cost
+                      </Button>
+                    </div>
+                  </ModuleScope>
+                </div>
+              </Card>
+            ) : null}
+
+            {openBookings > 0 ? (
+              <Card className="flex items-start gap-3 p-4">
+                <Icon
+                  glyph={faExclamationTriangle}
+                  className="text-warning mt-0.5 size-5 shrink-0"
+                  aria-hidden
+                />
+                <div className="flex min-w-0 flex-col gap-1">
+                  <Text className="font-medium">{openBookingsTitle(openBookings)}</Text>
+                  <Text className="text-sm">{openBookingsBody(openBookings)}</Text>
+                  <ModuleScope module="scheduling">
+                    <div>
+                      <Button
+                        size="sm"
+                        color="module"
+                        variant="soft"
+                        onClick={() => {
+                          ctx.open(
+                            'scheduling.bookings.list',
+                            { status: 'still_open' },
+                            { target: 'tab' }
+                          );
+                        }}
+                      >
+                        Show them
+                      </Button>
+                    </div>
+                  </ModuleScope>
                 </div>
               </Card>
             ) : null}

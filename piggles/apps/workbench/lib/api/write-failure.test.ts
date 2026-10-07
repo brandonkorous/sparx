@@ -19,7 +19,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { ApiError } from '@wizeworks/api-client';
-import { describeWriteFailure } from './write-failure';
+import { describeWriteFailure, failureMessage, readFailureMessage } from './write-failure';
 
 /** An api-rest failure as the client sees it. */
 function apiError(status: number, code: string, message: string): ApiError {
@@ -186,5 +186,55 @@ describe('the body says something the title did not', () => {
     for (const error of everyFailure) {
       expect(describeWriteFailure(error).message.length).toBeGreaterThan(15);
     }
+  });
+});
+
+describe('a failure a call site words itself (issue 922)', () => {
+  it('never shows the browser’s own words for a dropped connection', () => {
+    const message = failureMessage(new TypeError('Failed to fetch'), 'That did not publish.');
+    expect(message).not.toContain('Failed to fetch');
+    expect(message).toBe(describeWriteFailure(new TypeError('Failed to fetch')).message);
+  });
+
+  it('keeps the sentence a call site wrote itself', () => {
+    expect(failureMessage(new Error('That code did not work.'), 'fallback')).toBe(
+      'That code did not work.'
+    );
+  });
+
+  it('words a server failure the same way a save does', () => {
+    const error = apiError(500, 'INTERNAL', 'Internal Server Error');
+    expect(failureMessage(error, 'fallback')).toBe(describeWriteFailure(error).message);
+    expect(failureMessage(error, 'fallback')).not.toContain('Internal Server Error');
+  });
+
+  it('passes a refusal the server wrote for her straight through', () => {
+    const error = apiError(409, 'CONFLICT', 'That domain is already connected to a site.');
+    expect(failureMessage(error, 'fallback')).toBe('That domain is already connected to a site.');
+  });
+
+  it('falls back when there is nothing to say', () => {
+    expect(failureMessage('boom', 'That did not publish.')).toBe('That did not publish.');
+    expect(failureMessage(new Error(''), 'That did not publish.')).toBe('That did not publish.');
+  });
+});
+
+describe('a failure to open something (issue 922)', () => {
+  it('never shows the browser’s words, and never talks about a save', () => {
+    const message = readFailureMessage(new TypeError('Failed to fetch'), 'Try again in a moment.');
+    expect(message).not.toContain('Failed to fetch');
+    expect(message).not.toMatch(/save|typed/i);
+  });
+
+  it('words a server failure without the server’s words', () => {
+    const message = readFailureMessage(apiError(503, 'UNAVAILABLE', 'Service Unavailable'), 'x');
+    expect(message).toBe('Something went wrong on our end. Try again in a moment.');
+  });
+
+  it('passes a sentence written for her straight through', () => {
+    expect(readFailureMessage(apiError(404, 'NOT_FOUND', 'That invoice is gone.'), 'x')).toBe(
+      'That invoice is gone.'
+    );
+    expect(readFailureMessage('boom', 'Try again in a moment.')).toBe('Try again in a moment.');
   });
 });

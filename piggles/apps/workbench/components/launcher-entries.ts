@@ -8,7 +8,7 @@
 // the palette is a faster route to a surface, never a wider one.
 
 import { useMemo } from 'react';
-import { routeAcceptsId, routeForEntity } from '@wizeworks/links';
+import { recordDestination, routeForEntity } from '@wizeworks/links';
 import { useFavorites } from '../lib/api/shell-data';
 import { useDebouncedValue, useRecordSearch } from '../lib/api/search';
 import {
@@ -128,13 +128,25 @@ export function useRecordEntries(
     for (const hit of records.hits) {
       const route = routeForEntity(hit.entityType);
       if (!route) continue;
-      const surface = getSurface(route.surface);
-      if (!surface || !surfaceIsVisible(surface, reachable, known)) continue;
-      // A handful of entity types have no detail surface — a review is worked in
-      // a queue, a page is authored in the builder — so their home is a LIST and
-      // it takes no id. That falls out of whether the address has a parameter,
-      // rather than being a flag someone has to keep in step with the route.
-      const carriesId = routeAcceptsId(route);
+      // The record's own pane where its search entry names one (an invoice on
+      // account, or any other invoice), else the entity's home. A home that is
+      // a LIST (a review is worked in a queue) takes no id, which falls out of
+      // the route rather than a flag kept in step with it.
+      const destination = recordDestination(hit.entityType, hit.recordId, hit.url);
+      const opens = (key: string) => {
+        const found = getSurface(key);
+        return found && surfaceIsVisible(found, reachable, known) ? found : undefined;
+      };
+      const own = destination ? opens(destination.surface) : undefined;
+      const surface = own ?? opens(route.surface);
+      if (!surface) continue;
+      const target =
+        own && destination
+          ? destination
+          : {
+              surface: route.surface,
+              params: destination?.surface === route.surface ? destination.params : {},
+            };
       out.push({
         id: `record:${hit.key}`,
         // `resolveTitle`, never the raw field: a surface may title itself with
@@ -153,7 +165,7 @@ export function useRecordEntries(
         icon: surface.icon,
         module: surface.module,
         run: (mods) =>
-          controller.open(route.surface, carriesId ? { id: hit.recordId } : undefined, {
+          controller.open(target.surface, target.params, {
             target: targetFor(mods),
           }),
       });

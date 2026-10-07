@@ -28,6 +28,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatAddress, useLocations, type BusinessLocation } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { useBusinessZone } from '../../lib/business-timezone';
 
 const DETAIL_KEY = 'scheduling.locations.detail';
 
@@ -50,6 +51,7 @@ function filedNote(location: BusinessLocation): string {
 }
 
 export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const businessZone = useBusinessZone();
   const [activeOnly, setActiveOnly] = useState(false);
   const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useLocations(activeOnly);
 
@@ -167,7 +169,10 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 </td>
                 <td className="hidden whitespace-nowrap @xl:table-cell">{filed}</td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">{location.timezone}</td>
+                <td className="hidden whitespace-nowrap @lg:table-cell">
+                  {location.timezone ??
+                    (businessZone ? `${businessZone}, from your business` : 'Not set')}
+                </td>
                 <td>
                   <Badge color={location.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                     {location.isActive ? 'In use' : 'Off'}

@@ -31,6 +31,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { fixedStageChance } from '@wizeworks/crm-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { Archive, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -187,7 +188,7 @@ function PipelineEditor({
           afterPaneChange(() => {
             toast.add({
               title: `${created.name} created`,
-              description: 'Now add the stages a deal moves through.',
+              description: 'Now add the steps a deal moves through.',
               type: 'success',
             });
           });
@@ -206,11 +207,11 @@ function PipelineEditor({
   const onAddStage = () => {
     if (!pipeline) return;
     addStage.mutate(
-      { name: 'New stage', sortOrder: pipeline.stages.length, stageType: 'open', probability: 0 },
+      { name: 'New step', sortOrder: pipeline.stages.length, stageType: 'open', probability: 0 },
       {
         onError: (error) => {
           toast.add({
-            title: 'Could not add a stage',
+            title: 'Could not add a step',
             description: pipelineErrorMessage(error, 'Nothing was changed.'),
             type: 'error',
           });
@@ -233,7 +234,7 @@ function PipelineEditor({
     reorder.mutate(next, {
       onError: (error) => {
         toast.add({
-          title: 'Could not reorder the stages',
+          title: 'Could not reorder the steps',
           description: pipelineErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -295,7 +296,7 @@ function PipelineEditor({
               </Badge>
             ) : null}
             {isArchived ? (
-              <Badge color="neutral" variant="soft" size="sm">
+              <Badge color="warning" variant="soft" size="sm">
                 Archived
               </Badge>
             ) : null}
@@ -311,8 +312,8 @@ function PipelineEditor({
                 Create a pipeline
               </Heading>
               <Text>
-                A pipeline is your own set of stages a deal moves through. Name it, then add the
-                stages: from first contact to won or lost.
+                A pipeline is your own set of steps a deal moves through. Name it, then add the
+                steps: from first contact to won or lost.
               </Text>
             </div>
           ) : null}
@@ -377,7 +378,7 @@ function PipelineEditor({
             <Alert color="info">
               <AlertContent>
                 <AlertDescription>
-                  Create the pipeline first, then its stages appear here to add and arrange.
+                  Create the pipeline first, then its steps appear here to add and arrange.
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -400,7 +401,7 @@ function PipelineEditor({
             >
               {stages.length === 0 ? (
                 <Text className="text-sm">
-                  No stages yet. Add the first step a deal goes through, like “New lead”.
+                  No steps yet. Add the first step a deal goes through, like “New lead”.
                 </Text>
               ) : (
                 <div className="flex flex-col gap-2">
@@ -519,7 +520,7 @@ function StageRow({
       {
         onError: (error) => {
           toast.add({
-            title: 'Could not save the stage',
+            title: 'Could not save the step',
             description: pipelineErrorMessage(error, 'Nothing was changed.'),
             type: 'error',
           });
@@ -551,8 +552,8 @@ function StageRow({
     const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another step';
     const ok = await confirm({
       title: `Remove ${stage.name}?`,
-      description: `Any deals still on this stage move to “${targetName}”. This cannot be undone, but no deal is lost.`,
-      confirmLabel: 'Remove stage',
+      description: `Any deals still on this step move to “${targetName}”. This cannot be undone, but no deal is lost.`,
+      confirmLabel: 'Remove step',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -562,7 +563,7 @@ function StageRow({
       {
         onError: (error) => {
           toast.add({
-            title: 'Could not remove the stage',
+            title: 'Could not remove the step',
             description: pipelineErrorMessage(error, 'Nothing was changed.'),
             type: 'error',
           });
@@ -572,6 +573,9 @@ function StageRow({
   };
 
   const meta = stageTypeMeta(stage.stageType);
+  // Won is 100% and anything else finished is 0%, whatever is typed: the server
+  // applies the same rule (issue 110), so the box shows it and cannot be edited.
+  const fixed = fixedStageChance(stage.stageType);
 
   return (
     <div className="border-base-300 bg-base-100 flex flex-col gap-3 rounded-lg border p-3">
@@ -582,7 +586,7 @@ function StageRow({
             variant="ghost"
             color="neutral"
             shape="square"
-            aria-label="Move stage up"
+            aria-label="Move step up"
             title="Move up"
             disabled={isFirst || reordering}
             onClick={onMoveUp}
@@ -594,7 +598,7 @@ function StageRow({
             variant="ghost"
             color="neutral"
             shape="square"
-            aria-label="Move stage down"
+            aria-label="Move step down"
             title="Move down"
             disabled={isLast || reordering}
             onClick={onMoveDown}
@@ -621,9 +625,12 @@ function StageRow({
 
         <Field className="min-w-[9rem]">
           <FieldLabel>Means</FieldLabel>
+          {/* The box carries what the step means in its color. A badge beside it
+              repeated the same word on every row and pushed the finished rows'
+              columns out of line (sparx persona issue 110). */}
           <Select
-            color="module"
-            aria-label="What this stage means"
+            color={stage.stageType === 'open' ? 'module' : meta.tone}
+            aria-label="What this step means"
             value={stage.stageType}
             items={Object.fromEntries(stageTypesFor(objectKey).map((t) => [t.value, t.label]))}
             onValueChange={(next) => {
@@ -646,7 +653,8 @@ function StageRow({
                   min={0}
                   max={100}
                   inputMode="numeric"
-                  value={probability}
+                  value={fixed === null ? probability : String(fixed)}
+                  disabled={fixed !== null}
                   aria-label="Chance of winning, as a percentage"
                   placeholder="0"
                   onChange={(event) => {
@@ -660,17 +668,13 @@ function StageRow({
           />
         </Field>
 
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-
         <Button
           size="sm"
           variant="ghost"
           color="danger"
           shape="square"
-          aria-label={isOnlyStage ? 'A pipeline must keep at least one stage' : 'Remove this stage'}
-          title={isOnlyStage ? 'A pipeline must keep at least one stage' : 'Remove this stage'}
+          aria-label={isOnlyStage ? 'A pipeline must keep at least one step' : 'Remove this step'}
+          title={isOnlyStage ? 'A pipeline must keep at least one step' : 'Remove this step'}
           disabled={isOnlyStage}
           onClick={() => {
             setRemoving((cur) => !cur);
@@ -706,7 +710,7 @@ function StageRow({
             }}
           >
             <Trash2 className="size-4" aria-hidden />
-            Remove stage
+            Remove step
           </Button>
           <Button
             size="sm"

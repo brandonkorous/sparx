@@ -18,6 +18,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { entityLabel, runTone, useMigrationRuns, type RunSummary } from './data';
+import { landedBreakdown } from './run-outcome';
 import { getVendor, type CanonicalEntity } from '@wizeworks/migration';
 
 function when(iso: string): string {
@@ -35,6 +36,12 @@ function when(iso: string): string {
 
 function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
   const landed = run.importedCount + run.updatedCount;
+  // Without this the row reads the same for a run that added thirty people and
+  // a run that overwrote thirty (run-outcome, sparx persona issue 106).
+  const breakdown = landedBreakdown(
+    { imported: run.importedCount, updated: run.updatedCount },
+    run.dryRun
+  );
   return (
     <div className="border-base-300 bg-base-100 flex flex-wrap items-center gap-3 rounded-xl border p-4">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -72,6 +79,7 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
           {run.dryRun ? 'rows would come across' : 'rows brought across'}
           {run.errorCount > 0 ? ` · ${run.errorCount.toLocaleString()} skipped` : ''}
         </Text>
+        {breakdown === null ? null : <Text className="text-end text-sm">{breakdown}</Text>}
       </div>
 
       <Button variant="ghost" size="sm" onClick={onOpen}>

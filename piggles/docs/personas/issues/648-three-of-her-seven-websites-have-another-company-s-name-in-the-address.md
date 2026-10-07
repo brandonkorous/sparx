@@ -210,3 +210,13 @@ hers to edit.
 **Not verified on screen.** The dev stack was stopped for the repair, so the
 tenant site was not asked for any of the three addresses afterwards. The database
 is what was read back. Serving them is the next thing to look at when it is up.
+
+## Correction, 2026-10-06 (issue 927)
+
+"A non-canonical host redirects to the canonical" was never true. Nothing on the
+platform sends one address to another: the site app serves any address it
+recognizes, and it refuses a tenant on another brand's zone. So in production the
+three kept `sparx.zone` rows open nothing, and their only effect was the Domains
+list calling each one "Always on". They are no longer listed once the site has an
+address in its own zone ([927](927-her-free-address-said-nothing-to-set-up-and-nothing-else.md)).
+The rows are still in the table.

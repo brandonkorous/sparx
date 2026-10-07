@@ -155,6 +155,9 @@ export interface BillingRenderData {
   validUntil: string | null;
   /** The buyer's purchase order number, or null/absent for none (issue 077). */
   poNumber?: string | null;
+  /** The terms the bill was issued on, in words ("Net 45"), or null/absent
+   *  for none. Printed beside the due date (sparx persona issue 103). */
+  paymentTerms?: string | null;
   billTo: BillingRenderParty | null;
   shipTo: BillingRenderParty | null;
   lines: BillingRenderLine[];
@@ -251,6 +254,11 @@ export function docHeadBlockHtml(data: BillingRenderData): string {
   if (data.number) meta.push(`<div><span>Number</span><strong>${esc(data.number)}</strong></div>`);
   if (data.issuedAt) meta.push(`<div><span>Issued</span>${esc(formatDate(data.issuedAt))}</div>`);
   if (data.dueAt) meta.push(`<div><span>Due</span>${esc(formatDate(data.dueAt))}</div>`);
+  // The agreement that date comes from, so a Net 45 county reads Net 45 on its
+  // bill whatever the footer says. Never on an offer, which asks for nothing.
+  if (data.paymentTerms && !data.priceOffer) {
+    meta.push(`<div><span>Terms</span>${esc(data.paymentTerms)}</div>`);
+  }
   if (data.validUntil) {
     meta.push(`<div><span>Valid until</span>${esc(formatDate(data.validUntil))}</div>`);
   }

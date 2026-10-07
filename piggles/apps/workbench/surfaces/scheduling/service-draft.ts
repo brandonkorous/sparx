@@ -18,6 +18,7 @@ export interface Draft {
   bufferAfterMin: number;
   slotIntervalMin: number;
   price: string;
+  priceOnQuote: boolean;
   currency: string;
   capacity: number;
   policyId: string;
@@ -40,6 +41,7 @@ export const BLANK: Draft = {
   bufferAfterMin: 0,
   slotIntervalMin: 15,
   price: '',
+  priceOnQuote: false,
   currency: 'usd',
   capacity: 1,
   policyId: '',
@@ -74,6 +76,7 @@ export function draftFrom(service: SchedulingService): Draft {
     bufferAfterMin: service.bufferAfterMin,
     slotIntervalMin: service.slotIntervalMin,
     price: centsToPrice(service.priceCents),
+    priceOnQuote: service.priceOnQuote,
     currency: service.currency,
     capacity: service.capacity,
     policyId: service.policyId ?? '',
@@ -123,7 +126,8 @@ export function payloadFrom(draft: Draft) {
     slotIntervalMin: Math.max(1, draft.slotIntervalMin),
     // The caller already refused an unreadable price, so the null branch is a
     // belt-and-braces zero rather than a decision.
-    priceCents: priceToCents(draft.price) ?? 0,
+    priceCents: draft.priceOnQuote ? 0 : (priceToCents(draft.price) ?? 0),
+    priceOnQuote: draft.priceOnQuote,
     currency: draft.currency,
     capacity: draft.bookingType === 'class' ? Math.max(1, draft.capacity) : 1,
     policyId: draft.policyId === '' ? null : draft.policyId,

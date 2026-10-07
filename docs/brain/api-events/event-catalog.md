@@ -19,13 +19,17 @@ The **single source of truth** for events is the `EventType` union in `wizeworks
 
 **`subscription.*` is a TENANT'S OWN customers' commerce subscriptions.** The tenant's own sparx bill is `tenant.subscription.changed` (published by the Stripe **billing** webhook after reconciliation, consumed by `platform-crm-worker`, docs/140). Same word, different customer — reaching for `subscription.cancelled` to mean "a tenant churned" wires the wrong stream.
 
-Real families (abbrev.): `tenant.{created,updated,subscription.changed}`, `module.{activated,deactivated}`, `content.entry.*`, `media.*`, `email.send`, `builder.{published,rolled_back}`, `site.updated`, `product`/`variant.*`, `price.recomputed`, `inventory.*`, `cart`/`checkout.*`, `order.*`, `payment.*`, `subscription.*`, `return.*`, `review.*`, `b2b.*`, `booking.*`, `dropship.*`, `partner.*`, `bootcamp.*`, `chat.message.received`, `push.send`, `import.job.created`, `feedback.*`. Shared payload contracts live in `types.ts`.
+Real families (abbrev.): `tenant.{created,updated,subscription.changed}`, `module.{activated,deactivated}`, `content.entry.*`, `media.*`, `email.send`, `builder.{published,rolled_back}`, `builder.{page,layout,theme,email}.published`, `builder.layout.activated`, `site.updated`, `product`/`variant.*`, `price.recomputed`, `inventory.*`, `cart`/`checkout.*`, `order.*`, `payment.*`, `subscription.*`, `return.*`, `review.*`, `b2b.*`, `booking.*`, `dropship.*`, `partner.*`, `bootcamp.*`, `chat.message.received`, `push.send`, `import.job.created`, `feedback.*`. Shared payload contracts live in `types.ts`.
 
 ## A consumer can exist with no publisher, and it is silent
 
 `builder.{published,rolled_back}` were added in 2026-07 to close exactly that gap. `cache-revalidation-worker` had a `builder.` branch mapping onto the `builder:<slug>` tag, and every storefront page/layout/frame/style read already carried the tag — but **nothing ever emitted the event**, so the branch was dead code and the tag was never purged. Nothing failed, because all 19 storefront routes are `force-dynamic` and nothing is cached.
 
 That is the shape to watch for: a purge path is only exercised once caching is switched on, so a missing publisher looks perfectly healthy right up until it silently serves a stale page — or, worse, keeps serving the broken page a **rollback** was performed to remove.
+
+### The reverse: a publisher with no subscriber (2026-10-06)
+
+The same worker then had the opposite gap. `@wizeworks/builder` publishes its own topics after a single document goes live from its own pane, `builder.{page,layout,theme,email}.published` and `builder.layout.activated`, and `installBuilderPubSubBridge` (booted by api-rest) puts them on the bus. They were not in `EventType`, so the worker's tests called them "plausible names nobody emitted" and its subscription list asked for `builder.published` alone. The broker held every one of them; the consumer's filter excluded them. A header published from its pane reached visitors when the five-minute cache ran out (measured 4m29s), under a pane saying "a few seconds" (piggles persona issue 921). Now all five are `EventType` members, `BuilderTopic` must stay a subset (a compile-time assertion in `builder/src/events.ts`), and the worker subscribes to the four a visitor sees. Measured after: 2 seconds, both directions. **Before calling an event name fake, ask the broker** (`jsm.streams.info(stream, { subjects_filter })`), not the union.
 
 ## `site.updated`: a save that changes the website without a publish
 

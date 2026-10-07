@@ -17,6 +17,15 @@ export const PRODUCTS_COLLECTION = resolveCollectionName('products');
 // never a real property id (those are UUIDs), so the two can't collide.
 export const GLOBAL_SITE_SCOPE = '__all__';
 
+// "Fits every year" sentinel for `fitment_years`. A fit rule that names no year
+// range (a part listed for the 6.7L engine, with no years) fits every year of
+// that vehicle, the rule collection-rules and fitment-service already apply. The
+// index has no way to say "every year" except a value, so such a product carries
+// 0 alongside any real years, and the year filter matches `[0, <year>]`. No real
+// model year is 0. Without it, picking any year emptied a shop whose parts were
+// fitted by engine alone (sparx persona issue 125).
+export const EVERY_FITMENT_YEAR = 0;
+
 export function productsSchema(
   collectionName: string = PRODUCTS_COLLECTION
 ): CollectionCreateSchema {

@@ -187,7 +187,7 @@ export type { BillingTemplateDto } from './billing-template-service';
 // this package answer that question and each had grown its own arithmetic. One
 // rule, so a screen, an aging report and the dunning ladder can never disagree
 // about whether the same invoice is late.
-export { daysPastDue } from './billing-ar';
+export { daysPastDue, dueDayAfter } from './billing-ar';
 export { businessTimeZone } from './business-clock';
 // The default renderer + the shared print section builders the builder-authored
 // template renderer (api-rest's renderInvoiceTree) composes (docs/87 §10).

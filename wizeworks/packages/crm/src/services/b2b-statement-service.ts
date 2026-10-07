@@ -37,6 +37,7 @@ import {
   type StatementFigures,
 } from './b2b-statement';
 import { ISSUED_BILL_WHERE } from './billing-document-service';
+import { accountContactBilling } from './account-contact-billing';
 import { partyFromJson } from './billing-render-parts';
 import { businessTimeZone } from './business-clock';
 
@@ -157,53 +158,7 @@ async function billingAddressOf(
     if (lines.length > 0) return lines;
   }
 
-  const contacts = await tx.b2bAccountContact.findMany({
-    where: { accountId, isActive: true, customer: { deletedAt: null } },
-    select: {
-      role: true,
-      customer: {
-        select: {
-          addresses: {
-            where: { type: { in: ['billing', 'both'] } },
-            select: {
-              isDefault: true,
-              line1: true,
-              line2: true,
-              city: true,
-              region: true,
-              postalCode: true,
-              country: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: 'asc' },
-  });
-  const ordered = [
-    ...contacts.filter((c) => c.role === 'primary_contact'),
-    ...contacts.filter((c) => c.role !== 'primary_contact'),
-  ];
-  for (const contact of ordered) {
-    const addresses = [...contact.customer.addresses].sort(
-      (a, b) => Number(b.isDefault) - Number(a.isDefault)
-    );
-    const address = addresses[0];
-    if (!address) continue;
-    const party = partyFromJson(
-      {
-        line1: address.line1,
-        line2: address.line2 ?? '',
-        city: address.city,
-        region: address.region ?? '',
-        postalCode: address.postalCode ?? '',
-        country: address.country,
-      },
-      'Bill to'
-    );
-    if (party && party.lines.length > 0) return party.lines;
-  }
-  return [];
+  return (await accountContactBilling(tx, accountId)).lines;
 }
 
 /**

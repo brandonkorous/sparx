@@ -19,6 +19,7 @@ import {
   type PageSettingsPatch,
 } from '../../lib/studio/page-data';
 import { useActivePropertyId } from '../../lib/api/shell-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /** A stored row as the engine's document. Exported so a restore can rebuild the
  *  document from the server and hand it to whatever pane is holding it. */
@@ -121,7 +122,7 @@ function usePageWrites(
 
   const error = useMemo(() => {
     const failure = publishPage.error ?? savePage.error;
-    return failure instanceof Error ? failure.message : null;
+    return failure ? failureMessage(failure, 'That did not go through. Try again.') : null;
   }, [savePage.error, publishPage.error]);
 
   return { saving: savePage.isPending, publishing: publishPage.isPending, error, save, publish };

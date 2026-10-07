@@ -1,119 +1,65 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
-import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { requireSession } from '@wizeworks/auth';
 import { prisma } from '@wizeworks/db';
-import { Logo } from '@piggles/brand/react';
-import { AppearanceControl } from '@/components/appearance-control';
-import { APP_COUNT_WORD, marketingUrl, PRODUCT } from '@piggles/config';
-import { PRICE_LABEL } from '@piggles/config/pricing';
+import { PRODUCT } from '@piggles/config';
 import { capacityReport } from '@wizeworks/usage';
+import { AccountBar } from '@/components/account/account-bar';
+import { BillingNotice } from '@/components/account/billing-notice';
+import { CookieSection } from '@/components/account/cookie-section';
+import { PaymentSection } from '@/components/account/payment-section';
+import { PlanCard } from '@/components/account/plan-card';
 import { Capacity } from '@/components/capacity';
+import { readBilling } from '@/lib/billing';
 import { readConsent } from '@/lib/consent';
+import { canPay } from '@/lib/pay-roles';
 import { planState } from '@/lib/plan-state';
 
 export const metadata: Metadata = { title: 'Your account' };
 export const dynamic = 'force-dynamic';
 
 // The account home: what you pay, what you are using, and the way back to work.
-//
-// Capacity is measured, never assumed. A meter with no snapshot reads "not
-// measured yet" and a ceiling nobody has decided draws no bar — a value nobody
-// took must never render as one.
+// The badge and the Payment sentence both come from `planState`, so they agree.
 
-// `planState` lives in lib/ because BOTH halves of this page read it: the badge
-// under "Your plan" and the sentence under "Payment". They used to be written
-// separately, which is how the badge came to say `active` while the paragraph
-// below it said "while you are on the trial" for a business whose trial had
-// ended nineteen days earlier.
+async function loadAccount(tenantId: string) {
+  return Promise.all([
+    prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: {
+        name: true,
+        slug: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        platformBrand: true,
+      },
+    }),
+    // The address her site is really served at, READ rather than composed (issue #089).
+    prisma.domain.findFirst({
+      where: { tenantId, type: 'subdomain' },
+      orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
+      select: { host: true },
+    }),
+    readBilling(tenantId),
+  ]);
+}
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billing?: string }>;
+}) {
   const session = await requireSession();
-
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: session.user.tenantId },
-    select: {
-      name: true,
-      slug: true,
-      subscriptionStatus: true,
-      trialEndsAt: true,
-      platformBrand: true,
-    },
-  });
-
-  // The address her site is really served at, READ rather than composed. This
-  // used to render `{tenant.slug}.{suffix}`, which is the same fact from a
-  // different place: the console reads the `domains` row, so when the two drifted
-  // apart the two apps quoted two different addresses for one business and
-  // neither knew (issue #089). One source, so a drift shows up instead of hiding.
-  const siteAddress = await prisma.domain.findFirst({
-    where: { tenantId: session.user.tenantId, type: 'subdomain' },
-    orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
-    select: { host: true },
-  });
-
-  const plan = planState(tenant?.subscriptionStatus, tenant?.trialEndsAt);
-
-  // The analytics answer, shown as a fact rather than as a control. This page
-  // reports where things stand; changing a decision happens on the screen that
-  // asked for it, which is the same screen either way.
-  //
-  // Three states, and all three are rendered differently. "Not asked yet" is not
-  // folded into "no" — they mean different things, and a person who has never
-  // been asked seeing the word "no" would reasonably conclude they had answered.
-  const consent = await readConsent(session.user.id, session.user.tenantId);
-
-  // The brand decides the ceilings; this app is single-brand, but the tenant's
-  // own column is still what answers it — a tenant belongs to a brand, not to a
-  // deployment.
+  const { billing: marker } = await searchParams;
+  const [tenant, siteAddress, billing] = await loadAccount(session.user.tenantId);
+  const plan = planState(tenant?.subscriptionStatus, tenant?.trialEndsAt, !!billing?.subscribed);
+  const consent = await readConsent(session.user.id, session.user.homeTenantId);
+  // The tenant's own brand column decides the ceilings, not the deployment.
   const capacity = await capacityReport(session.user.tenantId, tenant?.platformBrand ?? null);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
-      <div className="flex flex-wrap items-center justify-between gap-6">
-        <Logo />
-        {/* A PLAIN ANCHOR, and it must stay one. `/handoff` is not a page — it
-            is a redirect endpoint that 303s to another ORIGIN (mypiggles.com).
-            Next's client router soft-navigates a <Link>: it fetches the RSC
-            payload for the href, the 303 sends that fetch cross-origin, CORS
-            refuses it, and the console fills with
-
-              Failed to fetch RSC payload for …/handoff. Falling back to
-              browser navigation. TypeError: Failed to fetch
-
-            on every click of the one button this page exists for. The fallback
-            is why it limps rather than dying outright, which is what kept it
-            unnoticed. An <a> does the real navigation first time, with no failed
-            request and no error.
-
-            Same rule for every other entry to the door — see the note in
-            accept-invite-client.tsx. */}
-        {/* `flex-wrap` HERE, not only on the row above. The outer row wrapped,
-            so the logo dropped to its own line and these three landed together
-            on the next one — 349px of controls in a 341px column at 360px, which
-            pushed **Go to my business** 32px off the right edge and gave the
-            page sideways scroll. The one button this page exists for was the
-            part hanging off the screen. `justify-end` keeps them on the right
-            once they do wrap. */}
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {/* Beside the way out, not instead of it — the same corner it occupies
-              on the signed-out screens, so it does not move once somebody has an
-              account. */}
-          <AppearanceControl />
-          {/* A FORM, not a link. Signing out is a state change, so it must not be
-              reachable by a prefetch, a crawler or an <img> — see the note in
-              /sign-out. Colorless: `neutral` on a bar like this is issue #003. */}
-          <form action="/sign-out" method="post">
-            <button className={buttonClasses({ variant: 'ghost' })} type="submit">
-              Sign out
-            </button>
-          </form>
-          <a className={buttonClasses({ color: 'primary' })} href="/handoff">
-            Go to my business
-          </a>
-        </div>
-      </div>
+      <AccountBar />
+      <BillingNotice marker={marker} />
 
       <h1 className="mt-12 text-3xl font-extrabold sm:text-4xl">
         {tenant?.name ?? 'Your account'}
@@ -124,27 +70,7 @@ export default async function AccountPage() {
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        <Card>
-          <CardBody>
-            <h2 className="text-xl font-bold">Your plan</h2>
-            <p className="mt-1 text-base">All {APP_COUNT_WORD} apps, one price.</p>
-            <p className="mt-4 text-4xl font-extrabold">
-              {PRICE_LABEL}
-              <span className="text-base font-bold">/month</span>
-            </p>
-            <div className="mt-4">
-              {/* Status is its own color axis: a state that wants something
-                  from her gets a semantic tone. `plan.tone` is UNDEFINED for
-                  the states that want nothing, which renders a colorless badge
-                  — a different thing from naming `neutral`, and the right
-                  answer for "no billing set up yet". */}
-              <Badge color={plan.tone} variant="soft" size="lg">
-                {plan.label}
-              </Badge>
-            </div>
-          </CardBody>
-        </Card>
-
+        <PlanCard plan={plan} billing={billing} />
         <Card>
           <CardBody>
             <h2 className="text-xl font-bold">Your business address</h2>
@@ -163,53 +89,8 @@ export default async function AccountPage() {
         <Capacity report={capacity} />
       </div>
 
-      <div className="border-base-300 mt-12 border-t pt-8">
-        <h2 className="text-xl font-bold">Payment</h2>
-        {/* The first sentence is the one the badge above is drawn from, so the
-            two halves of this page cannot say different things about the same
-            business. The second is true in every state. */}
-        <p className="mt-2 text-base">
-          {plan.payment} Adding a payment method, seeing invoices, and buying more room are the next
-          thing being built.
-        </p>
-      </div>
-
-      <div className="border-base-300 mt-10 border-t pt-8">
-        <h2 className="text-xl font-bold">Cookie choices</h2>
-        <div className="mt-3 flex flex-wrap items-center gap-4">
-          {consent === null ? (
-            <Badge color="warning" variant="soft" size="lg">
-              Not asked yet
-            </Badge>
-          ) : (
-            <Badge color={consent.analytics ? 'success' : 'neutral'} variant="soft" size="lg">
-              {consent.analytics ? 'Helping us improve' : 'Analytics off'}
-            </Badge>
-          )}
-          <Link
-            className={buttonClasses({ color: 'neutral', variant: 'outline' })}
-            href="/cookie-choices"
-          >
-            {consent === null ? 'Answer it' : 'Change this'}
-          </Link>
-        </div>
-        <p className="mt-3 max-w-prose text-base">
-          {consent === null
-            ? `Whether ${PRODUCT.name} may see which screens you use. Nothing is being counted until you say so.`
-            : consent.analytics
-              ? `${PRODUCT.name} counts which screens get used inside your workspace, so we can fix what is confusing. Never sold, never advertising, and never anything you have stored.`
-              : `${PRODUCT.name} is counting nothing. The only cookies left are the ones that keep you signed in.`}{' '}
-          <a
-            className="font-semibold underline"
-            href={marketingUrl('cookies')}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Every cookie we set
-          </a>
-          .
-        </p>
-      </div>
+      <PaymentSection plan={plan} billing={billing} mayPay={canPay(session.user.role)} />
+      <CookieSection consent={consent} />
     </main>
   );
 }

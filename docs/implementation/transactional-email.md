@@ -1,8 +1,8 @@
 # Transactional email — coverage + build tracker
 
-Version: 1.13
+Version: 1.14
 Author: Brandon Korous
-Last Updated: 2026-10-03
+Last Updated: 2026-10-06
 
 > The **living** status + decision log for sparx's transactional & lifecycle email.
 > It answers three questions the design docs don't: what the platform actually
@@ -188,7 +188,16 @@ holds every past shipped body per key; a default row whose draft **and** publish
 both hash into the prior set is replaced with the current design — anything edited is left
 alone. Rides the same activation + 6-hourly reconcile path as `repairLegacyRows`, never a SQL
 migration. **Going forward: when a default body is redesigned again, APPEND the outgoing
-body's fingerprint to that key's set (never remove).**
+body's fingerprint to that key's set (never remove), and append the new one to that key's
+list in `email-default-history.json`.**
+
+That rule was kept by hand until 2026-10-06, and it slipped: the 2026-09-16 wording sweep
+changed almost every body and appended nothing, which left 870 untouched rows in dev on
+old wording (persona issue 919). `email-default-history.json` now lists every body each
+default has shipped, computed from the code at each commit, oldest first, ending on
+today's. `email-default-refresh.test.ts` fails when a body changes until both edits are
+made, and fails when a body in the history is missing from the prior set. The test names
+the exact fingerprints to paste.
 
 **Requires silicaui 0.33** (email box-decoration/roles/webfonts).
 
@@ -250,8 +259,8 @@ on the base design, (2) a `TEMPLATES` registry entry (key/name/type/category/sub
 preheader/sources/refs), (3) a trigger — a new system-automation seed (`email.send_campaign`
 
 - `builderEmailKey`) or a direct send. New keys provision automatically (the provisioner
-  creates MISSING keys); **no fingerprint entry is needed for a brand-new key** — fingerprints
-  only gate refreshing _existing_ rows.
+  creates MISSING keys). A brand-new key gets an EMPTY prior set and a one-entry history
+  (`"key": ["<its fingerprint>"]`); the test prints the line to add.
 
 ### Phase 1 — commerce order lifecycle (closes the receipt asymmetry) 🟡 (code-complete, uncommitted)
 
@@ -375,8 +384,8 @@ with system fallbacks today; a webfont link is additive and lower-value.
   helpers on the base design — no hardcoded sparx anything; visuals derive from the tenant brand.
 - **A new key is not live until its trigger is wired.** Body + registry alone provisions an
   editable-but-never-sent template. Always land the trigger in the same slice.
-- **Refresh fingerprints are for EXISTING keys only.** New keys need none; only append a
-  fingerprint when _redesigning_ an already-shipped body.
+- **Refresh fingerprints are for EXISTING keys only.** A new key gets an empty prior set and
+  a one-entry history; append a prior fingerprint only when _redesigning_ a shipped body.
 - **Tests per slice:** a body render assertion (status cue + hero datum present) and, where a
   trigger seed lands, its presence in `SYSTEM_AUTOMATIONS`.
 - Uncommitted; user handles commits.

@@ -38,7 +38,7 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
 import { deriveDocumentStatus } from './billing-ar';
 import { businessTimeZone } from './business-clock';
-import { quoteCostsForItems } from './ar-invoice-lines';
+import { invoiceLineName, quoteCostsForItems, taxRateFrom } from './ar-invoice-lines';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { invoicePaymentMethod, invoicePaymentNote } from './invoice-payment-method';
 
@@ -128,20 +128,8 @@ export function invoiceParty(
   return partyFromOrder(orderAddress, fallbackName, email);
 }
 
-/**
- * An order item's name on the invoice, with its part code when the name does
- * not already carry it.
- *
- * Gillett names a part "Bosch Remanufactured Fuel Injector (0986435621)", code
- * and all, so appending the code unconditionally printed it twice on every
- * invoice raised from an order (sparx persona issue 077, the same defect as the
- * quote editor's line description).
- */
-export function invoiceLineName(name: string, sku: string | null | undefined): string {
-  const code = sku?.trim() ?? '';
-  if (code === '' || name.toLowerCase().includes(code.toLowerCase())) return name;
-  return `${name} (${code})`;
-}
+// Where its tests and callers have always found it.
+export { invoiceLineName };
 
 /** Money on an order, in the two numbers this decision needs. */
 interface OrderMoney {
@@ -152,28 +140,6 @@ interface OrderMoney {
 /** What is still owed, to the cent. */
 function outstanding(order: OrderMoney): number {
   return Math.round((order.total - order.amountPaid) * 100) / 100;
-}
-
-/**
- * The single tax rate that reproduces this order's tax.
- *
- * The order stores tax per line, already computed by the tax service against the
- * place it was sold into. A billing document stores ONE rate and applies it to
- * whichever lines are marked taxable — so the rate is derived from the taxable
- * lines alone, not the whole subtotal, or an order with one exempt line would
- * come out under-taxed.
- *
- * Exact for the ordinary case, which is one tax place per order. An order that
- * somehow carried two different rates would round to a blended one; the order
- * remains the record of what was actually charged.
- */
-function taxRateFrom(lines: { lineSubtotal: number; taxAmount: number }[]): number {
-  const taxable = lines.filter((l) => l.taxAmount > 0);
-  const base = taxable.reduce((acc, l) => acc + l.lineSubtotal, 0);
-  if (base <= 0) return 0;
-  const tax = taxable.reduce((acc, l) => acc + l.taxAmount, 0);
-  // Decimal(6,4) on the column — four places is the precision it can hold.
-  return Math.round((tax / base) * 10_000) / 10_000;
 }
 
 /** One invoice as the order pane needs to show it — enough to say what was asked

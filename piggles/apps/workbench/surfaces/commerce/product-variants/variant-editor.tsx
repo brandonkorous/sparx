@@ -21,6 +21,7 @@ import {
 import { MoneyInput } from '../../../components/money-input';
 import { OptionalMoney } from './fields';
 import { CoreDeposit } from './core-deposit';
+import { PreorderOfferNote } from '../../inventory/preorder-offer-note';
 import type { VariantDraft } from './draft';
 import type { Variant } from '../products-data';
 
@@ -140,7 +141,7 @@ function Codes({ draft, problem, onChange }: Omit<EditorProps, 'variant' | 'labe
 }
 
 /** When it runs out, what kind of thing it is, and whether it is posted. */
-function Handling({ label, draft, onChange }: Omit<EditorProps, 'problem' | 'variant'>) {
+function Handling({ variant, label, draft, onChange }: Omit<EditorProps, 'problem'>) {
   return (
     <>
       <Field>
@@ -160,6 +161,9 @@ function Handling({ label, draft, onChange }: Omit<EditorProps, 'problem' | 'var
           send it when it arrives.
         </FieldDescription>
       </Field>
+      {draft.inventoryPolicy === 'preorder' ? (
+        <PreorderOfferNote variantId={variant.id} productId={variant.productId} />
+      ) : null}
 
       <Field>
         <FieldLabel>What kind of thing this version is</FieldLabel>
@@ -219,7 +223,7 @@ export function VariantEditor({ variant, label, draft, problem, onChange }: Edit
       <CoreDeposit variant={variant} label={label} draft={draft} onChange={onChange} />
       <Codes draft={draft} problem={problem} onChange={onChange} />
       {problem ? <FieldStatus status="error">{problem}</FieldStatus> : null}
-      <Handling label={label} draft={draft} onChange={onChange} />
+      <Handling variant={variant} label={label} draft={draft} onChange={onChange} />
     </>
   );
 }

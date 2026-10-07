@@ -11,6 +11,7 @@
 // is written to be re-run for any day whose sources moved.
 
 import { withTenant, type TxClient } from '@wizeworks/db';
+import { ORDER_MOVEMENT_REFERENCE } from './stock-movements';
 
 /* ── The arithmetic (pure, so it is tested without a database) ─────────────── */
 
@@ -181,7 +182,7 @@ export async function recomputeDay(
     const orderIds = [
       ...new Set(
         movements
-          .filter((m) => m.referenceType === 'order' && m.referenceId)
+          .filter((m) => m.referenceType === ORDER_MOVEMENT_REFERENCE && m.referenceId)
           .map((m) => m.referenceId!)
       ),
     ];
@@ -195,7 +196,7 @@ export async function recomputeDay(
     }
     for (const movement of movements) {
       const site =
-        movement.referenceType === 'order' && movement.referenceId
+        movement.referenceType === ORDER_MOVEMENT_REFERENCE && movement.referenceId
           ? (orderSites.get(movement.referenceId) ?? null)
           : null;
       addTo(cogs, site, movement.costConsumedCents ?? 0);

@@ -25,6 +25,7 @@ export {
   matchPath,
   normalizePath,
   pathForEntity,
+  recordDestination,
   routeAcceptsId,
   routeForEntity,
   routeForSurface,

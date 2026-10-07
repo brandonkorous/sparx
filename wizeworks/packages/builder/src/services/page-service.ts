@@ -29,6 +29,7 @@ import { atAddress, isLive } from './page-liveness';
 import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
 import type { PropertyContext, ServiceContext } from '../errors';
+import { indexPages, withPageSearch } from './page-search';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
 import { expandTreeForPublish } from './component-service';
@@ -336,25 +337,31 @@ async function ensureStarterPagesTx(
  *  ships only collection templates, a fixture, a deleted home) can leave a site
  *  without a front door. Idempotent. Returns the created page, or null if a home
  *  already existed. */
-export function ensureHome(
+export async function ensureHome(
   ctx: PropertyContext,
   modules: SiteChromeOptions = {}
 ): Promise<BuilderPageDto | null> {
-  return withTenant(ctx, async (tx) => {
-    const home = await ensureHomeTx(tx, ctx, modules);
-    return home ? toDto(home) : null;
+  const home = await withTenant(ctx, async (tx) => {
+    const created = await ensureHomeTx(tx, ctx, modules);
+    return created ? toDto(created) : null;
   });
+  // A Home made here is a page like any other (`page-search.ts`).
+  if (home) indexPages(ctx, [home.id]);
+  return home;
 }
 
 /** List the tenant's pages. On first use (zero rows) seed the curated starter
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Also heals a
  *  home-less property (pages but no slugless singleton) by injecting the default
  *  home, so every site that's ever opened has a `/`. Idempotent. */
-export function listOrSeed(
+export async function listOrSeed(
   ctx: PropertyContext,
   modules: SiteChromeOptions = {}
 ): Promise<BuilderPageSummaryDto[]> {
-  return withTenant(ctx, async (tx) => {
+  // The pages this read may create are pages like any other, so search is told
+  // once they are committed (`page-search.ts`).
+  let seeded = false;
+  const pages = await withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
       select: PAGE_SUMMARY_SELECT,
@@ -369,6 +376,7 @@ export function listOrSeed(
       const healedHome = !hasHome && (await ensureHomeTx(tx, ctx, modules)) !== null;
       const healedStarters = await ensureStarterPagesTx(tx, ctx, modules);
       if (healedHome || healedStarters) {
+        seeded = true;
         const healed = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
           select: PAGE_SUMMARY_SELECT,
@@ -419,12 +427,20 @@ export function listOrSeed(
       entityId: null,
       diff: { after: { count: starters.length } },
     });
-    const seeded = await tx.builderPage.findMany({
+    seeded = true;
+    const created = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    return seeded.map((r) => toDto(r, modules));
+    return created.map((r) => toDto(r, modules));
   });
+  if (seeded) {
+    indexPages(
+      ctx,
+      pages.map((p) => p.id)
+    );
+  }
+  return pages;
 }
 
 export function get(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
@@ -435,7 +451,14 @@ export function get(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
   });
 }
 
-export async function create(ctx: PropertyContext, rawInput: unknown): Promise<BuilderPageDto> {
+/** `createWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function create(
+  ...args: Parameters<typeof createWrite>
+): Promise<Awaited<ReturnType<typeof createWrite>>> {
+  return withPageSearch(args[0], () => createWrite(...args));
+}
+
+async function createWrite(ctx: PropertyContext, rawInput: unknown): Promise<BuilderPageDto> {
   const input = CreatePageInput.parse(rawInput);
   if (input.recordType) await assertValidRecordType(ctx, input.recordType);
   return withTenant(ctx, async (tx) => {
@@ -477,9 +500,16 @@ export async function create(ctx: PropertyContext, rawInput: unknown): Promise<B
   });
 }
 
+/** `updateWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function update(
+  ...args: Parameters<typeof updateWrite>
+): Promise<Awaited<ReturnType<typeof updateWrite>>> {
+  return withPageSearch(args[0], () => updateWrite(...args));
+}
+
 /** Rename and/or save the draft tree and/or retarget. Draft-tree saves are the
  *  high-frequency autosave path — deliberately NOT audited. */
-export async function update(
+async function updateWrite(
   ctx: PropertyContext,
   id: string,
   rawInput: unknown
@@ -487,7 +517,7 @@ export async function update(
   const input = UpdatePageInput.parse(rawInput);
   // Retargeting at a real source keeps the template↔content link from drifting.
   if (input.recordType) await assertValidRecordType(ctx, input.recordType);
-  return withTenant(ctx, async (tx) => {
+  const dto = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findFirst({
       where: { id, propertyId: ctx.propertyId },
       select: { id: true },
@@ -541,9 +571,29 @@ export async function update(
       );
     }
   });
+  // Every column but the draft body is live the moment it is saved: there is no
+  // published copy of a page's search title, sharing picture, chrome, name or
+  // address. The storefront caches them, so the cache is told, as a publish tells
+  // it. Without this, a title changed from the SEO page check reached visitors only
+  // when the five-minute cache ran out (sparx persona issue 133).
+  if (Object.keys(input).some((key) => key !== 'tree')) {
+    await publishBuilderEvent({
+      tenantId: ctx.tenantId,
+      topic: 'builder.page.settings.changed',
+      payload: { pageId: dto.id, name: dto.name },
+    });
+  }
+  return dto;
 }
 
-export async function remove(ctx: PropertyContext, id: string): Promise<void> {
+/** `removeWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function remove(
+  ...args: Parameters<typeof removeWrite>
+): Promise<Awaited<ReturnType<typeof removeWrite>>> {
+  return withPageSearch(args[0], () => removeWrite(...args));
+}
+
+async function removeWrite(ctx: PropertyContext, id: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
@@ -594,10 +644,17 @@ export async function reorder(ctx: PropertyContext, rawInput: unknown): Promise<
   });
 }
 
+/** `publishWrite`, then search re-reads the site's pages (`page-search.ts`). */
+export function publish(
+  ...args: Parameters<typeof publishWrite>
+): Promise<Awaited<ReturnType<typeof publishWrite>>> {
+  return withPageSearch(args[0], () => publishWrite(...args));
+}
+
 /** Snapshot the draft tree into the published tree, expanding any tenant
  *  components into concrete primitives first (docs/53 §3). The publish event is
  *  emitted for the storefront render path. */
-export async function publish(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
+async function publishWrite(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
   const dto = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);

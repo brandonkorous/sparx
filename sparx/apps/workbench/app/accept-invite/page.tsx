@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import * as React from 'react';
 import Link from 'next/link';
-import { UserPlus } from 'lucide-react';
 import { Badge, Button, Text } from '@wizeworks/silicaui-react';
 import { getInvitationDetail, getSession, type InvitationDetail } from '@wizeworks/auth';
-import { AuthShell } from '../../components/auth-shell';
-import { roleLabel } from '../../surfaces/team/roles';
+import { InviteShell } from './invite-shell';
+import { roleDescription, roleLabel } from '../../surfaces/team/roles';
 import {
   AcceptInviteButton,
   ResendVerificationButton,
@@ -91,7 +90,8 @@ export default async function AcceptInvitePage({
         <div className="flex flex-col gap-3">
           <Text className="text-sm">
             You&rsquo;re signed in as <strong>{session.user.email}</strong>, but this invitation was
-            sent to <strong>{invite.email}</strong>. Sign in with that address to accept it.
+            sent to <strong>{invite.email}</strong>. Sign out, then sign in or create an account
+            with that address.
           </Text>
           <SwitchAccountButton callbackURL={callbackURL} />
         </div>
@@ -132,36 +132,37 @@ function InviteFrame({
   children: React.ReactNode;
 }) {
   return (
-    <AuthShell
-      tabs={[{ id: 'invite', label: 'Accept invitation', icon: UserPlus }]}
-      activeTab="invite"
-    >
+    <InviteShell>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">You&rsquo;re invited</h1>
           <Text>
-            {invite.inviterName} invited you to join <strong>{invite.orgName}</strong>.
+            {invite.inviterName} invited you to join <strong>{invite.orgName}</strong>
+            {/* "Gillett Diesel Service Inc." already ends the sentence. */}
+            {invite.orgName.trim().endsWith('.') ? '' : '.'}
           </Text>
         </div>
-        <div className="flex items-center gap-2">
-          <Text className="text-sm">Role</Text>
-          <Badge color="neutral" variant="soft" size="sm">
-            {roleLabel(invite.role)}
-          </Badge>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <Text className="text-sm">Role</Text>
+            <Badge variant="outline" size="sm">
+              {roleLabel(invite.role)}
+            </Badge>
+          </div>
+          {/* What the role can and cannot do, the same sentence the person who
+              invited them read when choosing it (issue 120). */}
+          <Text className="text-sm">{roleDescription(invite.role)}</Text>
         </div>
         {children}
       </div>
-    </AuthShell>
+    </InviteShell>
   );
 }
 
 // Standalone message (no invite context — bad/expired link).
 function InviteMessage({ title, body }: { title: string; body: string }) {
   return (
-    <AuthShell
-      tabs={[{ id: 'invite', label: 'Accept invitation', icon: UserPlus }]}
-      activeTab="invite"
-    >
+    <InviteShell>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
@@ -171,6 +172,6 @@ function InviteMessage({ title, body }: { title: string; body: string }) {
           Go to sign in
         </Button>
       </div>
-    </AuthShell>
+    </InviteShell>
   );
 }

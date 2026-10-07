@@ -403,6 +403,16 @@ module "pubsub" {
     # into the fleet (sparx persona issue 040).
     "builder.published"   = []
     "builder.rolled_back" = []
+    # One document published from its own pane (persona issue 921). Same
+    # consumer, same reason for being topic-only; the email one has none.
+    "builder.page.published"   = []
+    "builder.layout.published" = []
+    "builder.layout.activated" = []
+    "builder.theme.published"  = []
+    "builder.email.published"  = []
+    # A page's live settings saved without a publish (persona issue 133). Same
+    # consumer, same reason for being topic-only.
+    "builder.page.settings.changed" = []
     # A site's own settings changed without a publish: its name, links, contact
     # details, brand, cookie banner, shop settings, payment method or footer legal
     # links. Same consumer, same reason for being topic-only.

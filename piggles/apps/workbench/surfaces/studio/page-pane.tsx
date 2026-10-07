@@ -197,6 +197,7 @@ function PageStatus({
   if (unpublished) return <span>Saved. Visitors still see the last published version.</span>;
   // "Saved and live" the instant the API returned was a claim about the visitor
   // made from the console's own state.
-  if (catchingUp) return <span>Published. Your site catches up within a few minutes.</span>;
+  if (catchingUp)
+    return <span>Published. Your site shows it in a few seconds, a few minutes at most.</span>;
   return <span>Saved and live.</span>;
 }

@@ -48,6 +48,7 @@ import { FirstRunTour } from '../lib/tour/first-run-tour';
 import { ModuleTourOffers } from '../lib/tour/module-tour-offers';
 import type { WorkbenchModule } from './module-scope';
 import { useOnboarding } from '../lib/onboarding/api';
+import { setStorageOwner } from '../lib/workbench/storage-owner';
 import { isOnboardingFinished } from '../lib/onboarding/entry';
 import { OnboardingGate } from '../surfaces/onboarding/onboarding-gate';
 // Registers every surface. Must be imported before the dock mounts, since a
@@ -55,12 +56,17 @@ import { OnboardingGate } from '../surfaces/onboarding/onboarding-gate';
 import '../lib/surfaces/catalog';
 
 export function WorkbenchShell({
+  userId,
   userName,
   userEmail,
   initialSiteKey,
   initialCompact,
   arrivalAddress,
 }: {
+  /** The signed-in person. Their open panes, arrangements and remembered
+   *  choices are kept under this id, so two people on one computer never get
+   *  each other's workbench (lib/workbench/storage-owner.ts). */
+  userId: string;
   userName: string;
   userEmail: string;
   /** The active site read from the cookie server-side — the boot key when set,
@@ -74,6 +80,9 @@ export function WorkbenchShell({
    *  this page load is asking for. See app/workbench-entry.tsx. */
   arrivalAddress: string;
 }) {
+  // First, before anything below reads browser storage.
+  setStorageOwner(userId);
+
   // Minted once per window. A popout gets its own id from the popout bootstrap.
   const windowIdRef = useRef<string | null>(null);
   windowIdRef.current ??= mintWindowId();

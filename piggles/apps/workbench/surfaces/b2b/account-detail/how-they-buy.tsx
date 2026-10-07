@@ -14,7 +14,12 @@ import {
 import { PaymentTermsField } from '../../../components/payment-terms-field';
 import { FormSection } from '../../../components/form-section';
 import { MoneyInput } from '../../../components/money-input';
-import { formatCents, type AccountDetail, type AccountStatus } from '../accounts-data';
+import {
+  formatCents,
+  standingHelp,
+  type AccountDetail,
+  type AccountStatus,
+} from '../accounts-data';
 import { creditStanding } from '../../../lib/credit-standing';
 import { type FieldProps } from './draft';
 import { useTierItems } from './form-hooks';
@@ -218,9 +223,7 @@ function StandingField({ draft, set }: FieldProps) {
           </div>
         }
       />
-      <FieldDescription>
-        Put them on credit hold to stop new orders until they&apos;ve paid what they owe.
-      </FieldDescription>
+      <FieldDescription>{standingHelp(draft.status)}</FieldDescription>
     </Field>
   );
 }

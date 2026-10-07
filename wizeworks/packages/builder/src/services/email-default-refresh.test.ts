@@ -20,6 +20,8 @@ import {
 // The pre-redesign bodies, captured from the shipped code they replaced — the ground
 // truth for "an untouched old row is recognised; an edited one is not".
 import oldFixtures from './email-default-refresh.fixture.json';
+// Every body each default has shipped, oldest first, ending on today's.
+import history from './email-default-history.json';
 
 const oldDoc = (key: keyof typeof oldFixtures): SilicaEmailDocument =>
   structuredClone(oldFixtures[key]) as unknown as SilicaEmailDocument;
@@ -89,6 +91,39 @@ describe('email default refresh fingerprints', () => {
       const def = getDefaultEmailTemplate(t.key);
       expect(def, t.key).toBeTruthy();
       expect(isPriorDefaultBody(t.key, def!.doc), t.key).toBe(false);
+    }
+  });
+
+  // Persona issue 919. The rule "append the outgoing body" was kept by hand, and
+  // the 2026-09-16 wording sweep changed almost every body without appending one,
+  // which stranded 870 untouched rows in dev on old wording. These two make the
+  // rule a check: the history ends on today's body, and every earlier body in it
+  // is one the refresh recognizes.
+  it('the history of every default ends on the body it ships today', () => {
+    for (const t of DEFAULT_EMAIL_TEMPLATES) {
+      const shipped = history[t.key as keyof typeof history] as string[] | undefined;
+      const now = bodyFingerprint(t.doc);
+      const outgoing = shipped?.at(-1);
+      expect(
+        outgoing,
+        outgoing === undefined
+          ? `"${t.key}" has no history. Add "${t.key}": ["${now}"] to email-default-history.json.`
+          : `The default "${t.key}" changed. Add its outgoing body "${outgoing}" to ` +
+              `PRIOR_DEFAULT_BODY_FINGERPRINTS["${t.key}"], then append "${now}" to its ` +
+              `list in email-default-history.json.`
+      ).toBe(now);
+    }
+  });
+
+  it('every earlier body a default has shipped is one the refresh recognizes', () => {
+    for (const [key, shipped] of Object.entries(history)) {
+      for (const fp of shipped.slice(0, -1)) {
+        expect(
+          PRIOR_DEFAULT_BODY_FINGERPRINTS[key]?.has(fp),
+          `"${fp}" is an earlier body of "${key}". Add it to PRIOR_DEFAULT_BODY_FINGERPRINTS["${key}"], ` +
+            `or every business still on it is never refreshed.`
+        ).toBe(true);
+      }
     }
   });
 

@@ -36,6 +36,8 @@ export interface CopyCandidate {
   id: string;
   name: string;
   kind: ResourceKind;
+  /** False when it has no weekly hours yet (sparx persona issue 118). */
+  hasWeeklyHours?: boolean;
 }
 
 /** The candidates of one kind, under the heading the picker shows. */
@@ -187,6 +189,7 @@ export function copyConfirmCopy({
   closures,
   closedAllWeek,
   seasonal,
+  targetsWithHours = targets.length,
 }: {
   source: string;
   targets: readonly string[];
@@ -196,12 +199,19 @@ export function copyConfirmCopy({
   closedAllWeek: boolean;
   /** The week being copied has season dates on it. */
   seasonal: boolean;
+  /** How many of the targets already have weekly hours. With none, nothing is
+   *  replaced, and the confirm must not say it is (sparx persona issue 118). */
+  targetsWithHours?: number;
 }): { title: string; description: string; confirmLabel: string; cancelLabel: string } {
   const sentences = [
     `${nameList(targets)} will get the same weekly hours as ${source}.`,
-    targets.length === 1
-      ? 'Their current weekly hours will be replaced, and the old ones cannot be brought back.'
-      : 'Their current weekly hours will be replaced, for each of them, and the old ones cannot be brought back.',
+    targetsWithHours === 0
+      ? targets.length === 1
+        ? 'They have no weekly hours yet.'
+        : 'None of them has weekly hours yet.'
+      : targets.length === 1
+        ? 'Their current weekly hours will be replaced, and the old ones cannot be brought back.'
+        : 'Their current weekly hours will be replaced, for each of them, and the old ones cannot be brought back.',
   ];
   if (closedAllWeek) {
     sentences.push(
@@ -219,7 +229,7 @@ export function copyConfirmCopy({
   return {
     title: `Copy ${source}’s hours to ${whoCount(targets)}?`,
     description: sentences.join(' '),
-    confirmLabel: `Replace hours for ${targets.length === 1 ? (targets[0] ?? '') : String(targets.length)}`,
+    confirmLabel: `${targetsWithHours === 0 ? 'Copy hours to' : 'Replace hours for'} ${targets.length === 1 ? (targets[0] ?? '') : String(targets.length)}`,
     cancelLabel: 'Keep their hours',
   };
 }

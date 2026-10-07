@@ -23,6 +23,8 @@ function txWith(
     authors: { avatarAssetId: string; n: number }[];
     staffDocuments: { assetId: string; n: number }[];
     expenses: { assetId: string; n: number }[];
+    /** What the one raw query over pages, layouts and id columns answers. */
+    other: { kind: string; id: string; n: number }[];
   }> = {}
 ): TxClient {
   const shape = <T extends Record<string, unknown>>(list: (T & { n: number })[] | undefined) =>
@@ -36,6 +38,11 @@ function txWith(
     author: group(shape(rows.authors)),
     staffDocument: group(shape(rows.staffDocuments)),
     financeExpenseAttachment: group(shape(rows.expenses)),
+    mediaAsset: {
+      findMany: ({ where }: { where: { id: { in: string[] } } }) =>
+        Promise.resolve(where.id.in.map((id) => ({ id, key: `k/${id}`, tenantId: 't' }))),
+    },
+    $queryRaw: () => Promise.resolve(rows.other ?? []),
   } as unknown as TxClient;
 }
 
@@ -139,6 +146,13 @@ describe('describeUsage', () => {
     authors: 0,
     staffDocuments: 0,
     expenses: 0,
+    sitePages: 0,
+    siteLayouts: 0,
+    branding: 0,
+    catalog: 0,
+    reviews: 0,
+    socialPosts: 0,
+    otherRecords: 0,
     total: 0,
     ...over,
   });
@@ -172,5 +186,49 @@ describe('describeUsage', () => {
 
   it('leaves out a kind that is zero', () => {
     expect(describeUsage(usage({ products: 1 }))).not.toContain('author');
+  });
+});
+
+describe('the places a design or a brand holds a picture (issue 932)', () => {
+  // A site page keeps a linked picture's ADDRESS in its design, not its id, so
+  // counting by id found 1 of Juniper Row's 87 on her pages where there were 20.
+  // A picture that only a page, the logo or a collection used read as unused,
+  // and a deleted one is purged for good 30 days later.
+  it('counts a picture on a site page', async () => {
+    const usage = await countAssetUsage(txWith({ other: [{ kind: 'sitePages', id: A, n: 2 }] }), [
+      A,
+    ]);
+    expect(usage.get(A)).toMatchObject({ sitePages: 2, total: 2 });
+  });
+
+  it('counts the logo, a collection picture and a social post', async () => {
+    const usage = await countAssetUsage(
+      txWith({
+        other: [
+          { kind: 'branding', id: A, n: 1 },
+          { kind: 'catalog', id: A, n: 1 },
+          { kind: 'socialPosts', id: B, n: 3 },
+        ],
+      }),
+      [A, B]
+    );
+    expect(usage.get(A)).toMatchObject({ branding: 1, catalog: 1, total: 2 });
+    expect(usage.get(B)).toMatchObject({ socialPosts: 3, total: 3 });
+  });
+
+  it('names them for a person', async () => {
+    const counted = async (other: { kind: string; id: string; n: number }[]) =>
+      (await countAssetUsage(txWith({ other }), [A])).get(A)!;
+    expect(
+      describeUsage(
+        await counted([
+          { kind: 'sitePages', id: A, n: 2 },
+          { kind: 'branding', id: A, n: 1 },
+        ])
+      )
+    ).toBe('2 site pages and 1 logo or site icon');
+    expect(describeUsage(await counted([{ kind: 'siteLayouts', id: A, n: 1 }]))).toBe(
+      '1 site header or footer'
+    );
   });
 });

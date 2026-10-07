@@ -16,7 +16,7 @@ import type { CanonicalRow } from '../canonical';
 import { clean } from '../coerce';
 import type { SourceRow } from '../parse/csv';
 import type { VendorAdapter } from '../types';
-import { groupBy, indexed, pick, row, tags } from './_helpers';
+import { groupBy, indexed, markRead, pick, row, tags } from './_helpers';
 
 /** `Current Quantity Downtown` → `Downtown`. Square appends the location's name to
  *  each stock column, and the tenant named those locations, so the prefix is the only
@@ -103,6 +103,7 @@ function mapInventory(rows: SourceRow[]): CanonicalRow[] {
       const location =
         locationFrom(header, 'Current Quantity') ?? locationFrom(header, 'New Quantity');
       if (location === null) continue;
+      markRead(header);
       const quantity = clean(value);
       if (quantity === '' || !/^-?\d+(\.\d+)?$/.test(quantity)) continue;
       out.push(

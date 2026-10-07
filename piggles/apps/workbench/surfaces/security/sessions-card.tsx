@@ -48,6 +48,7 @@ import {
   type AuthSession,
 } from './security-data';
 import { whereFromPrefix, whereFromSentence } from './where-from-words';
+import { failureMessage } from '../../lib/api/write-failure';
 
 function ms(iso: string): number {
   return new Date(iso).getTime();
@@ -95,7 +96,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
       onError: (error) => {
         toast.add({
           title: 'Could not sign that device out',
-          description: error instanceof Error ? error.message : 'Nothing was changed.',
+          description: failureMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
       },
@@ -120,7 +121,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
       onError: (error) => {
         toast.add({
           title: 'Could not sign the other devices out',
-          description: error instanceof Error ? error.message : 'Nothing was changed.',
+          description: failureMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
       },

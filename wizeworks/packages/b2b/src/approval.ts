@@ -16,6 +16,8 @@ import { isModuleEnabled } from '@wizeworks/auth';
 import {
   accountOrderGate,
   b2bArService,
+  businessTimeZone,
+  dueDayAfter,
   heldOrderMoney,
   poNumberOf,
   taskService,
@@ -762,8 +764,8 @@ async function placeHeldOrder(
     const paymentTerms = account?.paymentTerms ?? paymentTermsRequested;
     const dueDaysMatch = /^net(\d+)$/i.exec(paymentTerms);
     const dueDays = dueDaysMatch?.[1] ? parseInt(dueDaysMatch[1], 10) : 30;
-    const dueAt = new Date();
-    dueAt.setDate(dueAt.getDate() + dueDays);
+    // A due DAY on the business's calendar (sparx persona issue 099).
+    const dueAt = dueDayAfter(new Date(), dueDays, await businessTimeZone(tx, ctx.tenantId));
     // The order's own site issues the invoice (docs/131 §3.6). Order.propertyId
     // is nullable (orders outlive their site), so fall back to the primary.
     const issuingPropertyId =

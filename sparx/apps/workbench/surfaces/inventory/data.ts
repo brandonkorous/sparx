@@ -127,10 +127,11 @@ export interface StockLocation {
   country: string | null;
   isActive: boolean;
   /** Units held here, and how many shelves this place has. NULL means nobody
-   *  counted, never zero — the LIST counts both; a single location read on its
-   *  own does not. */
+   *  counted, never zero. The list and a single read both count. */
   onHand: number | null;
   binCount: number | null;
+  /** Online orders ship from here (issue 929). */
+  shipsOnline: boolean | null;
 }
 
 /**

@@ -159,7 +159,10 @@ function RateComposer({
   const gap = readiness.data ? weightGap(readiness.data) : null;
   const weightWarning = gap && draft.type === 'by_weight' ? bandsWarning(gap) : null;
   const nameError = draft.name.trim() === '';
-  const profileError = draft.profileId === '';
+  // A shop with no product group yet sends none, and the server files the
+  // option under its default group, making "All products" if needed (sparx
+  // persona issue 128). Only a shop WITH groups has to pick one.
+  const profileError = profiles.length > 0 && draft.profileId === '';
 
   const failure = create.isError
     ? shippingErrorMessage(create.error, 'Could not add this delivery option. Nothing was changed.')
@@ -176,7 +179,7 @@ function RateComposer({
     if (nameError || profileError) return;
     const base: CreateShippingRateInput = {
       zoneId,
-      profileId: draft.profileId,
+      ...(draft.profileId ? { profileId: draft.profileId } : {}),
       name: draft.name.trim(),
       type: draft.type,
       currency: 'USD',
@@ -648,25 +651,13 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
       )}
 
       {adding ? (
-        profileList.length === 0 ? (
-          <Alert color="warning">
-            <AlertContent>
-              <AlertTitle>Add a product group first</AlertTitle>
-              <AlertDescription>
-                A delivery option needs a product group to apply to. Add one from the Shipping
-                screen, then come back.
-              </AlertDescription>
-            </AlertContent>
-          </Alert>
-        ) : (
-          <RateComposer
-            zoneId={zoneId}
-            profiles={profileList}
-            onDone={() => {
-              setAdding(false);
-            }}
-          />
-        )
+        <RateComposer
+          zoneId={zoneId}
+          profiles={profileList}
+          onDone={() => {
+            setAdding(false);
+          }}
+        />
       ) : (
         <div>
           <Button

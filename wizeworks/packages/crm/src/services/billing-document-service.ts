@@ -34,6 +34,7 @@ import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
 import { closeWhenDocumentMovesOn } from './task-service';
 import { businessTimeZone } from './business-clock';
+import { documentRecipient } from './account-contact-billing';
 
 /** The tenant's primary site — the issuer for a document created without one
  *  (docs/131 §3.6). Every tenant has exactly one, seeded at provisioning, so the
@@ -261,15 +262,6 @@ function sentAtOf(metadata: Prisma.JsonValue): string | null {
   return null;
 }
 
-/** The address frozen on the document itself, when there is one. */
-function frozenEmail(billTo: Prisma.JsonValue): string | null {
-  if (billTo && typeof billTo === 'object' && !Array.isArray(billTo)) {
-    const value = (billTo as Record<string, unknown>).email;
-    if (typeof value === 'string' && value.trim()) return value.trim();
-  }
-  return null;
-}
-
 /** Shape of the two relations the list resolves a name from. */
 type BilledCustomer = {
   firstName: string | null;
@@ -471,18 +463,25 @@ export async function aging(
 }
 
 export async function get(ctx: ServiceContext, documentId: string): Promise<DocumentWithLines> {
-  const doc = await withTenant(ctx, (tx) =>
-    tx.billingDocument.findUnique({
+  return withTenant(ctx, async (tx) => {
+    const doc = await tx.billingDocument.findUnique({
       where: { id: documentId },
       include: {
         lines: { orderBy: { sortOrder: 'asc' } },
         customer: { select: { email: true } },
       },
-    })
-  );
-  if (doc?.deletedAt !== null) throw new CrmNotFoundError('BillingDocument', documentId);
-  const { customer, ...document } = doc;
-  return { ...document, billedToEmail: frozenEmail(document.billTo) ?? customer?.email ?? null };
+    });
+    if (doc?.deletedAt !== null) throw new CrmNotFoundError('BillingDocument', documentId);
+    const { customer, ...document } = doc;
+    // The same answer the send itself reaches (`documentRecipient`), so the
+    // Send box names the address the email will really go to.
+    const billedToEmail = await documentRecipient(tx, {
+      billTo: document.billTo,
+      companyId: document.companyId,
+      customerEmail: customer?.email ?? null,
+    });
+    return { ...document, billedToEmail };
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────

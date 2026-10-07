@@ -49,6 +49,8 @@ import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { createOrderArDocument } from './b2b-ar-service';
+import { dueDayAfter } from './billing-ar';
+import { businessTimeZone } from './business-clock';
 import {
   findHoldingRule,
   loadOrderSignOff,
@@ -297,8 +299,8 @@ export async function convertToOrder(
     // order is held: signing it off issues it.
     let invoiceId: string | null = null;
     if (doc.companyId && termsDays !== null && held.length === 0) {
-      const dueAt = new Date(placedAt);
-      dueAt.setDate(dueAt.getDate() + termsDays);
+      // A due DAY on the business's calendar (issue 099), not the moment plus days.
+      const dueAt = dueDayAfter(placedAt, termsDays, await businessTimeZone(tx, ctx.tenantId));
       const invoice = await createOrderArDocument(
         { tenantId: ctx.tenantId, userId: ctx.userId, tx },
         {

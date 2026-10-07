@@ -22,6 +22,9 @@ export interface DeliveryStepProps {
   /** Null = "somewhere else", i.e. the form below is the answer. */
   savedId: string | null;
   onPickSaved: (id: string | null) => void;
+  /** Set when the shop also hands orders over in person: a way to collect
+   *  instead, before any address is asked for (sparx persona issue 129). */
+  onCollectInstead?: () => void;
   /** Who is buying. Used for a saved address that carries no recipient name. */
   contactName: string;
   address: Address;
@@ -53,6 +56,17 @@ export function DeliveryStep(props: DeliveryStepProps) {
       <h2 className="text-base-content text-3xl font-semibold tracking-tight">
         Where should we send it?
       </h2>
+
+      {props.onCollectInstead ? (
+        <Button
+          type="button"
+          variant="outline"
+          className="self-start"
+          onClick={props.onCollectInstead}
+        >
+          Rather pick it up? Collect it from us, free
+        </Button>
+      ) : null}
 
       {book.length > 0 ? (
         <SavedAddressChoices

@@ -666,15 +666,6 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'crm.report.readOnly':
     'This is one of the ready-made reports. Make a copy to change anything: the copy is yours entirely.',
 
-  // ── Your web address ─────────────────────────────────────────────────────
-  //
-  // FACTUALLY WRONG under Piggles, not merely off-voice. sparx tells the reader
-  // their free address is a "sparx.zone address"; a Piggles business is given
-  // <something>.piggles.site at signup, so the sparx sentence names a domain
-  // they do not have and will never see.
-  'domains.managedAddress':
-    'We look after this address, so there is nothing for you to set up and nothing that can break. Every site gets one free, it works from the minute you sign up, and it keeps working even after you connect your own domain. It can never be removed, because it is your site’s permanent back-up address.',
-
   // ── Messages ─────────────────────────────────────────────────────────────
   'email.suppression.addNote':
     'We will stop sending this address anything at all: newsletters, offers, account emails, the lot. You can take them off this list whenever you like.',

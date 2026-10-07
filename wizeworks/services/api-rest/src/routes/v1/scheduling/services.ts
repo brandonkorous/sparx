@@ -116,6 +116,7 @@ function serviceView(s: SchedulingService) {
     bufferBeforeMin: s.bufferBeforeMin,
     bufferAfterMin: s.bufferAfterMin,
     priceCents: s.priceCents,
+    priceOnQuote: s.priceOnQuote,
     currency: s.currency,
     capacity: s.capacity,
     assignmentStrategy: s.assignmentStrategy,

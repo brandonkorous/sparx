@@ -115,6 +115,7 @@ async function bookableServices(tenantId: string, propertyId: string) {
       description: s.description,
       durationMinutes: s.durationMinutes,
       priceCents: s.priceCents,
+      priceOnQuote: s.priceOnQuote,
       currency: s.currency,
       requiresApproval: s.requiresApproval,
       requiresAsset: s.requiresAsset,

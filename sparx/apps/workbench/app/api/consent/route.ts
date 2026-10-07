@@ -47,7 +47,12 @@ export async function POST(request: Request): Promise<NextResponse> {
   // `tenant_id = current_tenant_id()` policy, and an update issued without the
   // GUC set matches no rows and reports success having changed nothing — which
   // would leave somebody being asked the same question forever.
-  await withTenant({ tenantId: session.user.tenantId }, async (tx) => {
+  //
+  // The HOME tenant, not the active one: the row belongs to the business the
+  // person signed up under, and RLS refuses the write from a business they
+  // joined. Under the active tenant every invited member's answer failed with
+  // "That did not save" (sparx persona issue 122).
+  await withTenant({ tenantId: session.user.homeTenantId }, async (tx) => {
     const before = await tx.user.findUnique({
       where: { id: session.user.id },
       select: { preferences: true },

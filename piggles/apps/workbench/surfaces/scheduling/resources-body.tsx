@@ -83,7 +83,7 @@ export function ResourcesBody(props: ResourcesBodyProps) {
           actions: (
             <Button size="sm" color="module" onClick={props.onAdd}>
               <Icon glyph={faPlus} className="size-4" aria-hidden />
-              Add one
+              Add a person or equipment
             </Button>
           ),
         }}

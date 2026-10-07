@@ -76,7 +76,13 @@ describe('jobMargin', () => {
   });
 });
 
-function job(label: string, marginCents: number, revenueCents: number, iso: string): JobProfit {
+function job(
+  label: string,
+  marginCents: number,
+  revenueCents: number,
+  iso: string,
+  uncostedLines = 0
+): JobProfit {
   return {
     type: 'order',
     id: label,
@@ -88,10 +94,11 @@ function job(label: string, marginCents: number, revenueCents: number, iso: stri
     revenueCents,
     revenueBasis: 'collected',
     cogsCents: 0,
+    uncostedLines,
     feeCents: 0,
     allocatedCents: 0,
     marginCents,
-    marginRate: revenueCents > 0 ? marginCents / revenueCents : null,
+    marginRate: uncostedLines > 0 || revenueCents <= 0 ? null : marginCents / revenueCents,
   };
 }
 
@@ -128,6 +135,21 @@ describe('sortJobs', () => {
     expect(skewed[0]?.label).toBe('big but thin');
     sortJobs(skewed, 'margin_desc');
     expect(skewed[0]?.label).toBe('small but fat');
+  });
+
+  // Persona issue 924: a sale whose goods cost was never recorded reads 100%
+  // because nothing was taken off. Ranked by that, it topped Best first and made
+  // the one measured job look like the worst of the month.
+  it('puts a job with unrecorded goods cost after every measured one, either way round', () => {
+    const list = [
+      job('unrecorded', 158_21, 158_21, '2027-01-03T00:00:00.000Z', 1),
+      job('belt', 43_00, 72_00, '2027-01-06T00:00:00.000Z'),
+      job('loss', -5_00, 10_00, '2027-01-01T00:00:00.000Z'),
+    ];
+    sortJobs(list, 'margin_asc');
+    expect(list.map((r) => r.label)).toEqual(['loss', 'belt', 'unrecorded']);
+    sortJobs(list, 'margin_desc');
+    expect(list.map((r) => r.label)).toEqual(['belt', 'loss', 'unrecorded']);
   });
 
   it('orders by when the work happened, newest first', () => {

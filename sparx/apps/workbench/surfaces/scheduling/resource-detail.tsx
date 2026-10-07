@@ -29,6 +29,13 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import {
+  Alert,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { Save, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -52,6 +59,7 @@ import {
   type ResourceInput,
   type ResourceKind,
   type SchedulingResource,
+  hoursMissingNotice,
 } from './setup-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -166,6 +174,7 @@ function ResourceEditor({
   const toast = useToast();
   const confirm = useConfirm();
   const isNew = id === 'new';
+  const hoursNotice = existing ? hoursMissingNotice(existing) : null;
 
   const create = useCreateResource();
   const update = useUpdateResource(id);
@@ -295,7 +304,7 @@ function ResourceEditor({
         controls={
           <>
             {state ? (
-              <Badge color={state.tone} variant="soft" size="sm">
+              <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
                 {state.label}
               </Badge>
             ) : null}
@@ -316,6 +325,30 @@ function ResourceEditor({
           ) : null}
 
           <SaveFailure title="Could not save this" message={saveError} />
+
+          {hoursNotice && existing ? (
+            <Alert color="warning" variant="soft" role="status">
+              <AlertContent>
+                <AlertTitle>{hoursNotice.title}</AlertTitle>
+                <AlertDescription>{hoursNotice.detail}</AlertDescription>
+              </AlertContent>
+              <AlertActions>
+                <Button
+                  size="sm"
+                  color="warning"
+                  onClick={() => {
+                    ctx.open(
+                      'scheduling.availability',
+                      { resourceId: existing.id },
+                      { target: 'tab' }
+                    );
+                  }}
+                >
+                  Set its hours
+                </Button>
+              </AlertActions>
+            </Alert>
+          ) : null}
 
           <FormSection
             title={isNew ? 'New person or thing' : 'What it is'}

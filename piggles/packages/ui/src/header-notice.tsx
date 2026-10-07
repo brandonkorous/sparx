@@ -1,25 +1,8 @@
 'use client';
 
-// The bar above everything — one sentence, an optional button, an optional way
-// to close it.
-//
-// ── WHY IT IS A CLIENT COMPONENT ────────────────────────────────────────────
-//
-// Only for the close. The sentence is server-rendered and arrives in the HTML,
-// so a visitor with no JavaScript still reads it and a crawler still indexes it.
-// What needs the browser is remembering that THIS visitor closed THIS notice —
-// which is a per-person fact with no account behind it, so localStorage is the
-// only place it can live.
-//
-// The dismissal is keyed on the notice's ID, not on a single "banner dismissed"
-// flag. Closing an offer must not silence next month's outage notice, and a flag
-// would do exactly that, silently, to the people most likely to have closed one
-// before.
-//
-// A visitor who has already dismissed it sees the bar for one frame before the
-// effect runs. That is the trade for keeping the sentence in the server HTML,
-// and it is the right way round: the flash costs a dismisser a moment, while
-// client-only rendering would cost everyone else the content and the layout.
+// The bar above everything: one sentence, an optional link, an optional close.
+// Server-rendered so it reads without JavaScript; the client part only remembers
+// that THIS visitor closed THIS notice (keyed by id, so next month's still shows).
 
 import * as React from 'react';
 
@@ -32,9 +15,7 @@ export interface HeaderNoticeData {
   dismissible: boolean;
 }
 
-/** Tone → the silica fill and its matching ink. A PAIR, always: `bg-primary`
- *  without `text-primary-content` is how a bar ends up with dark text on a dark
- *  fill in one theme and nobody notices until somebody screenshots it. */
+/** Tone → the silica fill AND its matching ink, always as a pair. */
 const TONE_CLASS: Record<HeaderNoticeData['tone'], string> = {
   primary: 'bg-primary text-primary-content',
   info: 'bg-info text-info-content',
@@ -45,24 +26,32 @@ const TONE_CLASS: Record<HeaderNoticeData['tone'], string> = {
 
 const storageKey = (id: string) => `piggles.notice.dismissed.${id}`;
 
+function wasDismissed(notice: HeaderNoticeData): boolean {
+  if (!notice.dismissible) return false;
+  try {
+    return Boolean(window.localStorage.getItem(storageKey(notice.id)));
+  } catch {
+    return false; // Storage blocked: keep showing it rather than throw over a banner.
+  }
+}
+
+/** A bar inviting you to the page you are already on says nothing. */
+function pointsHere(notice: HeaderNoticeData): boolean {
+  return Boolean(notice.linkHref?.startsWith('/')) && notice.linkHref === window.location.pathname;
+}
+
 export function HeaderNotice({ notice }: { notice: HeaderNoticeData | null }) {
-  const [dismissed, setDismissed] = React.useState(false);
+  const [hidden, setHidden] = React.useState(false);
 
   React.useEffect(() => {
-    if (!notice?.dismissible) return;
-    try {
-      if (window.localStorage.getItem(storageKey(notice.id))) setDismissed(true);
-    } catch {
-      // A browser with storage blocked simply keeps showing it. Better than a
-      // page that throws over a banner.
-    }
-  }, [notice?.id, notice?.dismissible]);
+    if (notice && (wasDismissed(notice) || pointsHere(notice))) setHidden(true);
+  }, [notice]);
 
-  if (!notice || dismissed) return null;
+  if (!notice || hidden) return null;
 
   function close() {
     if (!notice) return;
-    setDismissed(true);
+    setHidden(true);
     try {
       window.localStorage.setItem(storageKey(notice.id), '1');
     } catch {
@@ -71,11 +60,9 @@ export function HeaderNotice({ notice }: { notice: HeaderNoticeData | null }) {
   }
 
   return (
+    // No `role`: an offer is not worth interrupting a screen reader. A named
+    // landmark is reachable on purpose and ignorable by default.
     <aside
-      // `role` is deliberately absent. This is not an alert — an alert
-      // interrupts a screen reader mid-sentence, and an offer is not worth that.
-      // As a landmark with a name it is reachable on purpose and ignorable by
-      // default, which is what a banner should be.
       aria-label="Announcement"
       className={`${TONE_CLASS[notice.tone]} relative px-4 py-2.5 text-center sm:px-12`}
     >
@@ -96,9 +83,7 @@ export function HeaderNotice({ notice }: { notice: HeaderNoticeData | null }) {
           type="button"
           onClick={close}
           aria-label="Close this notice"
-          // Absolute, so closing it never reflows the sentence it sits beside —
-          // and `-translate-y-1/2` rather than a matched padding, because the
-          // bar's height changes the moment the message wraps on a phone.
+          // Absolute and centered, so closing never reflows a sentence that wraps.
           className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full px-2 py-1 text-xl leading-none font-bold opacity-70 transition-opacity hover:opacity-100"
         >
           &times;

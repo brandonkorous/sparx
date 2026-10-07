@@ -36,6 +36,7 @@ import {
   describeDue,
   formatMoney,
   normalizeDocument,
+  documentRowState,
   invoiceState,
   type BillingDocument,
 } from './types';
@@ -91,24 +92,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-/** The color of a quote's standing on this list. Accepted is the good outcome,
- *  a priced quote is waiting on the customer, a declined or expired one is
- *  over. A draft carries no color: nothing about it is decided yet. */
-function priceOfferTone(stageType: string | undefined): 'success' | 'info' | 'danger' | undefined {
-  switch (stageType) {
-    case 'committed':
-    case 'paid':
-      return 'success';
-    case 'open':
-    case 'final':
-      return 'info';
-    case 'void':
-      return 'danger';
-    default:
-      return undefined;
-  }
 }
 
 export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -416,9 +399,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
                 // quote said the money was owed twice, once on the quote and once
                 // on its invoice (sparx persona issue 085). It shows where it
                 // stands instead, and no balance.
-                const state = doc.priceOffer
-                  ? { label: doc.stageName ?? 'Quote', tone: priceOfferTone(doc.stageType) }
-                  : invoiceState(doc.status);
+                const state = documentRowState(doc);
                 return (
                   <tr
                     key={doc.id}

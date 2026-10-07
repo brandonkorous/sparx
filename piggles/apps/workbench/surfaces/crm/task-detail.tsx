@@ -354,7 +354,7 @@ function TaskEditor({
           ) : undefined
         }
         status={
-          <Badge color={meta.tone} variant="soft" size="sm">
+          <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
             {meta.label}
           </Badge>
         }

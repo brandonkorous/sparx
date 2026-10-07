@@ -16,6 +16,7 @@ import {
   useSaveEmail,
   type EmailRow,
 } from '../../lib/studio/email-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /** A stored row as the engine's document. */
 function toDoc(row: EmailRow): EmailDoc {
@@ -76,7 +77,7 @@ function useEmailWrites(store: DocumentStore<EmailDoc> | null): EmailWrites {
 
   const error = useMemo(() => {
     const failure = publishEmail.error ?? saveEmail.error;
-    return failure instanceof Error ? failure.message : null;
+    return failure ? failureMessage(failure, 'That did not go through. Try again.') : null;
   }, [saveEmail.error, publishEmail.error]);
 
   return { saving: saveEmail.isPending, publishing: publishEmail.isPending, error, save, publish };

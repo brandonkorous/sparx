@@ -12,7 +12,7 @@ import { useMemo, type ReactNode } from 'react';
 import type { DocumentKind } from '@wizeworks/studio';
 import type { EmailPreviewHost, StudioHost } from '@wizeworks/studio/react';
 import type { Theme } from '@wizeworks/silicaui-html';
-import type { EmailColorDefaults } from '@wizeworks/silicaui-builder/email';
+import type { EmailColorDefaults, EmailFrame } from '@wizeworks/silicaui-builder/email';
 import { BASE_SILICA_THEME, validateResponsiveVocabulary } from '@wizeworks/silica-catalog';
 import { makeRenderHostNode } from './host-cores';
 import { useMediaPicker, type PickedAsset } from '../../surfaces/cms/media-picker';
@@ -25,7 +25,7 @@ import { catalogFor } from './catalog-scope';
 import { renderStudioIcon } from './studio-icons';
 import { useCanvasPreview, type CanvasPreview } from './preview';
 import { EMAIL_CONTENT_BLOCKS, useEmailIdentity, useEmailPreview } from './email-domain';
-import { useEmailColors } from './email-data';
+import { useEmailChrome } from './email-data';
 
 /**
  * The host. Never null — there is nothing left to wait for.
@@ -52,7 +52,7 @@ export function useStudioHostConfig(): StudioHost | null {
   // `site.*` in an email is THIS business, not a sample — the same identity the
   // header draws, the theme board names, and the merge-tag panel lists.
   const emailPreview = useEmailPreview(useEmailIdentity());
-  const emailColors = useEmailColors();
+  const emailChrome = useEmailChrome();
   const pickMedia = useMediaPicker();
 
   return useMemo(
@@ -61,10 +61,11 @@ export function useStudioHostConfig(): StudioHost | null {
         fallbackTheme: BASE_SILICA_THEME,
         preview,
         emailPreview,
-        emailColors: emailColors.data,
+        emailColors: emailChrome.data?.colors,
+        emailFrame: emailChrome.data?.frame,
         pickMedia,
       }),
-    [preview, emailPreview, emailColors.data, pickMedia]
+    [preview, emailPreview, emailChrome.data, pickMedia]
   );
 }
 
@@ -103,12 +104,14 @@ function buildHost({
   preview,
   emailPreview,
   emailColors,
+  emailFrame,
   pickMedia,
 }: {
   fallbackTheme: Theme;
   preview: CanvasPreview;
   emailPreview: EmailPreviewHost;
   emailColors: EmailColorDefaults | undefined;
+  emailFrame: EmailFrame | undefined;
   pickMedia: () => Promise<PickedAsset | null>;
 }): StudioHost {
   // The same root for both, so the mark a header draws and the text a bound node
@@ -154,6 +157,17 @@ function buildHost({
     // until the read settles — silica's neutral default then, which is visibly not
     // the brand rather than quietly the wrong brand.
     ...(emailColors ? { emailColors } : {}),
+    // The header and footer every send adds, drawn around the canvas and named on
+    // hover, in her words rather than the platform's "Brand frame".
+    ...(emailFrame
+      ? {
+          emailFrame: {
+            ...emailFrame,
+            label:
+              'Every email gets this header and footer from your brand. It is not part of this email, so it cannot be edited here.',
+          },
+        }
+      : {}),
     emailCatalog: () => EMAIL_CONTENT_BLOCKS,
     // The document's own settings at the root; below it, a live region's declared
     // props and — on a product listing — which products it shows. Without the second

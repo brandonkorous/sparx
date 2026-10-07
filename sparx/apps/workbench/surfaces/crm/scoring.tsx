@@ -61,6 +61,7 @@ import {
   type ScoringModel,
   type ScoringRule,
 } from './scoring-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -441,7 +442,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
       toast.add({ title: 'Scoring saved', type: 'success' });
     };
     const onFail = (e: unknown) => {
-      setError(e instanceof Error ? e.message : 'Could not save this. Nothing was changed.');
+      setError(failureMessage(e, 'Could not save this. Nothing was changed.'));
     };
 
     if (model) update.mutate(payload, { onSuccess: onDone, onError: onFail });

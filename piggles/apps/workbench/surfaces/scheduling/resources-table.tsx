@@ -61,7 +61,7 @@ function ResourceRow({ resource, onOpen }: { resource: SchedulingResource; onOpe
       </td>
       <td className="hidden whitespace-nowrap @xl:table-cell">{holds ?? '—'}</td>
       <td>
-        <Badge color={state.tone} variant="soft" size="sm">
+        <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
           {state.label}
         </Badge>
       </td>

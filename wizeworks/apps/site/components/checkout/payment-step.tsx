@@ -168,8 +168,12 @@ function CardOrAccountPaymentStep(props: PaymentStepProps) {
   // a non-B2B shopper. The server refuses both either way (issue 082).
   const netTermsEligible =
     Boolean(session.companyId) && canBillToAccount(session.b2bAccountPaymentTerms);
+  // A shop that takes no card payments on its website yet leaves an account on
+  // terms one way to pay, so there is no choice to offer: "Pay by card" there led
+  // only to "this shop cannot take card payments" (sparx persona issue 136).
+  const billOnly = netTermsEligible && session.paymentMode === 'unavailable';
   const [method, setMethod] = useState<'choose' | 'card' | 'account'>(
-    netTermsEligible ? 'choose' : 'card'
+    billOnly ? 'account' : netTermsEligible ? 'choose' : 'card'
   );
 
   if (method === 'choose') {
@@ -199,7 +203,9 @@ function CardOrAccountPaymentStep(props: PaymentStepProps) {
   }
 
   if (method === 'account') {
-    return <AccountPaymentStep {...props} onBack={() => setMethod('choose')} />;
+    return (
+      <AccountPaymentStep {...props} onBack={billOnly ? props.onBack : () => setMethod('choose')} />
+    );
   }
 
   return (

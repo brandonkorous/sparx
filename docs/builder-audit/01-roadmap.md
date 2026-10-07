@@ -1,8 +1,8 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.23.0
+Version: 2.24.0
 Author: Brandon Korous
-Last Updated: 2026-08-03
+Last Updated: 2026-10-06
 
 > **Status — EVERY SLICE IS DONE except industry blueprints (18b).** Waves 1, 2 and 4 are complete,
 > **wave 3 is fully closed** — silicaui answered all nineteen asks — and as of 2026-08-02 the sparx
@@ -575,6 +575,8 @@ Where "no better in the world" is actually won or lost.
   > **~~Blocked on a purge that does not exist yet~~ — THE BLOCKER IS CLEARED (2026-07-28).** Found during slice 8: `cache-revalidation-worker` mapped `builder.*` onto the `builder:<slug>` tag and every storefront read already carried the tag, but NOTHING emitted the event — no `builder.*` member in the `EventType` union, and neither publish nor rollback published anything. Dead code that looked healthy, because all 19 routes are `force-dynamic` so nothing is cached.
   >
   > That is now wired, because it is pure engineering with no ongoing cost and it is the precondition for the rest: `builder.published` and `builder.rolled_back` are real `EventType` members, published best-effort **after** the write commits by `POST /v1/builder/site/publish` and `POST /v1/builder/site/releases/:id/restore` (`api-rest/lib/builder-events.ts`). The worker's test now asserts the two names that genuinely exist rather than four plausible ones nobody emitted, plus the prefix behaviour separately. The brain's [event catalog](../brain/api-events/event-catalog.md) records the shape to watch for: a consumer branch with no publisher is silent until caching is switched on.
+  >
+  > **Correction, 2026-10-06.** The "four plausible ones nobody emitted" were emitted: `@wizeworks/builder` publishes `builder.page.published`, `builder.layout.published`, `builder.layout.activated` and `builder.email.published` from its services, and api-rest's `installBuilderPubSubBridge` puts them on the bus. Cutting the worker's list down to two left every header, footer, single page and look published from its own pane on the five-minute cache. All five (plus a new `builder.theme.published`) are `EventType` members now and the worker subscribes to the four a visitor sees (piggles persona issue 921).
   >
   > **What remains is the cost decision, and it is the owner's.** Removing `force-dynamic` trades a staleness risk for spend that most likely FALLS (fewer origin renders). Nothing else blocks it.
 

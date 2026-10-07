@@ -23,6 +23,10 @@ model CommerceSiteSettings {
   showStockBelow          Int     @default(10) @map("show_stock_below")
   hidePricesWhenSignedOut Boolean @default(false) @map("hide_prices_when_signed_out")
   requireAuthForCheckout  Boolean @default(false) @map("require_auth_for_checkout")
+  /// Customers may also collect in person while the shop delivers. With no
+  /// delivery set up at all, collecting is offered regardless (sparx persona
+  /// issue 129).
+  offersCollection        Boolean @default(false) @map("offers_collection")
 
   // Default dunning policy used by every subscription on this tenant
   // unless overridden per-subscription.

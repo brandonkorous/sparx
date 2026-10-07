@@ -1,14 +1,9 @@
-// The price, in exactly one place.
-//
-// Exported from `@piggles/config/pricing` and deliberately NOT from the package
-// index. `index.ts` states that the console never knows a price (RULE #2), and
-// that stays true: anything importing `@piggles/config` gets no route to this
-// file. The two surfaces that legitimately STATE a price — the marketing site
-// and the account app — reach for the subpath by name, which makes every one of
-// them greppable.
-//
-// Every "$99" a visitor reads resolves here. A price change is this file plus
-// `piggles/config/billing-plan.json` (the Stripe catalog), in that order.
+// The price, in exactly one place. Exported from `@piggles/config/pricing` and
+// NOT the package index, because the console never knows a price (RULE #2).
+// A price change is this file plus `piggles/config/billing-plan.json`.
+
+import { apiOrigin, REVALIDATE_ONE_MINUTE } from './api-origin';
+import type { HeaderNotice } from './notice';
 
 /** Dollars a month. The arithmetic form — comparisons, count-ups, receipts. */
 export const PRICE_MONTHLY = 99;
@@ -19,20 +14,62 @@ export const PRICE_LABEL = '$99';
 /** Days of trial, no card. */
 export const TRIAL_DAYS = 14;
 
+/** Where a question about paying goes. */
+export const BILLING_EMAIL = 'hello@meetpiggles.com';
+
 // ── FOUNDING MEMBERS ────────────────────────────────────────────────────────
-//
-// There is no founding-member RATE in this file, and that is the point. The
-// offer is a moment, not a plan: it is announced on the header notice, which is
-// authored in the WizeWorks admin console and lives in the database, so it can
-// be changed or ended without a deploy. Baking a second price into the product
-// would make it a second plan, which RULE #2 forbids outright.
-//
-// What is stable enough to hardcode is the door: where an enquiry goes.
+// A coupon on the one price, never a second plan. Its terms live in the plan
+// file and Stripe counts the places, so what is left is always READ, never typed.
 
-/** Where a founding-member enquiry goes. */
-export const FOUNDING_EMAIL = 'hello@meetpiggles.com';
+export interface FounderOffer {
+  /** What a founding member pays each month, in dollars. */
+  monthly: number;
+  limit: number;
+  /** Places still open. Zero once the last one is taken. */
+  remaining: number;
+}
 
-/** `mailto:` for the same, with the subject already written. */
-export const FOUNDING_MAILTO = `mailto:${FOUNDING_EMAIL}?subject=${encodeURIComponent(
-  'Becoming a founding member'
-)}`;
+interface OfferWire {
+  amountOffCents: number;
+  limit: number;
+  remaining: number;
+}
+
+/** The founding offer as it stands, or null when it cannot be read. NEVER
+ *  THROWS: a page that cannot count the places says nothing about them. */
+export async function fetchFounderOffer(): Promise<FounderOffer | null> {
+  try {
+    const res = await fetch(`${apiOrigin()}/v1/public/billing/offer?plan=piggles`, {
+      ...REVALIDATE_ONE_MINUTE,
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: { offer?: OfferWire | null } };
+    const offer = body.data?.offer;
+    if (!offer) return null;
+    return {
+      monthly: PRICE_MONTHLY - Math.round(offer.amountOffCents / 100),
+      limit: offer.limit,
+      remaining: offer.remaining,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** True while somebody can still become a founding member. */
+export function founderOpen(offer: FounderOffer | null): offer is FounderOffer {
+  return offer !== null && offer.remaining > 0;
+}
+
+/** The header bar for the offer while places are left, else null. */
+export function founderNotice(offer: FounderOffer | null, href: string): HeaderNotice | null {
+  if (!founderOpen(offer)) return null;
+  return {
+    id: 'founding-offer',
+    message: `Founding members pay $${String(offer.monthly)} a month instead of ${PRICE_LABEL}, for as long as they stay. ${String(offer.remaining)} of ${String(offer.limit)} places left.`,
+    linkLabel: 'How it works',
+    linkHref: href,
+    tone: 'primary',
+    dismissible: true,
+  };
+}

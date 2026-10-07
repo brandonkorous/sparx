@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
   // never resolve to "carry on and start the tracker" — the ask is cheap and
   // idempotent, so an unreadable record costs one screen rather than one
   // unconsented session.
-  const consent = await readConsent(session.user.id, session.user.tenantId);
+  const consent = await readConsent(session.user.id, session.user.homeTenantId);
   if (!consent) {
     return sameOriginRedirectWithNext('/cookie-choices', `/handoff${request.nextUrl.search}`);
   }

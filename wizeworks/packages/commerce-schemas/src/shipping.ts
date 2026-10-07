@@ -128,7 +128,11 @@ export type ShippingRateType = z.infer<typeof ShippingRateType>;
 
 export const CreateShippingRateInput = z.object({
   zoneId: Uuid,
-  profileId: Uuid,
+  // Optional: absent means the shop's default product group, which is created
+  // ("All products") when the shop has none. A shop with no group could not add
+  // ANY delivery option while the Shipping screen told it a group was optional
+  // (sparx persona issue 128).
+  profileId: Uuid.optional(),
   name: z.string().min(1).max(127),
   type: ShippingRateType,
   // For flat / free_above_threshold:

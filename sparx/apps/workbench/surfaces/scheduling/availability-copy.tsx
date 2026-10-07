@@ -75,7 +75,11 @@ export function HoursCopy({
   const targets = groups
     .flatMap((group) => group.members)
     .filter((member) => selected.includes(member.id))
-    .map((member) => ({ id: member.id, name: member.name }));
+    .map((member) => ({
+      id: member.id,
+      name: member.name,
+      hasWeeklyHours: member.hasWeeklyHours,
+    }));
 
   const setGroup = (group: CopyGroup, next: readonly string[]) => {
     const inGroup = new Set(group.members.map((member) => member.id));
@@ -91,6 +95,7 @@ export function HoursCopy({
   const run = async () => {
     if (dirty || targets.length === 0) return;
     const copied = withClosures ? closures : [];
+    const withHours = targets.filter((target) => target.hasWeeklyHours !== false).length;
     const ok = await confirm({
       ...copyConfirmCopy({
         source: sourceName,
@@ -98,8 +103,11 @@ export function HoursCopy({
         closures: copied.length,
         closedAllWeek: windows.length === 0,
         seasonal: windows.some((window) => window.validFrom !== null || window.validTo !== null),
+        targetsWithHours: withHours,
       }),
-      color: 'danger',
+      // Red only when hours are really thrown away; filling in an empty week is
+      // ordinary work (sparx persona issue 118).
+      color: withHours === 0 ? 'module' : 'danger',
     });
     if (!ok) return;
     // Awaited rather than handed callbacks: a callback passed to `mutate` is

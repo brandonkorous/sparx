@@ -16,6 +16,9 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { Wordmark } from '@sparx/brand/react';
 import { signOut } from '@wizeworks/auth/client';
+import { Button, useToast } from '@wizeworks/silicaui-react';
+import { enterBusiness, useBusinesses } from '../../lib/api/businesses';
+import { useTenant } from '../../lib/api/shell-data';
 
 /** Local class-name join — silicaui-react does not export `cn`, and the workbench
  *  has no shared helper, so this tiny filter keeps the shell dependency-free. */
@@ -24,14 +27,48 @@ function cn(...classes: (string | false | null | undefined)[]): string {
 }
 
 export function OnboardingHeader({ right }: { right?: ReactNode }) {
+  // The other businesses this person belongs to. Someone who joined a team also
+  // holds the workspace their sign-up made, and choosing it from the switcher
+  // opens THIS screen over the whole window, switcher and all. Without a door
+  // back the only way out was "Save & exit", which signs them out (persona
+  // issue 124).
+  const { data: businesses } = useBusinesses();
+  const { data: tenant } = useTenant();
+  const toast = useToast();
+  const elsewhere = tenant
+    ? (businesses ?? []).filter((business) => business.id !== tenant.id)
+    : [];
+
   return (
     <header className="bg-base-100 border-base-300 flex h-14 shrink-0 items-center justify-between border-b px-4 @[48rem]:px-6">
       <Wordmark size={38} aria-label="sparx" />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         {right}
-        <button
-          type="button"
-          className="text-base-content/70 hover:text-sm"
+        {elsewhere.map((business) => (
+          <Button
+            key={business.id}
+            variant="outline"
+            size="sm"
+            className="text-sm"
+            onClick={() => {
+              void enterBusiness(business.id).catch(() => {
+                toast.add({
+                  title: 'Could not open that business',
+                  description: 'You may no longer have access to it. Nothing here has changed.',
+                  type: 'error',
+                });
+              });
+            }}
+          >
+            Go to {business.name}
+          </Button>
+        ))}
+        {/* Colorless ghost: a quiet way out, painted by silica rather than a
+            hand-faded <button> (RULE #1, RULE #3). */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-sm"
           onClick={() => {
             // Onboarding persists every step as it goes, so leaving loses nothing —
             // "Save & exit" is an honest label, not a promise we then break.
@@ -41,7 +78,7 @@ export function OnboardingHeader({ right }: { right?: ReactNode }) {
           }}
         >
           Save &amp; exit
-        </button>
+        </Button>
       </div>
     </header>
   );

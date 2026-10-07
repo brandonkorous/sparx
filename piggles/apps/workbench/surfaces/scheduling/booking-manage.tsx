@@ -35,7 +35,7 @@ interface BookingManageProps {
 
 export function BookingManage(props: BookingManageProps) {
   const { ctx, booking, isFetching, updatedAt, onRefresh } = props;
-  const state = useBookingManage(ctx, booking);
+  const state = useBookingManage(booking);
   const { id, policy, actionError, who, terminal } = state;
   // A booking has no name field, so the registry title was the only one it ever
   // had and four open bookings read as four tabs saying "Booking" (issue 842).

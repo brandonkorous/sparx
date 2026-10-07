@@ -116,6 +116,7 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { surfaceTitle } from '../../lib/surfaces/registry';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProduct, type Product } from './products-data';
+import { personalKey } from '../../lib/workbench/storage-owner';
 
 /* ── The selection channel ──────────────────────────────────────────────── */
 
@@ -143,7 +144,7 @@ const SELECTION_CHANNEL = 'piggles-console-product-selection';
  * as a deletion rather than a switch. */
 function selectionKey(): string {
   const site = new URLSearchParams(window.location.search).get('site') ?? 'default';
-  return `${SELECTION_CHANNEL}:${site}`;
+  return personalKey(`${SELECTION_CHANNEL}:${site}`);
 }
 
 function readStoredSelection(): Selection | null {

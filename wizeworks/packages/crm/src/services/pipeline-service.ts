@@ -11,6 +11,7 @@ import {
   ReorderPipelineStagesInput,
   UpdatePipelineInput,
   UpdatePipelineStageInput,
+  fixedStageChance,
   stageTypesFor,
   type StageType,
 } from '@wizeworks/crm-schemas';
@@ -216,7 +217,7 @@ export async function createStage(
         pipelineId,
         name: input.name,
         sortOrder: input.sortOrder,
-        probability: input.probability,
+        probability: fixedStageChance(input.stageType) ?? input.probability,
         stageType: input.stageType,
         color: input.color ?? null,
       },
@@ -250,12 +251,15 @@ export async function updateStage(
     if (input.stageType !== undefined) {
       assertStageTypeFits(before.pipeline.objectKey, input.stageType);
     }
+    // A finished stage has a fixed chance, whatever was sent (issue 110).
+    const fixed = fixedStageChance(input.stageType ?? before.stageType);
+    const probability = fixed ?? input.probability;
     const updated = await tx.pipelineStage.update({
       where: { id: stageId },
       data: {
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.sortOrder !== undefined ? { sortOrder: input.sortOrder } : {}),
-        ...(input.probability !== undefined ? { probability: input.probability } : {}),
+        ...(probability !== undefined ? { probability } : {}),
         ...(input.stageType !== undefined ? { stageType: input.stageType } : {}),
         ...(input.color !== undefined ? { color: input.color } : {}),
       },
@@ -278,6 +282,14 @@ export async function updateStage(
         where: { stageId, deletedAt: null },
         select: { id: true },
       });
+      // Moving a deal copies the stage's chance onto it, so the deals already
+      // here take the fixed chance too, as if they had just been moved.
+      if (fixed !== null && onStage.length > 0) {
+        await tx.deal.updateMany({
+          where: { id: { in: onStage.map((d) => d.id) } },
+          data: { probability: fixed },
+        });
+      }
       await closeWhenDealMovesOn(tx, ctx, {
         dealIds: onStage.map((d) => d.id),
         because: `The stage “${updated.name}” now counts as ${updated.stageType}, so this no longer needs doing.`,

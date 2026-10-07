@@ -27,6 +27,8 @@ const NONE: SampleDataCounts = {
   bookings: 0,
   services: 0,
   resources: 0,
+  bookingRules: 0,
+  places: 0,
   deals: 0,
   tickets: 0,
   billingDocuments: 0,
@@ -40,6 +42,22 @@ const NONE: SampleDataCounts = {
 describe('services and people are counted, because Remove takes them (issue 085)', () => {
   it('adds them to the removable total', () => {
     expect(countsTotal({ ...NONE, services: 7, resources: 6 })).toBe(13);
+  });
+});
+
+describe('a design’s example booking rules and places are counted, because Remove takes them (issue 920)', () => {
+  it('adds them to the removable total and names them', () => {
+    expect(countsTotal({ ...NONE, bookingRules: 2, places: 1 })).toBe(3);
+    expect(summarizeCounts({ ...NONE, bookingRules: 2, places: 1 })).toBe(
+      '2 booking rules, 1 booking place'
+    );
+  });
+});
+
+describe('the sentence a Remove confirmation is built from reads as English', () => {
+  it('says one thing in the singular, and keeps "AI" in capitals', () => {
+    expect(summarizeCounts({ ...NONE, products: 1 })).toBe('1 product');
+    expect(summarizeCounts({ ...NONE, aiPrompts: 3 })).toBe('3 AI prompts');
   });
 });
 

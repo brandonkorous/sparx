@@ -16,6 +16,9 @@ import { FormSection } from '../../components/form-section';
 import { LOCATION_TYPES, locationTypeHint } from './locations-data';
 import { cleanCode, type Draft } from './location-draft';
 import { LocationAddress } from './location-address';
+import { LocationOnlineOrders } from './location-online-orders';
+import { canShipFrom } from './location-ship-from';
+import type { Location } from './locations-data';
 
 export interface FieldsProps {
   isNew: boolean;
@@ -23,6 +26,7 @@ export interface FieldsProps {
   set: <K extends keyof Draft>(key: K, value: Draft[K]) => void;
   codeError: string | null;
   showAddrWarning: boolean;
+  existing: Location | null;
 }
 
 function KindField({
@@ -57,7 +61,12 @@ function KindField({
   );
 }
 
-function Identity({ isNew, draft, set, codeError }: Omit<FieldsProps, 'showAddrWarning'>) {
+function Identity({
+  isNew,
+  draft,
+  set,
+  codeError,
+}: Omit<FieldsProps, 'showAddrWarning' | 'existing'>) {
   return (
     <FormSection
       title={isNew ? 'New location' : 'Name and kind'}
@@ -115,6 +124,12 @@ function Identity({ isNew, draft, set, codeError }: Omit<FieldsProps, 'showAddrW
 }
 
 export function LocationFields(props: FieldsProps) {
+  // Where parcels leave from now, or will once this is saved. Its address
+  // section then asks for what a courier needs.
+  const shipsFrom =
+    props.draft.isActive &&
+    (props.existing?.shipsOnline === true ||
+      (props.draft.shipsOnline && canShipFrom(props.draft.type)));
   return (
     <>
       <Identity
@@ -123,10 +138,13 @@ export function LocationFields(props: FieldsProps) {
         set={props.set}
         codeError={props.codeError}
       />
+      {/* Before the address, because it is the reason the address matters. */}
+      <LocationOnlineOrders draft={props.draft} set={props.set} existing={props.existing} />
       <LocationAddress
         draft={props.draft}
         set={props.set}
         showAddrWarning={props.showAddrWarning}
+        shipsFrom={shipsFrom}
       />
     </>
   );

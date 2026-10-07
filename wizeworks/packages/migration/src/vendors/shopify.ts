@@ -24,7 +24,7 @@ import type { CanonicalRow } from '../canonical';
 import { clean } from '../coerce';
 import type { SourceRow } from '../parse/csv';
 import type { VendorAdapter } from '../types';
-import { groupBy, pathOf, pick, productStatus, row, tags } from './_helpers';
+import { groupBy, markRead, pathOf, pick, productStatus, row, tags } from './_helpers';
 
 /** Columns in the inventory export that are NOT a location. Everything else in that
  *  file is a warehouse the tenant named themselves, which is why this list has to be
@@ -159,6 +159,24 @@ function mapProducts(rows: SourceRow[]): CanonicalRow[] {
   return out;
 }
 
+/**
+ * The customer's note, and what Shopify said about their tax.
+ *
+ * Shopify keeps a bare "Tax Exempt: yes". sparx keeps an exemption as a
+ * certificate (who issued it, where it applies), which the file does not have,
+ * so it cannot become one. It used to vanish without a word: Gillett's file
+ * had three exempt farms (sparx persona issue 104). It rides on their note,
+ * saying what to do, so nobody is left to find out at checkout. No product
+ * name: both consoles read this file.
+ */
+function customerNote(source: SourceRow): string {
+  const note = pick(source, 'Note');
+  if (pick(source, 'Tax Exempt').toLowerCase() !== 'yes') return note;
+  const exempt =
+    'Tax exempt in Shopify. Add their exemption certificate under Tax exemption to stop charging them tax.';
+  return note === '' ? exempt : `${note}\n\n${exempt}`;
+}
+
 function mapCustomers(rows: SourceRow[]): CanonicalRow[] {
   return rows.map((source) =>
     row({
@@ -181,7 +199,7 @@ function mapCustomers(rows: SourceRow[]): CanonicalRow[] {
       country: pick(source, 'Default Address Country Code', 'Default Address Country', 'Country'),
       zip: pick(source, 'Default Address Zip', 'Zip'),
       tags: tags(pick(source, 'Tags')),
-      note: pick(source, 'Note'),
+      note: customerNote(source),
       total_spent: pick(source, 'Total Spent'),
       total_orders: pick(source, 'Total Orders'),
       type: 'person',
@@ -245,25 +263,47 @@ function mapInventory(rows: SourceRow[]): CanonicalRow[] {
   const out: CanonicalRow[] = [];
 
   for (const source of rows) {
+    // A row with no usable SKU is kept, not skipped: the check then names it as
+    // a problem. Skipped, Gillett's Bosch Fuel Rail (SKU "-" in Shopify) and its
+    // 5 units left the count without a word (sparx persona issue 105).
     const sku = pick(source, 'SKU');
-    if (sku === '') continue;
 
     // Newer exports are already tall: a Location column plus Available/On hand.
+    // Shopify's own export names them "On hand (current)", "On hand (new)"
+    // (blank until you type a change), "Available (not editable)" and
+    // "Incoming (not editable)". Asked only for "On hand" and "Available",
+    // Gillett's export of 1,366 rows mapped with no quantity at all: 0 ready,
+    // 1,367 problems (sparx persona issue 105). A typed new count wins.
     const namedLocation = pick(source, 'Location');
     if (namedLocation !== '') {
       out.push(
         row({
           sku,
           location: namedLocation,
-          quantity: pick(source, 'On hand', 'Available', 'Quantity'),
-          available: pick(source, 'Available'),
-          incoming: pick(source, 'Incoming'),
+          quantity: pick(
+            source,
+            'On hand (new)',
+            'On hand (current)',
+            'On hand',
+            'Available (not editable)',
+            'Available',
+            'Quantity'
+          ),
+          available: pick(source, 'Available (not editable)', 'Available'),
+          incoming: pick(source, 'Incoming (not editable)', 'Incoming'),
         })
       );
+      // The columns that name the item are understood, not left behind.
+      for (const header of Object.keys(source)) {
+        if (INVENTORY_FIXED.has(header.toLowerCase())) markRead(header);
+      }
       continue;
     }
 
     for (const [header, value] of Object.entries(source)) {
+      // The fixed columns name the item, and every other column is a location:
+      // all understood, whatever this cell says.
+      markRead(header);
       if (INVENTORY_FIXED.has(header.toLowerCase())) continue;
       const quantity = clean(value);
       if (quantity === '') continue;

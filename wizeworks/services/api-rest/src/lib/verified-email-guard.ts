@@ -37,12 +37,11 @@ export async function requireVerifiedEmail(request: FastifyRequest): Promise<voi
   if (auth.actorType !== 'user') return;
 
   // Source the verified flag from the authenticated identity (the session JWT
-  // `ev` claim), NOT a fresh DB read. `users` has RLS policies that filter the
-  // non-owner `sparx_app` role api-rest connects as (the table is ENABLE-but-
-  // NO-FORCE — see wizeworks/packages/db/CLAUDE.md), so `prisma.user.findUnique` on the
-  // base client returns null here and would wrongly gate EVERY verified user.
-  // The claim is refreshed on each 5-minute token mint, so it is never stale by
-  // more than that. (`tenants` below has no RLS — the dispatch table — so that
+  // `ev` claim), NOT a fresh DB read: it costs nothing and is the identity the
+  // request was authenticated as. (A bare `users` read does work as `sparx_app`
+  // today, through `users_operator_read`, measured 2026-10-06; this note once
+  // said it returned null.) The claim is refreshed on each 5-minute token mint,
+  // so it is never stale by more than that. (`tenants` below has no RLS — the dispatch table — so that
   // base-client read is safe.)
   if (auth.emailVerified) return;
 

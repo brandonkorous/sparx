@@ -22,6 +22,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  FieldStatus,
   Heading,
   Input,
   NativeSelect,
@@ -43,6 +44,9 @@ import {
   BOOKING_TYPES,
   RESOURCE_KINDS,
   bookingTypeLabel,
+  defaultPolicy,
+  policySummary,
+  reminderSummary,
   schedulingErrorMessage,
   serviceState,
   useCreateService,
@@ -72,6 +76,7 @@ interface Draft {
   bufferAfterMin: number;
   slotIntervalMin: number;
   price: string;
+  priceOnQuote: boolean;
   currency: string;
   capacity: number;
   policyId: string;
@@ -94,6 +99,7 @@ const BLANK: Draft = {
   bufferAfterMin: 0,
   slotIntervalMin: 15,
   price: '',
+  priceOnQuote: false,
   currency: 'usd',
   capacity: 1,
   policyId: '',
@@ -130,6 +136,7 @@ function draftFrom(service: SchedulingService): Draft {
     bufferAfterMin: service.bufferAfterMin,
     slotIntervalMin: service.slotIntervalMin,
     price: centsToPrice(service.priceCents),
+    priceOnQuote: service.priceOnQuote,
     currency: service.currency,
     capacity: service.capacity,
     policyId: service.policyId ?? '',
@@ -180,6 +187,7 @@ function ServiceEditor({
   const losses = useServiceLosses(isNew ? null : id);
 
   const [draft, setDraft] = useState<Draft>(initial);
+  const chosenPolicy = (policies.data?.items ?? []).find((policy) => policy.id === draft.policyId);
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
@@ -220,7 +228,8 @@ function ServiceEditor({
     bufferBeforeMin: draft.bufferBeforeMin,
     bufferAfterMin: draft.bufferAfterMin,
     slotIntervalMin: Math.max(1, draft.slotIntervalMin),
-    priceCents: priceToCents(draft.price),
+    priceCents: draft.priceOnQuote ? 0 : priceToCents(draft.price),
+    priceOnQuote: draft.priceOnQuote,
     currency: draft.currency,
     capacity: draft.bookingType === 'class' ? Math.max(1, draft.capacity) : 1,
     policyId: draft.policyId === '' ? null : draft.policyId,
@@ -552,14 +561,19 @@ function ServiceEditor({
                       min={0}
                       step={0.01}
                       className="max-w-40 tabular-nums"
-                      value={draft.price}
+                      value={draft.priceOnQuote ? '' : draft.price}
+                      disabled={draft.priceOnQuote}
                       onChange={(event) => {
                         set('price', event.target.value);
                       }}
                     />
                   }
                 />
-                <FieldDescription>Leave blank for a free booking.</FieldDescription>
+                <FieldDescription>
+                  {draft.priceOnQuote
+                    ? 'Quoted after a look: nothing is charged when they book.'
+                    : 'Leave blank for a free booking.'}
+                </FieldDescription>
               </Field>
 
               {/* A service stores its currency LOWERCASE, which is this module's
@@ -574,6 +588,28 @@ function ServiceEditor({
               />
             </div>
 
+            {/* A price worked out after looking at the job. Without it a 0 price
+                read "Free" on the public booking page (sparx persona issue 117). */}
+            <label className="flex items-start gap-3">
+              <Checkbox
+                color="module"
+                checked={draft.priceOnQuote}
+                aria-label="We quote the price after looking at the job"
+                onChange={(event) => {
+                  set('priceOnQuote', event.target.checked);
+                }}
+              />
+              <span className="flex flex-col gap-0.5">
+                <Text as="span" className="font-medium">
+                  We quote the price after looking at the job
+                </Text>
+                <Text as="span" className="text-sm">
+                  Customers see &ldquo;Quoted after we look&rdquo; instead of a price, and pay
+                  nothing when they book.
+                </Text>
+              </span>
+            </label>
+
             <Field>
               <FieldLabel>Booking rules</FieldLabel>
               <FieldControl
@@ -586,7 +622,7 @@ function ServiceEditor({
                       set('policyId', event.target.value);
                     }}
                   >
-                    <option value="">No deposit or cancellation rules</option>
+                    <option value="">No rules, and no reminders</option>
                     {(policies.data?.items ?? []).map((policy) => (
                       <option key={policy.id} value={policy.id}>
                         {policy.name}
@@ -595,10 +631,18 @@ function ServiceEditor({
                   </NativeSelect>
                 }
               />
-              <FieldDescription>
-                The deposit and cancellation terms a customer agrees to when booking this service.
-                Set these up under Booking rules.
-              </FieldDescription>
+              {chosenPolicy ? (
+                <FieldDescription>
+                  {policySummary(chosenPolicy)} · {reminderSummary(chosenPolicy)}. Change any of it
+                  under Booking rules.
+                </FieldDescription>
+              ) : (
+                <FieldStatus status="warning">
+                  Nobody booking this gets a reminder. Reminders live in a rule set alongside
+                  deposits and cancellation terms, so a service with no rule set sends nothing
+                  before the appointment. Pick one, or make one under Booking rules.
+                </FieldStatus>
+              )}
             </Field>
           </FormSection>
 
@@ -878,9 +922,28 @@ export function ServiceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
   const service = useService(id);
+  const policies = usePolicies({ take: 250, skip: 0 });
 
   if (isNew) {
-    return <ServiceEditor ctx={ctx} id="new" initial={BLANK} existing={null} />;
+    // Waits for the business's booking rules, so a new service starts with its
+    // first set picked and the form is not "changed" before anyone touches it.
+    if (policies.isPending) {
+      return (
+        <div className={PANE_SHELL}>
+          <p className="p-4 text-sm" role="status">
+            Loading…
+          </p>
+        </div>
+      );
+    }
+    return (
+      <ServiceEditor
+        ctx={ctx}
+        id="new"
+        initial={{ ...BLANK, policyId: defaultPolicy(policies.data?.items)?.id ?? '' }}
+        existing={null}
+      />
+    );
   }
 
   if (service.isError) {

@@ -4,10 +4,14 @@
 // someone likes to look at their work, not data about the business, so it does
 // not belong on the server or in the per-site layout. Keyed by surface so the
 // deals board and (docs/144 §7.2) the tickets board remember separately.
+// Per-user holds on a shared computer too: the key names the person
+// (lib/workbench/storage-owner.ts, persona issue 123).
 //
 // Follows the defensive localStorage convention in lib/workbench/persistence.ts
 // — swallow quota/blocked errors, degrade to the default, never throw. A lost
 // preference is a mild annoyance; a crash on a private-mode browser is not.
+
+import { personalKey } from './workbench/storage-owner';
 
 const KEY = 'sparx-workbench-list-view';
 
@@ -19,7 +23,7 @@ type ViewMap = Record<string, ListView>;
 function read(): ViewMap {
   if (typeof localStorage === 'undefined') return {};
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(personalKey(KEY));
     return raw ? (JSON.parse(raw) as ViewMap) : {};
   } catch {
     return {};
@@ -34,7 +38,7 @@ export function readListView(surfaceKey: string, fallback: ListView): ListView {
 export function writeListView(surfaceKey: string, view: ListView): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(KEY, JSON.stringify({ ...read(), [surfaceKey]: view }));
+    localStorage.setItem(personalKey(KEY), JSON.stringify({ ...read(), [surfaceKey]: view }));
   } catch {
     // Storage full or blocked — the choice just won't survive a reload.
   }

@@ -20,8 +20,48 @@ export function normalizeHeader(header: string): string {
     .trim();
 }
 
+// ── Which of the file's own columns a mapping read ─────────────────────────────
+//
+// The file report listed what would be left behind by sparx's own field keys
+// (`accepts_sms, total_orders, total_spent`), and only the keys a mapping wrote
+// out. A column no mapping reads at all was never in that list: Shopify's "Tax
+// Exempt" column vanished from Gillett's customer import without a word (sparx
+// persona issue 104). So a mapping run under `trackingReads` records every
+// column it read, in the file's own words, and the report can name the rest.
+// `pick` and `has` record what they match; an adapter that walks the row to
+// carry its leftover columns records each one it carries with `markRead`.
+
+let reads: Set<string> | null = null;
+
+/** Run a mapping and return what it produced plus the columns it read. */
+export function trackingReads<T>(run: () => T): { result: T; read: Set<string> } {
+  const previous = reads;
+  const read = new Set<string>();
+  reads = read;
+  try {
+    return { result: run(), read };
+  } finally {
+    reads = previous;
+  }
+}
+
+/** Record that a column was read and carried somewhere. */
+export function markRead(header: string): void {
+  reads?.add(header);
+}
+
+/** Record every column of this row that answers to one of these headers. */
+function noteMatches(row: SourceRow, headers: string[]): void {
+  if (reads === null) return;
+  const wanted = headers.map(normalizeHeader);
+  for (const key of Object.keys(row)) {
+    if (headers.includes(key) || wanted.includes(normalizeHeader(key))) reads.add(key);
+  }
+}
+
 /** Read the first of several possible headers, case- and spacing-insensitively. */
 export function pick(row: SourceRow, ...headers: string[]): string {
+  noteMatches(row, headers);
   for (const header of headers) {
     const direct = row[header];
     if (direct !== undefined && clean(direct) !== '') return clean(direct);
@@ -36,6 +76,7 @@ export function pick(row: SourceRow, ...headers: string[]): string {
 
 /** True when a row carries any of these headers at all (even empty). */
 export function has(row: SourceRow, ...headers: string[]): boolean {
+  noteMatches(row, headers);
   const wanted = headers.map(normalizeHeader);
   return Object.keys(row).some((key) => wanted.includes(normalizeHeader(key)));
 }

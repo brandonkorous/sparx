@@ -27,7 +27,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Copy, LayoutGrid, Search, Star } from 'lucide-react';
 import { Wordmark } from '@sparx/brand/react';
-import { useFavorites, useTenant, useToggleFavorite } from '../lib/api/shell-data';
+import { useFavorites, useToggleFavorite } from '../lib/api/shell-data';
 import type { WindowMode } from '../lib/window-mode';
 import type { ThemeChoice } from '../lib/theme';
 import { useWorkbench } from '../lib/workbench/context';
@@ -37,6 +37,7 @@ import { NotificationCenter } from './notification-center';
 import { TrialChip } from './billing/trial-chip';
 import { QuickAdd } from './toolbar/quick-add';
 import { LauncherKey } from './shortcut-keys';
+import { BusinessSwitcher } from './toolbar/business-switcher';
 import { SiteSwitcher } from './toolbar/site-switcher';
 import { ViewerMenu } from './toolbar/viewer-menu';
 
@@ -112,7 +113,6 @@ export function Toolbar({
   onChangeWindowMode,
 }: ToolbarProps) {
   const { controller } = useWorkbench();
-  const { data: tenant } = useTenant();
 
   // The focused pane, live — the star and feedback context follow it.
   const activeDescriptor = useSyncExternalStore(
@@ -132,15 +132,9 @@ export function Toolbar({
           <Wordmark className="mx-2" size={38} aria-label="sparx" />
         </span>
 
-        {/* Workspace — plain identity, not a control. The tenant is a fact of
-            the session; there is nothing to switch it to from here. */}
-        <span
-          data-tour="workspace"
-          className="max-w-40 truncate text-sm font-medium"
-          title={tenant?.name}
-        >
-          {tenant?.name ?? ' '}
-        </span>
+        {/* The business: plain text for one, a switcher for someone in more than
+            one (a person who joined a team also holds their own workspace). */}
+        <BusinessSwitcher siteKey={siteKey} />
 
         <SiteSwitcher siteKey={siteKey} />
       </NavbarStart>

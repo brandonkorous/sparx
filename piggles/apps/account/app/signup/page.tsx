@@ -8,6 +8,7 @@ import { AuthShell } from '@/components/auth-shell';
 import { BrandPanel } from '@/components/brand-panel';
 import { SignUpForm } from '@/components/signup-form';
 import { googleSignInAvailable } from '@/lib/social';
+import { joiningFrom } from '@/lib/invite-joining';
 
 export const metadata: Metadata = { title: 'Create your account' };
 export const dynamic = 'force-dynamic';
@@ -34,11 +35,20 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
   // read no destination at all, so an invited person was put through setting up
   // a business of their own and the invitation was never seen again (881).
   const next = returnPath(params, '/onboarding');
+  // On the way to accept an invitation: they are joining a business, not
+  // starting a trial of their own.
+  const joining = await joiningFrom(next);
 
   return (
     <AuthShell
-      heading="Let's get you started."
-      lede="Fourteen days free. No card needed."
+      heading={
+        joining ? `Create your account to join ${joining.orgName}` : "Let's get you started."
+      }
+      lede={
+        joining
+          ? `Use ${joining.email}, the address your invitation went to.`
+          : 'Fourteen days free. No card needed.'
+      }
       panel={<BrandPanel lead="Set it up once." emphasis="Then just run the place." />}
       aside={
         <p>

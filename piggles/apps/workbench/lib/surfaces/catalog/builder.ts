@@ -68,7 +68,7 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     module: 'builder',
     icon: faPalette,
     order: 2,
-    keywords: ['theme', 'colors', 'colors', 'fonts', 'brand', 'style', 'look'],
+    keywords: ['theme', 'colors', 'fonts', 'brand', 'style', 'look'],
     // A theme is TENANT-wide and reusable across sites, so this is its own pane
     // rather than a mode inside the page editor — open it beside a page and a
     // color change repaints that page as it is dragged.

@@ -73,6 +73,10 @@ model SchedulingService {
   bufferBeforeMin      Int     @default(0) @map("buffer_before_min")
   bufferAfterMin       Int     @default(0) @map("buffer_after_min")
   priceCents           Int     @default(0) @map("price_cents")
+  // The price is worked out after looking at the job (a turbo rebuild, an
+  // injector set): the site says so instead of printing "Free" for a 0 price,
+  // and nothing is charged at booking (sparx persona issue 117).
+  priceOnQuote         Boolean @default(false) @map("price_on_quote")
   currency             String  @default("usd") @db.Char(3)
   capacity             Int     @default(1) // >1 for classes
   assignmentStrategy   String  @default("any_available") @map("assignment_strategy") @db.VarChar(20)

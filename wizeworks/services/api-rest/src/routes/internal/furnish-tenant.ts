@@ -34,18 +34,15 @@
 // is addressed by id with the plain system client; everything the furnishing
 // itself writes goes through `withTenant` and stays RLS-scoped.
 
-import { timingSafeEqual } from 'node:crypto';
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { ALL_MODULES, type ModuleSlug } from '@wizeworks/auth';
 import { prisma } from '@wizeworks/db';
 
-import { env } from '../../env.js';
+import { authorizeSignupApp } from '../../lib/internal-signup-token.js';
 import { furnishTenant } from '../../lib/furnish-tenant.js';
 import { blueprintSlugsHiddenFrom } from '../../lib/marketplace/brand-scope.js';
 import { tenantPlatformBrand } from '../../lib/tenant-brand.js';
-
-const FURNISH_TOKEN_HEADER = 'x-sparx-internal-furnish-token';
 
 const MODULE_SET = new Set<string>(ALL_MODULES);
 
@@ -63,25 +60,6 @@ const bodySchema = z.object({
   billPerModule: z.boolean().optional(),
 });
 
-function authorize(request: FastifyRequest): void {
-  const expected = env.SPARX_INTERNAL_FURNISH_TOKEN;
-  if (!expected) {
-    // No token configured → endpoint disabled. 401 rather than a silent success,
-    // so a forgotten secret in prod shows up as signups arriving unfurnished
-    // WITH an error, instead of arriving unfurnished quietly.
-    throw unauthorized('Internal furnish token is not configured.');
-  }
-  const provided = request.headers[FURNISH_TOKEN_HEADER];
-  if (typeof provided !== 'string' || provided.length === 0) {
-    throw unauthorized('Missing X-sparx-Internal-Furnish-Token header.');
-  }
-  const a = Buffer.from(provided, 'utf8');
-  const b = Buffer.from(expected, 'utf8');
-  if (a.length !== b.length || !timingSafeEqual(a, b)) {
-    throw unauthorized('Invalid furnish token.');
-  }
-}
-
 const listQuerySchema = z.object({ tenantId: z.string().uuid() });
 
 const furnishTenantRoutes: FastifyPluginAsync = async (app) => {
@@ -93,7 +71,7 @@ const furnishTenantRoutes: FastifyPluginAsync = async (app) => {
   // catalog, so a direct query there would happily hand a Piggles business the
   // other brand's showcase.
   app.get('/internal/tenant/blueprints', async (request) => {
-    authorize(request);
+    authorizeSignupApp(request);
     const { tenantId } = listQuerySchema.parse(request.query);
 
     const tenant = await prisma.tenant.findUnique({
@@ -141,7 +119,7 @@ const furnishTenantRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/internal/tenant/furnish', async (request, reply) => {
-    authorize(request);
+    authorizeSignupApp(request);
     const body = bodySchema.parse(request.body);
 
     // The tenant must already exist — this furnishes, it never creates. A 404
@@ -185,13 +163,6 @@ const furnishTenantRoutes: FastifyPluginAsync = async (app) => {
 
   return Promise.resolve();
 };
-
-function unauthorized(message: string): Error {
-  const err = new Error(message);
-  (err as { statusCode?: number }).statusCode = 401;
-  (err as { code?: string }).code = 'UNAUTHORIZED';
-  return err;
-}
 
 function notFound(message: string): Error {
   const err = new Error(message);

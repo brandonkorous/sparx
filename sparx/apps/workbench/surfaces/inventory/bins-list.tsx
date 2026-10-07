@@ -84,7 +84,11 @@ const FULL_WIDTH = [
 
 export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [locationId, setLocationId] = useState('');
+  // Seeded from the address so a location's "See its shelves" opens this on
+  // that place (issue 929). Read ONCE: after that the picker owns it.
+  const [locationId, setLocationId] = useState(() =>
+    typeof ctx.params.location === 'string' ? ctx.params.location : ''
+  );
   const [type, setType] = useState('');
   const [nonEmptyOnly, setNonEmptyOnly] = useState(false);
 

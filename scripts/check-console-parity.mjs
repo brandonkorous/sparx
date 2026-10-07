@@ -260,6 +260,18 @@ const EXCEPTIONS = [
   },
   // ── Auth: the consoles are entered differently ──────────────────────────
   {
+    axis: 'lib',
+    only: 'sparx',
+    path: 'lib/invite-joining',
+    why: 'names the business an invitee is joining on the sign-in and sign-up cards (sparx persona issue 124). sparx signs people in inside the workbench; Piggles signs them in on its account app, which carries its own copy at piggles/apps/account/lib/invite-joining.ts.',
+  },
+  {
+    axis: 'lib',
+    only: 'sparx',
+    path: 'lib/api/businesses',
+    why: 'the business list and switch, the same capability as Piggles lib/console/businesses.ts, kept beside the other shell reads in lib/api (persona issue 124). Same route on both sides: app/api/businesses.',
+  },
+  {
     axis: 'components',
     only: 'sparx',
     path: 'components/auth',
@@ -385,12 +397,6 @@ const EXCEPTIONS = [
   },
   {
     axis: 'routes',
-    only: 'piggles',
-    path: 'app/api/businesses',
-    why: 'the Piggles business switcher reads the list from the console’s own session; sparx switches tenants through api-rest.',
-  },
-  {
-    axis: 'routes',
     only: 'sparx',
     path: 'app/health',
     why: 'sparx answers probes at both /health and /api/health; Piggles answers at /api/health only, which is what its Deployment probes ask for (verified against the manifests).',
@@ -444,12 +450,6 @@ const EXCEPTIONS = [
   },
 
   // ── Same capability, different factoring ────────────────────────────────
-  {
-    axis: 'components',
-    only: 'piggles',
-    path: 'components/~topbar/business-switcher',
-    why: 'a Piggles owner can hold several BUSINESSES and act as one at a time, so the console carries a tenant switcher beside the site switcher. sparx’s workbench is entered for one tenant and the workspace renders as plain identity — there is nothing in this window to switch it to. The capability itself is not missing: sparx switches tenants through api-rest (see app/api/businesses), and if the workbench ever grows the control it belongs here, next to components/toolbar/site-switcher.tsx.',
-  },
   {
     axis: 'components',
     only: 'piggles',

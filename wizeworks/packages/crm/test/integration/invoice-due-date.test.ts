@@ -114,7 +114,7 @@ describe('a bill says when it is due', () => {
     const due = await withTenant({ tenantId: test.tenant.tenantId }, (tx) =>
       billingDocumentStageService.dueDateFromTerms(
         tx,
-        { companyId: null, customerId: walkInId },
+        { tenantId: test.tenant.tenantId, companyId: null, customerId: walkInId },
         receivedOn
       )
     );
@@ -126,7 +126,7 @@ describe('a bill says when it is due', () => {
     const due = await withTenant({ tenantId: test.tenant.tenantId }, (tx) =>
       billingDocumentStageService.dueDateFromTerms(
         tx,
-        { companyId: null, customerId: onTermsId },
+        { tenantId: test.tenant.tenantId, companyId: null, customerId: onTermsId },
         receivedOn
       )
     );

@@ -76,7 +76,19 @@ function readConfigMapValue() {
 function normalise(plan) {
   const { $comment, ...rest } = plan;
   void $comment;
-  return JSON.stringify(rest, Object.keys(rest).sort());
+  return JSON.stringify(sortKeys(rest));
+}
+
+/** Sort keys at EVERY depth. A replacer array (the old way) filters nested keys
+ *  too, so `base` and `capacity` compared as `{}` and a price change went unseen. */
+function sortKeys(value) {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value === null || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.keys(value)
+      .sort()
+      .map((k) => [k, sortKeys(value[k])])
+  );
 }
 
 /** The same shape @wizeworks/billing enforces at boot. Catching it here turns a

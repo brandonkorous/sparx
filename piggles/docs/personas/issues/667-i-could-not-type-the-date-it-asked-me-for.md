@@ -260,3 +260,12 @@ setInternal((prev) => {
 
 That second line is the fix: an incomplete set of segments beside a `null` value
 is somebody part-way through typing, never a parent clearing the field.
+
+## Regressed, and fixed again — 2026-10-06
+
+[931](931-the-date-box-forgot-the-month-while-she-typed-the-year.md). The
+next day's fix for 670 added `dayFromStored`, which rebuilt a day with
+`new Date(year, month, day)`, and `dayIso` never padded the year. Typing a year
+digit by digit into an EMPTY box then wiped the month and day again. The
+confirmation above was on a box that already held a year, which hid it. Both
+helpers are fixed and the round trip is tested for years 2, 20 and 202.

@@ -13,6 +13,7 @@ import type { ComponentDoc, DocumentStore, StudioSession } from '@wizeworks/stud
 import { useStudioBinding } from '../../lib/studio/provider';
 import { useSavePiece } from '../../lib/studio/piece-data';
 import { pieceKeyOf } from '../../lib/studio/saved-pieces';
+import { failureMessage } from '../../lib/api/write-failure';
 
 export interface PieceDocumentState {
   store: DocumentStore<ComponentDoc> | null;
@@ -97,7 +98,10 @@ export function usePieceDocument(symbolId: string | null): PieceDocumentState {
   }, [store, savePiece]);
 
   const error = useMemo(
-    () => (savePiece.error instanceof Error ? savePiece.error.message : null),
+    () =>
+      savePiece.error
+        ? failureMessage(savePiece.error, 'That did not go through. Try again.')
+        : null,
     [savePiece.error]
   );
 

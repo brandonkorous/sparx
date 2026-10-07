@@ -26,6 +26,7 @@ import { prisma, withTenant } from '@wizeworks/db';
 import { getProcessor } from './processors';
 import type { ImportRow, ProcessorContext } from './processors';
 import { reconcileSegmentsAfterImport } from './reconcile-segments.js';
+import { reindexSearchAfterImport } from './reindex-after-import.js';
 
 const ImportJobCreatedPayload = z.object({
   jobId: z.string().uuid(),
@@ -244,6 +245,16 @@ export async function handle(payload: ImportJobEvent, logger: Logger): Promise<H
     // process cannot answer it by publishing. See ./reconcile-segments.
     await reconcileSegmentsAfterImport(
       { tenantId: job.tenantId, entityType: job.entityType, dryRun: options.dryRun === true },
+      log
+    );
+    // And into search, which cannot hear this process either (issue 107).
+    await reindexSearchAfterImport(
+      {
+        tenantId: job.tenantId,
+        entityType: job.entityType,
+        dryRun: options.dryRun === true,
+        written: imported + updated,
+      },
       log
     );
 

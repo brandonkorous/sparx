@@ -27,7 +27,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatCents,
-  formatDate,
+  formatDueDay,
   invoiceState,
   useInvoices,
   type InvoiceRow,
@@ -236,7 +236,9 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-48 truncate @lg:table-cell">
                       {invoice.account?.companyName ?? '—'}
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">{formatDate(invoice.dueAt)}</td>
+                    <td className="hidden text-sm @2xl:table-cell">
+                      {formatDueDay(invoice.dueAt)}
+                    </td>
                     <td className="hidden text-right font-medium tabular-nums @xl:table-cell">
                       {invoice.balanceCents > 0
                         ? formatCents(invoice.balanceCents)

@@ -33,8 +33,21 @@ import {
   serviceState,
   usePolicies,
   useService,
+  type BookingPolicy,
   type SchedulingService,
 } from './setup-data';
+
+/**
+ * The booking rules a new service starts with: the business's oldest set, which is
+ * the `Standard` one the module creates (24 hours' notice, reminders a day and two
+ * hours before). The server picks the same one when a service is created without
+ * naming any. Every service used to start with none, so no booking got a reminder
+ * while the site promised one (sparx persona issue 135).
+ */
+function defaultPolicy(policies: readonly BookingPolicy[] | undefined): BookingPolicy | null {
+  if (!policies || policies.length === 0) return null;
+  return [...policies].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0] ?? null;
+}
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -142,9 +155,26 @@ export function ServiceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
   const service = useService(id);
+  const policies = usePolicies({ take: 250, skip: 0 });
 
   if (isNew) {
-    return <ServiceEditor ctx={ctx} id="new" initial={BLANK} existing={null} />;
+    // Waits for the business's booking rules, so a new service starts with its
+    // first set picked and the form is not "changed" before anyone touches it.
+    if (policies.isPending) {
+      return (
+        <div className={PANE_SHELL}>
+          <PaneWaiting />
+        </div>
+      );
+    }
+    return (
+      <ServiceEditor
+        ctx={ctx}
+        id="new"
+        initial={{ ...BLANK, policyId: defaultPolicy(policies.data?.items)?.id ?? '' }}
+        existing={null}
+      />
+    );
   }
 
   if (service.isError) {

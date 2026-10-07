@@ -1,19 +1,10 @@
-// The header notice — what Piggles is announcing above every page right now.
-//
-// Authored by WizeWorks staff in the admin console, stored in
-// `platform_announcements`, served by api-rest. It is here rather than in a
-// layout because all three Piggles surfaces ask the same question and must get
-// the same answer: a notice that ran on the marketing site but not on the
-// sign-up screen is a promise made and then not repeated at the moment somebody
-// acts on it.
-//
-// SERVER ONLY. Every caller is a server component in a layout, which is what
-// keeps this a single cached fetch per render rather than a request from every
-// visitor's browser.
+// The header notice: what Piggles announces above every page right now, authored
+// in the admin console and served by api-rest. Shared so all three surfaces say
+// the same thing. SERVER ONLY: one cached fetch per render, never per visitor.
 
-/** A notice, as the public endpoint returns it. Deliberately NOT the operator's
- *  shape: the window, the switch and the audit fields are how a notice is
- *  MANAGED, and none of them mean anything once it is on screen. */
+import { apiOrigin, REVALIDATE_ONE_MINUTE } from './api-origin';
+
+/** A notice as it is shown: none of the operator's window, switch or audit fields. */
 export interface HeaderNotice {
   id: string;
   message: string;
@@ -26,48 +17,8 @@ export interface HeaderNotice {
 
 export type NoticeSurface = 'marketing' | 'account' | 'console';
 
-/**
- * Where api-rest is, from inside a Piggles pod.
- *
- * Same posture as `originOf` in product.ts, and for the same reason: a laptop
- * that configures nothing must talk to the laptop. There is no production
- * fallback host here, though — api-rest is reached in-cluster by service name,
- * which is not something this package can guess. If the variable is missing in
- * production the fetch below fails and the page renders with no bar, which is
- * the correct failure: a marketing site must not go down because an
- * announcement service did.
- */
-/**
- * `next.revalidate` is Next's own extension to `RequestInit`, and every consumer
- * of this package is a Next app — but the package itself does not depend on
- * `next`, and should not gain a dependency on a framework to describe one fetch.
- *
- * So the shape is asserted here, once, rather than declared globally: augmenting
- * `RequestInit` in this package would collide with Next's identical declaration
- * in the three apps that DO have it. Outside Next the extra key is ignored, which
- * is the right behavior — the caching is a hint, not the contract.
- */
-const REVALIDATE_ONE_MINUTE = { next: { revalidate: 60 } } as RequestInit;
-
-function apiOrigin(): string {
-  const configured = process.env.PIGGLES_API_REST_URL?.trim();
-  if (configured) return configured.replace(/\/$/, '');
-  return 'http://localhost:3100';
-}
-
-/**
- * The one notice for this surface, or null.
- *
- * NEVER THROWS. A layout calls this, so an exception here would take out every
- * page of the site — and the thing it failed to fetch is a banner. Any failure
- * (unreachable, slow, malformed) resolves to "nothing to announce", which is
- * also the answer nine days out of ten.
- *
- * Cached for a minute at the framework layer, matching the endpoint's own
- * `cache-control`. Switching a notice off in the console is therefore felt while
- * the operator is still looking at the screen, without a marketing page under
- * load asking the database on every render.
- */
+/** The one notice for this surface, or null. NEVER THROWS: a layout calls this,
+ *  and a missing banner must not take out every page. Cached a minute. */
 export async function fetchHeaderNotice(surface: NoticeSurface): Promise<HeaderNotice | null> {
   try {
     const url = `${apiOrigin()}/v1/public/announcements?brand=piggles&surface=${surface}`;

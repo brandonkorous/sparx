@@ -83,6 +83,27 @@ export function formatMoney(cents: number, currency: string): string {
   }
 }
 
+/** What a service costs, in words: "Quoted" for a price worked out after a look
+ *  (sparx persona issue 117), "Free" for none, else the price. */
+export function servicePriceLabel(s: {
+  priceCents: number;
+  currency: string;
+  priceOnQuote?: boolean;
+}): string {
+  if (s.priceOnQuote) return 'Quoted';
+  if (s.priceCents <= 0) return 'Free';
+  return formatMoney(s.priceCents, s.currency);
+}
+
+/** " · $195.00" or " · Quoted" after a length; nothing for a free service. */
+export function servicePriceSuffix(s: {
+  priceCents: number;
+  currency: string;
+  priceOnQuote?: boolean;
+}): string {
+  return s.priceOnQuote || s.priceCents > 0 ? ` · ${servicePriceLabel(s)}` : '';
+}
+
 /** A run of minutes as "1 hr 30 min", the way a person reads a duration. */
 export function formatDuration(minutes: number): string {
   if (minutes <= 0) return '0 min';
@@ -119,6 +140,8 @@ export interface SchedulingService {
   bufferBeforeMin: number;
   bufferAfterMin: number;
   priceCents: number;
+  /** Priced after looking at the job (sparx persona issue 117). */
+  priceOnQuote: boolean;
   currency: string;
   capacity: number;
   assignmentStrategy: AssignmentStrategy;
@@ -197,6 +220,7 @@ export interface ServiceInput {
   bufferBeforeMin?: number;
   bufferAfterMin?: number;
   priceCents?: number;
+  priceOnQuote?: boolean;
   currency?: string;
   capacity?: number;
   assignmentStrategy?: AssignmentStrategy;
@@ -364,6 +388,9 @@ export interface SchedulingResource {
   /** The sites this person or place works for. EMPTY = all of them, which is both
    *  the default and what every single-site business reads. */
   propertyIds: string[];
+  /** Whether it has any weekly hours: with none it can never be booked. Absent
+   *  where the server did not look (sparx persona issue 118). */
+  hasWeeklyHours?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -475,7 +502,8 @@ export interface BusinessLocation {
   id: string;
   name: string;
   address: LocationAddress;
-  timezone: string;
+  /** Null when it has no zone of its own and follows the business. */
+  timezone: string | null;
   lat: number | null;
   lng: number | null;
   isActive: boolean;
@@ -491,7 +519,7 @@ export interface BusinessLocation {
 export interface LocationInput {
   name?: string;
   address?: LocationAddress;
-  timezone?: string;
+  timezone?: string | null;
   lat?: number | null;
   lng?: number | null;
   isActive?: boolean;
@@ -626,10 +654,19 @@ export function resourceKindLabel(value: string): string {
   return RESOURCE_KIND_LABEL.get(value) ?? 'Resource';
 }
 
-export function resourceState(resource: Pick<SchedulingResource, 'isActive'>): StateLabel {
-  return resource.isActive
-    ? { label: 'In use', tone: 'success' }
-    : { label: 'Off', tone: 'neutral' };
+/**
+ * Where a person or thing stands. "In use" only when it can actually be booked:
+ * one in use with no weekly hours reads "No hours" (sparx persona issue 118).
+ * "Off" carries no tone: switched off is a real state, and `neutral` is not ours
+ * to choose.
+ */
+export function resourceState(resource: Pick<SchedulingResource, 'isActive' | 'hasWeeklyHours'>): {
+  label: string;
+  tone: Exclude<Tone, 'neutral'> | undefined;
+} {
+  if (!resource.isActive) return { label: 'Off', tone: undefined };
+  if (resource.hasWeeklyHours === false) return { label: 'No hours', tone: 'warning' };
+  return { label: 'In use', tone: 'success' };
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -726,6 +763,8 @@ export function useSetResourceWindows(resourceId: string) {
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: availabilityKeys.windows(resourceId) });
+      // Whether it has hours at all shows on its page and in the list (issue 118).
+      void queryClient.invalidateQueries({ queryKey: resourceKeys.all });
     },
   });
 }
@@ -820,6 +859,7 @@ export function useCopyHours() {
     onSettled: (_results, _error, plan) => {
       for (const target of plan.targets) {
         void queryClient.invalidateQueries({ queryKey: availabilityKeys.windows(target.id) });
+        void queryClient.invalidateQueries({ queryKey: resourceKeys.all });
       }
       if (plan.closures.length > 0) {
         void queryClient.invalidateQueries({ queryKey: availabilityKeys.exceptions(null) });
@@ -1012,6 +1052,42 @@ export const REMINDER_OFFSETS: { minutes: number; label: string }[] = [
   { minutes: 60, label: '1 hour before' },
 ];
 
+/**
+ * The reminder times as a person would say them: "1 day and 2 hours before".
+ *
+ * Reminders hang off the RULE SET, not the service, so this is also the honest
+ * answer to "does anyone get reminded about this booking": a rule set with none,
+ * or a service with no rule set at all, means nobody does.
+ */
+export function reminderSummary(policy: BookingPolicy): string {
+  const offsets = [...policy.reminderOffsetsMin].sort((a, b) => b - a);
+  if (offsets.length === 0) return 'No reminders';
+  const said = offsets.map(
+    (minutes) =>
+      REMINDER_OFFSETS.find((offset) => offset.minutes === minutes)?.label.replace(
+        / before$/,
+        ''
+      ) ?? `${String(minutes)} min`
+  );
+  const last = said[said.length - 1];
+  const phrase = said.length === 1 ? last : `${said.slice(0, -1).join(', ')} and ${String(last)}`;
+  return `Reminder ${String(phrase)} before`;
+}
+
+/**
+ * The booking rules a new service starts with: the business's oldest set, which is
+ * the `Standard` one the module creates (24 hours' notice, reminders a day and two
+ * hours before). The server picks the same one when a service is created without
+ * naming any. Every service used to start with none, so no booking got a reminder
+ * while the site promised one (sparx persona issue 135).
+ */
+export function defaultPolicy(
+  policies: readonly BookingPolicy[] | undefined
+): BookingPolicy | null {
+  if (!policies || policies.length === 0) return null;
+  return [...policies].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0] ?? null;
+}
+
 /** A plain-language summary of what a policy asks of a customer, for the list. */
 export function policySummary(policy: BookingPolicy): string {
   const parts: string[] = [];
@@ -1023,4 +1099,29 @@ export function policySummary(policy: BookingPolicy): string {
       : 'Cancel any time'
   );
   return parts.join(' · ');
+}
+
+/**
+ * The warning on a person or thing with no weekly hours, or null when it has
+ * some (or nobody looked). With none, every service that needs it shows no open
+ * times, and nothing said why (sparx persona issue 118).
+ */
+export function hoursMissingNotice(resource: {
+  name: string;
+  hasWeeklyHours?: boolean;
+}): { title: string; detail: string } | null {
+  if (resource.hasWeeklyHours !== false) return null;
+  return {
+    title: `No hours yet, so nobody can book ${resource.name}`,
+    detail:
+      'Every service that needs it shows no open times until it has weekly hours. Set them once, or copy them from someone who keeps the same hours.',
+  };
+}
+
+/** What "no zone of its own" means, in words: it follows the business (the same
+ *  words as the Piggles console). */
+export function followBusinessLabel(zone: string | null | undefined): string {
+  if (zone === undefined) return 'Same as your business';
+  if (zone === null) return 'Same as your business (not set yet)';
+  return `Same as your business (${zone})`;
 }

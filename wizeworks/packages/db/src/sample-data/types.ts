@@ -416,6 +416,11 @@ export interface SampleDataCounts {
    *  offers to clear them never said they were there (persona issue 085). */
   services: number;
   resources: number;
+  /** The booking rules and places a design made as examples (issue 920). They
+   *  have no column to carry a practice mark, so they are found by the design's
+   *  install record and removed only while nothing uses them. */
+  bookingRules: number;
+  places: number;
   deals: number;
   /** Demo support requests (docs/144 §7) — the queue's spread of states. */
   tickets: number;

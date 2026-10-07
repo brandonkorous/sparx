@@ -24,6 +24,7 @@ import type {
   PublicFitmentDomain,
   PublicFitmentNode,
 } from '@/lib/commerce';
+import { SubmitOnPick } from '@/components/submit-on-pick';
 
 /** One resolved drill level: the dimension it represents, the nodes the
  *  customer can pick from at this tier, and the currently-selected node id (if
@@ -79,6 +80,11 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
       {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
+      {/* What it FITS comes first. For a shop that set up fitment it is the question
+          a buyer arrives with ("does it fit my truck?", "is it my size?"), and at the bottom it sat
+          two screens down, below every brand, type and tag (sparx persona issue 125). */}
+      <FitmentFacet domains={domains} activeDomain={activeDomain} levels={levels} values={values} />
+
       <div>
         <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">Price</h4>
         <div className="flex items-center gap-2">
@@ -114,8 +120,6 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
         </label>
       </div>
 
-      <FitmentFacet domains={domains} activeDomain={activeDomain} levels={levels} values={values} />
-
       <div className="flex gap-2">
         <Button type="submit" color="primary" className="flex-1">
           Apply
@@ -144,7 +148,7 @@ export function FitmentFacet({
   const fitmentRanges = values.fitmentRanges ?? {};
 
   return (
-    <div>
+    <SubmitOnPick>
       <h4 className="text-base-content mt-0 mb-3 text-base font-semibold">
         {domains.length > 1 ? 'Fits your' : `Fits your ${activeDomain.displayName.toLowerCase()}`}
       </h4>
@@ -163,8 +167,9 @@ export function FitmentFacet({
       ) : null}
 
       {/* `level` dimensions: one <select> per reachable tier. Each select is
-          named fl<index> and carries node ids; picking one + Apply reveals the
-          next tier (the page resolves children server-side). */}
+          named fl<index> and carries node ids; picking one submits the form and
+          the page resolves the next tier server-side (Apply still works without
+          JavaScript). */}
       {levels.map((level, i) => (
         <label
           key={level.dimension.key}
@@ -191,7 +196,7 @@ export function FitmentFacet({
           <RangeWidget dim={dim} value={fitmentRanges[dim.key]} />
         </label>
       ))}
-    </div>
+    </SubmitOnPick>
   );
 }
 

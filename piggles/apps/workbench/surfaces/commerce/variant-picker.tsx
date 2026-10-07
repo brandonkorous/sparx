@@ -17,6 +17,7 @@ import { Icon } from '@piggles/ui';
 import { formatCents, stockNoteFor, type VariantStock } from './products-data';
 import { useProductVariantChoices, useVariantSearch, type VariantChoice } from './bundles-data';
 import { pickerRows } from './variant-search';
+import { useActivePropertyId, useSites } from '../../lib/api/shell-data';
 
 /**
  * What tells one version of a product from another, on screen.
@@ -110,6 +111,12 @@ export function VariantPicker({
   placeholder?: string;
 }) {
   const [search, setSearch] = useState('');
+  // The list is the site being worked in. With more than one site, a miss
+  // names it, or it reads as though the product did not exist (issue 928).
+  const { data: sites } = useSites();
+  const activeSiteId = useActivePropertyId();
+  const siteName =
+    (sites?.length ?? 0) > 1 ? sites?.find((site) => site.id === activeSiteId)?.name : undefined;
   const catalog = useVariantSearch(search);
   const preferred = useProductVariantChoices(preferProductId);
   const isPending = catalog.isPending || (Boolean(preferProductId) && preferred.isPending);
@@ -165,7 +172,9 @@ export function VariantPicker({
           <Icon glyph={faBoxMagnifyingGlass} className="size-5" aria-hidden />
           <Text className="text-sm">
             {search.trim()
-              ? `No product matches “${search.trim()}”.`
+              ? siteName
+                ? `Nothing on ${siteName} matches “${search.trim()}”. This list shows the site you are working in; switch site at the top to look in another.`
+                : `No product matches “${search.trim()}”.`
               : 'No products to choose from yet.'}
           </Text>
         </div>

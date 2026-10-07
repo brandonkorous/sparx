@@ -14,7 +14,7 @@ import type { CanonicalRow } from '../canonical';
 import { clean } from '../coerce';
 import type { SourceRow } from '../parse/csv';
 import type { VendorAdapter } from '../types';
-import { contentStatus, pick, row, tags } from './_helpers';
+import { contentStatus, markRead, pick, row, tags } from './_helpers';
 
 /** Field names Webflow puts on every collection export, so a mapper can tell the
  *  structural columns apart from the tenant's own fields. */
@@ -68,6 +68,7 @@ function mapContent(rows: SourceRow[]): CanonicalRow[] {
       const text = clean(value);
       if (text === '' || mapped[header] !== undefined) continue;
       mapped[`custom:${header}`] = text;
+      markRead(header);
     }
 
     return mapped;

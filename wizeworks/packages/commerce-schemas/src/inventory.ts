@@ -94,7 +94,7 @@ export const AdjustInventoryInput = z.object({
   warehouseId: Uuid,
   delta: z.number().int(), // signed
   reason: InventoryAdjustReason,
-  referenceType: z.string().max(63).nullish(), // 'order', 'return', 'transfer'
+  referenceType: z.string().max(63).nullish(), // 'Order', 'Return', 'InventoryTransfer', … (as written; compared case-sensitively)
   referenceId: Uuid.nullish(),
   note: z.string().max(2000).nullish(),
   unitCostCents: z.number().int().nonnegative().nullish(),

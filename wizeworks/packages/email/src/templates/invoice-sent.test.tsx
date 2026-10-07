@@ -58,6 +58,22 @@ describe('the invoice email', () => {
     expect((await render({ poNumber: null })).text).not.toContain('PO number');
   });
 
+  // MEASURED 2026-10-06 on Gillett's INV-000015: "PO number: SLCO-FM-26-1203"
+  // twice in one email. `toContain` above passed with both (sparx persona
+  // issue 103), so this one counts.
+  it('prints the PO number once', async () => {
+    const { text } = await render({ poNumber: 'SLCO-FM-26-1203' });
+    expect(text.split('PO number: SLCO-FM-26-1203').length - 1).toBe(1);
+  });
+
+  // Salt Lake County is on Net 45, and Gillett's own footer says Net 30: the
+  // bill has to say the account's terms itself (sparx persona issue 103).
+  it('names the terms beside the due date', async () => {
+    const { text } = await render({ dueAt: '2026-11-20T12:00:00.000Z', paymentTerms: 'Net 45' });
+    expect(text).toContain('It is due by November 20, 2026 (Net 45).');
+    expect((await render({ paymentTerms: null })).text).not.toContain('(Net');
+  });
+
   it('prints the note the business wrote, and nothing when there is none', async () => {
     expect((await render()).text).toContain('August standing order');
     expect((await render({ note: null })).text).not.toContain('August standing order');

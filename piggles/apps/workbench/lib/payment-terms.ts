@@ -25,6 +25,8 @@
 // the first is "we never agreed anything", the second is "before it leaves".
 // Neither is a number of days and neither is zero days.
 
+import { dayIso } from './today';
+
 /** The common agreements, offered first so the usual case stays one click. */
 export const PAYMENT_TERM_PRESETS: { value: string; label: string }[] = [
   { value: 'prepay', label: 'Pay before dispatch' },
@@ -79,4 +81,20 @@ export function isCustomTerm(terms: string | null | undefined): boolean {
   if (!terms) return false;
   if (PAYMENT_TERM_PRESETS.some((preset) => preset.value === terms)) return false;
   return paymentTermsDays(terms) !== null;
+}
+
+/**
+ * The day a bill on these terms falls due, counted from today on the reader's
+ * own calendar, or null when the terms are not a day count (no agreement, or
+ * pay before it leaves).
+ *
+ * The hand-raised wholesale invoice opened two weeks out whoever it was for.
+ * Picking O'Malley Ranch (Net 15) left it on the 14th day, and Wasatch Front
+ * (Net 30) would have been told to pay sixteen days early, on a bill the
+ * business typed itself (sparx persona issue 097).
+ */
+export function dueDayFor(terms: string | null | undefined, now: Date = new Date()): string | null {
+  const days = paymentTermsDays(terms);
+  if (days === null) return null;
+  return dayIso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + days));
 }

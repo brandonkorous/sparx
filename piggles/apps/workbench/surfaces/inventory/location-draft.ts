@@ -19,6 +19,9 @@ export interface Draft {
   country: string;
   phone: string;
   isActive: boolean;
+  /** Online orders ship from here. Only ever turned ON from the form: a channel
+   *  ships from one place, so moving it is done on the place it moves TO. */
+  shipsOnline: boolean;
 }
 
 export const BLANK: Draft = {
@@ -33,6 +36,7 @@ export const BLANK: Draft = {
   country: '',
   phone: '',
   isActive: true,
+  shipsOnline: false,
 };
 
 /** A code is uppercase letters, digits, dash and underscore — matching what the
@@ -65,6 +69,7 @@ export function draftFrom(location: Location): Draft {
     country: location.country ?? '',
     phone: location.phone ?? '',
     isActive: location.isActive,
+    shipsOnline: location.shipsOnline === true,
   };
 }
 

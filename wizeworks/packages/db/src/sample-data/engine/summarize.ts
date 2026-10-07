@@ -11,6 +11,14 @@ import {
   SAMPLE_SLUG_PREFIX,
 } from '../markers';
 import type { SampleDataCounts } from '../types';
+import {
+  designExamples,
+  practiceBookingWhere,
+  removablePlaceWhere,
+  removableResourceWhere,
+  removableRuleWhere,
+  removableServiceWhere,
+} from './practice-bookings';
 
 const sampleMeta = { path: ['sample'], equals: true };
 const samplePrefix = { startsWith: SAMPLE_HANDLE_PREFIX };
@@ -26,6 +34,9 @@ export async function summarizeSampleDataOnTx(
     select: { id: true },
   });
   const orderIds = sampleOrders.map((o) => o.id);
+  // Bookings, services and people by the rule Clear removes them by.
+  const practice = await practiceBookingWhere(tx, tenantId);
+  const examples = await designExamples(tx, tenantId);
 
   const [
     products,
@@ -39,6 +50,8 @@ export async function summarizeSampleDataOnTx(
     bookings,
     services,
     resources,
+    bookingRules,
+    places,
     deals,
     bundles,
     movements,
@@ -54,10 +67,11 @@ export async function summarizeSampleDataOnTx(
       : Promise.resolve(0),
     tx.productReview.count({ where: { tenantId, product: { handle: samplePrefix } } }),
     tx.productQuestion.count({ where: { tenantId, product: { handle: samplePrefix } } }),
-    tx.booking.count({ where: { tenantId, service: { settings: sampleMeta } } }),
-    // The same marker Clear deletes them by (`settings.sample`).
-    tx.schedulingService.count({ where: { tenantId, settings: sampleMeta } }),
-    tx.schedulingResource.count({ where: { tenantId, settings: sampleMeta } }),
+    tx.booking.count({ where: practice }),
+    tx.schedulingService.count({ where: removableServiceWhere(tenantId, practice) }),
+    tx.schedulingResource.count({ where: removableResourceWhere(tenantId, practice) }),
+    tx.bookingPolicy.count({ where: removableRuleWhere(tenantId, examples, practice) }),
+    tx.businessLocation.count({ where: removablePlaceWhere(tenantId, examples, practice) }),
     tx.deal.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.bundle.count({ where: { tenantId, bundleProduct: { handle: samplePrefix } } }),
     tx.inventoryMovement.count({ where: { tenantId, source: SAMPLE_MOVEMENT_SOURCE } }),
@@ -95,6 +109,8 @@ export async function summarizeSampleDataOnTx(
     bookings,
     services,
     resources,
+    bookingRules,
+    places,
     deals,
     tickets,
     billingDocuments,
@@ -127,6 +143,8 @@ export function countsTotal(c: SampleDataCounts): number {
     c.bookings +
     c.services +
     c.resources +
+    c.bookingRules +
+    c.places +
     c.deals +
     c.tickets +
     c.billingDocuments +

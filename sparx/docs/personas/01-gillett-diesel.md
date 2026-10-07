@@ -1,8 +1,8 @@
 # P01 — Doty Brown · Gillett Diesel Service
 
-**Version:** 1.1
+**Version:** 1.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-02
+**Last Updated:** 2026-10-06
 
 **Status:** in progress
 **Run:** 2026-10-01 —
@@ -29,6 +29,21 @@ Site shopper accounts (Gillett's own site, http://localhost:3004/account/login?t
 | Marcus Oyelaran-Pike, Wasatch Front (accounts payable, view only)                             | `marcus.oyelaran-pike@wasatchutility.test` | `Wasatch-AP-2026!`       |
 | Teodora Vukić-Hale, Wasatch Front (fleet manager, "Can approve orders"; +1 (801) 555-0163)    | `teodora.vukic-hale@wasatchutility.test`   | `Wasatch-Approver-2026!` |
 | Dana Whitcomb-Nguyen, Salt Lake County Public Works (buyer; signed up on the site 2026-10-06) | `dana.whitcomb-nguyen@slcopw.test`         | `SLCo-Buyer-2026!`       |
+
+Gillett team (workbench, http://localhost:3011):
+
+| Who                                                              | Email                                | Password              |
+| ---------------------------------------------------------------- | ------------------------------------ | --------------------- |
+| Mike Van Der Berg, service manager (Editor; joined 2026-10-06)   | `mike.vanderberg@gillettdiesel.test` | `Sparx-Persona-2026!` |
+| Kendra Ruiz, parts counter (Editor; joined 2026-10-06)           | `kendra.ruiz@gillettdiesel.test`     | `Sparx-Persona-2026!` |
+| Alyssa Thompson, accounts receivable (Editor; joined 2026-10-06) | `alyssa.thompson@gillettdiesel.test` | `Sparx-Persona-2026!` |
+
+Each sign-up also made a home workspace of its own ("Mike's workspace" `305ad459-…`,
+"Kendra's workspace" `d0ef9750-…`, "Alyssa's workspace" `222e8f26-…`). Every account
+has one; their own settings are stored there ([122]), and the toolbar switcher lists
+it beside Gillett ([124]). Their verification links were built with the dev secret
+(scratchpad `verify-link.mjs <email> <invitation id>`), not read from an email: the
+console mailer prints to the event-worker's output.
 
 Dev note: every tenant's site shares `localhost:3004`, so its sign-in cookie is
 shared too. Another agent signing in to a different shop on the same browser
@@ -113,6 +128,92 @@ with the PO number on every line. Act 3's leftover engines placed: 5.9L Cummins 
 24-valve 33 (split by year), 7.3L 13, 6.0L 13, 6.4L 7, 2.8L Duramax 1; 206 parts now
 fit an engine. No part in his catalog fits the EcoDiesel, LM2, LZ0 or F-150 3.0L, so
 those stay empty.
+
+**Act 6 (2026-10-06): done-when holds.** Money in, every balance checked by hand to
+the cent. Fleet invoice INV-000015 for Salt Lake County (O-000018 on the site: 2 ×
+Bosch injector at the contract $510.00 + $150.00 deposit each, PO SLCO-FM-26-1203,
+Net 45, due Nov 20) itemized after [095]; part payment $500.00 by check ("Check
+20417, Salt Lake County Auditor"), $820.00 left; INV-000005 (Høgberg, $13.84) paid
+in full by bank transfer; two old bills moved in from his previous books as
+overdue: 4471 for O'Malley, $1,286.40, due Aug 27 ("Late by 40 days", O'Malley
+suspended by the ladder), and 4466 for Høgberg, $412.80, due Sep 16 ("Late by 20
+days", credit hold, owner notice). Hand sums: Wasatch $5,976.80 (credit $19,023.20
+left of $25,000.00), Salt Lake County $4,535.00, O'Malley $1,286.40, Høgberg
+$412.80; Owed to you $11,798.20 before 4466, the statement for Wasatch ends at
+$5,976.80 with every PO number. Fixed on the way: [094]-[102]. Two open
+questions for Brandon: an invoice cannot print the account's own terms (Doty's
+footer says "Net 30" on a Net 45 county bill); and the Try again / 360px items
+from act 5. Migrations 0025 and 0026 applied locally, and another session's
+0024 with them.
+
+**Act 7 (2026-10-06): done-when holds.** Wasatch Front's company page shows People
+here (Marcus, Renée, Teodora), Orders (5, all Renée's), What they owe ($5,976.80 on
+4 invoices; quotes show their step and a dash), Deals (Service plan for all 38 RAM
+3500s, 2027, $86,400, Proposal sent) and Requests, with Fleet, buyers and statement
+one press away. Customers: his Shopify export (30, asset
+`assets/gillett/shopify-customers-export.csv`) moved in; 37 customers after two
+merges (the second Desmond from the phone match, and Brynn's Lehi and Kanab records
+by hand) and Kekoa added. Pipeline "Fleet accounts": First call 10%, Visited their yard 25%, Proposal
+sent 50%, Trial order 75%, Won 100%, Lost 0%. Deals: Wasatch $86,400.00 (Proposal
+sent, Nov 16), O'Malley $7,250.50 (First call, Jul 15 2027), Salt Lake County
+$61,380.00 (Visited their yard, Jan 29 2027), Red Rock $9,840.00 (Trial order, Oct
+30), new prospect Uintah Basin Oilfield Services (Kekoa Aldana-Price, Fleet
+superintendent, 24 trucks) $54,000.00 (First call, Mar 31 2027), and Høgberg's
+dealer program $15,000.00 on Sales, lost ("Lars went with a regional distributor in
+Boise…"). Task: "Send Renée the 2027 service plan pricing sheet", Oct 9 10:00 AM,
+High, on the Wasatch deal. Request #1 for Dana: "Unit 34 turbo whines after the
+Cheetah install", High, assigned to Doty. Fixed on the way: [104]-[116]. Migrations
+0027 and 0028 applied locally.
+
+**Act 8 (2026-10-06): done-when holds.** As Mike, Scheduling > Calendar shows Wade
+Okonkwo-Larsen's "Pre-purchase inspection, used diesel truck", Wed Oct 7, 3:00 to
+4:30 PM Mountain, with Kirk Halvorsen in Bay 1 (light duty), Confirmed, "Call +1
+(801) 555-0177". Wade booked it on the public site. Services: Diesel oil change,
+Diesel truck service, Turbocharger rebuild and balance, Pre-purchase inspection,
+Diesel diagnostic, Chassis dyno run, Injector replacement set of 6; the turbo
+rebuild and the injector set are "Quoted after we look". People and equipment: Kirk
+Halvorsen, Tomás Begay, Bay 1, Bay 2, Chassis dyno, Turbo balancer; the two new
+ones carry Bay 1's hours (Mon-Fri 7:30 AM-5:30 PM, Sat 8 AM-12 PM). Place: "Main
+Office & Shop (Heritage Crest)", 14812 Heritagecrest Way, Bluffdale, UT 84065,
+following the business zone (America/Denver). Team: Mike invited as Editor, joined.
+Fixed on the way: [117]-[123]. Migration 0029 applied locally.
+
+The invitation flow, reproduced with Kendra and fixed ([124]): accepting now opens
+Gillett directly (proved with Alyssa); the sign-in and sign-up cards name Gillett;
+sparx has a business switcher; the setup of an invitee's own empty workspace has
+"Go to Gillett Diesel Service Inc.". Kendra and Alyssa are invited and joined as
+Editors (act 11's team, one act early). After a dev restart Alyssa signed out and
+in and opened in Gillett.
+Kept by Brandon (2026-10-06): an invitee verifies their address after signing up,
+although the invitation reached that mailbox, because a link can be forwarded. The booking page still carries template words
+(act 9).
+
+**Act 9 (2026-10-06, in progress):** The truck finder works on every shop page and a
+year no longer hides parts that fit every year ([125]); product pages say what the part
+fits ([126], "What it fits" on his Each product template). Shipping: region "United
+States", UPS Ground $15.00, free from $250.00, 5 days, under "All products" ([127],
+[128]); "Customers can also collect" on, and checkout offers both ([129]). Card payments
+are not set up, so the cart, the drawer and checkout now say so before anything is typed
+([131]). Built a Locations page (Main Office & Shop, Mon-Fri 7:30 AM-5:30 PM, Sat 8 AM-12
+PM, (801) 571-7780; Warehouse, shipping, cores and returns, (800) 638-4679), linked in the
+menu, the phone menu and the footer, published. Pages are in search now ([130]; Locations
+was findable a moment after its first save). Site checks: every one of his eight pages has
+a search title and summary, set from the page check itself ([133]); the length is measured
+as served ([134]); scores About 90, Book 86, Wholesale 86, Contact 84, Shop 84, Home 81,
+Locations 80, Journal 76. Fixed on the way: [132] (two Insert rows with one key).
+Then: three real articles in the Journal (Fleece Cheetah vs Stock Turbo, Fleet Downtime
+Reduction, and Doty's own "The Unseen Impact: Why Diesel Fuel Quality Matters", with
+Doty Brown added as an author and the expired May 2025 promo code left out), each with
+a fitting picture of his. Book and Wholesale rewritten in his words with his own shop
+and warehouse photos, described. "Ask for an appointment" on Home is now "Book an
+appointment" to /book. The 404 page is in his look. Before promising reminders on Book:
+no booking had ever got one ([135], fixed; all seven services on "Standard"). Utah sales
+tax 7.25% on and collecting; a counter pickup was untaxed ([137], fixed) and the [131] fix
+had shut out trade buyers on account ([136], fixed). Renée's O-000020 (pickup, PO
+WFUC-24-0906): $1,007.60 + $73.05 tax = $1,380.65, waiting for Teodora's sign-off.
+[138] one British spelling. Act 9's done-when still needs the test-card purchase and its
+email (blocked: Stripe test onboarding is Brandon's). Migrations 0030 and 0031 applied
+locally; no new ones since.
 
 **Act 3 status (2026-10-01 evening):** [057] proved on screen end to end:
 all 84 faked core choices converted (one part each, a real deposit, send-first on);
@@ -569,3 +670,7 @@ Filled in at the end, honestly, including what was skipped (RULE #4).
 | 2026-10-03 | 5   | **The approver who was never asked.** Teodora was "Can approve orders" and nothing ever asked her ([087], fixed): a limit can now be signed by the account's own approvers, on the site. Doty set Wasatch's "Over $1,000.00" to Teodora; Renée's O-000014 ($1,208.00) waited for her, she approved it with a note, INV-000014 was issued with the PO. Renée's O-000015 (Holset turbo, $2,700.00) waited, Teodora turned it down with a reason, the turbo's hold was released. Also fixed on the way: held orders hold stock, card holds capture or void with the answer, a bought cart no longer takes changes, and a test suite no longer wipes the search index.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 2026-10-06 | 5   | **Search and the tasks behind it.** After the WSL restart `localhost` answered again; `127.0.0.1` loads but never starts (the dev server refuses its live-reload line from any other origin), so use `localhost`. Removed contacts are a yellow badge now (Brandon). "Wasatch" found the account, its people, invoices, quotes and all five orders ([087], confirmed). "O-0000" counted 10 of Gillett's 15 orders, the engine's half-typed-word limit ([089], fixed for every search). Three sign-off tasks were still open days after their orders were answered, one titled `from  is waiting` ([088], fixed: migration 0023, the daily check closes order tasks and now announces what it closes, a canceled or edited task tells search, closed tasks read Done or Canceled). With the API restarting the box said "Nothing in your records matches" ([090], fixed both consoles, with a separate message for a search too long to send).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 2026-10-06 | 5   | **Fully tested, live.** Brandon: "you have to fully test this". Dana signed up on the site and placed O-000016 and O-000017 (2 Cheetah turbos, $4,758.30, over the county's $2,500 limit): each opened its sign-off task by itself, and canceling each closed it to Canceled in search with no hand steps. A task renamed, canceled, reopened and marked done by hand: search followed each ([088], confirmed live). Product and customer list counts match the database; Piggles search checked as Devi ([089], [090]). New defects, all fixed both consoles: a held order read "$4,758.30 still owed", offered Make an invoice and a cash box, sat under "Still owed", and its cancel box said "1 item" for two ([091]); Remove took a contact away in one click, and after Restore the pointer sat on the account's only approver's Remove ([092]); "Units 31" dropped the 31 ([093]). Another session was editing `api-rest` at the same time and restarted the API every few minutes; Dana's first sign-up and one shop search failed in those gaps and worked on retry (not product defects).                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 2026-10-06 | 6   | **Money in.** INV-000009 from the search box opened the whole Wholesale invoices list, which listed eight quotes as Owed, $22,389.72 nobody owed ([094], fixed: the list is bills, a hit opens its own record, the top accounts report stopped counting a quote and its invoice twice). Every invoice an order on account raised was one line, "Order O-000012", with the $400.00 of core deposits folded into the goods ([095], fixed; INV-000015 for Dana's O-000018 itemized). The pinned Summary covered Record a payment ([096], fixed); $500.00 check recorded, $820.00 left. INV-000005 marked paid ("INV-000005as received", [102]). Moving in his old receivables: Raise an invoice ignored the account's terms and scolded an untouched Amount ([097]); a typed due day listed a day early ([098]); order invoices counted terms from the moment, so INV-000014 read Nov 2 and Nov 3 on two screens ([099], migration 0026 moves all due dates to midday of the day they were printed with); 4471 could never be emailed, Send pointed at a locked Bill to ([100]); the ladder suspended O'Malley and told nobody ([101], owner notice proved on Høgberg's 4466). Totals to the cent on Owed to you, the Wholesale list, each account and Wasatch's statement. The first click after a page load was swallowed again twice ([032], still the real-mouse check). My first draft of [101] installed two task automations in 38 local businesses before I renamed them; removed (76 rows, never run).                                                                |
+| 2026-10-06 | 7   | **Customers.** The Shopify customer file moved in: "Tax Exempt" was dropped without a word ([104], now listed as left behind and noted on the 3 exempt customers); Shopify's stock export read as 1,367 problems ([105]); a second import said "30 of 30 brought over" and doubled a walk-in with no email ([106], matched by phone now); imported customers were not in search until someone pressed Put them back ([107]). Duplicates said everyone was unique while phones were never compared ([108]); merging Brynn's two records needed a hand merge that did not exist ([109]). The fleet pipeline's Won step was 0% likely ([110], migration 0027); the company page counted five quotes as owed, $13,469.60 for $5,976.80 ([111]); orders and deals lived on two pages that never linked, and the company page could not add a deal, a person or a request ([112]); a new deal with no estimate was stored at 0% ([113], migration 0028); the reason a deal was lost was wiped by the save that lost it ([114]); a deal page showed no tasks, not even the follow-up an automation had made for it ([115]); a request could only name the first 100 customers ([116]). Six deals, one task, Request #1. **Done-when holds.** The browser tool drops input sent with or right after a page load (measured, [032]).                                                                                                                                                                                                                                                  |
+| 2026-10-06 | 8   | **Service bookings.** A quoted job could only be priced $0, which the site showed as "Free" ([117]: "We quote the price after looking at the job"). A new person or machine had no hours and nothing said so, so nobody could book it ([118]: "No hours" with Set its hours, and the list's button now names what it adds). The place showed a blank time zone that invited a wrong pick ([119]). The invite dialog named roles without saying what each can do ([120]). The invite page crashed for every invitee ([121], blocker). Mike, once in, could not save his own settings: the analytics question came back on every load ([122]). Mike opened onto Doty's 155 tabs on her computer ([123]). Every invitee landed in an empty business of their own, asked to buy a plan, with no way between businesses ([124], blocker: fresh window on accept and sign-in, the new-session rule, a sparx business switcher, a way back from setup, invitation words in both products). Wade booked the pre-purchase inspection on the public site and it sits on Mike's calendar. Each guard proved red.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 2026-10-06 | 9   | **The website, first half.** The truck finder was empty on every shop and a chosen year hid parts that fit every year ([125]); no product page said what it fits ([126]); a region could not be limited to one country ([127]); with no product group no delivery option could be added ([128]); setting up delivery took pickup away ([129]). Pages were not in search ([130]). Checkout asked for name, phone and address before saying the shop takes no card payments ([131]). Built Locations and put it in all three menus. Two Insert rows shared the key `timeline` ([132]). The page check said what to fix with no way to fix it, and a saved title stayed off the live site for five minutes ([133]). The title check graded 54 characters while the site served 79 ([134]). All eight pages now carry search titles and summaries; scores 76 to 90. Then the Journal (three articles, Doty as author), Book and Wholesale in his words, the appointment button to /book, the 404 checked. No booking had ever got a reminder ([135]); trade buyers on account were shut out by the [131] fix ([136]); a counter pickup was never taxed ([137]); one British spelling ([138]). Utah tax proved on O-000020: $73.05 on $1,007.60. Left: the card purchase (Stripe, Brandon).                                                                                                                                                                                                                                                                                      |

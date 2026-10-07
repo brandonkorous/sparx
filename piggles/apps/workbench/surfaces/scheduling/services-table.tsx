@@ -17,11 +17,12 @@ import { Table } from '../../components/table';
 import {
   bookingTypeLabel,
   formatDuration,
-  formatMoney,
   schedulingErrorMessage,
   serviceState,
   useRestoreService,
   type SchedulingService,
+  servicePriceLabel,
+  servicePriceSuffix,
 } from './setup-data';
 
 interface RowEvent {
@@ -104,9 +105,7 @@ export function ServicesTable({
                   <span className="truncate text-sm @lg:hidden">
                     {bookingTypeLabel(service.bookingType)} ·{' '}
                     {formatDuration(service.durationMinutes)}
-                    {service.priceCents > 0
-                      ? ` · ${formatMoney(service.priceCents, service.currency)}`
-                      : ''}
+                    {servicePriceSuffix(service)}
                   </span>
                 </span>
               </td>
@@ -117,9 +116,7 @@ export function ServicesTable({
                 {formatDuration(service.durationMinutes)}
               </td>
               <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
-                {service.priceCents > 0
-                  ? formatMoney(service.priceCents, service.currency)
-                  : 'Free'}
+                {servicePriceLabel(service)}
               </td>
               <td>
                 <Badge color={state.tone} variant="soft" size="sm">

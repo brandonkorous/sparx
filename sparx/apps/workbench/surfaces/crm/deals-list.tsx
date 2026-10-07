@@ -476,7 +476,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <thead>
                 <tr>
                   <th>Deal</th>
-                  <th>Stage</th>
+                  <th>Step</th>
                   <th className="text-right">Value</th>
                   <th className="hidden @lg:table-cell">For</th>
                 </tr>

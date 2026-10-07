@@ -45,6 +45,9 @@ export interface CartAccountRules {
   minimumOrderCents: number | null;
   shortfallCents: number;
   shortfallMessage: string | null;
+  /** The account's payment terms ("net30"), or null. Billed on day terms, its
+   *  buyers can order while the shop takes no card payments here (issue 136). */
+  paymentTerms?: string | null;
 }
 
 /** The rules as one sentence: "Sold in cases of 12. Minimum 24." */

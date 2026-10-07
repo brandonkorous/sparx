@@ -230,6 +230,9 @@ export interface JobProfit {
   revenueCents: number;
   revenueBasis: RevenueBasis;
   cogsCents: number;
+  /** Things this job sold whose cost was never recorded. Above zero, the cost
+   *  and margin are not known and `marginRate` is null (persona issue 924). */
+  uncostedLines: number;
   feeCents: number;
   allocatedCents: number;
   marginCents: number;
@@ -338,7 +341,8 @@ export function useJobProfit(filters: JobProfitFilters) {
   return useQuery({
     queryKey: [...SPEND_KEY, 'jobs', filters],
     queryFn: () =>
-      api.get<{ jobs: JobProfit[] }>('/v1/finance/jobs', {
+      // `openBookings`: appointments that happened and were never closed (issue 926).
+      api.get<{ jobs: JobProfit[]; openBookings?: number }>('/v1/finance/jobs', {
         from: filters.from,
         to: filters.to,
         sort: filters.sort ?? 'margin_asc',

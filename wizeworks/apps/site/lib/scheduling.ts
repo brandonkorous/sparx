@@ -15,6 +15,8 @@ export interface PublicService {
   bookingType: 'appointment' | 'class' | 'reservation' | 'rental';
   durationMinutes: number;
   priceCents: number;
+  /** Priced after looking at the job; the site says so instead of a price. */
+  priceOnQuote?: boolean;
   currency: string;
   capacity: number;
   color: string | null;

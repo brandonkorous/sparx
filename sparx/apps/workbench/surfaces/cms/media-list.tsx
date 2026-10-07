@@ -39,7 +39,8 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useUploadMedia } from './media';
 import {
   assetStatusState,
-  sizeLabel,
+  tileSizeLine,
+  tileUseLine,
   useMediaAssetsList,
   useRefreshMediaLibrary,
   type MediaAsset,
@@ -67,6 +68,16 @@ const STATUS_FILTERS = [
   { value: 'failed', label: 'Failed' },
 ] as const satisfies readonly { value: StatusFilter; label: string }[];
 
+type UsageFilter = MediaListQuery['usage'];
+
+/** The question somebody clearing a library of sample pictures asks first:
+ *  which of these does nothing use (issue 932). */
+const USAGE_FILTERS = [
+  { value: 'all', label: 'Any use' },
+  { value: 'used', label: 'In use' },
+  { value: 'unused', label: 'No use found' },
+] as const satisfies readonly { value: UsageFilter; label: string }[];
+
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -91,12 +102,20 @@ function kindIcon(kind: MediaKind, className: string) {
   }
 }
 
-function emptyAdvice(search: string, kindLabel: string | null, statusLabel: string | null): string {
+function emptyAdvice(
+  search: string,
+  kindLabel: string | null,
+  statusLabel: string | null,
+  usage: UsageFilter = 'all'
+): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of the filename, or the alt text you gave it.');
   if (kindLabel) parts.push(`You are only seeing ${kindLabel}. Switch to All to widen it.`);
   if (statusLabel)
     parts.push(`Only “${statusLabel}” is showing. Choose Any state to see the rest.`);
+  if (usage === 'unused')
+    parts.push('Everything here is in use somewhere. Choose Any use to see it all.');
+  if (usage === 'used') parts.push('Nothing here is in use yet. Choose Any use to see it all.');
   return parts.join(' ');
 }
 
@@ -105,6 +124,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [kind, setKind] = useState<MediaKind | 'all'>('all');
   const [status, setStatus] = useState<StatusFilter>('all');
+  const [usage, setUsage] = useState<UsageFilter>('all');
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -115,6 +135,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
     q: search.trim(),
     kind,
     status,
+    usage,
     take,
     skip,
   });
@@ -125,7 +146,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const narrowed = search.trim() !== '' || kind !== 'all' || status !== 'all';
+  const narrowed = search.trim() !== '' || kind !== 'all' || status !== 'all' || usage !== 'all';
   const staleAfterFailure = Boolean(error) && rows.length > 0;
 
   const resetWindow = () => {
@@ -248,6 +269,22 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </FilterItem>
               ))}
             </Filter>
+            <Filter
+              color="module"
+              value={usage}
+              onValueChange={(next) => {
+                setUsage((next as UsageFilter | null) ?? 'all');
+                resetWindow();
+              }}
+              showReset={false}
+              aria-label="Filter by use"
+            >
+              {USAGE_FILTERS.map((entry) => (
+                <FilterItem key={entry.value} value={entry.value}>
+                  {entry.label}
+                </FilterItem>
+              ))}
+            </Filter>
             <input
               ref={fileRef}
               type="file"
@@ -327,7 +364,8 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
               description: emptyAdvice(
                 search.trim(),
                 kind === 'all' ? null : (activeKindLabel?.toLowerCase() ?? null),
-                status === 'all' ? null : activeStatusLabel
+                status === 'all' ? null : activeStatusLabel,
+                usage
               ),
             }}
             firstRun={{
@@ -398,8 +436,11 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </span>
                       <span className="flex items-center gap-1 text-sm">
                         {kindIcon(asset.kind, 'size-3.5 shrink-0')}
-                        {sizeLabel(asset)}
+                        <span className="line-clamp-2">{tileUseLine(asset)}</span>
                       </span>
+                      {tileSizeLine(asset) ? (
+                        <span className="text-sm">{tileSizeLine(asset)}</span>
+                      ) : null}
                     </span>
                   </button>
                 </li>

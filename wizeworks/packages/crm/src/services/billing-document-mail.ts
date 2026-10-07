@@ -18,11 +18,12 @@
 
 import { withTenant } from '@wizeworks/db';
 import { resolveSiteOrigin, siteUrl } from '@wizeworks/db/site-origin';
-import { poNumberOf } from '@wizeworks/crm-schemas';
+import { paymentTermsOf, paymentTermsWords, poNumberOf } from '@wizeworks/crm-schemas';
 import { billingDocumentNoun, isPriceOfferWorkflow } from '@wizeworks/crm-schemas/builtins';
 
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { documentRecipient } from './account-contact-billing';
 import { dueDateFromTerms } from './billing-document-stage-service';
 
 /** The money figures a bill is built from, in major units. */
@@ -160,7 +161,13 @@ export async function billingDocumentEmail(
     const noun = billingDocumentNoun(doc.workflow.slug);
 
     const billTo = (doc.billTo ?? {}) as { name?: string; email?: string };
-    const to = billTo.email ?? doc.customer?.email ?? null;
+    // Frozen Bill to, else the customer, else the account's own people: the
+    // one rule the page shows too (`documentRecipient`, sparx persona issue 100).
+    const to = await documentRecipient(tx, {
+      billTo: doc.billTo,
+      companyId: doc.companyId,
+      customerEmail: doc.customer?.email ?? null,
+    });
     if (!to) {
       throw new CrmValidationError(
         'There is no email address to send this to. Add one under Bill to, then send it again.'
@@ -227,6 +234,8 @@ export async function billingDocumentEmail(
         // The buyer's own purchase order number, so their accounts department
         // can match this to the order they raised (issue 077).
         poNumber: poNumberOf(doc.metadata),
+        // The terms the bill was issued on, beside its due date (issue 103).
+        paymentTerms: priceOffer ? null : paymentTermsWords(paymentTermsOf(doc.metadata)),
         viewUrl,
         // A rebuilt part's core deposit as its own row under the part (sparx 051).
         lines: doc.lines.flatMap((line) => {

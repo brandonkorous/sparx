@@ -29,6 +29,12 @@ export interface SparxSession {
     image?: string | null;
     /** The ACTIVE organization's tenant id (docs/114 §A.3). */
     tenantId: string;
+    /** The tenant the person's own `users` row belongs to. Differs from
+     *  `tenantId` while they act in a business they joined. Anything that
+     *  writes their OWN row (consent, preferences) runs under this one: RLS
+     *  lets a member read that row from the joined business, never write it,
+     *  and the write fails there (sparx persona issue 122). */
+    homeTenantId: string;
     /** The user's role in the active organization. */
     role: string;
   };
@@ -81,7 +87,7 @@ export async function getSession(): Promise<SparxSession | null> {
   }
 
   return {
-    user: { ...user, tenantId, role },
+    user: { ...user, tenantId, role, homeTenantId: user.tenantId },
     session: {
       id: result.session.id,
       userId: result.session.userId,

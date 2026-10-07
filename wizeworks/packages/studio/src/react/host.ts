@@ -12,7 +12,11 @@
 
 import type { HostNode, Node, Theme } from '@wizeworks/silicaui-html';
 import type { PaletteGroup } from '@wizeworks/silicaui-builder/react';
-import type { EmailColorDefaults, EmailPaletteItem } from '@wizeworks/silicaui-builder/email';
+import type {
+  EmailColorDefaults,
+  EmailFrame,
+  EmailPaletteItem,
+} from '@wizeworks/silicaui-builder/email';
 import type { ReactNode } from 'react';
 import type { DocumentKind, DocumentRef } from '../documents/types';
 import type { AddressableNode } from '../tree/walk';
@@ -113,6 +117,17 @@ export interface StudioHost {
    * brand instead of on silica's neutral grey.
    */
   emailColors?: EmailColorDefaults;
+
+  /**
+   * The header and footer every send wraps around the email, drawn on the canvas
+   * around the body so the author designs inside the email the inbox shows.
+   *
+   * Without it the canvas drew the body alone, and the business's name bar and
+   * legal footer appeared only in Preview (persona issue 129). They are drawn
+   * inert: they cannot be selected, moved or dropped into, because they are not
+   * part of this email. `label` is what the canvas says when they are hovered.
+   */
+  emailFrame?: EmailFrame;
 
   /**
    * Draw a pinned functional core — a cart, a checkout, the brand mark — on the

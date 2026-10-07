@@ -78,6 +78,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
+import { CustomerMergeRow } from './customer-merge';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useAccounts } from './companies-data';
@@ -851,6 +852,8 @@ function CustomerEditor({
         }}
       />
 
+      {!isNew && customer ? <CustomerMergeRow ctx={ctx} customer={customer} /> : null}
+
       {!isNew && customer ? (
         <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
           <Text className="text-sm">
@@ -898,7 +901,13 @@ function CustomerEditor({
                 onClick: () => {
                   ctx.open(
                     'crm.deal.detail',
-                    { id: 'new', customerId: customer.id },
+                    // Their company comes with them, as it does when a person
+                    // is picked on the deal itself (sparx persona issue 112).
+                    {
+                      id: 'new',
+                      customerId: customer.id,
+                      ...(customer.companyId ? { companyId: customer.companyId } : {}),
+                    },
                     { target: 'tab' }
                   );
                 },
@@ -1282,7 +1291,10 @@ function IdentityRail({
         {contact ? <MetadataItem label="Best reached by">{contact}</MetadataItem> : null}
         {rep ? <MetadataItem label="Looked after by">{rep}</MetadataItem> : null}
         {account ? <MetadataItem label="Wholesale customer">{account}</MetadataItem> : null}
-        <MetadataItem label="Customer since">{joinedMonth(customer.createdAt)}</MetadataItem>
+        {/* When the record was made, which is not when they became a customer:
+            a lead read "Customer since August 2026" under its own Lead badge
+            (act 325). */}
+        <MetadataItem label="Known since">{joinedMonth(customer.createdAt)}</MetadataItem>
       </MetadataList>
 
       {customer.tags.length > 0 ? (

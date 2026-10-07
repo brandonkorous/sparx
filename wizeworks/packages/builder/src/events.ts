@@ -8,10 +8,19 @@
 // wizeworks/packages/sitebuilder/src/events.ts.
 //
 // `builder.page.published` / `builder.layout.published` / `builder.layout.activated`
-// are the meaningful business events — the storefront render path consumes them (a
-// published page, or activating a different published layout, changes what the
-// live store serves). Draft saves are not events (too frequent, no external
+// / `builder.theme.published` are the meaningful business events: each changes what
+// the live site serves, so `cache-revalidation-worker` purges the site's `builder:`
+// cache on every one. Draft saves are not events (too frequent, no external
 // consumer).
+//
+// They reach the broker through `installBuilderPubSubBridge` (api-rest boots it),
+// so each is a member of the platform `EventType` union too; the assertion below
+// stops a new topic being added here and not there. The purge worker subscribed
+// to none of the four until 2026-10-06 (persona issue 921): a header, footer,
+// single page or look published from its own pane reached visitors only when
+// the five-minute cache ran out.
+
+import type { EventType } from '@wizeworks/events';
 
 export interface BuilderEvent {
   tenantId: string;
@@ -25,7 +34,13 @@ export type BuilderTopic =
   | 'builder.page.published'
   | 'builder.layout.published'
   | 'builder.layout.activated'
+  | 'builder.theme.published'
+  | 'builder.page.settings.changed'
   | 'builder.email.published';
+
+// Fails to compile when a topic above is missing from `EventType`.
+type Assert<T extends true> = T;
+export type BuilderTopicsAreEvents = Assert<BuilderTopic extends EventType ? true : false>;
 
 export interface Publisher {
   publish(event: BuilderEvent): Promise<void>;

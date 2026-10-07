@@ -69,12 +69,16 @@ export interface Location {
   /**
    * How much stock is here, and how many shelves this place has.
    *
-   * NULL means nobody counted, never zero. The list endpoint counts both; a
-   * single location read on its own does not, and a 0 there would claim the
-   * place is empty when the truth is that nothing asked.
+   * NULL means nobody counted, never zero, and a 0 would claim the place is
+   * empty when the truth is that nothing asked. The list and a single read
+   * both count (the single read since issue 929, so the pane can say it).
    */
   onHand: number | null;
   binCount: number | null;
+  /** Online orders ship from here: couriers price postage from this address
+   *  and labels are printed with it. Exactly one location in use says true;
+   *  the server works it out by the same rule postage uses (issue 929). */
+  shipsOnline: boolean | null;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
@@ -170,6 +174,9 @@ export interface CreateLocationInput {
   type: string;
   address: LocationAddressInput;
   isActive: boolean;
+  /** `['storefront']` makes this the place online orders ship from, and the
+   *  server takes it off whichever location had it. */
+  defaultForChannel?: string[];
 }
 
 export function useCreateLocation() {
@@ -191,6 +198,7 @@ export interface UpdateLocationInput {
   type?: string;
   address?: LocationAddressInput;
   isActive?: boolean;
+  defaultForChannel?: string[];
 }
 
 export function useUpdateLocation(id: string) {

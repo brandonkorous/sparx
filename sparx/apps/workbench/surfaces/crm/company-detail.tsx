@@ -36,7 +36,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Trash2 } from 'lucide-react';
+import { Plus, Trash2, Truck, UserPlus } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -51,9 +51,16 @@ import { ModuleScope } from '../../components/module-scope';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
-  invoiceState,
+  documentRowState,
+  owedOn,
   type BillingDocument,
 } from '../invoicing/types';
+import {
+  formatDate as formatOrderDate,
+  formatMoney as formatOrderMoney,
+  shippingState,
+  useOrders,
+} from '../commerce/data';
 import { formatMoney as formatDealMoney, useDeals } from './deals-data';
 import { stageTypeMeta } from './pipelines-data';
 import { priorityLabel, priorityTone, useTickets } from './tickets-data';
@@ -75,6 +82,7 @@ import {
   type AccountInput,
   type Company,
   type CompanyStatus,
+  newRequestParams,
 } from './companies-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
@@ -532,10 +540,7 @@ function CompanyEditor({
               <Heading level={1} className="text-2xl font-semibold">
                 Add a company
               </Heading>
-              <Text>
-                Set up a business that buys from you at agreed prices. You can add its buyers as
-                customers afterwards.
-              </Text>
+              <Text>{companyIntro(tradeEnabled)}</Text>
             </div>
           ) : null}
 
@@ -632,6 +637,29 @@ function CompanyEditor({
             <FormSection
               title="Trade terms"
               description="What this business is allowed to order on account, and what it pays."
+              action={
+                account ? (
+                  // Their fleet, who may order, and their statement live on the
+                  // wholesale page; the two never linked (issue 112).
+                  <ModuleScope module="b2b">
+                    <Button
+                      size="sm"
+                      variant="soft"
+                      color="module"
+                      onClick={(event) => {
+                        ctx.open(
+                          'b2b.account.detail',
+                          { id: account.id },
+                          { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+                        );
+                      }}
+                    >
+                      <Truck className="size-4" aria-hidden />
+                      Fleet, buyers and statement
+                    </Button>
+                  </ModuleScope>
+                ) : null
+              }
             >
               <Field>
                 <FieldLabel>Status</FieldLabel>
@@ -910,6 +938,16 @@ function CompanyEditor({
  * Read-only on purpose, like every related list in the CRM: a row opens the real
  * record. This is a lens onto those things, never a second place to edit them.
  */
+/** Who at the company placed an order: the person, not the company again. */
+function placedBy(order: {
+  customer: { firstName: string | null; lastName: string | null; email: string | null } | null;
+}): string {
+  const person = [order.customer?.firstName, order.customer?.lastName].filter(Boolean).join(' ');
+  if (person) return person;
+  if (order.customer?.email) return order.customer.email;
+  return 'Not recorded';
+}
+
 function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceContext }) {
   const open = (surface: string, id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     const target: OpenTarget = event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab';
@@ -928,24 +966,104 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
         })
         .then((result) => ({ items: result.items.map(normalizeDocument) })),
   });
+  // Everything bought by anyone who works here. Orders are readable whenever
+  // the CRM is on, so a company page can always ask (issue 112).
+  const orders = useOrders({
+    companyId,
+    sortBy: 'placedAt',
+    order: 'desc',
+    take: 20,
+    skip: 0,
+  });
   const deals = useDeals({ companyId, take: 50 });
   const tickets = useTickets({ companyId, state: 'all', take: 50 });
+  // The same read People here makes; a request from a one-person company is
+  // that person's (sparx persona issue 112).
+  const people = useCustomers({ companyId });
 
+  const orderRows = orders.data?.items ?? [];
+  const orderTotal = orders.data?.total ?? orderRows.length;
   const invoiceRows = invoices.data?.items ?? [];
   const dealRows = deals.data?.items ?? [];
   const ticketRows = tickets.data?.items ?? [];
 
   // What is still owed across everything unpaid. The number an owner is looking
   // for is rarely one invoice — it is "how exposed am I to this company".
-  const owed = invoiceRows.reduce((sum, doc) => sum + doc.balance, 0);
+  const owed = invoiceRows.reduce((sum, doc) => sum + owedOn(doc), 0);
   const owedCurrency = invoiceRows[0]?.currency ?? 'USD';
-  const unpaidCount = invoiceRows.filter((doc) => doc.balance > 0).length;
+  const unpaidCount = invoiceRows.filter((doc) => owedOn(doc) > 0).length;
 
   return (
     <>
       <FormSection
+        title="Orders"
+        description="Everything bought by anyone who works here, newest first."
+      >
+        <ModuleScope module="commerce">
+          {orders.isPending ? (
+            <Text className="text-sm" role="status">
+              Loading&hellip;
+            </Text>
+          ) : orders.isError ? (
+            <Text className="text-sm" role="alert">
+              Could not load their orders. Try again in a moment.
+            </Text>
+          ) : orderRows.length === 0 ? (
+            <Text className="text-sm">Nobody here has placed an order yet.</Text>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Table size="sm" hover>
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th className="hidden @lg:table-cell">Placed</th>
+                    <th className="hidden @2xl:table-cell">By</th>
+                    <th>Status</th>
+                    <th className="text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderRows.map((row) => {
+                    const state = shippingState(row);
+                    return (
+                      <tr
+                        key={row.id}
+                        className="cursor-pointer"
+                        onClick={(event) => {
+                          open('commerce.order.detail', row.id, event);
+                        }}
+                      >
+                        <td className="font-mono text-sm">{row.orderNumber}</td>
+                        <td className="hidden text-sm @lg:table-cell">
+                          {formatOrderDate(row.placedAt)}
+                        </td>
+                        <td className="hidden text-sm @2xl:table-cell">{placedBy(row)}</td>
+                        <td>
+                          <Badge color={state.tone} variant="soft" size="sm">
+                            {state.label}
+                          </Badge>
+                        </td>
+                        <td className="text-right font-mono text-sm tabular-nums">
+                          {formatOrderMoney(row.total, row.currency)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+              {orderTotal > orderRows.length ? (
+                <Text className="text-sm">
+                  The latest {orderRows.length} of {orderTotal} orders.
+                </Text>
+              ) : null}
+            </div>
+          )}
+        </ModuleScope>
+      </FormSection>
+
+      <FormSection
         title="What they owe"
-        description="Everything billed to this company or to anyone who works here, newest first, because a contact's unpaid invoice is still this company's debt."
+        description="Every invoice and quote made out to this company or to anyone who works here, newest first, because a contact's unpaid invoice is still this company's debt. Nothing is owed on a quote until it becomes an invoice."
       >
         <ModuleScope module="invoicing">
           {invoices.isPending ? (
@@ -982,7 +1100,8 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                 </thead>
                 <tbody>
                   {invoiceRows.map((doc) => {
-                    const state = invoiceState(doc.status);
+                    // A quote is a price offered, never owed (issue 111).
+                    const state = documentRowState(doc);
                     return (
                       <tr
                         key={doc.id}
@@ -1001,7 +1120,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                           {formatInvoiceMoney(doc.total, doc.currency)}
                         </td>
                         <td className="text-right font-mono text-sm tabular-nums">
-                          {formatInvoiceMoney(doc.balance, doc.currency)}
+                          {doc.priceOffer ? '—' : formatInvoiceMoney(doc.balance, doc.currency)}
                         </td>
                       </tr>
                     );
@@ -1013,7 +1132,27 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
         </ModuleScope>
       </FormSection>
 
-      <FormSection title="Deals" description="Sales being worked with this company.">
+      <FormSection
+        title="Deals"
+        description="Sales being worked with this company."
+        action={
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={(event) => {
+              ctx.open(
+                'crm.deal.detail',
+                { id: 'new', companyId },
+                { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+              );
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            Add a deal
+          </Button>
+        }
+      >
         {deals.isPending ? (
           <Text className="text-sm" role="status">
             Loading&hellip;
@@ -1025,7 +1164,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
             <thead>
               <tr>
                 <th>Deal</th>
-                <th>Stage</th>
+                <th>Step</th>
                 <th className="text-right">Value</th>
               </tr>
             </thead>
@@ -1060,6 +1199,21 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
       <FormSection
         title="Requests"
         description="Support this company has asked for, open and resolved."
+        action={
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={(event) => {
+              ctx.open('crm.ticket.detail', newRequestParams(people.data?.items ?? []), {
+                target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab',
+              });
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            Add a request
+          </Button>
+        }
       >
         {tickets.isPending ? (
           <Text className="text-sm" role="status">
@@ -1074,7 +1228,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                 <th className="w-16 text-right">#</th>
                 <th>Request</th>
                 <th>Urgency</th>
-                <th className="hidden @lg:table-cell">Stage</th>
+                <th className="hidden @lg:table-cell">Step</th>
               </tr>
             </thead>
             <tbody>
@@ -1104,6 +1258,14 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
   );
 }
 
+/** The words above a new company. A company is not always a buyer: it may be a
+ *  prospect nobody has sold to yet (sparx persona issue 112). */
+function companyIntro(tradeEnabled: boolean): string {
+  return tradeEnabled
+    ? 'Add a business you deal with: a customer, a prospect or a partner. Once it is saved, add its people and its deals here. If they buy from you on account, set their terms below.'
+    : 'Add a business you deal with: a customer, a prospect or a partner. Once it is saved, add its people and its deals here.';
+}
+
 function CompanyPeople({ companyId, ctx }: { companyId: string; ctx: SurfaceContext }) {
   const { data, isPending } = useCustomers({ companyId });
   const people = data?.items ?? [];
@@ -1117,6 +1279,25 @@ function CompanyPeople({ companyId, ctx }: { companyId: string; ctx: SurfaceCont
     <FormSection
       title="People here"
       description="Everyone whose employer is this company. Open one to see their history."
+      action={
+        // A new person already filed under this company (sparx persona issue 112):
+        // the empty state used to send the owner off to find the Customers screen.
+        <Button
+          size="sm"
+          variant="outline"
+          color="module"
+          onClick={(event) => {
+            ctx.open(
+              'crm.customer.detail',
+              { id: 'new', companyId },
+              { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+            );
+          }}
+        >
+          <UserPlus className="size-4" aria-hidden />
+          Add someone
+        </Button>
+      }
     >
       {isPending ? (
         <Text className="text-sm" role="status">
@@ -1124,8 +1305,8 @@ function CompanyPeople({ companyId, ctx }: { companyId: string; ctx: SurfaceCont
         </Text>
       ) : people.length === 0 ? (
         <Text className="text-sm">
-          Nobody is filed under this company yet. Open a contact and set their company, or add this
-          company&rsquo;s email domains above and new arrivals will be offered it automatically.
+          Nobody is filed under this company yet. Add someone here, or add this company&rsquo;s
+          email domains above and new arrivals will be offered it automatically.
         </Text>
       ) : (
         <ul className="flex flex-col gap-1">

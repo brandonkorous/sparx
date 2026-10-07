@@ -341,3 +341,48 @@ export function signatureTone(
 export function workspaceErrorMessage(error: unknown, fallback: string): string {
   return apiErrorMessage(error, fallback);
 }
+
+/**
+ * What the duplicates check compared, for the screen that found nothing.
+ *
+ * It said "Every customer looks unique. Nobody shares an email address, or a
+ * name and company." whatever the business had switched on. Gillett had two
+ * Desmond Achterbergs on one phone number and phone matching off (the
+ * default), and the screen told him everyone was unique (sparx persona issue
+ * 108). It says what was checked, and what was not.
+ */
+export function duplicatesCheckedWords(rules: readonly DuplicateMatchRule[]): {
+  checked: string;
+  notChecked: string | null;
+} {
+  const parts: Record<DuplicateMatchRule, string> = {
+    email: 'an email address',
+    phone: 'a phone number',
+    name_company: 'a surname and employer',
+  };
+  const on = MATCH_RULES.filter((rule) => rules.includes(rule.value)).map(
+    (rule) => parts[rule.value]
+  );
+  const checked =
+    on.length === 0
+      ? 'Nothing is being compared.'
+      : `Nobody shares ${on.length === 1 ? on[0] : `${on.slice(0, -1).join(', ')} or ${on[on.length - 1]}`}.`;
+  // EVERY rule that is off, not just phone: the first version only ever named
+  // phone, so turning email off left the screen claiming the full check.
+  const nouns: Record<DuplicateMatchRule, string> = {
+    email: 'email addresses',
+    phone: 'phone numbers',
+    name_company: 'surnames and employers',
+  };
+  const off = MATCH_RULES.filter((rule) => !rules.includes(rule.value));
+  if (off.length === 0) return { checked, notChecked: null };
+  const list = (items: string[]): string =>
+    items.length === 1
+      ? (items[0] ?? '')
+      : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1] ?? ''}`;
+  const what = list(off.map((rule) => nouns[rule.value]));
+  return {
+    checked,
+    notChecked: `${what.charAt(0).toUpperCase()}${what.slice(1)} are not compared, so two records that share one are not shown. Turn on ${list(off.map((rule) => `“${rule.label}”`))} under How the CRM behaves to include them.`,
+  };
+}

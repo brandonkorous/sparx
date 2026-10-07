@@ -75,6 +75,7 @@ import {
 } from './product-variant-slots';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
+import { PreorderOfferNote } from '../inventory/preorder-offer-note';
 import {
   formatCents,
   productErrorMessage,
@@ -1316,6 +1317,9 @@ function VariantRow({
               you send it when it arrives.
             </FieldDescription>
           </Field>
+          {draft.inventoryPolicy === 'preorder' ? (
+            <PreorderOfferNote variantId={variant.id} productId={variant.productId} />
+          ) : null}
 
           <Field>
             <FieldLabel>What kind of thing this version is</FieldLabel>

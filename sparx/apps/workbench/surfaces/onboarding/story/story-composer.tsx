@@ -10,6 +10,7 @@ import {
   type StoryState,
 } from '@wizeworks/story-schemas';
 import {
+  fulfillment,
   handleSlug,
   pickBlueprint,
   resolveModules,
@@ -185,6 +186,7 @@ export function StoryComposer({
         // to take the structure alone lives in the wizard and in Designs.
         sampleData: true,
         selling,
+        offersCollection: fulfillment(story).has('pickup'),
         story: toPersistPayload(story),
       })
       .then((res) => {

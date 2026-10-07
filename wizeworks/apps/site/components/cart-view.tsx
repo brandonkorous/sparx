@@ -11,6 +11,7 @@ import { Alert, Button } from '@wizeworks/silicaui-react';
 import { cadenceLabel, type RepeatCadence } from '@wizeworks/commerce-schemas';
 
 import { checkoutBlock, lineRule, ruleSentence } from '@/lib/account-buying-rules';
+import { ordersClosed } from '@/lib/orders-closed';
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
@@ -53,7 +54,9 @@ export function CartView({
   // A trade account's rules on this basket (sparx persona issue 086): who may
   // order, each line's case pack, minimum and maximum, and the account minimum.
   // Checkout refuses the same baskets on the server; this says so first.
-  const blocked = checkoutBlock(accountRules);
+  // Or a shop that cannot be paid on its website yet (sparx persona issue 131).
+  const closed = ordersClosed(paymentMode, accountRules?.paymentTerms);
+  const blocked = checkoutBlock(accountRules) ?? closed;
 
   // Why a quantity change was refused, against the line it was refused on. A
   // shop can run out for the day (issue 026), and a stepper that silently snaps
@@ -309,7 +312,11 @@ export function CartView({
           paymentMode={paymentMode}
         />
         {blocked ? (
-          <Alert color={accountRules?.canOrder === false ? 'info' : 'warning'}>{blocked}</Alert>
+          <Alert
+            color={accountRules?.canOrder === false || blocked === closed ? 'info' : 'warning'}
+          >
+            {blocked}
+          </Alert>
         ) : null}
         {blocked ? (
           <Button color="primary" size="lg" className="w-full" disabled>

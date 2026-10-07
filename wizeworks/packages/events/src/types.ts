@@ -76,6 +76,28 @@ export type EventType =
   // So the publisher lands FIRST, and ISR becomes a switch rather than a rewrite.
   | 'builder.published'
   | 'builder.rolled_back'
+  // One document went live from its own pane rather than the whole site: the
+  // header and footer, a single page, a different layout made the live one, or a
+  // look the site already wears. `@wizeworks/builder` publishes these itself
+  // after the write commits (`BuilderTopic` in its events.ts, which must stay a
+  // subset of this union), and api-rest bridges them onto the bus. Each changes
+  // what visitors are served, so the purge worker subscribes to all four. It
+  // subscribed to none until 2026-10-06: they were taken for plausible names
+  // nobody emitted, and a header published from its pane reached visitors only
+  // when the five-minute cache ran out (persona issue 921).
+  | 'builder.page.published'
+  | 'builder.layout.published'
+  | 'builder.layout.activated'
+  | 'builder.theme.published'
+  // A page's own settings changed WITHOUT a publish: its search title and summary,
+  // sharing picture, canonical address, whether search engines may list it, its
+  // header and footer, its name or address. These columns are not staged like the
+  // page body: they are live the moment they are saved, and the storefront caches
+  // them for five minutes. A search title changed from the SEO page check reached
+  // the live site only when that cache ran out (sparx persona issue 133).
+  | 'builder.page.settings.changed'
+  // An email template went live. Nothing a visitor reads, so nothing purges on it.
+  | 'builder.email.published'
   // A site's own settings changed WITHOUT a publish: its name, social links,
   // contact details, brand, cookie banner, shop display settings, which site is
   // the primary, how it takes payment, or the legal links in its footer. Each of

@@ -19,6 +19,7 @@ const h = vi.hoisted(() => {
         del: ReturnType<typeof vi.fn>;
       };
       checkout: { sessions: { create: ReturnType<typeof vi.fn> } };
+      coupons: { retrieve: ReturnType<typeof vi.fn> };
     },
   };
   return {
@@ -101,6 +102,7 @@ function freshStripeStub() {
           .mockResolvedValue({ id: 'cs_1', url: 'https://checkout.stripe.test/pay/cs_1' }),
       },
     },
+    coupons: { retrieve: vi.fn() },
   };
 }
 
@@ -366,6 +368,95 @@ describe('createCheckoutSession', () => {
 
     expect(r).toEqual({ url: null, reason: 'no_paid_modules' });
     expect(h.stub.value!.checkout.sessions.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('createCheckoutSession with a plan offer', () => {
+  const OFFER_PLAN = {
+    ...FLAT_PLAN,
+    id: 'offer_test',
+    offer: { coupon: 'INTRO', amountOffCents: 2000, limit: 100 },
+  };
+  const coupon = (over: Record<string, unknown>) => ({
+    id: 'INTRO',
+    valid: true,
+    max_redemptions: 100,
+    times_redeemed: 40,
+    amount_off: 2000,
+    ...over,
+  });
+  interface SessionArg {
+    discounts?: { coupon: string }[];
+    allow_promotion_codes?: boolean;
+  }
+  const sessionArgs = () =>
+    h.stub.value!.checkout.sessions.create.mock.calls.map((c) => c[0] as SessionArg);
+
+  beforeEach(() => {
+    registerBillingPlan(OFFER_PLAN);
+    process.env.TEST_FLAT_BASE_PRICE = 'price_flat_base';
+    h.tenantFindUnique.mockResolvedValue({
+      id: 't1',
+      email: 'a@b.co',
+      name: 'Acme',
+      stripeCustomerId: 'cus_abc',
+      stripeSubscriptionId: null,
+      billingInterval: 'monthly',
+      billingPlan: 'offer_test',
+      trialEndsAt: null,
+      settings: {},
+    });
+  });
+
+  const open = () =>
+    createCheckoutSession('t1', { successUrl: 'https://s/ok', cancelUrl: 'https://s/no' });
+
+  it('applies the offer on its own while places are left, with no code box', async () => {
+    h.stub.value!.coupons.retrieve.mockResolvedValue(coupon({}));
+
+    await open();
+
+    expect(h.stub.value!.coupons.retrieve).toHaveBeenCalledWith('INTRO');
+    expect(sessionArgs()).toEqual([expect.objectContaining({ discounts: [{ coupon: 'INTRO' }] })]);
+    expect(sessionArgs()[0]!.allow_promotion_codes).toBeUndefined();
+  });
+
+  it('falls back to the code box once every place is taken', async () => {
+    h.stub.value!.coupons.retrieve.mockResolvedValue(coupon({ valid: false, times_redeemed: 100 }));
+
+    await open();
+
+    expect(sessionArgs()).toHaveLength(1);
+    expect(sessionArgs()[0]!.discounts).toBeUndefined();
+    expect(sessionArgs()[0]!.allow_promotion_codes).toBe(true);
+  });
+
+  it('still opens a checkout when the last place goes between the read and the create', async () => {
+    h.stub.value!.coupons.retrieve.mockResolvedValue(coupon({ times_redeemed: 99 }));
+    h.stub
+      .value!.checkout.sessions.create.mockRejectedValueOnce(
+        Object.assign(new Error('Coupon is not valid'), {
+          type: 'StripeInvalidRequestError',
+          param: 'discounts[0][coupon]',
+        })
+      )
+      .mockResolvedValueOnce({ id: 'cs_2', url: 'https://checkout.stripe.test/pay/cs_2' });
+
+    const r = await open();
+
+    expect(r).toEqual({ url: 'https://checkout.stripe.test/pay/cs_2' });
+    expect(sessionArgs()[1]!.discounts).toBeUndefined();
+    expect(sessionArgs()[1]!.allow_promotion_codes).toBe(true);
+  });
+
+  it('does not swallow an unrelated Stripe failure', async () => {
+    h.stub.value!.coupons.retrieve.mockResolvedValue(coupon({}));
+    h.stub.value!.checkout.sessions.create.mockRejectedValueOnce(
+      Object.assign(new Error('card_declined'), { type: 'StripeCardError' })
+    );
+
+    await expect(open()).rejects.toThrow('card_declined');
+    expect(sessionArgs()).toHaveLength(1);
   });
 });
 

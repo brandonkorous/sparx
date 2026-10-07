@@ -15,7 +15,6 @@
 // just their email and land straight in onboarding.
 
 import { useEffect, useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import { KeyRound, LogIn, Mail, ShieldCheck, UserPlus } from 'lucide-react';
 import { authClient, emailOtp, signIn, twoFactor } from '@wizeworks/auth/client';
 import {
@@ -33,6 +32,7 @@ import { AuthDivider, AuthShell, GoogleButton } from '../auth-shell';
 import { GoogleOneTap } from './google-one-tap';
 import { signUpAction } from './sign-up-action';
 import { identifyFirstTouch } from '../../lib/analytics';
+import type { Joining } from '../../lib/invite-joining';
 
 /** Better Auth's default minimum — checked here so the hint and the server agree. */
 const MIN_PASSWORD = 8;
@@ -115,15 +115,24 @@ export interface AuthWrapperProps {
    *  /oauth/consent instead of the shell. Every method honors it — password, code,
    *  link, passkey, Google, and One Tap. */
   callbackURL?: string;
+  /** Set when this sign-in leads to accepting an invitation: the business being
+   *  joined and the address it was sent to. The card then says so, instead of
+   *  greeting a newcomer with "Welcome back" or "Start your story" (persona
+   *  issue 124). See lib/invite-joining.ts. */
+  joining?: Joining | null;
 }
 
-export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: AuthWrapperProps) {
-  const router = useRouter();
+export function AuthWrapper({
+  initialMode,
+  googleClientId,
+  callbackURL = '/',
+  joining = null,
+}: AuthWrapperProps) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [view, setView] = useState<View>('form');
 
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(joining?.email ?? '');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [agreeLegal, setAgreeLegal] = useState(false);
@@ -150,8 +159,15 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
   function finish() {
     // callbackURL defaults to '/', where a fresh account hits the setup gate; the
     // MCP consent flow overrides it to return to /oauth/consent.
-    router.replace(callbackURL);
-    router.refresh();
+    //
+    // A REAL page load, not `router.replace`. The window may hold a pass minted
+    // for whoever was signed in before (the root layout asks for one on every
+    // page): "Switch account" on an invitation signs Doty out and Kendra in
+    // inside one window, and a soft navigation would have carried Doty's pass,
+    // owner and all, into Kendra's workbench (persona issue 124). A new person
+    // gets a new window. `callbackURL` was checked by safeInternalPath on the
+    // server before it reached this component.
+    window.location.assign(callbackURL);
   }
 
   function switchMode(next: Mode) {
@@ -195,7 +211,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
     return () => {
       cancelled = true;
     };
-    // finish/router are stable; re-arm only when the mode or view changes.
+    // finish is stable; re-arm only when the mode or view changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignUp, view]);
 
@@ -669,12 +685,18 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-semibold">
-            {isSignUp ? 'Start your story' : 'Welcome back'}
+            {joining
+              ? `${isSignUp ? 'Create your account' : 'Sign in'} to join ${joining.orgName}`
+              : isSignUp
+                ? 'Start your story'
+                : 'Welcome back'}
           </h2>
           <Text className="text-sm">
-            {isSignUp
-              ? 'Your story, multiplied: create your account and you’ll be up and running in minutes.'
-              : 'Sign in to pick up exactly where you left off.'}
+            {joining
+              ? `Use ${joining.email}, the address your invitation went to. ${isSignUp ? 'New here? Create your account below.' : 'No account yet? Choose Create account above.'}`
+              : isSignUp
+                ? 'Your story, multiplied: create your account and you’ll be up and running in minutes.'
+                : 'Sign in to pick up exactly where you left off.'}
           </Text>
         </div>
 

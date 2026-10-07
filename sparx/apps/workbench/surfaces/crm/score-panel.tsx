@@ -52,6 +52,7 @@ import {
   useScoreHistory,
   type ScoreEventRow,
 } from './scoring-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /** When a score was last worked out, in words. */
 function scoredWhen(iso: string | null): string {
@@ -124,9 +125,7 @@ function AdjustScore({ objectKey, recordId }: { objectKey: string; recordId: str
           setReason('');
         },
         onError: (e: unknown) => {
-          setError(
-            e instanceof Error ? e.message : 'Could not change the score. Nothing was changed.'
-          );
+          setError(failureMessage(e, 'Could not change the score. Nothing was changed.'));
         },
       }
     );

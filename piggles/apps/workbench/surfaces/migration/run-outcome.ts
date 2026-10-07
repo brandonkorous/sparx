@@ -93,12 +93,14 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
       ? {
           tone: 'warning',
           title: 'Nobody in this file is new',
-          description: `All ${count} are people you already have. Doing this for real replaces their name, phone, tags and address with whatever this file says, including anything you have changed here since the file was made. Anyone who has been taken off marketing stays off it.`,
+          // Not "and address": the import adds an address only to someone who has
+          // none, and keeps the one on file (sparx persona issue 106).
+          description: `All ${count} are people you already have. Doing this for real replaces their name, phone and tags with whatever this file says, including anything you have changed here since the file was made. Addresses they already have are kept. Anyone who has been taken off marketing stays off it.`,
         }
       : {
           tone: 'warning',
           title: 'Nobody in this file was new',
-          description: `All ${count} were people you already had, and their details now match this file. Anyone who had been taken off marketing stayed off it.`,
+          description: `All ${count} were people you already had. Their names, phones and tags now match this file, and the addresses they already had were kept. Anyone who had been taken off marketing stayed off it.`,
         };
   }
 

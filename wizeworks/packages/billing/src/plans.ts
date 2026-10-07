@@ -66,6 +66,19 @@ export interface BillingPlan {
   included?: Record<string, number>;
   /** Flat plans only: the expansion blocks. */
   capacity?: CapacityBlock[];
+  /** An introductory discount checkout applies on its own while it lasts. A
+   *  COUPON on the base price, never a second plan: `limit` redemptions, kept for
+   *  as long as the subscription runs. The provisioner creates it. */
+  offer?: PlanOffer;
+}
+
+export interface PlanOffer {
+  /** The Stripe coupon id, which is also the code a person can read. */
+  coupon: string;
+  /** Taken off every monthly invoice, for as long as the subscription runs. */
+  amountOffCents: number;
+  /** How many subscriptions may ever carry it. */
+  limit: number;
 }
 
 /**
@@ -111,7 +124,22 @@ function validate(raw: unknown): BillingPlan {
   if (plan.shape === 'flat' && !plan.base) {
     fail(`flat plan "${plan.id}" has no base item: there would be nothing to charge`);
   }
+  if (plan.offer !== undefined) validateOffer(plan.id ?? '?', plan.offer);
   return plan as BillingPlan;
+}
+
+/** An offer with no coupon, no amount or no limit would discount nothing, or
+ *  everything, forever — refuse it at boot rather than at checkout. */
+function validateOffer(planId: string, offer: Partial<PlanOffer>): void {
+  if (typeof offer.coupon !== 'string' || offer.coupon.trim() === '') {
+    fail(`plan "${planId}" has an offer with no coupon`);
+  }
+  for (const field of ['amountOffCents', 'limit'] as const) {
+    const value = offer[field];
+    if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+      fail(`plan "${planId}" has an offer whose ${field} is not a positive whole number`);
+    }
+  }
 }
 
 function load(): Map<string, BillingPlan> {

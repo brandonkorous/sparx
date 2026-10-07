@@ -7,10 +7,9 @@
 // three handlers alongside its markup, and the markup is the part somebody reads
 // when they want to change how the screen looks.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useToast } from '@wizeworks/silicaui-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { usePolicy } from './setup-data';
 import { thisComputersTimezone } from '../../lib/business-timezone';
 import {
@@ -35,7 +34,7 @@ import {
   type Booking,
 } from './bookings-data';
 
-export function useBookingManage(ctx: SurfaceContext, booking: Booking) {
+export function useBookingManage(booking: Booking) {
   const toast = useToast();
   const id = booking.id;
 
@@ -60,9 +59,10 @@ export function useBookingManage(ctx: SurfaceContext, booking: Booking) {
   const startWall = wallValue(booking.startAt, zone);
   const [rescheduleLocal, setRescheduleLocal] = useState(startWall);
 
-  useEffect(() => {
-    ctx.setTitle(booking.service.name || 'Booking');
-  }, [ctx, booking.service.name]);
+  // The tab title is the pane's own (`bookingTabTitle` in booking-manage.tsx,
+  // issue 842). This hook used to set the service name as well, and the two
+  // effects undid each other on every render until React gave up with
+  // "Maximum update depth exceeded" on every booking opened (act 325).
 
   const notesChanged = notes !== (booking.notes ?? '') || staffNotes !== (booking.staffNotes ?? '');
   useDirtySource(notesChanged, 'This booking has unsaved notes. Close anyway?');

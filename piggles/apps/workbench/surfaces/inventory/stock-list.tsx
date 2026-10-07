@@ -51,7 +51,11 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [locationId, setLocationId] = useState('');
+  // Seeded from the address so a location's "See what is here" opens this on
+  // that place (issue 929). Read ONCE, like `level` below.
+  const [locationId, setLocationId] = useState(() =>
+    typeof ctx.params.location === 'string' ? ctx.params.location : ''
+  );
   // Seeded from the address so "1 item is sold out" can open this showing that
   // item. Read ONCE: after the first render the chips own it, and re-reading
   // would fight a person who has since changed it.

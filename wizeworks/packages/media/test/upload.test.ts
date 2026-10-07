@@ -36,6 +36,10 @@ vi.mock('@wizeworks/db', () => {
         return { id: where.id, ...(row?.data ?? {}) };
       }),
       findFirst: vi.fn(() => findFirstResult.value),
+      // `countAssetUsage` also reads the asset's address to search site pages
+      // for it (issue 932). Answering no rows skips that search, which is what
+      // an asset on no page and in no other record looks like.
+      findMany: vi.fn(() => []),
     },
     // The seven sources `countAssetUsage` groups over. Only product photos vary
     // here; the rest answer empty, which is what an unreferenced asset looks like.

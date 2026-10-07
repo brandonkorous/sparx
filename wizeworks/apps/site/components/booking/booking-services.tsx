@@ -14,13 +14,7 @@ import Link from 'next/link';
 
 import { EmptyState } from '@/components/empty-state';
 import { listBookableServices } from '@/lib/scheduling';
-
-function money(cents: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
-}
+import { servicePriceWords } from '@/lib/service-record-words';
 
 function duration(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
@@ -100,11 +94,7 @@ export async function BookingServices({
                 {s.description ? <span className="text-base-content">{s.description}</span> : null}
                 <span className="text-base-content flex gap-4 text-sm font-medium">
                   <span>{duration(s.durationMinutes)}</span>
-                  {s.priceCents > 0 ? (
-                    <span>{money(s.priceCents, s.currency)}</span>
-                  ) : (
-                    <span>Free</span>
-                  )}
+                  <span>{servicePriceWords(s)}</span>
                 </span>
                 <span className="btn btn-primary btn-sm mt-auto gap-1.5 self-start">
                   See open times

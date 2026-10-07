@@ -11,6 +11,7 @@
 import { withTenant, type BookingAttendee, type TxClient } from '@wizeworks/db';
 import type { JoinSessionInput, UpdateAttendeeInput } from '@wizeworks/scheduling-schemas';
 
+import { recognizeBookedCustomers } from './booked-customer';
 import { BookingNotFoundError, InvalidBookingStateError } from './errors';
 import { lockClassSession } from './locks';
 
@@ -140,6 +141,8 @@ export async function bookClassSeat(
         intakeSubmissionId: input.intakeSubmissionId ?? null,
       },
     });
+    // A seat makes them a customer (issue 113); a waiting-list place does not yet.
+    if (!willWaitlist) await recognizeBookedCustomers(tx, [attendee.customerId]);
     return { attendee, waitlisted: willWaitlist };
   });
 }
@@ -183,6 +186,11 @@ async function promoteWaitlisted(
     promoted.push(updated);
     taken += a.partySize;
   }
+  // Off the waiting list and into a seat: a customer now (issue 113).
+  await recognizeBookedCustomers(
+    tx,
+    promoted.map((p) => p.customerId)
+  );
   return promoted;
 }
 
@@ -220,6 +228,10 @@ export async function updateAttendee(
       ['cancelled', 'no_show'].includes(input.status) &&
       !['cancelled', 'no_show'].includes(existing.status);
     const promoted = freed ? await promoteWaitlisted(tx, tenantId, existing.bookingId) : [];
+    // Staff moving someone into a seat by hand makes them a customer (issue 113).
+    if (input.status !== undefined && SEAT_CONSUMING.includes(input.status)) {
+      await recognizeBookedCustomers(tx, [attendee.customerId]);
+    }
     return { attendee, promoted };
   });
 }

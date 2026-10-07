@@ -19,9 +19,11 @@
 // AND IT IS NOT OWED EITHER. That second half was missing, and it is the reason
 // this screen once told a shop it owed $2,090 to nobody: the guard above kept a
 // dateless cost out of the aging bands and then summed it into "Total
-// outstanding" anyway. A cost recorded through the Spending quick-add carries no
-// payment date because the quick-add never asks for one, so "not marked paid" is
-// an ABSENCE, not a debt. The headline counts what has a day to pay it by; the
+// outstanding" anyway. A cost recorded through the Spending quick-add carried no
+// payment date because the quick-add never asked for one, so "not marked paid" is
+// an ABSENCE, not a debt. Since issue 930 the quick-add asks (a Paid tick, on by
+// default); the costs below are the ones recorded before that, or on purpose as
+// not yet paid. The headline counts what has a day to pay it by; the
 // rest is listed, and said, and left out of the figure.
 //
 // AND THE TWO DATED TABS MAY ONLY CLAIM WHAT THEY CAN SEE. Both filter on
@@ -130,14 +132,25 @@ function BillRow({
         onOpen(event);
       }}
     >
+      {/* WRAPS, never truncates, as on Spending: a `truncate` cell keeps
+          `white-space: nowrap`, so it asks for its whole text as the column's
+          width. The table came to 832px in a 766px card at an ordinary window,
+          and clicking a row's button scrolled the names off the left edge
+          (issue 930). */}
       <td className="max-w-56 min-w-0">
-        <div className="truncate font-medium">{bill.description}</div>
-        {bill.vendor ? <div className="truncate text-sm">{bill.vendor.name}</div> : null}
+        <div className="line-clamp-2 font-medium">{bill.description}</div>
+        {bill.vendor ? <div className="line-clamp-1 text-sm">{bill.vendor.name}</div> : null}
       </td>
+      {/* The due day sits under how late it is, rather than in a column of its
+          own: the two are one fact, and the column it took was the width the
+          bill's name needed (issue 930). */}
       <td>
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}
         </Badge>
+        {bill.dueAt ? (
+          <div className="mt-1 text-sm whitespace-nowrap">Due {formatDay(bill.dueAt)}</div>
+        ) : null}
       </td>
       <td className="hidden @lg:table-cell">
         {bill.category ? (
@@ -145,9 +158,6 @@ function BillRow({
             {bill.category.name}
           </Badge>
         ) : null}
-      </td>
-      <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">
-        {bill.dueAt ? formatDay(bill.dueAt) : '—'}
       </td>
       <td className="text-right font-medium tabular-nums">
         {formatCents(bill.amountCents, bill.currency)}
@@ -159,13 +169,17 @@ function BillRow({
           variant="outline"
           color="success"
           loading={paying}
+          // The words fold away on a narrow pane, and the button then had no
+          // name at all; and "Paid" alone reads as the bill's state, not as
+          // something to press.
+          aria-label={`Mark ${bill.description} as paid`}
           onClick={(event) => {
             event.stopPropagation();
             onPay();
           }}
         >
           <Check className="size-4" aria-hidden />
-          <span className="hidden @2xl:inline">Paid</span>
+          <span className="hidden @2xl:inline">Mark paid</span>
         </Button>
       </td>
     </tr>
@@ -211,7 +225,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
    * OWED IS NOT THE SAME AS "NOT MARKED PAID", AND ONLY ONE OF THEM IS A DEBT.
    *
    * A cost typed into the Spending quick-add carries no due date and no payment
-   * date, because the quick-add asks for neither — three fields and a button is
+   * date, because the quick-add asked for neither — three fields and a button is
    * the whole point of it. That is the honest record of what somebody said: a
    * cost happened. It says nothing about whether the money has left.
    *
@@ -222,7 +236,8 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
    *
    * So the headline counts what has a DATE TO PAY IT BY, which is the only thing
    * a person has actually said they owe. The rest is still listed, still
-   * markable as paid, and named for what it is.
+   * markable as paid, and named for what it is. (The quick-add has asked whether
+   * a cost is paid since issue 930; rows from before it remain.)
    */
   const totals = useMemo(() => {
     const byBucket = new Map<BucketKey, number>();
@@ -410,8 +425,8 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="border-base-300 mt-4 border-t pt-3 text-sm">
                   Not counted above: {formatCents(totals.unmarked)} across{' '}
                   {totals.unmarkedCount === 1 ? '1 cost' : `${String(totals.unmarkedCount)} costs`}{' '}
-                  with no due date. Recording a cost does not say whether you have paid it. Open one
-                  to give it a due date, or mark it paid.
+                  with no due date that were not marked paid when they were recorded. Open one to
+                  give it a due date, or mark it paid.
                 </Text>
               ) : null}
             </Card>
@@ -432,7 +447,6 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
                       <th>Bill</th>
                       <th>How late</th>
                       <th className="hidden @lg:table-cell">Category</th>
-                      <th className="hidden @2xl:table-cell">Due</th>
                       <th className="text-right">Amount</th>
                       <th className="text-right">Settle</th>
                     </tr>

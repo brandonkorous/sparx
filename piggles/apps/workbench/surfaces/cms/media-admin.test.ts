@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { formatBytes, sizeLabel } from './media-admin';
+import { formatBytes, sitePlacesLine, sizeLabel, tileSizeLine, tileUseLine } from './media-admin';
 
 const asset = (byteSize: number | null, linked = false) => ({ byteSize, linked });
 
@@ -60,5 +60,69 @@ describe('formatBytes', () => {
 
   it('caps at gigabytes rather than inventing a unit', () => {
     expect(formatBytes(5 * 1024 ** 4)).toContain('GB');
+  });
+});
+
+describe('what a tile says under its filename', () => {
+  const pic = (usageCount: number, products = 0) => ({
+    usageCount,
+    usage:
+      usageCount === 0
+        ? null
+        : {
+            products,
+            content: usageCount - products,
+            customers: 0,
+            authors: 0,
+            staffDocuments: 0,
+            expenses: 0,
+
+            sitePages: 0,
+
+            siteLayouts: 0,
+
+            branding: 0,
+
+            catalog: 0,
+
+            reviews: 0,
+
+            socialPosts: 0,
+
+            otherRecords: 0,
+          },
+  });
+
+  it('says when no use was found', () => {
+    expect(tileUseLine(pic(0))).toBe('No use found');
+  });
+
+  it('names where a picture is used', () => {
+    expect(tileUseLine(pic(3, 2))).toBe('In 2 product photos and 1 page or article');
+  });
+
+  it('leaves out the size of a picture kept somewhere else', () => {
+    expect(tileSizeLine(asset(null, true))).toBeNull();
+  });
+
+  it('keeps a measured size and the fault of an unweighed file', () => {
+    expect(tileSizeLine(asset(1536))).toBe('1.5 KB');
+    expect(tileSizeLine(asset(null, false))).toBe('Size not recorded');
+  });
+});
+
+describe('which site pages show a file (issue 932)', () => {
+  it('names the pages, grouped by site', () => {
+    expect(
+      sitePlacesLine([
+        { kind: 'page', name: 'Home', site: 'Juniper Row' },
+        { kind: 'page', name: 'About', site: 'Juniper Row' },
+        { kind: 'layout', name: 'Main', site: 'Lookbook' },
+      ])
+    ).toBe('Home and About on Juniper Row; the header and footer “Main” on Lookbook');
+  });
+
+  it('says nothing when no page shows it', () => {
+    expect(sitePlacesLine([])).toBeNull();
   });
 });

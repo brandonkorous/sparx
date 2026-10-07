@@ -4,45 +4,16 @@ import Link from 'next/link';
 import { Table } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { accountUrl, APP_COUNT_WORD, APP_COUNT_WORD_CAP, PRODUCT } from '@piggles/config';
-import { PRICE_LABEL } from '@piggles/config/pricing';
+import { fetchFounderOffer, PRICE_LABEL } from '@piggles/config/pricing';
 import { PageHero } from '@/components/marketing/page-hero';
 import { PriceFigure } from '@/components/marketing/hero/price-figure';
 import { WhatYouPay } from '@/components/marketing/what-you-pay';
 import { CloseBand } from '@/components/marketing/close-band';
+import { FounderBand } from '@/components/marketing/founder-band';
 
-// /pricing — one plan, and the part everyone actually wants to know: what makes
-// the number go up.
-//
-// The page is structured as a promise, then what the promise is measured
-// against, then its own small print — in that order, because the promise is only
-// worth anything if the small print is on the same page. A pricing page that
-// says "one simple price" and hides the limits behind a support article is the
-// thing this product is positioned against.
-//
-// ── THE PRICE IS STATED TWICE, NOT THREE TIMES ──────────────────────────────
-//
-// The hero said the price and then a card three lines below said it again, with the
-// same button under it. Repeating a number is not emphasis; it is the page
-// having nothing to add. <WhatYouPay> now carries the price and the call to
-// action, because it is the one place on the page where the price is standing next to
-// something — so "What you get for it" went back to being what it says it is: a
-// sentence and the allowance table, full width.
-//
-// NO COMPARISON GRID. Not a stylistic choice — piggles/CLAUDE.md RULE #2 forbids
-// tiers, and a three-column grid is how tiers get reintroduced by a designer who
-// only meant to fill the width. There is one plan, so there is one card.
-//
-// ── NUMBERS ─────────────────────────────────────────────────────────────────
-// The allowances below come from the approved source pack
-// (docs/initial/docs/commercial/PRICING_AND_ENTITLEMENTS.md), which states two of
-// them as ranges — 10–25 GB storage, 5,000–10,000 email sends — and says
-// explicitly that final numbers must be validated against infrastructure cost.
-//
-// This page publishes the LOW end of each range. Deliberate: an allowance can be
-// raised later and every existing customer is pleased, but lowering a published
-// number is a repricing you have to write to people about. Confirm the final
-// figures against real infrastructure cost before launch; until then these are
-// the safe end of a hypothesis, not a measured limit.
+// /pricing: one plan, then what makes the number go up, then its small print, on
+// one page. No comparison grid: RULE #2 forbids tiers, and a grid reintroduces them.
+// Allowances publish the LOW end of the source pack's ranges until cost is measured.
 
 export const metadata: Metadata = {
   title: 'Pricing',
@@ -112,7 +83,8 @@ const FAQ = [
   },
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const offer = await fetchFounderOffer();
   return (
     <>
       <PageHero
@@ -121,10 +93,6 @@ export default function PricingPage() {
         figure={<PriceFigure />}
         assurances={['Free for 14 days', 'No card needed', 'Cancel by not carrying on']}
       >
-        {/* `block` came off both. It was making a full-width stack of two
-            buttons, which is a phone layout that had been left running on
-            desktop because the hero's right-hand column was empty and there was
-            nothing to balance them against. */}
         <a
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', 'pricing-hero')}
@@ -138,6 +106,8 @@ export default function PricingPage() {
 
       <WhatYouPay />
 
+      <FounderBand offer={offer} from="pricing" />
+
       <Section>
         <div className="max-w-[62ch]">
           <h2 className="text-3xl font-extrabold sm:text-4xl">What you get for it</h2>
@@ -145,12 +115,7 @@ export default function PricingPage() {
             The allowances below are what one subscription includes. Most businesses never come near
             any of them. They exist so that the price can stay the same for everybody who does not.
           </p>
-          {/* Spelled out, not `{APPS.length}`. The derived count is more
-                robust but it renders "15" three lines under a heading that says
-                "fifteen", and mixed numerals in one passage read as an
-                oversight. The registry is still the source of truth — if an app
-                is ever added, this page is one of the places to update, which is
-                why /apps derives its own list rather than repeating one here. */}
+          {/* Spelled out (APP_COUNT_WORD_CAP), so numerals never mix with words here. */}
           <p className="mt-4 text-lg">
             {APP_COUNT_WORD_CAP} apps, and the two things that usually cost extra everywhere else
             (your own domain and your own sending address) are in here too.

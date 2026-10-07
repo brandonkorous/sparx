@@ -24,6 +24,7 @@ import {
   ServiceNotFoundError,
   SlotUnavailableError,
 } from './errors';
+import { recognizeBookedCustomers } from './booked-customer';
 import { recordBookingEvent } from './booking-history';
 import { bookingMoneyFor, type BookingMoney } from './booking-money';
 import { blockedError, blockedResources } from './slot-guards';
@@ -282,6 +283,11 @@ export async function createBooking(
         if (isExclusionViolation(err)) throw new SlotUnavailableError();
         throw err;
       }
+      // Whoever it is for is a customer now (issue 113), in the same write.
+      await recognizeBookedCustomers(tx, [
+        input.customerId,
+        ...input.attendees.map((a) => a.customerId),
+      ]);
       // Auto-confirmed bookings (no approval gate) notify immediately + schedule
       // reminders; a `requested` booking waits for confirmBooking to notify.
       if (status === 'confirmed') {

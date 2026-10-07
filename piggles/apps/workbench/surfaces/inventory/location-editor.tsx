@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { Badge, Button, Text } from '@wizeworks/silicaui-react';
-import { faFloppyDisk, faLocationDot } from '@fortawesome/pro-solid-svg-icons';
+import { faBoxes, faFloppyDisk, faGrid, faLocationDot } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -22,6 +22,7 @@ import {
   type Location,
 } from './locations-data';
 import { COLUMN, type Draft } from './location-draft';
+import { locationStockLine } from './location-stock-line';
 import { useLocationValidity } from './location-validity';
 import { LocationFields } from './location-fields';
 import { LocationLifecycle } from './location-lifecycle';
@@ -83,9 +84,16 @@ function EditorToolbar({
  *  with the REST of the identity — the code on its shelf labels, where it is,
  *  and whether a sample pack put it there. A new location is introduced by the
  *  form section instead. */
-function IdentityLine({ existing }: { existing: Location | null }) {
+function IdentityLine({
+  existing,
+  onSee,
+}: {
+  existing: Location | null;
+  onSee: (surface: 'inventory.stock.list' | 'inventory.bins.list') => void;
+}) {
   if (!existing) return null;
   const place = locationPlace(existing);
+  const stock = locationStockLine(existing);
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
       <span className="font-mono text-sm">{existing.code}</span>
@@ -109,6 +117,44 @@ function IdentityLine({ existing }: { existing: Location | null }) {
             </Text>
           </span>
         </>
+      ) : null}
+      {stock ? (
+        <>
+          <span aria-hidden>·</span>
+          <Text as="span" className="text-sm">
+            {stock}
+          </Text>
+        </>
+      ) : null}
+      {/* The list says how much is here; these are the way to it. Stock and
+          Shelves both filter by location and nothing opened either on one
+          (issue 929). Only for a place in use, the only kind their location
+          filters offer. */}
+      {existing.isActive ? (
+        <span className="ml-auto flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            color="module"
+            variant="outline"
+            onClick={() => {
+              onSee('inventory.stock.list');
+            }}
+          >
+            <Icon glyph={faBoxes} className="size-4" aria-hidden />
+            See what is here
+          </Button>
+          <Button
+            size="sm"
+            color="module"
+            variant="outline"
+            onClick={() => {
+              onSee('inventory.bins.list');
+            }}
+          >
+            <Icon glyph={faGrid} className="size-4" aria-hidden />
+            See its shelves
+          </Button>
+        </span>
       ) : null}
     </div>
   );
@@ -210,7 +256,12 @@ export function LocationEditor({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <IdentityLine existing={existing} />
+          <IdentityLine
+            existing={existing}
+            onSee={(surface) => {
+              if (existing) ctx.open(surface, { location: existing.id });
+            }}
+          />
 
           <SaveFailure title="Could not save this location" message={saveError} />
 
@@ -220,6 +271,7 @@ export function LocationEditor({
             set={set}
             codeError={codeError}
             showAddrWarning={showAddrWarning}
+            existing={existing}
           />
 
           <LocationLifecycle

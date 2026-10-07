@@ -134,6 +134,7 @@ import {
 } from './costing-data';
 import { describeQuantityShort } from './assembly-data';
 import { freightNote } from './freight-words';
+import { readFailureMessage } from '../../lib/api/write-failure';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -1595,8 +1596,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       (error: unknown) => {
                         toast.add({
                           title: 'Could not open the print view',
-                          description:
-                            error instanceof Error ? error.message : 'Try again in a moment.',
+                          description: readFailureMessage(error, 'Try again in a moment.'),
                           type: 'error',
                         });
                       }

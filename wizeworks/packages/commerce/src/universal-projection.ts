@@ -861,6 +861,67 @@ const siteProjector: EntityProjector = {
     }),
 };
 
+// ─── builder: a page of a site ───────────────────────────────────────────────
+// The pages an owner builds in the editor: Home, About, Contact, and the one page
+// that shows every product. Gillett Diesel typed "About" with the page open in
+// the editor behind the box and was told "Nothing in your records matches"
+// (sparx persona issue 130): pages were never in the index, though the box says
+// it searches everything. Signalled from `@wizeworks/builder`'s page and site
+// services (`page-search.ts`) on every write that adds, renames, re-addresses,
+// publishes or removes a page.
+//
+// A page belongs to ONE site, so the subtitle names it and the address carries it:
+// an owner with two businesses has two "About" pages, and the link opens the one
+// she picked on its own site rather than whichever site the console is on.
+// Words come from the row only. No body text: a page's words live in a tree of
+// sections, and the name, the address and the search-engine title are what an
+// owner types to find the page.
+
+const builderPageProjector: EntityProjector = {
+  entityType: 'builder_page',
+  module: 'builder',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.builderPage.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const p = await tx.builderPage.findFirst({
+        where: { id },
+        include: { property: { select: { name: true } } },
+      });
+      if (!p) return null;
+      return {
+        id: universalId(ctx.tenantId, 'builder_page', p.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'builder_page',
+        module: 'builder',
+        record_id: p.id,
+        title: p.name,
+        subtitle: `${pageAddressWords(p.kind, p.slug)} · ${p.property.name}`,
+        body: snippet(p.seoDescription),
+        keywords: keywords([p.slug, p.seoTitle, p.property.name]),
+        status: p.publishedAt ? 'published' : 'draft',
+        url: `/builder?pageId=${p.id}&site=${p.propertyId}`,
+        created_at: epoch(p.createdAt),
+        updated_at: epoch(p.updatedAt),
+      };
+    }),
+};
+
+/** Where a page sits on the site, as the owner reads an address. A page that
+ *  shows every product has the address `/products/:handle`; the `:handle` part is
+ *  the code's word for "each one", so it is said as "every page under /products/". */
+export function pageAddressWords(kind: string, slug: string | null): string {
+  const trimmed = (slug ?? '').trim().replace(/^\/+/, '');
+  if (kind === 'collection') {
+    const base = trimmed.split(':')[0]?.replace(/\/+$/, '') ?? '';
+    return base ? `Every page under /${base}/` : 'Every page of one kind';
+  }
+  return trimmed ? `/${trimmed}` : 'Home page, /';
+}
+
 // ─── cms: content entry (signalled live, paired with cms_page) ─────────────
 // Covers every ContentEntry typeKey EXCEPT `page`, which cmsPageProjector takes
 // (those rows are a tenant's policy and standalone pages). Same table, split on
@@ -1265,6 +1326,7 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   cmsPageProjector,
   // Site Builder + CMS breadth (docs/39 Ph2 / docs/66)
   siteProjector,
+  builderPageProjector,
   contentEntryProjector,
   mediaProjector,
   // Purchasing (issue 508). A warehouse refers to its own paperwork by number,

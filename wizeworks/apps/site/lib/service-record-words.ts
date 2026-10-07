@@ -34,15 +34,34 @@ export function durationWords(minutes: number): string {
   return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
 }
 
+/**
+ * What a service costs, in words, everywhere the site shows it.
+ *
+ * A price worked out after looking at the job says so. Without that, a 0 price
+ * read "Free" on the list and nothing at all on the service's own page, so a
+ * turbo rebuild priced by quote read Free to every customer (sparx persona
+ * issue 117).
+ */
+export function servicePriceWords(s: {
+  priceCents: number;
+  currency: string;
+  priceOnQuote?: boolean;
+}): string {
+  if (s.priceOnQuote) return 'Quoted after we look';
+  if (s.priceCents <= 0) return 'Free';
+  return formatMoney(s.priceCents, s.currency.toUpperCase());
+}
+
 /** "1 hr 30 min · $149.00": the length, and the price when the shop set one. */
 export function serviceTypeSummary(s: {
   durationMinutes: number;
   priceCents: number;
   currency: string;
+  priceOnQuote?: boolean;
 }): string {
   const length = durationWords(s.durationMinutes);
-  if (s.priceCents <= 0) return length;
-  return `${length} · ${formatMoney(s.priceCents, s.currency.toUpperCase())}`;
+  if (!s.priceOnQuote && s.priceCents <= 0) return length;
+  return `${length} · ${servicePriceWords(s)}`;
 }
 
 interface PartLike {

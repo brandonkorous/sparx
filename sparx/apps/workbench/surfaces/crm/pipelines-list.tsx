@@ -2,7 +2,7 @@
 
 // The pipelines list — the ways you win work.
 //
-// A pipeline is the set of stages a deal moves through. This is a table: the
+// A pipeline is the set of steps a deal moves through. This is a table: the
 // pipeline's name is the anchor, with how many stages it has and whether it is
 // the default or archived in their own columns. Deal counts are not in the list
 // payload, so they are not shown here — they live where a pipeline's deals do.
@@ -150,7 +150,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No pipelines yet',
               description:
-                'A pipeline is the set of stages a deal moves through. Your own way of winning work. Create your first one to start tracking deals.',
+                'A pipeline is the set of steps a deal moves through. Your own way of winning work. Create your first one to start tracking deals.',
               action: createFirst,
             }}
           />
@@ -160,7 +160,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
               <tr>
                 <th>Name</th>
                 <th>Moves</th>
-                <th className="hidden text-right @md:table-cell">Stages</th>
+                <th className="hidden text-right @md:table-cell">Steps</th>
                 <th>State</th>
               </tr>
             </thead>

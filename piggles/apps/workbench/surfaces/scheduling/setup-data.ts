@@ -83,6 +83,27 @@ export function formatMoney(cents: number, currency: string): string {
   }
 }
 
+/** What a service costs, in words: "Quoted" for a price worked out after a look
+ *  (sparx persona issue 117), "Free" for none, else the price. */
+export function servicePriceLabel(s: {
+  priceCents: number;
+  currency: string;
+  priceOnQuote?: boolean;
+}): string {
+  if (s.priceOnQuote) return 'Quoted';
+  if (s.priceCents <= 0) return 'Free';
+  return formatMoney(s.priceCents, s.currency);
+}
+
+/** " · $195.00" or " · Quoted" after a length; nothing for a free service. */
+export function servicePriceSuffix(s: {
+  priceCents: number;
+  currency: string;
+  priceOnQuote?: boolean;
+}): string {
+  return s.priceOnQuote || s.priceCents > 0 ? ` · ${servicePriceLabel(s)}` : '';
+}
+
 /** A run of minutes as "1 hr 30 min", the way a person reads a duration. */
 export function formatDuration(minutes: number): string {
   if (minutes <= 0) return '0 min';
@@ -119,6 +140,8 @@ export interface SchedulingService {
   bufferBeforeMin: number;
   bufferAfterMin: number;
   priceCents: number;
+  /** Priced after looking at the job (sparx persona issue 117). */
+  priceOnQuote: boolean;
   currency: string;
   capacity: number;
   assignmentStrategy: AssignmentStrategy;
@@ -195,6 +218,7 @@ export interface ServiceInput {
   bufferBeforeMin?: number;
   bufferAfterMin?: number;
   priceCents?: number;
+  priceOnQuote?: boolean;
   currency?: string;
   capacity?: number;
   assignmentStrategy?: AssignmentStrategy;
@@ -357,6 +381,9 @@ export interface SchedulingResource {
   /** The sites this person or place works for. EMPTY = all of them, which is both
    *  the default and what every single-site business reads. */
   propertyIds: string[];
+  /** Whether it has any weekly hours: with none it can never be booked. Absent
+   *  where the server did not look (sparx persona issue 118). */
+  hasWeeklyHours?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -608,10 +635,19 @@ export function resourceKindLabel(value: string): string {
   return RESOURCE_KIND_LABEL.get(value) ?? 'Resource';
 }
 
-export function resourceState(resource: Pick<SchedulingResource, 'isActive'>): StateLabel {
-  return resource.isActive
-    ? { label: 'In use', tone: 'success' }
-    : { label: 'Off', tone: 'neutral' };
+/**
+ * Where a person or thing stands. "In use" only when it can actually be booked:
+ * one in use with no weekly hours reads "No hours" (sparx persona issue 118).
+ * "Off" carries no tone: switched off is a real state, and `neutral` is not ours
+ * to choose.
+ */
+export function resourceState(resource: Pick<SchedulingResource, 'isActive' | 'hasWeeklyHours'>): {
+  label: string;
+  tone: Exclude<Tone, 'neutral'> | undefined;
+} {
+  if (!resource.isActive) return { label: 'Off', tone: undefined };
+  if (resource.hasWeeklyHours === false) return { label: 'No hours', tone: 'warning' };
+  return { label: 'In use', tone: 'success' };
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -708,6 +744,8 @@ export function useSetResourceWindows(resourceId: string) {
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: availabilityKeys.windows(resourceId) });
+      // Whether it has hours at all shows on its page and in the list (issue 118).
+      void queryClient.invalidateQueries({ queryKey: resourceKeys.all });
     },
   });
 }
@@ -802,6 +840,7 @@ export function useCopyHours() {
     onSettled: (_results, _error, plan) => {
       for (const target of plan.targets) {
         void queryClient.invalidateQueries({ queryKey: availabilityKeys.windows(target.id) });
+        void queryClient.invalidateQueries({ queryKey: resourceKeys.all });
       }
       if (plan.closures.length > 0) {
         void queryClient.invalidateQueries({ queryKey: availabilityKeys.exceptions(null) });
@@ -1027,4 +1066,21 @@ export function policySummary(policy: BookingPolicy): string {
       : 'Cancel any time'
   );
   return parts.join(' · ');
+}
+
+/**
+ * The warning on a person or thing with no weekly hours, or null when it has
+ * some (or nobody looked). With none, every service that needs it shows no open
+ * times, and nothing said why (sparx persona issue 118).
+ */
+export function hoursMissingNotice(resource: {
+  name: string;
+  hasWeeklyHours?: boolean;
+}): { title: string; detail: string } | null {
+  if (resource.hasWeeklyHours !== false) return null;
+  return {
+    title: `No hours yet, so nobody can book ${resource.name}`,
+    detail:
+      'Every service that needs it shows no open times until it has weekly hours. Set them once, or copy them from someone who keeps the same hours.',
+  };
 }

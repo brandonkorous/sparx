@@ -158,6 +158,10 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         // shopper's saved-list page simply stays empty, which is what it did on
         // every shop on the platform until this core existed (issue 642).
         HOST_KEYS.commerceProductSave,
+        // What it fits is information, not a transaction: a shop with no fit rules
+        // has no use for it, and one that says it in the description must be able
+        // to take it off (persona issue 126).
+        HOST_KEYS.commerceProductFitment,
       ].sort()
     );
   });

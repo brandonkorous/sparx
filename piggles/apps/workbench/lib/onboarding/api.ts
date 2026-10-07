@@ -37,6 +37,8 @@ export interface CommitStoryInput {
   sampleData: boolean;
   /** Selling modules gate the payments step. */
   selling: boolean;
+  /** The story said customers "pick up locally" (issue 129). */
+  offersCollection: boolean;
   story: StoryPayload;
 }
 
@@ -75,6 +77,7 @@ export function useOnboardingActions() {
       const companyName = titleCase(slug);
 
       await setup.saveModules(input.modules, done);
+      if (input.offersCollection && input.modules.commerce) await setup.offerCollection();
 
       let installId: string | null = null;
       if (input.blueprintKey) {

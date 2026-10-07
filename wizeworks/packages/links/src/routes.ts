@@ -596,7 +596,14 @@ export const ROUTES: readonly AppRoute[] = [
   // its own copy of that surface and no longer registers the key, so this address
   // simply resolves to nothing there — which is the honest outcome for a link to a
   // screen that product no longer has.
-  { path: '/builder', surface: 'builder.studio' },
+  // The home of a site page found in search: the editor, opened on that page
+  // (`?pageId=`) on its own site (`?site=`). The stored address carries both.
+  {
+    path: '/builder',
+    surface: 'builder.studio',
+    entity: 'builder_page',
+    entityLabel: 'Site pages',
+  },
   { path: '/builder/site', surface: 'builder.site' },
   { path: '/builder/pages', surface: 'builder.pages' },
   { path: '/builder/email-designs', surface: 'builder.email' },

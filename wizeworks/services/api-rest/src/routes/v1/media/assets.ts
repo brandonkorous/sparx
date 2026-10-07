@@ -23,6 +23,7 @@ import { mediaSiteVisibilityWhere, resolveListScope } from '../../../lib/propert
 import { conflict, notFound } from '@wizeworks/api-core/errors';
 import {
   countAssetUsage,
+  sitePlacesUsingAsset,
   countOneAssetUsage,
   describeUsage,
   type AssetUsage,
@@ -66,6 +67,11 @@ const ListQuery = z.object({
   source: z.string().max(32).optional(),
   // Manual-collection filter (docs/49) — only assets pinned to this collection.
   collection: z.string().uuid().optional(),
+  // Only files nothing uses (`unused`), or only ones something does (`used`).
+  // Usage is COUNTED, not stored, so this cannot be a WHERE clause: the
+  // matching set is counted whole and paged afterwards (issue 932). A library
+  // runs to thousands of files at most, and the count is grouped queries.
+  usage: z.enum(['used', 'unused']).optional(),
   // `limit` is a legacy alias for `take`, still used by the asset-picker
   // modal's single bulk fetch — offset pagination (`take`/`skip` + `total`)
   // is what the media library list page uses, matching every other list.
@@ -85,6 +91,13 @@ const EMPTY_USAGE: AssetUsage = {
   authors: 0,
   staffDocuments: 0,
   expenses: 0,
+  sitePages: 0,
+  siteLayouts: 0,
+  branding: 0,
+  catalog: 0,
+  reviews: 0,
+  socialPosts: 0,
+  otherRecords: 0,
   total: 0,
 };
 
@@ -163,6 +176,15 @@ function serializeAsset(row: AssetRow, variants: VariantRow[], usage: AssetUsage
       authors: usage.authors,
       staff_documents: usage.staffDocuments,
       expenses: usage.expenses,
+      // Site pages and layouts, the brand, catalog pictures, reviews, social
+      // posts and evidence records (issue 932).
+      site_pages: usage.sitePages,
+      site_layouts: usage.siteLayouts,
+      branding: usage.branding,
+      catalog: usage.catalog,
+      reviews: usage.reviews,
+      social_posts: usage.socialPosts,
+      other_records: usage.otherRecords,
     },
     // Originals are private — the dashboard fetches them via a separate
     // signed-GET flow once we add it (Phase 3.7). Variants are public.
@@ -236,8 +258,27 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
       ...(scope ? mediaSiteVisibilityWhere(scope) : {}),
     };
 
-    const [page, total] = await withRequestTenant(request, (tx) =>
-      Promise.all([
+    const [page, total] = await withRequestTenant(request, async (tx) => {
+      if (q.usage) {
+        // Every match, in the list's own order, then narrowed by its count.
+        const all = await tx.mediaAsset.findMany({
+          where,
+          orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+          select: { id: true },
+        });
+        const counts = await countAssetUsage(
+          tx,
+          all.map((r) => r.id)
+        );
+        const wanted = all
+          .map((r) => r.id)
+          .filter((id) => (counts.get(id)?.total ?? 0) > 0 === (q.usage === 'used'));
+        const pageIds = wanted.slice(skip, skip + take);
+        const rows = await tx.mediaAsset.findMany({ where: { id: { in: pageIds } } });
+        const byId = new Map(rows.map((r) => [r.id, r]));
+        return [pageIds.flatMap((id) => byId.get(id) ?? []), wanted.length] as const;
+      }
+      return Promise.all([
         tx.mediaAsset.findMany({
           where,
           orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
@@ -245,8 +286,8 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
           skip,
         }),
         tx.mediaAsset.count({ where }),
-      ])
-    );
+      ]);
+    });
 
     // Variants for the whole page in one query (not per-row), so the asset
     // picker + media library can render real thumbnails. Without this the list
@@ -296,17 +337,24 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     const { id } = PathId.parse(request.params);
 
-    const { asset, variants, usage } = await withRequestTenant(request, async (tx) => {
+    const { asset, variants, usage, places } = await withRequestTenant(request, async (tx) => {
       const row = await tx.mediaAsset.findFirst({ where: { id, deletedAt: null } });
       if (!row) throw notFound('MediaAsset', id);
       const vs = await tx.mediaVariant.findMany({
         where: { assetId: id },
         orderBy: [{ format: 'asc' }, { width: 'asc' }],
       });
-      return { asset: row, variants: vs, usage: await countOneAssetUsage(tx, id) };
+      return {
+        asset: row,
+        variants: vs,
+        usage: await countOneAssetUsage(tx, id),
+        places: await sitePlacesUsingAsset(tx, id),
+      };
     });
 
-    return ok(serializeAsset(asset, variants, usage));
+    // Which pages, by name, on the single read only: the list counts, and a
+    // person about to delete a file opens it first (issue 932).
+    return ok({ ...serializeAsset(asset, variants, usage), used_on_site: places });
   });
 
   // ──────────────────────────────────────────────────────────────────────

@@ -642,7 +642,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     current={readerLocale}
                     ownLanguageLabel={ownLanguageLabel}
                   />
-                  <MiniCart />
+                  <MiniCart paymentMode={site.commerce.paymentMode} />
                   {/* The silica behavior runtime (docs/118 Stage 6b): hydrates the
                       data-sui-* markers a published silica page/frame renders, and
                       routes host actions (newsletter, cart) to the providers above.

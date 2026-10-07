@@ -40,6 +40,9 @@ export interface InvoiceSentEmailProps {
    *  account matches every invoice to a purchase order before it pays, and this
    *  number is how its accounts department finds the match (sparx issue 077). */
   poNumber?: string | null;
+  /** The terms the bill was issued on, in words ("Net 45"). Printed after the
+   *  due date, so a county on Net 45 reads Net 45 (sparx persona issue 103). */
+  paymentTerms?: string | null;
   /** The lines, as they appear on the document. */
   lines: LineItem[];
   summary: SummaryRow[];
@@ -106,6 +109,7 @@ export function InvoiceSentEmail({
   priceOffer = false,
   validUntil,
   poNumber,
+  paymentTerms,
   lines,
   summary,
   note,
@@ -159,17 +163,12 @@ export function InvoiceSentEmail({
             ? ` This price holds until ${goodUntil}.`
             : ' Nothing is owed on it. It is a price, not a bill.'
           : due
-            ? ` It is due by ${due}.`
+            ? ` It is due by ${due}${paymentTerms ? ` (${paymentTerms})` : ''}.`
             : ''}
       </EmailParagraph>
 
-      {/* Their own reference, where their accounts department looks first. */}
-      {poNumber ? (
-        <EmailParagraph>
-          PO number: <strong>{poNumber}</strong>
-        </EmailParagraph>
-      ) : null}
-
+      {/* Their own reference, where their accounts department looks first.
+          Once: it was printed twice on every invoice email that carried one. */}
       {poNumber ? (
         <EmailParagraph>
           PO number: <strong>{poNumber}</strong>

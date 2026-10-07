@@ -31,6 +31,7 @@
 // under another.
 
 import type { WindowMode } from './window-mode';
+import { personalKey } from './workbench/storage-owner';
 
 const KEY = 'piggles-console-mode-layout';
 
@@ -49,7 +50,7 @@ interface ModeSnapshot {
 }
 
 function storageKey(siteKey: string, mode: WindowMode): string {
-  return `${KEY}:${siteKey}:${mode}`;
+  return personalKey(`${KEY}:${siteKey}:${mode}`);
 }
 
 export function saveModeLayout(siteKey: string, mode: WindowMode, grid: unknown): void {

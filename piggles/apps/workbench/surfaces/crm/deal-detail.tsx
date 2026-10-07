@@ -37,6 +37,7 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { fixedStageChance } from '@wizeworks/crm-schemas';
 import { useConfirm } from '../../lib/confirm';
 import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -50,6 +51,7 @@ import { MoneyTextInput, moneyCents, moneyProblem } from '../../components/money
 import { moneyText } from '../../lib/read-money';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
+import { DealTasks } from './deal-tasks';
 import { ScorePanel } from './score-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
@@ -243,6 +245,13 @@ function DealEditor({
     setDraft((cur) => (cur.customerId === '' ? { ...cur, customerId: presetCustomerId } : cur));
   }, [isNew, touched, presetCustomerId]);
 
+  // The same from a company page's "Add a deal" (sparx persona issue 112).
+  const presetCompanyId = typeof ctx.params.companyId === 'string' ? ctx.params.companyId : '';
+  useEffect(() => {
+    if (!isNew || touched || presetCompanyId === '') return;
+    setDraft((cur) => (cur.companyId === '' ? { ...cur, companyId: presetCompanyId } : cur));
+  }, [isNew, touched, presetCompanyId]);
+
   useEffect(() => {
     ctx.setTitle(isNew ? 'New deal' : deal ? deal.title : 'Deal');
   }, [ctx, isNew, deal]);
@@ -255,6 +264,11 @@ function DealEditor({
   const currentPipeline: Pipeline | undefined = pipelineList.find((p) => p.id === draft.pipelineId);
   const stages = currentPipeline?.stages ?? [];
   const currentStage = stages.find((s) => s.id === draft.stageId);
+  // What a blank Likelihood means: the step's own chance, which the server
+  // stores when nothing is typed (sparx persona issue 113).
+  const stepChance = currentStage ? Number(currentStage.probability) : null;
+  // On a Won or Lost step the chance is a fact, not a guess (issue 110).
+  const stepFixed = currentStage ? fixedStageChance(currentStage.stageType) : null;
   // Whether the deal has finished, and how — drives the "why it was won/lost"
   // field. Read from the DRAFT's stage, not the saved one, so choosing a closing
   // stage in the Stage select reveals the field before Save rather than after.
@@ -369,7 +383,12 @@ function DealEditor({
         onSuccess: () => {
           if (stageChanged) {
             moveStage.mutate(
-              { toStageId: draft.stageId },
+              // The reason travels with the move that closes the deal; sent only
+              // with the field patch, the move wiped it (sparx persona issue 114).
+              {
+                toStageId: draft.stageId,
+                ...(draft.closedReason.trim() ? { closedReason: draft.closedReason } : {}),
+              },
               {
                 onSuccess: () => {
                   setTouched(false);
@@ -534,8 +553,9 @@ function DealEditor({
                         min={0}
                         max={100}
                         inputMode="numeric"
-                        value={draft.probability}
-                        placeholder="0"
+                        value={stepFixed === null ? draft.probability : String(stepFixed)}
+                        disabled={stepFixed !== null}
+                        placeholder={stepChance === null ? '0' : String(stepChance)}
                         onChange={(event) => {
                           set('probability', event.target.value);
                         }}
@@ -546,7 +566,13 @@ function DealEditor({
                     </div>
                   }
                 />
-                <FieldDescription>Your rough chance of winning it.</FieldDescription>
+                <FieldDescription>
+                  {stepFixed !== null
+                    ? 'A won deal was 100% likely and a lost one 0%.'
+                    : stepChance === null
+                      ? 'Your rough chance of winning it.'
+                      : `Your rough chance of winning it. Leave it blank to use the step's ${String(stepChance)}%.`}
+                </FieldDescription>
               </Field>
             </div>
           </FormSection>
@@ -734,6 +760,9 @@ function DealEditor({
           {!isNew && deal ? (
             <AssociationsPanel objectKey="deal" recordId={deal.id} ctx={ctx} />
           ) : null}
+
+          {/* Its follow-ups, and a way to add one already linked to it. */}
+          {!isNew && deal ? <DealTasks ctx={ctx} deal={deal} /> : null}
 
           {/* The extra details this business tracks on a deal (docs/144 §3) —
               "competitor", "renewal month", whatever they already keep in a

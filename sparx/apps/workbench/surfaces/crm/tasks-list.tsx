@@ -209,7 +209,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
                   >
                     <td className="font-medium">{row.title}</td>
                     <td>
-                      <Badge color={meta.tone} variant="soft" size="sm">
+                      <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                         {meta.label}
                       </Badge>
                     </td>

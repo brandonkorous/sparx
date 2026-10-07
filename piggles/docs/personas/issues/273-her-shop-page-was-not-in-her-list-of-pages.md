@@ -129,8 +129,8 @@ that part was already fixed. Four things were not:
   frame is not this design's. A design whose pages are gone now leaves the
   header, footer and look alone, and Piggles' Remove warning says so. Opened on
   screen and dismissed with Keep it; the design is still installed. Sparx's
-  Remove warning still says "its look is cleared": that file carries another
-  change in progress, so it waits for it.
+  Remove warning says the same since act 325, once the other change in that
+  file was committed.
 - **The doubled heading.** The listing printed its own "All products" on every
   page it sat on. It now does that only on `/products`, whose shell has no
   heading of its own, the way the booking list treats `/book` (issue 095). Her

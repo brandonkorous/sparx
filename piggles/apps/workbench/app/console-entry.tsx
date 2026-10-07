@@ -61,6 +61,7 @@ export async function ConsoleEntry({ address }: { address: string }) {
   return (
     <ConsoleShell
       notice={notice}
+      userId={session.user.id}
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
       initialSiteKey={initialSiteKey}

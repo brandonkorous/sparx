@@ -1,12 +1,12 @@
 # 113 — A client's record, in a booking business, has no appointments on it
 
-**Status:** open
+**Status:** fixed (act 325)
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 7
 **Surface:** mypiggles › Customers › a customer
 **Filed:** 2026-08-22
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-06
+**Confirmed by:** on screen at Halo & Hem; 6 tests, 3 proven red; the migration dry-run in a rolled-back transaction
 
 ## What happened
 
@@ -65,21 +65,62 @@ Every time. Book somebody in, then open their record.
 Point 1 is the one that matters most and is the smallest — the bookings list is
 already filterable and the customer id is in hand.
 
-## Where it stands (act 324)
+## What changed (act 325)
 
-- **Point 1, partly done.** The record has a **Bookings** tab now
-  (`customer-bookings.tsx`). The overview still does not lead with the next
-  appointment.
-- **Point 3, not done.** Only an order turns a lead into a customer
-  (`recomputeCustomerCommerce` in `crm/customer-rollup.ts`). A booking does
-  not, so a booked client still reads "Lead".
-- **Point 2, not done.** "Total spent" still sums orders only.
+The scheduling work this waited on was committed in `c5eca5886`.
 
-Points 2 and 3 belong in booking creation, and `wizeworks/packages/scheduling`
-holds a large change in progress from another session (27 files, a new
-`booking-money.ts`). Fixing them now would land on top of that change, so they
-wait for it to be committed. Checking on screen needs a booking business:
-Halo & Hem, not Juniper Row, which has no bookings.
+**Point 3, a booking makes a customer.** `recognizeBookedCustomers`
+(`wizeworks/packages/scheduling/src/booked-customer.ts`) applies the order
+rollup's rule in the same write that puts a person on a booking: forward only,
+`customer` and `evangelist` untouched, `leadStatus` cleared. It runs where a
+person is booked: `createBooking` (so the website, the console, the AI tools, a
+repeating series and the waiting list all get it), a class seat, a seat taken
+off the waiting list, and staff moving someone into a seat by hand. A waiting
+list place alone does not count.
+
+The people already stuck are moved by migration
+`20270530000024_a_client_who_booked_or_bought_is_a_customer`, written and not
+run. It also moves the people the ORDER rule never reached: issue 280 promoted
+a buyer only at their next order, so Priyanka herself read "Lead" above two
+paid orders. Dry run in dev: 65 people moved (53 with bookings, 38 with orders).
+
+**Point 1, the record leads with the diary.** A **Visits** row in the Bookings
+color sits at the top of the overview whenever the person has a visit behind
+them or one to come: Next visit, Last visit, Visits so far, Booked ahead. A last
+visit is a past booking the business accepted and nobody called off or marked
+missed, not only one marked done: Priyanka's August appointment still read
+"confirmed" in October. "Nothing here yet" no longer shows under a booked
+client. A person's bookings now include the classes they hold a seat in, so a
+studio member's Bookings tab stops reading "Never booked in".
+
+**Point 2, money says what it counts.** "Paid you so far" is now **Paid for
+orders**, beside "Their orders come to", "Orders" and "Last order". Booking money
+is in the Visits row as Booked ahead, at today's prices; past visits are not
+summed, because a booking keeps no price of its own. In a business with no shop,
+the orders row is hidden for anyone who never ordered.
+
+**Two more found on the way.**
+- Opening a booking looped: two pieces of code set the tab title to different
+  words and undid each other until React stopped with "Maximum update depth
+  exceeded". The older one (the service name) is removed; the tab keeps
+  "Probe Only · Oct 15, 2026" (issue 842's title).
+- Every record said "Customer since" its creation month, under a Lead badge too.
+  It is **Known since** now, in both consoles.
+
+## Proof
+
+At Halo & Hem, as the owner:
+- Priyanka's record leads with Last visit "a month ago", Aug 28 · Full head
+  highlights, 1 visit so far, then her orders row with "Paid for orders $67.00".
+- "Probe Only", a lead with nothing on her record, was booked for Cut and finish
+  on October 15 through New booking. Her record turned to **Customer** and led
+  with Next visit Oct 15, 2026, 2:00 PM, and Booked ahead $65.00, 1 visit.
+- The booking pane opened with no console errors.
+
+`booked-customer.test.ts`: 6 tests. Against the old code 3 fail: the class seat,
+the seat given by hand, and the class in a person's bookings. Scheduling 178
+tests, both consoles' typecheck, ESLint, prettier and the plain-words check
+clean. The sparx console got the same change and was typechecked, not driven.
 
 ## Rating effect
 

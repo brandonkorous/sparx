@@ -25,6 +25,7 @@ import type {
   SeoAuditAction,
 } from './types';
 import {
+  AS_SERVED,
   CHECK_LABELS,
   EXPECTED_SCHEMA,
   WORD_THRESHOLD,
@@ -128,8 +129,10 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     })
   );
 
-  // 2 — Title length (meta, 8)
-  const tl = title.length;
+  // 2 — Title length (meta, 8). Measured as SERVED: the site adds its name to the
+  // title, and a search engine cuts what it serves, not what was typed.
+  const served = (e.servedTitle ?? '').trim() || title;
+  const tl = title.length === 0 ? 0 : served.length;
   let titleLen: CheckStatus;
   if (tl >= 30 && tl <= 60) titleLen = 'pass';
   else if ((tl >= 10 && tl < 30) || (tl > 60 && tl <= 70)) titleLen = 'warn';
@@ -140,7 +143,7 @@ function runChecks(e: AuditableEntity): CheckResult[] {
       category: 'meta',
       weight: 8,
       status: titleLen,
-      value: `${tl} characters`,
+      value: served === title ? `${tl} characters` : `${tl} characters ${AS_SERVED}`,
       // When the title is empty, check #1 already owns the message — stay quiet here.
       ...(titleLen !== 'pass' && tl > 0
         ? {

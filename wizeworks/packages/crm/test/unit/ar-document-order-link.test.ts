@@ -12,10 +12,17 @@ const create = vi.fn((args: { data: Record<string, unknown> }) =>
   Promise.resolve({ id: 'inv-1', ...args.data })
 );
 
+// The people on the account, for a bill nobody else names an address for.
+let contacts: unknown[] = [];
+
 const tx = {
   company: {
     findUnique: vi.fn(() =>
-      Promise.resolve({ id: 'acct', companyName: 'Høgberg Diesel & Performance' })
+      Promise.resolve({
+        id: 'acct',
+        companyName: 'Høgberg Diesel & Performance',
+        paymentTerms: 'net30',
+      })
     ),
   },
   documentWorkflow: {
@@ -34,6 +41,11 @@ const tx = {
       Promise.resolve({
         metadata: { poNumber: 'HDP-1188' },
         customer: { email: 'renee.castaneda@wasatchutility.test' },
+        // A real order always carries its items; none here, so the invoice is
+        // the single order line these tests read.
+        shippingTotal: 0,
+        surchargeTotal: 0,
+        items: [],
       })
     ),
   },
@@ -47,6 +59,7 @@ const tx = {
     findMany: vi.fn(() => Promise.resolve([])),
   },
   billingDocumentSnapshot: { create: vi.fn(() => Promise.resolve({})) },
+  b2bAccountContact: { findMany: vi.fn(() => Promise.resolve(contacts)) },
 };
 
 vi.mock('@wizeworks/db', async (importOriginal) => ({
@@ -83,6 +96,18 @@ describe('createOrderArDocument', () => {
     expect(create.mock.calls.at(-1)?.[0].data.orderId).toBe('order-9');
   });
 
+  // The terms it was issued on, frozen with it and printed as "Net 30"
+  // (sparx persona issue 103).
+  it("freezes the account's terms onto the invoice, by order or by hand", async () => {
+    await createOrderArDocument(CTX, { ...input, orderId: 'order-9' });
+    expect(create.mock.calls.at(-1)?.[0].data.metadata).toMatchObject({
+      poNumber: 'HDP-1188',
+      paymentTerms: 'net30',
+    });
+    await createOrderArDocument(CTX, { ...input, orderId: null });
+    expect(create.mock.calls.at(-1)?.[0].data.metadata).toMatchObject({ paymentTerms: 'net30' });
+  });
+
   it('links nothing on an invoice raised by hand', async () => {
     await createOrderArDocument(CTX, { ...input, orderId: null });
     expect(create.mock.calls.at(-1)?.[0].data.orderId).toBeNull();
@@ -113,6 +138,37 @@ describe('createOrderArDocument', () => {
       name: 'Høgberg Diesel & Performance',
       email: 'renee.castaneda@wasatchutility.test',
     });
+  });
+
+  // O'Malley Ranch's first bill on sparx, 4471, raised by hand: no earlier bill
+  // and no order, so it went out to the company name alone and could not be
+  // emailed, with Seamus O'Malley on the account as its buyer (issue 100).
+  it("goes to the account's own buyer on a first bill raised by hand", async () => {
+    contacts = [
+      {
+        role: 'buyer',
+        customer: {
+          email: 'seamus.omalley@omalleyranch.test',
+          addresses: [
+            {
+              isDefault: true,
+              line1: '4410 N Old Hwy 91',
+              line2: null,
+              city: 'Hyde Park',
+              region: 'UT',
+              postalCode: '84318',
+              country: 'US',
+            },
+          ],
+        },
+      },
+    ];
+    await createOrderArDocument(CTX, { ...input, orderId: null });
+    contacts = [];
+    const billTo = create.mock.calls.at(-1)?.[0].data.billTo as Record<string, string>;
+    expect(billTo.email).toBe('seamus.omalley@omalleyranch.test');
+    expect(billTo.address).toContain('4410 N Old Hwy 91');
+    expect(billTo.address).toContain('Hyde Park');
   });
 
   it('keeps a bill-to the caller gives, as a quote’s', async () => {

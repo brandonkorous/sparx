@@ -1221,6 +1221,9 @@ export function productDetailPage(): Node {
       // `buyBox()` is a self-contained section now (its own padding + `max-w-5xl`), so the
       // page simply stacks it above the cross-sell strip — no extra wrapper.
       buyBox(),
+      // What it fits, under the buy box. Draws nothing for a product with no fit
+      // rules, so a shop that never uses fitment sees no change (persona issue 126).
+      hostCore(HOST_KEYS.commerceProductFitment),
       // A carousel rather than the scroll rail (issue 187), and it removes itself when
       // there is nothing to cross-sell — which on a one-product shop is ALWAYS, because
       // the strip excludes the product being looked at.

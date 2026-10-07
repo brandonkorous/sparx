@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import { Alert, Button } from '@wizeworks/silicaui-react';
 import { signOut } from '@wizeworks/auth/client';
 import { acceptInvitation, resendInviteVerification } from './actions';
@@ -19,7 +18,6 @@ export function AcceptInviteButton({
   invitationId: string;
   orgName: string;
 }) {
-  const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
@@ -28,8 +26,14 @@ export function AcceptInviteButton({
     startTransition(async () => {
       const result = await acceptInvitation(invitationId);
       if (result.ok) {
-        router.replace('/');
-        router.refresh();
+        // A REAL page load, not `router.replace`. The window already holds a
+        // pass for the person's own workspace (the root layout asks for one on
+        // every page, this one included), and a soft navigation kept it: Kendra
+        // pressed "Accept & enter Gillett" and was asked to set up a salon in
+        // her own empty workspace (persona issue 124). Joining a business is a
+        // switch of business, and a switch reloads the window, the same as
+        // switching sites does.
+        window.location.assign('/');
       } else {
         setError(result.error ?? 'Could not accept the invitation.');
       }
@@ -56,10 +60,11 @@ export function AcceptInviteButton({
   );
 }
 
-/** Signed in as the wrong address: sign out and return to sign-in, preserving the
- *  return-to-invite callback so they can retry as the invited address. */
+/** Signed in as the wrong address: sign out and come back to this invitation,
+ *  which then offers both "Sign in to accept" and "Create an account". Sending
+ *  them to the sign-in page instead greeted a newcomer with "Welcome back" and no
+ *  word of the business they were joining (persona issue 124). */
 export function SwitchAccountButton({ callbackURL }: { callbackURL: string }) {
-  const router = useRouter();
   const [pending, startTransition] = React.useTransition();
 
   function onSwitch() {
@@ -67,10 +72,11 @@ export function SwitchAccountButton({ callbackURL }: { callbackURL: string }) {
       try {
         await signOut();
       } catch {
-        /* even if sign-out reports an error, still route to sign-in */
+        /* even if sign-out reports an error, still come back to the invitation */
       }
-      router.push(`/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`);
-      router.refresh();
+      // A real page load: the signed-out person's pass must not survive into
+      // the next person's window (persona issue 124).
+      window.location.assign(callbackURL);
     });
   }
 
@@ -82,7 +88,7 @@ export function SwitchAccountButton({ callbackURL }: { callbackURL: string }) {
       disabled={pending}
       className="w-full"
     >
-      Switch account
+      Sign out
     </Button>
   );
 }

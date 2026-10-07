@@ -40,7 +40,7 @@ export async function recordConsent(
   }
 
   try {
-    await writeConsent(session.user.id, session.user.tenantId, answer === 'yes');
+    await writeConsent(session.user.id, session.user.homeTenantId, answer === 'yes');
   } catch {
     return { error: 'We could not save that just now. Please try again.' };
   }

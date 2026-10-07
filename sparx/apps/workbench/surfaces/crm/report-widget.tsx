@@ -14,6 +14,7 @@ import { Maximize2, Pencil, X } from 'lucide-react';
 
 import { useModuleColor } from '../analytics/charts';
 import { useRunReport, type DashboardWidget } from './report-builder-data';
+import { readFailureMessage } from '../../lib/api/write-failure';
 
 function formatCell(value: unknown): string {
   if (value === null || value === undefined) return '—';
@@ -143,7 +144,7 @@ export function ReportWidget({
         <div className="skeleton h-40 w-full" />
       ) : isError ? (
         <Alert color="warning">
-          {error instanceof Error ? error.message : 'This report could not be worked out.'}
+          {readFailureMessage(error, 'This report could not be worked out.')}
         </Alert>
       ) : !data || data.rows.length === 0 ? (
         <div className="flex flex-1 items-center justify-center">

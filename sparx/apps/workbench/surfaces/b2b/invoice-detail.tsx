@@ -63,7 +63,8 @@ import {
   type PaidMethod,
 } from './invoices-data';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { HALF_A_DAY, NOT_A_DATE, dayStartUtc } from '../../lib/today';
+import { HALF_A_DAY, NOT_A_DATE, dayIso, dayMiddayUtc } from '../../lib/today';
+import { dueDayFor, paymentTermsLabel } from '../../lib/payment-terms';
 import { ChoiceListNote, choiceListState } from '../../components/choice-list-note';
 import { DayInput } from '../../components/day-input';
 
@@ -76,12 +77,15 @@ function isoDateInput(value: string | null): string {
 }
 
 /** A default due date two weeks out, so a fresh invoice opens with a sensible
- *  date rather than empty. */
+ *  date rather than empty. Until an account is chosen; then its own terms.
+ *  On the reader's calendar: the UTC day was already tomorrow every evening. */
 function defaultDueDate(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 14);
-  return date.toISOString().slice(0, 10);
+  const now = new Date();
+  return dayIso(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14));
 }
+
+/** The boxes on the create form, each of which speaks for itself once used. */
+type Box = 'account' | 'number' | 'amount' | 'due' | 'note';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -140,7 +144,17 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
   const [amount, setAmount] = useState(0);
   const [dueDate, setDueDate] = useState(defaultDueDate());
   const [notes, setNotes] = useState('');
-  const [touched, setTouched] = useState(false);
+  // Which boxes have been used, and whether Raise has been pressed. One flag
+  // for the whole form turned "Enter how much this invoice is for." red the
+  // moment the business was picked, before the amount box had been touched
+  // (sparx persona issue 097). A box speaks for itself once it is used, and
+  // every box speaks when the form is sent.
+  const [used, setUsed] = useState<ReadonlySet<Box>>(() => new Set());
+  const [tried, setTried] = useState(false);
+  const shows = (box: Box) => tried || used.has(box);
+  // Whether the due date is one she chose. Until then it follows the chosen
+  // account's own terms, and says so under the box.
+  const [dueChosen, setDueChosen] = useState(false);
   // The due date box's own half-typed state, which its `value` cannot
   // express. Held here rather than left to `DayInput`'s own warning because
   // this field ALREADY refuses on an empty box — two red lines saying
@@ -153,17 +167,26 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle('New invoice');
   }, [ctx]);
 
-  const mark = () => {
-    setTouched(true);
+  const mark = (box: Box) => {
+    setUsed((current) => (current.has(box) ? current : new Set(current).add(box)));
   };
+
+  const chosenAccount = accountsQuery.data?.items.find((account) => account.id === accountId);
+  // The due date, from the account's own terms, while she has not picked one.
+  // Read during render rather than copied into state on pick, so an account
+  // list that arrives after the preset account still sets it.
+  const termsDue = dueChosen ? null : dueDayFor(chosenAccount?.paymentTerms);
+  const effectiveDue = termsDue ?? dueDate;
 
   const accountError = accountId === '' ? 'Choose which business this invoice is for.' : null;
 
   const amountError = amount <= 0 ? 'Enter how much this invoice is for.' : null;
-  const dueIso = dueDate === '' ? null : dayStartUtc(dueDate);
+  // Midday UTC, the way invoicing stores a due day: midnight UTC is the evening
+  // before in America, so 4471, due Aug 27, listed as due Aug 26 (issue 098).
+  const dueIso = effectiveDue === '' ? null : dayMiddayUtc(effectiveDue);
   const dateError = dueHalfTyped
     ? HALF_A_DAY
-    : dueDate === ''
+    : effectiveDue === ''
       ? 'Set a due date.'
       : dueIso === null
         ? NOT_A_DATE
@@ -185,7 +208,7 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
   );
 
   const submit = () => {
-    mark();
+    setTried(true);
     if (blocking || dueIso === null) return;
     setFailure(null);
     create.mutate(
@@ -248,7 +271,7 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                 render={
                   <div className="max-w-sm">
                     <Select
-                      color={accountError && touched ? 'error' : 'module'}
+                      color={accountError && shows('account') ? 'error' : 'module'}
                       aria-label="Which business"
                       placeholder={
                         accountsQuery.isPending ? 'Loading accounts…' : 'Choose a trade account'
@@ -257,13 +280,13 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                       items={accountItems}
                       onValueChange={(next) => {
                         setAccountId((next as string | null) ?? '');
-                        mark();
+                        mark('account');
                       }}
                     />
                   </div>
                 }
               />
-              {accountError && touched ? (
+              {accountError && shows('account') ? (
                 <FieldStatus status="error">{accountError}</FieldStatus>
               ) : (
                 <ChoiceListNote
@@ -293,7 +316,7 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                       placeholder="The next one in your run"
                       onChange={(event) => {
                         setNumber(event.target.value);
-                        mark();
+                        mark('number');
                       }}
                     />
                   }
@@ -314,13 +337,13 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                         aria-label="Invoice amount"
                         onValueChange={(next) => {
                           setAmount(next);
-                          mark();
+                          mark('amount');
                         }}
                       />
                     </div>
                   }
                 />
-                {amountError && touched ? (
+                {amountError && shows('amount') ? (
                   <FieldStatus status="error">{amountError}</FieldStatus>
                 ) : (
                   <FieldDescription>The total they owe.</FieldDescription>
@@ -334,23 +357,28 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                 render={
                   <div className="max-w-48">
                     <DayInput
-                      color={dateError && touched ? 'error' : 'module'}
-                      value={dueDate}
+                      color={dateError && shows('due') ? 'error' : 'module'}
+                      value={effectiveDue}
                       aria-label="Due date"
                       sayWhenUnfinished={false}
                       onValueChange={(value, halfTyped) => {
                         setDueDate(value);
                         setDueHalfTyped(halfTyped);
-                        mark();
+                        setDueChosen(true);
+                        mark('due');
                       }}
                     />
                   </div>
                 }
               />
-              {dateError && touched ? (
+              {dateError && shows('due') ? (
                 <FieldStatus status="error">{dateError}</FieldStatus>
               ) : (
-                <FieldDescription>When you expect to be paid by.</FieldDescription>
+                <FieldDescription>
+                  {termsDue && chosenAccount
+                    ? `When you expect to be paid by. ${chosenAccount.companyName}: ${paymentTermsLabel(chosenAccount.paymentTerms).toLowerCase()}, counted from today.`
+                    : 'When you expect to be paid by.'}
+                </FieldDescription>
               )}
             </Field>
 
@@ -365,7 +393,7 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
                     placeholder="What this invoice is for."
                     onChange={(event) => {
                       setNotes(event.target.value);
-                      mark();
+                      mark('note');
                     }}
                   />
                 }
@@ -404,7 +432,7 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
   const editable = invoice.status !== 'paid' && invoice.status !== 'void';
   const dirty = editable && (dueDate !== savedDate || notes !== savedNotes);
   // A date box can hold something that is not a date; see `lib/today`.
-  const dueIso = dueDate === '' ? null : dayStartUtc(dueDate);
+  const dueIso = dueDate === '' ? null : dayMiddayUtc(dueDate);
   const dateError = dueDate !== '' && dueIso === null ? NOT_A_DATE : null;
 
   useDirtySource(dirty, 'This invoice has unsaved changes. Close anyway?');
@@ -721,8 +749,7 @@ function MarkPaidDialog({ invoice }: { invoice: InvoiceRow }) {
         <DialogContent className="max-w-md">
           <DialogTitle>Mark as paid</DialogTitle>
           <DialogDescription>
-            Records the full {formatCents(invoice.balanceCents)} owed on invoice{' '}
-            {invoice.invoiceNumber} as received, and frees up the account&apos;s credit.
+            {`Records the full ${formatCents(invoice.balanceCents)} owed on invoice ${invoice.invoiceNumber} as received, and frees up the account's credit.`}
           </DialogDescription>
 
           <div className="flex flex-col gap-4 py-2">

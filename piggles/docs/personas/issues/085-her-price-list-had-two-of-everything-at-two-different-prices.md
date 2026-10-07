@@ -1,13 +1,13 @@
 # 085 — Her price list had two of everything, at two different prices
 
-**Status:** open: the count is fixed (act 324); the two menus are not
+**Status:** fixed (act 324 the count, act 325 the two menus)
 **Severity:** major
 **Found by:** P02 · Halo & Hem · act 4
 **Surface:** mypiggles › Bookings › Services, and the public booking page
 **Filed:** 2026-08-21
-**Fixed:** —
-**Confirmed by:** —
-**Blocked on:** a choice about day-one sample bookings, see act 324 below
+**Fixed:** 2026-10-06
+**Confirmed by:** 2 database tests with the real Salon (Editorial) design and the salon pack, each proven red
+**Blocked on:** —
 
 ## What happened
 
@@ -150,6 +150,51 @@ The way through is probably the second, with a sample marker on the booking
 itself so Clear finds it without asking the service. That changes the
 sample-data engine's markers and Clear (`markers.ts`, `clear.ts`), and both hold
 another session's work in progress now, so it waits for that to land.
+
+## Act 325
+
+The sample-data engine's other work landed, and the choice turned out not to be
+one. Issue 098 had already decided the design's booking content is examples: it
+installs only when practice data is on. It was just never marked as practice
+data, which is why Clear left Ava, Maya and Noor behind.
+
+- **One menu.** The practice pack brings services and people only to a business
+  that has none. One that has a menu, the design's or its own, gets its practice
+  bookings on that menu with those people (`engine/scheduling.ts`). None lands
+  on a person already booked: each is checked against the database's own
+  no-double-booking rule and left out if it would clash.
+- **The design's examples are practice data.** The services and people the
+  design MAKES carry `settings.sample`; ones it reuses by name are the owner's and
+  are never marked (`installSchedulingSlice`).
+- **A booking carries its own mark.** `source = 'sample'`. Older practice
+  bookings are found by their practice customer, which every one had, so no
+  backfill is needed (`engine/practice-bookings.ts`).
+- **Remove never takes a real booking.** It used to delete every booking on a
+  practice service, a real client's included, and a practice stylist on a real
+  booking made the whole Remove fail. Now it takes practice bookings only, and
+  keeps any practice service or person a real booking, series, waiting list or
+  meeting link uses: that one is the owner's now. The count shown before Remove
+  uses the same rule.
+- **A reload keeps the menu.** "Load practice data" clears its old rows first;
+  that first step now keeps the services and people, so a reload books onto the
+  same menu instead of deleting the design's and bringing the trade's.
+
+Left over: the design's booking rules and place have no column to hold a mark,
+so Remove leaves them. Filed as
+[920](920-removing-practice-data-left-the-designs-booking-rules-behind.md).
+
+**Proof.** `sample-salon-design-one-menu.test.ts` installs the real Salon
+(Editorial) design with practice data and loads the salon pack: 7 services (the
+design's, not 7 + 11), 3 people, all marked, every practice booking on the
+design's menu; Remove leaves 0 services, 0 people, 0 bookings. Red on the old
+installer (0 of 3 people marked). `sample-scheduling-one-menu.test.ts`: a
+business with its own service and stylist gets no second menu, the practice
+booking that wanted her booked stylist stands down, and Remove leaves her
+service, stylist and real booking; a business with the pack's menu keeps it on
+reload, and Remove keeps the practice service and stylist a real client was
+booked with, and that booking. All 3 red on the old engine. The related
+database suites (design locations, design untouched, practice support, resource
+site scope) pass.
 
 ## What Nia did instead
 

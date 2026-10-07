@@ -99,9 +99,10 @@ export function isOverdue(task: { status: string; dueAt: string | null }): boole
 export function taskStatusMeta(
   status: string,
   overdue = false
-): { label: string; tone: 'success' | 'warning' | 'danger' | 'info' | 'neutral' } {
+): { label: string; tone: 'success' | 'warning' | 'danger' | 'info' | undefined } {
   if (status === 'completed') return { label: 'Done', tone: 'success' };
-  if (status === 'cancelled') return { label: 'Canceled', tone: 'neutral' };
+  // A canceled task is a real outcome with no tone: colorless, never grey.
+  if (status === 'cancelled') return { label: 'Canceled', tone: undefined };
   if (overdue) return { label: 'Overdue', tone: 'danger' };
   return { label: 'To do', tone: 'info' };
 }
@@ -119,6 +120,20 @@ export function taskSubject(task: Task): string | null {
   if (task.deal) return task.deal.title;
   if (task.company?.companyName.trim()) return task.company.companyName.trim();
   return null;
+}
+
+/** What opens a new task already linked to a deal, and to its person when it
+ *  has one (sparx persona issue 115). */
+export function taskForDealParams(deal: { id: string; customerId: string | null }): {
+  id: 'new';
+  dealId: string;
+  customerId?: string;
+} {
+  return {
+    id: 'new',
+    dealId: deal.id,
+    ...(deal.customerId ? { customerId: deal.customerId } : {}),
+  };
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */

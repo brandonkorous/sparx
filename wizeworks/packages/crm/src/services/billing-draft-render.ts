@@ -14,6 +14,7 @@
 // input, but the names printed beside it are still tenant records.
 
 import { withTenant } from '@wizeworks/db';
+import { paymentTermsWords } from '@wizeworks/crm-schemas';
 import { billingDocumentNoun, isPriceOfferWorkflow } from '@wizeworks/crm-schemas/builtins';
 
 import type { ServiceContext } from '../errors';
@@ -24,6 +25,7 @@ import type {
 } from './billing-document-html';
 import { withCoreRows } from './billing-document-html';
 import { computeBillingTotals } from './billing-totals';
+import { payerTermsOf } from './billing-document-stage-service';
 import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
 
 /** One unsaved line as the editor holds it. Every field is optional because a
@@ -142,6 +144,16 @@ export async function buildRenderDataFromDraft(
 
     const priceOffer = isPriceOfferWorkflow(draft.workflowSlug);
     const noun = billingDocumentNoun(draft.workflowSlug);
+    // The terms the payer has agreed, which issuing the bill freezes onto it:
+    // the preview shows the line the printed copy will carry (issue 103).
+    const paymentTerms = priceOffer
+      ? null
+      : paymentTermsWords(
+          await payerTermsOf(tx, {
+            companyId: draft.companyId ?? null,
+            customerId: draft.customerId ?? null,
+          })
+        );
     const offerTitle = noun.charAt(0).toUpperCase() + noun.slice(1);
 
     return {
@@ -159,6 +171,7 @@ export async function buildRenderDataFromDraft(
       dueAt: draft.dueAt ?? null,
       validUntil: draft.validUntil ?? null,
       poNumber: draft.poNumber?.trim() ? draft.poNumber.trim() : null,
+      paymentTerms,
       billTo,
       shipTo: partyFromJson(draft.shipTo, 'Ship to'),
       lines,

@@ -32,6 +32,13 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import {
+  Alert,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { faFloppyDisk, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -58,6 +65,7 @@ import {
   type ResourceInput,
   type ResourceKind,
   type SchedulingResource,
+  hoursMissingNotice,
 } from './setup-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
@@ -165,6 +173,7 @@ function ResourceEditor({
   const toast = useToast();
   const confirm = useConfirm();
   const isNew = id === 'new';
+  const hoursNotice = existing ? hoursMissingNotice(existing) : null;
 
   const create = useCreateResource();
   const update = useUpdateResource(id);
@@ -291,7 +300,7 @@ function ResourceEditor({
         }
         status={
           state ? (
-            <Badge color={state.tone} variant="soft" size="sm">
+            <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
               {state.label}
             </Badge>
           ) : null
@@ -325,6 +334,30 @@ function ResourceEditor({
           ) : null}
 
           <SaveFailure title="Could not save this" message={saveError} />
+
+          {hoursNotice && existing ? (
+            <Alert color="warning" variant="soft" role="status">
+              <AlertContent>
+                <AlertTitle>{hoursNotice.title}</AlertTitle>
+                <AlertDescription>{hoursNotice.detail}</AlertDescription>
+              </AlertContent>
+              <AlertActions>
+                <Button
+                  size="sm"
+                  color="warning"
+                  onClick={() => {
+                    ctx.open(
+                      'scheduling.availability',
+                      { resourceId: existing.id },
+                      { target: 'tab' }
+                    );
+                  }}
+                >
+                  Set its hours
+                </Button>
+              </AlertActions>
+            </Alert>
+          ) : null}
 
           <FormSection
             title={isNew ? 'New person or thing' : 'What it is'}

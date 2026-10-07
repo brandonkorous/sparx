@@ -101,7 +101,7 @@ export function HeaderMenu() {
         <div className="border-base-300 mt-6 border-t pt-6">
           <a
             className={buttonClasses({ variant: 'outline', block: true })}
-            href={accountUrl('sign-in')}
+            href={accountUrl('sign-in', 'header-menu-sign-in')}
           >
             Sign in
           </a>

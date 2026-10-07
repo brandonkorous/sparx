@@ -4,6 +4,11 @@
 //
 // Commerce's numbers, so the whole band wears the Commerce hue — the one signal
 // that these come from orders rather than from something typed into the CRM.
+//
+// ORDERS, and every label says so. "Paid you so far" read as everything this
+// person had ever paid, and in a salon it said $0.00 for a client with a $180
+// appointment on Friday (persona issue 113). Visits have their own row
+// (`customer-overview-visits.tsx`), and this one names what it counts.
 
 import { Text } from '@wizeworks/silicaui-react';
 
@@ -14,7 +19,7 @@ import { describeOrderRecency, formatMoney, longDate } from './customer-display'
 
 // A bordered base-100 tile — the app's KPI shape (mirrors reports.tsx). Value
 // leads on scale and weight; the label sits under it in full ink, never faded.
-function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
+export function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-3">
       <span className="text-sm">{label}</span>
@@ -46,7 +51,7 @@ export function WorthKpis({ customer }: { customer: Customer }) {
           hint={orders > 0 ? `${formatMoney(avg)} an order on average` : undefined}
         />
         <Kpi
-          label="Paid you so far"
+          label="Paid for orders"
           value={formatMoney(spent)}
           hint={
             outstanding > 0

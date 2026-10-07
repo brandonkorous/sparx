@@ -11,19 +11,12 @@ import { AuthShell } from './auth-shell';
 import { RailPreview } from './rail-preview';
 import { BusinessFields } from './onboarding/business-fields';
 import { Choices } from './onboarding/choices';
+import { HeardAboutField } from './onboarding/heard-about';
 import { LookPicker } from './onboarding/look-picker';
 import { SHOWCASE_KEY, useOnboardingAnswers } from './onboarding/use-answers';
 
-// Onboarding — two questions, a live preview of the answer, and the door in.
-//
-// This component is the FRAME. The answers live in `onboarding/use-answers.ts`,
-// and each question block is its own file (RULE #0.5): `business-fields.tsx`,
-// `choices.tsx`, and `look-picker.tsx` over `lib/looks.ts`.
-//
-// The panel beside this form is a LIVE preview of the rail these checkboxes
-// build, so the answer and the picture of it share one piece of state. The page
-// cannot hold it — it is a server component reading the tenant — so the client
-// component that owns the answers renders the shell too.
+// Onboarding: a few questions, a live preview of the rail they build, the door in.
+// This is the FRAME; the answers live in `onboarding/use-answers.ts`.
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -48,18 +41,14 @@ export function Onboarding({
   });
   const a = useOnboardingAnswers(suggestedName, state);
 
-  // Setup finished: leave for the console with a REAL navigation. The action
-  // used to `redirect('/handoff')`, which made the client router fetch an RSC
-  // payload for a route that 303s to another origin — a doomed request, and
-  // `/handoff` hit twice. It mints a single-use token, so the second hit found
-  // it spent and bounced a brand-new customer back to sign-in.
+  // A REAL navigation: `/handoff` 303s cross-origin with a single-use token, and a
+  // router fetch would hit it twice and spend it.
   useEffect(() => {
     if (state.done) window.location.assign(state.done);
   }, [state.done]);
 
-  // The showcase first, then the templates that actually answer to this trade —
-  // by what they are ABOUT, not by which vertical they were filed under. So
-  // answering "what kind of business" visibly re-orders the shelf above it.
+  // The showcase first, then the templates that answer to this trade by what they
+  // are ABOUT, so picking a trade visibly re-orders the shelf.
   const looks = useMemo(() => rankLooks(blueprints, a.trade, SHOWCASE_KEY), [blueprints, a.trade]);
 
   return (
@@ -70,17 +59,14 @@ export function Onboarding({
       panel={<RailPreview picked={a.picked} />}
     >
       <form action={action} className="flex flex-col gap-8">
-        {/* An error that belongs to one field is shown ON that field, never
-            also up here — two copies of the same sentence read as two problems. */}
+        {/* A field's own error shows on that field only: two copies read as two problems. */}
         {state.error && !state.field ? (
           <Alert color="danger" variant="soft">
             <AlertDescription>{state.error}</AlertDescription>
           </Alert>
         ) : null}
 
-        {/* Keyed on the attempt. React resets the form's DOM after every action
-            and then writes back only what CHANGED, so a failed attempt leaves
-            each field holding the reset's value instead of hers (issue 163). */}
+        {/* Keyed on the attempt, so a failed attempt keeps her answers (issue 163). */}
         <BusinessFields
           key={`fields-${a.attempt}`}
           name={a.name}
@@ -99,6 +85,7 @@ export function Onboarding({
           selected={a.look}
           onSelect={a.setLook}
         />
+        <HeardAboutField key={`heard-${a.attempt}`} value={a.heard} onChange={a.setHeard} />
 
         <Submit />
       </form>

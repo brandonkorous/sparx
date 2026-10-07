@@ -25,6 +25,7 @@ import '@/lib/surfaces/catalog';
 // shadow them. Additions only — never a re-registration of a platform key.
 import '@/lib/surfaces/piggles-catalog';
 import { useConsoleTheme } from '@/lib/use-theme';
+import { setStorageOwner } from '@/lib/workbench/storage-owner';
 import { useGuideBrowseRequests } from '@/lib/tour/anchor';
 import { useUnclaimedModules } from '@/lib/console/nav';
 import { useRailNav } from '@/lib/console/apps';
@@ -39,6 +40,7 @@ import type { NavTab } from './mobile/nav-bar';
 
 export function ConsoleShell({
   notice,
+  userId,
   userName,
   userEmail,
   initialSiteKey,
@@ -49,6 +51,10 @@ export function ConsoleShell({
   /** What WizeWorks is announcing on this surface, or null. Server-fetched and
    *  handed down — this shell is a client component and the read is server-only. */
   notice: HeaderNoticeData | null;
+  /** The signed-in person. Their open panes, arrangements and remembered
+   *  choices are kept under this id, so two people on one computer never get
+   *  each other's console (lib/workbench/storage-owner.ts). */
+  userId: string;
   userName: string;
   userEmail: string;
   /** The active site read from the cookie server-side — the boot key when set,
@@ -65,6 +71,9 @@ export function ConsoleShell({
    *  variable that decides it is server-only. */
   accountOrigin: string;
 }) {
+  // First, before anything below reads browser storage.
+  setStorageOwner(userId);
+
   const windowIdRef = useRef<string | null>(null);
   windowIdRef.current ??= mintWindowId();
   const windowId = windowIdRef.current;

@@ -222,7 +222,7 @@ export async function reserveOnTx(
       );
     }
 
-    // A `preorder` variant with a live WINDOW is a bounded offer, not an open
+    // A variant with a live preorder WINDOW is a bounded offer, not an open
     // tap (docs/146 Phase 9.4). This is where the cap is enforced, because this
     // is the moment a customer can still be told no — refusing at commit would
     // mean refusing after they have paid. The units are COUNTED at commit, not
@@ -233,12 +233,16 @@ export async function reserveOnTx(
     // by that cart. The overshoot is then recorded truthfully rather than
     // clamped away — `preorderState` reports zero remaining and the window
     // refuses to have its limit edited below what is already owed.
-    if (variant.inventoryPolicy === 'preorder') {
-      await assertPreorderHeadroomOnTx(tx, ctx, {
-        variantId: input.variantId,
-        quantity: input.quantity - Math.max(0, available),
-      });
-    }
+    //
+    // Whatever the item's policy says, not only `preorder` (persona issue 928).
+    // Opening a window flips a `deny` item and leaves a `continue` one alone, so
+    // an item set to keep selling took orders past its preorder's limit, and the
+    // count at commit swallowed the refusal. No window, no check: the call
+    // answers null for an ordinary backorder.
+    await assertPreorderHeadroomOnTx(tx, ctx, {
+      variantId: input.variantId,
+      quantity: input.quantity - Math.max(0, available),
+    });
 
     // `continue` / `preorder` — the hold succeeds and this transaction commits,
     // so the incident lands with the thing it describes.

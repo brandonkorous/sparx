@@ -285,9 +285,13 @@ export const preorderKeys = {
   detail: (id: string) => [...preorderKeys.all, 'detail', id] as const,
 };
 
-export function usePreorderWindows(query: { status?: string; variantId?: string } = {}) {
+export function usePreorderWindows(
+  query: { status?: string; variantId?: string } = {},
+  options: { enabled?: boolean } = {}
+) {
   const key = `${query.status ?? 'any'}:${query.variantId ?? ''}`;
   return useQuery({
+    enabled: options.enabled ?? true,
     queryKey: preorderKeys.list(key),
     queryFn: () =>
       api.list<PreorderWindow>('/v1/inventory/preorders', {

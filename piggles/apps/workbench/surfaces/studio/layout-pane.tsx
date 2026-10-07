@@ -56,12 +56,15 @@ function LayoutPaneBody({
 }) {
   const { doc, dirty } = useDocSnapshot();
 
-  // In an effect, not in render: setting a parent's state during render is the
-  // warning that becomes a loop the first time the title derives from anything
-  // that moves.
+  // Always the screen's own name. It read the layout row's name, which nobody
+  // types: "Site layout" from the starter, "Tempo layout" from a design, and no
+  // screen renames it. So the launcher said Header & footer and the tab beside it
+  // said Site layout. Set rather than left to the registry so a tab saved with
+  // the old word is put right on open (persona issue 923). In an effect, not in
+  // render: setting a parent's state during render is a loop waiting to happen.
   useEffect(() => {
-    onTitle(doc.name || 'Header & footer');
-  }, [onTitle, doc.name]);
+    onTitle('Header & footer');
+  }, [onTitle]);
 
   useDirtySource(dirty, 'Your changes to the header and footer have not been saved.');
 
@@ -154,6 +157,7 @@ function LayoutStatus({
     return <span>Saved, but never published: visitors still see the starter header.</span>;
   }
   if (unpublished) return <span>Saved. Visitors still see the last published header.</span>;
-  if (catchingUp) return <span>Published. Your site catches up within a few minutes.</span>;
+  if (catchingUp)
+    return <span>Published. Your site shows it in a few seconds, a few minutes at most.</span>;
   return <span>Saved and live.</span>;
 }

@@ -85,6 +85,7 @@ export {
   jobMargin,
   sortJobs,
   jobProfitability,
+  openPastBookingCount,
 } from './jobs';
 
 export { type FinanceProvisionResult, provisionFinance } from './provisioning';

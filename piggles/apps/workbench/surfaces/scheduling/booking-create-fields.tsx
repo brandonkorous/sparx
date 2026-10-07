@@ -27,11 +27,11 @@ import { SaveFailure } from '@/components/save-failure';
 import type { WallClockBox } from '../../lib/wall-clock';
 import {
   bookingTypeLabel,
-  formatMoney,
   type CustomerLite,
   type ResourceLite,
   type ServiceLite,
 } from './bookings-data';
+import { servicePriceSuffix } from './setup-data';
 
 /** Everything the form edits. Owned by the pane, so its toolbar can tell whether
  *  the booking can be taken yet. */
@@ -151,9 +151,7 @@ export function BookingCreateFields({
             <FieldDescription>
               {bookingTypeLabel(chosenService.bookingType)} · {chosenService.durationMinutes}{' '}
               minutes
-              {chosenService.priceCents > 0
-                ? ` · ${formatMoney(chosenService.priceCents, chosenService.currency)}`
-                : ''}
+              {servicePriceSuffix(chosenService)}
             </FieldDescription>
           ) : (
             <FieldDescription>The service this time is set aside for.</FieldDescription>

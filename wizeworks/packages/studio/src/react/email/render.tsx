@@ -13,7 +13,7 @@
 // stylesheet in `style.ts`, never as a `style` prop.
 
 import type { ReactNode } from 'react';
-import type { EmailNode } from '@wizeworks/silicaui-builder/email';
+import type { EmailFrame, EmailNode } from '@wizeworks/silicaui-builder/email';
 import { emailChildren } from '../../email/walk';
 import type { EmailPreviewHost } from '../host';
 import { resolveMergeTags } from './tokens';
@@ -33,6 +33,10 @@ export interface EmailRenderContext {
    * drop indicator somewhere else in the email.
    */
   liftedId?: string | null;
+  /** The header and footer the send wraps around the body, drawn around it here. */
+  frame?: EmailFrame;
+  /** Drawing the frame: no selection, no hover, no drag. Not part of this email. */
+  inert?: boolean;
 }
 
 export interface EmailDropHint {
@@ -69,6 +73,9 @@ function stateClasses(ctx: EmailRenderContext, node: EmailNode): string {
 
 /** The attributes every drawn node carries: its address, and whether it can move. */
 function frameProps(ctx: EmailRenderContext, node: EmailNode, base: string) {
+  // The frame keeps its address so its stylesheet rules reach it, and nothing
+  // else: the canvas ignores anything inside `[data-email-frame]`.
+  if (ctx.inert) return { 'data-enode': node.id, draggable: false, className: base };
   return {
     'data-enode': node.id,
     draggable: !node.locked,
@@ -87,7 +94,9 @@ export function renderEmailNode(node: EmailNode, ctx: EmailRenderContext): React
     case 'body':
       return (
         <div {...frameProps(ctx, node, 'mx-auto flex min-h-full flex-col')} draggable={false}>
+          <FrameBand sections={ctx.frame?.header} label={ctx.frame?.label} ctx={ctx} />
           {renderChildren(node, ctx)}
+          <FrameBand sections={ctx.frame?.footer} label={ctx.frame?.label} ctx={ctx} />
         </div>
       );
 
@@ -222,6 +231,27 @@ function Thumbnail({ src, alt }: { src: string; alt: string }) {
   // framework-neutral, and the source is an arbitrary author-supplied URL that no
   // optimiser has a loader for anyway.
   return <img src={src} alt={alt} className="block h-auto w-full" />;
+}
+
+/** The send's header or footer, drawn where the inbox shows it and marked as not
+ *  part of this email. Hover names it, so a click that selects nothing is not a
+ *  mystery. */
+function FrameBand({
+  sections,
+  label,
+  ctx,
+}: {
+  sections: readonly EmailNode[] | undefined;
+  label: string | undefined;
+  ctx: EmailRenderContext;
+}) {
+  if (!sections?.length) return null;
+  const inert = { ...ctx, frame: undefined, inert: true };
+  return (
+    <div data-email-frame="" title={label} className="flex cursor-default flex-col">
+      {sections.map((section) => renderEmailNode(section, inert))}
+    </div>
+  );
 }
 
 function EmptySlot({ label }: { label: string }) {

@@ -1183,6 +1183,9 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'inventory.preorders',
+    // A product version opens this on itself (issue 928). View params, so a
+    // Preorders tab already open is reused rather than copied.
+    viewParams: ['variant', 'product'],
     title: 'Preorders',
     module: 'inventory',
     icon: CalendarClock,

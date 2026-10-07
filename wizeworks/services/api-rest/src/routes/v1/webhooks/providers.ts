@@ -60,13 +60,29 @@ const providerWebhookRoutes: FastifyPluginAsync = async (app) => {
       throw new ApiError('VALIDATION_ERROR', 'Missing stripe-signature header');
     }
 
-    // Resolve the installation with the unscoped client — a public webhook has no
-    // tenant context (same pattern as the single-account stripe webhook). Gate on
+    // A public webhook carries no tenant, only the installation id. The bare
+    // client found nothing here: the installations table forces row-level
+    // security, so every webhook was acknowledged as "no matching installation"
+    // and dropped (sparx persona issue 125). The owner-side lookup names the
+    // tenant; the installation itself is then read under that tenant. Gate on
     // enabled + not-uninstalled so a torn-down install rejects cleanly.
-    const install = await prisma.providerInstallation.findFirst({
-      where: { id: installationId, uninstalledAt: null, enabled: true },
-      select: { id: true, tenantId: true, providerSlug: true, kind: true, configEncrypted: true },
-    });
+    const owner = await prisma.$queryRaw<{ tenant_id: string | null }[]>`
+      SELECT find_provider_installation_tenant(${installationId}::uuid) AS tenant_id`;
+    const ownerTenantId = owner[0]?.tenant_id ?? null;
+    const install = ownerTenantId
+      ? await withTenant({ tenantId: ownerTenantId }, (tx) =>
+          tx.providerInstallation.findFirst({
+            where: { id: installationId, uninstalledAt: null, enabled: true },
+            select: {
+              id: true,
+              tenantId: true,
+              providerSlug: true,
+              kind: true,
+              configEncrypted: true,
+            },
+          })
+        )
+      : null;
     if (install?.providerSlug !== slug) {
       // Unknown / mismatched install — ack so the provider stops retrying a dead URL.
       request.log.warn({ slug, installationId }, 'provider webhook: no matching installation');

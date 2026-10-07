@@ -11,7 +11,12 @@
 //        moveStage() would skip the event — moveStage is the only
 //        sanctioned stage-change path.
 
-import { CreateDealInput, MoveDealStageInput, UpdateDealInput } from '@wizeworks/crm-schemas';
+import {
+  CreateDealInput,
+  MoveDealStageInput,
+  UpdateDealInput,
+  fixedStageChance,
+} from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
 import type { Deal, Prisma } from '@wizeworks/db';
 
@@ -175,7 +180,11 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
         title: input.title,
         value: input.value,
         currency: input.currency,
-        probability: input.probability,
+        // No estimate typed (0) takes the step's chance, the same as moving a
+        // deal does; a finished step's chance is fixed (sparx persona issue 113).
+        probability:
+          fixedStageChance(stage.stageType) ??
+          (input.probability > 0 ? input.probability : stage.probability),
         expectedCloseDate: input.expectedCloseDate ? new Date(input.expectedCloseDate) : null,
         source: input.source ?? null,
         tags: input.tags ?? [],
@@ -371,7 +380,16 @@ export async function moveStage(
         stageId: toStage.id,
         probability: toStage.probability,
         ...(isClosing
-          ? { closedAt: new Date(), closedReason: input.closedReason ?? null }
+          ? {
+              closedAt: new Date(),
+              // A reason written while the deal was still open (the deal form
+              // saves its fields, then moves the step) is the reason it closed:
+              // keep it rather than wipe it (sparx persona issue 114). Closing from
+              // an already-closed step replaces the old outcome's reason.
+              closedReason:
+                input.closedReason ??
+                (before.stage.stageType === 'open' ? before.closedReason : null),
+            }
           : { closedAt: null, closedReason: null }),
       },
     });

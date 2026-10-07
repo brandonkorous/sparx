@@ -112,6 +112,7 @@ export const shippingKeys = {
   zoneRates: (id: string) => ['commerce', 'shipping', 'zones', id, 'rates'] as const,
   profiles: ['commerce', 'shipping', 'profiles'] as const,
   profile: (id: string) => ['commerce', 'shipping', 'profiles', id] as const,
+  collection: ['commerce', 'shipping', 'collection'] as const,
 };
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -290,4 +291,37 @@ const RATE_TYPE_LABEL: Record<string, string> = {
 
 export function rateTypeLabel(type: string): string {
   return RATE_TYPE_LABEL[type] ?? type;
+}
+
+/** Why the region's coverage cannot be saved, or null. Limited to countries
+ *  with none chosen would save as "everywhere", the opposite of the choice. */
+export function regionCoverageError(draft: {
+  limited: boolean;
+  countries: readonly string[];
+}): string | null {
+  return draft.limited && draft.countries.length === 0
+    ? 'Choose at least one country, or turn on Deliver anywhere in the world.'
+    : null;
+}
+
+/* ── Collecting in person (sparx persona issue 129) ───────────────────────── */
+
+export function useCollectionSetting() {
+  return useQuery({
+    queryKey: shippingKeys.collection,
+    queryFn: () => api.get<{ offersCollection: boolean }>('/v1/commerce/shipping/collection'),
+  });
+}
+
+export function useSetCollectionSetting() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (offersCollection: boolean) =>
+      api.put<{ offersCollection: boolean }>('/v1/commerce/shipping/collection', {
+        offersCollection,
+      }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(shippingKeys.collection, data);
+    },
+  });
 }

@@ -9,6 +9,7 @@ import { Button, Step, Steps } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import { readyDayLabel, type StorefrontPaymentMode } from '@/lib/made-to-order-copy';
+import { ORDERS_CLOSED_MESSAGE } from '@/lib/orders-closed';
 import { heldOrderSentence, type HeldCard } from '@/lib/sign-off-words';
 import type {
   Address,
@@ -75,6 +76,23 @@ export function EmptyCart() {
       </h2>
       <Button render={<Link href="/products" />} color="primary">
         Shop all products
+      </Button>
+    </div>
+  );
+}
+
+/** A shop that cannot be paid on its website yet. Said before the first
+ *  question, so nobody types an address for an order that cannot be placed
+ *  (sparx persona issue 131). */
+export function OrdersClosed() {
+  return (
+    <div className="text-base-content grid min-h-[40vh] place-items-center gap-4 py-[clamp(3rem,8vw,6rem)] text-center">
+      <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+        Orders can’t be placed here yet
+      </h2>
+      <p className="max-w-[52ch] text-lg">{ORDERS_CLOSED_MESSAGE}</p>
+      <Button render={<Link href="/" />} color="primary">
+        Go to the home page
       </Button>
     </div>
   );

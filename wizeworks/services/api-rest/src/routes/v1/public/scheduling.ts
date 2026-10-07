@@ -247,6 +247,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
         bookingType: s.bookingType,
         durationMinutes: s.durationMinutes,
         priceCents: s.priceCents,
+        priceOnQuote: s.priceOnQuote,
         currency: s.currency,
         capacity: s.capacity,
         color: s.color,

@@ -42,8 +42,22 @@ export const EVENTS = [
   'module.activated',
   'module.deactivated',
   // ── Published site pages and chrome ─────────────────────────────────────────
+  // The whole site, from Publish, and a rollback to an earlier release.
   'builder.published',
   'builder.rolled_back',
+  // One document, from its own pane: the header and footer, a single page, a
+  // different layout made live, and the look a site wears. `@wizeworks/builder`
+  // publishes these, not api-rest, so they were missed for a month and her header
+  // reached visitors only when the cache ran out (persona issue 921). Not
+  // `builder.email.published`: no visitor reads an email template.
+  'builder.page.published',
+  'builder.layout.published',
+  'builder.layout.activated',
+  'builder.theme.published',
+  // A page's live settings (search title and summary, sharing picture, chrome,
+  // name, address) saved without a publish. Live in the database at once, so the
+  // cache has to follow (persona issue 133).
+  'builder.page.settings.changed',
   // ── Catalog ─────────────────────────────────────────────────────────────────
   'product.created',
   'product.updated',

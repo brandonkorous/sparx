@@ -177,6 +177,7 @@ function ThemeStatus({
   if (dirty) return <span>Not saved yet</span>;
   if (!applied) return <span>Saved. Your site is using a different look.</span>;
   if (unpublished) return <span>Saved. Visitors still see the last published look.</span>;
-  if (catchingUp) return <span>Published. Your site catches up within a few minutes.</span>;
+  if (catchingUp)
+    return <span>Published. Your site shows it in a few seconds, a few minutes at most.</span>;
   return <span>Saved and live.</span>;
 }

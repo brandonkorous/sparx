@@ -83,6 +83,7 @@ export {
   bringInLabel,
   failingRows,
   importableRows,
+  leftBehind,
   summarize,
   validateRows,
   type DuplicateGroup,

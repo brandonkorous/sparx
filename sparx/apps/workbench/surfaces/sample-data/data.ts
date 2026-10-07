@@ -36,6 +36,9 @@ export interface SampleDataCounts {
   bookings: number;
   services: number;
   resources: number;
+  /** A design's example booking rules and places (issue 920). */
+  bookingRules: number;
+  places: number;
   deals: number;
   tickets: number;
   billingDocuments: number;

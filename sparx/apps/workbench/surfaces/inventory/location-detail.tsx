@@ -28,6 +28,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -46,7 +47,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Archive, MapPin, Save, Warehouse } from 'lucide-react';
+import { Archive, Boxes, Grid3x3, MapPin, Save, Warehouse } from 'lucide-react';
 import { CountryField } from '../../components/country-field';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -70,6 +71,10 @@ import {
 } from './locations-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { useBusinessCountry } from '../../lib/business-country';
+import { useBusinessAddress } from '../../lib/business-address';
+import { LocationOnlineOrders } from './location-online-orders';
+import { addressLine, businessAddressOffer, canShipFrom } from './location-ship-from';
+import { locationStockLine } from './location-stock-line';
 
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes fields pinned to the left edge. */
@@ -89,6 +94,10 @@ interface Draft {
   country: string;
   phone: string;
   isActive: boolean;
+  /** Online orders ship from here. Only ever turned ON from the form: a channel
+   *  ships from one place, so moving it is done on the place it moves TO
+   *  (issue 929). */
+  shipsOnline: boolean;
 }
 
 const BLANK: Draft = {
@@ -103,6 +112,7 @@ const BLANK: Draft = {
   country: '',
   phone: '',
   isActive: true,
+  shipsOnline: false,
 };
 
 /** A code is uppercase letters, digits, dash and underscore — matching what the
@@ -135,6 +145,7 @@ function draftFrom(location: Location): Draft {
     country: location.country ?? '',
     phone: location.phone ?? '',
     isActive: location.isActive,
+    shipsOnline: location.shipsOnline === true,
   };
 }
 
@@ -227,7 +238,8 @@ function LocationEditor({
         draft.name.trim() !== '' ||
         draft.code.trim() !== '' ||
         addressChanged(draft, initial) ||
-        draft.type !== initial.type
+        draft.type !== initial.type ||
+        draft.shipsOnline !== initial.shipsOnline
       );
     }
     return (
@@ -235,9 +247,19 @@ function LocationEditor({
       draft.code !== initial.code ||
       draft.type !== initial.type ||
       draft.isActive !== initial.isActive ||
+      draft.shipsOnline !== initial.shipsOnline ||
       addressChanged(draft, initial)
     );
   }, [draft, initial, isNew]);
+
+  // Ticked, and still a place a parcel can leave from. The box is hidden for a
+  // supplier's place and disabled for a closed one, so a tick left behind by
+  // either change is not sent.
+  const shipsFromHere = draft.shipsOnline && draft.isActive && canShipFrom(draft.type);
+  // Where parcels leave from now, or will once this is saved. Its postal code
+  // is then not optional: a courier prices from it.
+  const shipsFrom = draft.isActive && (existing?.shipsOnline === true || shipsFromHere);
+  const businessOffer = businessAddressOffer(useBusinessAddress(), draft);
 
   const busy = create.isPending || update.isPending;
   const canSave = nameOk && codeOk && addrValid && changed && !busy;
@@ -276,6 +298,7 @@ function LocationEditor({
           type: draft.type,
           address: addressInput(draft),
           isActive: draft.isActive,
+          ...(shipsFromHere ? { defaultForChannel: ['storefront'] } : {}),
         },
         {
           onSuccess: (result) => {
@@ -299,6 +322,14 @@ function LocationEditor({
         ...(draft.type !== initial.type ? { type: draft.type } : {}),
         ...(draft.isActive !== initial.isActive ? { isActive: draft.isActive } : {}),
         ...(addressChanged(draft, initial) ? { address: addressInput(draft) } : {}),
+        ...(shipsFromHere && !initial.shipsOnline && existing
+          ? {
+              defaultForChannel: [
+                ...existing.defaultForChannel.filter((channel) => channel !== 'storefront'),
+                'storefront',
+              ],
+            }
+          : {}),
       },
       {
         onSuccess: () => {
@@ -338,6 +369,7 @@ function LocationEditor({
   };
 
   const place = existing ? locationPlace(existing) : null;
+  const stock = existing ? locationStockLine(existing) : null;
 
   return (
     <div className={PANE_SHELL}>
@@ -400,6 +432,44 @@ function LocationEditor({
                       </Text>
                     </span>
                   </>
+                ) : null}
+                {stock ? (
+                  <>
+                    <span aria-hidden>·</span>
+                    <Text as="span" className="text-sm">
+                      {stock}
+                    </Text>
+                  </>
+                ) : null}
+                {/* The list says how much is here; these are the way to it.
+                    Stock and Shelves both filter by location and nothing
+                    opened either on one (issue 929). Only for a place in use,
+                    the only kind their location filters offer. */}
+                {existing.isActive ? (
+                  <span className="ml-auto flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      color="module"
+                      variant="outline"
+                      onClick={() => {
+                        ctx.open('inventory.stock.list', { location: existing.id });
+                      }}
+                    >
+                      <Boxes className="size-4" aria-hidden />
+                      See what is here
+                    </Button>
+                    <Button
+                      size="sm"
+                      color="module"
+                      variant="outline"
+                      onClick={() => {
+                        ctx.open('inventory.bins.list', { location: existing.id });
+                      }}
+                    >
+                      <Grid3x3 className="size-4" aria-hidden />
+                      See its shelves
+                    </Button>
+                  </span>
                 ) : null}
               </div>
             </div>
@@ -480,10 +550,43 @@ function LocationEditor({
             </Field>
           </FormSection>
 
+          {/* Before the address, because it is the reason the address matters. */}
+          <LocationOnlineOrders draft={draft} set={set} existing={existing} />
+
           <FormSection
             title="Where it is"
             description="The address stock lives at. It appears on paperwork and helps work out shipping. A place that keeps no physical stock (like a supplier that ships direct) can leave most of this blank."
           >
+            {/* The address on Business details, offered when this place lacks
+                what a courier needs. It fills the fields and saves nothing;
+                Save does that (issue 929). */}
+            {businessOffer ? (
+              <Alert color="info" variant="soft">
+                <AlertContent>
+                  <AlertTitle>Is it at your business address?</AlertTitle>
+                  <AlertDescription>
+                    Business details has {addressLine(businessOffer)}.
+                  </AlertDescription>
+                </AlertContent>
+                <AlertActions>
+                  <Button
+                    size="sm"
+                    color="module"
+                    onClick={() => {
+                      set('line1', businessOffer.line1);
+                      set('line2', businessOffer.line2);
+                      set('city', businessOffer.city);
+                      set('region', businessOffer.region);
+                      set('postalCode', businessOffer.postalCode);
+                      set('country', businessOffer.country);
+                    }}
+                  >
+                    Use this address
+                  </Button>
+                </AlertActions>
+              </Alert>
+            ) : null}
+
             <Field>
               <FieldLabel>Street address</FieldLabel>
               <FieldControl
@@ -548,7 +651,9 @@ function LocationEditor({
               </Field>
 
               <Field>
-                <FieldLabel>Postal code (optional)</FieldLabel>
+                {/* Not optional where parcels leave from: a courier prices
+                    postage from it, and the server refuses a label without it. */}
+                <FieldLabel>{shipsFrom ? 'Postal code' : 'Postal code (optional)'}</FieldLabel>
                 <FieldControl
                   render={
                     <Input

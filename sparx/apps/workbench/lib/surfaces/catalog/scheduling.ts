@@ -141,7 +141,8 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     keywords: ['resources', 'staff', 'rooms', 'bays', 'vehicles'],
     component: ResourcesListSurface,
     createSurface: 'scheduling.resources.detail',
-    createLabel: 'Add one',
+    // Read on its own in Search everything, so it names what it adds.
+    createLabel: 'Add a person or equipment',
   },
   {
     key: 'scheduling.resources.detail',

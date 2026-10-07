@@ -145,7 +145,23 @@ function buildWhere(opts: ListBookingsOptions): Record<string, unknown> {
         : {}),
     ...(opts.bookingType ? { bookingType: opts.bookingType } : {}),
     ...(opts.serviceId ? { serviceId: opts.serviceId } : {}),
-    ...(opts.customerId ? { customerId: opts.customerId } : {}),
+    // A person's bookings are the ones made for them AND the classes they hold a
+    // seat in. A class session names nobody on the booking itself, so filtering
+    // the booking's own customer alone left a studio member's record reading
+    // "Never booked in" above a term of classes (issue 113). In an AND so it can
+    // never collide with the search's OR below.
+    ...(opts.customerId
+      ? {
+          AND: [
+            {
+              OR: [
+                { customerId: opts.customerId },
+                { attendees: { some: { customerId: opts.customerId } } },
+              ],
+            },
+          ],
+        }
+      : {}),
     ...(opts.companyId ? { companyId: opts.companyId } : {}),
     ...(opts.locationId ? { locationId: opts.locationId } : {}),
     ...(opts.resourceId ? { resources: { some: { resourceId: opts.resourceId } } } : {}),

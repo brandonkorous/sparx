@@ -29,6 +29,7 @@ import { KeyRound } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { FormSection } from '../../components/form-section';
 import { MIN_PASSWORD_LENGTH, useChangePassword } from './security-data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 const EMPTY = { current: '', next: '', confirm: '' };
 
@@ -101,8 +102,7 @@ export function PasswordCard() {
             title: 'Could not change your password',
             // The server's sentence names the exact problem ("wrong current
             // password", "password too weak") far better than we can guess.
-            description:
-              error instanceof Error ? error.message : 'Check your current password and try again.',
+            description: failureMessage(error, 'Check your current password and try again.'),
             type: 'error',
           });
         },

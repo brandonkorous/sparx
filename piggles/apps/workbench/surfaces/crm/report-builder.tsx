@@ -69,6 +69,7 @@ import {
   type Visualization,
 } from './report-builder-data';
 import { productCopy } from '../../lib/product';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /* ── Draft ──────────────────────────────────────────────────────────────── */
 
@@ -427,7 +428,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
       }
     } catch (error) {
       toast.add({
-        title: error instanceof Error ? error.message : 'Could not save that report.',
+        title: failureMessage(error, 'Could not save that report.'),
         type: 'error',
       });
     }

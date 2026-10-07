@@ -88,7 +88,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   if (isUnreachable(error)) {
     return {
       message:
-        "We couldn't reach the server just then. Your connection looks fine, so this is probably us: wait a moment and save again. What you typed is still here.",
+        "We couldn't reach the server just then. Your connection looks fine, so this is probably us: wait a moment and try again. What you typed is still here.",
       showReference: false,
       code: 'unreachable',
     };
@@ -228,4 +228,40 @@ export function describeWriteFailure(error: unknown): WriteFailure {
     showReference: Boolean(reference),
     code: error.code || 'server-error',
   };
+}
+
+/**
+ * The sentence for a failure a call site words itself, used where it would have
+ * printed `error.message`.
+ *
+ * A call site that throws its own `Error('That code did not work')` keeps its
+ * words. But a dropped connection rejects with the browser's own TypeError, and
+ * its message is "Failed to fetch": that reached the screen raw on every pane
+ * that printed `error.message`, seen under her header's Publish button when the
+ * server restarted mid-publish (persona issue 922). A failure from the server is
+ * worded here too, so a 500's "Internal Server Error" never reaches her either.
+ */
+export function failureMessage(error: unknown, fallback: string): string {
+  if (isOffline() || isUnreachable(error) || error instanceof ApiError) {
+    return describeWriteFailure(error).message;
+  }
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+/**
+ * The same, for something she asked to SEE: a report, a download, a print view.
+ * `failureMessage` speaks about a save ("what you typed is still here"), which is
+ * wrong when nothing was typed, so the network and server cases are worded for
+ * opening instead. A refusal the server wrote for her still passes through.
+ */
+export function readFailureMessage(error: unknown, fallback: string): string {
+  if (isOffline())
+    return "You're not connected to the internet. Check your connection and try again.";
+  if (isUnreachable(error)) {
+    return "We couldn't reach the server just then. Your connection looks fine, so this is probably us: wait a moment and try again.";
+  }
+  if (error instanceof ApiError && error.status >= 500) {
+    return 'Something went wrong on our end. Try again in a moment.';
+  }
+  return error instanceof Error && error.message ? error.message : fallback;
 }

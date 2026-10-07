@@ -117,3 +117,10 @@ export async function saveWorkspace(input: WorkspaceInput, done: Done): Promise<
   await patchOnboarding({ completed: { workspace: true }, currentStep: 'domain' });
   done();
 }
+
+/** Customers may collect in person, as the story said ("pick up locally"). It
+ *  outlives the moment delivery is set up, which used to take collecting away
+ *  (sparx persona issue 129). */
+export async function offerCollection(): Promise<void> {
+  await api.put('/v1/commerce/shipping/collection', { offersCollection: true });
+}

@@ -19,6 +19,7 @@ import { api } from '../../lib/api/client';
 import { openServerHtml } from '../../lib/api/html-artifact';
 import { FormSection } from '../../components/form-section';
 import { stageTone, type BillingDocument, type DocumentSnapshot } from './types';
+import { readFailureMessage } from '../../lib/api/write-failure';
 
 function useSnapshots(documentId: string) {
   return useQuery({
@@ -38,7 +39,7 @@ export function HistorySection({ doc }: { doc: BillingDocument }) {
       (error: unknown) => {
         toast.add({
           title: 'Could not open that record',
-          description: error instanceof Error ? error.message : 'Try again in a moment.',
+          description: readFailureMessage(error, 'Try again in a moment.'),
           type: 'error',
         });
       }

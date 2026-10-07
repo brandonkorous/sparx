@@ -119,6 +119,10 @@ interface TenantFacts {
    *  different, shorter question than the story composer, so it lands in its
    *  own namespaced key rather than pretending to be the same answer. */
   railGroups: string[];
+  /** Where the owner says they heard about us, answered during onboarding at
+   *  `tenants.settings.acquisition.heardAbout`. Self-reported, so it survives a
+   *  declined cookie and a visit that arrived by typing the name into a search. */
+  heardAbout: string | null;
 }
 
 /** Read everything the mirror needs straight from the tenant's own rows.
@@ -180,6 +184,7 @@ async function loadTenantFacts(tenantId: string): Promise<TenantFacts | null> {
     platformBrand: tenant.platformBrand,
     story: readStory(tenant.settings),
     railGroups: readRailGroups(tenant.settings),
+    heardAbout: readHeardAbout(tenant.settings),
   };
 }
 
@@ -230,6 +235,13 @@ function readRailGroups(settings: unknown): string[] {
   const groups = (settings as { piggles?: { railGroups?: unknown } } | null)?.piggles?.railGroups;
   if (!Array.isArray(groups)) return [];
   return groups.filter((g): g is string => typeof g === 'string').slice(0, 12);
+}
+
+/** The owner's own answer to "where did you hear about us", or null. */
+export function readHeardAbout(settings: unknown): string | null {
+  const answer = (settings as { acquisition?: { heardAbout?: unknown } } | null)?.acquisition
+    ?.heardAbout;
+  return typeof answer === 'string' && answer.trim() ? answer.trim().slice(0, 64) : null;
 }
 
 /** Module slugs with `enabled: true` in `tenants.settings.modules`. */
@@ -305,6 +317,7 @@ async function ensureMirror(
       acquisitionChannel: facts.acquisitionChannel,
       acquisitionSource: facts.acquisitionSource,
       acquisitionCampaign: facts.acquisitionCampaign,
+      heardAbout: facts.heardAbout,
       platformBrand: facts.platformBrand,
     },
   });
@@ -470,6 +483,7 @@ function dealMetadata(facts: TenantFacts): Record<string, unknown> {
     storyImpliedModules: facts.story.impliedModules,
     storyComposedAt: facts.story.composedAt,
     railGroups: facts.railGroups,
+    heardAbout: facts.heardAbout,
   };
 }
 

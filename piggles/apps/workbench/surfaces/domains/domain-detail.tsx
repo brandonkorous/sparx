@@ -63,12 +63,14 @@ import {
   useConnectDomain,
   useDisconnectDomain,
   useDomain,
+  useDomains,
   useMakeCanonical,
   useReissueVerification,
   useVerifyDomain,
   type DnsRecord,
+  type Domain,
 } from './data';
-import { productCopy } from '../../lib/product';
+import { productCopy, productName } from '../../lib/product';
 import { SaveFailure } from '@/components/save-failure';
 
 /** The one column everything in this pane sits in. Centred and capped, because a
@@ -134,7 +136,9 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
   // Defaults to the site being worked in, which is nearly always the one meant —
   // but it stays a visible, changeable choice, because pointing an address at
   // the wrong site is both easy to do and confusing to undo.
-  const fallbackSite = activeSiteId ?? '';
+  // A free address's "Connect a domain" names its own site (issue 927).
+  const askedFor = typeof ctx.params.propertyId === 'string' ? ctx.params.propertyId : null;
+  const fallbackSite = askedFor ?? activeSiteId ?? '';
   const chosenSite = propertyId || fallbackSite;
 
   const siteItems = useMemo(() => {
@@ -258,6 +262,80 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
+/**
+ * The free address that came with the site (persona issue 927).
+ *
+ * This read "Nothing to set up" and nothing else, which answers a question nobody
+ * opening it has. Somebody looking at their free address wants to know where it
+ * came from, whether it can change, which address customers are actually sent,
+ * and how to get a proper one. So: those.
+ *
+ * Where it came from is told from the HOST, not from the business name. Older
+ * businesses were given a made-up name (issue 010), so "made from your business's
+ * name" would be false for exactly the people most likely to wonder.
+ */
+function FreeAddress({
+  ctx,
+  domain,
+  siblings,
+}: {
+  ctx: SurfaceContext;
+  domain: Domain;
+  /** Every address of this site, this one included. */
+  siblings: Domain[];
+}) {
+  const product = productName();
+  // `<business>.<zone>` for the first site, `<site>.<business>.<zone>` after it.
+  const labels = domain.host.split('.');
+  const sitePart = labels.length >= 4 ? labels[0] : null;
+  const main = siblings.find((other) => other.isCanonical && other.id !== domain.id);
+  const hasOwnDomain = siblings.some((other) => other.type !== 'subdomain');
+
+  return (
+    <>
+      <FormSection title="Where this address comes from">
+        <Text className="text-sm">
+          {sitePart
+            ? `${product} gave this site its address when it was added. The first part, ${sitePart}, is the site's own; the rest is your business's.`
+            : `${product} gave your business this address when you signed up.`}{' '}
+          It never changes and cannot be removed, so a link to it keeps working for as long as the
+          site exists.
+        </Text>
+        {main ? (
+          <Text className="text-sm">
+            This site&apos;s main address is <span className="font-semibold">{main.host}</span>.
+            That is the one in the links your customers are sent and in your sitemap. This one opens
+            the same site.
+          </Text>
+        ) : null}
+      </FormSection>
+
+      {hasOwnDomain ? null : (
+        <FormSection
+          title="Use your own domain"
+          action={
+            <Button
+              size="sm"
+              color="module"
+              onClick={() => {
+                ctx.open('platform.settings.domain', { id: 'new', propertyId: domain.propertyId });
+              }}
+            >
+              <Icon glyph={faLink} className="size-4" aria-hidden />
+              Connect a domain
+            </Button>
+          }
+        >
+          <Text className="text-sm">
+            If you own an address like yourbusiness.com, you can point it at this site.{' '}
+            {domain.host} keeps working beside it, so nothing goes dark while you set it up.
+          </Text>
+        </FormSection>
+      )}
+    </>
+  );
+}
+
 function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -271,6 +349,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     refetch,
   } = useDomain(id);
   const { data: sites } = useSites();
+  const { data: allDomains } = useDomains();
 
   const verify = useVerifyDomain(id);
   const reissue = useReissueVerification(id);
@@ -332,7 +411,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const onMakeCanonical = async () => {
     const ok = await confirm({
       title: `Make ${domain.host} the main address?`,
-      description: `This becomes the address your site is known by, and the address it uses now sends people here automatically. Links people have already saved keep working.`,
+      description: `The links your customers are sent, and your sitemap, will use ${domain.host} from now on. The address used now keeps opening your site too, so links people already have still work.`,
       confirmLabel: 'Make it the main address',
       cancelLabel: 'Leave it as it is',
       color: 'warning',
@@ -422,7 +501,6 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               <Button
                 size="sm"
                 variant="outline"
-                color="neutral"
                 // Empty here, not at runtime — silica's `render` moves this Button's
                 // children onto the anchor, which the a11y rule cannot see.
                 // eslint-disable-next-line jsx-a11y/anchor-has-content -- children arrive via `render`
@@ -444,7 +522,6 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   <Button
                     size="sm"
                     variant="outline"
-                    color="neutral"
                     loading={canonical.isPending}
                     onClick={() => {
                       void onMakeCanonical();
@@ -499,13 +576,17 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           {/* ONE status message, carrying the most specific true thing known. A
               failed check names the exact record that was missing, which beats
               the generic description of the same state — showing both stacked
-              two paragraphs of "we could not find your records". */}
-          <Alert color={state.tone} variant="soft">
-            <AlertContent>
-              <AlertTitle>{state.label}</AlertTitle>
-              <AlertDescription>{checkFailure ?? state.detail}</AlertDescription>
-            </AlertContent>
-          </Alert>
+              two paragraphs of "we could not find your records".
+              Not on a working free address: the badge already says it, and the
+              section below says what it is (issue 927). */}
+          {isManaged && isLive ? null : (
+            <Alert color={state.tone} variant="soft">
+              <AlertContent>
+                <AlertTitle>{state.label}</AlertTitle>
+                <AlertDescription>{checkFailure ?? state.detail}</AlertDescription>
+              </AlertContent>
+            </Alert>
+          )}
 
           {domain.instructions ? (
             <>
@@ -555,7 +636,6 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     <Button
                       size="sm"
                       variant="outline"
-                      color="neutral"
                       loading={reissue.isPending}
                       onClick={() => {
                         reissue.mutate(undefined, {
@@ -588,14 +668,13 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               ) : null}
             </>
           ) : (
-            <FormSection title="Nothing to set up">
-              <Text className="text-sm">
-                {productCopy(
-                  'domains.managedAddress',
-                  "This address is managed by Piggles, so there are no records for you to add and nothing that can break. Every site comes with a free piggles.site address that works immediately and stays available even after you connect your own domain. It cannot be removed, because it is your site's permanent fallback address."
-                )}
-              </Text>
-            </FormSection>
+            <FreeAddress
+              ctx={ctx}
+              domain={domain}
+              siblings={(allDomains ?? []).filter(
+                (other) => other.propertyId === domain.propertyId
+              )}
+            />
           )}
         </div>
       </div>

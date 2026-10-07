@@ -43,7 +43,7 @@ import { useDragCargo, useDragSource, useDropZone } from '../drag/pointer-drag';
 import { boxOf, siblingBoxes } from '../canvas/hit';
 import type { CanvasDevice } from '../canvas/canvas';
 import { renderEmailNode, type EmailDropHint, type EmailRenderContext } from './render';
-import { emailStylesheet } from './style';
+import { emailStylesheet, framedEmailRoot } from './style';
 
 /** The console's own selection colors, handed to the email subtree as custom
  *  properties. Literal, because Tailwind reads source text. */
@@ -67,10 +67,13 @@ const DEVICE_CLASS: Record<CanvasDevice, string> = {
   mobile: 'w-[390px]',
 };
 
-/** The nearest email node element at or above `target`, within `root`. */
+/** The nearest email node element at or above `target`, within `root`. Nothing
+ *  inside the send's header or footer counts: they are drawn, not part of this
+ *  email, so a click there selects nothing and a drop there lands nowhere. */
 function emailElementAt(target: EventTarget | null, root: HTMLElement): HTMLElement | null {
   if (!(target instanceof globalThis.Node)) return null;
   const start = target instanceof HTMLElement ? target : target.parentElement;
+  if (start?.closest('[data-email-frame]')) return null;
   const found = start?.closest<HTMLElement>('[data-enode]') ?? null;
   return found && root.contains(found) ? found : null;
 }
@@ -98,7 +101,13 @@ export function EmailCanvas({ device = 'desktop' }: { device?: CanvasDevice }) {
   const scope = useId().replace(/:/g, '');
 
   const root = doc.document.root;
-  const css = useMemo(() => emailStylesheet(root, scope), [root, scope]);
+  const frame = host.emailFrame;
+  // The frame's blocks are styled by the same rules as the body's, so the
+  // stylesheet walks the email as it is sent: header, body, footer.
+  const css = useMemo(
+    () => emailStylesheet(framedEmailRoot(root, frame), scope),
+    [frame, root, scope]
+  );
 
   // Drag scoped to THIS document, never to "an email": two builders dock side by
   // side, and a block dragged across the gap would otherwise draw a drop indicator
@@ -113,6 +122,7 @@ export function EmailCanvas({ device = 'desktop' }: { device?: CanvasDevice }) {
     hoverId,
     dropHint,
     liftedId: cargo?.surface === surface ? (cargo.moveId ?? null) : null,
+    frame,
   };
 
   const idAt = useCallback((target: EventTarget | null): string | undefined => {

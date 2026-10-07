@@ -80,6 +80,8 @@ const quoteLines = [
 const QUOTE_TOTAL = 1117.5;
 
 let convertedFrom: string | null;
+// The order's own items: none unless a test gives it some.
+let orderItems: Record<string, unknown>[] = [];
 const lineCreate = vi.fn((_args: { data: Record<string, unknown> }) => Promise.resolve({}));
 const docCreate = vi.fn((args: { data: Record<string, unknown> }) =>
   Promise.resolve({ id: 'doc-ar', ...args.data })
@@ -100,7 +102,14 @@ const tx = {
   },
   order: {
     findUnique: vi.fn(() =>
-      Promise.resolve({ metadata: {}, convertedFromDocumentId: convertedFrom })
+      Promise.resolve({
+        metadata: {},
+        convertedFromDocumentId: convertedFrom,
+        customerId: 'c-dana',
+        shippingTotal: 0,
+        surchargeTotal: 0,
+        items: orderItems,
+      })
     ),
   },
   billingDocument: {
@@ -119,6 +128,7 @@ const tx = {
   },
   billingDocumentLine: { create: lineCreate, findMany: vi.fn(() => Promise.resolve([])) },
   billingDocumentSnapshot: { create: vi.fn(() => Promise.resolve({})) },
+  b2bAccountContact: { findMany: vi.fn(() => Promise.resolve([])) },
 };
 
 vi.mock('@wizeworks/db', async (importOriginal) => ({
@@ -161,6 +171,7 @@ function writtenLines() {
 beforeEach(() => {
   vi.clearAllMocks();
   convertedFrom = QUOTE;
+  orderItems = [];
 });
 
 describe('an invoice raised from a quote order', () => {
@@ -202,9 +213,58 @@ describe('the single order line it falls back to', () => {
     expect(lines[0]?.costCents ?? null).toBeNull();
   });
 
-  it('is used for an order that did not come from a quote', async () => {
+  it('is used for an order with nothing to itemize', async () => {
     convertedFrom = null;
     await raise(500);
     expect(writtenLines()).toHaveLength(1);
+  });
+});
+
+// Salt Lake County's O-000012 was placed on the site, not from a quote, and its
+// invoice INV-000009 was one line, "Order O-000012", $3,715.00, with the $400.00
+// of refundable core deposits folded into the goods (sparx persona issue 095).
+describe('an invoice raised from an order placed on the site', () => {
+  beforeEach(() => {
+    convertedFrom = null;
+    orderItems = [
+      {
+        name: 'Holset Reman Turbo Actuator, X15 EPA17 6382093HX',
+        sku: '6382093HX',
+        quantity: 2,
+        unitPrice: 1657.5,
+        lineSubtotal: 3315,
+        discountAmount: 0,
+        taxAmount: 0,
+        coreCharge: 200,
+        productId: 'p-actuator',
+        variantId: 'v-actuator',
+      },
+    ];
+  });
+
+  it('bills each part, with its core deposit apart from the goods', async () => {
+    await raise(3715);
+    expect(writtenLines()).toEqual([
+      expect.objectContaining({
+        description: 'Holset Reman Turbo Actuator, X15 EPA17 6382093HX',
+        quantity: 2,
+        unitPrice: 1657.5,
+        lineSubtotal: 3315,
+        coreCharge: 200,
+        costCents: null,
+      }),
+    ]);
+  });
+
+  it("puts the bill in the buyer's history as well as the account's", async () => {
+    await raise(3715);
+    expect(docCreate.mock.calls[0]?.[0].data).toMatchObject({ customerId: 'c-dana' });
+  });
+
+  it('keeps the single order line when the items do not come to the total', async () => {
+    await raise(3615);
+    expect(writtenLines()).toEqual([
+      expect.objectContaining({ description: 'Order O-000008', unitPrice: 3615 }),
+    ]);
   });
 });

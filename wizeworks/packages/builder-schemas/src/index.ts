@@ -43,3 +43,4 @@ export * from './import-export';
 export * from './catalog';
 export * from './platform-catalog';
 export * from './site-chrome';
+export * from './served-title';

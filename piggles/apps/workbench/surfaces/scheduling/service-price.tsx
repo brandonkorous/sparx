@@ -6,12 +6,14 @@
 // see `ServiceRules` below for why that line exists.
 
 import {
+  Checkbox,
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
   FieldStatus,
   NativeSelect,
+  Text,
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
 import { CurrencyField } from '../../components/currency-field';
@@ -47,17 +49,22 @@ export function ServicePrice({
                   color="module"
                   className="max-w-40"
                   aria-label="Price"
-                  text={draft.price}
+                  disabled={draft.priceOnQuote}
+                  text={draft.priceOnQuote ? '' : draft.price}
                   onTextChange={(text) => {
                     onSet('price', text);
                   }}
                 />
               }
             />
-            {priceProblem ? (
+            {priceProblem && !draft.priceOnQuote ? (
               <FieldStatus status="error">{priceProblem}</FieldStatus>
             ) : (
-              <FieldDescription>Leave blank for a free booking.</FieldDescription>
+              <FieldDescription>
+                {draft.priceOnQuote
+                  ? 'Quoted after a look: nothing is charged when they book.'
+                  : 'Leave blank for a free booking.'}
+              </FieldDescription>
             )}
           </Field>
 
@@ -72,6 +79,28 @@ export function ServicePrice({
             }}
           />
         </div>
+
+        {/* A price worked out after looking at the job. Without it a 0 price
+            read "Free" on the public booking page (sparx persona issue 117). */}
+        <label className="flex items-start gap-3">
+          <Checkbox
+            color="module"
+            checked={draft.priceOnQuote}
+            aria-label="We quote the price after looking at the job"
+            onChange={(event) => {
+              onSet('priceOnQuote', event.target.checked);
+            }}
+          />
+          <span className="flex flex-col gap-0.5">
+            <Text as="span" className="font-medium">
+              We quote the price after looking at the job
+            </Text>
+            <Text as="span" className="text-sm">
+              Customers see &ldquo;Quoted after we look&rdquo; instead of a price, and pay nothing
+              when they book.
+            </Text>
+          </span>
+        </label>
       </FormSection>
 
       <ServiceRules draft={draft} policies={policies} onSet={onSet} />

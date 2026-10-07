@@ -13,7 +13,13 @@
 // into a color box, and a stylesheet is the one place a stray `}` stops being a
 // typo and starts being a way to write rules for the rest of the page.
 
-import type { Align, EmailNode, FontWeight } from '@wizeworks/silicaui-builder/email';
+import type {
+  Align,
+  EmailBody,
+  EmailFrame,
+  EmailNode,
+  FontWeight,
+} from '@wizeworks/silicaui-builder/email';
 import { walkEmail } from '../../email/walk';
 
 const WEIGHTS: Record<FontWeight, string> = {
@@ -135,4 +141,17 @@ export function emailStylesheet(root: EmailNode, scope: string): string {
   });
 
   return rules.join('\n');
+}
+
+/**
+ * The body as it is sent: the frame's header, the authored blocks, the frame's
+ * footer. The canvas styles THIS, so the header and footer it draws around the
+ * email (issue 129) get their colors and spacing from the same rules.
+ */
+export function framedEmailRoot(root: EmailBody, frame: EmailFrame | undefined): EmailBody {
+  if (!frame) return root;
+  return {
+    ...root,
+    children: [...(frame.header ?? []), ...root.children, ...(frame.footer ?? [])],
+  };
 }

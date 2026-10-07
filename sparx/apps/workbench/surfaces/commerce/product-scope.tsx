@@ -110,6 +110,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { surfaceTitle } from '../../lib/surfaces/registry';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProduct, type Product } from './products-data';
+import { personalKey } from '../../lib/workbench/storage-owner';
 
 /* ── The selection channel ──────────────────────────────────────────────── */
 
@@ -140,7 +141,7 @@ const SELECTION_CHANNEL = 'sparx-workbench-product-selection';
  * import, since neither brand tree may depend on the other. */
 function selectionKey(): string {
   const site = new URLSearchParams(window.location.search).get('site') ?? 'default';
-  return `${SELECTION_CHANNEL}:${site}`;
+  return personalKey(`${SELECTION_CHANNEL}:${site}`);
 }
 
 function readStoredSelection(): Selection | null {

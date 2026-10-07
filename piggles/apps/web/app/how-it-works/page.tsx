@@ -10,32 +10,9 @@ import { StepsFigure } from '@/components/marketing/hero/steps-figure';
 import { GROUP_COPY } from '@/components/marketing/groups';
 import { CloseBand } from '@/components/marketing/close-band';
 
-// /how-it-works — the destination behind the home page's onboarding section.
-//
-// ── WHY THIS PAGE HAD TO EXIST ──────────────────────────────────────────────
-//
-// "You answer two questions. It arrives set up." was 202 words on the home page
-// with nowhere to click. It is also the single claim on that page most likely to
-// be disbelieved: everybody has been told a product sets itself up, and everybody
-// has then been handed an empty screen and a help centre. A claim that big needs
-// somewhere to be checked, and the home page is not the place to check it — it
-// gets three seconds and a link, and this is what the link owes it.
-//
-// ── WHAT IT IS ALLOWED TO SAY ───────────────────────────────────────────────
-//
-// Everything here is something the account app genuinely does today. The section
-// this page came from carried the same restraint (STATUS.md, "Onboarding") and it
-// matters more here, because a page titled "how it works" that describes a flow
-// nobody has built is the exact thing DESIGN.md §10 exists to stop. If a step
-// changes in the account app, this page is wrong until it is edited — there is no
-// mechanism keeping them in step and pretending otherwise would be worse.
-//
-// ── THE SHAPE ───────────────────────────────────────────────────────────────
-//
-//   1  The two questions — the whole form, shown
-//   2  What "arrives set up" means, per group
-//   3  What the answer does NOT do
-//   4  The fourteen days
+// /how-it-works: the place the home page's "it arrives set up" claim is checked.
+// Everything here must be something the account app does TODAY (DESIGN.md §10);
+// a step changed there makes this page wrong until it is edited.
 
 export const metadata: Metadata = {
   title: 'How getting started works',
@@ -119,10 +96,9 @@ export default function HowItWorksPage() {
               This is the entire form.
             </h2>
             <p className="mt-6 max-w-[58ch] text-lg">
-              Not the first step of the form. There is no second page, no card, no company size, no
-              &ldquo;how did you hear about us&rdquo;, and nobody rings you. The second question is
-              the only one that changes anything, and it changes what you see, never what you are
-              allowed to have.
+              Not the first step of the form. There is no card, no company size, and nobody rings
+              you. The second question is the only one that changes anything, and it changes what
+              you see, never what you are allowed to have.
             </p>
           </div>
           {/* The SIGNUP, not the console — the same depiction the home page used

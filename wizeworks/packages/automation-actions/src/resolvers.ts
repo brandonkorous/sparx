@@ -1195,7 +1195,13 @@ const B2B_ACCOUNT_EVENTS = ['crm.b2b_account.created'];
 // @wizeworks/events bus (both carry `accountId`), so they hydrate the account (+ its
 // primary contact as customer.*) exactly like a b2b_account event, plus the
 // overdue/invoice numbers off the payload.
-const B2B_NOTIFICATION_EVENTS = ['b2b.invoice.overdue', 'b2b.account.credit_hold'];
+// `b2b.account.suspended` was published and never resolved, so nothing could
+// act on a suspension (sparx persona issue 101).
+const B2B_NOTIFICATION_EVENTS = [
+  'b2b.invoice.overdue',
+  'b2b.account.credit_hold',
+  'b2b.account.suspended',
+];
 
 // An invoice issued on an account's terms (checkout, an accepted quote, a signed
 // off order). Its payload carries `invoiceId`, a billing document, so it

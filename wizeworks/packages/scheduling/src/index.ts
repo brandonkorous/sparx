@@ -107,6 +107,7 @@ export {
   deleteResource,
   getResourcePropertyIds,
   getResourcePropertyIdsFor,
+  resourcesWithWeeklyHours,
 } from './resources';
 export {
   createService,

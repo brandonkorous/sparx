@@ -182,6 +182,48 @@ export function withPoNumber(
   return { ...base, poNumber: trimmed };
 }
 
+// ── The payment terms a bill was issued on ──────────────────────────────────
+//
+// The agreement the due date was worked out from ("net45"), frozen on the bill
+// when it is issued, the way its PO number is: an account whose terms change
+// later does not rewrite a bill already in its hands. Printed beside the due
+// date as "Net 45". Gillett's own footer said "payment due Net 30" on Salt Lake
+// County's bill, due Nov 20 on Net 45, because nothing on the bill could say
+// the account's own terms (sparx persona issue 103).
+//
+// Only a day count is printed. "Pay up front" and "nothing agreed" leave the
+// line off rather than print a word that is not terms.
+
+/** The terms frozen on a bill, as stored (`net45`), or null when none. */
+export function paymentTermsOf(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
+  const value = (metadata as Record<string, unknown>).paymentTerms;
+  return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
+}
+
+/** A metadata bag with the terms set, MERGED like `withPoNumber`. Terms that
+ *  are not a day count are not stored, and a bag that already has terms keeps
+ *  them: they were frozen when it was issued. */
+export function withPaymentTerms(
+  metadata: unknown,
+  terms: string | null | undefined
+): Record<string, unknown> {
+  const base =
+    metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+      ? { ...(metadata as Record<string, unknown>) }
+      : {};
+  if (paymentTermsOf(base) !== null || paymentTermsWords(terms) === null) return base;
+  return { ...base, paymentTerms: terms?.trim().toLowerCase() };
+}
+
+/** Terms as a bill prints them: "Net 45". Null for anything that is not a
+ *  day count. */
+export function paymentTermsWords(terms: string | null | undefined): string | null {
+  const match = /^net\s*(\d{1,3})$/i.exec(terms?.trim() ?? '');
+  const days = match?.[1] ? Number(match[1]) : 0;
+  return days > 0 ? `Net ${String(days)}` : null;
+}
+
 // ── What the buyer needs about delivery ─────────────────────────────────────
 //
 // A trade buyer's request carries when they need it, where it goes, and any

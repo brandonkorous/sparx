@@ -12,6 +12,8 @@ import { SYSTEM_AUTOMATIONS } from './index.js';
  * and the tenants' copies of it then need a decision of their own.
  */
 const SHIPPED_KEYS = [
+  'b2b.account-credit-hold-notice',
+  'b2b.account-suspended-notice',
   'b2b.chase-overdue-invoices',
   'b2b.invoice-due-reminder',
   'b2b.invoice-issued-email',

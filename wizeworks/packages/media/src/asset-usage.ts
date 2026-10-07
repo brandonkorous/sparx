@@ -20,6 +20,7 @@
 // cannot drift from them, which a denormalised column maintained by hand at five
 // call sites certainly would.
 
+import { Prisma } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 /** What is using an asset, and how many of each. Only the sources that can be
@@ -39,6 +40,22 @@ export interface AssetUsage {
   staffDocuments: number;
   /** Receipts and bills attached to an expense. */
   expenses: number;
+  /** Site pages whose design shows it, by id or by its address. */
+  sitePages: number;
+  /** A site's header and footer (`builder_layouts`), the same way. */
+  siteLayouts: number;
+  /** The logo, the dark-background logo or the browser icon. */
+  branding: number;
+  /** A category's or a collection's picture. */
+  catalog: number;
+  /** Photographs a customer attached to a review. */
+  reviews: number;
+  /** Social posts that carry it. */
+  socialPosts: number;
+  /** Records that keep a file as evidence: returns, shipping labels, tax
+   *  certificates, batch certificates, signed agreements, issued invoices,
+   *  marketplace banners and part-finder icons. */
+  otherRecords: number;
   /** The sum, which is what a guard and a screen both want. */
   total: number;
 }
@@ -50,19 +67,117 @@ const EMPTY: AssetUsage = {
   authors: 0,
   staffDocuments: 0,
   expenses: 0,
+  sitePages: 0,
+  siteLayouts: 0,
+  branding: 0,
+  catalog: 0,
+  reviews: 0,
+  socialPosts: 0,
+  otherRecords: 0,
   total: 0,
 };
 
-/** A builder page stores asset ids INSIDE its silica tree as plain JSON, with no
- *  reference table beside it, so it cannot be counted without scanning every
- *  tree on every read. It is deliberately out of scope here and is the reason
- *  callers must treat `total` as "at least this many" rather than "exactly".
+/** What is still not counted, so callers treat `total` as "at least this many".
  *
- *  Measured on Juniper Row while this was written: 1 of her 87 assets appears in
- *  a builder tree, against 40 in products and 17 in CMS bodies — so the gap is
- *  real and small. Closing it wants a reference index for builder pages, which
- *  is its own piece of work. */
-export const UNCOUNTED = 'builder page trees';
+ *  Site pages and their header and footer WERE out of scope here, on a
+ *  measurement of 1 of Juniper Row's 87 assets in a builder tree. That counted
+ *  by id. A design that links a picture keeps its ADDRESS in the tree, and by
+ *  address 20 of the 87 were on her pages, so the library called a picture on
+ *  her home page "Not used anywhere" (issue 932). Pages and layouts are now
+ *  scanned for the id and the address, and the brand, catalog, review, social
+ *  and record columns that hold an asset id are counted too. What is left is a
+ *  picture whose address appears only inside an email design, a saved section
+ *  or a theme. */
+export const UNCOUNTED = 'email designs, saved sections and themes';
+
+/** Columns that hold one asset id, and the kind each counts toward. */
+const ID_COLUMNS: readonly (readonly [string, string, keyof Omit<AssetUsage, 'total'>])[] = [
+  ['tenant_brands', 'logo_light_media_id', 'branding'],
+  ['tenant_brands', 'logo_dark_media_id', 'branding'],
+  ['tenant_brands', 'favicon_media_id', 'branding'],
+  ['commerce_product_categories', 'hero_media_id', 'catalog'],
+  ['commerce_product_categories', 'icon_media_id', 'catalog'],
+  ['commerce_product_collections', 'hero_media_id', 'catalog'],
+  ['commerce_review_media', 'media_asset_id', 'reviews'],
+  ['commerce_return_labels', 'label_media_id', 'otherRecords'],
+  ['fulfillment_labels', 'label_media_id', 'otherRecords'],
+  ['commerce_tax_exemptions', 'certificate_media_id', 'otherRecords'],
+  ['inventory_lot_batches', 'coa_media_id', 'otherRecords'],
+  ['commerce_contract_prices', 'signed_agreement_media_id', 'otherRecords'],
+  ['billing_document_snapshots', 'pdf_media_id', 'otherRecords'],
+  ['market_merchant_profiles', 'banner_media_id', 'otherRecords'],
+  ['commerce_fitment_nodes', 'icon_media_id', 'otherRecords'],
+];
+
+interface RefRow {
+  kind: keyof Omit<AssetUsage, 'total'>;
+  id: string;
+  n: number;
+}
+
+/**
+ * The references no grouped Prisma count can reach: id columns on tables this
+ * package has no model handle for, uuid and JSON arrays, and the designs of
+ * site pages and layouts, which hold an id OR an address as plain JSON.
+ *
+ * One query. Pages are matched within the asset's own tenant, because a tree is
+ * searched by text and an address (a stock photograph's URL) can be shared by
+ * two businesses that both installed the same design.
+ */
+async function countOtherReferences(tx: TxClient, ids: readonly string[]): Promise<RefRow[]> {
+  const assets = await tx.mediaAsset.findMany({
+    where: { id: { in: [...ids] } },
+    select: { id: true, key: true, tenantId: true },
+  });
+  if (assets.length === 0) return [];
+  const assetIds = assets.map((a) => a.id);
+  const keys = assets.map((a) => a.key);
+  const tenants = assets.map((a) => a.tenantId);
+
+  const idRefs = ID_COLUMNS.map(
+    ([table, column, kind]) =>
+      Prisma.sql`SELECT ${kind}::text AS kind, ${Prisma.raw(`"${column}"`)} AS id FROM ${Prisma.raw(`"${table}"`)} WHERE ${Prisma.raw(`"${column}"`)} = ANY(${assetIds}::uuid[])`
+  );
+
+  return tx.$queryRaw<RefRow[]>`
+    WITH needles AS (
+      SELECT * FROM unnest(${assetIds}::uuid[], ${keys}::text[], ${tenants}::uuid[]) AS n(id, key, tenant_id)
+    ),
+    pages AS MATERIALIZED (
+      SELECT tenant_id,
+             coalesce(draft_tree::text, '') || coalesce(published_tree::text, '') ||
+             coalesce(silica_draft_tree::text, '') || coalesce(silica_published_tree::text, '') AS txt
+      FROM builder_pages WHERE tenant_id = ANY(${tenants}::uuid[])
+    ),
+    layouts AS MATERIALIZED (
+      SELECT tenant_id,
+             coalesce(draft_tree::text, '') || coalesce(published_tree::text, '') ||
+             coalesce(silica_draft_tree::text, '') || coalesce(silica_published_tree::text, '') AS txt
+      FROM builder_layouts WHERE tenant_id = ANY(${tenants}::uuid[])
+    ),
+    refs(kind, id) AS (
+      ${Prisma.join(idRefs, ' UNION ALL ')}
+      UNION ALL
+      SELECT 'socialPosts', unnest(media_asset_ids) FROM social_posts
+        WHERE media_asset_ids && ${assetIds}::uuid[]
+      UNION ALL
+      SELECT 'otherRecords', (jsonb_array_elements_text(photo_media_ids))::uuid
+        FROM commerce_return_inspections WHERE jsonb_typeof(photo_media_ids) = 'array'
+      UNION ALL
+      SELECT 'otherRecords', (jsonb_array_elements_text(media_asset_ids))::uuid
+        FROM commerce_return_line_items WHERE jsonb_typeof(media_asset_ids) = 'array'
+      UNION ALL
+      SELECT 'sitePages', n.id FROM needles n JOIN pages p ON p.tenant_id = n.tenant_id
+        WHERE position(n.id::text IN p.txt) > 0 OR position(n.key IN p.txt) > 0
+      UNION ALL
+      SELECT 'siteLayouts', n.id FROM needles n JOIN layouts l ON l.tenant_id = n.tenant_id
+        WHERE position(n.id::text IN l.txt) > 0 OR position(n.key IN l.txt) > 0
+    )
+    SELECT kind, id::text AS id, count(*)::int AS n FROM refs
+    WHERE id = ANY(${assetIds}::uuid[])
+    GROUP BY kind, id
+  `;
+}
 
 /** Usage for a set of assets, as a map keyed by asset id. Assets with no
  *  references are present with zeroes rather than absent, so a caller never has
@@ -134,8 +249,49 @@ export async function countAssetUsage(
   for (const r of authors) bump(r.avatarAssetId, 'authors', r._count._all);
   for (const r of staffDocuments) bump(r.assetId, 'staffDocuments', r._count._all);
   for (const r of expenses) bump(r.assetId, 'expenses', r._count._all);
+  for (const r of await countOtherReferences(tx, ids)) bump(r.id, r.kind, r.n);
 
   return usage;
+}
+
+/** One site page or header and footer that shows an asset. */
+export interface SitePlaceUsingAsset {
+  kind: 'page' | 'layout';
+  name: string;
+  /** The site it belongs to. A business can have several, and a page called
+   *  "Home" says nothing until it says whose. */
+  site: string;
+}
+
+/**
+ * WHICH pages and headers and footers show one asset, for its own page. The
+ * count says "1 site page"; somebody about to delete the file needs to know
+ * which one to open (issue 932). Same search as the count: the id or the
+ * address, within the asset's own business.
+ */
+export async function sitePlacesUsingAsset(
+  tx: TxClient,
+  assetId: string
+): Promise<SitePlaceUsingAsset[]> {
+  const asset = await tx.mediaAsset.findFirst({
+    where: { id: assetId },
+    select: { id: true, key: true, tenantId: true },
+  });
+  if (!asset) return [];
+  return tx.$queryRaw<SitePlaceUsingAsset[]>`
+    SELECT 'page' AS kind, p.name, s.name AS site
+    FROM builder_pages p JOIN properties s ON s.id = p.property_id
+    WHERE p.tenant_id = ${asset.tenantId}::uuid
+      AND (position(${asset.id} IN coalesce(p.draft_tree::text, '') || coalesce(p.published_tree::text, '') || coalesce(p.silica_draft_tree::text, '') || coalesce(p.silica_published_tree::text, '')) > 0
+        OR position(${asset.key} IN coalesce(p.draft_tree::text, '') || coalesce(p.published_tree::text, '') || coalesce(p.silica_draft_tree::text, '') || coalesce(p.silica_published_tree::text, '')) > 0)
+    UNION ALL
+    SELECT 'layout' AS kind, l.name, s.name AS site
+    FROM builder_layouts l JOIN properties s ON s.id = l.property_id
+    WHERE l.tenant_id = ${asset.tenantId}::uuid
+      AND (position(${asset.id} IN coalesce(l.draft_tree::text, '') || coalesce(l.published_tree::text, '') || coalesce(l.silica_draft_tree::text, '') || coalesce(l.silica_published_tree::text, '')) > 0
+        OR position(${asset.key} IN coalesce(l.draft_tree::text, '') || coalesce(l.published_tree::text, '') || coalesce(l.silica_draft_tree::text, '') || coalesce(l.silica_published_tree::text, '')) > 0)
+    ORDER BY site, name
+  `;
 }
 
 /** Usage for one asset — the shape both delete guards want. */
@@ -158,6 +314,13 @@ export function describeUsage(usage: AssetUsage): string {
   add(usage.authors, 'author profile', 'author profiles');
   add(usage.staffDocuments, 'staff document', 'staff documents');
   add(usage.expenses, 'expense', 'expenses');
+  add(usage.sitePages, 'site page', 'site pages');
+  add(usage.siteLayouts, 'site header or footer', 'site headers and footers');
+  add(usage.branding, 'logo or site icon', 'logos and site icons');
+  add(usage.catalog, 'category or collection', 'categories and collections');
+  add(usage.reviews, 'customer review', 'customer reviews');
+  add(usage.socialPosts, 'social post', 'social posts');
+  add(usage.otherRecords, 'other record', 'other records');
   if (parts.length === 0) return 'nothing';
   if (parts.length === 1) return parts[0]!;
   return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)!}`;

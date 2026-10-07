@@ -10,6 +10,7 @@ import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { addressChanged, addressInput, type Draft } from './location-draft';
+import { canShipFrom } from './location-ship-from';
 import { locationErrorMessage, type Location } from './locations-data';
 import type { useArchiveLocation, useCreateLocation, useUpdateLocation } from './locations-data';
 
@@ -36,6 +37,10 @@ export function useLocationSave({
 }) {
   const toast = useToast();
   const confirm = useConfirm();
+  // Ticked, and still a place a parcel can leave from. The box is hidden for a
+  // supplier's place and disabled for a closed one, so a tick left behind by
+  // either change is not sent.
+  const shipsFromHere = draft.shipsOnline && draft.isActive && canShipFrom(draft.type);
 
   /** A new location becomes the manage view for the location that now exists,
    *  rather than a spent form beside a list that has moved on. */
@@ -47,6 +52,7 @@ export function useLocationSave({
         type: draft.type,
         address: addressInput(draft),
         isActive: draft.isActive,
+        ...(shipsFromHere ? { defaultForChannel: ['storefront'] } : {}),
       },
       {
         onSuccess: (result) => {
@@ -77,6 +83,14 @@ export function useLocationSave({
         ...(draft.type !== initial.type ? { type: draft.type } : {}),
         ...(draft.isActive !== initial.isActive ? { isActive: draft.isActive } : {}),
         ...(addressChanged(draft, initial) ? { address: addressInput(draft) } : {}),
+        ...(shipsFromHere && !initial.shipsOnline && existing
+          ? {
+              defaultForChannel: [
+                ...existing.defaultForChannel.filter((channel) => channel !== 'storefront'),
+                'storefront',
+              ],
+            }
+          : {}),
       },
       {
         onSuccess: () => {

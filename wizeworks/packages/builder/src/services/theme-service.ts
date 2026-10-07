@@ -21,6 +21,7 @@ import {
   type PropertyContext,
   type ServiceContext,
 } from '../errors';
+import { publishBuilderEvent } from '../events';
 import { captureThemeVersionTx } from './theme-version-service';
 
 /** Where a look came from. Never who owns it — every row belongs to the tenant. */
@@ -185,13 +186,16 @@ export function duplicate(ctx: ServiceContext, id: string, name?: string): Promi
 /**
  * Snapshot draft → published.
  *
- * Publishing a theme does NOT change what any site is serving on its own: a site
- * serves the theme its `published_theme_id` points at, and that pointer moves
- * when the SITE publishes. So an author can perfect a look, publish it, and still
- * choose when each site starts wearing it.
+ * A site serves the PUBLISHED tokens of the theme its `published_theme_id` points
+ * at, and that pointer moves when the SITE publishes. So publishing a look no site
+ * wears yet changes nothing live, and an author can choose when each site starts
+ * wearing it. But publishing the look a site ALREADY wears repaints that site at
+ * once, which is why this emits `builder.theme.published` for the cache purge
+ * (persona issue 921). Emitted for every publish: knowing which sites wear it
+ * costs a read, and an unneeded purge costs one cache miss.
  */
-export function publish(ctx: ServiceContext, id: string): Promise<ThemeDto> {
-  return withTenant(ctx, async (tx) => {
+export async function publish(ctx: ServiceContext, id: string): Promise<ThemeDto> {
+  const dto = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderTheme.findFirst({ where: { id, tenantId: ctx.tenantId } });
     if (!existing) throw new BuilderNotFoundError('Theme', id);
     const row = await tx.builderTheme.update({
@@ -206,6 +210,13 @@ export function publish(ctx: ServiceContext, id: string): Promise<ThemeDto> {
     await captureThemeVersionTx(tx, ctx, row.id, existing.draftTokens, 'publish');
     return toDto(row);
   });
+  // After the commit, so a rolled-back publish never purges anything.
+  await publishBuilderEvent({
+    tenantId: ctx.tenantId,
+    topic: 'builder.theme.published',
+    payload: { themeId: dto.id, name: dto.name },
+  });
+  return dto;
 }
 
 /** Which sites wear this look — the blast radius of deleting or changing it. */

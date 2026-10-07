@@ -9,6 +9,7 @@ import { Table } from '../../components/table';
 import type { Location } from './locations-data';
 import { locationPlace, locationState, locationTypeLabel } from './locations-vocabulary';
 import { locationStockLine } from './location-stock-line';
+import { readyForCouriers } from './location-ship-from';
 
 interface Modifiers {
   shiftKey: boolean;
@@ -58,6 +59,19 @@ function Row({
             {location.isSample ? (
               <Badge color="info" variant="soft" size="sm" className="shrink-0">
                 Sample
+              </Badge>
+            ) : null}
+            {/* The one place parcels leave from, in selling's hue: it is the
+                shop's fact about this row, not the row's state (issue 929). */}
+            {location.shipsOnline ? (
+              <Badge color="module-commerce" variant="soft" size="sm" className="shrink-0">
+                Ships online orders
+              </Badge>
+            ) : null}
+            {/* Said on the list, so it is seen before anyone opens the place. */}
+            {location.shipsOnline && !readyForCouriers(location) ? (
+              <Badge color="warning" variant="soft" size="sm" className="shrink-0">
+                Address too short for couriers
               </Badge>
             ) : null}
           </span>

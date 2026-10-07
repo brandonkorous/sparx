@@ -88,6 +88,12 @@ export interface ValidationReport {
   errorRows: number[];
   /** Columns present in the mapped rows that no field spec claims. Ignored on import. */
   unmappedColumns: string[];
+  /**
+   * The FILE's columns, in its own words, that hold something and that no
+   * mapping read. Absent when the mapping was not tracked (a JSON or XML
+   * export). See `leftBehind` for the list a person reads (issue 104).
+   */
+  unreadColumns?: string[];
   /** Rows that share a natural key inside this one file. */
   duplicates: DuplicateGroup[];
 }
@@ -95,6 +101,15 @@ export interface ValidationReport {
 /** Hard cap on issues carried back to the UI. The counts are always complete; only
  *  the list is capped, because 40,000 issue objects freeze a browser tab. */
 const MAX_ISSUES = 500;
+
+/** A field's label inside a sentence: "last name", but "SKU", never "sku"
+ *  (Gillett's stock file read "This stock level has no sku.", issue 105). */
+function inSentence(label: string): string {
+  return label
+    .split(' ')
+    .map((word) => (/^[A-Z0-9]{2,}$/.test(word) ? word : word.toLowerCase()))
+    .join(' ');
+}
 
 function preview(value: string): string {
   const text = clean(value);
@@ -188,8 +203,8 @@ export function validateRows(entity: CanonicalEntity, rows: CanonicalRow[]): Val
         rowIndex: -1,
         column: spec.key,
         code: 'missing_column',
-        message: `This file has no ${spec.label.toLowerCase()} for any ${label.one.toLowerCase()}.`,
-        hint: `Every ${label.one.toLowerCase()} needs a ${spec.label.toLowerCase()}. Re-export with that column included, or map an existing column to it.`,
+        message: `This file has no ${inSentence(spec.label)} for any ${label.one.toLowerCase()}.`,
+        hint: `Every ${label.one.toLowerCase()} needs a ${inSentence(spec.label)}. Re-export with that column included, or map an existing column to it.`,
       });
     }
   }
@@ -200,7 +215,7 @@ export function validateRows(entity: CanonicalEntity, rows: CanonicalRow[]): Val
       rowIndex: -1,
       code: 'missing_natural_key',
       message: `Nothing in this file identifies each ${label.one.toLowerCase()}.`,
-      hint: `Add one of: ${keyFields.map((spec) => spec.label.toLowerCase()).join(', ')}. Without it we cannot tell two ${label.many.toLowerCase()} apart, or match one you already have.`,
+      hint: `Add one of: ${keyFields.map((spec) => inSentence(spec.label)).join(', ')}. Without it we cannot tell two ${label.many.toLowerCase()} apart, or match one you already have.`,
     });
   }
 
@@ -309,7 +324,7 @@ export function validateRows(entity: CanonicalEntity, rows: CanonicalRow[]): Val
         rowIndex: r,
         column: spec.key,
         code: 'required_missing',
-        message: `This ${label.one.toLowerCase()} has no ${spec.label.toLowerCase()}.`,
+        message: `This ${label.one.toLowerCase()} has no ${inSentence(spec.label)}.`,
         hint: `A ${label.one.toLowerCase()} cannot be created without one. Fill it in, or remove the row.`,
       });
     }
@@ -322,7 +337,7 @@ export function validateRows(entity: CanonicalEntity, rows: CanonicalRow[]): Val
           severity: 'error',
           rowIndex: r,
           code: 'no_key',
-          message: `This row has no ${keyFields.map((spec) => spec.label.toLowerCase()).join(' or ')}.`,
+          message: `This row has no ${keyFields.map((spec) => inSentence(spec.label)).join(' or ')}.`,
           hint: 'Rows without one cannot be matched or updated, so this one will be skipped.',
         });
       } else {
@@ -449,6 +464,33 @@ export function bringInLabel(
 }
 
 /** One-line summary for a surface header. Plain language, no jargon. */
+/** Plain words for the standard fields a mapping writes out and sparx does
+ *  not keep (the customer importer explains why for each). */
+const NOT_KEPT_WORDS: Readonly<Record<string, string>> = {
+  accepts_sms: 'SMS opt-in',
+  total_spent: 'Total spent',
+  total_orders: 'Number of orders',
+  created_at: 'Customer since',
+};
+
+/**
+ * What in this file will be left behind, in words its owner knows: the
+ * file's own column names for what nothing read, and plain words for the
+ * fields sparx does not keep.
+ *
+ * The report listed sparx's keys ("accepts_sms, total_orders, total_spent")
+ * and never the columns no mapping read: Shopify's "Tax Exempt" left Gillett's
+ * customer import without a word (sparx persona issue 104).
+ */
+export function leftBehind(report: ValidationReport): string[] {
+  const notKept = report.unmappedColumns.map((key) =>
+    key.startsWith('custom:')
+      ? key.slice('custom:'.length)
+      : (NOT_KEPT_WORDS[key] ?? key.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase()))
+  );
+  return [...new Set([...notKept, ...(report.unreadColumns ?? [])])];
+}
+
 export function summarize(report: ValidationReport): string {
   if (report.blocked) {
     const problems = report.issues.filter((issue) => issue.rowIndex === -1).length;

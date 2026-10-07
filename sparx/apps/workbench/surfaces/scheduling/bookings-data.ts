@@ -244,6 +244,8 @@ export interface BookingQuery {
   serviceId?: string;
   /** ISO instant; bookings that start at or after it. "What is still to come". */
   from?: string;
+  /** ISO instant; bookings that start before it. "What has already happened". */
+  to?: string;
   /** Any of these statuses. A canceled appointment in the future is not one
    *  that is still to come, so counting what is ahead has to say which. */
   statusIn?: BookingStatus[];
@@ -303,9 +305,11 @@ export const lookupKeys = {
  * not about whichever page happens to be loaded, so filtering the loaded rows in
  * the browser would answer it with the wrong ten.
  */
-export function useBookings(query: BookingQuery) {
+export function useBookings(query: BookingQuery, opts: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: bookingKeys.list(query),
+    // Off when the caller knows the Bookings app is not there to ask.
+    enabled: opts.enabled ?? true,
     queryFn: () =>
       api.list<Booking>('/v1/scheduling/bookings', {
         ...(query.q ? { q: query.q } : {}),
@@ -314,6 +318,7 @@ export function useBookings(query: BookingQuery) {
         ...(query.customerId ? { customerId: query.customerId } : {}),
         ...(query.serviceId ? { serviceId: query.serviceId } : {}),
         ...(query.from ? { from: query.from } : {}),
+        ...(query.to ? { to: query.to } : {}),
         ...(query.statusIn?.length ? { statusIn: query.statusIn.join(',') } : {}),
         order: query.order,
         take: query.take,

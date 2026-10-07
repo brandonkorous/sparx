@@ -22,6 +22,7 @@ import {
   deleteResource,
   getResourcePropertyIds,
   getResourcePropertyIdsFor,
+  resourcesWithWeeklyHours,
 } from '@wizeworks/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
@@ -52,11 +53,12 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
     );
     const rows = await listResources(tenantId, { ...query, propertyIds });
     // One query for the whole page's site scope rather than one per row.
-    const scopes = await getResourcePropertyIdsFor(
-      tenantId,
-      rows.map((r) => r.id)
-    );
-    return ok(rows.map((r) => resourceView(r, scopes.get(r.id) ?? [])));
+    const ids = rows.map((r) => r.id);
+    const [scopes, withHours] = await Promise.all([
+      getResourcePropertyIdsFor(tenantId, ids),
+      resourcesWithWeeklyHours(tenantId, ids),
+    ]);
+    return ok(rows.map((r) => resourceView(r, scopes.get(r.id) ?? [], withHours.has(r.id))));
   });
 
   app.post('/v1/scheduling/resources', async (request, reply) => {
@@ -72,11 +74,12 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
     await requireSchedulingModule(request);
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    const [row, scope] = await Promise.all([
+    const [row, scope, withHours] = await Promise.all([
       getResource(tenantId, id),
       getResourcePropertyIds(tenantId, id),
+      resourcesWithWeeklyHours(tenantId, [id]),
     ]);
-    return ok(resourceView(row, scope));
+    return ok(resourceView(row, scope, withHours.has(id)));
   });
 
   // The resource's private subscribe-to `.ics` feed URL (docs/79 §8.1). Any staff
@@ -110,9 +113,11 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
   });
 };
 
-function resourceView(r: SchedulingResource, propertyIds: string[]) {
+function resourceView(r: SchedulingResource, propertyIds: string[], hasWeeklyHours?: boolean) {
   return {
     id: r.id,
+    // Undefined where it was not looked up (a write's echo), never a guess.
+    ...(hasWeeklyHours === undefined ? {} : { hasWeeklyHours }),
     kind: r.kind,
     userId: r.userId,
     locationId: r.locationId,

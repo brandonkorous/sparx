@@ -47,6 +47,7 @@ import {
   useMergeCustomers,
   type DuplicateGroup,
 } from './duplicates-data';
+import { duplicatesCheckedWords, useCrmSettings } from './workspace-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -72,6 +73,11 @@ function shortDate(iso: string | null): string {
 
 export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: groups, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDuplicates();
+  // What the check compared, from the business's own rules (issue 108).
+  const settings = useCrmSettings();
+  const checked = duplicatesCheckedWords(
+    settings.data?.duplicateMatchRules ?? ['email', 'name_company']
+  );
   const { data: viewer } = useViewer();
   const canMerge = viewer?.role === 'admin' || viewer?.role === 'owner';
   const bulkMerge = useBulkMerge();
@@ -171,7 +177,20 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<CopyCheck className="size-6" aria-hidden />}
               title="No duplicates found"
-              description="Every customer looks unique. Nobody shares an email address, or a name and company. We check whenever you reopen this, so come back after a busy spell."
+              description={`${checked.checked}${checked.notChecked === null ? '' : ` ${checked.notChecked}`} We check whenever you reopen this, so come back after a busy spell.`}
+              actions={
+                checked.notChecked === null ? undefined : (
+                  <Button
+                    size="sm"
+                    color="module"
+                    onClick={() => {
+                      ctx.open('crm.settings', {}, { target: 'tab' });
+                    }}
+                  >
+                    How the CRM behaves
+                  </Button>
+                )
+              }
             />
           </div>
         ) : (
@@ -357,7 +376,7 @@ function CandidateRow({
         <Button
           size="sm"
           variant={isPrimary ? 'soft' : 'outline'}
-          color={isPrimary ? 'success' : 'neutral'}
+          {...(isPrimary ? { color: 'success' } : {})}
           className="shrink-0"
           aria-pressed={isPrimary}
           onClick={onKeep}
@@ -393,9 +412,11 @@ function CandidateRow({
               {meta.label}
             </Badge>
           ) : null}
+          {/* What the flag means, in the customer page's words. Most are set by an
+              import whose opt-in column did not say yes; nobody asked (issue 108). */}
           {customer.doNotContact ? (
             <Badge color="warning" variant="soft" size="sm">
-              Asked not to be contacted
+              Do not send marketing
             </Badge>
           ) : null}
         </div>

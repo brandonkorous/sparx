@@ -16,7 +16,7 @@
 
 import type { FastifyBaseLogger } from 'fastify';
 
-import { Prisma, withTenant } from '@wizeworks/db';
+import { Prisma, SAMPLE_SETTINGS, withTenant } from '@wizeworks/db';
 import { listEnabledModules, type ModuleSlug } from '@wizeworks/auth';
 import {
   categoryService,
@@ -1415,6 +1415,13 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
   // whole slice stands down. Bookings then opens on her own 'Main location' and
   // nothing else, which is exactly what a business that has not written its menu
   // yet has.
+  //
+  // And when it does install, it installs as practice data. The services and
+  // people it MAKES carry the same `settings.sample` mark the practice pack's do,
+  // so "Remove practice data" takes them away with the rest: Halo & Hem cleared
+  // her samples and kept Ava, Maya and Noor, two of whom the screen then offered
+  // to her clients as colorists (issue 085). A row reused by name is the
+  // business's own and is never marked.
   if (!env.sampleData) return;
 
   const idmap = result.scheduling ?? { locations: {}, policies: {}, resources: {}, services: [] };
@@ -1575,6 +1582,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           bookableOnline: r.bookableOnline,
           locationId: locationFor(r.locationHandle),
           imageUrl: imageUrlFor(r.imageAssetId) ?? null,
+          settings: SAMPLE_SETTINGS,
           // The chairs, rooms and staff a design installs belong to the business on
           // THIS site. Left unscoped they would be allocatable by a booking taken on
           // a sibling site — one business's barber assigned to the other's grooming
@@ -1640,6 +1648,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           bookableOnline: s.bookableOnline,
           requiresApproval: s.requiresApproval,
           imageUrl: imageUrlFor(s.imageAssetId) ?? null,
+          settings: SAMPLE_SETTINGS,
         })
       );
       id = created.id;

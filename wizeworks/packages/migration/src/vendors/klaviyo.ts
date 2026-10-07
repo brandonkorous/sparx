@@ -13,7 +13,7 @@ import type { CanonicalRow } from '../canonical';
 import { clean } from '../coerce';
 import type { SourceRow } from '../parse/csv';
 import type { VendorAdapter } from '../types';
-import { pick, row } from './_helpers';
+import { markRead, pick, row } from './_helpers';
 
 const KLAVIYO_SYSTEM = new Set(
   [
@@ -76,6 +76,7 @@ function mapProfiles(rows: SourceRow[]): CanonicalRow[] {
       const text = clean(value);
       if (text === '') continue;
       mapped[`custom:${header}`] = text;
+      markRead(header);
     }
 
     return mapped;

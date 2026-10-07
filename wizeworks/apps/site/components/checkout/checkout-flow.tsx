@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert } from '@wizeworks/silicaui-react';
 
 import { checkoutBlock } from '@/lib/account-buying-rules';
+import { ordersClosed } from '@/lib/orders-closed';
 import {
   createPaymentIntent,
   isCheckoutUnreachable,
@@ -34,7 +35,13 @@ import { useCustomer } from '../customer-provider';
 import { EMPTY_ADDRESS } from './address-form';
 import { PaymentStep } from './payment-step';
 import { OrderSummary } from './order-summary';
-import { Confirmation, EmptyCart, StepIndicator, type CheckoutStep } from './checkout-chrome';
+import {
+  Confirmation,
+  EmptyCart,
+  OrdersClosed,
+  StepIndicator,
+  type CheckoutStep,
+} from './checkout-chrome';
 import type { PlacedOrderResult } from './payment-step';
 import { ContactStep, EMPTY_CONTACT, type ContactDraft } from './contact-step';
 import { CollectionStep } from './collection-step';
@@ -101,6 +108,11 @@ export function CheckoutFlow({
     null
   );
   const collectionOnly = offer !== null && !offer.deliveryOffered;
+  // A shop that delivers AND hands over in person (sparx persona issue 129):
+  // the opening answer carries the collection option beside "deliveryOffered".
+  // Choosing it skips the address entirely, the same as a collection-only shop.
+  const [pickupRate, setPickupRate] = useState<ShippingRate | null>(null);
+  const [collectInstead, setCollectInstead] = useState(false);
 
   // The SESSION only becomes the authority on money once the delivery step has
   // been submitted. It opens on mount and does not follow a basket edit, so before
@@ -208,6 +220,8 @@ export function CheckoutFlow({
         if (!result.deliveryOffered) {
           setRates(result.rates);
           setChosenRate(result.rates[0] ?? null);
+        } else {
+          setPickupRate(result.rates.find(isCollectionRate) ?? null);
         }
       })
       .catch(() => {
@@ -332,9 +346,14 @@ export function CheckoutFlow({
       // for its own reasons cannot take the sale down with it — and after the
       // rate is known, so we never file an address for an order that then
       // could not be delivered anyway.
-      await book.keepIfAsked(address);
-      setSession(await sendRate(tenantSlug, session.sessionId, rate, note, address));
-      collectedOrder.current = isCollectionRate(rate);
+      // Collecting from this list needs no address either: nothing is posted,
+      // so none is stored or kept (issue 064, and 129 for a shop doing both).
+      const collecting = isCollectionRate(rate);
+      if (!collecting) await book.keepIfAsked(address);
+      setSession(
+        await sendRate(tenantSlug, session.sessionId, rate, note, ...(collecting ? [] : [address]))
+      );
+      collectedOrder.current = collecting;
       setStep('payment');
     } catch (err) {
       setError((err as Error).message);
@@ -370,6 +389,11 @@ export function CheckoutFlow({
     );
   }
   if (cartEmpty && step !== 'done') return <EmptyCart />;
+  // A shop that cannot be paid here yet: said before anything is asked, not on
+  // the payment step after an address has been typed (sparx persona issue 131).
+  if (ordersClosed(shopPaymentMode, cart.accountRules?.paymentTerms) && step === 'contact') {
+    return <OrdersClosed />;
+  }
   if (repeatNeedsSignIn && step !== 'done') return <RepeatNeedsSignIn lines={repeating} />;
 
   if (step === 'done' && placed) {
@@ -456,8 +480,35 @@ export function CheckoutFlow({
           />
         ) : null}
 
-        {step === 'shipping' && !collectionOnly ? (
+        {step === 'shipping' && !collectionOnly && collectInstead && pickupRate ? (
+          <CollectionStep
+            rates={[pickupRate]}
+            chosen={pickupRate}
+            onChoose={setChosenRate}
+            currency={session?.currency ?? cart.currency}
+            contactName={contact.name.trim()}
+            contactPhone={contact.phone.trim()}
+            onBack={() => {
+              setCollectInstead(false);
+              setChosenRate(null);
+            }}
+            onSubmit={handleCollection}
+            busy={busy}
+            note={note}
+            onNoteChange={setNote}
+          />
+        ) : null}
+
+        {step === 'shipping' && !collectionOnly && !(collectInstead && pickupRate) ? (
           <DeliveryStep
+            onCollectInstead={
+              pickupRate
+                ? () => {
+                    setChosenRate(pickupRate);
+                    setCollectInstead(true);
+                  }
+                : undefined
+            }
             book={book.addresses}
             savedId={book.selectedId}
             onPickSaved={(id) => {

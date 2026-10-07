@@ -37,6 +37,7 @@ import { ApiError } from '@wizeworks/api-core/errors';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { prisma } from '@wizeworks/db';
 import { appLink, appOrigin } from '@wizeworks/links/server';
+import { monthlyRecurringCents } from '../../../lib/subscription-mrr.js';
 
 // ── Platform billing notifications (docs/impl transactional-email §4 P4) ─────
 // The tenant's OWN bill from WizeWorks: receipt, payment-failed, trial-ending.
@@ -385,41 +386,4 @@ async function publishSubscriptionChanged(
     mrrCents,
     currency: opts.currency ? opts.currency.toUpperCase() : null,
   });
-}
-
-/**
- * The subscription's total recurring revenue normalized to ONE MONTH, in cents.
- *
- * Normalizing here (rather than in the consumer) means every reader gets a
- * comparable number: an annual plan reports its monthly equivalent, so a CRM
- * board summing deal values isn't mixing yearly and monthly figures. Metered
- * items carry no unit_amount and are skipped — usage isn't recurring revenue
- * until it's billed. Returns null when nothing was computable.
- */
-function monthlyRecurringCents(sub: Stripe.Subscription): number | null {
-  let total = 0;
-  let counted = 0;
-
-  for (const item of sub.items.data) {
-    const amount = item.price.unit_amount;
-    if (amount === null || amount === undefined) continue;
-    const recurring = item.price.recurring;
-    if (!recurring) continue;
-
-    const every = recurring.interval_count > 0 ? recurring.interval_count : 1;
-    const perMonth =
-      recurring.interval === 'month'
-        ? 1 / every
-        : recurring.interval === 'year'
-          ? 1 / (12 * every)
-          : recurring.interval === 'week'
-            ? 52 / 12 / every
-            : // daily
-              365 / 12 / every;
-
-    total += amount * (item.quantity ?? 1) * perMonth;
-    counted++;
-  }
-
-  return counted === 0 ? null : Math.round(total);
 }

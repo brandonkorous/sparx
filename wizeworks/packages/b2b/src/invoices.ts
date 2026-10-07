@@ -11,7 +11,12 @@
 
 import { z } from 'zod';
 import { withTenant, type Prisma } from '@wizeworks/db';
-import { b2bArService, billingPaymentService, OWED_DOCUMENT_WHERE } from '@wizeworks/crm';
+import {
+  b2bArService,
+  billingPaymentService,
+  ISSUED_BILL_WHERE,
+  OWED_DOCUMENT_WHERE,
+} from '@wizeworks/crm';
 import { notFound, badRequest } from '@wizeworks/api-core/errors';
 import type { B2bContext } from './context.js';
 import type { PendingEvent } from './events.js';
@@ -73,6 +78,23 @@ const INVOICE_INCLUDE = {
 
 type InvoiceDoc = Prisma.BillingDocumentGetPayload<{ include: typeof INVOICE_INCLUDE }>;
 
+/**
+ * What this list and its actions are about: a bill issued to a trade account.
+ * Not a quote, which has its own list, and not a draft. Every read and action
+ * below goes through it, so a quote can neither be listed as owed nor marked
+ * paid or written off as an invoice.
+ *
+ * The list asked only `companyId is not null`, so Gillett's eight quotes sat
+ * among his six invoices as "Owed", $22,389.72 nobody owed him, one a draft
+ * never sent (sparx persona issue 094). `ISSUED_BILL_WHERE` was written for
+ * exactly this, a list that shows paid bills too, and was never asked here.
+ */
+const TRADE_BILL_WHERE: Prisma.BillingDocumentWhereInput = {
+  companyId: { not: null },
+  deletedAt: null,
+  ...ISSUED_BILL_WHERE,
+};
+
 function cents(d: Prisma.Decimal | number): number {
   return Math.round(Number(d) * 100);
 }
@@ -118,7 +140,7 @@ export type InvoiceView = ReturnType<typeof mapInvoice>;
 async function loadInvoice(ctx: B2bContext, id: string): Promise<InvoiceView | null> {
   const doc = await withTenant(ctx, (tx) =>
     tx.billingDocument.findFirst({
-      where: { id, companyId: { not: null }, deletedAt: null },
+      where: { id, ...TRADE_BILL_WHERE },
       include: INVOICE_INCLUDE,
     })
   );
@@ -129,8 +151,8 @@ async function loadInvoice(ctx: B2bContext, id: string): Promise<InvoiceView | n
 
 export async function listInvoices(ctx: B2bContext, input: InvoiceListInput) {
   const where: Prisma.BillingDocumentWhereInput = {
-    companyId: input.account_id ?? { not: null },
-    deletedAt: null,
+    ...TRADE_BILL_WHERE,
+    ...(input.account_id ? { companyId: input.account_id } : {}),
     ...(input.status ? { status: input.status } : {}),
   };
 
@@ -258,7 +280,7 @@ export async function markInvoicePaid(
 
   const before = await withTenant(ctx, (tx) =>
     tx.billingDocument.findFirst({
-      where: { id, companyId: { not: null }, deletedAt: null },
+      where: { id, ...TRADE_BILL_WHERE },
       select: { id: true, status: true, balance: true, companyId: true, notes: true },
     })
   );
@@ -313,7 +335,7 @@ export async function writeOffInvoice(
 
   const before = await withTenant(ctx, (tx) =>
     tx.billingDocument.findFirst({
-      where: { id, companyId: { not: null }, deletedAt: null },
+      where: { id, ...TRADE_BILL_WHERE },
       select: { id: true, status: true },
     })
   );

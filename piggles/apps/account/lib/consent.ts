@@ -79,13 +79,17 @@ export async function readConsent(userId: string, tenantId: string): Promise<Con
  *  Read-modify-write, MERGED — never assigned. `users.preferences` is shared:
  *  view defaults, notification preferences and tour outcomes all live in the
  *  same blob, and replacing the object would silently drop every one of them.
- *  The same rule the tour writer and the preferences endpoint both follow. */
+ *  The same rule the tour writer and the preferences endpoint both follow.
+ *
+ *  `homeTenantId` is the business the person's own row belongs to
+ *  (`session.user.homeTenantId`), never the one they are acting in: RLS refuses
+ *  the write from a business they joined (sparx persona issue 122). */
 export async function writeConsent(
   userId: string,
-  tenantId: string,
+  homeTenantId: string,
   analytics: boolean
 ): Promise<void> {
-  await withTenant({ tenantId }, async (tx) => {
+  await withTenant({ tenantId: homeTenantId }, async (tx) => {
     const before = await tx.user.findUnique({
       where: { id: userId },
       select: { preferences: true },

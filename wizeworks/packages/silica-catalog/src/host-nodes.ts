@@ -109,6 +109,17 @@ export const HOST_KEYS = {
    *  promising "when a shopper saves a product for later, it shows up here" (issue 642).
    */
   commerceProductSave: 'commerce.product-save',
+  /** What a product FITS: the makes, models and engines (or ages and sizes, or
+   *  species and breeds) its fit rules name, with any range such as years. A
+   *  per-record template (`commerce.product` record type); the route passes the
+   *  product handle via context. Draws nothing for a product with no fit rules.
+   *
+   *  It exists for the reason the save and questions cores do. The fit list was
+   *  built, and lived in the PREVIOUS generation's product body; when product pages
+   *  became silica trees it went out of reach and nothing said so. A diesel shop
+   *  with 443 fit rules showed a shopper a 2007-2010 injector with no sign of which
+   *  trucks it fits (sparx persona issue 126). */
+  commerceProductFitment: 'commerce.product-fitment',
   /** The bookable-service DETAIL — one service's header + its LIVE time-picker (availability,
    *  slot selection, booking). A per-record functional template (`scheduling.service` record
    *  type); the route passes the service id via context. Interactive (client widget). */
@@ -551,6 +562,27 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
         // makes a shopper work out whether it is saved by reading the button that
         // undoes it.
         default: 'Saved',
+      },
+    ],
+  },
+  {
+    key: HOST_KEYS.commerceProductFitment,
+    // What a shopper asks at the counter: "will it fit?". Not "fitment table",
+    // which is the trade's word for the data, not the question.
+    label: 'What it fits',
+    category: 'Your shop',
+    icon: 'box',
+    hint: 'The vehicles, sizes or models this product fits, from the fit rules you set on it. Shows nothing for a product with none. Put it on your product page.',
+    // Unpinned: a shop with no fit rules has no use for it, and one that would
+    // rather say it in the description must be able to take it off.
+    pinned: false,
+    defaultClass: 'mx-auto w-full max-w-5xl px-6',
+    props: [
+      {
+        name: 'heading',
+        label: 'Heading',
+        type: 'text',
+        default: 'What it fits',
       },
     ],
   },

@@ -13,6 +13,7 @@
 // are explicit, exported, and small enough to move by hand.
 
 import type { PaneDescriptor } from '../surfaces/descriptor';
+import { personalKey } from './storage-owner';
 
 const LAYOUT_KEY = 'sparx-workbench-layout';
 const WORKSPACES_KEY = 'sparx-workbench-workspaces';
@@ -28,7 +29,7 @@ const WORKSPACES_KEY = 'sparx-workbench-workspaces';
  * site is resolved. Keying by id (not name) survives renames.
  */
 function layoutKey(siteKey: string): string {
-  return `${LAYOUT_KEY}:${siteKey}`;
+  return personalKey(`${LAYOUT_KEY}:${siteKey}`);
 }
 
 /**
@@ -179,7 +180,7 @@ export function clearLayout(siteKey: string): void {
    rather than rebuilding a set of panes, you restore the one you built before. */
 
 export function listWorkspaces(): NamedWorkspace[] {
-  return readJson<NamedWorkspace[]>(WORKSPACES_KEY) ?? [];
+  return readJson<NamedWorkspace[]>(personalKey(WORKSPACES_KEY)) ?? [];
 }
 
 export function saveWorkspace(
@@ -198,7 +199,7 @@ export function saveWorkspace(
     zoom: presentation?.zoom,
     mode: presentation?.mode,
   };
-  writeJson(WORKSPACES_KEY, [...listWorkspaces(), workspace]);
+  writeJson(personalKey(WORKSPACES_KEY), [...listWorkspaces(), workspace]);
   return workspace;
 }
 
@@ -233,7 +234,7 @@ export function saveNavState(state: NavState): void {
 
 export function deleteWorkspace(id: string): void {
   writeJson(
-    WORKSPACES_KEY,
+    personalKey(WORKSPACES_KEY),
     listWorkspaces().filter((workspace) => workspace.id !== id)
   );
 }

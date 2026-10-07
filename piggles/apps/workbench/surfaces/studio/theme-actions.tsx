@@ -23,6 +23,7 @@ import {
   useSaveTheme,
   type ThemeRow,
 } from '../../lib/studio/data';
+import { failureMessage } from '../../lib/api/write-failure';
 
 /** What deleting this look would cost, in the author's own words. */
 function costOf(names: string[] | null): string {
@@ -121,7 +122,7 @@ function DeleteLook({ row }: { row: ThemeRow }) {
       // The server's own sentence names the site that is wearing it, which is more
       // use than anything this file could say from a status code.
       toast.add({
-        title: error instanceof Error ? error.message : 'That look could not be deleted',
+        title: failureMessage(error, 'That look could not be deleted'),
         type: 'error',
       });
     }

@@ -132,7 +132,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               >
                 <Plus className="size-4" aria-hidden />
-                Add one
+                Add a person or equipment
               </Button>
             ),
           }}
@@ -186,7 +186,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </td>
                 <td className="hidden whitespace-nowrap @xl:table-cell">{holds ?? '—'}</td>
                 <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
+                  <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
                     {state.label}
                   </Badge>
                 </td>
@@ -207,11 +207,11 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add one: hold Shift to open alongside, Alt for a new window"
+            title="Add a person or equipment: hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Add one</span>
+            <span className="hidden @lg:inline">Add a person or equipment</span>
           </Button>
         }
         controls={

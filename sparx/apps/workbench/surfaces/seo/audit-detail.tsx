@@ -3,7 +3,7 @@
 // One page's scorecard — how well it is set up to be found, and exactly what to
 // fix first.
 //
-// A READ-ONLY detail pane, not a form: there is nothing to save here. The score
+// A detail pane, not a form. The score
 // is recomputed fresh every time this opens (the live-audit endpoint re-scores
 // and re-stores), so the number is always current even when the list it was
 // opened from is a little stale — and "check again" is just a refetch.
@@ -12,8 +12,13 @@
 // return to and deep-link, comparing two pages' checks side by side is useful,
 // and it wants to sit BESIDE the list it came from.
 //
-// Deliberately NOT EditorLayout: there is no form and no running summary to put
-// in a rail. One centred column — the page's identity at the top, the single
+// Read-only does not mean actionless (sparx persona issue 133): the toolbar opens
+// the editor that can change what the checks complain about (`audit-fix-target.ts`),
+// and for a site page the two fields the checks grade most, its search title and
+// summary, are right here (`page-search-wording.tsx`), because the editor cannot
+// be opened onto them.
+//
+// Deliberately NOT EditorLayout: there is no running summary to put in a rail. One centred column — the page's identity at the top, the single
 // most worthwhile fix as a callout, the score broken down, then the checks split
 // into "worth fixing" and "already good".
 
@@ -33,6 +38,8 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { useFixAction } from './audit-fix-target';
+import { PageSearchWording } from './page-search-wording';
 import {
   checkStatusLabel,
   checkTone,
@@ -170,6 +177,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
     dataUpdatedAt,
     refetch,
   } = useAudit(type, id);
+  const fixAction = useFixAction(ctx, type, id);
 
   const worthFixing = useMemo(
     () => (card?.checks ?? []).filter((c) => c.status === 'warn' || c.status === 'fail'),
@@ -205,6 +213,9 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Page check actions"
+        // The ONE thing this pane offers: the editor that can change what it
+        // complains about, in the hue of the module it lands in.
+        primaryAction={fixAction}
         controls={
           <>
             {card ? (
@@ -290,6 +301,16 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                 </AlertContent>
               </Alert>
             )}
+
+            {type === 'builder_page' ? (
+              <PageSearchWording
+                pageId={id}
+                pageName={paramTitle || 'this page'}
+                onSaved={() => {
+                  void refetch();
+                }}
+              />
+            ) : null}
 
             <section className="card bg-base-100 flex flex-col gap-3 p-4">
               <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">

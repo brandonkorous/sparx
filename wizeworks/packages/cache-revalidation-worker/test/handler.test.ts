@@ -91,22 +91,27 @@ describe('planRevalidation', () => {
     expect(planRevalidation('sitebuilder.rolled_back')).toBe('site');
   });
 
-  it('maps the two builder events that are REALLY published to the builder scope', () => {
-    // `builder.published` / `builder.rolled_back` are the only `builder.*` members of
-    // the `EventType` union, and until 2026-07 there were none at all — this branch
-    // was written against names nobody emitted, so it was dead code that looked
-    // healthy. Both are now published by `POST /v1/builder/site/publish` and
-    // `.../releases/:id/restore`. Anything else here is aspirational; keep this list
-    // matching `wizeworks/packages/events/src/types.ts` rather than inventing plausible names.
-    for (const type of ['builder.published', 'builder.rolled_back']) {
+  it('maps every builder publish to the builder scope', () => {
+    // api-rest publishes the first two for the whole site. `@wizeworks/builder`
+    // publishes the other four itself when one document goes live from its own
+    // pane, and they reach the bus through its bridge. This test once called
+    // those "plausible names nobody emitted"; they were on the broker the whole
+    // time (persona issue 921).
+    for (const type of [
+      'builder.published',
+      'builder.rolled_back',
+      'builder.page.published',
+      'builder.layout.published',
+      'builder.layout.activated',
+      'builder.theme.published',
+    ]) {
       expect(planRevalidation(type)).toBe('builder');
     }
   });
 
   it('still maps any future builder.* name by prefix', () => {
-    // The branch is a prefix match on purpose: a later `builder.email.published` should
-    // purge the same tag without a worker change. This asserts the prefix behaviour
-    // WITHOUT implying those names exist today.
+    // The branch is a prefix match on purpose, so a new builder topic purges the
+    // same tag without a worker change. It still has to be SUBSCRIBED to arrive.
     expect(planRevalidation('builder.something.new')).toBe('builder');
   });
 
@@ -150,6 +155,27 @@ describe('the subscription list', () => {
     ]) {
       expect(EVENTS).toContain(type);
     }
+  });
+
+  it('carries every publish that changes what a visitor sees', () => {
+    // The whole site, and each document published from its own pane: the header
+    // and footer, one page, a layout made live, the look a site wears. Drop one
+    // and that Publish button waits for the five-minute cache again, while the
+    // pane says "a few seconds" (persona issue 921).
+    for (const type of [
+      'builder.published',
+      'builder.rolled_back',
+      'builder.page.published',
+      'builder.layout.published',
+      'builder.layout.activated',
+      'builder.theme.published',
+    ]) {
+      expect(EVENTS).toContain(type);
+    }
+  });
+
+  it('does not purge on an email template', () => {
+    expect(EVENTS).not.toContain('builder.email.published');
   });
 
   it('lists each event once', () => {

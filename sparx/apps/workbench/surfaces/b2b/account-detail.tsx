@@ -32,7 +32,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { FileText, Receipt, ShoppingCart, Trash2, UserPlus } from 'lucide-react';
+import { FileText, Handshake, Receipt, ShoppingCart, Trash2, UserPlus } from 'lucide-react';
+import { useModuleStates } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -57,6 +58,7 @@ import {
   useDeleteAccount,
   useSaveAccount,
   accountTierWords,
+  standingHelp,
   tierChoiceItems,
   useSetAccountTier,
   useTierChoices,
@@ -403,6 +405,9 @@ function AccountEditor({
 
   const state = account ? accountState(account.status) : null;
 
+  const modules = useModuleStates();
+  const crmOn = (modules.data ?? []).some((m) => m.slug === 'crm' && m.enabled);
+
   const openList = (surface: string, event: { shiftKey: boolean; altKey: boolean }) => {
     if (!account) return;
     ctx.open(
@@ -645,9 +650,7 @@ function AccountEditor({
                   </div>
                 }
               />
-              <FieldDescription>
-                Put them on credit hold to stop new orders until they&apos;ve paid what they owe.
-              </FieldDescription>
+              <FieldDescription>{standingHelp(draft.status)}</FieldDescription>
             </Field>
 
             <Field>
@@ -784,6 +787,27 @@ function AccountEditor({
                   <Receipt className="size-4" aria-hidden />
                   Their invoices
                 </Button>
+                {/* The same business as a CRM company: its deals, requests,
+                    notes and every order and invoice in one place. The two
+                    pages never linked, so a deal was one search away from an
+                    account nobody could see it from (sparx persona issue 112). */}
+                {crmOn ? (
+                  <Button
+                    size="sm"
+                    variant="soft"
+                    color="module-crm"
+                    onClick={(event) => {
+                      ctx.open(
+                        'crm.account.detail',
+                        { id: account.id },
+                        { target: targetFor(event) }
+                      );
+                    }}
+                  >
+                    <Handshake className="size-4" aria-hidden />
+                    Their deals and requests
+                  </Button>
+                ) : null}
               </div>
             </FormSection>
           ) : null}

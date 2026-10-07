@@ -11,7 +11,11 @@
 // is off, never "make your first one".
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import type { EmailColorDefaults, EmailDocument } from '@wizeworks/silicaui-builder/email';
+import type {
+  EmailColorDefaults,
+  EmailDocument,
+  EmailFrame,
+} from '@wizeworks/silicaui-builder/email';
 import { api } from '../api/client';
 
 export const EMAILS_KEY = ['studio', 'emails'] as const;
@@ -149,20 +153,20 @@ export function useCustomiseForSite() {
 }
 
 /**
- * The exact colors a real send paints with, resolved server-side from this
- * site's brand.
+ * What a real send wraps around and paints an email with, resolved server-side
+ * from this site's brand: the header and footer (`frame`) and the colors.
  *
- * Feeding these to the canvas is what makes a NEW block land on brand. They are
- * literal hex on purpose — an email cannot ship a CSS custom property, so every
- * color in a sent email is frozen when it is authored.
+ * The colors make a NEW block land on brand. They are literal hex on purpose:
+ * an email cannot ship a CSS custom property, so every color in a sent email is
+ * frozen when it is authored. The frame is drawn around the canvas so the owner
+ * designs inside the email her customers get (persona issue 129); the canvas
+ * used to read only the colors from this same answer and drop the frame.
  */
-export function useEmailColors() {
+export function useEmailChrome() {
   return useQuery({
-    queryKey: ['studio', 'email-colors'],
+    queryKey: ['studio', 'email-chrome'],
     queryFn: () =>
-      api
-        .get<{ colors: EmailColorDefaults }>('/v1/builder/emails/frame')
-        .then((response) => response.colors),
+      api.get<{ frame: EmailFrame; colors: EmailColorDefaults }>('/v1/builder/emails/frame'),
     staleTime: 300_000,
   });
 }

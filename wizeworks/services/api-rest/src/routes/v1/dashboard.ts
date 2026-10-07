@@ -8,7 +8,7 @@
 // rather than claiming "0 of X".
 
 import type { FastifyPluginAsync } from 'fastify';
-import { prisma } from '@wizeworks/db';
+import { prisma, withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import { ALL_MODULES, type ModuleSlug } from '@wizeworks/auth';
@@ -34,25 +34,31 @@ function readModuleFlags(settings: unknown): Record<string, boolean> {
   return out;
 }
 
+// Counted inside withTenant: pages, customers and bookings force row-level
+// security, so a bare count read 0 for every business (sparx persona issue 125).
 async function loadMetric(tenantId: string, slug: ModuleSlug): Promise<string | null> {
   switch (slug) {
     case 'cms': {
-      const n = await prisma.page.count({ where: { tenantId } });
+      const n = await withTenant({ tenantId }, (tx) => tx.page.count({ where: { tenantId } }));
       return `${n} ${n === 1 ? 'page' : 'pages'}`;
     }
     case 'crm': {
-      const n = await prisma.customer.count({ where: { tenantId, deletedAt: null } });
+      const n = await withTenant({ tenantId }, (tx) =>
+        tx.customer.count({ where: { tenantId, deletedAt: null } })
+      );
       return `${n} ${n === 1 ? 'customer' : 'customers'}`;
     }
     case 'scheduling': {
-      const n = await prisma.booking.count({
-        where: {
-          tenantId,
-          deletedAt: null,
-          startAt: { gte: new Date() },
-          status: { notIn: ['cancelled', 'no_show'] },
-        },
-      });
+      const n = await withTenant({ tenantId }, (tx) =>
+        tx.booking.count({
+          where: {
+            tenantId,
+            deletedAt: null,
+            startAt: { gte: new Date() },
+            status: { notIn: ['cancelled', 'no_show'] },
+          },
+        })
+      );
       return `${n} upcoming`;
     }
     default:

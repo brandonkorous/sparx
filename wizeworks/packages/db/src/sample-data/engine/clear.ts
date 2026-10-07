@@ -15,13 +15,30 @@ import {
   SAMPLE_SUPPLIER_PREFIX,
   SAMPLE_TIER_DESCRIPTION,
 } from '../markers';
+import {
+  designExamples,
+  practiceBookingWhere,
+  removablePlaceWhere,
+  removableResourceWhere,
+  removableRuleWhere,
+  removableServiceWhere,
+} from './practice-bookings';
 
 const sampleMeta = { path: ['sample'], equals: true };
 const samplePrefix = { startsWith: SAMPLE_HANDLE_PREFIX };
 
+export interface ClearOptions {
+  /** Keep the practice services and people: a reload books onto them again
+   *  rather than deleting the menu and bringing another (issue 085). Without
+   *  it, the reload's own first step deleted a design's example menu and the
+   *  pack replaced it with the trade's. "Remove practice data" leaves it unset. */
+  keepMenu?: boolean;
+}
+
 export async function clearSampleDataOnTx(
   tx: Prisma.TransactionClient,
-  tenantId: string
+  tenantId: string,
+  opts: ClearOptions = {}
 ): Promise<void> {
   // Resolve sample product + variant ids (needed to free RESTRICT edges).
   const products = await tx.product.findMany({
@@ -85,18 +102,30 @@ export async function clearSampleDataOnTx(
     where: { tenantId, description: SAMPLE_TIER_DESCRIPTION, accounts: { none: {} } },
   });
 
-  // Scheduling — bookings (via sample services) then the services/resources.
-  const sampleServices = await tx.schedulingService.findMany({
-    where: { tenantId, settings: sampleMeta },
-    select: { id: true },
-  });
-  if (sampleServices.length) {
-    await tx.booking.deleteMany({
-      where: { tenantId, serviceId: { in: sampleServices.map((s) => s.id) } },
+  // Scheduling — the practice bookings by their own mark, then the practice
+  // services and people nothing real still uses (practice-bookings.ts). It
+  // deleted every booking on a practice service, a real client's included.
+  const practice = await practiceBookingWhere(tx, tenantId);
+  await tx.booking.deleteMany({ where: practice });
+  if (!opts.keepMenu) {
+    // Which rules and places go is decided before anything is deleted, by the
+    // same rule the count uses, so it cannot drift from what the screen promised.
+    const examples = await designExamples(tx, tenantId);
+    const rules = await tx.bookingPolicy.findMany({
+      where: removableRuleWhere(tenantId, examples, practice),
+      select: { id: true },
+    });
+    const places = await tx.businessLocation.findMany({
+      where: removablePlaceWhere(tenantId, examples, practice),
+      select: { id: true },
+    });
+    await tx.schedulingService.deleteMany({ where: removableServiceWhere(tenantId, practice) });
+    await tx.schedulingResource.deleteMany({ where: removableResourceWhere(tenantId, practice) });
+    await tx.bookingPolicy.deleteMany({ where: { tenantId, id: { in: rules.map((r) => r.id) } } });
+    await tx.businessLocation.deleteMany({
+      where: { tenantId, id: { in: places.map((p) => p.id) } },
     });
   }
-  await tx.schedulingService.deleteMany({ where: { tenantId, settings: sampleMeta } });
-  await tx.schedulingResource.deleteMany({ where: { tenantId, settings: sampleMeta } });
 
   // Content (cascade revisions/references/property links).
   await tx.contentEntry.deleteMany({

@@ -12,6 +12,7 @@
 
 import { useEffect, type RefObject } from 'react';
 import type { WindowMode } from '../window-mode';
+import { personalKey } from '../workbench/storage-owner';
 
 const KEY = 'piggles-console-scroll';
 /** Scrolling fires continuously; one write when it settles is plenty. */
@@ -24,7 +25,7 @@ interface Scroll {
 
 function read(siteKey: string): Scroll | null {
   try {
-    const raw = localStorage.getItem(`${KEY}:${siteKey}`);
+    const raw = localStorage.getItem(personalKey(`${KEY}:${siteKey}`));
     if (!raw) return null;
     const value: unknown = JSON.parse(raw);
     if (typeof value !== 'object' || value === null) return null;
@@ -38,7 +39,7 @@ function read(siteKey: string): Scroll | null {
 
 function write(siteKey: string, scroll: Scroll): void {
   try {
-    localStorage.setItem(`${KEY}:${siteKey}`, JSON.stringify(scroll));
+    localStorage.setItem(personalKey(`${KEY}:${siteKey}`), JSON.stringify(scroll));
   } catch {
     // Storage blocked. The workspace still scrolls; it just forgets.
   }

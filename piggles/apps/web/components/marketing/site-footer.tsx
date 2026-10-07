@@ -58,7 +58,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { href: '/trust', label: 'Your data and safety' },
       { href: '/status', label: 'Is it working right now?' },
       { href: accountUrl('contact', 'footer'), label: 'Talk to a person', external: true },
-      { href: accountUrl('sign-in'), label: 'Sign in', external: true },
+      { href: accountUrl('sign-in', 'footer-sign-in'), label: 'Sign in', external: true },
     ],
   },
 ];

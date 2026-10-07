@@ -31,6 +31,7 @@ import { withTenant } from '@wizeworks/db';
 
 import { adjust } from '../../src/services/movements.js';
 import { commitSaleOnTx } from '../../src/services/sell-path.js';
+import { reserveOnTx } from '../../src/services/reservations.js';
 import {
   allocateBackordersOnTx,
   cancelBackordersForHolderOnTx,
@@ -422,6 +423,36 @@ describe('demand-side commitments — DB-backed', () => {
       const closed = await closePreorderWindow(ctx(), list!.id);
       expect(closed.isTakingOrders).toBe(false);
       expect(closed.soldQuantity).toBe(5);
+    });
+  });
+
+  describe('a preorder on an item set to keep selling', () => {
+    // Persona issue 928. Opening an offer flips only a `deny` item, so one set to
+    // "Keep selling it and owe it" stays `continue`, and the limit was checked
+    // for `preorder` items alone.
+    let f: InventoryFixture;
+
+    beforeAll(async () => {
+      f = await createInventoryFixture(tenantId);
+      await allowOversell(f, 'continue');
+      await stockUp(f, 1);
+      await openPreorderWindow(ctx(), f.variantId, { isCapped: true, maxQuantity: 2 });
+    });
+
+    const hold = (quantity: number) =>
+      withTenant(ctx(), (tx) =>
+        reserveOnTx(tx, ctx(), {
+          variantId: f.variantId,
+          warehouseId: f.warehouseId,
+          quantity,
+          holderType: 'cart',
+          holderId: crypto.randomUUID(),
+        })
+      );
+
+    it('still refuses a hold past the limit, counting the one on the shelf first', async () => {
+      await expect(hold(4)).rejects.toThrow(/Only 2 left/);
+      await expect(hold(3)).resolves.toBeTruthy();
     });
   });
 

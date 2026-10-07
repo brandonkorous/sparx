@@ -1,10 +1,31 @@
 # 056 — She published, and her site showed the old page for eight minutes
 
-**Status:** open — the code exists end to end and one link is not connected. Needs Brandon (secrets + fleet config).
+**Status:** fixed (the missing link landed in c5eca5886, from another session; seen on screen in act 325)
+**Fixed:** 2026-10-06
+**Confirmed by:** P03 · Juniper Row · act 325, a journal post's new title on the live page in 9 seconds
 **Severity:** major (every publish, every tenant; and the first visitor after the window still gets the old page)
 **Found by:** P01 · Thistle & Rye · act 11 — changing Monday's hours
 **Surface:** the tenant site › any published page · `wizeworks/services/cache-revalidation-worker`
 **Filed:** 2026-08-21
+
+## Act 325: fixed, and seen
+
+The link this issue was waiting on is connected. The purge worker is a handler
+in the event worker now, not a Cloud Run service, and the shared secret is set
+on both sides (all of it in [302](302-she-published-and-two-pages-of-her-own-shop-disagreed-about-it.md)).
+
+Seen on screen in act 325, as a visitor and as Devi side by side. A visitor
+loaded her `/blog` twice, so the list was cached. Devi changed her published
+post's title from "Caring for knitwear so it lasts" to "... so it lasts for
+years" and pressed Save. The visitor's page showed the new title **9 seconds**
+later (still the old one at 4). She put the title back; the page followed in 8
+seconds. In 056 the same kind of change took over two hours. The post's address
+did not change.
+
+The console's Publish message said "Your site catches up within a few
+minutes", true but now misleading. It says "Your site shows it in a few
+seconds, a few minutes at most" in the page, layout and theme panes; five
+minutes stays as the backstop if a purge is ever lost.
 
 ## Still open, and measured again on 2026-08-29 (P03 · Juniper Row)
 

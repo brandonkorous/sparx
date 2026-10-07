@@ -117,6 +117,28 @@ export async function getResourcePropertyIdsFor(
   });
 }
 
+/**
+ * Which of these people or things have any weekly hours at all.
+ *
+ * A new one starts with none, and with none it can never be booked: every
+ * service that needs it shows no open times, and nothing said why. Gillett's
+ * chassis dyno sat like that (sparx persona issue 118).
+ */
+export async function resourcesWithWeeklyHours(
+  tenantId: string,
+  ids: string[]
+): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  return withTenant({ tenantId }, async (tx) => {
+    const rows = await tx.availabilityWindow.findMany({
+      where: { resourceId: { in: ids } },
+      select: { resourceId: true },
+      distinct: ['resourceId'],
+    });
+    return new Set(rows.map((r) => r.resourceId));
+  });
+}
+
 export async function getResource(tenantId: string, id: string): Promise<SchedulingResource> {
   return withTenant({ tenantId }, async (tx) => {
     const res = await tx.schedulingResource.findFirst({ where: { id, deletedAt: null } });

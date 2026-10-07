@@ -70,6 +70,11 @@ export const CHECK_LABELS: Record<string, string> = {
   'ai-discoverable': 'AI assistants can find it',
 };
 
+/** Marks a title length measured with the business name the site adds (`servedTitle`
+ *  on the entity). In the stored value, so a card read back from the database gives
+ *  the same advice as one scored this second. */
+export const AS_SERVED = 'as search shows it';
+
 /** Entity-aware minimum word count for `content-depth`. Lives here because the
  *  tip quotes the number, so the sentence and the threshold cannot drift. */
 export const WORD_THRESHOLD: Record<EntityType, number> = {
@@ -143,6 +148,9 @@ export function checkTip(id: string, found: Finding): string | null {
       // and saying it twice charges her twice for one absence.
       const chars = leadingCount(value);
       if (chars === null || chars === 0) return null;
+      if (chars > 60 && value?.includes(AS_SERVED)) {
+        return 'Search shows your title with your business name added after it, and a long title gets cut off. Shorten it, or write your business name into the title yourself and nothing is added.';
+      }
       return chars > 60
         ? 'A long title gets cut off in search results. Trim it to about 60 characters.'
         : 'A very short title wastes the best chance you have of being found. Aim for 30 to 60 characters.';

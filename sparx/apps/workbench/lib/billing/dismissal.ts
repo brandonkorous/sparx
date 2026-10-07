@@ -3,6 +3,11 @@
 // owner never resurfaces a banner they just dismissed. Mirrors the defensive
 // localStorage convention in lib/workbench/persistence.ts (swallow quota/blocked
 // errors; a lost dismissal is a mild annoyance, never a crash).
+//
+// Kept per PERSON on a shared computer: one person closing the banner does not
+// hide it from the next (lib/workbench/storage-owner.ts, persona issue 123).
+
+import { personalKey } from '../workbench/storage-owner';
 
 const KEY = 'sparx-workbench-billing-dismissed';
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -13,7 +18,7 @@ type DismissMap = Record<string, number>;
 function read(): DismissMap {
   if (typeof localStorage === 'undefined') return {};
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(personalKey(KEY));
     return raw ? (JSON.parse(raw) as DismissMap) : {};
   } catch {
     return {};
@@ -23,7 +28,7 @@ function read(): DismissMap {
 function write(map: DismissMap): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(KEY, JSON.stringify(map));
+    localStorage.setItem(personalKey(KEY), JSON.stringify(map));
   } catch {
     // Storage full or blocked — degrade to "not dismissed", never throw.
   }

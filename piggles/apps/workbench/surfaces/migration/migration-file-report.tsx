@@ -18,7 +18,12 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 
-import { summarize, type MappedEntity, type ValidationIssue } from '@wizeworks/migration';
+import {
+  leftBehind,
+  summarize,
+  type MappedEntity,
+  type ValidationIssue,
+} from '@wizeworks/migration';
 import { ColumnMapper } from './column-mapper';
 import { entityLabel, sentenceList, type LoadedFile } from './data';
 
@@ -49,6 +54,8 @@ function IssueRow({ issue }: { issue: ValidationIssue }) {
  */
 export function EntityReport({ mapped }: { mapped: MappedEntity }) {
   const { entity, rows, report } = mapped;
+  // In the file's own words, with what nothing read (sparx persona issue 104).
+  const behind = leftBehind(report);
 
   return (
     <section className="border-base-300 bg-base-100 flex flex-col gap-2 rounded-xl border p-4">
@@ -86,14 +93,9 @@ export function EntityReport({ mapped }: { mapped: MappedEntity }) {
         </Text>
       ) : null}
 
-      {report.unmappedColumns.length > 0 ? (
+      {behind.length > 0 ? (
         <Text className="text-sm">
-          {report.unmappedColumns.length}{' '}
-          {report.unmappedColumns.length === 1
-            ? 'column in this file has'
-            : 'columns in this file have'}{' '}
-          no home here and will be left behind: {report.unmappedColumns.slice(0, 6).join(', ')}
-          {report.unmappedColumns.length > 6 ? '…' : ''}
+          {`Left behind, with nowhere here to keep ${behind.length === 1 ? 'it' : 'them'}: ${behind.slice(0, 8).join(', ')}${behind.length > 8 ? `, and ${String(behind.length - 8)} more` : ''}.`}
         </Text>
       ) : null}
     </section>

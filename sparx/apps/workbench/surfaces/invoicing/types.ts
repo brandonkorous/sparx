@@ -288,6 +288,53 @@ export function normalizeDocument(raw: BillingDocument): BillingDocument {
 export type ArTone = InvoiceTone;
 export { invoiceState };
 
+/** The color of a quote's standing. Accepted is the good outcome, a priced
+ *  quote is waiting on the customer, a declined or expired one is over. A draft
+ *  carries no color: nothing about it is decided yet. */
+export function priceOfferTone(
+  stageType: string | undefined
+): 'success' | 'info' | 'danger' | undefined {
+  switch (stageType) {
+    case 'committed':
+    case 'paid':
+      return 'success';
+    case 'open':
+    case 'final':
+      return 'info';
+    case 'void':
+      return 'danger';
+    default:
+      return undefined;
+  }
+}
+
+type DocumentRow = Pick<BillingDocument, 'status' | 'balance'> & {
+  priceOffer?: boolean;
+  stageName?: string;
+  stageType?: string;
+};
+
+/**
+ * What a row on ANY list of documents says it is doing.
+ *
+ * A quote or estimate is a price offered, not a bill: its payment status is
+ * `unpaid` from birth, so reading that status called every quote "Owed". The
+ * Invoicing list learned this in issue 085; the company page and the customer's
+ * Invoices tab kept reading the status, and Wasatch Front's company page said
+ * $13,469.60 was owed where $5,976.80 was (sparx persona issue 111). One rule,
+ * every list.
+ */
+export function documentRowState(doc: DocumentRow): { label: string; tone: InvoiceTone } {
+  return doc.priceOffer
+    ? { label: doc.stageName ?? 'Quote', tone: priceOfferTone(doc.stageType) }
+    : invoiceState(doc.status);
+}
+
+/** What is owed on a row: nothing on a quote, whatever it carries. */
+export function owedOn(doc: DocumentRow): number {
+  return doc.priceOffer ? 0 : doc.balance;
+}
+
 export function formatMoney(amount: number, currency: string): string {
   return formatAmount(amount, currency);
 }

@@ -11,13 +11,15 @@ import { Alert, Button } from '@wizeworks/silicaui-react';
 import { cadenceLabel } from '@wizeworks/commerce-schemas';
 
 import { checkoutBlock, lineRule, ruleSentence } from '@/lib/account-buying-rules';
+import { ordersClosed } from '@/lib/orders-closed';
+import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { CART_UNREACHABLE_MESSAGE } from '@/lib/shop-reach';
 import { CoreLine } from './core-choice';
 import { QuantityStepper } from './quantity-stepper';
 
-export function MiniCart() {
+export function MiniCart({ paymentMode = 'card' }: { paymentMode?: StorefrontPaymentMode }) {
   const {
     drawerOpen,
     closeDrawer,
@@ -34,7 +36,9 @@ export function MiniCart() {
   } = useCart();
   // A trade account's rules on the basket (sparx persona issue 086), the same
   // ones the cart page and checkout hold it to.
-  const blocked = checkoutBlock(accountRules);
+  // Or a shop that cannot be paid on its website yet (sparx persona issue 131).
+  const closed = ordersClosed(paymentMode, accountRules?.paymentTerms);
+  const blocked = checkoutBlock(accountRules) ?? closed;
 
   // Why a quantity change was refused, against the line it was refused on — a
   // shop can run out for the day (issue 026), and a stepper that silently snaps
@@ -204,7 +208,11 @@ export function MiniCart() {
               </p>
               {blocked ? (
                 <>
-                  <Alert color={accountRules?.canOrder === false ? 'info' : 'warning'}>
+                  <Alert
+                    color={
+                      accountRules?.canOrder === false || blocked === closed ? 'info' : 'warning'
+                    }
+                  >
                     {blocked}
                   </Alert>
                   <Button color="primary" size="lg" className="w-full" disabled>

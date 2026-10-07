@@ -51,6 +51,7 @@ import {
   type DocumentStage,
   type DocumentWorkflowDetail,
 } from './types';
+import { readFailureMessage } from '../../lib/api/write-failure';
 
 /** The document's workflow — names + entry effects for every stage it can hold. */
 export function useDocumentWorkflow(workflowId: string | undefined) {
@@ -471,7 +472,7 @@ export function DocumentActions({ doc, stage, ctx, noun, priceOffer }: DocumentA
               openServerHtml(`/v1/invoicing/documents/${doc.id}/pdf`).catch((error: unknown) => {
                 toast.add({
                   title: 'Could not open the print view',
-                  description: error instanceof Error ? error.message : 'Try again in a moment.',
+                  description: readFailureMessage(error, 'Try again in a moment.'),
                   type: 'error',
                 });
               });

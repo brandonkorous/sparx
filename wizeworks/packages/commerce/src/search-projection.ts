@@ -10,6 +10,7 @@
 // `documents().upsert()`.
 
 import {
+  EVERY_FITMENT_YEAR,
   GLOBAL_SITE_SCOPE,
   type CustomerSearchDocument,
   type OrderSearchDocument,
@@ -122,20 +123,13 @@ export async function projectProduct(
     const categories = new Set<string>();
     const items = new Set<string>();
     const variants = new Set<string>();
-    const rangeValues = new Set<number>();
     for (const f of product.fitments) {
       const path = f.node?.pathNames ?? [];
       if (path[0]) categories.add(path[0]);
       if (path[1]) items.add(path[1]);
       for (const deep of path.slice(2)) variants.add(deep);
-      for (const r of f.ranges) {
-        const lo = r.min === null ? 0 : Number(r.min);
-        const hi = r.max === null ? (lo > 0 ? lo + 30 : 0) : Number(r.max);
-        if (lo > 0 && hi >= lo) {
-          for (let y = lo; y <= Math.min(hi, lo + 50); y++) rangeValues.add(y);
-        }
-      }
     }
+    const rangeValues = fitmentRangeValues(product.fitments);
 
     // Flat "Name:Value" option tokens (Color:Black, Size:M) — the storefront facets on
     // these and regroups the counts by the "Name:" prefix. Colons in a value would split
@@ -200,7 +194,7 @@ export async function projectProduct(
       fitment_makes: categories.size > 0 ? [...categories] : undefined,
       fitment_models: items.size > 0 ? [...items] : undefined,
       fitment_engines: variants.size > 0 ? [...variants] : undefined,
-      fitment_years: rangeValues.size > 0 ? [...rangeValues] : undefined,
+      fitment_years: rangeValues.length > 0 ? rangeValues : undefined,
       image_url: firstImageKey ? mediaPublicUrl(firstImageKey) : undefined,
       created_at: Math.floor(product.createdAt.getTime() / 1000),
       updated_at: Math.floor(product.updatedAt.getTime() / 1000),
@@ -721,4 +715,33 @@ export async function listOrderIdsForTenant(ctx: ServiceContext): Promise<string
     const rows = await tx.order.findMany({ select: { id: true } });
     return rows.map((r) => r.id);
   });
+}
+
+/**
+ * The range values a product's fit rules cover, flattened for the index (years
+ * for a vehicle, weights for a pet, and so on). Open-ended windows cap to a
+ * sensible span.
+ *
+ * A rule with no window at all, or one open at both ends, fits EVERY value, the
+ * reading collection-rules and fitment-service already apply; it adds the
+ * EVERY_FITMENT_YEAR sentinel, which the year filter always matches. Without it a
+ * shop fitted by engine alone showed nothing for any year (sparx persona issue
+ * 125).
+ */
+export function fitmentRangeValues(
+  fitments: readonly { ranges: readonly { min: unknown; max: unknown }[] }[]
+): number[] {
+  const values = new Set<number>();
+  for (const fitment of fitments) {
+    if (fitment.ranges.length === 0) values.add(EVERY_FITMENT_YEAR);
+    for (const range of fitment.ranges) {
+      if (range.min === null && range.max === null) values.add(EVERY_FITMENT_YEAR);
+      const lo = range.min === null ? 0 : Number(range.min);
+      const hi = range.max === null ? (lo > 0 ? lo + 30 : 0) : Number(range.max);
+      if (lo > 0 && hi >= lo) {
+        for (let y = lo; y <= Math.min(hi, lo + 50); y++) values.add(y);
+      }
+    }
+  }
+  return [...values];
 }

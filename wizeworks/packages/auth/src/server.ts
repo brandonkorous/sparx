@@ -14,6 +14,7 @@ import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioni
 import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
 import { ac, roles } from './org-roles';
 import { isPasswordStep } from './sign-in-step';
+import { startingBusinessFor } from './starting-business';
 
 /**
  * Which brand an organization belongs to.
@@ -370,6 +371,26 @@ function createAuth() {
       },
       session: {
         create: {
+          // Which business the new session opens in. Someone who joined a team
+          // and never set up a business of their own opens in that team, not in
+          // the empty workspace sign-up made for them (starting-business.ts,
+          // persona issue 124). Best-effort: a failed read opens at home, as
+          // before, and never costs anyone their sign-in.
+          before: async (session) => {
+            const s = session as unknown as {
+              userId: string;
+              activeOrganizationId?: string | null;
+            };
+            if (s.activeOrganizationId) return;
+            try {
+              const organizationId = await startingBusinessFor(s.userId);
+              if (organizationId) {
+                return { data: { ...session, activeOrganizationId: organizationId } };
+              }
+            } catch {
+              // Open at home.
+            }
+          },
           // Alert on a sign-in from a device we haven't seen for this user — "new
           // device" = the first session that carries this user agent. Best-effort +
           // non-blocking: a notification failure must never affect sign-in. `create`

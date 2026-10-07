@@ -33,6 +33,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { fixedStageChance } from '@wizeworks/crm-schemas';
 import { useConfirm } from '../../lib/confirm';
 import {
   faBoxArchive,
@@ -317,7 +318,7 @@ function PipelineEditor({
               </Badge>
             ) : null}
             {isArchived ? (
-              <Badge color="neutral" variant="soft" size="sm">
+              <Badge color="warning" variant="soft" size="sm">
                 Put away
               </Badge>
             ) : null}
@@ -610,6 +611,9 @@ function StageRow({
   };
 
   const meta = stageTypeMeta(stage.stageType);
+  // Won is 100% and anything else finished is 0%, whatever is typed: the server
+  // applies the same rule (issue 110), so the box shows it and cannot be edited.
+  const fixed = fixedStageChance(stage.stageType);
 
   return (
     <div className="border-base-300 bg-base-100 flex flex-col gap-3 rounded-lg border p-3">
@@ -659,8 +663,11 @@ function StageRow({
 
         <Field className="min-w-[9rem]">
           <FieldLabel>Means</FieldLabel>
+          {/* The box carries what the step means in its color. A badge beside it
+              repeated the same word on every row and pushed the finished rows'
+              columns out of line (sparx persona issue 110). */}
           <Select
-            color="module"
+            color={stage.stageType === 'open' ? 'module' : meta.tone}
             aria-label="What this step means"
             value={stage.stageType}
             items={Object.fromEntries(stageTypesFor(objectKey).map((t) => [t.value, t.label]))}
@@ -684,7 +691,8 @@ function StageRow({
                   min={0}
                   max={100}
                   inputMode="numeric"
-                  value={probability}
+                  value={fixed === null ? probability : String(fixed)}
+                  disabled={fixed !== null}
                   aria-label="Chance of winning, as a percentage"
                   placeholder="0"
                   onChange={(event) => {
@@ -697,10 +705,6 @@ function StageRow({
             }
           />
         </Field>
-
-        <Badge color={meta.tone} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
 
         <Button
           size="sm"

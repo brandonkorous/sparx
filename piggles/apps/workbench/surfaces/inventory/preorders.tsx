@@ -48,7 +48,7 @@ import { Table } from '../../components/table';
 import { faCalendarClock, faCalendarPlus, faCirclePlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -67,7 +67,7 @@ import {
   type PreorderWindow,
 } from './demand-data';
 import { VariantPicker, versionOf } from '../commerce/variant-picker';
-import type { VariantChoice } from '../commerce/bundles-data';
+import { useProductVariantChoices, type VariantChoice } from '../commerce/bundles-data';
 import { badDayIn, dayStartUtc } from '../../lib/today';
 import { DayInput } from '../../components/day-input';
 
@@ -81,19 +81,38 @@ function toIso(value: string): string | null {
   return value === '' ? null : dayStartUtc(value);
 }
 
-export function PreordersSurface(_props: { ctx: SurfaceContext }) {
+export function PreordersSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
   const [status, setStatus] = useState('');
   const list = usePreorderWindows(status ? { status } : {});
+  const asked = useAskedFor(ctx);
   // `'new'` is the window that does not exist yet. There was no way to reach one
   // at all until 2026-09-18: `useOpenPreorder` had zero callers in either
   // console, so the table below could only ever be empty and the empty state
   // sent the reader to a product screen that has no such control (issue 678).
   const [editing, setEditing] = useState<PreorderWindow | 'new' | null>(null);
+  const [preset, setPreset] = useState<VariantChoice | null>(null);
   const start = () => {
+    setPreset(null);
     setEditing('new');
   };
+
+  // Opened from a product version (issue 928): its running offer if it has
+  // one, otherwise a new one with the item already chosen. Once per ask, so
+  // closing the dialog does not reopen it.
+  const handled = useRef<string | null>(null);
+  useEffect(() => {
+    if (!asked.variantId || handled.current === asked.variantId) return;
+    if (!asked.ready) return;
+    handled.current = asked.variantId;
+    if (asked.running) {
+      setEditing(asked.running);
+    } else if (asked.choice) {
+      setPreset(asked.choice);
+      setEditing('new');
+    }
+  }, [asked]);
 
   const rows = list.data?.items ?? [];
   const live = rows.filter((r) => r.isTakingOrders);
@@ -259,6 +278,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
       {editing ? (
         <PreorderEditor
           window={editing === 'new' ? null : editing}
+          preset={editing === 'new' ? preset : null}
           onClose={() => {
             setEditing(null);
           }}
@@ -318,6 +338,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
  */
 function PreorderEditor({
   window: row,
+  preset,
   onClose,
   onSaved,
   onOpened,
@@ -327,6 +348,8 @@ function PreorderEditor({
 }: {
   /** Null for an offer that does not exist yet. */
   window: PreorderWindow | null;
+  /** The item a new offer is for, when it was opened from that item. */
+  preset: VariantChoice | null;
   onClose: () => void;
   onSaved: () => void;
   onOpened: (itemName: string, live: boolean) => void;
@@ -335,7 +358,7 @@ function PreorderEditor({
   confirm: ReturnType<typeof useConfirm>;
 }) {
   const isNew = row === null;
-  const [picked, setPicked] = useState<VariantChoice | null>(null);
+  const [picked, setPicked] = useState<VariantChoice | null>(preset);
 
   const update = useUpdatePreorder(row?.id ?? '');
   const close = useClosePreorder(row?.id ?? '');
@@ -596,4 +619,34 @@ function PreorderEditor({
       </DialogContent>
     </Dialog>
   );
+}
+
+/**
+ * The item this pane was opened for, from a product version's "When you run out"
+ * (issue 928). `ready` once both questions are answered: does it already have an
+ * offer running, and what is it called.
+ */
+function useAskedFor(ctx: SurfaceContext): {
+  variantId: string | null;
+  ready: boolean;
+  running: PreorderWindow | null;
+  choice: VariantChoice | null;
+} {
+  const variantId = typeof ctx.params.variant === 'string' ? ctx.params.variant : null;
+  const productId = typeof ctx.params.product === 'string' ? ctx.params.product : undefined;
+  const windows = usePreorderWindows(variantId ? { variantId } : {});
+  const choices = useProductVariantChoices(variantId ? productId : undefined);
+  const running =
+    (windows.data?.items ?? []).find(
+      (w) =>
+        w.variantId === variantId &&
+        (w.effectiveStatus === 'open' || w.effectiveStatus === 'scheduled')
+    ) ?? null;
+  const choice = (choices.data ?? []).find((c) => c.id === variantId) ?? null;
+  return {
+    variantId,
+    ready: variantId !== null && windows.isSuccess && (running !== null || choices.isSuccess),
+    running,
+    choice,
+  };
 }

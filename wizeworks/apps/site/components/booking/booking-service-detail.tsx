@@ -13,6 +13,7 @@
 import Link from 'next/link';
 
 import { activeTenantSlug, getBookableService } from '@/lib/scheduling';
+import { servicePriceWords } from '@/lib/service-record-words';
 import { BookingWidget } from '@/components/booking/booking-widget';
 import { ClassBookingWidget } from '@/components/booking/class-booking-widget';
 
@@ -21,13 +22,6 @@ function duration(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
-}
-
-function money(cents: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
 }
 
 export async function BookingServiceDetail({ serviceId }: { serviceId: string }) {
@@ -56,9 +50,7 @@ export async function BookingServiceDetail({ serviceId }: { serviceId: string })
         <h1 className="text-base-content text-4xl font-semibold tracking-tight">{service.name}</h1>
         <p className="text-base-content flex gap-4 text-sm font-medium">
           <span>{duration(service.durationMinutes)}</span>
-          {service.priceCents > 0 ? (
-            <span>{money(service.priceCents, service.currency)}</span>
-          ) : null}
+          <span>{servicePriceWords(service)}</span>
         </p>
         {service.description ? <p className="text-base-content">{service.description}</p> : null}
       </header>

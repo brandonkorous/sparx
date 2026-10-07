@@ -36,7 +36,7 @@ import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { useBusinessTimezone } from '../../lib/business-timezone';
+import { useBusinessTimezone, useBusinessZone } from '../../lib/business-timezone';
 import { useBusinessCountry } from '../../lib/business-country';
 import { SaveFailure } from '@/components/save-failure';
 import {
@@ -48,6 +48,7 @@ import {
   useUpdateLocation,
   type BusinessLocation,
   type LocationInput,
+  followBusinessLabel,
 } from './setup-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 
@@ -95,7 +96,7 @@ function draftFrom(location: BusinessLocation): Draft {
     region: location.address.region ?? '',
     postalCode: location.address.postalCode ?? '',
     country: location.address.country ?? '',
-    timezone: location.timezone,
+    timezone: location.timezone ?? '',
     lat: location.lat == null ? '' : String(location.lat),
     lng: location.lng == null ? '' : String(location.lng),
     isActive: location.isActive,
@@ -192,6 +193,7 @@ function LocationEditor({
   const toast = useToast();
   const confirm = useConfirm();
   const isNew = id === 'new';
+  const followZone = useBusinessZone();
 
   const create = useCreateLocation();
   const update = useUpdateLocation(id);
@@ -248,7 +250,7 @@ function LocationEditor({
       ...(draft.postalCode.trim() ? { postalCode: draft.postalCode.trim() } : {}),
       ...(draft.country.trim() ? { country: draft.country.trim() } : {}),
     },
-    timezone: draft.timezone,
+    timezone: draft.timezone === '' ? null : draft.timezone,
     lat: lat.value,
     lng: lng.value,
     isActive: draft.isActive,
@@ -393,7 +395,12 @@ function LocationEditor({
                       set('timezone', event.target.value);
                     }}
                   >
-                    {(TIMEZONE_OPTIONS as readonly string[]).includes(draft.timezone) ? null : (
+                    {/* No zone of its own: it follows the business. Saying so,
+                        rather than showing a blank box, is the difference between
+                        a choice and a gap (sparx persona issue 119). */}
+                    <option value="">{followBusinessLabel(followZone)}</option>
+                    {draft.timezone === '' ||
+                    (TIMEZONE_OPTIONS as readonly string[]).includes(draft.timezone) ? null : (
                       <option value={draft.timezone}>{draft.timezone}</option>
                     )}
                     {TIMEZONE_OPTIONS.map((zone) => (

@@ -45,6 +45,9 @@ import {
 } from './customers-data';
 import { useCompanyDomainMatch } from './companies-data';
 import { ScorePanel } from './score-panel';
+import { Kpi } from './customer-kpi';
+import { hasVisits, useCustomerVisits, VisitKpis } from './customer-overview-visits';
+import { useModuleStates } from '../../lib/api/shell-data';
 import {
   formatDate as formatOrderDate,
   shippingState,
@@ -93,18 +96,10 @@ function OverviewRow({
 
 /* ── KPI tiles ──────────────────────────────────────────────────────────── */
 
-// A bordered base-100 tile — the app's KPI shape (mirrors reports.tsx). Value
-// leads on scale and weight; the label sits under it in full ink, never faded.
-function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-3">
-      <span className="text-sm">{label}</span>
-      <span className="text-2xl font-semibold tabular-nums">{value}</span>
-      {hint ? <span className="text-sm">{hint}</span> : null}
-    </div>
-  );
-}
-
+// ORDERS, and every label says so. "Paid you so far" read as everything this
+// person had ever paid, and in a salon it said $0.00 for a client with a $180
+// appointment on Friday (persona issue 113). Visits have their own row
+// (`customer-overview-visits.tsx`), and this one names what it counts.
 function WorthKpis({ customer }: { customer: Customer }) {
   // Two questions, and answering only the second is what made this card read
   // "$0.00 spent" above a list of orders worth hundreds: every customer who
@@ -130,7 +125,7 @@ function WorthKpis({ customer }: { customer: Customer }) {
           hint={orders > 0 ? `${formatMoney(avg)} an order on average` : undefined}
         />
         <Kpi
-          label="Paid you so far"
+          label="Paid for orders"
           value={formatMoney(spent)}
           hint={
             outstanding > 0
@@ -239,7 +234,7 @@ function OpenTasks({ ctx, tasks }: { ctx: SurfaceContext; tasks: Task[] }) {
               }}
             >
               <span className="min-w-0 flex-1 truncate font-medium">{task.title}</span>
-              <Badge color={meta.tone} variant="soft" size="sm">
+              <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                 {meta.label}
               </Badge>
               <span className="w-16 shrink-0 text-right text-sm">{taskDue(task.dueAt)}</span>
@@ -464,22 +459,50 @@ export function CustomerOverviewTab({
     skip: 0,
   });
   const activityQ = useCustomerActivities(customer.id, 6);
+  // In a business that takes bookings, the diary is the relationship (issue 113).
+  const visits = useCustomerVisits(customer.id);
+  const { data: modules } = useModuleStates();
+  const shop = modules?.find((module) => module.slug === 'commerce');
+  // The orders row in a business with no shop, for someone who never ordered, is
+  // four zeros about a thing the business does not do. Anyone with an order keeps
+  // it, so switching the shop off never hides money already taken.
+  const showWorth = !(shop && !shop.enabled) || customer.orderCount > 0;
+  const visited = hasVisits(visits);
 
   const deals = dealsQ.data?.items ?? [];
   const tasks = tasksQ.data?.items ?? [];
   const orders = ordersQ.data?.items ?? [];
   const activity = activityQ.data ?? [];
 
-  const loading = dealsQ.isPending || tasksQ.isPending || ordersQ.isPending || activityQ.isPending;
-  const anyError = dealsQ.isError || tasksQ.isError || ordersQ.isError || activityQ.isError;
+  const loading =
+    dealsQ.isPending ||
+    tasksQ.isPending ||
+    ordersQ.isPending ||
+    activityQ.isPending ||
+    visits.isPending;
+  const anyError =
+    dealsQ.isError || tasksQ.isError || ordersQ.isError || activityQ.isError || visits.isError;
+  // A booking is something on the record. "Nothing here yet" under a client
+  // booked for Friday was the sentence issue 113 opened with.
   const hasContent =
-    deals.length > 0 || tasks.length > 0 || orders.length > 0 || activity.length > 0;
+    deals.length > 0 || tasks.length > 0 || orders.length > 0 || activity.length > 0 || visited;
+  const things = visits.shown
+    ? 'bookings, deals, tasks, orders or logged activity'
+    : 'deals, tasks, orders or logged activity';
+  const visitRow = visits.shown && !visits.isPending && !visits.isError;
 
   return (
     <div className="flex flex-col gap-4">
       <CompanySuggestion ctx={ctx} customer={customer} />
-      {/* Worth always shows — $0 across zero orders is a real, meaningful state. */}
-      <WorthKpis customer={customer} />
+      {/* Someone with visits leads with them: when they are next in, and when
+          they were last in, before anything about orders. */}
+      {visitRow && visited ? <VisitKpis visits={visits} /> : null}
+      {/* Worth shows wherever there is a shop: $0 across zero orders is a real,
+          meaningful state there. */}
+      {showWorth ? <WorthKpis customer={customer} /> : null}
+      {/* Nobody booked yet: said out loud only where there is no orders row to
+          answer instead, so a shop's records do not each carry a row of blanks. */}
+      {visitRow && !visited && !showWorth ? <VisitKpis visits={visits} /> : null}
       <StoreCredit customerId={customer.id} />
       {/* "Are they worth my time" is the question this tab exists to answer, and
           the score is this business's own answer to it — so it sits with the
@@ -513,7 +536,7 @@ export function CustomerOverviewTab({
           <EmptyState
             icon={<AlertTriangle className="size-6" aria-hidden />}
             title="Some of this couldn't load"
-            description="There was a problem reaching the server, so this customer's deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer. Try again in a moment."
+            description={`There was a problem reaching the server, so this customer's ${visits.shown ? 'bookings, ' : ''}deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer. Try again in a moment.`}
           />
         </Card>
       ) : (
@@ -522,7 +545,7 @@ export function CustomerOverviewTab({
           <EmptyState
             icon={<Inbox className="size-6" aria-hidden />}
             title="Nothing here yet"
-            description={`${customerName(customer)} has no deals, tasks, orders or logged activity so far. As soon as any of that happens (or you log a note), it will show up here.`}
+            description={`${customerName(customer)} has no ${things} so far. As soon as any of that happens (or you log a note), it will show up here.`}
           />
         </Card>
       )}

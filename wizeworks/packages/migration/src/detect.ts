@@ -28,7 +28,7 @@ import {
 } from './types';
 import { validateRows, type ValidationReport } from './validate';
 import { allSources } from './vendors';
-import { normalizeHeader } from './vendors/_helpers';
+import { normalizeHeader, trackingReads } from './vendors/_helpers';
 
 /**
  * The line between an answer and a question.
@@ -293,8 +293,16 @@ export function readSource(input: DetectInput, sourceId?: string): ReadResult {
         const rows = source.mapText(input.text);
         entities.push({ entity: source.entity, rows, report: validateRows(source.entity, rows) });
       } else if (typeof source.map === 'function') {
-        const rows = source.map(raw);
-        entities.push({ entity: source.entity, rows, report: validateRows(source.entity, rows) });
+        const map = source.map;
+        const { result: rows, read } = trackingReads(() => map(raw));
+        entities.push({
+          entity: source.entity,
+          rows,
+          report: {
+            ...validateRows(source.entity, rows),
+            unreadColumns: unreadColumns(headers, raw, read),
+          },
+        });
       }
     }
   }
@@ -309,6 +317,18 @@ export function readSource(input: DetectInput, sourceId?: string): ReadResult {
     raw,
     entities,
   };
+}
+
+/** The file's columns that hold something and that no mapping read, in the
+ *  file's own words and order (sparx persona issue 104). */
+export function unreadColumns(
+  headers: readonly string[],
+  raw: readonly SourceRow[],
+  read: ReadonlySet<string>
+): string[] {
+  return headers.filter(
+    (header) => !read.has(header) && raw.some((source) => (source[header] ?? '').trim() !== '')
+  );
 }
 
 /**
