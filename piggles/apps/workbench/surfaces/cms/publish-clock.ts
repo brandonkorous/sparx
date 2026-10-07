@@ -29,7 +29,9 @@ export function wallClockToIso(local: string, zone: string): string | null {
   let at = asIfUtc - first * 60_000;
   const second = zoneOffsetMinutes(zone, new Date(at));
   if (second !== first) at = asIfUtc - second * 60_000;
-  return new Date(at).toISOString();
+  const instant = new Date(at);
+  if (Number.isNaN(instant.getTime())) return null;
+  return instant.toISOString();
 }
 
 /** The reverse: an instant as the "2026-10-08T06:00" a date-and-time box takes,

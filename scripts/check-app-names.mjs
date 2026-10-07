@@ -102,9 +102,15 @@ function stripComments(source) {
  * its five keys happen to be module slugs, which is why it lands here rather
  * than falling out of the shape rule.
  *
+ * `SEEN_BY_VISITORS` in sites/site-scope-words.ts is keyed on the module a
+ * site switch turns off, but its values are SENTENCES saying what that switch
+ * takes off the site ("The shop: products, basket, checkout…"), printed under
+ * the app's real name from `moduleLabel`. They exist because three switches all
+ * read "Sell" (issue 944); they describe, they do not name.
+ *
  * An entry here is a claim that the table names something else. Keep it short.
  */
-const NOT_APP_NAMES = ['surfaces/migration/data.ts'];
+const NOT_APP_NAMES = ['surfaces/migration/data.ts', 'surfaces/sites/site-scope-words.ts'];
 
 let scanned = 0;
 let exempt = 0;
@@ -116,7 +122,8 @@ for (const { brand, surfaces, nav } of CONSOLES) {
   if (!existsSync(surfaces)) die([`✖ app names: scan root missing: ${surfaces}`]);
   if (!existsSync(nav)) die([`✖ app names: the one table is missing: ${nav}`]);
   const slugs = new Set(moduleSlugs(brand));
-  if (slugs.size < 15) die([`✖ app names: only ${String(slugs.size)} module slugs found for ${brand}`]);
+  if (slugs.size < 15)
+    die([`✖ app names: only ${String(slugs.size)} module slugs found for ${brand}`]);
 
   for (const file of files(surfaces)) {
     scanned += 1;
@@ -135,7 +142,9 @@ for (const { brand, surfaces, nav } of CONSOLES) {
     // written on ONE line slipped straight past it — which is the shape somebody
     // reaches for precisely when they think it is too small to matter.
     const keyed = new Set();
-    for (const m of source.matchAll(/\b([a-z_]+):\s*(?:'([A-Z][^']*)'|\{\s*label:\s*'([A-Z][^']*)')/g)) {
+    for (const m of source.matchAll(
+      /\b([a-z_]+):\s*(?:'([A-Z][^']*)'|\{\s*label:\s*'([A-Z][^']*)')/g
+    )) {
       if (slugs.has(m[1])) keyed.add(m[1]);
     }
     if (keyed.size < 3) continue;
