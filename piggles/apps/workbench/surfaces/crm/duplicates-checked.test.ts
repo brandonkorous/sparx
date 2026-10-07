@@ -28,7 +28,7 @@ describe('duplicatesCheckedWords', () => {
     const words = duplicatesCheckedWords(['phone']);
     expect(words.checked).toBe('Nobody shares a phone number.');
     expect(words.notChecked).toBe(
-      'Email addresses and surnames and employers are not compared, so two records that share one are not shown. Turn on “The same email address” and “The same surname and employer” under How the CRM behaves to include them.'
+      'Email addresses and surnames and employers are not compared, so two records that share one are not shown. Turn on “The same email address” and “The same surname and employer” under How this app behaves to include them.'
     );
   });
 });

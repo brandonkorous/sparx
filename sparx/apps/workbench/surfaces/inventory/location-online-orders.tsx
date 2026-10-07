@@ -22,7 +22,12 @@ import { FormSection } from '../../components/form-section';
 import { useReachableModules } from '../../lib/surfaces/use-visible-nav';
 import { useStockLocations } from './data';
 import type { Location } from './locations-data';
-import { canShipFrom, courierGaps, listOf, type Draft as AddressDraft } from './location-ship-from';
+import {
+  canShipFrom,
+  courierGaps,
+  listOf,
+  type ShipFromAddress as AddressDraft,
+} from './location-ship-from';
 
 /** What this section reads and writes on the location form's draft. */
 interface Draft extends AddressDraft {

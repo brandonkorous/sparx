@@ -383,6 +383,6 @@ export function duplicatesCheckedWords(rules: readonly DuplicateMatchRule[]): {
   const what = list(off.map((rule) => nouns[rule.value]));
   return {
     checked,
-    notChecked: `${what.charAt(0).toUpperCase()}${what.slice(1)} are not compared, so two records that share one are not shown. Turn on ${list(off.map((rule) => `“${rule.label}”`))} under How the CRM behaves to include them.`,
+    notChecked: `${what.charAt(0).toUpperCase()}${what.slice(1)} are not compared, so two records that share one are not shown. Turn on ${list(off.map((rule) => `“${rule.label}”`))} under How this app behaves to include them.`,
   };
 }

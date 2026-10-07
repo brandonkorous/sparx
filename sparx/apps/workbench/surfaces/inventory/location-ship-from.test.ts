@@ -8,10 +8,10 @@ import {
   courierGaps,
   listOf,
   readyForCouriers,
-  type Draft,
+  type ShipFromAddress,
 } from './location-ship-from';
 
-const BLANK: Draft = {
+const BLANK: ShipFromAddress = {
   type: 'owned',
   line1: '',
   line2: '',
@@ -22,7 +22,7 @@ const BLANK: Draft = {
 };
 
 // Devi's Main Warehouse as it was: made before she typed her business address.
-const mainWarehouse: Draft = { ...BLANK, country: 'US' };
+const mainWarehouse: ShipFromAddress = { ...BLANK, country: 'US' };
 
 const business = {
   addressLine1: '1200 SE Belmont St',

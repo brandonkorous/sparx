@@ -6,7 +6,7 @@ import type { BusinessAddress } from '../../lib/business-address';
 
 /** The parts of the location form these rules read. The form's own draft lives
  *  in location-detail and has more; anything with these fields will do. */
-export interface Draft {
+export interface ShipFromAddress {
   type: string;
   line1: string;
   line2: string;
@@ -25,7 +25,7 @@ export function canShipFrom(type: string): boolean {
 /** The parts a courier prices postage from, in the form's words. The same four
  *  the server checks before it will price a parcel or print a label
  *  (`resolveShipFromAddress`), so the screen never asks for less than that. */
-export function courierGaps(draft: Draft): string[] {
+export function courierGaps(draft: ShipFromAddress): string[] {
   const gaps: string[] = [];
   if (!draft.line1.trim()) gaps.push('a street address');
   if (!draft.city.trim()) gaps.push('a town or city');
@@ -63,8 +63,8 @@ export function listOf(parts: readonly string[]): string {
  *  leave from. */
 export function businessAddressOffer(
   business: BusinessAddress | undefined,
-  draft: Draft
-): Pick<Draft, 'line1' | 'line2' | 'city' | 'region' | 'postalCode' | 'country'> | null {
+  draft: ShipFromAddress
+): Pick<ShipFromAddress, 'line1' | 'line2' | 'city' | 'region' | 'postalCode' | 'country'> | null {
   if (!business || !canShipFrom(draft.type)) return null;
   const line1 = business.addressLine1?.trim() ?? '';
   const city = business.city?.trim() ?? '';
@@ -85,7 +85,7 @@ export function businessAddressOffer(
 
 /** One line for an envelope: "1200 SE Belmont St, Portland, OR 97214, US". */
 export function addressLine(
-  parts: Pick<Draft, 'line1' | 'line2' | 'city' | 'region' | 'postalCode' | 'country'>
+  parts: Pick<ShipFromAddress, 'line1' | 'line2' | 'city' | 'region' | 'postalCode' | 'country'>
 ): string {
   const town = [parts.region, parts.postalCode].filter(Boolean).join(' ');
   return [parts.line1, parts.line2, parts.city, town, parts.country].filter(Boolean).join(', ');
