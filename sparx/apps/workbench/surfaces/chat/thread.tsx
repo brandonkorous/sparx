@@ -653,7 +653,7 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
 
       {/* Scrolls as a whole only when the pane is too short for the card, the
           messages' floor and the reply box together: nothing is ever cut off. */}
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto [&>*]:shrink-0">
         <ContextCard conversation={data} siteName={siteName} ctx={ctx} />
 
         {/* Assigning lives here, beside the identity, rather than crowding the
