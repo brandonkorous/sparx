@@ -71,7 +71,7 @@ function ShipFromSupplierForm({
   const ship = useShipFromSupplier(product.id);
   const first = data.variants[0];
   const [supplierId, setSupplierId] = useState(
-    link?.supplier.id ?? (suppliers.length === 1 ? suppliers[0].id : '')
+    link?.supplier.id ?? (suppliers.length === 1 ? (suppliers.at(0)?.id ?? '') : '')
   );
   const [code, setCode] = useState(link?.supplierSku ?? first?.sku ?? '');
   const [cost, setCost] = useState(
@@ -171,7 +171,7 @@ function ShipFromSupplierForm({
             }
           />
           <FieldDescription>
-            {margin === null
+            {margin === null || !first
               ? 'For one, before shipping.'
               : margin > 0
                 ? `You sell it for ${formatCents(first.priceCents, first.currency)}, so you make ${formatCents(margin, first.currency)} on each.`

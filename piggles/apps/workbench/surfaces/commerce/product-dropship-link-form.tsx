@@ -52,7 +52,7 @@ export interface ShipFormProps {
 function useShipForm({ data, suppliers, link }: ShipFormProps) {
   const first = data.variants.at(0);
   const [supplierId, setSupplierId] = useState(
-    link?.supplier.id ?? (suppliers.length === 1 ? suppliers[0].id : '')
+    link?.supplier.id ?? (suppliers.length === 1 ? (suppliers.at(0)?.id ?? '') : '')
   );
   const [code, setCode] = useState(link?.supplierSku ?? first?.sku ?? '');
   const [cost, setCost] = useState(
