@@ -19,7 +19,17 @@ describe('what a refused person is told', () => {
   });
 
   it('never names the ladder', () => {
-    for (const min of ['owner', 'admin', 'editor', 'viewer', 'api'] as const) {
+    for (const min of [
+      'owner',
+      'admin',
+      'editor',
+      'builder',
+      'marketing',
+      'support',
+      'partner',
+      'scanner',
+      'viewer',
+    ] as const) {
       expect(roleRefusal(min)).not.toMatch(/role or higher|requires/i);
     }
   });

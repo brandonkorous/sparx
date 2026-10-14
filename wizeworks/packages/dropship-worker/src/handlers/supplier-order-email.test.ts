@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { supplierOrderEmail } from './supplier-order-email.js';
+import { supplierOrderEmail, type SupplierOrderLine } from './supplier-order-email.js';
 
 // The order a business's own supplier gets by email when a customer buys a
 // product that supplier ships (sparx persona issue 171).
+const TANK: SupplierOrderLine = {
+  title: 'S&B 68 Gallon High-Capacity Fuel Tank, 17-26 Ford Powerstroke 6.7L Crew Cab Long Bed',
+  supplierSku: '10-1008',
+  quantity: 1,
+  unitCostCents: 110_000,
+};
+
 const base = {
   fromName: 'Gillett Diesel Service',
   supplierName: 'S&B Filters',
@@ -19,14 +26,7 @@ const base = {
     countryCode: 'US',
     phone: '+1 801-555-0142',
   },
-  lines: [
-    {
-      title: 'S&B 68 Gallon High-Capacity Fuel Tank, 17-26 Ford Powerstroke 6.7L Crew Cab Long Bed',
-      supplierSku: '10-1008',
-      quantity: 1,
-      unitCostCents: 110_000,
-    },
-  ],
+  lines: [TANK],
 };
 
 describe('supplierOrderEmail', () => {
@@ -40,7 +40,7 @@ describe('supplierOrderEmail', () => {
     expect(out.props.contactName).toBe('Marco');
     expect(out.props.lines).toEqual([
       {
-        title: base.lines[0].title,
+        title: TANK.title,
         subtitle: 'their code 10-1008 · 1 × $1,100.00',
         amount: '$1,100.00',
       },
@@ -74,8 +74,8 @@ describe('supplierOrderEmail', () => {
     });
     if (!out.ok) throw new Error('expected an email');
     expect(out.props.total).toBe(2249.5);
-    expect(out.props.lines[0].subtitle).toBe('their code 10-1008 · 2 × $1,100.00');
-    expect(out.props.lines[0].amount).toBe('$2,200.00');
+    expect(out.props.lines[0]?.subtitle).toBe('their code 10-1008 · 2 × $1,100.00');
+    expect(out.props.lines[0]?.amount).toBe('$2,200.00');
   });
 
   // The checkout asks "Anything we should know? Where to leave it…", and the
@@ -97,7 +97,7 @@ describe('supplierOrderEmail', () => {
   it('waits for the owner when what the supplier charges is not known', () => {
     const out = supplierOrderEmail({
       ...base,
-      lines: [{ ...base.lines[0], unitCostCents: null }],
+      lines: [{ ...TANK, unitCostCents: null }],
     });
     expect(out).toEqual({
       ok: false,

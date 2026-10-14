@@ -16,6 +16,13 @@ interface SendAsInput {
   props: Record<string, unknown>;
 }
 
+/** The send as it leaves: a From always, and props that say whether a reply lands. */
+export type SentAsTheBusiness<T extends SendAsInput> = T & {
+  from: string;
+  replyTo?: string;
+  props: { canReply?: boolean };
+};
+
 /**
  * The send with the business's From and Reply-To, and `canReply` saying whether a
  * reply reaches it: a template that invites a reply nobody reads is worse than one
@@ -24,7 +31,7 @@ interface SendAsInput {
 export function asTheBusiness<T extends SendAsInput>(
   send: T,
   sender: { from: string; replyTo: string | null }
-): T {
+): SentAsTheBusiness<T> {
   const replyTo = send.replyTo ?? sender.replyTo ?? undefined;
   return {
     ...send,
@@ -32,5 +39,5 @@ export function asTheBusiness<T extends SendAsInput>(
     replyTo,
     props:
       'canReply' in send.props ? send.props : { ...send.props, canReply: replyTo !== undefined },
-  };
+  } as SentAsTheBusiness<T>;
 }

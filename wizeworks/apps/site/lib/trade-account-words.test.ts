@@ -371,7 +371,6 @@ describe('the account standing, in words', () => {
           unpaidCents: 255_438,
           overdueCount: 1,
           overdueCents: 52_800,
-          paidCount: 4,
         },
         'USD'
       )
@@ -380,10 +379,7 @@ describe('the account standing, in words', () => {
       unpaid: '2 invoices are not yet paid: $2,554.38.',
     });
     expect(
-      openInvoiceWords(
-        { unpaidCount: 0, unpaidCents: 0, overdueCount: 0, overdueCents: 0, paidCount: 4 },
-        'USD'
-      )
+      openInvoiceWords({ unpaidCount: 0, unpaidCents: 0, overdueCount: 0, overdueCents: 0 }, 'USD')
     ).toEqual({ overdue: null, unpaid: null });
   });
 
