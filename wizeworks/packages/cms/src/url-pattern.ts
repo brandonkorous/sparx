@@ -30,6 +30,7 @@ export const RESERVED_ADDRESS_WORDS: readonly string[] = [
   'sign',
   '_next',
   'favicon.ico',
+  'feed.xml',
   'llms.txt',
   'robots.txt',
   'sitemap.xml',

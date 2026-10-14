@@ -23,8 +23,10 @@ describe('a conversation pane', () => {
   });
 
   it('scrolls as a whole rather than cut the reply box off', () => {
+    // `[&>*]:shrink-0`: the card and the reply box keep their own height, so the
+    // column scrolls instead of squashing them (check:scroll-squash).
     expect(read('./thread.tsx')).toContain(
-      '<div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">'
+      '<div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto [&>*]:shrink-0">'
     );
   });
 });

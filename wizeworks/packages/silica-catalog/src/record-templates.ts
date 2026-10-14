@@ -311,6 +311,7 @@ export const RESERVED_KIND_SEGMENTS: readonly string[] = [
   // Next's own, and the files the storefront serves at the root.
   '_next',
   'favicon.ico',
+  'feed.xml',
   'llms.txt',
   'robots.txt',
   'sitemap.xml',
