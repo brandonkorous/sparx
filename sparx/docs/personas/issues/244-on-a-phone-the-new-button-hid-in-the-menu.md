@@ -25,19 +25,19 @@ it twice over: it read only the `controls` slot, never `refresh`, and it counted
 
 With the check widened, it found 11 lists:
 
-| Button | Slot | File |
-| --- | --- | --- |
-| New report | refresh | sparx `crm/reports-library.tsx` |
-| Add a report | refresh | sparx `crm/dashboards.tsx` |
-| New instruction | controls | sparx `ai/prompts-list.tsx` |
-| New campaign | controls | sparx `funnels/campaigns.tsx` |
-| New shelf | controls | sparx `inventory/bins-list.tsx` |
-| New supplier | controls | sparx `inventory/suppliers-list.tsx` |
-| New bootcamp | controls | sparx `partner/bootcamps-list.tsx` |
-| New post | controls | sparx `social/calendar.tsx` |
-| New post | controls | sparx `social/queue.tsx` |
-| New report | controls | Piggles `crm/reports-library.tsx` |
-| New shelf | controls | Piggles `inventory/bins-list.tsx` |
+| Button          | Slot     | File                                 |
+| --------------- | -------- | ------------------------------------ |
+| New report      | refresh  | sparx `crm/reports-library.tsx`      |
+| Add a report    | refresh  | sparx `crm/dashboards.tsx`           |
+| New instruction | controls | sparx `ai/prompts-list.tsx`          |
+| New campaign    | controls | sparx `funnels/campaigns.tsx`        |
+| New shelf       | controls | sparx `inventory/bins-list.tsx`      |
+| New supplier    | controls | sparx `inventory/suppliers-list.tsx` |
+| New bootcamp    | controls | sparx `partner/bootcamps-list.tsx`   |
+| New post        | controls | sparx `social/calendar.tsx`          |
+| New post        | controls | sparx `social/queue.tsx`             |
+| New report      | controls | Piggles `crm/reports-library.tsx`    |
+| New shelf       | controls | Piggles `inventory/bins-list.tsx`    |
 
 ## What should have happened
 

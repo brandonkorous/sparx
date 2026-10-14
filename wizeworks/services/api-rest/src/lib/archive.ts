@@ -88,7 +88,7 @@ export function archiveMonths(
     const fields = kind.fields as KindFieldLike[];
     const body = (row.body ?? {}) as Record<string, unknown>;
     const headline = kindLayout(fields).headline;
-    const title = headline && typeof body[headline] === 'string' ? (body[headline]) : '';
+    const title = headline && typeof body[headline] === 'string' ? body[headline] : '';
     if (!path || !title) continue;
     const list = byMonth.get(month) ?? [];
     list.push({

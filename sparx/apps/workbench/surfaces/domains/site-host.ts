@@ -15,7 +15,10 @@ import { useDomains, type Domain } from './data';
  * before the domains have loaded: a caller prints the path alone rather than an
  * address nobody owns.
  */
-export function siteHostOf(domains: Domain[] | undefined, propertyId: string | null): string | null {
+export function siteHostOf(
+  domains: Domain[] | undefined,
+  propertyId: string | null
+): string | null {
   const mine = (domains ?? []).filter(
     (domain) =>
       domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)

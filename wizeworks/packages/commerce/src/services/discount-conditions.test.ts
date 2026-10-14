@@ -100,9 +100,7 @@ describe('a basket that does not qualify is refused', () => {
       lines: [{ id: 'l-tee', productId: TEE, quantity: 2, subtotalCents: 8400 }],
     });
 
-    expect(refusalReason([three], twoOfOne)).toBe(
-      'This code needs at least 3 items in your cart.'
-    );
+    expect(refusalReason([three], twoOfOne)).toBe('This code needs at least 3 items in your cart.');
     const threeOfOne = facts({
       lines: [{ id: 'l-tee', productId: TEE, quantity: 3, subtotalCents: 12600 }],
     });

@@ -18,11 +18,11 @@ open. The report has no filter at all.
 
 Checking the other seven against their own words found two more:
 
-| Report | It says | It counts | On the dev data |
-| --- | --- | --- | --- |
-| Where your deals are | open deals | every deal, won and lost too | Gillett's lost deal ($15,000) |
-| Who is carrying what | everything still to do | every task with no completion date | 3 canceled tasks |
-| Requests by urgency | requests nobody has answered yet | every request not sorted | 6 of 14 had been answered |
+| Report               | It says                          | It counts                          | On the dev data               |
+| -------------------- | -------------------------------- | ---------------------------------- | ----------------------------- |
+| Where your deals are | open deals                       | every deal, won and lost too       | Gillett's lost deal ($15,000) |
+| Who is carrying what | everything still to do           | every task with no completion date | 3 canceled tasks              |
+| Requests by urgency  | requests nobody has answered yet | every request not sorted           | 6 of 14 had been answered     |
 
 A sentence that says what a number counts is a contract. These broke it.
 

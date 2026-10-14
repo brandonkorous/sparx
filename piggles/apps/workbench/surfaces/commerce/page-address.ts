@@ -15,11 +15,7 @@ export type AddressedRecord = 'commerce.product' | 'commerce.collection' | 'comm
  * "gillettdiesel.sparx.zone/category/injectors". With no address known yet, the
  * path alone ("/category/injectors"), never a made-up one.
  */
-export function pageAddress(
-  host: string | null,
-  record: AddressedRecord,
-  handle: string
-): string {
+export function pageAddress(host: string | null, record: AddressedRecord, handle: string): string {
   const prefix = recordAddressFor(record)?.prefix ?? '/';
   return `${host ?? ''}${prefix}${handle || '…'}`;
 }

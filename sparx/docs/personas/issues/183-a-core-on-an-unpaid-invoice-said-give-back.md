@@ -58,7 +58,7 @@ paid, and the invoice is credited as well.
 One lookup and one rule, read by the refund and by every screen that talks about it.
 
 - `wizeworks/packages/commerce-schemas/src/cores.ts`: `splitCoreDeposit(deposit,
-  invoiceBalance)`, off the invoice first and only the rest back. `receiveCores` uses it.
+invoiceBalance)`, off the invoice first and only the rest back. `receiveCores` uses it.
 - `wizeworks/packages/commerce/src/services/core-service.ts`: `openInvoicesByOrder`, the
   newest invoice still owed per order, is the one lookup behind the refund, the list
   (`CoreOwed.openInvoice`) and a new read, `openInvoiceForLine`

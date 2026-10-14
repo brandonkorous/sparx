@@ -130,4 +130,3 @@ describe('the tax rate an invoice prints', () => {
     expect(invoiceTaxRate([line], {})).toBe(0.0725);
   });
 });
-

@@ -13,11 +13,11 @@
 
 "Where your deals are" has a "Total value" column. It read:
 
-| Stage | Deals | Total value |
-| --- | --- | --- |
-| First call | 2 | 61250.50 |
-| Trial order | 1 | 9,840 |
-| Visited their yard | 1 | 61,380 |
+| Stage              | Deals | Total value |
+| ------------------ | ----- | ----------- |
+| First call         | 2     | 61250.50    |
+| Trial order        | 1     | 9,840       |
+| Visited their yard | 1     | 61,380      |
 
 No dollar sign anywhere. And two styles in one column: a whole number got a thousands
 separator ("9,840"), a number with cents did not ("61250.50"). The same on the dashboard
@@ -45,8 +45,7 @@ smaller one at a glance, and neither says it is dollars.
 ## Where it lives
 
 - `wizeworks/packages/crm/src/services/report-compiler.ts`: result columns.
-- `formatCell` in `surfaces/crm/report-group-words.ts` (sparx; it moved there for issue
-  247) and the Piggles report builder and widget.
+- `formatCell` in `surfaces/crm/report-group-words.ts` (sparx; it moved there for issue 247) and the Piggles report builder and widget.
 
 ## The fix
 

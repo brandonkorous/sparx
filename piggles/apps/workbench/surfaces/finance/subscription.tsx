@@ -314,7 +314,11 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                       onClick={openBilling}
                     >
                       <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
-                      {inSetup ? 'Set up billing' : bill.card ? 'Manage billing & card' : 'Add a card'}
+                      {inSetup
+                        ? 'Set up billing'
+                        : bill.card
+                          ? 'Manage billing & card'
+                          : 'Add a card'}
                     </Button>
                   </div>
                   <Text className="mt-2 text-sm">

@@ -73,7 +73,7 @@ One answer, read by both sides. `issueRefund` already chose "gateway or by hand"
   as given back", settled "Given back by hand". Through a gateway the old words stay.
   Store credit now says "Give $750.00 as store credit".
 - The site: `components/returns/return-status.ts` `refundedLine` and `returnState(status,
-  route)`. Her page said "Sent back"; now "Given back to you", or "Added to your account"
+route)`. Her page said "Sent back"; now "Given back to you", or "Added to your account"
   for store credit.
 
 Tests, each proved red first: `refund-source.test.ts` (commerce, 10), the words test in

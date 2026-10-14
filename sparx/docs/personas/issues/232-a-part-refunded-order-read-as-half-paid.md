@@ -43,11 +43,11 @@ first and repeats to the customer.
 ## Where it lives
 
 - `sparx/apps/workbench/surfaces/commerce/order-detail.tsx`: `MoneyRow label="Paid so
-  far" amount={order.amountPaid}`.
+far" amount={order.amountPaid}`.
 - `piggles/apps/workbench/surfaces/commerce/order-detail-lines.tsx` `OrderTotals`: the
   same.
 - `amountDue` in `data.ts` already reads `amountPaid` as net (`total − amountPaid −
-  refundTotal`); only the label and figure of the paid row are wrong.
+refundTotal`); only the label and figure of the paid row are wrong.
 
 ## The fix
 

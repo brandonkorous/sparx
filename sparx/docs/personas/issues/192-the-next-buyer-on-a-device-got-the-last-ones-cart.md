@@ -38,6 +38,7 @@ check, but only for repeat deliveries.
 ## The fix
 
 Two layers.
+
 - Site: `lib/cart-session.ts` `cartEndsWithSession(before, after)`; `cart-provider.tsx`
   forgets the stored cart when its buyer signs out or a different buyer signs in. A guest
   who signs in keeps theirs (the server's cart handoff). While the session is unknown,
@@ -45,8 +46,8 @@ Two layers.
 - API: `lib/cart-owner.ts` `cartUsableBy`; `assertCartToken` (every cart read and write)
   answers "not found" when the cart belongs to one buyer and a different buyer is signed
   in, whatever token the browser kept. The site already forgets a cart that is not found.
-Tests red first: `cart-session.test.ts` (site, 5), `cart-owner.test.ts` (api-rest, 4).
-Site 454 and api-rest 490 pass; lint clean.
+  Tests red first: `cart-session.test.ts` (site, 5), `cart-owner.test.ts` (api-rest, 4).
+  Site 454 and api-rest 490 pass; lint clean.
 
 ## Confirmed by
 

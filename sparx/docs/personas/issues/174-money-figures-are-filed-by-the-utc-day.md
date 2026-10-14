@@ -44,7 +44,7 @@ Not a one-line change, because the inputs are not the same kind of date:
 - Sales, payments and stock movements are **moments**: their day is the business
   day of the moment (`businessDayOf`, as [145] and [146] did).
 - Expenses are **dates** stored as midnight UTC (`incurred_at` = `2026-10-06
-  00:00:00+00`): their day is that date as written. Reading them over a Denver day
+00:00:00+00`): their day is that date as written. Reading them over a Denver day
   range would move every expense to the day before.
 - Each rollup's window has to be cut on business-day edges (the reconcile deletes
   and rewrites from a window start), or its first day is written half full.

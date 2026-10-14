@@ -24,13 +24,13 @@ The same shape is on four more create forms, in both consoles. On each of them t
 form is still filled and its button still says what it did, so a second press tries to
 make a second copy:
 
-| Form | A second press |
-| --- | --- |
-| Record types › New | Fails: the short name is taken |
-| Stock › Shelves › New | Fails: that label is already a shelf at that location |
-| Stock › Count schedules › New | A second schedule, so the count is asked for twice |
+| Form                            | A second press                                                   |
+| ------------------------------- | ---------------------------------------------------------------- |
+| Record types › New              | Fails: the short name is taken                                   |
+| Stock › Shelves › New           | Fails: that label is already a shelf at that location            |
+| Stock › Count schedules › New   | A second schedule, so the count is asked for twice               |
 | Stock › Supplier invoices › New | Fails: their invoice number is already entered for that supplier |
-| Stock › Supplier returns › New | A second return claiming the same credit |
+| Stock › Supplier returns › New  | A second return claiming the same credit                         |
 
 Every other create form in the workbench (about 70 of them) passes
 `{ target: 'replace' }`, so the pane becomes the thing it just made.

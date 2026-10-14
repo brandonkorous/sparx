@@ -55,6 +55,7 @@ The counter sale asks the same tax engine the website's checkout uses, shows the
 on its own row, adds it to what it asks for, and writes it onto the order.
 
 **Server.**
+
 - `wizeworks/packages/commerce/src/services/sale-tax.ts` (new) `quoteTaxForSale`: the
   shop's own address as the place (as for a collected checkout order, issue 137), each
   line at the price this customer is charged, the buyer's and their wholesale
@@ -68,6 +69,7 @@ on its own row, adds it to what it asks for, and writes it onto the order.
   them.
 
 **Sparx workbench** (`sparx/apps/workbench/surfaces/commerce/`).
+
 - `sale-tax.ts` (new): asks the server, keys the answer to the exact sale (customer,
   lines, quantities, prices) and names the row: "Sales tax (7.25%)", or "Sales tax
   (none: their tax certificate is on file)".
