@@ -25,11 +25,11 @@ describe('a record type that is not there', () => {
     }
   );
 
-  it('is the not-found state, worded for a record type', () => {
+  it('is the not-found state, worded for a thing you track', () => {
     const states = read('./records-list-states.tsx');
     const at = states.indexOf('export function RecordTypeMissing');
     expect(states.slice(at, at + 700)).toMatch(
-      /<PaneLoadError[\s\S]*?error=\{error\}[\s\S]*?noun="record type"/
+      /<PaneLoadError[\s\S]*?error=\{error\}[\s\S]*?noun="thing you track"/
     );
   });
 });

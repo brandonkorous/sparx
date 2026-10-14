@@ -19,7 +19,7 @@ new link**. Nothing was sent by the first press.
 ## Why
 
 The sign-in system lives on getpiggles, another site, so the console's band can only
-open that page (`components/verify-email-band.tsx`). The page then waited for a second
+open that page (`components/verify-email-banner.tsx`). The page then waited for a second
 press. In sparx the same button sends in place.
 
 ## The fix
@@ -32,7 +32,7 @@ press. In sparx the same button sends in place.
   through the dev double mount) and takes `send=1` out of the address, so a reload sends
   nothing.
 
-Test `workbench/lib/verify-email-lands-on-a-page.test.ts`, 4 pass; the band test went
+Test `workbench/lib/verify-email/link-lands-on-a-page.test.ts`, 4 pass; the band test went
 red with the plain address put back. Lint clean; account typecheck clean.
 
 ## Confirmed by

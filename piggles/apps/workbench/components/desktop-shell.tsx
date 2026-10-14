@@ -9,7 +9,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { HeaderNotice, type HeaderNoticeData } from '@piggles/ui';
 import { LifecycleBand } from '@/components/lifecycle-band';
-import { VerifyEmailBand } from '@/components/verify-email-band';
+import { VerifyEmailBand } from '@/components/verify-email-banner';
 import { WorkbenchProvider } from '@/lib/workbench/context';
 import { StudioSessionProvider } from '@/lib/studio/provider';
 import { BackNavigation } from '@/lib/workbench/nav-history';

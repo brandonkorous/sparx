@@ -391,7 +391,7 @@ function FormMessagesWaiting({ ctx }: { ctx: SurfaceContext }) {
             : `${String(waiting)} messages from your contact form are waiting`}
         </AlertTitle>
         <AlertDescription>
-          People who write to you through the form on your site are listed in Form submissions, not
+          People who write to you through the form on your site are listed in Form replies, not
           here. Open one to answer it.
         </AlertDescription>
       </AlertContent>

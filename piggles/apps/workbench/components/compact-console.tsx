@@ -24,7 +24,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import { faShareNodes } from '@fortawesome/pro-solid-svg-icons';
 import { HeaderNotice, type HeaderNoticeData, Icon } from '@piggles/ui';
 import { LifecycleBand } from '@/components/lifecycle-band';
-import { VerifyEmailBand } from '@/components/verify-email-band';
+import { VerifyEmailBand } from '@/components/verify-email-banner';
 import { Button } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { MODULE_TO_APP, PRODUCT } from '@piggles/config';

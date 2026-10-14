@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { verifyEmailNotice } from './verify-email-words';
+import { verifyEmailNotice } from './words';
 
 /** An unconfirmed owner is told, and has a door to a new link (sparx persona
  *  issue 157, the same gap here). */

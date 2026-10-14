@@ -11,7 +11,7 @@
 
 import { Button } from '@wizeworks/silicaui-react';
 import { useViewer } from '@/lib/api/shell-data';
-import { verifyEmailNotice } from '@/lib/verify-email-words';
+import { verifyEmailNotice } from '@/lib/verify-email/words';
 
 export function VerifyEmailBand({ accountOrigin }: { accountOrigin: string }) {
   const { data: viewer } = useViewer();

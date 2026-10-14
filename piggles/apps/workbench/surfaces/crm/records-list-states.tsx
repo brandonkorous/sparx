@@ -84,8 +84,8 @@ export function RecordTypeMissing({ error, onRetry }: { error: unknown; onRetry:
           module={MODULE}
           icon={GLYPH}
           error={error}
-          noun="record type"
-          title="Could not load this record type"
+          noun="thing you track"
+          title="Could not load this thing you track"
           description="This is a problem reaching the server. Your records are unaffected. Try again in a moment."
           onRetry={onRetry}
         />

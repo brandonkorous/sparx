@@ -46,7 +46,7 @@ sparx console (`sparx/apps/workbench`):
 
 Piggles:
 
-- Console (`piggles/apps/workbench`): `/api/token` and `useViewer` carry the same two facts; `components/verify-email-band.tsx` sits beside the lifecycle band in both shells. Its "Send the link again" is a door to getpiggles.com's `/verify-email`, which owns sending.
+- Console (`piggles/apps/workbench`): `/api/token` and `useViewer` carry the same two facts; `components/verify-email-banner.tsx` sits beside the lifecycle band in both shells. Its "Send the link again" is a door to getpiggles.com's `/verify-email`, which owns sending.
 - Account app (`piggles/apps/account`): `app/verify-email/` page, screen and `sendConfirmLink` action, words in `lib/verify-email-landing.ts`. Signed out, it offers "Sign in to ask for a new link".
 
 Shared:
@@ -57,9 +57,9 @@ Shared:
 Tests, proved red:
 
 - `sparx/apps/workbench/lib/verify-email/link-lands-on-a-page.test.ts`: the `callbackURL` sign-up sends has a `page.tsx` in this console. Red before the page existed.
-- `piggles/apps/workbench/lib/verify-email-lands-on-a-page.test.ts`: the same for the Piggles account app, read from its files (the account app has no test runner). Red with the page moved away.
+- `piggles/apps/workbench/lib/verify-email/link-lands-on-a-page.test.ts`: the same for the Piggles account app, read from its files (the account app has no test runner). Red with the page moved away.
 - `wizeworks/services/api-rest/src/lib/verified-email-guard-words.test.ts`: the refusal does not say "dashboard" and names "Send the link again". Red on the old message.
-- Words: `lib/verify-email/words.test.ts` (sparx) and `lib/verify-email-words.test.ts` (Piggles console): the notice shows only for an unconfirmed owner and names the address; the landing page says "confirmed" only when the session does. These are new words, so they have no red of their own.
+- Words: `lib/verify-email/words.test.ts` (sparx) and `lib/verify-email/words.test.ts` (Piggles console): the notice shows only for an unconfirmed owner and names the address; the landing page says "confirmed" only when the session does. These are new words, so they have no red of their own.
 
 Typecheck clean in the sparx console, the Piggles console, the Piggles account app, `@wizeworks/auth` and api-rest. Lint clean on every file.
 

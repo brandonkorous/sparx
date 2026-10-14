@@ -9,9 +9,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { sendsOnArrival } from '../../account/lib/verify-email-landing';
+import { sendsOnArrival } from '../../../account/lib/verify-email-landing';
 
-const REPO = path.resolve(__dirname, '../../../..');
+const REPO = path.resolve(__dirname, '../../../../..');
 const SIGN_UP = path.join(REPO, 'wizeworks/packages/auth/src/sign-up.ts');
 const ACCOUNT_APP = path.join(REPO, 'piggles/apps/account/app');
 
@@ -37,7 +37,7 @@ describe('the confirm-your-email link', () => {
 describe('the band’s "Send the link again"', () => {
   it('opens the page marked to send', () => {
     const band = fs.readFileSync(
-      path.join(__dirname, '../components/verify-email-band.tsx'),
+      path.join(__dirname, '../../components/verify-email-banner.tsx'),
       'utf8'
     );
     expect(band).toContain('/verify-email?send=1');

@@ -322,6 +322,12 @@ const EXCEPTIONS = [
   {
     axis: 'routes',
     only: 'sparx',
+    path: 'app/verify-email',
+    why: 'the confirm-your-email link lands where Better Auth is mounted — getpiggles.com for Piggles (piggles/apps/account/app/verify-email).',
+  },
+  {
+    axis: 'routes',
+    only: 'sparx',
     path: 'app/api/auth',
     why: 'Better Auth is mounted by the app that owns the credential screens — workbench for sparx, the account app for Piggles.',
   },
