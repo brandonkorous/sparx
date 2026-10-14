@@ -39,5 +39,5 @@ export function asTheBusiness<T extends SendAsInput>(
     replyTo,
     props:
       'canReply' in send.props ? send.props : { ...send.props, canReply: replyTo !== undefined },
-  } as SentAsTheBusiness<T>;
+  };
 }
