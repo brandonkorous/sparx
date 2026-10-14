@@ -25,6 +25,8 @@ export interface PublishState {
   hasUnpublished: boolean;
   unpublishedPages: number;
   frameUnpublished: boolean;
+  /** The site's look waits too; absent from an older API. */
+  themeUnpublished?: boolean;
 }
 
 /** What is outstanding, in one sentence someone can act on. */
@@ -65,7 +67,13 @@ export function waitingLine(state: PublishState, siteIsDark = false): string {
     );
   }
   if (state.frameUnpublished) parts.push('your header and footer have changes');
-  const what = parts.join(', and ');
+  // A design's look chosen and saved is not live until the site is published, and this
+  // sentence used to count pages only, so the look waited with nothing saying so.
+  if (state.themeUnpublished) parts.push('the look of your site has changes');
+  // A sentence, so it starts with a capital whichever part comes first ("Your header
+  // and footer have changes…" read "your header…" when it was the only part).
+  const joined = parts.join(', and ');
+  const what = joined.charAt(0).toUpperCase() + joined.slice(1);
 
   return siteIsDark
     ? `${what} that are not published yet, so they are not part of what your site comes back with.`

@@ -125,3 +125,30 @@ describe('createMailgunProvider — a tenant relaying through their own domain',
     expect(urls[0]).toContain(`/v3/${DEFAULT_DOMAIN}/messages`);
   });
 });
+
+// A campaign's List-Unsubscribe pair goes out as real message headers (piggles persona
+// issue 985): Mailgun takes a header as an `h:` field.
+describe('createMailgunProvider: message headers', () => {
+  it('sends each header as an h: field', async () => {
+    const bodies: string[] = [];
+    vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+      bodies.push(init?.body instanceof URLSearchParams ? init.body.toString() : '');
+      return Promise.resolve(
+        new Response(JSON.stringify({ id: 'mailgun-id' }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      );
+    });
+    await createMailgunProvider({ apiKey: 'key', defaultDomain: DEFAULT_DOMAIN }).send({
+      ...message(`Brand <noreply@${DEFAULT_DOMAIN}>`),
+      headers: {
+        'List-Unsubscribe': '<https://api.example/unsubscribe?token=t>',
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
+    });
+    const form = new URLSearchParams(bodies[0]);
+    expect(form.get('h:List-Unsubscribe')).toBe('<https://api.example/unsubscribe?token=t>');
+    expect(form.get('h:List-Unsubscribe-Post')).toBe('List-Unsubscribe=One-Click');
+  });
+});

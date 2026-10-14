@@ -27,12 +27,15 @@ import {
 } from '@wizeworks/silicaui-react';
 import { History } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
+import { loadFailureWords } from '../../lib/api-error';
 import { ACTIVITY_MAX, activityKindLabel, activityTone, type ActivityEntry } from './security-data';
 
 interface ActivityCardProps {
   entries: ActivityEntry[] | undefined;
   isPending: boolean;
   isError: boolean;
+  /** The failed read's error, so the message can say WHY it failed (issue 260). */
+  error: unknown;
   isFetching: boolean;
   limit: number;
   refetch: () => void;
@@ -43,6 +46,7 @@ export function ActivityCard({
   entries,
   isPending,
   isError,
+  error,
   isFetching,
   limit,
   refetch,
@@ -63,7 +67,10 @@ export function ActivityCard({
           <AlertContent>
             <AlertTitle>Could not load your activity</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server. Your account record is unaffected.
+              {loadFailureWords(
+                error,
+                'This is a problem reaching the server. Your account record is unaffected.'
+              )}
             </AlertDescription>
           </AlertContent>
           <AlertActions>

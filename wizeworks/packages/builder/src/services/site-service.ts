@@ -53,6 +53,7 @@ import {
   RECORD_TEMPLATE_LABELS,
   isPlatformRecordPageName,
   isRecordAddress,
+  kindAddressAt,
   recordAddressAt,
   recordAddressFor,
   ensureUniqueIds,
@@ -83,6 +84,8 @@ import { newOpBatch, pageCreateOp, pageDeleteOp, savedThemesSetOp, themeSetOp } 
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 import { indexSitePages, withPageSearch } from './page-search';
+import { ensureKindPagesTx } from './kind-pages';
+import { showsItsDefault } from './default-page';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
 
@@ -296,6 +299,19 @@ async function healPageTx(tx: TxClient, page: BuilderPage): Promise<BuilderPage>
   return { ...page, silicaDraftTree: silicaDraftTree as Prisma.JsonValue };
 }
 
+/** Would opening (or publishing) this page change its draft? The read-only half of
+ *  `healPageTx`, for the publish screen's count (issue 986). */
+function awaitsRepair(page: Pick<BuilderPage, 'silicaDraftTree'>): boolean {
+  if (page.silicaDraftTree == null) return false;
+  return upgradePageBody(page.silicaDraftTree as unknown as SilicaNode).changed;
+}
+
+/** The same question of a frame: the read-only half of `healFrameTx`. */
+function frameAwaitsRepair(layout: Pick<BuilderLayout, 'silicaDraftTree'>): boolean {
+  if (layout.silicaDraftTree == null) return false;
+  return upgradeFrameChrome(layout.silicaDraftTree as unknown as SilicaNode).changed;
+}
+
 async function healPagesTx(tx: TxClient, pages: BuilderPage[]): Promise<BuilderPage[]> {
   const out: BuilderPage[] = [];
   for (const page of pages) out.push(await healPageTx(tx, page));
@@ -336,7 +352,10 @@ export async function load(
       // invisible to the filter above — and seeding "the missing page" over the top of it
       // hit `(tenant_id, property_id, slug)` and 500'd every builder load in production.
       const seeded = await ensureRecordPagesTx(tx, ctx, allPages, modules);
-      if (seeded) {
+      // A page for each content kind with a web address ("Each article"), after the record
+      // pages so it is measured against the rows they just wrote.
+      const seededKinds = modules.cmsEnabled ? await ensureKindPagesTx(tx, ctx) : false;
+      if (seeded || seededKinds) {
         seededRecordPages = true;
         allPages = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
@@ -461,8 +480,11 @@ function pickByCandidate<T extends { slug: string | null }>(
  * and the reason `PageSlug`'s regex is deliberately left alone (it guards the *authoring*
  * inputs, where a `:` must be impossible to type in the first place).
  */
-function addressOf(slug: string): RecordAddress | null {
+function addressOf(slug: string, existing: boolean): RecordAddress | null {
   const address = recordAddressAt(slug);
+  // A content kind's page keeps its address through a save. Only the platform writes one
+  // (`ensureKindPagesTx`), so a NEW page arriving with it is refused like any other `:`.
+  if (!address && existing && kindAddressAt(slug)) return null;
   if (!address && slug.includes(':')) {
     throw new BuilderValidationError(
       `"${slug}" is not a valid page address. Page addresses use lowercase letters, ` +
@@ -685,6 +707,26 @@ async function ensureRecordPagesTx(
     });
   }
   return true;
+}
+
+/**
+ * `ensureRecordPagesTx` for a caller holding no rows: the page LIST, which is all one
+ * console ever reads. That console never calls `load`, so its owners never got the
+ * record pages or the corrected names `load` gives — a design's blog-post page sat in
+ * a journal's list as "Article", one row above the journal's own Article kind's page.
+ * Same guard as `load`: only for a property that already has a site.
+ */
+export async function ensureRecordPagesForListTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  modules: SiteChromeOptions
+): Promise<boolean> {
+  const rows = await tx.builderPage.findMany({
+    where: { propertyId: ctx.propertyId },
+    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+  });
+  if (!rows.some(isSilica)) return false;
+  return ensureRecordPagesTx(tx, ctx, rows, modules);
 }
 
 /** The property's site-global symbols for `stage` (saved components). Read alongside
@@ -1049,7 +1091,10 @@ export function getPublishedPageBySlug(
     ]);
     // The tree check stays in JS: a Json column's NULL test needs Prisma's runtime
     // sentinel and this module imports Prisma as a type only.
-    const publishable = pages.filter((p) => hasStagedTree(p, stage));
+    // A record page is never a visitor's page by itself: `/articles/the-last-mill` may
+    // name a content kind's page as a candidate (so the frame read finds its chrome), but
+    // its body needs the piece bound in, and the kind route does that.
+    const publishable = pages.filter((p) => hasStagedTree(p, stage) && !isRecordAddress(p.slug));
     const row = pickByCandidate(publishable, candidates, target);
     if (!row) return null;
     return toPublishedPage(row, stagedSymbols(site, stage), stage);
@@ -1414,7 +1459,7 @@ function syncTx(
     // loop index — with a partial payload the index is meaningless.
     for (const p of input.pages) {
       const i = positionOf.get(p.id) ?? 0;
-      const address = addressOf(p.slug);
+      const address = addressOf(p.slug, existingById.has(p.id));
       if (existingById.has(p.id)) {
         const existing = existingById.get(p.id)!;
         // Only stamp `slug` when it actually changed under normalization — a
@@ -1900,7 +1945,8 @@ export async function publishFrame(
 ): Promise<{ layoutId: string; publishedAt: string; release: { id: string; hash: string } }> {
   const now = new Date();
   const result = await withTenant(ctx, async (tx) => {
-    const layout = await activeLayoutTx(tx, ctx);
+    // Healed as the whole-site publish heals it (issue 986).
+    const layout = await healFrameTx(tx, await activeLayoutTx(tx, ctx));
     if (layout.silicaDraftTree == null) {
       throw new BuilderValidationError(
         'There is no header or footer saved yet. Save your layout before publishing it.'
@@ -2225,8 +2271,10 @@ async function publishPageWrite(
 ): Promise<{ pageId: string; publishedAt: string; release: { id: string; hash: string } }> {
   const now = new Date();
   const result = await withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
-    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+    const found = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
+    if (!found) throw new BuilderNotFoundError('BuilderPage', id);
+    // Healed as the whole-site publish heals it (issue 986).
+    const row = await healPageTx(tx, found);
     if (row.silicaDraftTree == null) {
       throw new BuilderValidationError(
         'There is nothing saved on this page yet. Save it before publishing it.'
@@ -2308,25 +2356,49 @@ async function carryForwardManifestTx(
 /** Compare every silica draft tree against its published counterpart. Read-only. */
 export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
   return withTenant(ctx, async (tx) => {
-    const [allPages, layouts] = await Promise.all([
+    const [allPages, layouts, site] = await Promise.all([
       tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } }),
       tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } }),
+      tx.builderSite.findUnique({
+        where: { propertyId: ctx.propertyId },
+        select: {
+          silicaDraftTheme: true,
+          silicaPublishedTheme: true,
+          themeId: true,
+          publishedThemeId: true,
+        },
+      }),
     ]);
     const pages = allPages.filter(isSilica);
+    // The look waits too: the theme saved in the editor, or which saved look the site
+    // wears, against what `publish` last put live. Both go live with everything else.
+    const themeUnpublished =
+      site != null &&
+      (treeDiffers(site.silicaDraftTheme, site.silicaPublishedTheme) ||
+        site.themeId !== site.publishedThemeId);
     // A page counts as unpublished when its BODY or its CHROME CHOICE differs from what
     // visitors are served. Counting only the tree would let "no header on this page" sit
     // in the editor with Publish greyed out, which is the same silence the staged
     // pointer exists to end.
+    //
+    // A draft that publishing would REPAIR counts too, because `publish` now heals
+    // before it copies (issue 986). Left out, a site whose every page is behind the
+    // platform read "Everything you have saved is live", or listed only the one page
+    // its owner happened to open, and Publish everything changed pages it never named.
     const waiting = pages.filter(
       (r) =>
-        treeDiffers(r.silicaDraftTree, r.silicaPublishedTree) || r.frameId !== r.publishedFrameId
+        ((treeDiffers(r.silicaDraftTree, r.silicaPublishedTree) || awaitsRepair(r)) &&
+          !showsItsDefault(r)) ||
+        r.frameId !== r.publishedFrameId
     );
     const unpublishedPages = waiting.length;
     // ANY layout, not just the live one — an edit to a named layout is unpublished work
     // a visitor is not seeing, and a signal that only watched the default shell would
     // tell the author there is nothing to publish while a page renders the old one.
     const frameUnpublished = layouts.some(
-      (l) => l.silicaDraftTree != null && treeDiffers(l.silicaDraftTree, l.silicaPublishedTree)
+      (l) =>
+        l.silicaDraftTree != null &&
+        (treeDiffers(l.silicaDraftTree, l.silicaPublishedTree) || frameAwaitsRepair(l))
     );
 
     // The most recent publish across pages + frame — the timestamp the author reads
@@ -2342,10 +2414,11 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
     const active = layouts.find((l) => l.isActive) ?? null;
 
     return {
-      hasUnpublished: unpublishedPages > 0 || frameUnpublished,
+      hasUnpublished: unpublishedPages > 0 || frameUnpublished || themeUnpublished,
       unpublishedPages,
       unpublishedPageList: waiting.map((r) => ({ id: r.id, name: r.name, slug: r.slug })),
       frameUnpublished,
+      themeUnpublished,
       lastPublishedAt: last?.toISOString() ?? null,
       neverPublished: last === null,
       liveChromeGaps: liveChromeGaps(
@@ -2396,7 +2469,13 @@ async function publishWrite(
     const now = new Date();
     const manifest: ManifestEntry[] = [];
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
-    const pages = allPages.filter(isSilica);
+    // Healed first, exactly as opening each page would heal it. The repairs land on the
+    // draft when a page is OPENED, and this copied every draft as it stood, so a page
+    // nobody had opened since a repair shipped went out stale: The Marrow Review pressed
+    // Publish everything and her Archive kept its heading 24px left of her header's
+    // name (piggles persona issue 986). Publishing is the owner's own act, so this is
+    // the same blast radius the open-time heal already has.
+    const pages = await healPagesTx(tx, allPages.filter(isSilica));
     publishedPageCount = pages.length;
     for (const r of pages) {
       await tx.builderPage.update({
@@ -2431,7 +2510,10 @@ async function publishWrite(
     // through that layout's PUBLISHED tree, so publishing only the active shell would
     // leave such a page serving whatever the alternative looked like when it was last
     // published — or, for one created since, nothing at all.
-    const layouts = await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } });
+    const layouts = await healFramesTx(
+      tx,
+      await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } })
+    );
     for (const layout of layouts) {
       if (layout.silicaDraftTree == null) continue;
       await tx.builderLayout.update({

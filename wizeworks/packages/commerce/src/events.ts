@@ -6,6 +6,7 @@
 // one place. The actual transport is @wizeworks/events, which talks to
 // Google Pub/Sub in prod and a noop-with-logging publisher in dev/test.
 
+import { withTenant } from '@wizeworks/db';
 import {
   createPublisher,
   indexEntity,
@@ -129,6 +130,46 @@ export async function publishCommerceEvent<T>(input: CommerceEventInput<T>): Pro
       entityType: target.entityType,
       recordId: target.recordId,
     });
+  }
+
+  // A recipe's line in search names the item it makes (persona issue 261), so a
+  // renamed product or variant re-reads the recipes that make it.
+  if (input.topic === 'product.updated' || input.topic === 'variant.updated') {
+    for (const recordId of await recipesMaking(input.tenantId, input.data)) {
+      await indexEntity({
+        tenantId: input.tenantId,
+        actorId: input.actorId ?? null,
+        entityType: 'bom',
+        recordId,
+      });
+    }
+  }
+}
+
+/** The recipes (bills of materials) whose output is this product or variant.
+ *  Never throws: a missed re-read leaves one stale line until the next reindex,
+ *  and must not fail the write that already committed. */
+async function recipesMaking(tenantId: string, data: unknown): Promise<string[]> {
+  const payload = (data ?? {}) as Record<string, unknown>;
+  // A collection or category change rides on product.updated too; not this.
+  if (payload.collectionId !== undefined || payload.categoryId !== undefined) return [];
+  const variantId = typeof payload.variantId === 'string' ? payload.variantId : undefined;
+  const productId = typeof payload.productId === 'string' ? payload.productId : undefined;
+  if (!variantId && !productId) return [];
+  try {
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.billOfMaterials.findMany({
+        where: variantId ? { outputVariantId: variantId } : { outputVariant: { productId } },
+        select: { id: true },
+      })
+    );
+    return rows.map((r) => r.id);
+  } catch (err) {
+    logger.warn(
+      { err: err instanceof Error ? err.message : String(err), tenantId },
+      'could not read the recipes to re-index'
+    );
+    return [];
   }
 }
 

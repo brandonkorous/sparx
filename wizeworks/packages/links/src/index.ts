@@ -29,4 +29,5 @@ export {
   routeAcceptsId,
   routeForEntity,
   routeForSurface,
+  setLinkBrand,
 } from './resolve';

@@ -16,6 +16,7 @@ import {
   PRIOR_DEFAULT_BODY_FINGERPRINTS,
   bodyFingerprint,
   isPriorDefaultBody,
+  isUntouchedDefault,
 } from './email-default-refresh';
 // The pre-redesign bodies, captured from the shipped code they replaced — the ground
 // truth for "an untouched old row is recognised; an edited one is not".
@@ -129,5 +130,31 @@ describe('email default refresh fingerprints', () => {
 
   it('treats a null document (unrepaired legacy row) as not-a-default', () => {
     expect(isPriorDefaultBody('welcome-customer', null)).toBe(false);
+  });
+
+  // Sparx persona issue 152: opening the designer repaints brand-following colors and
+  // fills in ordering keys, and Preview saved that as the draft. It is no edit.
+  it('still refreshes a row whose draft holds only the designer repaint', () => {
+    const published = oldDoc('welcome-customer');
+    const draft = structuredClone(published);
+    const repaint = (node: unknown): void => {
+      if (Array.isArray(node)) return node.forEach(repaint);
+      if (!node || typeof node !== 'object') return;
+      const rec = node as Record<string, unknown>;
+      for (const k of Object.keys(rec)) if (rec[`${k}Auto`] === true) rec[k] = '#0c1014';
+      if (typeof rec.kind === 'string') rec.ord = 'a0';
+      Object.values(rec).forEach(repaint);
+    };
+    repaint(draft.root);
+    expect(isPriorDefaultBody('welcome-customer', draft)).toBe(false);
+    expect(isUntouchedDefault('welcome-customer', draft, published)).toBe(true);
+  });
+
+  it('does not refresh a row whose draft holds a real edit', () => {
+    const published = oldDoc('welcome-customer');
+    const draft = structuredClone(published);
+    const heading = draft.root.children[0] as unknown as { children: { html: string }[] };
+    heading.children[0]!.html = heading.children[0]!.html.replace('Welcome', 'Howdy');
+    expect(isUntouchedDefault('welcome-customer', draft, published)).toBe(false);
   });
 });

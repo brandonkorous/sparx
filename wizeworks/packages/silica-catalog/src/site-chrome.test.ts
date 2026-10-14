@@ -132,6 +132,10 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         // footer of every business that does not use social media, which is a real kind
         // of business and not an oversight.
         HOST_KEYS.siteSocialLinks,
+        // The archive is a listing the tenant places on a page of their own, like a list
+        // of their writing: deleting it costs the list, and every piece in it stays at
+        // its own address. Nothing a reader is in the middle of depends on it.
+        HOST_KEYS.cmsArchive,
         // The two media cores are the clearest case the list has: a map and an embed are
         // the TENANT'S OWN CONTENT, put there by them, and deleting one costs nothing but
         // the thing they chose to add. They are host cores only because the engine's

@@ -34,7 +34,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CalendarClock, Mail, Save, Send, Settings, X } from 'lucide-react';
+import { CalendarClock, Filter, Mail, Save, Send, Settings, X } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -65,11 +65,22 @@ import {
 } from './broadcasts-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { achievedTone, deliveredTile, shareOfLabel, type Tone } from './broadcast-stats-words';
-import { NOT_A_DATE, localMomentInstant } from '../../lib/today';
+import { NOT_A_DATE } from '../../lib/today';
+import { useReaderClock } from '../../lib/business-timezone';
+import {
+  clockNote,
+  futureInstant,
+  onClock,
+  wallClockFromNow,
+  wallClockToIso,
+} from '../../lib/publish-clock';
 
 const DETAIL_KEY = 'email.broadcasts.detail';
 const SETTINGS_KEY = 'email.settings';
 const EMAIL_DESIGNER_KEY = 'builder.email';
+/** An audience is a CRM segment, made on the segment screen (sparx persona
+ *  issue 151: the composer offered no way to reach it). */
+const NEW_AUDIENCE_KEY = 'crm.segment.detail';
 
 /** One centred, capped column. A pane torn onto a second monitor is otherwise
  *  2000px of dead grey with the form pinned to the left edge. */
@@ -101,13 +112,12 @@ function serialize(draft: Draft): string {
   );
 }
 
-/** A `datetime-local` value a few minutes ahead — the earliest sensible schedule
- *  and the default the picker opens on. Local wall-clock, not UTC, so the value
- *  matches what the operator sees on their own clock. */
-function soonLocalValue(): string {
-  const when = new Date(Date.now() + 15 * 60 * 1000);
-  const offsetMs = when.getTimezoneOffset() * 60 * 1000;
-  return new Date(when.getTime() - offsetMs).toISOString().slice(0, 16);
+/** A `datetime-local` value a few minutes ahead, on the business's clock: the
+ *  earliest sensible schedule and the default the picker opens on. It used this
+ *  computer's offset, which opened the box hours out for a business in another
+ *  zone (Piggles persona issue 984). */
+function soonLocalValue(clock: string): string {
+  return wallClockFromNow(15, clock);
 }
 
 /* ── The pane router ──────────────────────────────────────────────────────── */
@@ -170,6 +180,12 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [timing, setTiming] = useState<'now' | 'schedule'>('now');
   const [scheduledAt, setScheduledAt] = useState<string>('');
+  // The box is read on the business's clock, or this computer's when it has
+  // none, and the line under it says which. `new Date(box)` read it on this
+  // computer's clock, so a London newsletter scheduled from a laptop in
+  // California went out eight hours late (Piggles persona issue 984).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
   const [serverError, setServerError] = useState<string | null>(null);
   const committing = useRef(false);
 
@@ -223,8 +239,8 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
   });
   const ready = missing.length === 0 && recipientCount !== undefined && recipientCount > 0;
 
-  const scheduleValid =
-    timing === 'now' || (scheduledAt !== '' && new Date(scheduledAt) > new Date());
+  const scheduledIso = wallClockToIso(scheduledAt, clock);
+  const scheduleValid = timing === 'now' || futureInstant(scheduledAt, clock) !== null;
   const busy = create.isPending || update.isPending || send.isPending || schedule.isPending;
 
   /** Persist the draft (create the first time, patch thereafter) and return its
@@ -307,7 +323,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
     setServerError(null);
     committing.current = true;
     try {
-      const when = localMomentInstant(scheduledAt);
+      const when = wallClockToIso(scheduledAt, clock);
       if (when === null) {
         setServerError(NOT_A_DATE);
         committing.current = false;
@@ -471,6 +487,17 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
           <FormSection
             title="Who it goes to"
             description="An audience is a saved group of your customers. This broadcast reaches everyone in it, apart from anyone who has unsubscribed."
+            action={
+              <Button
+                size="sm"
+                onClick={() => {
+                  ctx.open(NEW_AUDIENCE_KEY, { id: 'new' }, { target: 'beside' });
+                }}
+              >
+                <Filter className="size-4" aria-hidden />
+                Make an audience
+              </Button>
+            }
           >
             {audiences.isError ? (
               <Alert color="warning">
@@ -484,8 +511,8 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
             ) : audiences.isSuccess && audienceItems.length === 0 ? (
               <div className="flex flex-col items-start gap-2">
                 <Text className="text-sm">
-                  You don’t have any saved audiences yet. Audiences are built from your customer
-                  list: create one, then come back to send to it.
+                  You don’t have any saved audiences yet. Use “Make an audience” above to build one
+                  from your customer list. Once it is saved, it shows up here to choose.
                 </Text>
               </div>
             ) : (
@@ -513,10 +540,10 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                       : recipientCount === undefined
                         ? ''
                         : recipientCount === 0
-                          ? 'Nobody matches this audience yet, so there is no one to send to.'
-                          : `About ${recipientCount.toLocaleString()} ${
+                          ? 'Nobody in this audience can be emailed yet, so there is no one to send to.'
+                          : `Right now, ${recipientCount.toLocaleString()} ${
                               recipientCount === 1 ? 'person' : 'people'
-                            } will receive this.`}
+                            } would receive this.`}
                   </FieldDescription>
                 ) : null}
               </Field>
@@ -644,7 +671,8 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                 onChange={(event) => {
                   const next = event.target.value as 'now' | 'schedule';
                   setTiming(next);
-                  if (next === 'schedule' && scheduledAt === '') setScheduledAt(soonLocalValue());
+                  if (next === 'schedule' && scheduledAt === '')
+                    setScheduledAt(soonLocalValue(clock));
                 }}
               >
                 <option value="now">Send as soon as I press Send</option>
@@ -662,7 +690,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                       type="datetime-local"
                       className="max-w-xs"
                       value={scheduledAt}
-                      min={soonLocalValue()}
+                      min={soonLocalValue(clock)}
                       onChange={(event) => {
                         setScheduledAt(event.target.value);
                       }}
@@ -671,8 +699,15 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                 />
                 {scheduledAt !== '' && !scheduleValid ? (
                   <FieldDescription>Pick a time in the future.</FieldDescription>
-                ) : (
-                  <FieldDescription>Uses your own time zone.</FieldDescription>
+                ) : null}
+                {/* Names whose clock the box is on, on the day chosen: "Uses your
+                    own time zone" meant this computer's, which is not where a
+                    business in London sends from (Piggles persona issue 984).
+                    Held back while the business's zone is still loading. */}
+                {reader.zone === undefined ? null : (
+                  <FieldDescription>
+                    {clockNote(reader.zone, reader.device, new Date(scheduledIso ?? Date.now()))}
+                  </FieldDescription>
                 )}
               </Field>
             ) : null}
@@ -711,6 +746,12 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
   const stats = useBroadcastStats(broadcast.id, isSent);
 
   const state = broadcastState(broadcast.status);
+  // Sent and scheduled times are on the business's clock, named, or this
+  // computer's when it has none. They read on this computer's clock unnamed, so
+  // a campaign sent at 9:20 AM in London read "1:20 AM" in California (Piggles
+  // persona issue 984).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   useEffect(() => {
     ctx.setTitle(broadcast.name);
@@ -723,7 +764,7 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
     const ok = await confirm({
       title: 'Cancel this scheduled broadcast?',
       description: `“${broadcast.name}” is set to send ${
-        broadcast.scheduledAt ? `on ${formatWhen(broadcast.scheduledAt)}` : 'later'
+        broadcast.scheduledAt ? `on ${onClock(broadcast.scheduledAt, clock)}` : 'later'
       }. Canceling stops it going out for good. Nobody receives it. You can always start a new broadcast later.`,
       confirmLabel: 'Cancel the send',
       cancelLabel: 'Leave it scheduled',
@@ -786,8 +827,8 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
               <AlertContent>
                 <AlertTitle>Scheduled to send</AlertTitle>
                 <AlertDescription>
-                  This goes out on {formatWhen(broadcast.scheduledAt)} to everyone in your audience.
-                  You can cancel it any time before then.
+                  This goes out on {onClock(broadcast.scheduledAt, clock)} to everyone in your
+                  audience. You can cancel it any time before then.
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -816,7 +857,20 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
             </Alert>
           ) : null}
 
-          <FormSection title="Summary">
+          {/* With no business zone the times below fall back to this computer's
+              clock, and say so, with where to set the business's own. */}
+          <FormSection
+            title="Summary"
+            description={
+              reader.zone === null && (broadcast.sentAt ?? broadcast.scheduledAt)
+                ? clockNote(
+                    null,
+                    reader.device,
+                    new Date(broadcast.sentAt ?? broadcast.scheduledAt ?? Date.now())
+                  )
+                : undefined
+            }
+          >
             <dl className="grid gap-x-6 gap-y-3 @md:grid-cols-2">
               <SummaryRow label="Who it went to" value={audienceName ?? 'An audience'} />
               <SummaryRow label="What was sent" value={emailName ?? 'A designed email'} />
@@ -832,9 +886,9 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
                 }
               />
               {broadcast.sentAt ? (
-                <SummaryRow label="Sent" value={formatWhen(broadcast.sentAt)} />
+                <SummaryRow label="Sent" value={onClock(broadcast.sentAt, clock)} />
               ) : broadcast.scheduledAt ? (
-                <SummaryRow label="Scheduled for" value={formatWhen(broadcast.scheduledAt)} />
+                <SummaryRow label="Scheduled for" value={onClock(broadcast.scheduledAt, clock)} />
               ) : null}
             </dl>
           </FormSection>
@@ -843,8 +897,12 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
               SENT broadcast it is the only record of what went out, because the
               design it was built from can be edited afterwards. */}
           <FormSection
-            title="What was sent"
-            description="The email as it arrived, shown for one person out of the audience."
+            title={isSent ? 'What was sent' : 'What will be sent'}
+            description={
+              isSent
+                ? 'The design as it was when this went out, shown for one person it went to.'
+                : 'The email as it will arrive, shown for one person out of the audience.'
+            }
           >
             <BroadcastPreview id={broadcast.id} enabled />
           </FormSection>
@@ -980,15 +1038,4 @@ function StatBlock({
       {hint ? <Text className="text-sm">{hint}</Text> : null}
     </div>
   );
-}
-
-/** A timestamp in full, plain words — "12 March 2026 at 9:00 am". */
-function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
 }

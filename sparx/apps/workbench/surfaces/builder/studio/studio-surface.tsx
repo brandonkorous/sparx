@@ -38,6 +38,7 @@ import type {
 import { THEME_PRESETS, type Node, type Site, type Theme } from '@wizeworks/silicaui-html';
 import {
   ensureUniqueIds,
+  kindAddressAt,
   recordAddressAt,
   recordPreviewPath,
   starterSite,
@@ -215,6 +216,7 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneLoadError
         title="Could not load your site"
         description="This is a problem reaching the server, or the site builder is switched off for this account. Your site itself is unaffected."
+        error={site.error}
         onRetry={() => {
           void site.refetch();
         }}
@@ -1206,6 +1208,14 @@ function previewPath(
 ): string {
   const address = recordAddressAt(slug);
   if (address) return recordPreviewPath(address, samples);
+  // A content kind's page ("Each article") previews at one of its published pieces,
+  // keyed by its address. With none published yet there is nothing to show it with, so
+  // it opens the front page rather than a 404.
+  const kind = kindAddressAt(slug);
+  if (kind) {
+    const sample = samples?.[kind.slug];
+    return sample?.startsWith(kind.prefix) ? sample : '/';
+  }
   const bare = (slug ?? '').trim().replace(/^\/+/, '');
   if (bare === '') return '/';
   return `/${bare}`;

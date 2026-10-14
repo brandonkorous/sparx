@@ -36,12 +36,13 @@ import {
   mergeErrorMessage,
   useMergeCustomers,
 } from './duplicates-data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 /** The row on the customer page that opens the merge, above Remove. */
 export function CustomerMergeRow({ ctx, customer }: { ctx: SurfaceContext; customer: Customer }) {
   const { data: viewer } = useViewer();
   // Merge cannot be undone, and the server allows it to owners and admins only.
-  const canMerge = viewer?.role === 'admin' || viewer?.role === 'owner';
+  const canMerge = canManageBusiness(viewer?.role);
   const [open, setOpen] = useState(false);
 
   return (

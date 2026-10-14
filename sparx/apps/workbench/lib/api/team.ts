@@ -110,6 +110,8 @@ export function useTeamRoster(): {
    *  team read as a complete one is how someone concludes a teammate was
    *  removed when in fact a request timed out. */
   isError: boolean;
+  /** The failed read's error, so the message can say WHY (issue 260). */
+  error: unknown;
   refetch: () => void;
 } {
   const members = useQuery({
@@ -143,6 +145,7 @@ export function useTeamRoster(): {
     invitations: invitationRows ?? [],
     ready: !members.isLoading && !invitations.isLoading,
     isError: members.isError || invitations.isError,
+    error: members.error ?? invitations.error,
     refetch: () => {
       void members.refetch();
       void invitations.refetch();
@@ -164,6 +167,8 @@ export function useTeamMember(memberId: string): {
   member: TeamMember | null;
   ready: boolean;
   isError: boolean;
+  /** The failed read's error, so the message can say WHY (issue 260). */
+  error: unknown;
   /** Loaded fine, but nobody in this account has that id — a removed teammate
    *  whose pane was still open, or a stale deep link. Distinct from an error. */
   missing: boolean;
@@ -181,6 +186,7 @@ export function useTeamMember(memberId: string): {
     member,
     ready: !members.isLoading,
     isError: members.isError,
+    error: members.error,
     missing: !members.isLoading && !members.isError && member === null,
     refetch: () => {
       void members.refetch();

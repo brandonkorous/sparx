@@ -34,7 +34,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
   Table,
@@ -45,6 +44,7 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useStockLocations } from './data';
 import { CountsUnpricedNotice } from './counts-list-unpriced';
@@ -86,7 +86,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
   const locationName = activeLocations.find((location) => location.id === locationId)?.name ?? null;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useCounts({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useCounts({
     q: search.trim(),
     ...(status ? { status } : {}),
     ...(locationId ? { warehouseId: locationId } : {}),
@@ -110,10 +110,11 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ClipboardList className="size-6" aria-hidden />}
           title="Could not load your counts"
           description="This is a problem reaching the server. Your counts are unaffected: the list just could not be read just now."
+          error={error}
         />
       );
     }

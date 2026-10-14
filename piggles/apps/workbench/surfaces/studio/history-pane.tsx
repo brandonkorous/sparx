@@ -1,17 +1,12 @@
 'use client';
 
-// History — every version of ONE document, and the way back to any of them.
-//
-// A pane rather than a drawer, and beside the thing it describes rather than over
-// it: the point of this console is that two documents can be on screen at once, and
-// a history that covers the canvas it is about is the one arrangement that cannot
-// work.
-//
-// TWO LADDERS, and conflating them would be the dangerous bug. Your SAVES rewrite
-// the working copy — private, cheap, reversible, nobody sees it. What WENT LIVE is
-// what visitors got. Interleaved by time they read as one list, and a badge is not
-// enough weight to carry the difference between "changes my copy" and "changes my
-// website".
+// History: every version of ONE document, and the way back to any of them. A pane
+// beside the document, not a drawer over it: a history that covers the canvas it
+// is about is the one arrangement that cannot work.
+
+// TWO LADDERS, never interleaved: your SAVES rewrite the private working copy;
+// what WENT LIVE is what visitors got. A badge cannot carry "changes my copy"
+// versus "changes my website".
 
 import { useEffect } from 'react';
 import { faClockRotateLeft } from '@fortawesome/pro-solid-svg-icons';
@@ -43,10 +38,9 @@ export function HistoryPaneSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (!ref) return <NoDocumentNamed icon={GLYPH} what="the history of" />;
 
-  // Split at the session, because the half below SUBSCRIBES to it and
-  // `useSessionSnapshot` throws outright with no `<StudioProvider>` above it. The
-  // provider does not exist until the site resolves, so a pane opened during boot
-  // has to wait here rather than reach for a session that is not there yet.
+  // Split at the session: `useSessionSnapshot` below throws with no
+  // `<StudioProvider>` above it, and the provider does not exist until the site
+  // resolves, so a pane opened during boot waits here.
   if (!session) return <PaneWaiting label="Finding your website…" />;
 
   return <HistoryForDocument ctx={ctx} session={session} ref_={ref} />;
@@ -85,7 +79,11 @@ function DocumentHistory({ doc, ref_ }: { doc: StudioDoc; ref_: DocumentRef }) {
   if (history.isPending) return <PaneWaiting label="Looking back through your changes…" />;
   if (history.isError) {
     return (
-      <PaneLoadError title="We couldn’t load this history" onRetry={() => void history.refetch()} />
+      <PaneLoadError
+        title="We couldn’t load this history"
+        error={history.error}
+        onRetry={() => void history.refetch()}
+      />
     );
   }
 
@@ -139,15 +137,9 @@ function SavesSection({
   );
 }
 
-/**
- * What visitors got.
- *
- * Read-only for a site document, and that is a decision rather than an omission:
- * what is published is one connected thing — a page, the header around it, the
- * pieces inside it — so putting one part back to last week while the rest stays at
- * today is exactly the breakage the release history exists to prevent. An email has
- * no such coupling; it goes out on its own, so it can go back on its own.
- */
+// What visitors got. Read-only for a site document on purpose: what is published is
+// one connected thing, so putting one part back alone is the breakage release
+// history prevents. An email goes out on its own, so it can go back on its own.
 function LiveSection({
   source,
   restore,

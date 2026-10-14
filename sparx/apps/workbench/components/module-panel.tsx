@@ -42,6 +42,7 @@ import { isTourableModule } from '../lib/tour/module-tours';
 import { launchModuleTour } from '../lib/tour/module-tour-offers';
 import { productName } from '../lib/product';
 import { wordForms } from './word-forms';
+import { useManageRights } from '../lib/manage-rights';
 
 interface ModulePanelProps {
   module: WorkbenchModule;
@@ -131,6 +132,7 @@ export function ModulePanel({
   // the tenant's own. This is the drift this file's header warns about, and it
   // had already happened here.
   const nav = useVisibleNav();
+  const rights = useManageRights();
   const entry = nav.find((candidate) => candidate.module === module);
   const listRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState('');
@@ -323,7 +325,8 @@ export function ModulePanel({
                         </SidebarItem>
                       </Tooltip>
 
-                      {surface.createSurface ? (
+                      {surface.createSurface &&
+                      !(surface.createManagersOnly && !rights.canManage) ? (
                         <Tooltip content={surface.createLabel ?? 'New'}>
                           <Button
                             color="neutral"

@@ -48,6 +48,7 @@ import {
   type ShippingRateType,
 } from './shipping-data';
 import { formatCentsAmount } from '../../lib/money-format';
+import { loadFailureWords } from '../../lib/api-error';
 import { bandsWarning, weightGap } from './weight-readiness';
 
 function money(cents: number, currency = 'USD'): string {
@@ -592,7 +593,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
           <AlertContent>
             <AlertTitle>Could not load the delivery options</AlertTitle>
             <AlertDescription>
-              {shippingErrorMessage(rates.error, 'This is a problem reaching the server.')}
+              {loadFailureWords(rates.error, 'This is a problem reaching the server.')}
             </AlertDescription>
           </AlertContent>
         </Alert>

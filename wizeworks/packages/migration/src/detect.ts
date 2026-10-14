@@ -73,6 +73,35 @@ export function sniffFormat(text: string): SourceFormat {
   return 'csv';
 }
 
+/**
+ * Column names anybody's own spreadsheet uses. A hint in this list is still read, but
+ * it is never proof of where a file came from.
+ *
+ * Squarespace's contacts hint was `Subscribed`. A journal's own list, `First name, Last
+ * name, Email, Subscribed, Signed up`, matched it and was announced as "a Squarespace
+ * contacts export" because it had "1 of 2 columns only Squarespace writes". She had
+ * never used Squarespace, and its column map left her sign-up dates behind (Piggles
+ * persona P09). Every word here is one a person types into a header row unprompted.
+ */
+const EVERYDAY_HEADERS = new Set(
+  [
+    'Subscribed',
+    'Status',
+    'Title',
+    'Quantity',
+    'Published',
+    'Draft',
+    'Company',
+    'Industry',
+    'Stage',
+    'Created',
+    'created_at',
+    'Buyer',
+    'Visible',
+    'Lists',
+  ].map(normalizeHeader)
+);
+
 function headerSet(headers: string[]): Set<string> {
   return new Set(headers.map(normalizeHeader));
 }
@@ -104,12 +133,14 @@ function scoreDelimited(
   if (hints.length > 0) {
     const hit = hints.filter((header) => headers.has(normalizeHeader(header)));
     confidence += 0.3 * (hit.length / hints.length);
-    if (hit.length > 0) {
+    // Only a column an ordinary sheet would not have says which platform made it.
+    const telling = hit.filter((header) => !EVERYDAY_HEADERS.has(normalizeHeader(header)));
+    if (telling.length > 0) {
       corroborated = true;
       // No leading conjunction: the surface joins these into one sentence and
       // supplies its own. "…, and plus 4 of 4 columns only shopify writes" is
       // what came out when both ends tried.
-      reasons.push(`${hit.length} of ${hints.length} columns only ${vendorName} writes`);
+      reasons.push(`${telling.length} of ${hints.length} columns only ${vendorName} writes`);
     }
   }
 

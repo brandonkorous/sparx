@@ -100,9 +100,12 @@ export function ConsoleDock({
   // be told what happens when a drag finishes. The ref breaks that circle and
   // always holds the current one.
   const dragEnded = useRef<(moved: HTMLElement | null) => void>(() => undefined);
+  // The same circle for a resize: filled windows follow the screen.
+  const refill = useRef<() => void>(() => undefined);
   const canvas = useWindowCanvas({
     zoom,
     onDragEnd: (moved) => dragEnded.current(moved),
+    onResize: () => refill.current(),
     onZoomStep: (direction) => {
       onChangeZoom(stepZoom(zoom, direction));
     },
@@ -120,6 +123,7 @@ export function ConsoleDock({
     forget: forgetZoomBases,
   });
   dragEnded.current = commands.dragEnded;
+  refill.current = commands.refill;
 
   const write = usePersistLayout({ api: apiRef, controller, siteKey, appliedMode, fit });
   /** Nothing open at all — a state the canvas has to answer for, since an empty
@@ -161,6 +165,8 @@ export function ConsoleDock({
       if (known) {
         applyWindowMode(api, known, readViewport());
         appliedMode.current = known;
+        // The saved layout may have been made on a bigger screen.
+        refill.current();
       }
     },
     [controller, persist, readViewport, siteKey, takeDropPoint]
@@ -180,9 +186,11 @@ export function ConsoleDock({
     appliedMode.current = mode;
     if (!previous) {
       applyWindowMode(api, mode, readViewport());
+      refill.current();
       return;
     }
     switchWindowMode(api, controller, siteKey, previous, mode, readViewport());
+    refill.current();
     fit();
   }, [mode, controller, fit, readViewport, siteKey]);
 

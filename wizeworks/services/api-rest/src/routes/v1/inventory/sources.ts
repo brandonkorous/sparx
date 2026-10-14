@@ -17,7 +17,12 @@ import { ApiSourceConfig } from '@wizeworks/commerce-schemas';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
-import { publishEvent, createPublisher, type PublisherLogger } from '@wizeworks/events';
+import {
+  publishEvent,
+  createPublisher,
+  indexEntity,
+  type PublisherLogger,
+} from '@wizeworks/events';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
 
 type SourceRecord = Prisma.InventorySourceGetPayload<Record<string, never>>;
@@ -157,6 +162,12 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       { sourceId: source.id },
       pubLogger
     );
+    await indexEntity({
+      tenantId,
+      actorId: userId,
+      entityType: 'inventory_source',
+      recordId: source.id,
+    });
 
     return reply.status(201).send(ok(redactSource(source)));
   });
@@ -182,7 +193,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/inventory/sources/:id', async (request, reply) => {
     await requireInventoryModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toInventoryContext(request);
+    const { tenantId, userId } = toInventoryContext(request);
     const { id } = request.params as { id: string };
     const body = UpdateSourceBody.parse(request.body);
 
@@ -209,6 +220,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
         },
       });
     });
+    await indexEntity({ tenantId, actorId: userId, entityType: 'inventory_source', recordId: id });
 
     return reply.send(ok(redactSource(source)));
   });
@@ -218,7 +230,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/inventory/sources/:id', async (request, reply) => {
     await requireInventoryModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toInventoryContext(request);
+    const { tenantId, userId } = toInventoryContext(request);
     const { id } = request.params as { id: string };
 
     await withTenant({ tenantId }, async (tx) => {
@@ -230,6 +242,13 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
         where: { id },
         data: { deletedAt: new Date(), status: 'paused', updatedAt: new Date() },
       });
+    });
+    await indexEntity({
+      tenantId,
+      actorId: userId,
+      entityType: 'inventory_source',
+      recordId: id,
+      op: 'delete',
     });
 
     return reply.status(204).send();

@@ -17,6 +17,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Card, EmptyState, Input, Table, Text } from '@wizeworks/silicaui-react';
 import { PaneEmpty } from '../../components/pane-empty';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { Plus, Table2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -121,6 +122,28 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ),
                 }
               : {})}
+          />
+        </Card>
+      </div>
+    );
+  }
+
+  // A type that is not there (deleted, or another business's) says so. It drew a
+  // working list with an Add button and "You made this record type up" for a
+  // type with no definition at all (persona issue 240).
+  if (type.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          <PaneLoadError
+            icon={<Table2 className="size-6" aria-hidden />}
+            error={type.error}
+            noun="record type"
+            title="Could not load this record type"
+            description="This is a problem reaching the server. Your records are unaffected. Try again in a moment."
+            onRetry={() => {
+              void type.refetch();
+            }}
           />
         </Card>
       </div>

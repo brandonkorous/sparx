@@ -133,7 +133,7 @@ export type { EmailSettings };
  *  isn't one yet. `ready:false` names the missing piece rather than showing a
  *  blank frame. */
 export type BroadcastPreview =
-  | { ready: false; reason: 'no-email' | 'not-published' | 'no-audience' }
+  | { ready: false; reason: 'no-email' | 'not-published' | 'no-audience' | 'sent-version-not-kept' }
   | { ready: true; to: string; from: string; subject: string; html: string; text: string };
 
 /* ── Query keys ───────────────────────────────────────────────────────────── */
@@ -145,7 +145,10 @@ export const emailKeys = {
   stats: (id: string) => ['email', 'broadcast', id, 'stats'] as const,
   preview: (id: string) => ['email', 'broadcast', id, 'preview'] as const,
   estimate: (segmentId: string) => ['email', 'estimate', segmentId] as const,
-  audiences: ['email', 'audiences'] as const,
+  // Under the segments' key, not the email root: saving a segment refreshes
+  // every list of segments, so one made beside an open composer is in its
+  // dropdown at once (sparx persona issue 151).
+  audiences: ['crm', 'segments', 'audiences'] as const,
   designed: ['email', 'designed'] as const,
   settings: ['email', 'settings'] as const,
 };

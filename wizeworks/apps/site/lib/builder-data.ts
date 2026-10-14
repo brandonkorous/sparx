@@ -20,9 +20,11 @@ import {
   type DataSources,
 } from '@wizeworks/builder-schemas';
 import { plainText } from '@wizeworks/commerce-schemas';
+import { authorPath } from '@wizeworks/silica-catalog';
 
 import { getEntriesByIds, publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { isNotFound, listProducts, type PublicProductListItem } from './commerce';
+import { getPublicKind, pieceUrl } from './kind-url';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
 import { loadCommerceData, productToBuilderRecord } from './builder-commerce-data';
@@ -117,14 +119,28 @@ function mapProduct(p: PublicProductListItem, tenantSlug: string): Record<string
 }
 
 // A published date → a readable "Month D, YYYY". Blank for a missing/invalid date.
-function formatPublishedDate(iso: string | null): string {
+//
+// The DAY is the business's (`timeZone`, from Business details), else UTC; never the
+// server's. A journal in England that published at 06:00 on October 1 read
+// "September 30" on a server running Pacific time, because the format followed the
+// server's own clock.
+//
+// The WORDS follow the site's own language setting (`locale`, Site settings), so a
+// piece's page and the cards linking to it print one date one way. They printed
+// "October 7, 2026" over cards reading "8 October 2026" on the same page.
+export function formatPublishedDate(
+  iso: string | null,
+  timeZone: string | null = null,
+  locale = 'en-US'
+): string {
   if (!iso) return '';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: timeZone ?? 'UTC',
   }).format(d);
 }
 
@@ -138,7 +154,7 @@ function formatPublishedDate(iso: string | null): string {
  *  byline degrades to nothing rather than erroring. `category` is the first
  *  `blog_category` term (fallback: the first non-tag term); `tags` are the
  *  `blog_tag` terms — the WordPress rubric/tags split every publisher template wants. */
-function projectByline(
+export function projectByline(
   entry: Pick<ApiEntry, 'author' | 'terms'>,
   tenantSlug: string
 ): Record<string, unknown> {
@@ -152,6 +168,8 @@ function projectByline(
     null;
   return {
     authorName: author?.display_name ?? '',
+    // Their page, so a byline is a link to everything else they wrote.
+    authorUrl: author?.slug ? authorPath(author.slug) : '',
     authorAvatar: avatarUrl ? { url: avatarUrl, alt: author?.display_name ?? '' } : null,
     authorBio: author?.bio ?? '',
     category: primaryCategory?.name ?? '',
@@ -168,7 +186,9 @@ function projectByline(
  *  productToBuilderRecord. */
 export function postToBuilderRecord(
   entry: ApiEntry<BlogPostBody>,
-  tenantSlug: string
+  tenantSlug: string,
+  timeZone: string | null = null,
+  locale = 'en-US'
 ): Record<string, unknown> {
   const body = entry.body ?? {};
   const title = typeof body.title === 'string' ? body.title : '';
@@ -179,7 +199,7 @@ export function postToBuilderRecord(
     excerpt: typeof body.excerpt === 'string' ? body.excerpt : '',
     body: body.body ?? null,
     featuredImage: url ? { url, alt: title } : null,
-    date: formatPublishedDate(entry.published_at),
+    date: formatPublishedDate(entry.published_at, timeZone, locale),
     ...projectByline(entry, tenantSlug),
   };
 }
@@ -200,17 +220,6 @@ function resolveEntryBodyAssets(
     b.featuredImage = url ? { url, alt } : null;
   }
   return b;
-}
-
-/** The route a `cms.<type>` collection CARD links to — mirrors silica-data's `entryUrl`
- *  so this (builder-preview) path links a journal/index card the SAME way the live silica
- *  storefront does. Only `blog_post` has a per-record detail route (`app/blog/[slug]`);
- *  other content types render inline and carry no destination, so their card `url` is `''`
- *  and the anchor stays un-clickable rather than pointing every card at the static index
- *  placeholder (`/blog`), which 404s. Keep in sync with `silica-data.ts` `entryUrl`. */
-function cmsEntryUrl(type: string, slug: string | null | undefined): string {
-  if (!slug) return '';
-  return type === 'blog_post' ? `/blog/${slug}` : '';
 }
 
 /** Hydrate the CMS entries a tree PINS by id (docs/98 Pillar 7 record-display) into
@@ -280,8 +289,8 @@ export async function loadBuilderData(
 
   for (const type of cmsTypes) {
     tasks.push(
-      listEntries(tenantSlug, type)
-        .then((entries) => {
+      Promise.all([listEntries(tenantSlug, type), getPublicKind(tenantSlug, type)])
+        .then(([entries, kind]) => {
           const shown = entries.slice(0, COLLECTION_PAGE_SIZE);
           setAtPath(
             root,
@@ -294,11 +303,11 @@ export async function loadBuilderData(
               ...resolveEntryBodyAssets(e.body, tenantSlug),
               ...projectByline(e, tenantSlug),
               // The card's own slug + destination, so a `cms.<type>` index card can bind its
-              // `<a href>` to `item.url` and deep-link the post (blog_post → /blog/<slug>)
-              // instead of every card falling back to the static `/blog` placeholder. Mirrors
-              // silica-data's `toSilicaEntry`.
+              // `<a href>` to `item.url` and deep-link the piece (blog_post → /blog/<slug>,
+              // any other kind → where its own pattern puts it) instead of every card falling
+              // back to a static placeholder. The same `pieceUrl` silica-data links with.
               slug: e.slug ?? '',
-              url: cmsEntryUrl(type, e.slug),
+              url: pieceUrl(type, kind?.urlPattern, e.slug),
             }))
           );
           // n+1 came back → more exist. Bindable, so a template can say so instead of

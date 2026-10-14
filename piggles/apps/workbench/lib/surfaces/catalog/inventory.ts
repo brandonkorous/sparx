@@ -991,7 +991,9 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     // differences — is the stock-take a business already does, not a thing
     // somebody configures once.
     key: 'inventory.stock.import',
-    title: 'Import from a spreadsheet',
+    // Says STOCK: "Import from a spreadsheet" was the first thing a journal found
+    // when it typed "import", and it opened onto warehouses and shelf counts (P09).
+    title: 'Import stock from a spreadsheet',
     module: 'inventory',
     icon: faFileSpreadsheet,
     section: 'Counting',

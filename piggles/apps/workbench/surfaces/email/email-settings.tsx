@@ -225,9 +225,11 @@ export function EmailSettingsSurface() {
       onError: (error) => {
         toast.add({
           title: 'Could not save',
+          // The fallback only speaks when the server gave no reason of its own,
+          // which means it failed: the fields were never the problem.
           description: emailSettingsErrorMessage(
             error,
-            'Nothing was changed. Check the fields and try again.'
+            'Nothing was changed. Try again in a moment.'
           ),
           type: 'error',
         });

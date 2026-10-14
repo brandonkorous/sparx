@@ -15,7 +15,7 @@ describe('a basket refused for stock', () => {
   it('says how many are left when some are, never "sold out"', () => {
     const sentence = stockRefusalSentence(stockRefusalOf(refusal(1)));
     expect(sentence).toBe(
-      'Sorry, only 1 is left to buy, counting any already in your basket. Lower the quantity and try again.'
+      'Sorry, only 1 is left to buy, counting any already in your cart. Lower the quantity and try again.'
     );
     expect(sentence).not.toContain('sold out');
   });

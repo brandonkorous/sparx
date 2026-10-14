@@ -21,6 +21,9 @@ import { createEntryTx, updateEntryTx, deleteEntryTx, serializeEntry } from '@wi
 import { writeAudit } from '@wizeworks/api-core/audit';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { indexContentEntry } from '../../../lib/content-search.js';
+import { entryIdsByTitle } from '../../../lib/entry-title-search.js';
+import { linkingThings } from '../../../lib/entry-links.js';
+import { entryPublicPath } from '../../../lib/content-paths.js';
 import { notFound } from '@wizeworks/api-core/errors';
 import { assertIfMatch, computeEntryEtag } from '@wizeworks/api-core/etag';
 import {
@@ -104,7 +107,7 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       request.headers['x-sparx-property-id']
     );
 
-    const where: Prisma.ContentEntryWhereInput = {
+    const where = (titled: string[]): Prisma.ContentEntryWhereInput => ({
       deletedAt: null,
       ...(q.type ? { typeKey: q.type } : {}),
       ...(q.status ? { status: q.status } : {}),
@@ -116,10 +119,8 @@ const entryRoutes: FastifyPluginAsync = (app) => {
         ? {
             OR: [
               { slug: { contains: q.q, mode: 'insensitive' } },
-              // Body title search via JSONB ->>'title'. Postgres can index
-              // this with a GIN expression index — added when search load
-              // demands it (Phase 4 puts the full-text path on Typesense).
-              { body: { path: ['title'], string_contains: q.q } },
+              // Title or name, ignoring capitals (`entry-title-search.ts`).
+              { id: { in: titled } },
             ],
           }
         : {}),
@@ -127,13 +128,14 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       // the search `OR` above (a foreign/stale id just yields global-only rows;
       // tenant_id RLS is the real boundary, not property_id).
       ...(propertyId ? contentSiteVisibilityWhere(propertyId) : {}),
-    };
+    });
 
     const take = Math.min(q.take ?? 50, 250);
-    const [rows, total] = await withRequestTenant(request, (tx) =>
-      Promise.all([
+    const [rows, total] = await withRequestTenant(request, async (tx) => {
+      const filter = where(q.q ? await entryIdsByTitle(tx, q.q) : []);
+      return Promise.all([
         tx.contentEntry.findMany({
-          where,
+          where: filter,
           orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
           take,
           skip: q.skip ?? 0,
@@ -148,9 +150,9 @@ const entryRoutes: FastifyPluginAsync = (app) => {
           // whole table is smaller than one page of results.
           include: { propertyLinks: { select: { propertyId: true } } },
         }),
-        tx.contentEntry.count({ where }),
-      ])
-    );
+        tx.contentEntry.count({ where: filter }),
+      ]);
+    });
 
     return paged(
       rows.map((row) => ({
@@ -182,6 +184,30 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       ...serializeEntry(row),
       propertyIds: row.propertyLinks.map((l) => l.propertyId),
     });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // WHAT LINKS HERE: read before a delete or a takedown, so the question can name
+  // the pages whose links would stop working (`lib/entry-links.ts`).
+  // ──────────────────────────────────────────────────────────────────────
+
+  app.get('/v1/content/entries/:id/linked-from', async (request) => {
+    requireRole(request, 'viewer');
+    const { id } = PathId.parse(request.params);
+    const things = await withRequestTenant(request, async (tx) => {
+      const entry = await tx.contentEntry.findFirst({
+        where: { id, deletedAt: null },
+        select: { typeKey: true, slug: true },
+      });
+      if (!entry) throw notFound('Entry', id);
+      const kind = await tx.contentType.findFirst({
+        where: { key: entry.typeKey },
+        select: { urlPattern: true },
+      });
+      const path = entryPublicPath(entry.typeKey, kind?.urlPattern, entry.slug);
+      return linkingThings(tx, id, path);
+    });
+    return ok({ linkedFrom: things });
   });
 
   // ──────────────────────────────────────────────────────────────────────

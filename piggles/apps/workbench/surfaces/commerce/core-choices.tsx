@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
 import { faArrowRightArrowLeft } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { RefreshButton } from '../../components/refresh-button';
@@ -106,26 +107,32 @@ function Toolbar({
 function NotAList({ choices, ctx }: { choices: Choices; ctx: SurfaceContext }) {
   const icon = <Icon glyph={faArrowRightArrowLeft} className="size-6" aria-hidden />;
   if (choices.isPending) return <PaneWaiting label="Looking for core charges set up as choices…" />;
-  const failed = choices.isError;
-  const action = failed
-    ? { label: 'Try again', run: () => void choices.refetch() }
-    : {
-        label: 'See the cores owed',
-        run: () => ctx.open('commerce.cores.list', undefined, { target: 'tab' }),
-      };
+  if (choices.isError) {
+    return (
+      <Card>
+        <PaneLoadError
+          icon={icon}
+          title="Could not load these products"
+          description="This is a problem reaching the server. Nothing about your products has changed."
+          error={choices.error}
+          onRetry={() => void choices.refetch()}
+        />
+      </Card>
+    );
+  }
   return (
     <Card>
       <EmptyState
         icon={icon}
-        title={failed ? 'Could not load these products' : 'No core charges set up as choices'}
-        description={
-          failed
-            ? 'This is a problem reaching the server. Nothing about your products has changed.'
-            : 'Every rebuilt part here has a real core deposit, or none at all. When a product sells its core charge as a choice, like “Accept core charge” and “Defer core charge”, it shows here so you can change it to a real deposit.'
-        }
+        title="No core charges set up as choices"
+        description="Every rebuilt part here has a real core deposit, or none at all. When a product sells its core charge as a choice, like “Accept core charge” and “Defer core charge”, it shows here so you can change it to a real deposit."
         actions={
-          <Button size="sm" color="module" onClick={action.run}>
-            {action.label}
+          <Button
+            size="sm"
+            color="module"
+            onClick={() => ctx.open('commerce.cores.list', undefined, { target: 'tab' })}
+          >
+            See the cores owed
           </Button>
         }
       />

@@ -81,11 +81,13 @@ export interface SaleTotals {
   goods: number;
   /** Refundable core deposits taken now. Paid back as the old parts come in. */
   coreDeposits: number;
-  /** What the sale comes to, deposits included. The figure the till asks for. */
+  /** Sales tax on the goods, never on a deposit (sparx persona issue 230). */
+  tax: number;
+  /** What the sale comes to, deposits and tax included. The figure the till asks for. */
   total: number;
 }
 
-export function saleTotals(lines: readonly SaleLine[]): SaleTotals {
+export function saleTotals(lines: readonly SaleLine[], taxCents = 0): SaleTotals {
   let goods = 0;
   let coreDeposits = 0;
   for (const line of lines) {
@@ -94,10 +96,12 @@ export function saleTotals(lines: readonly SaleLine[]): SaleTotals {
   }
   const roundedGoods = cents2(goods);
   const roundedDeposits = cents2(coreDeposits);
+  const tax = taxCents / 100;
   return {
     goods: roundedGoods,
     coreDeposits: roundedDeposits,
-    total: cents2(roundedGoods + roundedDeposits),
+    tax,
+    total: cents2(roundedGoods + roundedDeposits + tax),
   };
 }
 
@@ -112,6 +116,8 @@ export interface SaleItemPayload {
   /** Deposit per unit, in whole currency units. */
   coreCharge?: number;
   coreFirst?: true;
+  /** This line's sales tax, in whole currency units. */
+  taxAmount?: number;
 }
 
 /**
@@ -120,7 +126,7 @@ export interface SaleItemPayload {
  * Never both core fields on one line: the server refuses that, and it would mean
  * a deposit taken from somebody who was promised there would not be one.
  */
-export function saleItem(line: SaleLine): SaleItemPayload {
+export function saleItem(line: SaleLine, taxAmount = 0): SaleItemPayload {
   const item: SaleItemPayload = {
     sku: line.sku,
     name: line.name,
@@ -128,6 +134,7 @@ export function saleItem(line: SaleLine): SaleItemPayload {
     unitPrice: Number(line.price),
     ...(line.productId ? { productId: line.productId } : {}),
     ...(line.variantId ? { variantId: line.variantId } : {}),
+    ...(taxAmount > 0 ? { taxAmount } : {}),
   };
   if (!line.core) return item;
   if (bringsOldPartFirst(line)) return { ...item, coreFirst: true };

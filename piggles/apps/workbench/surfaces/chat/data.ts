@@ -112,7 +112,10 @@ export interface CustomerContext {
   company: string | null;
   type: string | null;
   orderCount: number;
+  /** Money received from them. */
   lifetimeValue: number;
+  /** What their orders are worth, net of refunds (sparx persona issue 163). */
+  orderedValue: number;
   lastOrderAt: string | null;
 }
 
@@ -383,6 +386,10 @@ export function useUpdateConversation(id: string) {
 export function useMarkRead(id: string) {
   const invalidate = useInvalidateConversations();
   return useMutation({
+    // HOUSEKEEPING: opening a conversation is not saving anything. Without the
+    // flag the status bar said "Saved just now" the moment Doty opened a chat to
+    // read it (sparx persona issue 165). See lib/api/write-meta.ts.
+    meta: { housekeeping: true },
     mutationFn: () => api.post<{ updated: number }>(`/v1/chat/conversations/${id}/read`),
     onSuccess: () => {
       invalidate(id);

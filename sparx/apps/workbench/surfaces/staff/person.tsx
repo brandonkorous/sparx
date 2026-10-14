@@ -113,6 +113,7 @@ import {
 } from './format';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { DayInput } from '../../components/day-input';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -1280,7 +1281,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
   const [baseline, setBaseline] = useState<FormState>(EMPTY);
   const [loaded, setLoaded] = useState(false);
 
-  const canSeePay = viewer.data?.role === 'admin' || viewer.data?.role === 'owner';
+  const canSeePay = canManageBusiness(viewer.data?.role);
 
   useEffect(() => {
     if (isNew) {

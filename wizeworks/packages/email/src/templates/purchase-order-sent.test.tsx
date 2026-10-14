@@ -61,4 +61,37 @@ describe('the purchase order email', () => {
     const { text } = await render({ fromName: 'Gillett Diesel Service Inc.' });
     expect(text).not.toContain('Inc..');
   });
+
+  // A supplier who ships to the business's customer (sparx persona issue 171).
+  // The address is a stranger's, so the email has to say so: a supplier reading
+  // "Deliver to" ships it, invoice and prices in the box, to somebody who paid the
+  // business a different price.
+  describe('when the supplier ships straight to the customer', () => {
+    const toCustomer = {
+      shipsToCustomer: true,
+      shipTo: { name: 'Renée Castañeda', lines: ['2210 S 3600 W', 'West Valley City, UT 84119'] },
+      expectedBy: null,
+      paymentTerms: null,
+    };
+
+    it('says the address is the customer’s, and to keep the prices out of the box', async () => {
+      const { text } = await render(toCustomer);
+      expect(text).toContain('straight to our customer');
+      expect(text).toContain('Ship to our customer');
+      expect(text).toContain('Renée Castañeda, 2210 S 3600 W, West Valley City, UT 84119');
+      expect(text).toContain('keep your invoice and prices out of the parcel');
+      expect(text).not.toContain('Deliver to');
+    });
+
+    it('asks for the tracking number', async () => {
+      const { text } = await render(toCustomer);
+      expect(text).toContain('send us the carrier and tracking number');
+    });
+
+    it('reads as a stock order when it is one', async () => {
+      const { text } = await render();
+      expect(text).toContain('Deliver to');
+      expect(text).not.toContain('our customer');
+    });
+  });
 });

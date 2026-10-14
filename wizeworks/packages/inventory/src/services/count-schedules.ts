@@ -229,6 +229,7 @@ export async function createCountSchedule(
       entityId: created.id,
       diff: { after: { name: created.name, cadence: created.cadence, intervalDays } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'count_schedule', created.id);
 
     return toScheduleRow(tx, ctx.tenantId, created);
   });
@@ -291,6 +292,7 @@ export async function updateCountSchedule(
         },
       },
     });
+    await indexInventoryEntityOnCommit(ctx, 'count_schedule', id);
 
     return toScheduleRow(tx, ctx.tenantId, updated);
   });
@@ -324,6 +326,7 @@ export async function deleteCountSchedule(
       entityId: id,
       diff: { before: { name: existing.name } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'count_schedule', id, 'delete');
     return { id, deleted: true as const };
   });
 }

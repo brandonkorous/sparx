@@ -33,6 +33,7 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { notFound } from '@wizeworks/api-core/errors';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { publish } from '@wizeworks/api-core/pubsub';
+import { indexEntity } from '@wizeworks/events';
 import {
   requireBuilderModule,
   toBuilderContext,
@@ -47,6 +48,22 @@ const BlockParam = z.object({ blockId: z.string().uuid() });
 const PropertyParam = z.object({ propertyId: z.string().uuid() });
 const CustomizeBody = z.object({ key: z.string().min(1).max(63) });
 
+/** Keep one email design findable in Ctrl K after a write (persona P09). Never
+ *  throws into the request: `indexEntity` detaches the publish. */
+function findable(
+  auth: { tenantId: string; actorId: string | null },
+  id: string,
+  op: 'upsert' | 'delete' = 'upsert'
+): Promise<void> {
+  return indexEntity({
+    tenantId: auth.tenantId,
+    actorId: auth.actorId,
+    entityType: 'email_design',
+    recordId: id,
+    op,
+  });
+}
+
 const builderEmailRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/emails', async (request) => {
     requireRole(request, 'viewer');
@@ -56,9 +73,10 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/builder/emails', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const email = await emailService.create(toBuilderTenantContext(request), request.body);
+    await findable(auth, email.id);
     return ok(email);
   });
 
@@ -91,6 +109,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const { key } = CustomizeBody.parse(request.body);
     await requireTenantProperty(auth, propertyId);
     const email = await emailService.customizeForSite(ctx, key, propertyId);
+    await findable(auth, email.id);
     return ok(email);
   });
 
@@ -118,26 +137,29 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.patch('/v1/builder/emails/:id', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.update(toBuilderTenantContext(request), id, request.body);
+    await findable(auth, id);
     return ok(email);
   });
 
   app.delete('/v1/builder/emails/:id', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     await emailService.remove(toBuilderTenantContext(request), id);
+    await findable(auth, id, 'delete');
     return ok({ id });
   });
 
   app.post('/v1/builder/emails/:id/publish', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.publish(toBuilderTenantContext(request), id);
+    await findable(auth, id);
     return ok(email);
   });
 
@@ -155,10 +177,11 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/builder/emails/:id/silica/publish', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.publishSilica(toBuilderTenantContext(request), id);
+    await findable(auth, id);
     return ok(email);
   });
 

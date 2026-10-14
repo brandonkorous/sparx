@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMAIL_CONTENT_BLOCKS } from './email-content-blocks';
+import { EMAIL_CONTENT_BLOCKS, writingBlocks } from './email-content-blocks';
 
 /** Collect every node id in a subtree — the invariant that matters for a palette
  *  block is that ONE `make()` produces a tree with no internal id collisions (silica
@@ -34,5 +34,26 @@ describe('EMAIL_CONTENT_BLOCKS', () => {
       const again = idsOf(item.make());
       expect(ids.some((id) => again.includes(id))).toBe(false);
     }
+  });
+});
+
+// P09: a journal could not put a published piece into its newsletter except by retyping it.
+describe('writingBlocks', () => {
+  const blocks = writingBlocks([
+    { ref: 'cms.article', label: 'Articles' },
+    { ref: 'cmsWhere.article.section.field', label: 'Articles in Field' },
+  ]);
+
+  it('offers one block per kind of writing the send can fill, in her words', () => {
+    expect(blocks.map((b) => b.label)).toEqual(['Latest Articles']);
+    expect(blocks[0]?.key).toBe('sx-latest-article');
+  });
+
+  it('drops a section that repeats one card per piece of that kind', () => {
+    const node = blocks[0]?.make() as { kind?: string; data?: { kind: string; ref: string } };
+    expect(node.kind).toBe('section');
+    expect(node.data).toEqual({ kind: 'collection', ref: 'cms.article' });
+    const ids = idsOf(node);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });

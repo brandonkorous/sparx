@@ -126,7 +126,9 @@ export function returnState(
 /** Why the customer is sending it back, in plain words. */
 export const REASON_LABELS: Record<string, string> = {
   wrong_item: 'Wrong item sent',
-  wrong_size: 'Wrong size',
+  // The customer's own words are "It does not fit"; a part has no size
+  // (sparx persona issue 182).
+  wrong_size: 'Does not fit',
   defective: 'Faulty',
   damaged_in_transit: 'Damaged on the way',
   not_as_described: 'Not as described',

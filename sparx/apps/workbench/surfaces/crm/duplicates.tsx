@@ -48,6 +48,7 @@ import {
   type DuplicateGroup,
 } from './duplicates-data';
 import { duplicatesCheckedWords, useCrmSettings } from './workspace-data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -79,7 +80,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
     settings.data?.duplicateMatchRules ?? ['email', 'name_company']
   );
   const { data: viewer } = useViewer();
-  const canMerge = viewer?.role === 'admin' || viewer?.role === 'owner';
+  const canMerge = canManageBusiness(viewer?.role);
   const bulkMerge = useBulkMerge();
   const toast = useToast();
   const confirm = useConfirm();

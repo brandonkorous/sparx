@@ -48,6 +48,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { BarChart3, Boxes, CalendarClock, Clock, Coins, MapPin } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
@@ -940,10 +941,11 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
     // cards implying you own nothing.
     if (summary.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<BarChart3 className="size-6" aria-hidden />}
           title="Could not load your reports"
           description="This is a problem reaching the server. Your stock and its history are unaffected: the figures just could not be worked out just now."
+          error={summary.error}
         />
       );
     }

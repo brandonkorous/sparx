@@ -35,6 +35,7 @@ import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
 import { afterCommit } from '../../lib/defer';
 import {
+  conditionLabel,
   dispositionLabel,
   dispositionTone,
   useReturnDispositions,
@@ -139,18 +140,24 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.inspectionId}>
-                  <td className="max-w-0">
+                  {/* Wraps rather than truncates. `max-w-0` + `truncate` cut the one
+                      column that NAMES the goods to "Bosch Reman…" while Qty and
+                      Condition kept their room, on the table whose whole job is
+                      deciding about that item (sparx persona issue 181). */}
+                  <td className="min-w-[7rem]">
                     <span className="flex min-w-0 flex-col">
-                      <span className="truncate">
+                      <span className="break-words">
                         {row.variantName ?? row.variantSku ?? 'A free-text line'}
                       </span>
                       {row.dispositionBinCode ? (
-                        <span className="truncate text-sm">On shelf {row.dispositionBinCode}</span>
+                        <span className="text-sm break-words">
+                          On shelf {row.dispositionBinCode}
+                        </span>
                       ) : null}
                     </span>
                   </td>
                   <td className="text-right tabular-nums">{row.quantity}</td>
-                  <td className="text-sm whitespace-nowrap">{row.condition.replace(/_/g, ' ')}</td>
+                  <td className="text-sm whitespace-nowrap">{conditionLabel(row.condition)}</td>
                   <td>
                     {row.disposition ? (
                       <span className="flex flex-col gap-0.5">

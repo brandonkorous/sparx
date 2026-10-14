@@ -144,35 +144,41 @@ function masthead(): Node {
  *  illustrates, so describing it would make a screen reader announce the same sentence
  *  twice; an empty alt marks it decorative, which is the correct treatment here. */
 function featuredImage(): Node {
-  return el('section', 'w-full @container bg-base-100', {
-    children: [
-      el('div', 'mx-auto w-full max-w-5xl px-6 py-10', {
-        children: [
-          bind(
-            // A raw `img`, not the `Image` atom, for the one reason given in full on
-            // the product hero (`commerce.ts`): silicaui's `Image` hardcodes
-            // `loading="lazy"` and ignores a `loading` prop.
-            el('img', 'aspect-video w-full rounded-box object-cover', {
-              attrs: {
-                // The shared placeholder tile, not an empty `src`: unbound (the studio
-                // canvas, where no post is in scope) an empty src renders the browser's
-                // broken-image glyph. `fillValue` overwrites it with the post's real
-                // image the moment the node resolves, so it never reaches a live page.
-                src: PLACEHOLDER_IMAGE,
-                alt: '',
-                // `eager` for the same reason the product hero is: this sits directly
-                // under the masthead and is the largest element on the post, so it is
-                // the LCP. The blog INDEX card below stays lazy — a grid is what lazy
-                // loading is for.
-                loading: 'eager',
-              },
-            }),
-            'featuredImage'
-          ),
-        ],
-      }),
-    ],
-  });
+  // Shown only when the post has a picture. The placeholder below is for the studio
+  // canvas; on a live post with no picture the whole band goes, not just the image,
+  // or it leaves a padded gap under the headline (P09).
+  return visibleWhen(
+    el('section', 'w-full @container bg-base-100', {
+      children: [
+        el('div', 'mx-auto w-full max-w-5xl px-6 py-10', {
+          children: [
+            bind(
+              // A raw `img`, not the `Image` atom, for the one reason given in full on
+              // the product hero (`commerce.ts`): silicaui's `Image` hardcodes
+              // `loading="lazy"` and ignores a `loading` prop.
+              el('img', 'aspect-video w-full rounded-box object-cover', {
+                attrs: {
+                  // The shared placeholder tile, not an empty `src`: unbound (the studio
+                  // canvas, where no post is in scope) an empty src renders the browser's
+                  // broken-image glyph. `fillValue` overwrites it with the post's real
+                  // image when it has one; when it has none the band is not drawn.
+                  src: PLACEHOLDER_IMAGE,
+                  alt: '',
+                  // `eager` for the same reason the product hero is: this sits directly
+                  // under the masthead and is the largest element on the post, so it is
+                  // the LCP. The blog INDEX card below stays lazy — a grid is what lazy
+                  // loading is for.
+                  loading: 'eager',
+                },
+              }),
+              'featuredImage'
+            ),
+          ],
+        }),
+      ],
+    }),
+    'featuredImage'
+  );
 }
 
 /** The written body — the pinned `cms.article-body` core on a PROSE measure.

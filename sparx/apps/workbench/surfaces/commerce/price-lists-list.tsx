@@ -13,20 +13,12 @@
 // owns a shop, not a pricing engine.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Table, Text } from '@wizeworks/silicaui-react';
 import { Plus, Tag } from 'lucide-react';
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -54,7 +46,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const active = FILTERS.find((entry) => entry.value === filter) ?? FILTERS[0];
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useQuery({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useQuery({
     queryKey: ['commerce', 'price-lists', 'list', { q: search, status: active.status }],
     queryFn: () =>
       api.list<PriceListRow>('/v1/commerce/price-lists', {
@@ -136,10 +128,11 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Tag className="size-6" aria-hidden />}
             title="Could not load your price lists"
             description="This is a problem reaching the server. Your price lists are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -196,7 +189,9 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Text>
                     </td>
                     <td className="hidden @lg:table-cell">{audienceSummary(row)}</td>
-                    <td className="hidden font-mono text-sm @xl:table-cell">{row.currency}</td>
+                    <td className="hidden font-mono text-sm whitespace-nowrap @xl:table-cell">
+                      {row.currency}
+                    </td>
                     <td className="hidden text-right tabular-nums @md:table-cell">
                       {row.entryCount === 1 ? '1 price' : `${String(row.entryCount)} prices`}
                     </td>

@@ -114,3 +114,36 @@ describe('describeRule', () => {
     expect(describeRule(null)).toBe(NO_CONDITIONS);
   });
 });
+
+/**
+ * A PICKED VALUE READS AS ITS NAME, NEVER ITS ID (sparx persona issue 149).
+ *
+ * A wholesale group, a wholesale customer and a team member are stored by id.
+ * The line printed the id: "Linked wholesale account is 1c0e…".
+ */
+describe('describeRule names what was picked', () => {
+  const RETAIL = '6f1d2c4e-8a3b-4c5d-9e7f-0a1b2c3d4e5f';
+  const CAFE = '1c0e4d2a-5b6c-4d7e-8f9a-0b1c2d3e4f5a';
+  const pred = (field: string, value: unknown) => ({ kind: 'predicate', field, op: 'eq', value });
+  const names = {
+    tier: { [RETAIL]: 'Shops that resell' },
+    account: { [CAFE]: 'Juniper Row Café' },
+  };
+
+  it('names the group and the business', () => {
+    expect(describeRule(pred('b2bAccount.pricingTierId', RETAIL), {}, names)).toBe(
+      'Wholesale group is Shops that resell'
+    );
+    expect(describeRule(pred('customer.b2bAccountId', CAFE), {}, names)).toContain(
+      'Juniper Row Café'
+    );
+  });
+
+  it('never prints an id, before the names load or after one is removed', () => {
+    const before = describeRule(pred('b2bAccount.pricingTierId', RETAIL));
+    expect(before).not.toContain(RETAIL);
+    expect(before).toBe('Wholesale group is a chosen group');
+    const removed = describeRule(pred('b2bAccount.pricingTierId', RETAIL), {}, { tier: {} });
+    expect(removed).toBe('Wholesale group is a group since removed');
+  });
+});

@@ -33,7 +33,6 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -48,6 +47,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Ruler, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { plural } from './data';
@@ -167,10 +167,11 @@ export function UnitsListSurface() {
   const body = () => {
     if (units.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Ruler className="size-6" aria-hidden />}
           title="Could not load your units"
           description="This is a problem reaching the server. Your units and everything measured in them are unaffected."
+          error={units.error}
         />
       );
     }
@@ -337,7 +338,7 @@ export function UnitsListSurface() {
                 <tbody>
                   {group.units.map((unit) => (
                     <tr key={unit.id}>
-                      <td className="font-mono font-medium">{unit.code}</td>
+                      <td className="font-mono font-medium whitespace-nowrap">{unit.code}</td>
                       <td>
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">

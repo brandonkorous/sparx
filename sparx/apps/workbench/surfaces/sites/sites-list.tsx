@@ -79,7 +79,7 @@ function notLiveWords(status: string): { label: string; tone?: 'warning' } {
 export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { controller } = useWorkbench();
   const confirm = useConfirm();
-  const { data: sites, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSites();
+  const { data: sites, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useSites();
   const { data: domains } = useDomains();
   const currentSiteId = useActivePropertyId();
   const [switching, setSwitching] = useState<string | null>(null);
@@ -145,6 +145,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<Globe className="size-6" aria-hidden />}
         title="Could not load your sites"
         description="This is a problem reaching the server, not a problem with your sites."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

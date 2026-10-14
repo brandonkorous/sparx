@@ -97,6 +97,8 @@ import {
   type ScopeMeta,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -115,7 +117,7 @@ const EXPIRY_ITEMS: Record<string, string> = {
 };
 
 function canManageAi(role: string | undefined): boolean {
-  return role === 'admin' || role === 'owner';
+  return canManageBusiness(role);
 }
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -605,7 +607,7 @@ function ConnectedAssistantsSection({
 }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isPending, isError, refetch } = useMcpConnections(canManage);
+  const { data, isPending, isError, error, refetch } = useMcpConnections(canManage);
   const revoke = useRevokeMcpConnection();
   const [revokingId, setRevokingId] = useState<string | null>(null);
 
@@ -666,7 +668,7 @@ function ConnectedAssistantsSection({
           <AlertContent>
             <AlertTitle>Could not load your connected apps</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server, not your apps.
+              {loadFailureWords(error, 'This is a problem reaching the server, not your apps.')}
             </AlertDescription>
           </AlertContent>
           <Button
@@ -863,7 +865,7 @@ function ApiKeysSection({
 }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isPending, isError, refetch } = useApiKeys(canManage);
+  const { data, isPending, isError, error, refetch } = useApiKeys(canManage);
   const issue = useIssueApiKey();
   const revoke = useRevokeApiKey();
 
@@ -1078,7 +1080,7 @@ function ApiKeysSection({
           <AlertContent>
             <AlertTitle>Could not load your keys</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server, not your keys.
+              {loadFailureWords(error, 'This is a problem reaching the server, not your keys.')}
             </AlertDescription>
           </AlertContent>
           <Button
@@ -1140,7 +1142,7 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: viewer } = useViewer();
   const canManage = canManageAi(viewer?.role);
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAiCredential();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAiCredential();
   const modules = useModuleStates();
   const aiOn = modules.data ? (modules.data.find((m) => m.slug === 'ai')?.enabled ?? false) : null;
   // The scope catalog is a viewer-safe vocabulary lookup, fetched here so both
@@ -1153,6 +1155,7 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneLoadError
         title="Could not load your AI connections"
         description="This is a problem reaching the server. Your connected account, apps and keys, if you have any, are unaffected."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

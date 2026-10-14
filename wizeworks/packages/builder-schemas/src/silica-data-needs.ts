@@ -15,6 +15,7 @@
 // React-free (silicaui-html types + the codec only), so the storefront's server
 // loader and any future prerender share ONE need-collection pass — no drift.
 
+import { AUTHORS_SOURCE_KEY, parseCmsWhereKey } from './binding';
 import { decodeBindingRef } from './binding-ref';
 import type { SilicaNode } from './site-sync';
 
@@ -38,6 +39,10 @@ export interface SilicaSourceNeeds {
   commerce: boolean;
   products: SilicaProductSources;
   cmsTypes: string[];
+  /** Lists of a kind's pieces filed under one choice (`cmsWhere.<kind>.<field>.<value>`). */
+  cmsWhere: { key: string; type: string; field: string; value: string }[];
+  /** The site's authors (`cmsAuthors`), for a contributors index. */
+  authors: boolean;
   productPins: string[];
   cmsPins: string[];
   /**
@@ -151,6 +156,16 @@ function recordNeed(ref: string, needs: SilicaSourceNeeds, limit?: number): void
       needs.products.categories.push(id);
       noteLimit(needs, root, limit);
     }
+  } else if (root === AUTHORS_SOURCE_KEY) {
+    needs.authors = true;
+    noteLimit(needs, root, limit);
+  } else if (root.startsWith('cmsWhere.')) {
+    // A kind's pieces filed under one choice (`cmsWhereKey`) — its own fetch.
+    const where = parseCmsWhereKey(root);
+    if (where) {
+      needs.cmsWhere.push({ key: root, ...where });
+      noteLimit(needs, root, limit);
+    }
   } else if (root.startsWith('cms.')) {
     const type = root.slice('cms.'.length).split('.')[0];
     if (type) {
@@ -168,6 +183,8 @@ export function collectSilicaSourceNeeds(tree: SilicaNode): SilicaSourceNeeds {
     commerce: false,
     products: { catalog: false, featured: false, fresh: false, related: false, categories: [] },
     cmsTypes: [],
+    cmsWhere: [],
+    authors: false,
     productPins: [],
     cmsPins: [],
     limits: {},
@@ -190,6 +207,8 @@ export function collectSilicaSourceNeeds(tree: SilicaNode): SilicaSourceNeeds {
 
   // De-dupe (a grid + a rail both name commerce.product; a type may repeat).
   needs.cmsTypes = needs.cmsTypes.filter((t) => !seenCms.has(t) && seenCms.add(t));
+  const seenWhere = new Set<string>();
+  needs.cmsWhere = needs.cmsWhere.filter((w) => !seenWhere.has(w.key) && seenWhere.add(w.key));
   needs.productPins = needs.productPins.filter(
     (id) => !seenProductPins.has(id) && seenProductPins.add(id)
   );

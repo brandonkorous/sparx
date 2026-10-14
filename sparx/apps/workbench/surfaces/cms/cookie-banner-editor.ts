@@ -16,6 +16,7 @@ import {
 } from './cookie-banner-data';
 import { orderedKinds, type CookieBannerDraft } from './cookie-banner-fields';
 import type { ChecklistEntry } from './legal-data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 function toDraft(settings: CookieBannerSettings): CookieBannerDraft {
   return {
@@ -65,7 +66,7 @@ export function useSiteNameIfMany(): string | undefined {
 export function useCanEditCookieBanner(): { known: boolean; canEdit: boolean } {
   const { data: viewer } = useViewer();
   if (!viewer) return { known: false, canEdit: false };
-  return { known: true, canEdit: viewer.role === 'owner' || viewer.role === 'admin' };
+  return { known: true, canEdit: canManageBusiness(viewer.role) };
 }
 
 export function useCookieBannerEditor(policyEntry: ChecklistEntry | null) {

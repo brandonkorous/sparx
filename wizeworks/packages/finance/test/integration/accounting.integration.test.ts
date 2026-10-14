@@ -175,9 +175,18 @@ describe('export', () => {
     expect(rows.find((r) => r.Description === 'Brake pads')?.Account).toBe('Parts & materials');
   });
 
-  it('refuses to pretend an unbuilt provider is connected', async () => {
+  // A row holds a provider's FILE settings as well as its sync grant, and the file
+  // works for every provider in the catalog, so a known provider keeps a row
+  // whether or not its sync is built (`assertProviderKnown`). Signing in is the
+  // guarded step, not saving settings. Only a provider nobody knows is refused.
+  it('keeps file settings for a known provider, and refuses an unknown one', async () => {
+    const row = await upsertConnection(t.tenantId, { provider: 'xero', propertyId: t.propertyId });
+    expect(row.provider).toBe('xero');
     await expect(
-      upsertConnection(t.tenantId, { provider: 'xero', propertyId: t.propertyId })
+      upsertConnection(t.tenantId, {
+        provider: 'not-a-provider' as Parameters<typeof upsertConnection>[1]['provider'],
+        propertyId: t.propertyId,
+      })
     ).rejects.toThrow(AccountingProviderUnavailableError);
   });
 });

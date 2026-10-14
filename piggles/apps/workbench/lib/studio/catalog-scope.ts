@@ -17,7 +17,14 @@
 import type { PaletteGroup, PaletteItem } from '@wizeworks/silicaui-builder/react';
 import type { CatalogScope } from '@wizeworks/studio/react';
 import type { DocumentKind } from '@wizeworks/studio';
-import { HOST_COMPONENTS, SITE_CATALOG, SPARX_CATALOG, hostCore } from '@wizeworks/silica-catalog';
+import {
+  HOST_COMPONENTS,
+  SITE_CATALOG,
+  SPARX_CATALOG,
+  hostCore,
+  hostKeysIn,
+  moduleForKey,
+} from '@wizeworks/silica-catalog';
 
 /**
  * The sparx-catalog blocks a LAYOUT may use, by group.
@@ -83,11 +90,49 @@ const PAGE_ONLY_BLOCKS = [
   'block:cta_inline',
 ];
 
+/**
+ * The catalog groups that belong to one app. A site that switched the app off under
+ * "What this site shows" does not show that app's pages, links or regions, so its
+ * editor does not offer to build them: a journal with Selling off was offered
+ * Products, a Buy box and a Cart (persona P09).
+ */
+const GROUP_MODULE: Readonly<Record<string, string>> = { commerce: 'commerce', writing: 'cms' };
+
+/** Whether a live region belongs to an app this site has switched off. */
+function offOnSite(key: string, siteOff: readonly string[]): boolean {
+  const module = moduleForKey(key);
+  return module !== null && siteOff.includes(module);
+}
+
+/** A palette item this site can show: none of the live regions inside it belongs to an
+ *  app it switched off. */
+function shownOnSite(item: PaletteItem, siteOff: readonly string[]): boolean {
+  if (siteOff.length === 0 || !item.make) return true;
+  return !hostKeysIn(item.make()).some((key) => offOnSite(key, siteOff));
+}
+
+/** The catalog without what this site switched off. Groups left empty are dropped. */
+function forSite(groups: readonly PaletteGroup[], siteOff: readonly string[]): PaletteGroup[] {
+  if (siteOff.length === 0) return [...groups];
+  const out: PaletteGroup[] = [];
+  for (const group of groups) {
+    const module = GROUP_MODULE[group.key];
+    if (module !== undefined && siteOff.includes(module)) continue;
+    const items = group.items.filter((item) => shownOnSite(item, siteOff));
+    if (items.length > 0) out.push({ ...group, items });
+  }
+  return out;
+}
+
 /** The live regions, grouped the way the registry groups them. */
-export function hostCoreGroups(categories?: readonly string[]): PaletteGroup[] {
+export function hostCoreGroups(
+  categories?: readonly string[],
+  siteOff: readonly string[] = []
+): PaletteGroup[] {
   const byCategory = new Map<string, PaletteItem[]>();
   for (const core of HOST_COMPONENTS) {
     if (categories && !categories.includes(core.category)) continue;
+    if (offOnSite(core.key, siteOff)) continue;
     const items = byCategory.get(core.category) ?? [];
     items.push({
       key: `host:${core.key}`,
@@ -126,15 +171,15 @@ function chromeCatalog(groups: readonly PaletteGroup[]): PaletteGroup[] {
  * opening hours or no cart, and nothing about the omission is visible until an author
  * goes looking for a block that is not there.
  */
-export function catalogFor(kind: DocumentKind): CatalogScope {
+export function catalogFor(kind: DocumentKind, siteOff: readonly string[] = []): CatalogScope {
   // `CatalogGroup` and `PaletteGroup` are the same shape either side of the package
   // boundary; the catalog is typed in sparx's terms and the palette in silica's.
-  const sparx = [...SPARX_CATALOG, ...SITE_CATALOG] as unknown as PaletteGroup[];
+  const sparx = forSite([...SPARX_CATALOG, ...SITE_CATALOG] as unknown as PaletteGroup[], siteOff);
   if (kind !== 'layout') {
-    return { extend: [...sparx, ...hostCoreGroups()] };
+    return { extend: [...sparx, ...hostCoreGroups(undefined, siteOff)] };
   }
   return {
-    extend: [...chromeCatalog(sparx), ...hostCoreGroups(CHROME_CORE_CATEGORIES)],
+    extend: [...chromeCatalog(sparx), ...hostCoreGroups(CHROME_CORE_CATEGORIES, siteOff)],
     hide: PAGE_ONLY_BLOCKS,
   };
 }

@@ -22,6 +22,7 @@ import { formatStamp } from '@/components/booking/booking-clock';
 import { ReschedulePicker } from '@/components/booking/reschedule-picker';
 
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
+import { ListPager } from '@/components/account/list-pager';
 
 const PAGE_SIZE = 20;
 
@@ -103,8 +104,6 @@ export default function BookingsPage() {
     setRescheduling(null);
     load();
   }
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div>
@@ -232,31 +231,12 @@ export default function BookingsPage() {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="mt-4 flex justify-between">
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                Previous
-              </Button>
-              <span className="text-base-content self-center text-sm">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <ListPager
+            offset={(page - 1) * PAGE_SIZE}
+            pageSize={PAGE_SIZE}
+            total={total}
+            onMove={(next) => setPage(next / PAGE_SIZE + 1)}
+          />
         </>
       )}
     </div>

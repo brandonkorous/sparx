@@ -235,10 +235,27 @@ const ROLE_ORDER: Record<string, number> = {
   owner: 3,
 };
 
+/**
+ * What a person refused by `requireRole(min)` is told.
+ *
+ * Every console prints this sentence as it arrives, and so does an AI client
+ * over MCP. It read "Requires admin role or higher.", a ladder nobody at a
+ * business has seen, with nothing about who CAN do it (sparx persona issue 168).
+ */
+export function roleRefusal(min: StaffRole): string {
+  if (min === 'owner') return 'Only the owner of this business can do this.';
+  if (min === 'admin')
+    return 'Only an owner or an admin of this business can do this. Ask one of them.';
+  if (min === 'editor') {
+    return 'Your role here lets you look, not change things. Ask an owner or an admin.';
+  }
+  return 'Your role here cannot do this. Ask an owner or an admin.';
+}
+
 export function requireRole(request: FastifyRequest, min: StaffRole): AuthContext {
   const auth = requireAuth(request);
   if ((ROLE_ORDER[auth.role] ?? 0) < (ROLE_ORDER[min] ?? 0)) {
-    throw forbidden(`Requires ${min} role or higher.`);
+    throw forbidden(roleRefusal(min));
   }
   return auth;
 }
@@ -256,7 +273,7 @@ export function requireAnyRole(
 ): AuthContext {
   const auth = requireAuth(request);
   if (!allowed.includes(auth.role)) {
-    throw forbidden(`Requires one of these roles: ${allowed.join(', ')}.`);
+    throw forbidden('Your role here cannot do this. Ask an owner or an admin.');
   }
   return auth;
 }

@@ -7,10 +7,19 @@ const OWN_SPREADSHEET = [
   'Marguerite,Adeyemi,marguerite@example.com,(503) 555-0142,1184 SE Ash St,Portland,OR,97214,US,newsletter,yes',
 ].join('\n');
 
-/** The real thing, which carries the column only Squarespace writes. */
+/** The real thing, which carries the column only Squarespace writes. `Subscribed` is
+ *  not that column: anybody's own list has one (see `JOURNAL_LIST`). */
 const SQUARESPACE_CONTACTS = [
-  'Email,First Name,Last Name,Subscribed,Created',
+  'Email,First Name,Last Name,Email Subscriber,Created',
   'sam@example.com,Sam,Quinn,Yes,2026-01-02',
+].join('\n');
+
+/** A journal's own subscriber list (Piggles persona P09). It was announced as "a
+ *  Squarespace contacts export", a platform she had never used. */
+const JOURNAL_LIST = [
+  'First name,Last name,Email,Subscribed,Signed up',
+  'Margaret,Holloway,m.holloway@example.com,yes,2024-03-02',
+  'Hugh,Ashdown,hugh.ashdown@example.com,no,2024-08-08',
 ].join('\n');
 
 const SHOPIFY_PRODUCTS = [
@@ -91,6 +100,12 @@ describe('detect', () => {
     const found = detect({ text: OWN_SPREADSHEET, fileName: 'juniper-row-mailing-list.csv' });
     expect(found.length).toBeGreaterThan(1);
     for (const candidate of found) expect(candidate.confidence).toBeLessThan(CERTAIN);
+  });
+
+  it('asks, rather than names a platform, for a list whose columns anybody would type', () => {
+    const found = detect({ text: JOURNAL_LIST, fileName: 'marrow-review-subscribers.csv' });
+    for (const candidate of found) expect(candidate.confidence).toBeLessThan(CERTAIN);
+    expect(readSource({ text: JOURNAL_LIST }).sure).toBe(false);
   });
 
   it('still answers outright when the vendor’s own columns are there', () => {

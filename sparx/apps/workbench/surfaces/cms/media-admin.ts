@@ -220,10 +220,13 @@ export function placeTarget(place: UsePlace): { surface: string; params: Record<
       return { surface: 'commerce.product.detail', params: { id: place.id } };
     case 'entry':
       return { surface: 'cms.content.detail', params: { id: place.id } };
+    // sparx edits pages and its header and footer in the one site editor; the
+    // per-document `builder.page` and `builder.layout` panes are Piggles' and are not
+    // registered here, so these links opened nothing.
     case 'page':
-      return { surface: 'builder.page', params: { pageId: place.id } };
+      return { surface: 'builder.studio', params: { pageId: place.id } };
     case 'layout':
-      return { surface: 'builder.layout', params: {} };
+      return { surface: 'builder.studio', params: { mode: 'layout' } };
   }
 }
 

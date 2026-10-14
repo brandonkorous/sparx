@@ -29,6 +29,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
 import { runKindLabel, runState, useAssemblyOrders, type AssemblyOrder } from './assembly-data';
 import { ActionLabel } from '../../components/action-label';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const PAGE = 50;
 
@@ -65,10 +66,11 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (runs.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Hammer className="size-6" aria-hidden />}
           title="Could not load your runs"
           description="This is a problem reaching the server. Nothing you have made is affected."
+          error={runs.error}
         />
       );
     }

@@ -14,11 +14,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Button,
   Field,
   FieldControl,
@@ -32,8 +27,9 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, TriangleAlert } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import { useActivePropertyId } from '../../lib/api/shell-data';
 import { useSite } from '../sites/data';
@@ -222,9 +218,11 @@ export function EmailSettingsSurface() {
       onError: (error) => {
         toast.add({
           title: 'Could not save',
+          // The fallback only speaks when the server gave no reason of its own,
+          // which means it failed: the fields were never the problem.
           description: emailSettingsErrorMessage(
             error,
-            'Nothing was changed. Check the fields and try again.'
+            'Nothing was changed. Try again in a moment.'
           ),
           type: 'error',
         });
@@ -238,30 +236,14 @@ export function EmailSettingsSurface() {
   // whole identity into a form whose Save is already dead (`dirty` needs `data`).
   if (settings.isError) {
     return (
-      <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <TriangleAlert />
-          <AlertContent>
-            <AlertTitle>Could not load your email settings</AlertTitle>
-            <AlertDescription>
-              Nothing has been lost. This is a problem reaching the server, not with your saved
-              settings.
-            </AlertDescription>
-          </AlertContent>
-          <AlertActions>
-            <Button
-              size="sm"
-              color="error"
-              variant="soft"
-              onClick={() => {
-                void settings.refetch();
-              }}
-            >
-              Try again
-            </Button>
-          </AlertActions>
-        </Alert>
-      </div>
+      <PaneLoadError
+        title="Could not load your email settings"
+        description="Nothing has been lost. This is a problem reaching the server, not with your saved settings."
+        error={settings.error}
+        onRetry={() => {
+          void settings.refetch();
+        }}
+      />
     );
   }
 

@@ -1,15 +1,19 @@
 'use client';
 
 // The editable shape of a broadcast, and the small pure helpers both faces of
-// the pane share: what is still missing before it can go out, and how a date is
-// spelled for a person.
+// the pane share: what is still missing before it can go out, and where the
+// schedule box opens.
 
+import { wallClockFromNow } from '../../lib/publish-clock';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import type { Audience, Broadcast, DesignedEmail, EmailSettings } from './broadcasts-data';
 
 export const DETAIL_KEY = 'email.broadcasts.detail';
 export const SETTINGS_KEY = 'email.settings';
 export const EMAIL_DESIGNER_KEY = 'builder.email';
+/** An audience is a CRM segment, made on the segment screen (sparx persona
+ *  issue 151: the composer offered no way to reach it). */
+export const NEW_AUDIENCE_KEY = 'crm.segment.detail';
 
 /** One centred, capped column. A pane torn onto a second monitor is otherwise
  *  2000px of dead grey with the form pinned to the left edge. */
@@ -39,24 +43,12 @@ export function serialize(draft: Draft): string {
   );
 }
 
-/** A `datetime-local` value a few minutes ahead — the earliest sensible schedule
- *  and the default the picker opens on. Local wall-clock, not UTC, so the value
- *  matches what the operator sees on their own clock. */
-export function soonLocalValue(): string {
-  const when = new Date(Date.now() + 15 * 60 * 1000);
-  const offsetMs = when.getTimezoneOffset() * 60 * 1000;
-  return new Date(when.getTime() - offsetMs).toISOString().slice(0, 16);
-}
-
-/** A timestamp in full, plain words — "12 March 2026 at 9:00 am". */
-export function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
+/** A `datetime-local` value a few minutes ahead, on the business's clock: the
+ *  earliest sensible schedule and the default the picker opens on. It used this
+ *  computer's offset, which opened the box hours out for a business in another
+ *  zone (Piggles persona issue 984). */
+export function soonLocalValue(clock: string): string {
+  return wallClockFromNow(15, clock);
 }
 
 /** "a, b and c" — a plain-language list for the "still needs …" hint. */
@@ -99,6 +91,13 @@ export interface ComposeBodyProps {
   scheduledAt: string;
   setScheduledAt: (next: string) => void;
   scheduleValid: boolean;
+  /** The instant the box holds, read on `clock`, or null when it holds none. */
+  scheduledIso: string | null;
+  /** The zone the box is read on: the business's, or this computer's when the
+   *  business has none (Piggles persona issue 984). */
+  clock: string;
+  /** Both halves of whose clock, for the sentence under the box. */
+  reader: { zone: string | null | undefined; device: string };
   /** The saved broadcast's id, or null while it has never been saved. The
    *  preview renders the SERVER's copy, so it needs one. */
   savedId: string | null;

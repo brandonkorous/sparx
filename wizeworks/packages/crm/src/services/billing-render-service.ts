@@ -44,6 +44,7 @@ const PAYMENT_KIND_LABEL: Record<string, string> = {
   deposit: 'Deposit',
   payment: 'Payment',
   refund: 'Refund',
+  credit: 'Credit',
 };
 
 // ── Mappers ──────────────────────────────────────────────────────────────────
@@ -99,7 +100,7 @@ export async function buildRenderData(
         description: l.description,
         quantity: Number(l.quantity),
         unitPrice: Number(l.unitPrice),
-        lineTotal: Number(l.lineTotal),
+        lineSubtotal: Number(l.lineSubtotal),
         taxable: l.taxable,
         coreCharge: l.coreCharge === null ? null : Number(l.coreCharge),
       }))
@@ -200,7 +201,7 @@ export async function buildRenderDataFromSnapshot(
         description: l.description,
         quantity: l.quantity,
         unitPrice: l.unitPrice,
-        lineTotal: l.lineTotal,
+        lineSubtotal: l.lineSubtotal,
         taxable: l.taxable,
         coreCharge: l.coreCharge ?? null,
       }))

@@ -33,8 +33,9 @@ import {
   type InvoiceTemplateNodeInput,
 } from '@wizeworks/crm-schemas';
 import { DEFAULT_INVOICE_TEMPLATE } from '@wizeworks/crm-schemas/builtins';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { BillingDocumentTemplate, Prisma, TxClient } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -105,14 +106,38 @@ function visibleTo(scope: TemplateScope): Prisma.BillingDocumentTemplateWhereInp
     : { propertyId: null };
 }
 
+/** Re-read a letterhead into search once the write commits: its name, whether it is
+ *  the default, and whether it is published are what the entry shows. */
+function reindexTemplate(ctx: ServiceContext, id: string): Promise<void> {
+  return afterCommit('index billing_template', () =>
+    indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'billing_template',
+      recordId: id,
+    })
+  );
+}
+
 /** Clear the standing default WITHIN ONE TIER, so promoting the trade counter's
  *  letterhead cannot quietly demote the studio's. The partial-unique index
  *  (tenant_id, property_id) WHERE is_default is the backstop. */
-async function clearDefaultIn(tx: TxClient, propertyId: string | null): Promise<void> {
-  await tx.billingDocumentTemplate.updateMany({
+async function clearDefaultIn(
+  tx: TxClient,
+  ctx: ServiceContext,
+  propertyId: string | null
+): Promise<void> {
+  // Read first: the one stood down stops being "Default" in search as well.
+  const demoted = await tx.billingDocumentTemplate.findMany({
     where: { isDefault: true, propertyId },
+    select: { id: true },
+  });
+  if (demoted.length === 0) return;
+  await tx.billingDocumentTemplate.updateMany({
+    where: { id: { in: demoted.map((d) => d.id) } },
     data: { isDefault: false },
   });
+  for (const d of demoted) await reindexTemplate(ctx, d.id);
 }
 
 /**
@@ -154,6 +179,7 @@ export function listOrSeed(
         entityId: seededRow.id,
         diff: { after: { name: DEFAULT_INVOICE_TEMPLATE.name } },
       });
+      await reindexTemplate(ctx, seededRow.id);
     }
 
     const rows = await tx.billingDocumentTemplate.findMany({
@@ -189,7 +215,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bi
     // out not-default, and printed nothing.
     const existingInTier = await tx.billingDocumentTemplate.count({ where: { propertyId } });
     const makeDefault = input.isDefault || existingInTier === 0;
-    if (makeDefault) await clearDefaultIn(tx, propertyId);
+    if (makeDefault) await clearDefaultIn(tx, ctx, propertyId);
     const created = await tx.billingDocumentTemplate.create({
       data: {
         tenantId: ctx.tenantId,
@@ -210,6 +236,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bi
       entityId: created.id,
       diff: { after: { name: created.name, propertyId } },
     });
+    await reindexTemplate(ctx, created.id);
     return toDto(created);
   });
 }
@@ -241,7 +268,7 @@ export async function update(
     // falls back to the shared letterhead until somebody picks one.
     if (input.propertyId !== undefined && input.propertyId !== existing.propertyId) {
       const moveTo = input.propertyId;
-      if (existing.isDefault) await clearDefaultIn(tx, moveTo);
+      if (existing.isDefault) await clearDefaultIn(tx, ctx, moveTo);
       data.property = moveTo ? { connect: { id: moveTo } } : { disconnect: true };
     }
 
@@ -250,6 +277,10 @@ export async function update(
       data,
       include: WITH_PROPERTY,
     });
+    // A draft-tree autosave changes nothing search shows, and it is the busy path.
+    if (input.name !== undefined || input.propertyId !== undefined) {
+      await reindexTemplate(ctx, id);
+    }
     return toDto(updated);
   });
 }
@@ -275,6 +306,7 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BillingT
       entityId: id,
       diff: { after: { name: updated.name } },
     });
+    await reindexTemplate(ctx, id);
     return toDto(updated);
   });
 }
@@ -287,8 +319,9 @@ export async function setDefault(ctx: ServiceContext, id: string): Promise<Billi
     const existing = await tx.billingDocumentTemplate.findUnique({ where: { id } });
     if (!existing) throw new CrmNotFoundError('BillingDocumentTemplate', id);
     if (!existing.isDefault) {
-      await clearDefaultIn(tx, existing.propertyId);
+      await clearDefaultIn(tx, ctx, existing.propertyId);
       await tx.billingDocumentTemplate.update({ where: { id }, data: { isDefault: true } });
+      await reindexTemplate(ctx, id);
     }
     const fresh = await tx.billingDocumentTemplate.findUniqueOrThrow({
       where: { id },
@@ -330,6 +363,7 @@ export async function remove(ctx: ServiceContext, id: string): Promise<void> {
       entityId: id,
       diff: { before: { name: existing.name } },
     });
+    await reindexTemplate(ctx, id);
   });
 }
 

@@ -16,6 +16,7 @@
 import { useMemo, useState } from 'react';
 import { Button, Card, EmptyState, SearchInput, Table, useToast } from '@wizeworks/silicaui-react';
 import { Plus, Puzzle, Sparkles } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
@@ -39,7 +40,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
   const createLabel = createLabelFor('commerce.fitment.list');
   const toast = useToast();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useFitmentDomains();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useFitmentDomains();
   const [search, setSearch] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -126,21 +128,14 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Puzzle className="size-6" aria-hidden />}
             title="Could not load your compatibility lists"
             description="This is a problem reaching the server. Your lists are unaffected. Nothing has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

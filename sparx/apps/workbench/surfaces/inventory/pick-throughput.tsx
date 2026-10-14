@@ -26,6 +26,7 @@ import { Badge, Card, EmptyState, NativeSelect, Table, Text } from '@wizeworks/s
 import { BarChart3, Gauge, ScanLine, TriangleAlert } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, useStockLocations } from './data';
 import {
@@ -91,18 +92,21 @@ export function PickThroughputSurface({ ctx }: { ctx: SurfaceContext }) {
   const locations = useStockLocations();
   const activeLocations = (locations.data?.items ?? []).filter((l) => l.isActive);
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickThroughput({
-    days,
-    ...(locationId ? { warehouseId: locationId } : {}),
-  });
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = usePickThroughput(
+    {
+      days,
+      ...(locationId ? { warehouseId: locationId } : {}),
+    }
+  );
 
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<BarChart3 className="size-6" aria-hidden />}
           title="Could not load the numbers"
           description="This is a problem reaching the server. Nothing on the floor is affected."
+          error={error}
         />
       );
     }

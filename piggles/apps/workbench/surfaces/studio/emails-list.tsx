@@ -1,10 +1,8 @@
 'use client';
 
-// Every email this business sends, and the way into each one.
-//
-// A TABLE, like every other list in the app: each email carries the same facts —
-// its name, the subject line it goes out with, whose it is, whether it is sending —
-// and people scan DOWN one of those columns.
+// Every email this business sends, and the way into each one. A TABLE: each
+// email carries the same facts (name, subject, whose, whether it is sending) and
+// people scan DOWN one of those columns.
 
 import { useState, type ReactNode } from 'react';
 import { Button, Card, EmptyState, Input, Text } from '@wizeworks/silicaui-react';
@@ -50,6 +48,7 @@ export function EmailsList({
       <Card className="min-h-0 flex-1 overflow-y-auto">
         <EmailsBody
           state={emails.isError ? 'error' : emails.isPending ? 'loading' : 'ready'}
+          error={emails.error}
           rows={rows}
           onRetry={retry}
           onOpen={onOpen}
@@ -68,12 +67,15 @@ export function EmailsList({
  *  catalogue, or the table. */
 function EmailsBody({
   state,
+  error,
   rows,
   onRetry,
   onOpen,
   onOpenBeside,
 }: {
   state: 'error' | 'loading' | 'ready';
+  /** The failed read's error, so the failure says WHY it failed (issue 260). */
+  error: unknown;
   rows: readonly EmailSummary[];
   onRetry: () => void;
   onOpen: (emailId: string) => void;
@@ -85,6 +87,7 @@ function EmailsBody({
         icon={GLYPH}
         title="Could not load your emails"
         description="This is a problem reaching the server. None of your designs are affected. Nothing has been lost."
+        error={error}
         onRetry={onRetry}
       />
     );

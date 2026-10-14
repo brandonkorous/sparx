@@ -16,7 +16,12 @@ import type { Logger } from 'pino';
 import { withTenant } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
 import type { FeedRow } from '@wizeworks/inventory';
-import { publishEvent, createPublisher, type PublisherLogger } from '@wizeworks/events';
+import {
+  publishEvent,
+  createPublisher,
+  indexEntity,
+  type PublisherLogger,
+} from '@wizeworks/events';
 import { parseCsvInventory } from '../csv.js';
 import { fetchApiRows } from '../adapters/http-api.js';
 
@@ -92,12 +97,22 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
     const errMsg = err instanceof Error ? err.message : String(err);
     log.error({ tenantId, sourceId, err: errMsg }, 'inventory-worker: sync failed');
 
-    await withTenant({ tenantId }, async (tx) => {
+    const marked = await withTenant({ tenantId }, async (tx) => {
       await tx.inventorySource.update({
         where: { id: sourceId },
         data: { status: 'error', updatedAt: new Date() },
       });
-    }).catch(() => undefined);
+      return true;
+    }).catch(() => false);
+    // The search entry shows the status, so it must learn the source is now failing.
+    if (marked && source.status !== 'error') {
+      await indexEntity({
+        tenantId,
+        actorId: payload.userId ?? null,
+        entityType: 'inventory_source',
+        recordId: sourceId,
+      });
+    }
 
     await publishEvent(
       publisher,

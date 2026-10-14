@@ -35,6 +35,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { formatMoney } from './data';
+import { paidBackNote, refundWords } from './return-refund-words';
 import { VariantPicker, versionOf } from './variant-picker';
 import { ReplacementShipmentFields } from './replacement-shipment-fields';
 import {
@@ -448,12 +449,14 @@ export function InspectReturnModal({
 
 /* ── Refund ─────────────────────────────────────────────────────────────── */
 
-/** Give the customer their money back — the move that settles the return, moves
- *  real money, and cannot be undone. */
+/** Give the customer their money back: the move that settles the return and
+ *  cannot be undone. It moves money only when a gateway holds the charge; money
+ *  taken by hand is recorded here and handed back by a person (issue 178). */
 export function RefundReturnModal({
   detail,
   currency,
   suggestedCents,
+  taxCents = 0,
   coreBackCents = 0,
   open,
   onClose,
@@ -463,6 +466,8 @@ export function RefundReturnModal({
   /** A starting amount worked out from the accepted lines, when the order's
    *  prices are known. Zero when they are not — the operator then types it. */
   suggestedCents: number;
+  /** The sales tax inside `suggestedCents` (issue 231). */
+  taxCents?: number;
   /** Core deposits that go back with the parts (issue 051). The server adds
    *  them on its own; shown so the figure on the button is the one paid. */
   coreBackCents?: number;
@@ -487,6 +492,12 @@ export function RefundReturnModal({
   const feeCents = fee.trim() ? Math.round((Number(fee) || 0) * 100) : undefined;
   const valid = amountCents > 0 || coreBackCents > 0;
   const backCents = amountCents + coreBackCents;
+  const words = refundWords({
+    who: detail.customerName ?? 'the customer',
+    amount: money(backCents, currency),
+    byHand: detail.refundsByHand,
+    asCredit,
+  });
 
   const submit = () => {
     refund.mutate(
@@ -497,10 +508,7 @@ export function RefundReturnModal({
       },
       {
         onSuccess: () => {
-          toast.add({
-            title: `${money(backCents, currency)} given back`,
-            type: 'success',
-          });
+          toast.add({ title: words.doneTitle, type: 'success' });
           onClose();
         },
         onError: (error) => {
@@ -517,19 +525,13 @@ export function RefundReturnModal({
     );
   };
 
-  const who = detail.customerName ?? 'the customer';
-
   return (
     <ActionDialog
       open={open}
       onClose={onClose}
       title="Give the money back"
-      description={
-        asCredit
-          ? `${who} gets this as store credit to spend with you later. This settles the return and cannot be undone.`
-          : `${who} gets this back the way they paid. This moves real money and cannot be undone.`
-      }
-      submitLabel={valid ? `Give back ${money(backCents, currency)}` : 'Give the money back'}
+      description={words.description}
+      submitLabel={valid ? words.submitLabel : 'Give the money back'}
       submitColor="danger"
       submitDisabled={!valid}
       busy={refund.isPending}
@@ -556,6 +558,8 @@ export function RefundReturnModal({
           }
         />
       </Field>
+
+      {paidBackNote(taxCents, currency) ? <Text>{paidBackNote(taxCents, currency)}</Text> : null}
 
       {coreBackCents > 0 ? (
         <Text>
@@ -595,7 +599,7 @@ export function RefundReturnModal({
             setAsCredit(event.target.checked);
           }}
         />
-        <Text as="span">Give as store credit instead of back to their card</Text>
+        <Text as="span">{words.creditLabel}</Text>
       </label>
     </ActionDialog>
   );

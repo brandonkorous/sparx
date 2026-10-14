@@ -27,6 +27,15 @@ import {
   quoteRequestFromForms,
 } from '@/lib/quote-request-tree';
 import { subscribeEmail } from '@/lib/signup-client';
+import {
+  isContactAction,
+  isHandledAction,
+  isSignupAction,
+  MESSAGE_SENT_MESSAGE,
+  NOT_CONNECTED_MESSAGE,
+  SIGNED_UP_MESSAGE,
+  thankOnSuccess,
+} from '@/lib/form-actions';
 import { submitContactForm } from '@/lib/contact-client';
 import { pageSlugFromPath } from '@/lib/page-slug';
 import { hasUnwiredMarkers, WIRED_ATTR } from '@/lib/silica-markers';
@@ -59,10 +68,18 @@ export function SilicaBehaviors({
     const onAction = async (ref: string | null, payload: ActionPayload) => {
       const values = payload.kind === 'submit' ? payload.values : {};
 
+      // A form whose job this site does not do says so. It used to fall through to
+      // the end, settle to success and read "Submitted." with nothing sent
+      // (`lib/form-actions.ts`).
+      if (payload.kind === 'submit' && !isHandledAction(ref)) {
+        payload.form.setAttribute('data-error-message', NOT_CONNECTED_MESSAGE);
+        throw new Error(`form action "${ref ?? ''}" is not handled on this site`);
+      }
+
       // Newsletter / email-capture forms (docs/51 §7): a silica <form> authored
       // with data-sui-action="email-signup" and an `email` field opts the address
       // into marketing through the same public endpoint the legacy block used.
-      if (ref === 'email-signup' || ref === 'newsletter' || ref === 'signup') {
+      if (isSignupAction(ref)) {
         const email = firstValue(values.email);
         // The authored node's id, read off the element the behavior handed us —
         // the same way the contact branch below does it. It is what enters the
@@ -73,6 +90,10 @@ export function SilicaBehaviors({
             ? (payload.form.getAttribute('data-sui-id') ?? undefined)
             : undefined;
         if (email) await subscribeEmail(tenantSlug, email, propertySlug, nodeId);
+        if (payload.kind === 'submit') {
+          thankOnSuccess(payload.form, SIGNED_UP_MESSAGE);
+          payload.form.reset();
+        }
         return;
       }
 
@@ -87,7 +108,7 @@ export function SilicaBehaviors({
       // <form> element carries the authored node's id as `data-sui-id` (emitted by
       // SilicaChrome's metaProps), so we read it off the element the behavior handed
       // us rather than trusting anything in the payload values.
-      if (ref === 'contact' && payload.kind === 'submit') {
+      if (isContactAction(ref) && payload.kind === 'submit') {
         const nodeId = payload.form.getAttribute('data-sui-id');
         if (!nodeId) return;
         const flat: Record<string, string> = {};
@@ -109,6 +130,7 @@ export function SilicaBehaviors({
         // a repeat until the visitor writes a new message. Here and not in the
         // silica `form` behavior, which also runs add-to-cart: a buy box keeps its
         // choices after a successful add.
+        thankOnSuccess(payload.form, MESSAGE_SENT_MESSAGE);
         payload.form.reset();
         return;
       }

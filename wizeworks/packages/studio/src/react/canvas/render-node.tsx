@@ -97,6 +97,22 @@ export function isEditable(ctx: RenderContext, id: string | undefined): boolean 
   return ctx.editableIds === null || ctx.editableIds.has(id);
 }
 
+/**
+ * When a node only shows on the live site sometimes, in words — or undefined.
+ *
+ * The canvas draws a list's card once and its "nothing here" line under it, because
+ * both are things the author edits. Drawn plain, the line reads as the truth: a
+ * journal with four contributors saw "Nobody has anything published yet" under its
+ * new list of authors (persona issue 948). The line is drawn dashed and says, on
+ * hover, when visitors see it.
+ */
+export function gateNote(node: Pick<AddressableNode, 'data'>): string | undefined {
+  if (node.data?.kind !== 'visible') return undefined;
+  return node.data.negate
+    ? 'Shows on your site only while this list is empty.'
+    : 'Shows on your site only when it has something to show.';
+}
+
 /** The outline utilities a node wears for its current state. */
 /**
  * Selection and drop chrome — the CONSOLE's colors, never the tenant's.
@@ -123,6 +139,11 @@ function stateClasses(ctx: RenderContext, node: AddressableNode): string {
   } else if (ctx.hoverId === id && editable) {
     classes.push(
       'outline-[color-mix(in_oklab,var(--studio-select)_50%,transparent)] outline outline-1 -outline-offset-1'
+    );
+  } else if (gateNote(node)) {
+    // Dashed: there, but only sometimes. See `gateNote`.
+    classes.push(
+      'outline-[color-mix(in_oklab,var(--studio-select)_50%,transparent)] outline-dashed outline-1 -outline-offset-1'
     );
   }
 
@@ -265,6 +286,8 @@ function renderElement(
   const editing = Boolean(node.id) && node.id === ctx.editingId;
   props.className = [node.class, state].filter(Boolean).join(' ') || undefined;
   props.key = key;
+  const gate = gateNote(node);
+  if (gate) props.title = gate;
   if (node.id) {
     props['data-sui-id'] = node.id;
     // Not draggable while it is being typed into: dragging is how you select a

@@ -2,21 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage, paneLoadReason } from './api-error';
 
-/**
- * WHY THESE ARE THREE STATES AND NOT TWO.
- *
- * A pane that could not load has to say WHY, because the three causes send a
- * person somewhere different:
- *
- *   404 → the thing is gone. Retrying cannot help.
- *   5xx → the server answered, and its answer was that it had failed. The fault
- *         is ours; checking their connection is wasted effort.
- *   otherwise → the server was never reached. Retrying is exactly right.
- *
- * The middle one wore the last one's sentence until persona issue 467: every
- * request the By-job screen made in its default filter answered 500, and the
- * screen told the shop the server could not be reached.
- */
+// A failed load has four causes and each sends a person somewhere different:
+// gone (no retry), our fault (5xx), refused (401/403), and not reached at all.
+// Only the last may blame the connection (persona issues 467 and 260).
 function apiError(status: number): ApiError {
   return new ApiError(status, {
     success: false,
@@ -45,10 +33,19 @@ describe('paneLoadReason', () => {
     expect(paneLoadReason(apiError(422))).toBe('missing');
   });
 
-  // 403 is the thing being THERE and out of reach, which is neither of the
-  // other two. It stays where it was rather than being called deleted.
-  it('leaves a 403 on unreachable', () => {
-    expect(paneLoadReason(apiError(403))).toBe('unreachable');
+  // 403 is the thing being THERE and out of reach. It used to say "a problem
+  // reaching the server" to someone the server had answered (persona issue 260).
+  it('calls a 403 refused: the server answered, and the answer was no', () => {
+    expect(paneLoadReason(apiError(403))).toBe('refused');
+  });
+
+  it('calls a 401 refused too', () => {
+    expect(paneLoadReason(apiError(401))).toBe('refused');
+  });
+
+  it('calls any other answered 4xx failed, never unreachable', () => {
+    expect(paneLoadReason(apiError(409))).toBe('failed');
+    expect(paneLoadReason(apiError(429))).toBe('failed');
   });
 
   it('calls a plain network failure unreachable: there is no status to read', () => {
@@ -56,13 +53,8 @@ describe('paneLoadReason', () => {
   });
 });
 
-/**
- * THE SCHEMA'S SENTENCE IS NOT WORTH SHOWING. ITS FIELD LIST IS.
- *
- * `apiErrorMessage` was right to drop "Request validation failed." and wrong to
- * drop what came with it. Every one of the 83 call sites in this console said
- * only the caller's own sentence, so a refused save named no box at all.
- */
+// The schema's SENTENCE is not worth showing; its FIELD LIST is. Without it, a
+// refused save on a twenty-field form named no box at all.
 function refused(details: unknown, message = 'Request validation failed.'): ApiError {
   return new ApiError(422, {
     success: false,
@@ -70,9 +62,9 @@ function refused(details: unknown, message = 'Request validation failed.'): ApiE
   });
 }
 
-describe('apiErrorMessage on a refused write', () => {
-  const fallback = 'Could not save this account. Nothing was changed.';
+const fallback = 'Could not save this account. Nothing was changed.';
 
+describe('apiErrorMessage on a refused write', () => {
   it('adds the box the server refused', () => {
     const said = apiErrorMessage(refused([{ path: 'physicalAddress' }]), fallback);
     expect(said).toBe(`${fallback} The problem is with Physical address.`);
@@ -88,9 +80,11 @@ describe('apiErrorMessage on a refused write', () => {
     // A rule that refuses the whole request has nowhere to point.
     expect(apiErrorMessage(refused([{ path: '' }]), fallback)).toBe(fallback);
   });
+});
 
+describe('apiErrorMessage on a rule a service explains', () => {
   it('keeps showing a SERVICE message, which explains a real rule', () => {
-    // A service never attaches per-field details, and its sentence is the one
+    // A plain business rule with no field named. Its sentence is the one
     // the operator actually needs (persona issue 224).
     const rule = new ApiError(422, {
       success: false,
@@ -104,5 +98,25 @@ describe('apiErrorMessage on a refused write', () => {
     expect(apiErrorMessage(rule, fallback)).toBe(
       'No payment gateway is configured to settle this refund.'
     );
+  });
+
+  it('shows a SERVICE sentence that names a field (persona issue 245)', () => {
+    // Every service mapper passes its own `details` through; a field named by
+    // a rule is not the schema talking about itself.
+    const rule = refused(
+      [{ field: 'lines', message: 'enter what you paid for it' }],
+      'Nothing on record says what this item cost, so the credit to expect cannot be worked out.'
+    );
+    expect(apiErrorMessage(rule, fallback)).toBe(
+      'Nothing on record says what this item cost, so the credit to expect cannot be worked out.'
+    );
+  });
+
+  it("still hides Fastify's own schema report, which carries a `keyword`", () => {
+    const ajv = refused(
+      [{ keyword: 'required', instancePath: '', message: "must have required property 'name'" }],
+      "body must have required property 'name'"
+    );
+    expect(apiErrorMessage(ajv, fallback)).not.toContain('must have required');
   });
 });

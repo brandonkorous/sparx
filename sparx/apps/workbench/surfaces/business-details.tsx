@@ -15,11 +15,6 @@ import { CountryField } from '../components/country-field';
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Button,
   Checkbox,
   Combobox,
@@ -33,13 +28,17 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Save, TriangleAlert } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { api } from '../lib/api/client';
 import { useDirtySource } from '../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../lib/timezones';
 import { FormSection } from '../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
+import { ManagersOnly, ManagersOnlyNotice } from '../components/managers-only';
+import { useManageRights } from '../lib/manage-rights';
+import { apiErrorMessage } from '../lib/api-error';
 import { EditorLayout } from '../components/editor-layout';
+import { PaneLoadError } from '../components/pane-load-error';
 
 interface BusinessDetails {
   businessName: string | null;
@@ -184,7 +183,13 @@ export function BusinessDetailsSurface() {
   const [loaded, setLoaded] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
 
-  const { data, isError, isPending, refetch } = useQuery({
+  const {
+    data,
+    isError,
+    error: loadError,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: ['tenant', 'business'],
     queryFn: () => api.get<BusinessDetails>('/v1/tenant/business'),
   });
@@ -213,6 +218,7 @@ export function BusinessDetailsSurface() {
     loaded && data !== undefined && JSON.stringify(form) !== JSON.stringify(toForm(data));
   useDirtySource(dirty, 'Your business details have unsaved changes. Close anyway?');
 
+  const rights = useManageRights();
   const save = useMutation({
     mutationFn: () => api.patch<BusinessDetails>('/v1/tenant/business', toPayload(form)),
     onSuccess: (result) => {
@@ -223,10 +229,12 @@ export function BusinessDetailsSurface() {
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
       toast.add({ title: 'Business details saved', type: 'success' });
     },
-    onError: () => {
+    onError: (error) => {
+      // The server's own sentence: "check the fields" was the advice given to a
+      // bookkeeper who was simply not allowed (sparx persona issue 168).
       toast.add({
         title: 'Could not save',
-        description: 'Nothing was changed. Check the fields and try again.',
+        description: apiErrorMessage(error, 'Nothing was changed. Try again in a moment.'),
         type: 'error',
       });
     },
@@ -250,30 +258,14 @@ export function BusinessDetailsSurface() {
   // whose Save is already dead (`dirty` needs `data`), and lose it.
   if (isError) {
     return (
-      <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <TriangleAlert />
-          <AlertContent>
-            <AlertTitle>Could not load your business details</AlertTitle>
-            <AlertDescription>
-              Nothing has been lost. This is a problem reaching the server, not with your saved
-              details.
-            </AlertDescription>
-          </AlertContent>
-          <AlertActions>
-            <Button
-              size="sm"
-              color="error"
-              variant="soft"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          </AlertActions>
-        </Alert>
-      </div>
+      <PaneLoadError
+        title="Could not load your business details"
+        description="Nothing has been lost. This is a problem reaching the server, not with your saved details."
+        error={loadError}
+        onRetry={() => {
+          void refetch();
+        }}
+      />
     );
   }
 
@@ -282,181 +274,195 @@ export function BusinessDetailsSurface() {
       <PaneToolbar
         label="Business details actions"
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            // A malformed address blocks the save outright: the server rejects it
-            // anyway, and a 400 surfaces as a generic toast that never points at
-            // the field that caused it.
-            disabled={!dirty || emailMalformed || isPending || save.isPending}
-            onClick={() => {
-              setEmailTouched(true);
-              save.mutate();
-            }}
-          >
-            <Save className="size-4" aria-hidden />
-            {save.isPending ? 'Saving…' : 'Save'}
-          </Button>
+          // No Save for somebody who may not change these: the notice below says
+          // so before they start (sparx persona issue 168).
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              // A malformed address blocks the save outright: the server rejects it
+              // anyway, and a 400 surfaces as a generic toast that never points at
+              // the field that caused it.
+              disabled={!dirty || emailMalformed || isPending || save.isPending}
+              onClick={() => {
+                setEmailTouched(true);
+                save.mutate();
+              }}
+            >
+              <Save className="size-4" aria-hidden />
+              {save.isPending ? 'Saving…' : 'Save'}
+            </Button>
+          )
         }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <EditorLayout
-          main={
-            <>
-              <FormSection
-                title="Business"
-                description="Who you are as a business. This is what gets printed on invoices, receipts and purchase orders. It is not the name of any of your sites."
-              >
-                <TextField
-                  label="Business name"
-                  value={form.businessName}
-                  onChange={set('businessName')}
-                  placeholder="Bob's Barbers"
-                  description="The name printed on your invoices, receipts and purchase orders."
-                />
-                <div className="grid gap-4 @lg:grid-cols-2">
-                  <Field>
-                    <FieldLabel>Business type</FieldLabel>
-                    <NativeSelect
-                      color="module"
-                      aria-label="Business type"
-                      value={form.entityType}
-                      onChange={(event) => {
-                        set('entityType')(event.target.value);
-                      }}
-                    >
-                      {ENTITY_TYPES.map((type) => (
-                        <option key={type.value} value={type.value}>
-                          {type.label}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </Field>
+        <ManagersOnly>
+          <EditorLayout
+            banner={<ManagersOnlyNotice change="change your business details" />}
+            main={
+              <>
+                <FormSection
+                  title="Business"
+                  description="Who you are as a business. This is what gets printed on invoices, receipts and purchase orders. It is not the name of any of your sites."
+                >
                   <TextField
-                    label="Company number"
-                    value={form.registrationNumber}
-                    onChange={set('registrationNumber')}
-                    description="As issued when you registered the business."
+                    label="Business name"
+                    value={form.businessName}
+                    onChange={set('businessName')}
+                    placeholder="Bob's Barbers"
+                    description="The name printed on your invoices, receipts and purchase orders."
                   />
-                </div>
-              </FormSection>
+                  <div className="grid gap-4 @lg:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Business type</FieldLabel>
+                      <NativeSelect
+                        color="module"
+                        aria-label="Business type"
+                        value={form.entityType}
+                        onChange={(event) => {
+                          set('entityType')(event.target.value);
+                        }}
+                      >
+                        {ENTITY_TYPES.map((type) => (
+                          <option key={type.value} value={type.value}>
+                            {type.label}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </Field>
+                    <TextField
+                      label="Company number"
+                      value={form.registrationNumber}
+                      onChange={set('registrationNumber')}
+                      description="As issued when you registered the business."
+                    />
+                  </div>
+                </FormSection>
 
-              <FormSection
-                title="Address"
-                description="Where the business is registered. This prints under your name on documents you send."
-              >
-                <TextField
-                  label="Street"
-                  value={form.addressLine1}
-                  onChange={set('addressLine1')}
-                />
-                <TextField
-                  label="Street line 2"
-                  value={form.addressLine2}
-                  onChange={set('addressLine2')}
-                  placeholder="Suite, unit, floor"
-                />
-                <div className="grid gap-4 @lg:grid-cols-3">
-                  <TextField label="City" value={form.city} onChange={set('city')} />
-                  <TextField label="State / region" value={form.region} onChange={set('region')} />
+                <FormSection
+                  title="Address"
+                  description="Where the business is registered. This prints under your name on documents you send."
+                >
                   <TextField
-                    label="Postal code"
-                    value={form.postalCode}
-                    onChange={set('postalCode')}
+                    label="Street"
+                    value={form.addressLine1}
+                    onChange={set('addressLine1')}
                   />
-                </div>
-                {/* Picked by name. It was a box asking for "US, GB, AU" - our
+                  <TextField
+                    label="Street line 2"
+                    value={form.addressLine2}
+                    onChange={set('addressLine2')}
+                    placeholder="Suite, unit, floor"
+                  />
+                  <div className="grid gap-4 @lg:grid-cols-3">
+                    <TextField label="City" value={form.city} onChange={set('city')} />
+                    <TextField
+                      label="State / region"
+                      value={form.region}
+                      onChange={set('region')}
+                    />
+                    <TextField
+                      label="Postal code"
+                      value={form.postalCode}
+                      onChange={set('postalCode')}
+                    />
+                  </div>
+                  {/* Picked by name. It was a box asking for "US, GB, AU" - our
                     filing system, on the form where a business writes down its
                     own address. Issue 721. */}
-                <CountryField value={form.country} onChange={set('country')} />
-              </FormSection>
+                  <CountryField value={form.country} onChange={set('country')} />
+                </FormSection>
 
-              <FormSection
-                title="Contact"
-                description="How customers reach you. Shown on documents alongside your address."
-              >
-                <div className="grid gap-4 @lg:grid-cols-2">
-                  <TextField label="Phone" value={form.phone} onChange={set('phone')} />
+                <FormSection
+                  title="Contact"
+                  description="How customers reach you. Shown on documents alongside your address."
+                >
+                  <div className="grid gap-4 @lg:grid-cols-2">
+                    <TextField label="Phone" value={form.phone} onChange={set('phone')} />
+                    <TextField
+                      label="Support email"
+                      type="email"
+                      value={form.supportEmail}
+                      onChange={set('supportEmail')}
+                      error={emailError}
+                      onBlur={() => {
+                        setEmailTouched(true);
+                      }}
+                      description="Where customers should write with a question."
+                    />
+                  </div>
+                </FormSection>
+              </>
+            }
+            rail={
+              <>
+                <FormSection
+                  title="Tax"
+                  description="Only filled in if you are registered to charge tax."
+                >
+                  <label className="flex items-center gap-2">
+                    <Checkbox
+                      color="module"
+                      checked={form.taxRegistered}
+                      aria-label="Registered for sales tax or VAT"
+                      onChange={(event) => {
+                        setForm((prev) => ({ ...prev, taxRegistered: event.target.checked }));
+                      }}
+                    />
+                    <Text as="span">Registered for sales tax / VAT</Text>
+                  </label>
                   <TextField
-                    label="Support email"
-                    type="email"
-                    value={form.supportEmail}
-                    onChange={set('supportEmail')}
-                    error={emailError}
-                    onBlur={() => {
-                      setEmailTouched(true);
-                    }}
-                    description="Where customers should write with a question."
+                    label="Tax ID"
+                    value={form.taxId}
+                    onChange={set('taxId')}
+                    description="Your EIN, VAT, GST or ABN number."
                   />
-                </div>
-              </FormSection>
-            </>
-          }
-          rail={
-            <>
-              <FormSection
-                title="Tax"
-                description="Only filled in if you are registered to charge tax."
-              >
-                <label className="flex items-center gap-2">
-                  <Checkbox
-                    color="module"
-                    checked={form.taxRegistered}
-                    aria-label="Registered for sales tax or VAT"
-                    onChange={(event) => {
-                      setForm((prev) => ({ ...prev, taxRegistered: event.target.checked }));
-                    }}
-                  />
-                  <Text as="span">Registered for sales tax / VAT</Text>
-                </label>
-                <TextField
-                  label="Tax ID"
-                  value={form.taxId}
-                  onChange={set('taxId')}
-                  description="Your EIN, VAT, GST or ABN number."
-                />
-                {/* Printing a tax number you are not registered under is a
+                  {/* Printing a tax number you are not registered under is a
                     compliance problem, not a cosmetic one — so say plainly that
                     the toggle, not the field, decides. */}
-                {form.taxId.trim() && !form.taxRegistered ? (
-                  <Text className="text-warning text-sm">
-                    This will not be shown on documents until you tick the box above.
-                  </Text>
-                ) : null}
-              </FormSection>
+                  {form.taxId.trim() && !form.taxRegistered ? (
+                    <Text className="text-warning text-sm">
+                      This will not be shown on documents until you tick the box above.
+                    </Text>
+                  ) : null}
+                </FormSection>
 
-              <FormSection title="Defaults" description="Used when nothing more specific applies.">
-                <TextField
-                  label="Currency"
-                  value={form.defaultCurrency}
-                  onChange={set('defaultCurrency')}
-                  placeholder="USD"
-                  description="Three-letter code, e.g. USD, GBP, AUD."
-                />
-                <Field>
-                  <FieldLabel>Time zone</FieldLabel>
-                  <Combobox
-                    color="module"
-                    items={zones}
-                    value={selectedZone}
-                    onValueChange={(next) => {
-                      // Base UI carries the ITEM, not its value. Clearing yields
-                      // null; the form models "unset" as an empty string, which
-                      // `toPayload` turns back to null at the boundary.
-                      set('timezone')(next ? (next as TimezoneOption).value : '');
-                    }}
-                    placeholder="Search for your city…"
-                    emptyMessage="No time zone matches that city."
-                    aria-label="Time zone"
+                <FormSection
+                  title="Defaults"
+                  description="Used when nothing more specific applies."
+                >
+                  <TextField
+                    label="Currency"
+                    value={form.defaultCurrency}
+                    onChange={set('defaultCurrency')}
+                    placeholder="USD"
+                    description="Three-letter code, e.g. USD, GBP, AUD."
                   />
-                  <FieldDescription>Used for dates on documents you send.</FieldDescription>
-                </Field>
-              </FormSection>
-            </>
-          }
-        />
+                  <Field>
+                    <FieldLabel>Time zone</FieldLabel>
+                    <Combobox
+                      color="module"
+                      items={zones}
+                      value={selectedZone}
+                      onValueChange={(next) => {
+                        // Base UI carries the ITEM, not its value. Clearing yields
+                        // null; the form models "unset" as an empty string, which
+                        // `toPayload` turns back to null at the boundary.
+                        set('timezone')(next ? (next as TimezoneOption).value : '');
+                      }}
+                      placeholder="Search for your city…"
+                      emptyMessage="No time zone matches that city."
+                      aria-label="Time zone"
+                    />
+                    <FieldDescription>Used for dates on documents you send.</FieldDescription>
+                  </Field>
+                </FormSection>
+              </>
+            }
+          />
+        </ManagersOnly>
       </div>
     </div>
   );

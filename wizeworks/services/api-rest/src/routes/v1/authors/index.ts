@@ -47,6 +47,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
 import { slugify } from '@wizeworks/api-core/slug';
 import { writeAudit } from '@wizeworks/api-core/audit';
+import { indexEntity } from '@wizeworks/events';
 import { requireTenantProperty, resolveListScope, type SiteActor } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -252,6 +253,14 @@ const authorRoutes: FastifyPluginAsync = (app) => {
       });
       return row;
     });
+    // After the commit, so Ctrl K finds the byline (persona P09).
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'author',
+      recordId: created.id,
+      op: 'upsert',
+    });
 
     reply.code(201);
     return ok(serialize(created));
@@ -318,6 +327,13 @@ const authorRoutes: FastifyPluginAsync = (app) => {
       });
       return row;
     });
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'author',
+      recordId: updated.id,
+      op: 'upsert',
+    });
     return ok(serialize(updated));
   });
 
@@ -337,6 +353,13 @@ const authorRoutes: FastifyPluginAsync = (app) => {
         entityId: id,
         before: { slug: existing.slug, displayName: existing.displayName },
       });
+    });
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'author',
+      recordId: id,
+      op: 'delete',
     });
     reply.code(204);
     return;

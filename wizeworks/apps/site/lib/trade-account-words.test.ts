@@ -8,8 +8,10 @@ import {
   accountStatusWords,
   contactRoleWords,
   coreDepositSentence,
+  creditLeftWords,
   invoiceStatusTone,
   invoiceStatusWords,
+  openInvoiceWords,
   paymentTermsWords,
   pricedQuote,
   quantityWords,
@@ -335,5 +337,70 @@ describe('pricedQuote', () => {
         lines: [{ ...line, unitPriceCents: null, lineSubtotalCents: null, lineTotalCents: null }],
       })
     ).toBeNull();
+  });
+});
+
+// Sparx persona issue 193: the account overview said "Manage your orders and
+// details here" and showed nothing of Renée's. It now carries her account's
+// standing, in the words her wholesale account page uses.
+describe('the account standing, in words', () => {
+  it('says how much credit is left to spend', () => {
+    expect(creditLeftWords({ creditLimit: 10_000, creditAvailable: 1_769.3 }, 'USD')).toBe(
+      '$1,769.30 of your $10,000.00 credit is left to spend.'
+    );
+  });
+
+  it('says when none is left, and never prints a negative', () => {
+    expect(creditLeftWords({ creditLimit: 10_000, creditAvailable: -250 }, 'USD')).toBe(
+      'None of your $10,000.00 credit is left to spend.'
+    );
+    expect(creditLeftWords({ creditLimit: 10_000, creditAvailable: 0 }, 'USD')).toBe(
+      'None of your $10,000.00 credit is left to spend.'
+    );
+  });
+
+  it('says nothing for an account with no credit line', () => {
+    expect(creditLeftWords({ creditLimit: 0, creditAvailable: 0 }, 'USD')).toBeNull();
+  });
+
+  it('says what is owed, overdue first', () => {
+    expect(
+      openInvoiceWords(
+        {
+          unpaidCount: 2,
+          unpaidCents: 255_438,
+          overdueCount: 1,
+          overdueCents: 52_800,
+          paidCount: 4,
+        },
+        'USD'
+      )
+    ).toEqual({
+      overdue: '1 invoice is overdue: $528.00.',
+      unpaid: '2 invoices are not yet paid: $2,554.38.',
+    });
+    expect(
+      openInvoiceWords(
+        { unpaidCount: 0, unpaidCents: 0, overdueCount: 0, overdueCents: 0, paidCount: 4 },
+        'USD'
+      )
+    ).toEqual({ overdue: null, unpaid: null });
+  });
+
+  it('the wholesale account page and the overview say it with the same words', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { fileURLToPath } = await import('node:url');
+    const read = (f: string) => readFileSync(fileURLToPath(new URL(f, import.meta.url)), 'utf8');
+    const accountPage = read('../app/account/(authed)/b2b/[accountId]/page.tsx');
+    const standing = read('../components/account/account-standing.tsx');
+    expect(accountPage).toContain('openInvoiceWords(');
+    expect(standing).toContain('openInvoiceWords(');
+    expect(standing).toContain('creditLeftWords(');
+    // The summary's account row is keyed `id`: reading `account.accountId` linked
+    // the overview to /account/b2b/undefined. The id comes from the accounts list.
+    expect(standing).not.toContain('account.accountId');
+    expect(read('../app/account/(authed)/page.tsx')).toMatch(
+      /<AccountStanding[\s\S]*<RecentOrders/
+    );
   });
 });

@@ -41,9 +41,10 @@ import { ReturnDispositionPanel } from './return-disposition-panel';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatDate, formatDateTime, formatMoney, useOrder } from './data';
-import { coresOwedOn } from './cores-data';
 import { ReturnParcels } from './return-parcels';
 import { needsShipmentRecord } from './return-shipment';
+import { refundFigures } from './return-refund-figures';
+import { refundSettledText, refundStepText } from './return-refund-words';
 import {
   conditionLabel,
   outcomeLabel,
@@ -178,28 +179,13 @@ function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: Return
   // orderItemId → unit price in dollars, from the order lines. Absent when the
   // order didn't load — every price below then simply isn't shown.
   const priceByOrderItem = new Map((order?.items ?? []).map((it) => [it.id, it.unitPrice]));
+  // What the refund starts from: what the accepted units were paid, sales tax
+  // included, and the core deposits that go back with them (issues 051, 231).
+  const { suggestedCents, taxCents, coreBackCents } = refundFigures(detail, order);
   // returnLineItemId → the condition inspection recorded for it, if any.
   const conditionByLine = new Map(
     detail.inspections.map((ins) => [ins.returnLineItemId, ins] as const)
   );
-
-  const suggestedCents = detail.items.reduce((sum, it) => {
-    const unit = priceByOrderItem.get(it.orderItemId);
-    if (unit === undefined) return sum;
-    const qty = it.approvedQuantity > 0 ? it.approvedQuantity : it.quantity;
-    return sum + Math.round(unit * qty * 100);
-  }, 0);
-
-  // A rebuilt part that comes back is its own core, so its core deposit goes back
-  // with it. The server adds this to the refund itself; the same rule here so
-  // the dialog says the figure the customer will actually get (issue 051).
-  const itemById = new Map((order?.items ?? []).map((it) => [it.id, it] as const));
-  const coreBackCents = detail.items.reduce((sum, it) => {
-    const line = itemById.get(it.orderItemId);
-    if (line?.coreCharge == null) return sum;
-    const qty = it.approvedQuantity > 0 ? it.approvedQuantity : it.quantity;
-    return sum + Math.min(qty, coresOwedOn(line)) * Math.round(line.coreCharge * 100);
-  }, 0);
 
   const canApprove = detail.status === 'requested' || detail.status === 'denied';
   const canDeny = detail.status === 'requested';
@@ -422,7 +408,11 @@ function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: Return
                 ) : null}
                 {detail.refundIssuedAs ? (
                   <Text className="text-sm">
-                    {REFUND_ISSUED_AS_LABELS[detail.refundIssuedAs] ?? detail.refundIssuedAs}
+                    {refundSettledText(
+                      detail.refundIssuedAs,
+                      detail.refundsByHand,
+                      REFUND_ISSUED_AS_LABELS
+                    )}
                     {detail.refundedAt ? ` · ${formatDateTime(detail.refundedAt)}` : ''}
                   </Text>
                 ) : null}
@@ -521,7 +511,7 @@ function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: Return
               {canRefund ? (
                 <ActionRow
                   title="Give the money back"
-                  description="Settle the return by refunding the customer. This moves real money and cannot be undone."
+                  description={refundStepText(detail.refundsByHand)}
                 >
                   <Button
                     size="sm"
@@ -600,6 +590,7 @@ function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: Return
         detail={detail}
         currency={currency}
         suggestedCents={suggestedCents}
+        taxCents={taxCents}
         coreBackCents={coreBackCents}
         open={refundOpen}
         onClose={() => {

@@ -17,6 +17,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Card,
@@ -26,6 +30,7 @@ import {
   SearchInput,
 } from '@wizeworks/silicaui-react';
 import { CircleDot, Globe, Inbox, UserCheck } from 'lucide-react';
+import { useSubmissions } from '../builder/form-submissions-data';
 import { useSites } from '../../lib/api/shell-data';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -43,6 +48,7 @@ import {
 } from './data';
 import { useChatLive } from './live';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -286,12 +292,15 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
+      <FormMessagesWaiting ctx={ctx} />
+
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Inbox className="size-6" aria-hidden />}
             title="Could not load your conversations"
             description="This is a problem reaching the server. Your conversations are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -359,5 +368,43 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
         {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
+  );
+}
+
+/**
+ * Messages sent through the site's contact form, still unanswered.
+ *
+ * They live in Form submissions, and this inbox is the one an owner opens to
+ * answer customers. It said "No conversations yet" while four customers' contact
+ * messages sat there unread for a week (sparx persona issue 162). Says nothing when
+ * there are none, or when forms are off (the read fails and is left quiet).
+ */
+function FormMessagesWaiting({ ctx }: { ctx: SurfaceContext }) {
+  const { data } = useSubmissions({ status: 'new', limit: 1 });
+  const waiting = data?.counts.new ?? 0;
+  if (waiting === 0) return null;
+  return (
+    <Alert color="info" variant="soft" className="mb-3">
+      <AlertContent>
+        <AlertTitle>
+          {waiting === 1
+            ? '1 message from your contact form is waiting'
+            : `${String(waiting)} messages from your contact form are waiting`}
+        </AlertTitle>
+        <AlertDescription>
+          People who write to you through the form on your site are listed in Form submissions, not
+          here. Open one to answer it.
+        </AlertDescription>
+      </AlertContent>
+      <Button
+        size="sm"
+        color="info"
+        onClick={(event: React.MouseEvent) => {
+          ctx.open('builder.forms', {}, { target: targetFor(event) });
+        }}
+      >
+        Open form messages
+      </Button>
+    </Alert>
   );
 }

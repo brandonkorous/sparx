@@ -195,6 +195,24 @@ export function RecordDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // A record that is not there (removed, or another business's id) says so,
   // rather than drawing its form under Remove and Save with the server's own
   // words above it (persona issue 226).
+  // The same for the type itself: a form to add a record of a type that is not
+  // there would only fail on Save (persona issue 240).
+  if (type.isError) {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          error={type.error}
+          noun="record type"
+          title="Could not load this record type"
+          description="This is a problem reaching the server. Your records are unaffected. Try again in a moment."
+          onRetry={() => {
+            void type.refetch();
+          }}
+        />
+      </div>
+    );
+  }
+
   if (!isNew && record.isError) {
     return (
       <div className={PANE_SHELL}>

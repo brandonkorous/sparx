@@ -47,12 +47,13 @@ function AllCosted() {
   );
 }
 
-function LoadFailed({ onRetry }: { onRetry: () => void }) {
+function LoadFailed({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   return (
     <PaneLoadError
       icon={<Coins className="size-6" aria-hidden />}
       title="Could not work out what is missing a cost"
       description="This is a problem reaching the server. Nothing about your stock or its costs has changed."
+      error={error}
       onRetry={onRetry}
     />
   );
@@ -103,6 +104,7 @@ export function UncostedStockSurface() {
     if (stock.isError)
       return (
         <LoadFailed
+          error={stock.error}
           onRetry={() => {
             void stock.refetch();
           }}

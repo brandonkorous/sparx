@@ -74,7 +74,7 @@ export function PreviewTable({
 function PreviewRow({ row }: { row: ParsedRedirectRow }) {
   const type = redirectTypeMeta(row.statusCode);
   return (
-    <li className="flex flex-col gap-2 p-3 sm:flex-row sm:items-start sm:gap-4">
+    <li className="flex flex-col gap-2 p-3 @2xl:flex-row @2xl:items-start @2xl:gap-4">
       <Text className="w-6 shrink-0 text-sm tabular-nums">{row.line}</Text>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate font-mono text-sm">{row.from || '—'}</span>
@@ -83,7 +83,7 @@ function PreviewRow({ row }: { row: ParsedRedirectRow }) {
           <span className="truncate">{row.to || '—'}</span>
         </span>
       </div>
-      <div className="flex shrink-0 flex-col items-start gap-1 sm:w-64">
+      <div className="flex shrink-0 flex-col items-start gap-1 @2xl:w-64">
         <div className="flex flex-wrap items-center gap-2">
           <Badge color={type.tone} variant="soft" size="sm">
             {type.label}

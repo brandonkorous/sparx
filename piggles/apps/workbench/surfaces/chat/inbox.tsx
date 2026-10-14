@@ -18,6 +18,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Card,
@@ -28,6 +32,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { faCircleDot, faGlobe, faInbox, faUserCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { useSubmissions } from '../builder/form-submissions-data';
 import { useSites } from '../../lib/api/shell-data';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -289,6 +294,8 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
+      <FormMessagesWaiting ctx={ctx} />
+
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
           <EmptyState
@@ -360,5 +367,43 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
         {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
+  );
+}
+
+/**
+ * Messages sent through the site's contact form, still unanswered.
+ *
+ * They live in Form submissions, and this inbox is the one an owner opens to
+ * answer customers. It read empty while customers' contact messages sat there
+ * unread (sparx persona issue 162). Says nothing when there are none, or when
+ * forms are off (the read fails and is left quiet).
+ */
+function FormMessagesWaiting({ ctx }: { ctx: SurfaceContext }) {
+  const { data } = useSubmissions({ status: 'new', limit: 1 });
+  const waiting = data?.counts.new ?? 0;
+  if (waiting === 0) return null;
+  return (
+    <Alert color="info" variant="soft" className="mb-3">
+      <AlertContent>
+        <AlertTitle>
+          {waiting === 1
+            ? '1 message from your contact form is waiting'
+            : `${String(waiting)} messages from your contact form are waiting`}
+        </AlertTitle>
+        <AlertDescription>
+          People who write to you through the form on your site are listed in Form submissions, not
+          here. Open one to answer it.
+        </AlertDescription>
+      </AlertContent>
+      <Button
+        size="sm"
+        color="info"
+        onClick={(event: React.MouseEvent) => {
+          ctx.open('builder.forms', {}, { target: targetFor(event) });
+        }}
+      >
+        Open form messages
+      </Button>
+    </Alert>
   );
 }

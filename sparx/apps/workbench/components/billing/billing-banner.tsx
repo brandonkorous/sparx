@@ -15,6 +15,7 @@ import { useWorkbench } from '../../lib/workbench/context';
 import { useTenant } from '../../lib/api/shell-data';
 import { useBill } from '../../surfaces/finance/bill-data';
 import { billingNotice } from '../../lib/billing/notice';
+import { useManageRights } from '../../lib/manage-rights';
 import { dismissBannerUntilTomorrow, isBannerDismissed } from '../../lib/billing/dismissal';
 
 export function BillingBanner() {
@@ -22,12 +23,13 @@ export function BillingBanner() {
   const { data: tenant } = useTenant();
   const { controller } = useWorkbench();
   const [dismissed, setDismissed] = useState(false);
+  const rights = useManageRights();
 
   // `useBill` is a client query with no SSR seed, so `bill` is undefined on the
   // server + first paint — the banner (and its localStorage read) only ever run
   // once we're client-side, so there's no hydration mismatch to guard against.
-  if (!bill || !tenant) return null;
-  const notice = billingNotice(bill.billing);
+  if (!bill || !tenant || !rights.known) return null;
+  const notice = billingNotice(bill.billing, rights.canManage);
   if (!notice) return null;
   if (notice.dismissible && (dismissed || isBannerDismissed(tenant.id))) return null;
 
@@ -40,13 +42,15 @@ export function BillingBanner() {
             <span className="text-sm">{notice.body}</span>
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            <Button
-              color={notice.tone}
-              size="xs"
-              onClick={() => controller.open('finance.subscription')}
-            >
-              {notice.ctaLabel}
-            </Button>
+            {notice.ctaLabel ? (
+              <Button
+                color={notice.tone}
+                size="xs"
+                onClick={() => controller.open('finance.subscription')}
+              >
+                {notice.ctaLabel}
+              </Button>
+            ) : null}
             {notice.dismissible ? (
               <Button
                 variant="ghost"

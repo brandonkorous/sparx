@@ -21,6 +21,7 @@ import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicau
 import { PackageCheck, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 // `formatMoment`: a delivery is booked in at a MOMENT, so the day it
@@ -45,7 +46,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useReceipts({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useReceipts({
     q: search.trim(),
     take,
     skip,
@@ -71,10 +72,11 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageCheck className="size-6" aria-hidden />}
           title="Could not load your deliveries"
           description="This is a problem reaching the server. Your records are unaffected: the list just could not be read just now."
+          error={error}
         />
       );
     }

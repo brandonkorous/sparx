@@ -68,6 +68,12 @@ export interface CatalogScope {
   hide?: string[];
 }
 
+/** One source a list can show — `cms.article` as "Articles". */
+export interface ListSourceChoice {
+  ref: string;
+  label: string;
+}
+
 export interface StudioHost {
   /**
    * The theme a site wears before anyone opens the theme builder — the app
@@ -166,6 +172,13 @@ export interface StudioHost {
    * called, so the sentence is the app's to write.
    */
   describeBinding?: (ref: string) => string | undefined;
+
+  /**
+   * The sources a repeating list bound to `current` could show instead, `current`
+   * included, for "What this list shows". The app knows the tenant's kinds of writing
+   * and their sections; this package does not. Fewer than two hides the control.
+   */
+  listSources?: (current: string) => readonly ListSourceChoice[];
 
   /**
    * How an EMAIL canvas resolves what it draws.

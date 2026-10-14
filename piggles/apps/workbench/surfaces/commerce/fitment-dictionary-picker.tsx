@@ -1,45 +1,27 @@
 'use client';
 
-// Install a ready-made compatibility list.
-//
-// Building a vehicle tree — dozens of makes, hundreds of models — from an empty
-// box is nobody's idea of a first five minutes, so the platform ships a library
-// of starter lists (Vehicles, Devices, Pets, …) an owner can stamp as their own
-// in one click. This is the empty-state path AND the "add another ready-made
-// one" path for a business that already has some.
-//
-// ── Why a modal, in an app where a pane is the default ────────────────────
-//
-// It clears all four of the modal tests (docs/123): nothing is lost if it is
-// abandoned (each install has already committed, or none has), there is no
-// durable draft to return to (the durable thing — the installed list — opens as
-// its OWN pane), nothing else needs to be on screen to pick a starter, and it is
-// seconds of work. It is scoped to the pane that opened it via PaneScope, so it
-// belongs to one document rather than the whole app.
+// Install a ready-made compatibility list (Vehicles, Devices, Pets, ...) in one
+// click, from empty or as another one. A modal: it passes the four modal tests
+// (docs/123), and PaneScope ties it to the pane that opened it.
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
-  Badge,
   Button,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
   EmptyState,
-  Heading,
   SearchInput,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { faBoxOpen, faCheck } from '@fortawesome/pro-solid-svg-icons';
+import { faBoxOpen } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneScope } from '../../lib/dock/window-boundary';
-import { resolveFitmentIcon } from './fitment-icons';
+import { FitmentDictionaryOptionRow } from './fitment-dictionary-option';
 import {
   fitmentErrorMessage,
   useFitmentDictionaries,
@@ -47,29 +29,68 @@ import {
   type FitmentDictionaryOption,
 } from './fitment-data';
 
-export function FitmentDictionaryPicker({
-  onClose,
-  onInstalled,
+function matching(options: FitmentDictionaryOption[], needle: string) {
+  if (!needle) return options;
+  return options.filter(
+    (option) =>
+      option.name.toLowerCase().includes(needle) ||
+      option.description.toLowerCase().includes(needle) ||
+      option.tags.some((tag) => tag.toLowerCase().includes(needle))
+  );
+}
+
+function LibraryList({
+  install,
+  matches,
+  onInstall,
 }: {
-  onClose: () => void;
-  onInstalled: (domainId: string, name: string) => void;
+  install: ReturnType<typeof useInstallFitmentDictionary>;
+  matches: FitmentDictionaryOption[];
+  onInstall: (option: FitmentDictionaryOption) => void;
 }) {
+  return (
+    <ul className="flex flex-col gap-2">
+      {matches.map((option) => (
+        <FitmentDictionaryOptionRow
+          key={option.slug}
+          option={option}
+          installing={install.isPending && install.variables === option.slug}
+          disabled={install.isPending}
+          onInstall={() => {
+            onInstall(option);
+          }}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function LibraryIntro({ search, onSearch }: { search: string; onSearch: (next: string) => void }) {
+  return (
+    <>
+      <Text className="text-sm">
+        Each of these is a starting list, not a complete one: the vehicle list, for one, has a
+        handful of common makes and models rather than every vehicle on the road. Install one, then
+        add the makes, models and engines you actually sell for. Everything in it is yours to add
+        to, rename, or trim.
+      </Text>
+      <div className="max-w-xs">
+        <SearchInput
+          size="sm"
+          aria-label="Search ready-made lists"
+          placeholder="Search: vehicle, pet, phone…"
+          value={search}
+          onValueChange={onSearch}
+        />
+      </div>
+    </>
+  );
+}
+
+/** Installs one list; a refusal says so in a toast and changes nothing. */
+function useInstallList(onInstalled: (domainId: string, name: string) => void) {
   const toast = useToast();
-  const query = useFitmentDictionaries();
   const install = useInstallFitmentDictionary();
-  const [search, setSearch] = useState('');
-
-  const options = useMemo(() => query.data ?? [], [query.data]);
-  const needle = search.trim().toLowerCase();
-  const matches = needle
-    ? options.filter(
-        (option) =>
-          option.name.toLowerCase().includes(needle) ||
-          option.description.toLowerCase().includes(needle) ||
-          option.tags.some((tag) => tag.toLowerCase().includes(needle))
-      )
-    : options;
-
   const onInstall = (option: FitmentDictionaryOption) => {
     install.mutate(option.slug, {
       onSuccess: (created) => {
@@ -84,6 +105,63 @@ export function FitmentDictionaryPicker({
       },
     });
   };
+  return { install, onInstall };
+}
+
+function LibraryBody({
+  query,
+  install,
+  needle,
+  matches,
+  onInstall,
+}: {
+  query: ReturnType<typeof useFitmentDictionaries>;
+  install: ReturnType<typeof useInstallFitmentDictionary>;
+  needle: string;
+  matches: FitmentDictionaryOption[];
+  onInstall: (option: FitmentDictionaryOption) => void;
+}) {
+  if (query.isError) {
+    return (
+      <PaneLoadError
+        title="Could not load the library"
+        description="This is a problem reaching the server. Nothing has been changed."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    );
+  }
+  if (query.isPending) return <PaneWaiting />;
+  if (matches.length === 0) {
+    return (
+      <EmptyState
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+        title={needle ? 'Nothing matches that' : 'No ready-made lists available'}
+        description={
+          needle
+            ? 'Try a different word, or build a list from scratch instead.'
+            : 'You can still build a compatibility list from scratch.'
+        }
+      />
+    );
+  }
+  return <LibraryList install={install} matches={matches} onInstall={onInstall} />;
+}
+
+export function FitmentDictionaryPicker({
+  onClose,
+  onInstalled,
+}: {
+  onClose: () => void;
+  onInstalled: (domainId: string, name: string) => void;
+}) {
+  const query = useFitmentDictionaries();
+  const { install, onInstall } = useInstallList(onInstalled);
+  const [search, setSearch] = useState('');
+  const options = useMemo(() => query.data ?? [], [query.data]);
+  const needle = search.trim().toLowerCase();
 
   return (
     <PaneScope>
@@ -95,120 +173,16 @@ export function FitmentDictionaryPicker({
       >
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden">
           <DialogTitle>Start from a ready-made list</DialogTitle>
-
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
-            <Text className="text-sm">
-              Each of these is a starting list, not a complete one: the vehicle list, for one, has a
-              handful of common makes and models rather than every vehicle on the road. Install one,
-              then add the makes, models and engines you actually sell for. Everything in it is
-              yours to add to, rename, or trim.
-            </Text>
-
-            <div className="max-w-xs">
-              <SearchInput
-                size="sm"
-                aria-label="Search ready-made lists"
-                placeholder="Search: vehicle, pet, phone…"
-                value={search}
-                onValueChange={setSearch}
-              />
-            </div>
-
-            {query.isError ? (
-              <Alert color="danger" variant="soft">
-                <AlertContent>
-                  <AlertTitle>Could not load the library</AlertTitle>
-                  <AlertDescription>
-                    This is a problem reaching the server. Nothing has been changed.
-                  </AlertDescription>
-                </AlertContent>
-                <Button
-                  size="sm"
-                  color="danger"
-                  variant="soft"
-                  onClick={() => {
-                    void query.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              </Alert>
-            ) : query.isPending ? (
-              <PaneWaiting />
-            ) : matches.length === 0 ? (
-              <EmptyState
-                icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
-                title={needle ? 'Nothing matches that' : 'No ready-made lists available'}
-                description={
-                  needle
-                    ? 'Try a different word, or build a list from scratch instead.'
-                    : 'You can still build a compatibility list from scratch.'
-                }
-              />
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {matches.map((option) => {
-                  const glyph = resolveFitmentIcon(option.iconKey);
-                  const installing = install.isPending && install.variables === option.slug;
-                  return (
-                    // Docked narrow, the Install button held its width and the
-                    // words beside it took the whole squeeze: at a 328px dialog
-                    // the description column was 112px, six words to a line.
-                    // `flex-wrap` needs a FLOOR to wrap against, so the column
-                    // gets one and Install drops underneath instead of
-                    // crushing it (issue 806).
-                    <li
-                      key={option.slug}
-                      className="border-base-300 flex flex-wrap items-start gap-3 rounded border p-3"
-                    >
-                      <Icon glyph={glyph} className="size-6 shrink-0" aria-hidden />
-                      <div className="flex min-w-48 flex-1 flex-col gap-1">
-                        <Heading level={3} className="text-base font-semibold">
-                          {option.name}
-                        </Heading>
-                        <Text className="text-sm">{option.description}</Text>
-                        {option.summary.length > 0 ? (
-                          <div className="flex flex-wrap gap-1 pt-0.5">
-                            {option.summary.map((chip, index) => (
-                              <Badge
-                                key={index}
-                                {...(chip.tone === 'module' ? { color: 'module' as const } : {})}
-                                variant="soft"
-                                size="sm"
-                              >
-                                {chip.label}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                      <div className="ms-auto shrink-0 self-center">
-                        {option.installed ? (
-                          <Badge color="success" variant="soft" size="sm">
-                            <Icon glyph={faCheck} className="size-3.5" aria-hidden />
-                            Installed
-                          </Badge>
-                        ) : (
-                          <Button
-                            size="sm"
-                            color="module"
-                            loading={installing}
-                            disabled={install.isPending}
-                            onClick={() => {
-                              onInstall(option);
-                            }}
-                          >
-                            Install
-                          </Button>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+            <LibraryIntro search={search} onSearch={setSearch} />
+            <LibraryBody
+              query={query}
+              install={install}
+              needle={needle}
+              matches={matching(options, needle)}
+              onInstall={onInstall}
+            />
           </div>
-
           <DialogFooter>
             <Button size="sm" variant="ghost" color="neutral" onClick={onClose}>
               Close

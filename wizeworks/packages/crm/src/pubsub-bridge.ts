@@ -92,6 +92,13 @@ const CRM_UNIVERSAL_BY_ENTITY: Record<string, { entityType: string; idField: str
   deal: { entityType: 'deal', idField: 'dealId' },
   task: { entityType: 'task', idField: 'taskId' },
   segment: { entityType: 'segment', idField: 'segmentId' },
+  // Persona issue 261. Every write to a request, a record type or a record of one
+  // already publishes one of these, naming the record, so the event is the
+  // signal. A record type is indexed by its KEY, which is what its screen is
+  // addressed by and what `crm.object_def.*` carries.
+  ticket: { entityType: 'ticket', idField: 'ticketId' },
+  object_def: { entityType: 'crm_object_type', idField: 'objectKey' },
+  record: { entityType: 'crm_record', idField: 'recordId' },
 };
 
 function universalTargetForCrm(

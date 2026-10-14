@@ -20,6 +20,8 @@ import { useActivePropertyId } from '../../lib/api/shell-data';
 import type { ToolbarAction } from '../../components/pane-toolbar-actions';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains } from '../domains/data';
+import { siteHostOf } from '../domains/site-host';
+import { pageAddress } from './page-address';
 import { productErrorMessage, usePublishProduct, type Product } from './products-data';
 
 /**
@@ -40,12 +42,10 @@ export function useProductActions(
   const retired = product.status === 'archived';
   const onSale = product.status === 'active';
 
-  const mine = (domains ?? []).filter(
-    (domain) =>
-      domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)
-  );
-  const host = (mine.find((domain) => domain.isCanonical) ?? mine[0])?.host ?? null;
-  const productUrl = host ? `https://${host}/products/${product.handle}` : null;
+  const host = siteHostOf(domains, propertyId);
+  const productUrl = host
+    ? `https://${pageAddress(host, 'commerce.product', product.handle)}`
+    : null;
 
   const togglePublished = async () => {
     if (onSale) {

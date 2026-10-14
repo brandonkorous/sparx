@@ -64,6 +64,9 @@ export interface ActiveProperty {
   /** How customers reach this business. Already in the payload — declared here so the
    *  email preview can address merge tags at the real business rather than a sample. */
   settings?: { contact?: { email?: string | null } | null } | null;
+  /** The apps this site switched OFF under "What this site shows". Already in the
+   *  payload; the page editor leaves their blocks out of its palette. */
+  moduleScope?: string[];
 }
 
 /** The tenant brand — identity colors, fonts, logos (docs/30 §6). Ungated
@@ -163,16 +166,20 @@ export function useActiveProperty(propertyId: string | null) {
 }
 
 /** What a page can bind to — the tenant's real CMS content types plus the
- *  code-defined commerce/CRM sources. Drives the binding picker + canvas preview
- *  data. Degrades to an empty catalog (the editor still runs on the code sources). */
+ *  code-defined commerce/CRM sources. Drives "What this list shows" and the canvas
+ *  preview data.
+ *
+ *  A failed read stays a FAILURE, retried, never an empty catalog. It used to be
+ *  caught into `{ sources: [] }`, which is a successful answer saying the business
+ *  writes nothing, cached for five minutes: one blip while the API restarted and a
+ *  journal's lists offered no Articles to choose. While it is missing the editor runs
+ *  on the code sources, exactly as it did on the empty answer. */
 export function useBindingCatalog() {
   return useQuery({
     queryKey: CATALOG_KEY,
-    queryFn: () =>
-      api.get<BindingCatalog>('/v1/builder/binding-schema').catch<BindingCatalog>(() => ({
-        sources: [],
-      })),
+    queryFn: () => api.get<BindingCatalog>('/v1/builder/binding-schema'),
     staleTime: 300_000,
+    retry: 3,
   });
 }
 

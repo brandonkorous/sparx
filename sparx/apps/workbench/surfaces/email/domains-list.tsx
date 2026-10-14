@@ -15,6 +15,8 @@ import { Badge, Button, Heading, SearchInput, Text } from '@wizeworks/silicaui-r
 import { MailWarning, Plus, Send } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import { ListEmptyState } from '../../components/list-empty-state';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -68,9 +70,11 @@ function AddressRow({
 }
 
 export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSendingDomains();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useSendingDomains();
   const { data: settings } = useEmailSettings();
   const [search, setSearch] = useState('');
+  const rights = useManageRights();
 
   const all = useMemo(() => data ?? [], [data]);
   const defaultId = settings?.defaultSendingDomainId ?? null;
@@ -91,6 +95,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<MailWarning className="size-6" aria-hidden />}
         title="Could not load your sending addresses"
         description="This is a problem reaching the server. Your addresses are unaffected. Nothing has been lost."
+        error={error}
         onRetry={() => {
           void refetch();
         }}
@@ -125,18 +130,20 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
         statusReady={!isPending}
         statusFailed={isError}
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add a sending address. Hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
-          >
-            <Plus className="size-4" aria-hidden />
-            Add a sending address
-          </Button>
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              title="Add a sending address. Hold Shift to open alongside, Alt for a new window"
+              onClick={(event) => {
+                ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
+              }}
+            >
+              <Plus className="size-4" aria-hidden />
+              Add a sending address
+            </Button>
+          )
         }
         refresh={
           <RefreshButton
@@ -150,6 +157,9 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
+        {/* Only an owner or an admin adds or changes these (sparx persona
+            issue 168); each address still opens for anybody to read. */}
+        <ManagersOnlyNotice change="add, check or remove sending addresses" className="px-4 pt-4" />
         {isPending ? (
           <p className="p-4 text-sm" role="status">
             Loading…
@@ -166,18 +176,19 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No sending addresses yet',
               description:
                 'A sending address is a domain you own that your email goes out from, so customers see mail from your own address, like hello@yourbusiness.com, and it lands in inboxes instead of spam. Add one and add a few records at your domain provider to prove it is yours.',
-              actions: (
-                <Button
-                  color="module"
-                  size="sm"
-                  onClick={(event) => {
-                    ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
-                  }}
-                >
-                  <Plus className="size-4" aria-hidden />
-                  Add a sending address
-                </Button>
-              ),
+              actions:
+                rights.known && !rights.canManage ? undefined : (
+                  <Button
+                    color="module"
+                    size="sm"
+                    onClick={(event) => {
+                      ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
+                    }}
+                  >
+                    <Plus className="size-4" aria-hidden />
+                    Add a sending address
+                  </Button>
+                ),
             }}
           />
         ) : (

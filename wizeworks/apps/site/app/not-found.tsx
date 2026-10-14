@@ -31,8 +31,19 @@
 // on a shop's website suggests the shop is broken rather than that they mistyped
 // something.
 
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { resolveSite } from '@/lib/site-context';
+
+// The tab and the first thing a screen reader says. It read only the business's
+// name, the same as its front page, so a reader with several tabs open could not
+// tell this one was a dead end (persona P09). The layout's title template adds
+// the name: "Page not found · The Marrow Review". With no business on the address
+// it keeps saying so, as the page below does.
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await resolveSite();
+  return { title: site ? 'Page not found' : { absolute: 'Site not found' } };
+}
 
 export default async function NotFound() {
   const site = await resolveSite();
@@ -61,7 +72,26 @@ export default async function NotFound() {
         It may have moved, or the address may have a typo in it. Everything else on {site.name} is
         still here.
       </p>
-      <Link href="/" className="btn btn-primary btn-lg">
+      {/* A way to the thing they were after, not only to the front page. Search reaches
+          every page and every piece a site has published, on every site (it is not
+          the shop's), so it is the archive this page can always offer (persona 947:
+          a journal's 404 must offer its archive). */}
+      <form action="/search" method="get" role="search" className="flex w-full max-w-md gap-2">
+        <label htmlFor="not-found-search" className="sr-only">
+          Search {site.name}
+        </label>
+        <input
+          id="not-found-search"
+          name="q"
+          type="search"
+          placeholder={`Search ${site.name}`}
+          className="input w-full"
+        />
+        <button type="submit" className="btn btn-primary">
+          Search
+        </button>
+      </form>
+      <Link href="/" className="btn btn-outline btn-lg">
         Go to the front page
       </Link>
     </main>

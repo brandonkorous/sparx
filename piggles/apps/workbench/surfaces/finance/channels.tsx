@@ -1,42 +1,20 @@
 'use client';
 
-// Where money comes from — takings split by where the sale happened.
-//
-// An analytical breakdown, not a chart tease: every channel carries its real
-// figures (orders, sales value, refunds, money received) alongside a proportional
-// bar, because an owner deciding where to spend attention needs the numbers, not
-// just their shape. "Takings" is money actually received, so a channel that sells
-// a lot but refunds a lot doesn't overstate itself.
-//
-// THE COLUMNS HAVE TO RECONCILE. Sales, Refunds and Received sat side by side
-// and did not add up, because the term between them was missing. One real shop
-// read $2,140.50 sold, $212.00 refunded, $325.00 received — and the $1,603.50
-// difference was seven orders nobody had paid for, three quarters of that
-// channel, shown nowhere. "Still owed" closes it:
-//
-//     Sales − Refunds − Still owed = Received
-//
-// and the subtitle says the same thing in a sentence, because the subtitle is
-// visible at every width and the columns are not.
-//
-// BREAKPOINTS: one column arrives per step, never two. Sales at @lg, Still owed
-// at @xl, Refunds at @2xl. Still owed comes BEFORE Refunds because it is both
-// the bigger number on a shop that invoices and the one that is still an action
-// — an unpaid order can be chased, a refund is already history.
+// Where money comes from: takings split by where the sale happened. "Takings" is
+// money actually received, so a channel that sells a lot but refunds a lot does
+// not overstate itself. The loaded report lives in channels-report.tsx.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { Card, EmptyState, Heading, Progress, Text } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { Card, EmptyState } from '@wizeworks/silicaui-react';
 import { faShop } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useChannels, type ChannelRow } from './channels-data';
-import { ordersLine, unreceivedLine } from './channels-words';
-import { channelLabel, formatMoney, formatMoneyCompact } from './format';
+import { ChannelsReportView } from './channels-report';
 
 const RANGES = [
   { value: '30', label: '30 days' },
@@ -44,23 +22,55 @@ const RANGES = [
   { value: '365', label: '12 months' },
 ] as const;
 
-function sharePct(value: number, total: number): string {
-  if (total <= 0) return '0%';
-  return `${String(Math.round((value / total) * 100))}%`;
+type ChannelsQuery = ReturnType<typeof useChannels>;
+
+function ChannelsBody({ query, range }: { query: ChannelsQuery; range: string }) {
+  const { data } = query;
+  const rows: ChannelRow[] = data?.channels ?? [];
+  if (query.isError) {
+    return (
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneLoadError
+          icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
+          title="Could not load your channels"
+          description="Something went wrong reaching the server. Try again in a moment."
+          error={query.error}
+          onRetry={() => {
+            void query.refetch();
+          }}
+        />
+      </Card>
+    );
+  }
+  if (query.isPending) {
+    return (
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneWaiting />
+      </Card>
+    );
+  }
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
+        title="No sales in this period"
+        description="Nothing was sold in the range you picked. Try a longer period, or come back once orders start coming in."
+      />
+    );
+  }
+  return (
+    <ChannelsReportView
+      rangeLabel={RANGES.find((r) => r.value === range)?.label}
+      rows={rows}
+      totals={data?.totals ?? { orders: 0, gross: 0, net: 0, refunds: 0, owed: 0 }}
+      currency={data?.currency ?? 'USD'}
+    />
+  );
 }
 
 export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
   const [range, setRange] = useState('90');
-  const days = Number(range);
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useChannels(days);
-
-  const currency = data?.currency ?? 'USD';
-  const rows: ChannelRow[] = data?.channels ?? [];
-  const totals = data?.totals ?? { orders: 0, gross: 0, net: 0, refunds: 0, owed: 0 };
-  const topNet = rows.reduce((m, r) => Math.max(m, r.net), 0);
-  const measurement = { ...totals, places: rows.length };
-  const money = (amount: number): string => formatMoney(amount, currency);
-  const unreceived = unreceivedLine(measurement, money);
+  const query = useChannels(Number(range));
 
   return (
     <div className={PANE_SHELL}>
@@ -78,139 +88,17 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
         ]}
         refresh={
           <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
+            isFetching={query.isFetching}
+            updatedAt={query.data ? query.dataUpdatedAt : undefined}
             onRefresh={() => {
-              void refetch();
+              void query.refetch();
             }}
           />
         }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {isError ? (
-          <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneLoadError
-              icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
-              title="Could not load your channels"
-              description="Something went wrong reaching the server. Try again in a moment."
-              onRetry={() => {
-                void refetch();
-              }}
-            />
-          </Card>
-        ) : isPending ? (
-          <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneWaiting />
-          </Card>
-        ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faShop} className="size-6" aria-hidden />}
-            title="No sales in this period"
-            description="Nothing was sold in the range you picked. Try a longer period, or come back once orders start coming in."
-          />
-        ) : (
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-            <Card className="p-4">
-              <Text className="text-sm">
-                Money received in the last {RANGES.find((r) => r.value === range)?.label}
-              </Text>
-              <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
-                {formatMoney(totals.net, currency)}
-              </Heading>
-              <Text className="mt-1 text-sm">{ordersLine(measurement)}</Text>
-              {/* What happened to the rest of the money. Shown at every width,
-                  because the columns that carry the same facts are not. */}
-              {unreceived === null ? null : <Text className="mt-1 text-sm">{unreceived}</Text>}
-
-              <div className="mt-4 flex flex-col gap-3">
-                {rows.map((r) => (
-                  <div
-                    key={r.key}
-                    className="grid grid-cols-[9rem_1fr_auto] items-center gap-3 text-sm"
-                  >
-                    <span className="truncate">{channelLabel(r.channel, r.source)}</span>
-                    <Progress
-                      color="module"
-                      value={r.net}
-                      max={topNet}
-                      aria-label={`${channelLabel(r.channel, r.source)}: ${formatMoney(r.net, currency)}`}
-                    />
-                    <span className="text-right font-medium tabular-nums">
-                      {formatMoneyCompact(r.net, currency)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* The figures in full — a breakdown, not a tease. */}
-            <Card className="overflow-hidden">
-              <header className="border-base-300 border-b px-4 py-3">
-                <Heading level={3} className="text-base font-semibold">
-                  The numbers
-                </Heading>
-                {/* Which column the percentage divides. Beside a sales figure
-                    four times the size of takings, "Share" alone reads as share
-                    of sales, and the two answers differ by thirty points. */}
-                <Text className="mt-1 text-sm">
-                  Share is of money received, not of what was sold.
-                </Text>
-              </header>
-              <Table size="sm">
-                <thead>
-                  <tr>
-                    <th>Where</th>
-                    <th className="text-right">Orders</th>
-                    <th className="hidden text-right @lg:table-cell">Sales</th>
-                    <th className="hidden text-right @xl:table-cell">Still owed</th>
-                    <th className="hidden text-right @2xl:table-cell">Refunds</th>
-                    <th className="text-right">Received</th>
-                    <th className="text-right">Share</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((r) => (
-                    <tr key={r.key}>
-                      <td className="font-medium">{channelLabel(r.channel, r.source)}</td>
-                      <td className="text-right tabular-nums">{r.orders}</td>
-                      <td className="hidden text-right tabular-nums @lg:table-cell">
-                        {formatMoney(r.gross, currency)}
-                      </td>
-                      <td className="hidden text-right tabular-nums @xl:table-cell">
-                        {r.owed > 0 ? formatMoney(r.owed, currency) : '—'}
-                      </td>
-                      <td className="hidden text-right tabular-nums @2xl:table-cell">
-                        {r.refunds > 0 ? `−${formatMoney(r.refunds, currency)}` : '—'}
-                      </td>
-                      <td className="text-right font-medium tabular-nums">
-                        {formatMoney(r.net, currency)}
-                      </td>
-                      <td className="text-right tabular-nums">{sharePct(r.net, totals.net)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-base-300 border-t font-medium">
-                    <td>All places</td>
-                    <td className="text-right tabular-nums">{totals.orders}</td>
-                    <td className="hidden text-right tabular-nums @lg:table-cell">
-                      {formatMoney(totals.gross, currency)}
-                    </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
-                      {totals.owed > 0 ? formatMoney(totals.owed, currency) : '—'}
-                    </td>
-                    <td className="hidden text-right tabular-nums @2xl:table-cell">
-                      {totals.refunds > 0 ? `−${formatMoney(totals.refunds, currency)}` : '—'}
-                    </td>
-                    <td className="text-right tabular-nums">{formatMoney(totals.net, currency)}</td>
-                    <td className="text-right tabular-nums">100%</td>
-                  </tr>
-                </tfoot>
-              </Table>
-            </Card>
-          </div>
-        )}
+        <ChannelsBody query={query} range={range} />
       </div>
     </div>
   );

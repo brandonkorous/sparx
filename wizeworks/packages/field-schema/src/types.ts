@@ -135,6 +135,15 @@ const UserField = BaseField.extend({
   multiple: z.boolean().optional(),
 });
 
+// One of the business's authors — the people its writing is credited to. A uuid
+// pointing at an `authors` row, never a staff user: a photographer credited on a
+// piece is a public name with a page, not a login. A piece's own byline is its
+// `author_id`; this is every OTHER credit (photographs, illustrations, edits).
+const AuthorField = BaseField.extend({
+  type: z.literal('author'),
+  multiple: z.boolean().optional(),
+});
+
 // A read-only number worked out from the OTHER fields on the same record —
 // margin from price and cost, days from a duration. Never accepted from a
 // client: the server computes it on write (see ./calc) and overwrites whatever
@@ -185,6 +194,7 @@ export type FieldDef =
   | z.infer<typeof AssetField>
   | z.infer<typeof CurrencyField>
   | z.infer<typeof UserField>
+  | z.infer<typeof AuthorField>
   | z.infer<typeof CalculatedField>
   | ObjectFieldDef
   | RepeaterFieldDef;
@@ -230,6 +240,7 @@ export const FieldDefSchema: z.ZodType<FieldDef> = z.lazy(() =>
     AssetField,
     CurrencyField,
     UserField,
+    AuthorField,
     CalculatedField,
     ObjectField,
     RepeaterField,

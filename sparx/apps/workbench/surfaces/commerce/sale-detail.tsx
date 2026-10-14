@@ -21,6 +21,7 @@ import { shownInPlace } from '@wizeworks/query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -32,6 +33,7 @@ import { Banknote } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { afterPaneChange } from '../../lib/defer';
+import { apiErrorMessage, workFailureWords } from '../../lib/api-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useActivePropertyId } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -41,6 +43,7 @@ import { SaleLines } from './sale-lines';
 import { SalePayment } from './sale-payment';
 import { useAgreedPrices, useTakeSale, type SaleLine, type Sellable } from './sale-data';
 import { saleTotals } from './sale-core';
+import { taxKey, taxRowLabel, useSaleTax, type SaleTaxQuote } from './sale-tax';
 import { takingNote, whatToOffer } from './sale-taking';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -113,9 +116,51 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const [amountTouched, setAmountTouched] = useState(false);
 
   const currency = 'USD';
-  // Core deposits are IN the total taken and on a row of their own, exactly as
-  // the website's checkout adds them up.
-  const totals = useMemo(() => saleTotals(lines), [lines]);
+
+  // THE SALES TAX (sparx persona issue 230). Asked of the server's tax engine,
+  // the one checkout uses, whenever the customer, a line, a quantity or a price
+  // changes; an answer is only used for the exact sale it was asked about.
+  // Nothing is written down until the tax for this sale is known: a sale written
+  // without it is the $0.00 of tax every counter sale used to carry.
+  const { mutate: askTax } = useSaleTax();
+  const [tax, setTax] = useState<{ key: string; quote: SaleTaxQuote } | null>(null);
+  const [taxFailedFor, setTaxFailedFor] = useState<string | null>(null);
+  // Why the last ask failed, so the words name the real cause (issue 260).
+  const [taxError, setTaxError] = useState<unknown>(null);
+  const askedTax = useRef('');
+  const [taxAttempt, setTaxAttempt] = useState(0);
+  const currentTaxKey = taxKey(customer?.id ?? null, lines);
+  const taxQuote = tax?.key === currentTaxKey ? tax.quote : null;
+  const taxReady = lines.length === 0 || taxQuote !== null;
+
+  useEffect(() => {
+    if (lines.length === 0 || askedTax.current === currentTaxKey) return;
+    const key = currentTaxKey;
+    // A short wait, so typing a price asks once rather than once a keystroke.
+    const timer = setTimeout(() => {
+      askedTax.current = key;
+      askTax(
+        { customerId: customer?.id ?? null, lines },
+        {
+          onSuccess: (quote) => {
+            setTax({ key, quote });
+            setTaxFailedFor(null);
+          },
+          onError: (error) => {
+            setTaxError(error);
+            setTaxFailedFor(key);
+          },
+        }
+      );
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentTaxKey, customer, lines, askTax, taxAttempt]);
+
+  // Core deposits and sales tax are IN the total taken, each on a row of its
+  // own, exactly as the website's checkout adds them up.
+  const totals = useMemo(() => saleTotals(lines, taxQuote?.totalTaxCents ?? 0), [lines, taxQuote]);
   // Filed under a business they buy for, which is the same fact the picker
   // marks. A business that phoned this through has handed over nothing.
   const buysOnAccount = customer?.companyId != null;
@@ -198,7 +243,13 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const priced = lines.every((line) => Number.isFinite(Number(line.price)));
   const named = lines.every((line) => line.name.trim() !== '');
   const canSave =
-    customer !== null && lines.length > 0 && priced && named && !take.isPending && !take.isSuccess;
+    customer !== null &&
+    lines.length > 0 &&
+    priced &&
+    named &&
+    taxReady &&
+    !take.isPending &&
+    !take.isSuccess;
 
   const addLine = (sellable: Sellable | null) => {
     setLines((current) => [...current, lineFrom(sellable)]);
@@ -215,6 +266,7 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         paidWith,
         paidNote,
         propertyId,
+        tax: taxQuote,
       },
       {
         onSuccess: (order) => {
@@ -278,10 +330,44 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           </FormSection>
 
+          {taxFailedFor === currentTaxKey ? (
+            <Alert color="error">
+              <AlertContent>
+                <AlertTitle>The sales tax could not be worked out</AlertTitle>
+                <AlertDescription>
+                  Nothing is written down until it is, so the sale is never recorded without its
+                  tax.{' '}
+                  {apiErrorMessage(
+                    taxError,
+                    workFailureWords(
+                      taxError,
+                      'This is a problem reaching the server, not a problem with this sale.'
+                    )
+                  )}
+                </AlertDescription>
+              </AlertContent>
+              <AlertActions>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    askedTax.current = '';
+                    setTaxFailedFor(null);
+                    setTaxAttempt((n) => n + 1);
+                  }}
+                >
+                  Try again
+                </Button>
+              </AlertActions>
+            </Alert>
+          ) : null}
+
           <SaleLines
             lines={lines}
             currency={currency}
             totals={totals}
+            taxLabel={taxRowLabel(taxQuote)}
+            taxKnown={taxQuote !== null}
             onAdd={addLine}
             onChange={(id, next) => {
               setLines((current) => current.map((line) => (line.id === id ? next : line)));

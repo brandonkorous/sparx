@@ -51,6 +51,7 @@ import {
   type DuplicateGroup,
 } from './duplicates-data';
 import { duplicatesCheckedWords, useCrmSettings } from './workspace-data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -81,7 +82,7 @@ function shortDate(iso: string | null): string {
 export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: groups, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDuplicates();
   const { data: viewer } = useViewer();
-  const canMerge = viewer?.role === 'admin' || viewer?.role === 'owner';
+  const canMerge = canManageBusiness(viewer?.role);
 
   // Which book was searched, so the empty state can say so. Both are already in
   // the shell's cache — the rail reads them — so naming the site costs nothing.

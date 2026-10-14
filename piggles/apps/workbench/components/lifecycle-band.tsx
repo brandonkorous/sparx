@@ -63,20 +63,24 @@ export function LifecycleBand({
       className={`${TONE_CLASS[life.tone]} flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 py-2.5 text-center`}
     >
       <p className="text-base font-medium">{life.sentence}</p>
-      <Button
-        // No `color`: the bar is already the tone. A colored button on a colored
-        // fill paints its own background over it and stops being legible on one
-        // of the two themes.
-        variant="outline"
-        size="sm"
-        onClick={() => {
-          // Out to the account app, which owns every question this raises and is
-          // the only place allowed to answer with numbers.
-          window.location.href = `${accountOrigin}/account`;
-        }}
-      >
-        {life.action}
-      </Button>
+      {/* No door for somebody who may not pay; the sentence names who can
+          (sparx persona issue 168). */}
+      {life.action ? (
+        <Button
+          // No `color`: the bar is already the tone. A colored button on a colored
+          // fill paints its own background over it and stops being legible on one
+          // of the two themes.
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            // Out to the account app, which owns every question this raises and is
+            // the only place allowed to answer with numbers.
+            window.location.href = `${accountOrigin}/account`;
+          }}
+        >
+          {life.action}
+        </Button>
+      ) : null}
     </aside>
   );
 }

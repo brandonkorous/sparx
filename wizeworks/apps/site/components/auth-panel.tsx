@@ -6,19 +6,28 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
+import { signedInDestination } from '@/lib/auth-redirect';
 import { AccountError } from '@/lib/customer-client';
 import { Alert, Button, Input, Tabs, TabsList, TabsTab } from '@wizeworks/silicaui-react';
 
 type Mode = 'signin' | 'register';
 
 export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
-  const { login, register } = useCustomer();
+  const { login, register, status } = useCustomer();
   const router = useRouter();
   const params = useSearchParams();
-  const redirectTo = params.get('redirect') ?? '/account';
+  // A path on this site only, the same rule as below.
+  const redirectTo = signedInDestination('authenticated', params.get('redirect')) ?? '/account';
+
+  // Already signed in: go on to where the link was taking them, never an empty
+  // form as if they were signed out (sparx persona issue 189).
+  const alreadyIn = signedInDestination(status, params.get('redirect'));
+  useEffect(() => {
+    if (alreadyIn) router.replace(alreadyIn);
+  }, [alreadyIn, router]);
 
   const [mode, setMode] = useState<Mode>(initial);
   const [email, setEmail] = useState('');

@@ -21,7 +21,7 @@
 //      to a tenant who is mid-migration.
 
 import type { FastifyRequest } from 'fastify';
-import type { PropertyContext } from '@wizeworks/builder';
+import { pageService, type PropertyContext } from '@wizeworks/builder';
 import { isModuleEnabled } from '@wizeworks/auth';
 import type { TxClient } from '@wizeworks/db';
 import { withRequestTenant } from '@wizeworks/api-core/db';
@@ -37,8 +37,11 @@ import {
   type SiteLintReport,
 } from '@wizeworks/site-lint';
 import type { Node as SilicaNode, SymbolDef } from '@wizeworks/silicaui-html';
+import { authorsWithWorkTx } from './author-roster.js';
+import { siteChromeOptions } from './builder-context.js';
 import { effectiveTheme } from './effective-theme.js';
 import {
+  siteDisabledModules,
   categorySiteVisibilityWhere,
   collectionSiteVisibilityWhere,
   contentSiteVisibilityWhere,
@@ -116,16 +119,18 @@ export function skippedPagesOf(
  * look", and the engine stays silent on it.
  */
 export async function siteCapabilities(ctx: PropertyContext): Promise<SiteCapabilities> {
-  const flags = await Promise.all(
-    (['commerce', 'scheduling', 'b2b'] as const).map((slug) =>
-      isModuleEnabled(ctx.tenantId, slug).catch(() => null)
-    )
-  );
+  const modules = ['commerce', 'scheduling', 'b2b'] as const;
+  const [flags, siteOff] = await Promise.all([
+    Promise.all(modules.map((slug) => isModuleEnabled(ctx.tenantId, slug).catch(() => null))),
+    siteDisabledModules(ctx.tenantId, ctx.propertyId).catch(() => null),
+  ]);
   // A single failed lookup is not grounds for saying "no accounts here" — that would be
   // the check going quiet on the site it was written for because of a blip. Only a clean
   // "all three are off" answers the question.
-  if (flags.some((flag) => flag === null)) return {};
-  return { customerAccounts: flags.some(Boolean) };
+  if (flags.some((flag) => flag === null) || siteOff === null) return {};
+  // THIS site's answer, not the account's: a journal that switched its shop off has
+  // nothing for a reader to sign in to, whatever else the account sells (issue 947).
+  return { customerAccounts: modules.some((m, i) => flags[i] && !siteOff.includes(m)) };
 }
 
 /**
@@ -200,6 +205,7 @@ export async function linkTargets(tx: TxClient, ctx: PropertyContext): Promise<L
       select: { slug: true },
     });
     targets.postSlugs = posts.map((p) => p.slug ?? '').filter(Boolean);
+    targets.authorSlugs = (await authorsWithWorkTx(tx, ctx.propertyId)).map((a) => a.slug);
   }
 
   if (scheduling) {
@@ -421,14 +427,23 @@ export async function runSiteCheck(
       siteCapabilities(ctx),
       starterText(tx, ctx),
     ]);
+    // A page this site switched off is not served to anyone (issue 944), so nothing on
+    // it can trip a visitor: a journal was told its Shop had no search title.
+    const [account, siteShows] = await Promise.all([
+      siteChromeOptions(ctx.tenantId),
+      siteChromeOptions(ctx.tenantId, ctx.propertyId),
+    ]);
+    const off = await pageService.pagesOffOnSiteTx(tx, ctx, account, siteShows);
+    const served = rows.filter((row) => !off.has(row.id));
 
     const symbols = (site?.silicaDraftSymbols ?? null) as Record<string, SymbolDef> | null;
 
     const input: SiteLintInput = {
-      pages: silicaPagesOf(rows),
-      // EVERY page, not just the walkable ones. A page nobody has opened still
-      // occupies its address, and the clash it causes is invisible from the site.
-      addressing: rows.map((row) => ({
+      pages: silicaPagesOf(served),
+      // EVERY page the site serves, not just the walkable ones. A page nobody has
+      // opened still occupies its address, and the clash it causes is invisible from
+      // the site. One this site switched off occupies nothing: it answers 404.
+      addressing: served.map((row) => ({
         id: row.id,
         name: row.name,
         slug: row.slug,
@@ -446,7 +461,7 @@ export async function runSiteCheck(
       starterText: starter,
     };
 
-    const notChecked = skippedPagesOf(rows);
+    const notChecked = skippedPagesOf(served);
 
     // TWO STEPS, and they have to be in this order: the engine names the pictures the
     // site references, this service sizes them, and the sized map goes back in. The

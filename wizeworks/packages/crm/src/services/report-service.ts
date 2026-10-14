@@ -20,14 +20,16 @@ import {
   type Measure,
 } from '@wizeworks/crm-schemas';
 import type { ConditionGroup } from '@wizeworks/automation-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { CrmReport, Prisma } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { asPropertySchema } from './custom-properties';
 import * as objectDefService from './object-def-service';
+import { BOARD_COLUMNS, visibleWhere } from './owner-visibility';
 import {
   isBuiltinObject,
   reportableProperties,
@@ -94,6 +96,46 @@ async function propertiesFor(
   };
 }
 
+/**
+ * Tell search a report changed, once the write commits (persona issue 261).
+ *
+ * "Search everything" finds a report by its name and a board by the reports on
+ * it, so a rename or a put-away also re-reads every board that shows the report.
+ * Queued from inside the transaction: it fires on commit and is dropped on a
+ * rollback, so search never names a report that was not saved.
+ */
+async function signalReportSearch(
+  ctx: ServiceContext,
+  tx: Prisma.TransactionClient,
+  reportId: string,
+  boardsToo: boolean
+): Promise<void> {
+  const boards = boardsToo
+    ? await tx.crmDashboardWidget.findMany({
+        where: { reportId },
+        select: { dashboardId: true },
+        distinct: ['dashboardId'],
+      })
+    : [];
+  await afterCommit(`index report ${reportId}`, async () => {
+    const actorId = ctx.userId ?? null;
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId,
+      entityType: 'report',
+      recordId: reportId,
+    });
+    for (const board of boards) {
+      await indexEntity({
+        tenantId: ctx.tenantId,
+        actorId,
+        entityType: 'dashboard',
+        recordId: board.dashboardId,
+      });
+    }
+  });
+}
+
 export async function list(
   ctx: ServiceContext,
   args: { propertyIds?: string[] | null; objectKey?: string } = {}
@@ -103,19 +145,31 @@ export async function list(
       where: {
         archivedAt: null,
         ...(args.objectKey ? { objectKey: args.objectKey } : {}),
-        // Site read-scoping (docs/131 §3.3): a member granted one business sees
-        // that business's reports plus the tenant-wide ones.
-        ...(args.propertyIds
-          ? { OR: [{ propertyId: null }, { propertyId: { in: args.propertyIds } }] }
-          : {}),
+        AND: [
+          // A report kept to its maker is in nobody else's list (issue 264).
+          visibleWhere(ctx.userId, BOARD_COLUMNS),
+          // Site read-scoping (docs/131 §3.3): a member granted one business sees
+          // that business's reports plus the tenant-wide ones.
+          ...(args.propertyIds
+            ? [{ OR: [{ propertyId: null }, { propertyId: { in: args.propertyIds } }] }]
+            : []),
+        ],
       },
       orderBy: [{ builtinSlug: 'asc' }, { name: 'asc' }],
     })
   );
 }
 
+/**
+ * One report, if this person may see it (persona issue 264). Everything else
+ * here (run, change, copy, delete) goes through this read, so a report kept to
+ * somebody else is refused by all of them the same way: as not found, which
+ * does not confirm it exists.
+ */
 export async function get(ctx: ServiceContext, id: string): Promise<CrmReport> {
-  const row = await withTenant(ctx, (tx) => tx.crmReport.findFirst({ where: { id } }));
+  const row = await withTenant(ctx, (tx) =>
+    tx.crmReport.findFirst({ where: { id, ...visibleWhere(ctx.userId, BOARD_COLUMNS) } })
+  );
   if (!row || row.archivedAt) throw new CrmNotFoundError('Report', id);
   return row;
 }
@@ -150,6 +204,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cr
       entityId: row.id,
       diff: { after: { name: row.name, objectKey: row.objectKey } },
     });
+    await signalReportSearch(ctx, tx, row.id, false);
     return row;
   });
 
@@ -202,6 +257,14 @@ export async function update(
       entityId: row.id,
       diff: { before: { name: before.name }, after: { name: row.name } },
     });
+    // A board is found by the names of the reports on it, but only by the ones
+    // everybody who can open the board may see, so sharing one changes it too.
+    await signalReportSearch(
+      ctx,
+      tx,
+      row.id,
+      row.name !== before.name || row.shared !== before.shared
+    );
     return row;
   });
 }
@@ -214,8 +277,8 @@ export async function duplicate(
   name?: string
 ): Promise<CrmReport> {
   const source = await get(ctx, id);
-  return withTenant(ctx, (tx) =>
-    tx.crmReport.create({
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.crmReport.create({
       data: {
         tenantId: ctx.tenantId,
         propertyId: source.propertyId,
@@ -233,8 +296,10 @@ export async function duplicate(
         ownerId: ctx.userId ?? null,
         shared: false,
       },
-    })
-  );
+    });
+    await signalReportSearch(ctx, tx, row.id, false);
+    return row;
+  });
 }
 
 export async function archive(ctx: ServiceContext, id: string): Promise<CrmReport> {
@@ -245,9 +310,12 @@ export async function archive(ctx: ServiceContext, id: string): Promise<CrmRepor
       [{ field: 'id', message: 'built-in reports cannot be archived' }]
     );
   }
-  return withTenant(ctx, (tx) =>
-    tx.crmReport.update({ where: { id }, data: { archivedAt: new Date() } })
-  );
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.crmReport.update({ where: { id }, data: { archivedAt: new Date() } });
+    // Out of search, and off the line under every board that showed it.
+    await signalReportSearch(ctx, tx, row.id, true);
+    return row;
+  });
 }
 
 /** Run a saved report. `dateRange` overrides the saved period without editing

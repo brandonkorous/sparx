@@ -25,6 +25,7 @@ import {
 } from '@wizeworks/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
+import { signalSchedulingService } from '../../../lib/scheduling-search.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -69,6 +70,7 @@ const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
           )
         : input.propertyId;
     const row = await createService(tenantId, { ...input, propertyId });
+    await signalSchedulingService({ tenantId, actorId: auth.actorId }, row.id);
     return reply.code(201).send(ok(serviceView(row)));
   });
 
@@ -82,27 +84,32 @@ const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/scheduling/services/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = UpdateServiceInput.parse({ ...(request.body as object), id });
-    return ok(serviceView(await updateService(tenantId, input)));
+    const row = await updateService(tenantId, input);
+    await signalSchedulingService({ tenantId, actorId: userId }, id);
+    return ok(serviceView(row));
   });
 
   app.delete('/v1/scheduling/services/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     await deleteService(tenantId, id);
+    await signalSchedulingService({ tenantId, actorId: userId }, id);
     return ok({ id, deleted: true });
   });
 
   app.post('/v1/scheduling/services/:id/restore', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    return ok(serviceView(await restoreService(tenantId, id)));
+    const row = await restoreService(tenantId, id);
+    await signalSchedulingService({ tenantId, actorId: userId }, id);
+    return ok(serviceView(row));
   });
 };
 

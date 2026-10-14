@@ -51,6 +51,16 @@ describe('order status label', () => {
   });
 });
 
+describe('order status label for an order the customer collected', () => {
+  // Brynn's counter sales each read "Delivered" (sparx persona issue 177).
+  it('says Collected, not Delivered', () => {
+    expect(orderStatusLabel('delivered', true)).toBe('Collected');
+    expect(orderStatusLabel('fulfilled', true)).toBe('Collected');
+    expect(orderStatusLabel('delivered')).toBe('Delivered');
+    expect(orderStatusLabel('placed', true)).toBe('Placed');
+  });
+});
+
 describe('the word before an order’s date', () => {
   it('says Ordered for an order that was never placed', () => {
     expect(orderedWord('pending_approval')).toBe('Ordered');

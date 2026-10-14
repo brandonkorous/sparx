@@ -193,6 +193,9 @@ export function useVariantSearch(
     data: query.data,
     isPending: query.isPending,
     isError: query.isError,
+    /** Why it failed, so the words can tell a lost connection from a 5xx or a
+     *  403 (issue 260). */
+    error: query.error,
     /** The rows in hand answer an older search; the current one is on its way. */
     searching: live !== term || query.isPlaceholderData,
     /** Ask again. A failed search keeps its error until the words change, so

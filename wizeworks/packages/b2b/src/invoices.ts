@@ -14,12 +14,15 @@ import { withTenant, type Prisma } from '@wizeworks/db';
 import {
   b2bArService,
   billingPaymentService,
+  businessTimeZone,
   ISSUED_BILL_WHERE,
   OWED_DOCUMENT_WHERE,
+  startOfBusinessDay,
 } from '@wizeworks/crm';
 import { notFound, badRequest } from '@wizeworks/api-core/errors';
 import type { B2bContext } from './context.js';
 import type { PendingEvent } from './events.js';
+import { invoiceLateness } from './invoice-lateness.js';
 
 // ── Schemas (shared with the REST routes) ─────────────────────────────────────
 
@@ -99,9 +102,29 @@ function cents(d: Prisma.Decimal | number): number {
   return Math.round(Number(d) * 100);
 }
 
-function mapInvoice(doc: InvoiceDoc) {
+/** The moment a read is made and the business's zone: how late a bill is depends
+ *  on both (sparx persona issue 175). */
+interface ReadClock {
+  now: Date;
+  timeZone: string | null;
+}
+
+function mapInvoice(doc: InvoiceDoc, clock: ReadClock) {
   const meta = (doc.metadata ?? {}) as Record<string, unknown>;
-  const lastPayment = doc.payments.find((p) => p.kind !== 'refund') ?? doc.payments[0] ?? null;
+  const today = invoiceLateness(
+    {
+      status: doc.status,
+      dueAt: doc.dueAt,
+      amountCents: cents(doc.total),
+      balanceCents: cents(doc.balance),
+    },
+    clock.now,
+    clock.timeZone
+  );
+  // Money that came in: a credit taken off is not a payment the account made
+  // (sparx persona issue 185).
+  const lastPayment =
+    doc.payments.find((p) => p.kind !== 'refund' && p.kind !== 'credit') ?? doc.payments[0] ?? null;
   return {
     id: doc.id,
     accountId: doc.companyId,
@@ -109,8 +132,8 @@ function mapInvoice(doc: InvoiceDoc) {
     invoiceNumber: doc.number ?? '',
     amountCents: cents(doc.total),
     balanceCents: cents(doc.balance),
-    status: doc.status,
-    overdueDays: doc.overdueDays,
+    status: today.status,
+    overdueDays: today.overdueDays,
     dueAt: doc.dueAt ? doc.dueAt.toISOString() : null,
     paidAt: doc.paidAt ? doc.paidAt.toISOString() : null,
     paidMethod: doc.status === 'paid' ? (lastPayment?.method ?? null) : null,
@@ -138,25 +161,50 @@ export type InvoiceView = ReturnType<typeof mapInvoice>;
 
 /** Load + project one invoice, scoped to B2B-AR documents. */
 async function loadInvoice(ctx: B2bContext, id: string): Promise<InvoiceView | null> {
-  const doc = await withTenant(ctx, (tx) =>
-    tx.billingDocument.findFirst({
+  const read = await withTenant(ctx, async (tx) => ({
+    doc: await tx.billingDocument.findFirst({
       where: { id, ...TRADE_BILL_WHERE },
       include: INVOICE_INCLUDE,
-    })
-  );
-  return doc ? mapInvoice(doc) : null;
+    }),
+    timeZone: await businessTimeZone(tx, ctx.tenantId),
+  }));
+  return read.doc ? mapInvoice(read.doc, { now: new Date(), timeZone: read.timeZone }) : null;
 }
 
 // ── Reads ──────────────────────────────────────────────────────────────────────
 
-export async function listInvoices(ctx: B2bContext, input: InvoiceListInput) {
-  const where: Prisma.BillingDocumentWhereInput = {
-    ...TRADE_BILL_WHERE,
-    ...(input.account_id ? { companyId: input.account_id } : {}),
-    ...(input.status ? { status: input.status } : {}),
+/**
+ * The status filter, as of today rather than as of the last nightly job: a bill
+ * still stored as unpaid but past its due day is overdue, and one stored overdue
+ * whose due date was moved out is not (sparx persona issue 175).
+ */
+function statusWhere(
+  status: InvoiceListInput['status'],
+  startOfToday: Date
+): Prisma.BillingDocumentWhereInput {
+  if (!status) return {};
+  const owed: Prisma.BillingDocumentWhereInput = {
+    status: { in: ['unpaid', 'partial', 'overdue'] },
   };
+  if (status === 'overdue') {
+    return { ...owed, dueAt: { lt: startOfToday } };
+  }
+  if (status === 'unpaid' || status === 'partial') {
+    // Its stored status, but not one that is late today.
+    return { status, OR: [{ dueAt: null }, { dueAt: { gte: startOfToday } }] };
+  }
+  return { status };
+}
 
-  const { items, total } = await withTenant(ctx, async (tx) => {
+export async function listInvoices(ctx: B2bContext, input: InvoiceListInput) {
+  const now = new Date();
+  const { items, total, timeZone } = await withTenant(ctx, async (tx) => {
+    const timeZone = await businessTimeZone(tx, ctx.tenantId);
+    const where: Prisma.BillingDocumentWhereInput = {
+      ...TRADE_BILL_WHERE,
+      ...(input.account_id ? { companyId: input.account_id } : {}),
+      ...statusWhere(input.status, startOfBusinessDay(now, timeZone)),
+    };
     const [items, total] = await Promise.all([
       tx.billingDocument.findMany({
         where,
@@ -167,10 +215,15 @@ export async function listInvoices(ctx: B2bContext, input: InvoiceListInput) {
       }),
       tx.billingDocument.count({ where }),
     ]);
-    return { items, total };
+    return { items, total, timeZone };
   });
 
-  return { items: items.map(mapInvoice), total, skip: input.skip, take: input.take };
+  return {
+    items: items.map((doc) => mapInvoice(doc, { now, timeZone })),
+    total,
+    skip: input.skip,
+    take: input.take,
+  };
 }
 
 export async function getInvoice(ctx: B2bContext, id: string): Promise<InvoiceView> {

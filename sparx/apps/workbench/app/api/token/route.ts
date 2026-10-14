@@ -60,6 +60,11 @@ export interface WorkbenchTokenResponse {
    */
   userId: string;
   role: string;
+  /** The signed-in address, and whether it is confirmed. Read by the
+   *  confirm-your-email notice (sparx persona issue 157); `ev` in the token is
+   *  what api-rest acts on. Not a control either. */
+  email: string;
+  emailVerified: boolean;
 }
 
 export async function GET(): Promise<NextResponse> {
@@ -103,6 +108,8 @@ export async function GET(): Promise<NextResponse> {
     propertyId,
     userId: session.user.id,
     role: session.user.role,
+    email: session.user.email,
+    emailVerified: session.user.emailVerified,
   };
 
   // Never cache a bearer token — not in the browser, not at Cloudflare.

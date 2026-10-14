@@ -9,6 +9,7 @@
 
 import {
   Field,
+  FieldControl,
   FieldDescription,
   FieldLabel,
   Input,
@@ -47,14 +48,18 @@ function PageName({ doc }: { doc: PageDoc }) {
   return (
     <Field>
       <FieldLabel>Name</FieldLabel>
-      <Input
+      <FieldControl
         key={`${doc.id}:name`}
-        defaultValue={doc.name}
-        onBlur={(event) => {
-          const value = event.currentTarget.value.trim();
-          if (!value || value === doc.name) return;
-          apply('Rename page', [{ kind: 'doc.rename', value }]);
-        }}
+        render={
+          <Input
+            defaultValue={doc.name}
+            onBlur={(event) => {
+              const value = event.currentTarget.value.trim();
+              if (!value || value === doc.name) return;
+              apply('Rename page', [{ kind: 'doc.rename', value }]);
+            }}
+          />
+        }
       />
       <FieldDescription>What you call it. Visitors never see this.</FieldDescription>
     </Field>
@@ -72,29 +77,37 @@ function SearchWording({ doc }: { doc: PageDoc }) {
     <>
       <Field>
         <FieldLabel>Title in search results</FieldLabel>
-        <Input
+        <FieldControl
           key={`${doc.id}:seo-title`}
-          defaultValue={doc.seo.title ?? ''}
-          placeholder={doc.name}
-          onBlur={(event) => {
-            const value = event.currentTarget.value.trim() || null;
-            if (value !== doc.seo.title) setSeo({ title: value });
-          }}
+          render={
+            <Input
+              defaultValue={doc.seo.title ?? ''}
+              placeholder={doc.name}
+              onBlur={(event) => {
+                const value = event.currentTarget.value.trim() || null;
+                if (value !== doc.seo.title) setSeo({ title: value });
+              }}
+            />
+          }
         />
         <FieldDescription>Leave it empty and the page name is used.</FieldDescription>
       </Field>
 
       <Field>
         <FieldLabel>Description in search results</FieldLabel>
-        <Textarea
+        <FieldControl
           key={`${doc.id}:seo-description`}
-          rows={3}
-          defaultValue={doc.seo.description ?? ''}
-          placeholder="A sentence or two about what someone finds on this page."
-          onBlur={(event) => {
-            const value = event.currentTarget.value.trim() || null;
-            if (value !== doc.seo.description) setSeo({ description: value });
-          }}
+          render={
+            <Textarea
+              rows={3}
+              defaultValue={doc.seo.description ?? ''}
+              placeholder="A sentence or two about what someone finds on this page."
+              onBlur={(event) => {
+                const value = event.currentTarget.value.trim() || null;
+                if (value !== doc.seo.description) setSeo({ description: value });
+              }}
+            />
+          }
         />
       </Field>
 
@@ -127,18 +140,22 @@ function PageAddress({ doc }: { doc: PageDoc }) {
   return (
     <Field>
       <FieldLabel>Address</FieldLabel>
-      <Input
+      <FieldControl
         key={`${doc.id}:slug`}
-        defaultValue={doc.slug ?? ''}
-        placeholder="/about"
-        onBlur={(event) => {
-          const raw = event.currentTarget.value.trim();
-          // A leading slash is what the address IS, so add it rather than refusing
-          // an answer that is right in every way except one character.
-          const value = raw ? (raw.startsWith('/') ? raw : `/${raw}`) : null;
-          if (value === doc.slug) return;
-          apply('Change address', [{ kind: 'page.setSlug', value }]);
-        }}
+        render={
+          <Input
+            defaultValue={doc.slug ?? ''}
+            placeholder="/about"
+            onBlur={(event) => {
+              const raw = event.currentTarget.value.trim();
+              // A leading slash is what the address IS, so add it rather than refusing
+              // an answer that is right in every way except one character.
+              const value = raw ? (raw.startsWith('/') ? raw : `/${raw}`) : null;
+              if (value === doc.slug) return;
+              apply('Change address', [{ kind: 'page.setSlug', value }]);
+            }}
+          />
+        }
       />
       <FieldDescription>
         {doc.slug
@@ -166,20 +183,26 @@ function ChromeChoice({ doc }: { doc: PageDoc }) {
   return (
     <Field>
       <FieldLabel>Header and footer</FieldLabel>
-      <NativeSelect
-        value={current}
-        onChange={(event) => {
-          const next = event.currentTarget.value;
-          if (next === current) return;
-          apply('Change header and footer', [
-            { kind: 'page.setFrame', value: next === 'none' ? NO_FRAME : null },
-          ]);
-        }}
-      >
-        <option value="site">Use my site’s header and footer</option>
-        <option value="none">No header or footer</option>
-        {current === 'other' ? <option value="other">A different header and footer</option> : null}
-      </NativeSelect>
+      <FieldControl
+        render={
+          <NativeSelect
+            value={current}
+            onChange={(event) => {
+              const next = event.currentTarget.value;
+              if (next === current) return;
+              apply('Change header and footer', [
+                { kind: 'page.setFrame', value: next === 'none' ? NO_FRAME : null },
+              ]);
+            }}
+          >
+            <option value="site">Use my site’s header and footer</option>
+            <option value="none">No header or footer</option>
+            {current === 'other' ? (
+              <option value="other">A different header and footer</option>
+            ) : null}
+          </NativeSelect>
+        }
+      />
       <FieldDescription>
         “No header or footer” gives you a bare page: useful for a campaign or a thank-you page.
       </FieldDescription>

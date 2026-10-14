@@ -42,6 +42,7 @@ import {
   listSocialConnections,
   listSocialPosts,
   markPostPublishing,
+  importTimeZone,
   parseSocialCsv,
   rejectSocialPost,
   retrySocialPostTarget,
@@ -564,7 +565,7 @@ const bestTime: McpToolDefinition = {
 const importPosts: McpToolDefinition = {
   name: 'import_social_posts',
   description:
-    'Create many posts at once from CSV text. The first row names the columns: `body` (required), plus optional `when` (a date/time) and `accounts` (destination NAMES, several separated by ";"). A row with a future time goes through the approval gate exactly like any other scheduled post; anything else lands as a draft. Returns per-row problems rather than failing the whole import. Set `dryRun` to check a file without creating anything.',
+    'Create many posts at once from CSV text. The first row names the columns: `body` (required), plus optional `when` (a date/time) and `accounts` (destination NAMES, several separated by ";"). A `when` with no zone of its own ("2026-10-15 09:00") is read on the business\'s own clock; one that names its zone ("...Z", "...+01:00") is taken as written. Pass `timezone` only to say which clock to use when the business has not set one (otherwise UTC). A row with a future time goes through the approval gate exactly like any other scheduled post; anything else lands as a draft. Returns per-row problems rather than failing the whole import. Set `dryRun` to check a file without creating anything.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({
@@ -572,6 +573,7 @@ const importPosts: McpToolDefinition = {
     defaultTargetIds: z.array(uuid()).max(50).optional(),
     propertyId: uuid().nullable().optional(),
     dryRun: z.boolean().optional(),
+    timezone: z.string().min(1).max(64).optional(),
   }),
   run: async (ctx, input) => {
     const i = input as {
@@ -579,8 +581,11 @@ const importPosts: McpToolDefinition = {
       defaultTargetIds?: string[];
       propertyId?: string | null;
       dryRun?: boolean;
+      timezone?: string;
     };
-    const parsed = parseSocialCsv(i.csv);
+    // A time with no zone is read on the business's clock, not the server's (piggles
+    // persona issue 990).
+    const parsed = parseSocialCsv(i.csv, await importTimeZone(ctx, i.timezone));
     if (i.dryRun) {
       return {
         wouldCreate: parsed.rows.length,

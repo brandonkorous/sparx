@@ -9,10 +9,27 @@
 // and amount BILLED (billing_documents by finalized_at). The mechanics mirror
 // commerce's revenueTimeseries (the reference implementation); invoicing differs
 // only in deriving each day from two source tables instead of one.
+//
+// Every day is the BUSINESS's calendar day, as on commerce's chart (sparx persona
+// issue 174). Filed by UTC date, a payment taken at 7pm in Denver was the next
+// day's cash, and the last evening of a month the next month's, beside an
+// invoice and a statement that print the day it was (issues 145 and 146). A day
+// is carried as a midnight-UTC date; a source read turns it into the business's
+// midnight-to-midnight moments, and SQL files each row `AT TIME ZONE` the same
+// zone. A business that has not said where it is keeps UTC.
 
 import { Prisma, withTenant, type TxClient } from '@wizeworks/db';
+import {
+  businessDateKey,
+  businessDayStart,
+  calendarZone,
+  dateOfKey,
+  rangeDayKey,
+  shiftDateKey,
+} from '@wizeworks/time';
 
 import type { ServiceContext } from '../errors';
+import { businessTimeZone } from './business-clock';
 
 const DEFAULT_CURRENCY = 'USD';
 
@@ -24,7 +41,7 @@ export interface DateRange {
 export type RollupGrain = 'day' | 'week' | 'month';
 
 export interface CollectedTimeseriesPoint {
-  /** Start of the bucket, UTC date `YYYY-MM-DD`. */
+  /** Start of the bucket, the business's calendar date `YYYY-MM-DD`. */
   bucket: string;
   paymentsCount: number;
   invoicesCount: number;
@@ -81,10 +98,34 @@ interface DayMeasures {
 }
 
 interface DayRow extends DayMeasures {
-  /** UTC date key `YYYY-MM-DD`. */
+  /** The business's calendar date `YYYY-MM-DD`. */
   key: string;
-  /** UTC-midnight Date for the bucket (used as the rollup PK value). */
+  /** That date as the midnight-UTC Date a `DATE` column takes (the rollup PK value). */
   date: Date;
+}
+
+/** The business's zone for a report: its own when the runtime knows it, else UTC.
+ *  Also the zone SQL files each row in, so the window and the buckets agree. */
+async function reportZone(tx: TxClient, tenantId: string): Promise<string> {
+  return calendarZone(await businessTimeZone(tx, tenantId));
+}
+
+/** The moments `[from, toExclusive)` of a run of the business's days, given as
+ *  midnight-UTC dates. */
+function businessMoments(
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date
+): { from: Date; toExclusive: Date } {
+  return {
+    from: businessDayStart(fromDay, zone),
+    toExclusive: businessDayStart(toDayExclusive, zone),
+  };
+}
+
+/** The business's today, as a midnight-UTC date. */
+function businessToday(zone: string): Date {
+  return dateOfKey(businessDateKey(new Date(), zone));
 }
 
 function startOfUtcDay(d: Date): Date {
@@ -146,9 +187,10 @@ interface RawBilledDayPropRow extends RawBilledDayRow {
   property_id: string;
 }
 
-// One pass per source table over the window, merged by UTC day, SCOPED for a
-// read (docs/131 §6). Payments are bucketed by `received_at` (net cash =
-// deposits + payments − refunds); billed documents by `finalized_at`.
+// One pass per source table over the business's days [fromDay, toDayExclusive),
+// merged by the business's day, SCOPED for a read (docs/131 §6). Payments are
+// bucketed by `received_at` (net cash = deposits + payments − refunds); billed
+// documents by `finalized_at`.
 // `propertyId` undefined = every site (the tenant-wide total); a value = only
 // that site's cashflow. The site is authoritative on `billing_documents`:
 // `billing_document_payments.property_id` is nullable and untrusted, so each
@@ -158,27 +200,31 @@ interface RawBilledDayPropRow extends RawBilledDayRow {
 // collectedTimeseries.
 async function aggregateCollectedByDay(
   tx: TxClient,
-  from: Date,
-  toExclusive: Date,
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date,
   propertyId?: string
 ): Promise<DayRow[]> {
+  const { from, toExclusive } = businessMoments(zone, fromDay, toDayExclusive);
   const [payments, billed] = await Promise.all([
     tx.$queryRaw<RawPaymentDayRow[]>`
       SELECT
-        (p.received_at AT TIME ZONE 'UTC')::date              AS bucket,
+        (p.received_at AT TIME ZONE ${zone})::date           AS bucket,
         COUNT(*) FILTER (WHERE p.kind <> 'refund')::int       AS payments_count,
         COALESCE(SUM(p.amount) FILTER (WHERE p.kind <> 'refund'), 0) AS gross_collected,
         COALESCE(SUM(p.amount) FILTER (WHERE p.kind = 'refund'), 0)  AS refunded
       FROM billing_document_payments p
       JOIN billing_documents d ON d.id = p.document_id
-      WHERE p.received_at >= ${from}
+      -- A credit took money off a bill; none came in (sparx persona issue 185).
+      WHERE p.kind <> 'credit'
+        AND p.received_at >= ${from}
         AND p.received_at < ${toExclusive}
         ${propertyId ? Prisma.sql`AND d.property_id = ${propertyId}::uuid` : Prisma.empty}
       GROUP BY 1
     `,
     tx.$queryRaw<RawBilledDayRow[]>`
       SELECT
-        (finalized_at AT TIME ZONE 'UTC')::date AS bucket,
+        (finalized_at AT TIME ZONE ${zone})::date AS bucket,
         COUNT(*)::int                           AS invoices_count,
         COALESCE(SUM(total), 0)                 AS billed
       FROM billing_documents
@@ -230,27 +276,31 @@ async function aggregateCollectedByDay(
 // read is an indexed lookup, not a re-scan.
 async function aggregateCollectedByDayPerProperty(
   tx: TxClient,
-  from: Date,
-  toExclusive: Date
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date
 ): Promise<(DayRow & { propertyId: string })[]> {
+  const { from, toExclusive } = businessMoments(zone, fromDay, toDayExclusive);
   const [payments, billed] = await Promise.all([
     tx.$queryRaw<RawPaymentDayPropRow[]>`
       SELECT
         d.property_id                                        AS property_id,
-        (p.received_at AT TIME ZONE 'UTC')::date              AS bucket,
+        (p.received_at AT TIME ZONE ${zone})::date           AS bucket,
         COUNT(*) FILTER (WHERE p.kind <> 'refund')::int       AS payments_count,
         COALESCE(SUM(p.amount) FILTER (WHERE p.kind <> 'refund'), 0) AS gross_collected,
         COALESCE(SUM(p.amount) FILTER (WHERE p.kind = 'refund'), 0)  AS refunded
       FROM billing_document_payments p
       JOIN billing_documents d ON d.id = p.document_id
-      WHERE p.received_at >= ${from}
+      -- A credit took money off a bill; none came in (sparx persona issue 185).
+      WHERE p.kind <> 'credit'
+        AND p.received_at >= ${from}
         AND p.received_at < ${toExclusive}
       GROUP BY d.property_id, 2
     `,
     tx.$queryRaw<RawBilledDayPropRow[]>`
       SELECT
         property_id                             AS property_id,
-        (finalized_at AT TIME ZONE 'UTC')::date AS bucket,
+        (finalized_at AT TIME ZONE ${zone})::date AS bucket,
         COUNT(*)::int                           AS invoices_count,
         COALESCE(SUM(total), 0)                 AS billed
       FROM billing_documents
@@ -350,13 +400,16 @@ export async function collectedTimeseries(
 ): Promise<CollectedTimeseries> {
   const grain = input.grain ?? 'day';
   const propertyId = input.propertyId;
-  const from = startOfUtcDay(new Date(input.range.from));
-  const to = startOfUtcDay(new Date(input.range.to));
-  // First day served live (recomputed on every read). Everything before it is a
-  // closed day read from the rollup.
-  const overlayStart = addUtcDays(startOfUtcDay(new Date()), -OVERLAY_DAYS);
 
   return withTenant(ctx, async (tx) => {
+    // The range ends and "today" are the business's calendar days: a range
+    // ending now ends today in the shop, not tomorrow in UTC.
+    const zone = await reportZone(tx, ctx.tenantId);
+    const from = dateOfKey(rangeDayKey(input.range.from, zone));
+    const to = dateOfKey(rangeDayKey(input.range.to, zone));
+    // First day served live (recomputed on every read). Everything before it is a
+    // closed day read from the rollup.
+    const overlayStart = addUtcDays(businessToday(zone), -OVERLAY_DAYS);
     const toExclusive = addUtcDays(to, 1);
     const closedToExclusive = new Date(Math.min(toExclusive.getTime(), overlayStart.getTime()));
     const byKey = new Map<string, DayMeasures>();
@@ -385,7 +438,13 @@ export async function collectedTimeseries(
           });
         }
       } else {
-        for (const d of await aggregateCollectedByDay(tx, from, closedToExclusive, propertyId)) {
+        for (const d of await aggregateCollectedByDay(
+          tx,
+          zone,
+          from,
+          closedToExclusive,
+          propertyId
+        )) {
           addCollectedMeasures(byKey, d.key, d);
         }
       }
@@ -394,7 +453,13 @@ export async function collectedTimeseries(
     // 2) Open days (today + yesterday) always recomputed live so they're fresh.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateCollectedByDay(tx, overlayFrom, toExclusive, propertyId)) {
+      for (const d of await aggregateCollectedByDay(
+        tx,
+        zone,
+        overlayFrom,
+        toExclusive,
+        propertyId
+      )) {
         addCollectedMeasures(byKey, d.key, d);
       }
     }
@@ -431,21 +496,27 @@ export async function collectedTimeseries(
 // so late refunds / voids against older days self-heal in one pass. Run once
 // over full history, this is also the backfill. Invoked per active tenant by
 // `/internal/invoicing/collected-rollup`.
+//
+// The window starts on the business's midnight. It deletes every bucket from its
+// first day and rewrites them, so a start cut at UTC midnight would rewrite that
+// first business day from only the hours after it (sparx persona issue 174).
 export async function reconcileCollectedRollup(
   ctx: ServiceContext,
   opts?: { sinceDays?: number }
 ): Promise<CollectedRollupReconcileResult> {
   const sinceDays = Math.max(0, opts?.sinceDays ?? DEFAULT_RECONCILE_DAYS);
-  const today = startOfUtcDay(new Date());
-  const windowStart = addUtcDays(today, -sinceDays);
-  const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant(ctx, async (tx) => {
+    const zone = await reportZone(tx, ctx.tenantId);
+    const today = businessToday(zone);
+    const windowStart = addUtcDays(today, -sinceDays);
+    const toExclusive = addUtcDays(today, 1); // include today
+
     // Per (property, day) rows (docs/131 §6). Delete-then-insert the whole window
     // for the tenant regardless of property — every site's rows are rewritten in
     // one pass, so a late refund/void on any site self-heals and a site with no
     // activity that day simply has no row.
-    const rows = await aggregateCollectedByDayPerProperty(tx, windowStart, toExclusive);
+    const rows = await aggregateCollectedByDayPerProperty(tx, zone, windowStart, toExclusive);
 
     await tx.rollupInvoicingDailyCollected.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
@@ -560,15 +631,29 @@ export async function collectionsSummary(ctx: ServiceContext): Promise<Collectio
     const thirtyDaysAgo = new Date(Date.now() - 30 * 86_400_000);
     const daysToPayStart = new Date(Date.now() - DAYS_TO_PAY_WINDOW * 86_400_000);
 
+    // "This month" and "last month" begin on the business's midnight on the
+    // 1st. `date_trunc('month', now())` is the database's month, UTC: a payment
+    // taken on the evening of Oct 31 in Denver was November's cash, and on that
+    // evening "this month" already meant November (sparx persona issue 174).
+    const zone = await reportZone(tx, ctx.tenantId);
+    const firstOfMonth = `${businessDateKey(new Date(), zone).slice(0, 8)}01`;
+    const thisMonthStart = businessDayStart(firstOfMonth, zone);
+    const lastMonthStart = businessDayStart(
+      `${shiftDateKey(firstOfMonth, -1).slice(0, 8)}01`,
+      zone
+    );
+
     const [collectedRows, daysRows, openRows, paidAgg, depositAgg] = await Promise.all([
       tx.$queryRaw<RawCollected[]>`
         SELECT
           COALESCE(SUM(CASE WHEN kind = 'refund' THEN -amount ELSE amount END)
-            FILTER (WHERE received_at >= date_trunc('month', now())), 0) AS this_month,
+            FILTER (WHERE received_at >= ${thisMonthStart}), 0) AS this_month,
           COALESCE(SUM(CASE WHEN kind = 'refund' THEN -amount ELSE amount END)
-            FILTER (WHERE received_at >= date_trunc('month', now()) - interval '1 month'
-                      AND received_at <  date_trunc('month', now())), 0) AS last_month
+            FILTER (WHERE received_at >= ${lastMonthStart}
+                      AND received_at <  ${thisMonthStart}), 0) AS last_month
         FROM billing_document_payments
+        -- A credit is not money collected (sparx persona issue 185).
+        WHERE kind <> 'credit'
       `,
       tx.$queryRaw<RawDaysToPay[]>`
         SELECT

@@ -13,6 +13,37 @@ import { LadderReport } from './ladder';
 
 const RANGES = [7, 30, 90].map((d) => ({ value: String(d), label: `Last ${String(d)} days` }));
 
+/** The three states in their house shapes, so a failure always offers a retry. */
+function ReportBody({ ladder }: { ladder: ReturnType<typeof useLadder> }) {
+  if (ladder.isPending) {
+    return (
+      <Card className="items-center justify-center py-8">
+        <PaneWaiting module="funnels" />
+      </Card>
+    );
+  }
+  if (ladder.isError) {
+    return (
+      <Card className="items-center justify-center py-8">
+        <PaneLoadError
+          module="funnels"
+          icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
+          title="Could not work out how this is doing"
+          description={funnelErrorMessage(
+            ladder.error,
+            'This is a problem reaching the server. The campaign itself carries on as normal, and nothing it has recorded is affected.'
+          )}
+          error={ladder.error}
+          onRetry={() => {
+            void ladder.refetch();
+          }}
+        />
+      </Card>
+    );
+  }
+  return ladder.data ? <LadderReport ladder={ladder.data} /> : null;
+}
+
 export function ReportPanel({ id }: { id: string }) {
   const [days, setDays] = useState(30);
   const ladder = useLadder(id, days);
@@ -44,31 +75,7 @@ export function ReportPanel({ id }: { id: string }) {
         </Field>
       </header>
 
-      {/* The three states in their house shapes. This branch used to be a bare
-          "Loading…" paragraph and, on a failure, a sentence with NO WAY TO TRY
-          AGAIN — the only dead end of its kind on the pane. */}
-      {ladder.isPending ? (
-        <Card className="items-center justify-center py-8">
-          <PaneWaiting module="funnels" />
-        </Card>
-      ) : ladder.isError ? (
-        <Card className="items-center justify-center py-8">
-          <PaneLoadError
-            module="funnels"
-            icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
-            title="Could not work out how this is doing"
-            description={funnelErrorMessage(
-              ladder.error,
-              'This is a problem reaching the server. The campaign itself carries on as normal, and nothing it has recorded is affected.'
-            )}
-            onRetry={() => {
-              void ladder.refetch();
-            }}
-          />
-        </Card>
-      ) : ladder.data ? (
-        <LadderReport ladder={ladder.data} />
-      ) : null}
+      <ReportBody ladder={ladder} />
     </section>
   );
 }

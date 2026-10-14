@@ -20,7 +20,7 @@ import { defaultMakeId } from '@wizeworks/silicaui-html';
 import type { EmailNode } from '@wizeworks/silicaui-builder/email';
 import type { EmailDoc } from '../../documents/types';
 import { docKey } from '../../documents/types';
-import { appendEmailSlot, resolveEmailDrop } from '../../email/drop';
+import { clickedEmailSlot } from '../../email/drop';
 import { stampEmailTree } from '../../email/edit';
 import { useApply, useDoc, useDocSnapshot, useSelect, useStudioHost } from '../context';
 import { useDragSource } from '../drag/pointer-drag';
@@ -47,21 +47,18 @@ export function EmailPalette({ onInserted }: { onInserted?: () => void } = {}) {
   /**
    * Where a CLICKED row lands.
    *
-   * Beside the selection where that is legal, climbing outward until something can
-   * hold it — the same rule the canvas uses for a drop, so clicking and dragging
-   * cannot disagree. Nothing selected appends to the end of the email, which is
-   * where someone building from the top down is working.
+   * Inside the selection when it can hold the block; otherwise beside it, climbing
+   * outward until something can hold it, the same rule the canvas uses for a drop.
+   * Nothing selected appends to the end of the email, which is where someone
+   * building from the top down is working.
    */
   const insert = useCallback(
     (item: EmailPaletteItem) => {
       const node = build(item);
-      const anchor = selection[0];
-      // Nothing selected appends to the end of the email — to the last place that
-      // can actually HOLD this block, which for a text block is the last section
-      // rather than the body it could never sit in.
-      const slot = anchor
-        ? resolveEmailDrop(root, { targetId: anchor, position: 'after' }, node)
-        : appendEmailSlot(root, node);
+      // Inside the selection when it can hold this block, beside it otherwise, and
+      // with nothing selected the last place at the end of the email that can hold
+      // it (`clickedEmailSlot`, issue 988).
+      const slot = clickedEmailSlot(root, selection[0], node);
       // REFUSED IS AN ANSWER, and it has to be spoken. An email body holds sections;
       // a text block, a button and an image live INSIDE one. Clicking Text with
       // nothing selected is therefore a legitimate refusal — and it used to be a

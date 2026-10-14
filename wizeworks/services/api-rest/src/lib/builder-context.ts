@@ -90,9 +90,9 @@ export async function siteChromeOptions(
   ]);
   return {
     commerceEnabled: commerceEnabled && !off.includes('commerce'),
-    // Scheduling is not one of the eight switches a site can throw, so only the
-    // account's answer counts.
-    schedulingEnabled,
+    // Bookings became a switch a site can throw (issue 944): a journal can take its
+    // booking pages off its own site.
+    schedulingEnabled: schedulingEnabled && !off.includes('scheduling'),
     cmsEnabled: cmsEnabled && !off.includes('cms'),
   };
 }

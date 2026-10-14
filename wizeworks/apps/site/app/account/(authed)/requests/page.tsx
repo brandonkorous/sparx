@@ -25,6 +25,7 @@ import {
 } from '@/lib/customer-client';
 
 import { Alert, Badge, Button, Input, Textarea } from '@wizeworks/silicaui-react';
+import { ListPager } from '@/components/account/list-pager';
 
 const PAGE_SIZE = 20;
 
@@ -131,8 +132,6 @@ export default function RequestsPage() {
       setSending(false);
     }
   }
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="flex flex-col gap-6">
@@ -302,31 +301,12 @@ export default function RequestsPage() {
         </ul>
       )}
 
-      {totalPages > 1 ? (
-        <div className="flex items-center gap-3">
-          <Button
-            color="neutral"
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            Previous
-          </Button>
-          <span className="text-base-content">
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            color="neutral"
-            variant="outline"
-            size="sm"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      ) : null}
+      <ListPager
+        offset={(page - 1) * PAGE_SIZE}
+        pageSize={PAGE_SIZE}
+        total={total}
+        onMove={(next) => setPage(next / PAGE_SIZE + 1)}
+      />
     </div>
   );
 }

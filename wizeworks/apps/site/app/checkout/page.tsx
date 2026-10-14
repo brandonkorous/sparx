@@ -33,6 +33,7 @@ export default async function CheckoutPage() {
         tenantSlug={site.slug}
         paymentMode={site.commerce.paymentMode}
         shopName={site.name}
+        collectAt={site.contact.address}
       />
     </div>
   );

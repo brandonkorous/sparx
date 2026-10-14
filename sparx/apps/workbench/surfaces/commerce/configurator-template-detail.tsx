@@ -50,6 +50,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { MoneyCentsInput } from '../../components/money-input';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { workFailureWords } from '../../lib/api-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
@@ -1140,7 +1141,10 @@ function TryItPanel({
             <AlertDescription>
               {productErrorMessage(
                 preview.error,
-                'This is a problem reaching the server. Nothing has been changed.'
+                workFailureWords(
+                  preview.error,
+                  'This is a problem reaching the server. Nothing has been changed.'
+                )
               )}
             </AlertDescription>
           </AlertContent>

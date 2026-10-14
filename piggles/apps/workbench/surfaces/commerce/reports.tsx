@@ -1,56 +1,21 @@
 'use client';
 
-// Reports — how selling is going, read-only.
-//
-// Everything here is computed live from real orders by api-rest; nothing is
-// mocked. Four things, in the order a shop owner asks them: how much came in,
-// how that moved day by day, what sold best, and where the sales came from.
-// When there are simply no orders in the chosen window, the surface says so
-// plainly rather than drawing an empty chart — an honest blank beats a fake one.
-//
-// The day-by-day chart is drawn from layout utilities, not a charting library:
-// one series, no axes, heights quantised to a finite set of Tailwind classes so
-// there is no inline style. Pulling in a chart dependency to draw a row of
-// rectangles would be the tail wagging the dog (see sites/traffic.tsx).
+// Reports: how selling is going, read-only, computed live from real orders. The
+// day-by-day chart is Tailwind bars, not a chart library (see sites/traffic.tsx).
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
-import {
-  Card,
-  Heading,
-  Select,
-  Stat,
-  StatDesc,
-  StatTitle,
-  StatValue,
-  Stats,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Card, Select } from '@wizeworks/silicaui-react';
 import { faChartLine } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import { FormSection } from '../../components/form-section';
-import { ConversionFunnelReport } from './conversion-funnel';
-import {
-  BestSellersSection,
-  ChannelsSection,
-  DayByDaySection,
-  RevenueNotes,
-} from './report-sections';
-
-/** Registry module for this pane, so the brand draws Sell's own picture rather
- *  than the generic one. */
-const MODULE = 'commerce';
+import { ReportsOverview, type ReportsOverviewProps } from './reports-overview';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   RANGE_LABEL,
-  formatCents,
-  formatCentsRounded,
   presetRange,
-  reportsErrorMessage,
   useChannelBreakdown,
   useConversionFunnel,
   useRevenueSummary,
@@ -59,7 +24,63 @@ import {
   type RangePreset,
 } from './reports-data';
 
-const NUMBER = new Intl.NumberFormat();
+/** Registry module for this pane, so the brand draws Sell's own picture rather
+ *  than the generic one. */
+const MODULE = 'commerce';
+
+function RangeSelect(props: { preset: RangePreset; onChange: (next: RangePreset) => void }) {
+  return (
+    <div className="w-36">
+      <Select
+        size="sm"
+        color="module"
+        aria-label="Time period"
+        value={props.preset}
+        items={[
+          { value: '7', label: RANGE_LABEL['7'] },
+          { value: '30', label: RANGE_LABEL['30'] },
+          { value: '90', label: RANGE_LABEL['90'] },
+        ]}
+        onValueChange={(next) => {
+          props.onChange((next as RangePreset) ?? '30');
+        }}
+      />
+    </div>
+  );
+}
+
+function ReportsBody(
+  props: Omit<ReportsOverviewProps, 'data' | 'module'> & {
+    summary: ReturnType<typeof useRevenueSummary>;
+    onRetry: () => void;
+  }
+) {
+  const { summary, onRetry } = props;
+  // Both non-ready states are carded, matching the ready one: a stack of
+  // FormSections, each already a card.
+  if (summary.isError) {
+    return (
+      <Card>
+        <PaneLoadError
+          module={MODULE}
+          icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
+          title="Could not load how selling is going"
+          description="This is a problem reaching the server. Try again in a moment."
+          error={summary.error}
+          onRetry={onRetry}
+        />
+      </Card>
+    );
+  }
+  if (summary.isPending || !summary.data) {
+    return (
+      <Card>
+        <PaneWaiting module={MODULE} />
+      </Card>
+    );
+  }
+  return <ReportsOverview {...props} module={MODULE} data={summary.data} />;
+}
 
 export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const [preset, setPreset] = useState<RangePreset>('30');
@@ -83,30 +104,12 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
 
   const data = summary.data;
   const currency = data?.currency ?? 'USD';
-  const hasSales = (data?.ordersCount ?? 0) > 0;
 
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Controls for how selling is going"
-        controls={
-          <div className="w-36">
-            <Select
-              size="sm"
-              color="module"
-              aria-label="Time period"
-              value={preset}
-              items={[
-                { value: '7', label: RANGE_LABEL['7'] },
-                { value: '30', label: RANGE_LABEL['30'] },
-                { value: '90', label: RANGE_LABEL['90'] },
-              ]}
-              onValueChange={(next) => {
-                setPreset((next as RangePreset) ?? '30');
-              }}
-            />
-          </div>
-        }
+        controls={<RangeSelect preset={preset} onChange={setPreset} />}
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -115,112 +118,12 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
           />
         }
       />
-
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-          {/* Both non-ready states are carded, matching the ready one — a stack of
-              FormSections, each already a card. */}
-          {summary.isError ? (
-            <Card>
-              <PaneLoadError
-                module={MODULE}
-                icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
-                title="Could not load how selling is going"
-                description={reportsErrorMessage(
-                  summary.error,
-                  'This is a problem reaching the server. Try again in a moment.'
-                )}
-                onRetry={refetchAll}
-              />
-            </Card>
-          ) : summary.isPending || !data ? (
-            <Card>
-              <PaneWaiting module={MODULE} />
-            </Card>
-          ) : (
-            <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  {RANGE_LABEL[preset]}
-                </Heading>
-                <Text className="text-sm">
-                  Figures cover {data.rangeLabel}. Money is what customers paid, after any refunds.
-                </Text>
-              </div>
-
-              {!hasSales ? (
-                <Card>
-                  <PaneEmpty
-                    module={MODULE}
-                    icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
-                    title="No sales in this period"
-                    description="Once orders come in, this fills with your revenue, your best sellers, and where the sales came from. Try a longer period above, or check back after your next sale."
-                  />
-                </Card>
-              ) : (
-                <>
-                  {/* Wraps, and each block keeps a width its figure fits in.
-                      `.stats` is an `overflow: hidden` flex row that never wrapped,
-                      so at 360px it CLIPPED them: $111.32 read "$111.3" (issue 261). */}
-                  <Stats className="w-full flex-wrap">
-                    <Stat className="min-w-44 flex-1">
-                      <StatTitle>Revenue</StatTitle>
-                      <StatValue>{formatCentsRounded(data.netRevenueCents, currency)}</StatValue>
-                      <StatDesc>after refunds</StatDesc>
-                    </Stat>
-                    <Stat className="min-w-44 flex-1">
-                      <StatTitle>Orders</StatTitle>
-                      <StatValue>{NUMBER.format(data.ordersCount)}</StatValue>
-                      <StatDesc>placed in this period</StatDesc>
-                    </Stat>
-                    <Stat className="min-w-44 flex-1">
-                      <StatTitle>Average order</StatTitle>
-                      <StatValue>{formatCents(data.averageOrderValueCents, currency)}</StatValue>
-                      <StatDesc>spent per order</StatDesc>
-                    </Stat>
-                  </Stats>
-
-                  <RevenueNotes data={data} currency={currency} />
-
-                  <DayByDaySection
-                    series={series.data}
-                    currency={currency}
-                    isPending={series.isPending}
-                  />
-
-                  <FormSection
-                    title="How many visits became orders"
-                    description="Where people stop between arriving and buying. A step with nothing to compare against says so rather than showing 0%."
-                  >
-                    {funnel.isPending ? (
-                      <Text className="text-sm" role="status">
-                        Loading…
-                      </Text>
-                    ) : funnel.data ? (
-                      <ConversionFunnelReport funnel={funnel.data} />
-                    ) : (
-                      <Text className="text-sm">
-                        This could not be worked out just now. Nothing about your orders has
-                        changed.
-                      </Text>
-                    )}
-                  </FormSection>
-
-                  <BestSellersSection
-                    products={products.data ?? []}
-                    currency={currency}
-                    isPending={products.isPending}
-                  />
-
-                  <ChannelsSection
-                    channels={channels.data}
-                    currency={currency}
-                    isPending={channels.isPending}
-                  />
-                </>
-              )}
-            </>
-          )}
+          <ReportsBody
+            {...{ preset, currency, summary, series, products, channels, funnel }}
+            onRetry={refetchAll}
+          />
         </div>
       </div>
     </div>

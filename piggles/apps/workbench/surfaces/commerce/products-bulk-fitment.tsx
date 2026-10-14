@@ -15,7 +15,6 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTitle,
-  Text,
 } from '@wizeworks/silicaui-react';
 import { faDownLeft, faPuzzlePiece } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -27,6 +26,7 @@ import { useFitmentDomains, type FitmentDomain } from './products-data';
 import { useFitmentChoice, type FitmentChoice } from './fitment-choice';
 import { FitmentChooserFields } from './fitment-chooser';
 import { GatheredEntries } from './products-bulk-fitment-entries';
+import { NoLists } from './products-bulk-fitment-no-lists';
 import { useBulkFitmentRun } from './products-bulk-fitment-run';
 import { fit, productCount, targetCount, type BulkTarget } from './products-bulk-words';
 
@@ -93,13 +93,44 @@ function GatherButton(props: { adding: boolean; choice: FitmentChoice; onGather:
   );
 }
 
-function Body(props: {
+function Fields(props: {
+  adding: boolean;
+  choice: FitmentChoice;
+  run: ReturnType<typeof useBulkFitmentRun>;
+  domains: FitmentDomain[];
+  onGather: () => void;
+}) {
+  const { adding, choice, run, domains, onGather } = props;
+  return (
+    <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
+      <FitmentChooserFields
+        choice={choice}
+        domains={domains}
+        withNotes={false}
+        withRanges={adding}
+        lockDomain={!adding && run.entries.length > 0}
+        commit={<GatherButton adding={adding} choice={choice} onGather={onGather} />}
+      />
+      <GatheredEntries
+        adding={adding}
+        entries={run.entries}
+        domains={domains}
+        onRemove={run.drop}
+      />
+      {run.failure ? <Failure text={run.failure} /> : null}
+    </div>
+  );
+}
+
+interface BodyProps {
   direction: Direction;
   target: BulkTarget;
   domains: FitmentDomain[];
   onClose: () => void;
   onDone: () => void;
-}) {
+}
+
+function Body(props: BodyProps) {
   const adding = props.direction === 'add';
   const n = targetCount(props.target);
   const choice = useFitmentChoice(props.domains, true);
@@ -125,23 +156,13 @@ function Body(props: {
       <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col overflow-hidden">
         <DialogTitle>{`${adding ? 'Add' : 'Remove'} what ${productCount(n)} ${fit(n)}`}</DialogTitle>
         <DialogDescription>{LEAD[props.direction]}</DialogDescription>
-        <div className="@container flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
-          <FitmentChooserFields
-            choice={choice}
-            domains={props.domains}
-            withNotes={false}
-            withRanges={adding}
-            lockDomain={!adding && run.entries.length > 0}
-            commit={<GatherButton adding={adding} choice={choice} onGather={gather} />}
-          />
-          <GatheredEntries
-            adding={adding}
-            entries={run.entries}
-            domains={props.domains}
-            onRemove={run.drop}
-          />
-          {run.failure ? <Failure text={run.failure} /> : null}
-        </div>
+        <Fields
+          adding={adding}
+          choice={choice}
+          run={run}
+          domains={props.domains}
+          onGather={gather}
+        />
         <Footer
           adding={adding}
           n={n}
@@ -152,49 +173,6 @@ function Body(props: {
         />
       </DialogContent>
     </Dialog>
-  );
-}
-
-function NoLists(props: {
-  ctx: SurfaceContext;
-  failed: boolean;
-  onRetry: () => void;
-  onClose: () => void;
-}) {
-  if (props.failed) {
-    return (
-      <Alert color="danger" variant="soft">
-        <AlertContent>
-          <AlertTitle>Could not load your compatibility lists</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing has been changed.
-          </AlertDescription>
-        </AlertContent>
-        <Button size="sm" color="danger" variant="soft" onClick={props.onRetry}>
-          Try again
-        </Button>
-      </Alert>
-    );
-  }
-  return (
-    <div className="flex flex-col items-start gap-3">
-      <Text>
-        Before products can be marked as fitting something, your catalog needs a list of what those
-        things are: vehicles, machine models, printers. Set one up and come back.
-      </Text>
-      <Button
-        size="sm"
-        color="module"
-        onClick={(event) => {
-          props.onClose();
-          props.ctx.open('commerce.fitment.list', undefined, {
-            target: event.shiftKey ? 'beside' : 'tab',
-          });
-        }}
-      >
-        Set up a compatibility list
-      </Button>
-    </div>
   );
 }
 
@@ -232,6 +210,7 @@ export function BulkFitmentDialog(props: {
             <NoLists
               ctx={props.ctx}
               failed={domains.isError}
+              error={domains.error}
               onRetry={() => void domains.refetch()}
               onClose={props.onClose}
             />

@@ -59,6 +59,7 @@ import {
 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
@@ -558,25 +559,15 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
           <FollowingNotice scope={scope} />
 
           {failedToLoad ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load what customers said"
-              description={productErrorMessage(
-                reviews.error ?? questions.error,
-                'This is a problem reaching the server. Nothing customers wrote has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void reviews.refetch();
-                    void questions.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing customers wrote has been lost."
+              error={reviews.error ?? questions.error}
+              onRetry={() => {
+                void reviews.refetch();
+                void questions.refetch();
+              }}
             />
           ) : (
             <>

@@ -4,10 +4,10 @@
 
 import { useEffect, useState } from 'react';
 import { useToast } from '@wizeworks/silicaui-react';
-import { formatMoney } from './data';
+import { receiveCoreWords } from './core-line-words';
 import {
   coreErrorMessage,
-  plural,
+  useCoreOpenInvoice,
   useReceiveCores,
   wholeCount,
   type CoreLine,
@@ -48,14 +48,15 @@ function useReceiveForm(open: boolean, owed: number) {
 
 export type ReceiveForm = ReturnType<typeof useReceiveForm>;
 
-function submitLabel(form: ReceiveForm, back: number, currency: string): string {
-  if (!form.valid) return 'Record the core';
-  if (back > 0) return `Give back ${formatMoney(back, currency)}`;
-  return `Keep ${plural(form.bad, 'deposit', 'deposits')}`;
-}
-
-/** Sends the count to the server and reports what it did with the money. */
-function useReceiveSubmit(line: CoreLine, form: ReceiveForm, onClose: () => void) {
+/** Sends the count to the server and reports what it did with the money.
+ *  `asksWhereMoneyGoes` is false when every deposit comes off the open invoice,
+ *  so no "where to" was offered and none is sent. */
+function useReceiveSubmit(
+  line: CoreLine,
+  form: ReceiveForm,
+  asksWhereMoneyGoes: boolean,
+  onClose: () => void
+) {
   const toast = useToast();
   const receive = useReceiveCores();
   const submit = () => {
@@ -63,7 +64,7 @@ function useReceiveSubmit(line: CoreLine, form: ReceiveForm, onClose: () => void
     const body = {
       usable: form.good,
       unusable: form.bad,
-      refundTo: form.values.refundTo,
+      refundTo: asksWhereMoneyGoes ? form.values.refundTo : ('original_payment' as const),
       ...(note ? { note } : {}),
     };
     receive.mutate(
@@ -99,25 +100,28 @@ export function ReceiveCoresModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { owed, currency } = line;
+  const { owed } = line;
   const form = useReceiveForm(open, owed);
-  const { submit, busy } = useReceiveSubmit(line, form, onClose);
-  const deposit = line.depositCents / 100;
-  const back = form.good * deposit;
+  // The order's open invoice: a returned deposit comes off it first (sparx persona
+  // issue 183). Undefined while it loads, so the dialog promises nothing it has
+  // not checked.
+  const invoice = useCoreOpenInvoice(line.orderItemId, open);
+  const words = receiveCoreWords(line, { usable: form.good, unusable: form.bad, invoice });
+  const { submit, busy } = useReceiveSubmit(line, form, words.asksWhereMoneyGoes, onClose);
 
   return (
     <ActionDialog
       open={open}
       onClose={onClose}
       title="Old part came back"
-      description={`${line.name}: ${plural(owed, 'core is', 'cores are')} still owed by ${line.customerName}. A usable core gets its ${formatMoney(deposit, currency)} deposit back. If this order has an invoice still open, the deposit comes off that invoice first.`}
-      submitLabel={submitLabel(form, back, currency)}
-      submitColor={back > 0 ? 'danger' : 'module'}
-      submitDisabled={!form.valid}
+      description={words.description}
+      submitLabel={form.valid ? words.submitLabel : 'Record the core'}
+      submitColor={words.submitColor}
+      submitDisabled={!form.valid || !words.ready}
       busy={busy}
       onSubmit={submit}
     >
-      <ReceiveCoresFields form={form} owed={owed} />
+      <ReceiveCoresFields form={form} owed={owed} asksWhereMoneyGoes={words.asksWhereMoneyGoes} />
     </ActionDialog>
   );
 }

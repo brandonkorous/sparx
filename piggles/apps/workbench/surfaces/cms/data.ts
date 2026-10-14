@@ -59,6 +59,7 @@ export type FieldDef =
   | (BaseField & { type: 'email' })
   | (BaseField & { type: 'reference'; to: string; multiple?: boolean; min?: number; max?: number })
   | (BaseField & { type: 'asset'; accept?: string[]; multiple?: boolean })
+  | (BaseField & { type: 'author'; multiple?: boolean })
   | ObjectFieldDef
   | RepeaterFieldDef;
 

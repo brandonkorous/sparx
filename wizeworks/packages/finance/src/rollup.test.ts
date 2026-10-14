@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { assertAllocationsFit, unallocatedCents } from './expenses';
 import { OverAllocatedError } from './errors';
-import { computeProfit, utcDayRange, utcMidnight } from './rollup';
+import { computeProfit, paymentSalesCents, utcDayRange, utcMidnight } from './rollup';
 
 const inputs = {
   revenueCents: 0,
@@ -127,5 +127,31 @@ describe('unallocatedCents', () => {
 
   it('is the whole expense when nothing was pinned to a job', () => {
     expect(unallocatedCents(100_00, [])).toBe(100_00);
+  });
+});
+
+describe('what a payment on an invoice sold (sparx persona issue 172)', () => {
+  // Only invoices that did NOT come from an order reach this: an order's sale
+  // is counted when it is placed, so its invoice's payment would count it twice.
+  it('is the payment less its share of the tax and the core deposits', () => {
+    // A $1,000.00 service invoice with $70.00 tax and a $150.00 core deposit,
+    // total $1,220.00, paid in full: $1,000.00 sold.
+    const invoice = { documentTotal: 1220, documentTax: 70, documentCores: 150 };
+    expect(paymentSalesCents({ ...invoice, amount: 1220, kind: 'payment' })).toBe(100000);
+  });
+
+  it('counts a part payment in the same proportion', () => {
+    const invoice = { documentTotal: 1220, documentTax: 70, documentCores: 150 };
+    expect(paymentSalesCents({ ...invoice, amount: 610, kind: 'payment' })).toBe(50000);
+  });
+
+  it('takes a refund off', () => {
+    const invoice = { documentTotal: 107, documentTax: 7, documentCores: 0 };
+    expect(paymentSalesCents({ ...invoice, amount: 107, kind: 'refund' })).toBe(-10000);
+  });
+
+  it('counts the whole payment on an invoice with no total to share by', () => {
+    const invoice = { documentTotal: 0, documentTax: 0, documentCores: 0 };
+    expect(paymentSalesCents({ ...invoice, amount: 50, kind: 'deposit' })).toBe(5000);
   });
 });

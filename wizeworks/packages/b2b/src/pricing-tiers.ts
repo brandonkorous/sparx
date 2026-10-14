@@ -11,6 +11,7 @@
 import { z } from 'zod';
 import { withTenant, type Prisma } from '@wizeworks/db';
 import { notFound } from '@wizeworks/api-core/errors';
+import { indexEntity } from '@wizeworks/events';
 import type { B2bContext } from './context.js';
 
 // ── Schemas (shared with the REST routes — one source of truth) ───────────────
@@ -182,6 +183,12 @@ export async function createTier(ctx: B2bContext, rawInput: unknown): Promise<Ti
       include: TIER_COUNT_INCLUDE,
     })
   );
+  await indexEntity({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId,
+    entityType: 'pricing_tier',
+    recordId: tier.id,
+  });
   return toTierView(tier);
 }
 
@@ -204,6 +211,12 @@ export async function updateTier(
       include: TIER_COUNT_INCLUDE,
     })
   );
+  await indexEntity({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId,
+    entityType: 'pricing_tier',
+    recordId: id,
+  });
   return toTierView(updated);
 }
 
@@ -218,6 +231,13 @@ export async function deleteTier(ctx: B2bContext, id: string): Promise<void> {
   await withTenant(ctx, (tx) =>
     tx.b2bPricingTier.update({ where: { id }, data: { deletedAt: new Date() } })
   );
+  await indexEntity({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId,
+    entityType: 'pricing_tier',
+    recordId: id,
+    op: 'delete',
+  });
 }
 
 // ── Tier overrides ───────────────────────────────────────────────────────────

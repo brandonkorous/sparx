@@ -222,6 +222,9 @@ const CARRIER_LABELS: Record<string, string> = {
   dhl: 'DHL',
   digital: 'Sent electronically',
   dropship: 'Sent by the supplier',
+  // Taken at the counter or fetched by the customer. It printed as "pickup" on
+  // a customer's order page (sparx persona issue 177).
+  pickup: 'Collected in person',
   other: 'Another courier',
 };
 
@@ -232,7 +235,23 @@ const CARRIER_LABELS: Record<string, string> = {
  * has named is a gap in the map above, and shouting it does not make it mean
  * anything. Empty/absent returns '' so a caller can drop the line entirely.
  */
-export function carrierLabel(carrier: string | null | undefined): string {
+/** The carrier name the owner typed, from a fulfillment's metadata
+ *  (`carrierOther`, written when the carrier is `other`); null when none. */
+export function typedCarrierOf(metadata: unknown): string | null {
+  if (typeof metadata !== 'object' || metadata === null) return null;
+  const typed = (metadata as { carrierOther?: unknown }).carrierOther;
+  return typeof typed === 'string' && typed.trim() !== '' ? typed.trim() : null;
+}
+
+export function carrierLabel(
+  carrier: string | null | undefined,
+  /** The name the owner typed for a carrier with no code (`other`): kept on the
+   *  fulfillment as `metadata.carrierOther`. "R+L Carriers" read as "Another
+   *  courier" without it (sparx persona issue 216). */
+  typed?: string | null
+): string {
   if (!carrier) return '';
+  const named = typed?.trim() ?? '';
+  if (carrier === 'other' && named !== '') return named;
   return CARRIER_LABELS[carrier] ?? carrier;
 }

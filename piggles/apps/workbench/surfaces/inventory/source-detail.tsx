@@ -100,6 +100,7 @@ import {
   type SourceType,
 } from './sources-data';
 import { productCopy } from '../../lib/product';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -170,7 +171,7 @@ function TypeIcon({ type, className }: { type: SourceType; className?: string })
  *  this and 403s otherwise, so the interface simply doesn't offer the controls
  *  to anyone who would only be handed an error. */
 function canPairBridge(role: string | undefined): boolean {
-  return role === 'admin' || role === 'owner';
+  return canManageBusiness(role);
 }
 
 /* ── The one-time pairing key ─────────────────────────────────────────────

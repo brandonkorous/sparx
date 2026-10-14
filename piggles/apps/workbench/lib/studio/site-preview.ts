@@ -12,7 +12,7 @@
 // possible failure for a screen whose whole job is showing unsaved work.
 
 import { useMutation } from '@wizeworks/query';
-import { recordAddressAt, recordPreviewPath } from '@wizeworks/silica-catalog';
+import { kindAddressAt, recordAddressAt, recordPreviewPath } from '@wizeworks/silica-catalog';
 import { api } from '../api/client';
 import type { SitePreviewTarget } from './site-data';
 
@@ -31,6 +31,14 @@ export function previewPath(
 ): string {
   const address = recordAddressAt(slug);
   if (address) return recordPreviewPath(address, samples);
+  // A content kind's page ("Each article") previews at one of its published pieces,
+  // keyed by its address. With none published yet there is nothing to show it with, so
+  // it opens the front page rather than a 404.
+  const kind = kindAddressAt(slug);
+  if (kind) {
+    const sample = samples?.[kind.slug];
+    return sample?.startsWith(kind.prefix) ? sample : '/';
+  }
   const bare = (slug ?? '').trim().replace(/^\/+/, '');
   return bare === '' ? '/' : `/${bare}`;
 }

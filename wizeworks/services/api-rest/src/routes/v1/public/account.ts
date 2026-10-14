@@ -21,7 +21,8 @@ import { z } from 'zod';
 
 import { isModuleEnabled } from '@wizeworks/auth';
 import { approvalService } from '@wizeworks/b2b';
-import { cartService, COLLECTION_RATE_REF } from '@wizeworks/commerce';
+import { cartService } from '@wizeworks/commerce';
+import { typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { heldOrderMoney, orderService, orderFulfillmentsService } from '@wizeworks/crm';
 import { unitsWaitingForCore } from '@wizeworks/crm-schemas';
 import { NET_TERMS_AR_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
@@ -48,8 +49,10 @@ import {
 import { resolveCoreReturnAddress } from '../../../lib/business-identity.js';
 import { resolvePublicPropertyId, siteDisabledModules } from '../../../lib/property.js';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { isCollectedOrder } from '../../../lib/collected-order.js';
 import {
   ensureAnnouncedMembership,
+  optionalCustomer,
   requireCustomerId,
   relaySetCookies,
 } from '../../../lib/customer-session.js';
@@ -128,11 +131,6 @@ function orderMeta(metadata: unknown): Record<string, unknown> {
 function readShippingDescription(metadata: unknown): string | null {
   const value = orderMeta(metadata).shippingDescription;
   return typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
-}
-
-/** Coming to fetch it, so there is no delivery and no address to show. */
-function isCollectedOrder(metadata: unknown): boolean {
-  return orderMeta(metadata).shippingRateRef === COLLECTION_RATE_REF;
 }
 
 /** How an order billed to a trade account is paid: its terms, and its invoice
@@ -365,8 +363,28 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     return ok({ ok: true });
   });
 
+  // The site asks this on every page, for every visitor, to know whether to say "Sign
+  // in" or a name. Most visitors have no session, and `/me` answers them 401, which
+  // every browser prints as an error in the console of every page of every site
+  // (persona issue 947). This answers them `customer: null` instead. A signed-in
+  // reader gets exactly what `/me` gives.
+  app.get('/v1/public/commerce/account/session', async (request) => {
+    const ctx = await accountContext(request);
+    if (!(await optionalCustomer(request, ctx))) return ok({ customer: null });
+    return ok(await signedInProfile(request, ctx));
+  });
+
   app.get('/v1/public/commerce/account/me', async (request) => {
     const ctx = await accountContext(request);
+    return ok(await signedInProfile(request, ctx));
+  });
+
+  /** The signed-in customer and what this site offers them. Throws 401 when nobody is
+   *  signed in. */
+  async function signedInProfile(
+    request: FastifyRequest,
+    ctx: Awaited<ReturnType<typeof accountContext>>
+  ) {
     const customerId = await requireCustomerId(request, ctx, 'account:read');
     // WHICH SITE they are signed in on. The account area is one screen on many
     // sites, and a business running a shop and a journal off one account has
@@ -377,8 +395,8 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       loadOffers(ctx, customerId, await siteDisabledModules(ctx.tenantId, propertyId)),
     ]);
     if (!customer) throw notFound('Customer', customerId);
-    return ok({ customer, offers });
-  });
+    return { customer, offers };
+  }
 
   app.patch('/v1/public/commerce/account/me', async (request) => {
     const body = ProfileBody.parse(request.body);
@@ -434,6 +452,8 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
         totalCents: toCents(o.total),
         currency: o.currency,
         placedAt: o.placedAt.toISOString(),
+        // So the list says Collected, not Delivered (sparx persona issue 177).
+        collecting: isCollectedOrder(o.metadata),
       })),
       { page, per_page: pageSize, total, total_pages: Math.ceil(total / pageSize) }
     );
@@ -544,6 +564,9 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
         id: f.id,
         status: f.status,
         carrier: f.carrier,
+        // The name the owner typed when the carrier has no code: "R+L
+        // Carriers", not "Another courier" (sparx persona issue 216).
+        carrierOther: typedCarrierOf(f.metadata),
         service: f.service,
         trackingNumber: f.trackingNumber,
         trackingUrl: f.trackingUrl,

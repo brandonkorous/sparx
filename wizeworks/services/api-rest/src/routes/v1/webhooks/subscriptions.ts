@@ -18,6 +18,7 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
 import { writeAudit } from '@wizeworks/api-core/audit';
+import { indexEntity } from '@wizeworks/events';
 import {
   decryptWebhookSecret,
   storeWebhookSecret,
@@ -165,6 +166,12 @@ const webhookRoutes: FastifyPluginAsync = (app) => {
       });
       return row;
     });
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'webhook',
+      recordId: created.id,
+    });
 
     reply.code(201);
     return ok({
@@ -201,6 +208,12 @@ const webhookRoutes: FastifyPluginAsync = (app) => {
       });
       return after;
     });
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'webhook',
+      recordId: updated.id,
+    });
 
     return ok({
       ...updated,
@@ -221,6 +234,13 @@ const webhookRoutes: FastifyPluginAsync = (app) => {
         entityId: id,
         before: { name: existing.name },
       });
+    });
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'webhook',
+      recordId: id,
+      op: 'delete',
     });
     reply.code(204);
   });

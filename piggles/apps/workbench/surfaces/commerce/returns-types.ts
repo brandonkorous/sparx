@@ -50,6 +50,11 @@ export interface ReturnLine {
   variantId: string | null;
   quantity: number;
   approvedQuantity: number;
+  /** What the units accepted back were paid: goods after their discount, and
+   *  the sales tax on them (sparx persona issue 231). Absent from an older
+   *  server. */
+  paidGoodsCents?: number;
+  paidTaxCents?: number;
   reasonCode: string;
   customerNote: string | null;
   mediaAssetIds: string[];
@@ -101,6 +106,9 @@ export interface ReturnDetail extends ReturnSummary {
   refundedAmountCents: number | null;
   restockingFeeCents: number | null;
   refundIssuedAs: string | null;
+  /** The money was taken by hand, so a refund records it and a person hands it
+   *  back (sparx persona issue 178). The server's answer, never guessed here. */
+  refundsByHand: boolean;
   approvedAt: string | null;
   receivedAt: string | null;
   refundedAt: string | null;

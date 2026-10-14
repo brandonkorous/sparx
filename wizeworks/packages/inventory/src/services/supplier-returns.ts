@@ -567,14 +567,12 @@ async function resolveLines(
       unitCostCents = level?.avgCostCents ?? variant.costCents ?? null;
     }
     if (unitCostCents === null) {
+      // Said to the owner as written (persona issue 245): what is missing, and the
+      // one box that fixes it. A return recorded as worth nothing would write the
+      // money off, so it is refused rather than guessed.
       throw new InventoryValidationError(
-        'Nothing on record says what this item cost, so the credit to expect cannot be worked out',
-        [
-          {
-            field: 'lines',
-            message: `enter a unit cost for ${input.variantId}: recording a return worth £0 would write the money off`,
-          },
-        ]
+        'Nothing on record says what this item cost, so the credit to expect cannot be worked out. Enter what you paid for each one.',
+        [{ field: 'lines', message: 'enter what you paid for each one' }]
       );
     }
 

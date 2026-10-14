@@ -23,7 +23,7 @@
 import { useState } from 'react';
 import { Button, Input, NativeSelect, Text, useToast } from '@wizeworks/silicaui-react';
 import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
-import { CARRIERS } from './carriers';
+import { CARRIERS, serviceFor } from './carriers';
 import type { ShipNow } from './order-ship-gate';
 
 /**
@@ -49,20 +49,31 @@ export function RecordHandover({
   const [carrier, setCarrier] = useState<string>('usps');
   const [tracking, setTracking] = useState('');
   const [note, setNote] = useState('');
+  // "Another courier" asks which: the customer reads this name, not "Another
+  // courier" (sparx persona issue 219).
+  const [courier, setCourier] = useState('');
+  const unnamed = !plan.collected && carrier === 'other' && courier.trim() === '';
 
   const lines = shipNow.lines;
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
-    if (lines.length === 0) return;
+    if (lines.length === 0 || unnamed) return;
     record.mutate(
       {
         status: plan.collected ? 'delivered' : 'shipped',
         lines,
         carrier: plan.collected ? 'pickup' : carrier,
+        ...(plan.collected ? {} : { carrierOther: courier }),
         // The words the shopper chose, kept on the record so the pane can say
         // how it went without re-deriving it from a rate ref.
-        ...(plan.description ? { service: plan.description } : {}),
+        ...(plan.collected
+          ? plan.description
+            ? { service: plan.description }
+            : {}
+          : serviceFor(plan.description, carrier)
+            ? { service: serviceFor(plan.description, carrier) }
+            : {}),
         ...(plan.collected ? {} : { trackingNumber: tracking }),
         notes: note,
       },
@@ -127,6 +138,18 @@ export function RecordHandover({
               ))}
             </NativeSelect>
           </label>
+          {carrier === 'other' ? (
+            <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
+              <span className="text-base font-medium">Courier’s name</span>
+              <Input
+                value={courier}
+                placeholder="Estes, a local courier…"
+                onChange={(event) => {
+                  setCourier(event.target.value);
+                }}
+              />
+            </label>
+          ) : null}
           <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
             <span className="text-base font-medium">Tracking number (optional)</span>
             <Input
@@ -148,7 +171,13 @@ export function RecordHandover({
           }}
         />
       </label>
-      <Button type="submit" color="primary" loading={record.isPending}>
+      <Button
+        type="submit"
+        color="primary"
+        loading={record.isPending}
+        disabled={unnamed}
+        title={unnamed ? 'Say which courier took it' : undefined}
+      >
         {plan.collected ? 'They collected it' : 'Mark it as sent'}
       </Button>
     </form>

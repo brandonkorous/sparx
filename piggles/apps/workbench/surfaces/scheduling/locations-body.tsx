@@ -3,10 +3,11 @@
 // What fills the places card: the failure, the wait, the first-run state, or the
 // table.
 
-import { Button, EmptyState } from '@wizeworks/silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { faLocationDot, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { LocationsTable } from './locations-table';
 import type { BusinessLocation } from './setup-data';
@@ -17,6 +18,8 @@ const MODULE = 'scheduling';
 
 interface BodyProps {
   isError: boolean;
+  /** The failed read's error, so the failure says WHY it failed (issue 260). */
+  error: unknown;
   isPending: boolean;
   rows: BusinessLocation[];
   activeOnly: boolean;
@@ -67,6 +70,7 @@ function LocationsEmpty({
 
 export function LocationsBody({
   isError,
+  error,
   isPending,
   rows,
   activeOnly,
@@ -77,15 +81,13 @@ export function LocationsBody({
 }: BodyProps) {
   if (isError) {
     return (
-      <EmptyState
+      <PaneLoadError
+        module={MODULE}
         icon={<Icon glyph={faLocationDot} className="size-6" aria-hidden />}
         title="Could not load your places"
         description="This is a problem reaching the server. Nothing is affected: the list just could not be read just now."
-        actions={
-          <Button size="sm" color="module" onClick={refetch}>
-            Try again
-          </Button>
-        }
+        error={error}
+        onRetry={refetch}
       />
     );
   }

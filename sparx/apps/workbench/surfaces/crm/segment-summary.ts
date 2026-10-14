@@ -23,6 +23,23 @@ import {
  *  this — the builder refuses to save one — so it means an unrecognised shape. */
 export const NO_CONDITIONS = 'No conditions';
 
+/** The names behind the values a person PICKS (a tier, a wholesale account, a
+ *  team member), which the rule stores by id, keyed by id. A kind left out has
+ *  not loaded yet. */
+export type PickedNames = Partial<Record<'rep' | 'account' | 'tier', Record<string, string>>>;
+
+/** What a picked value reads as before its names load, and after it is gone. */
+const PICKED_WORDS: Record<keyof PickedNames, { loading: string; gone: string }> = {
+  rep: { loading: 'a chosen team member', gone: 'a former team member' },
+  account: { loading: 'a chosen account', gone: 'a removed account' },
+  tier: { loading: 'a chosen tier', gone: 'a removed tier' },
+};
+
+interface Lookup {
+  custom: CustomFieldIndex;
+  names: PickedNames;
+}
+
 interface Leaf {
   kind: 'predicate';
   field: SegmentFieldPath;
@@ -56,29 +73,37 @@ function leaves(node: unknown): Leaf[] {
 
 /** A stored value in the words the builder shows for it: an enum reads as its
  *  label, a range as "5 and 10", a boolean as yes or no. */
-function readValue(leaf: Leaf, custom: CustomFieldIndex): string {
+function readValue(leaf: Leaf, lookup: Lookup): string {
   const { value } = leaf;
   if (value === undefined || value === null) return '';
   if (typeof value === 'boolean') return value ? 'yes' : 'no';
   if (Array.isArray(value)) {
-    const parts = value.map((v) => labelFor(leaf, v, custom));
+    const parts = value.map((v) => labelFor(leaf, v, lookup));
     return leaf.op === 'between' && parts.length === 2
       ? `${parts[0] ?? ''} and ${parts[1] ?? ''}`
       : parts.join(', ');
   }
-  return labelFor(leaf, value, custom);
+  return labelFor(leaf, value, lookup);
 }
 
-function labelFor(leaf: Leaf, value: unknown, custom: CustomFieldIndex): string {
-  const options = fieldMeta(leaf.field, custom).options;
-  const match = options?.find((o) => o.value === value);
+function labelFor(leaf: Leaf, value: unknown, lookup: Lookup): string {
+  const meta = fieldMeta(leaf.field, lookup.custom);
+  // A picked value is an id, and an id is not something to read (sparx persona
+  // issue 149: "Linked wholesale account is 1c0e…").
+  if (meta.kind === 'rep' || meta.kind === 'account' || meta.kind === 'tier') {
+    const names = lookup.names[meta.kind];
+    const words = PICKED_WORDS[meta.kind];
+    if (!names) return words.loading;
+    return names[String(value)] ?? words.gone;
+  }
+  const match = meta.options?.find((o) => o.value === value);
   return match ? match.label : String(value);
 }
 
-function describeLeaf(leaf: Leaf, custom: CustomFieldIndex): string {
-  const meta = fieldMeta(leaf.field, custom);
+function describeLeaf(leaf: Leaf, lookup: Lookup): string {
+  const meta = fieldMeta(leaf.field, lookup.custom);
   const op = operatorLabel(leaf.op as Parameters<typeof operatorLabel>[0], meta.kind);
-  const value = readValue(leaf, custom);
+  const value = readValue(leaf, lookup);
   return value === '' ? `${meta.label} ${op}` : `${meta.label} ${op} ${value}`;
 }
 
@@ -110,14 +135,19 @@ const MAX_SPELLED_OUT = 4;
  * "not subscribed" read as "Subscribed to marketing is yes" — the exact opposite
  * of the group, in a sentence with no hint anything was missing.
  */
-export function describeRule(rules: unknown, custom: CustomFieldIndex = {}): string {
+export function describeRule(
+  rules: unknown,
+  custom: CustomFieldIndex = {},
+  names: PickedNames = {}
+): string {
+  const lookup: Lookup = { custom, names };
   if (leaves(rules).length === 0) return NO_CONDITIONS;
   if (leaves(rules).length > MAX_SPELLED_OUT) {
     const [first, ...rest] = leaves(rules);
-    const head = first === undefined ? NO_CONDITIONS : describeLeaf(first, custom);
+    const head = first === undefined ? NO_CONDITIONS : describeLeaf(first, lookup);
     return `${head}, and ${String(rest.length)} more`;
   }
-  return describeNode(rules, custom, null);
+  return describeNode(rules, lookup, null);
 }
 
 /**
@@ -126,22 +156,18 @@ export function describeRule(rules: unknown, custom: CustomFieldIndex = {}): str
  * "(opened or clicked) and subscribed" flattens into "opened or clicked and
  * subscribed", which an English reader groups the other way round.
  */
-function describeNode(
-  node: unknown,
-  custom: CustomFieldIndex,
-  parent: 'and' | 'or' | null
-): string {
-  if (isLeaf(node)) return describeLeaf(node, custom);
+function describeNode(node: unknown, lookup: Lookup, parent: 'and' | 'or' | null): string {
+  if (isLeaf(node)) return describeLeaf(node, lookup);
   if (!isBranch(node)) return '';
   if (node.kind === 'not') {
-    const inner = describeNode(node.child, custom, null);
+    const inner = describeNode(node.child, lookup, null);
     return inner === '' ? '' : `not (${inner})`;
   }
   // Hoisted: inside the callback TypeScript no longer remembers that the `not`
   // case returned above, so the parameter widens back to all three kinds.
   const kind: 'and' | 'or' = node.kind;
   const parts = (node.children ?? [])
-    .map((child) => describeNode(child, custom, kind))
+    .map((child) => describeNode(child, lookup, kind))
     .filter((part) => part !== '');
   if (parts.length === 0) return '';
   if (parts.length === 1) return parts[0] ?? '';

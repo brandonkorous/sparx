@@ -37,6 +37,7 @@ import type {
 import { shopHeader } from '../../../wizeworks/packages/silica-catalog/src/commerce';
 import { blogIndexPage, blogPostGrid } from '../../../wizeworks/packages/silica-catalog/src/cms';
 import { HOST_KEYS, functionalShell, hostCore } from '../../../wizeworks/packages/silica-catalog/src/host-nodes';
+import { insideMeasure } from '../../../wizeworks/packages/silica-catalog/src/page-measure';
 import { resolveSparxTheme } from '../../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
 import { TEMPLATE_THEME_BY_SLUG } from '../../../wizeworks/packages/silica-catalog/src/template-themes';
 import { CONTENT_THEME_BY_SLUG } from '../../../wizeworks/packages/silica-catalog/src/content-themes';
@@ -66,8 +67,13 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *
  *  1.5.0 carries the chrome the composite has been emitting since issue 291 — the
  *  account link in the bar and the phone panel, and the legal links in the footer —
- *  which the committed bundles had been a release behind on (issue 313). */
-const BUNDLE_VERSION = '1.5.1';
+ *  which the committed bundles had been a release behind on (issue 313).
+ *
+ *  1.5.3 puts every band's gutter inside its 6xl box (piggles persona issue 950). The
+ *  committed bundles were bumped one patch each in place, from 1.5.1 or from 1.5.2 where
+ *  an earlier fix had bumped them by hand, so this is the highest of those and a regen
+ *  never ships a version older than the one already published. */
+const BUNDLE_VERSION = '1.5.3';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -204,7 +210,10 @@ function singleton(
         kind: 'singleton',
         ...(slug ? { slug } : {}),
         ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-        root: stampTree(root),
+        // The house measure (piggles persona issue 950): a band this generator, or the spec,
+        // authored with its gutter outside its 6xl box ships with it inside, so every page
+        // starts on the header's left edge however its sections were written.
+        root: stampTree(insideMeasure(root).root),
     };
 }
 
@@ -226,7 +235,8 @@ function collectionPage(
         recordType,
         isDefault: true,
         ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-        root: stampTree(root),
+        // The house measure, as `singleton` above.
+        root: stampTree(insideMeasure(root).root),
     };
 }
 

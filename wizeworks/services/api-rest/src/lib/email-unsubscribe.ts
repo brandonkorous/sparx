@@ -26,14 +26,31 @@ function hmac(data: string): string {
   return crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
 }
 
-/** `base64url(tenantId:email).hmac` — opaque, tamper-evident, self-describing. */
-export function signUnsubscribeToken(tenantId: string, email: string): string {
-  const data = Buffer.from(`${tenantId}:${email.toLowerCase()}`).toString('base64url');
+/**
+ * `base64url(tenantId:email)[~base64url(broadcastId)].hmac`: opaque, tamper-evident,
+ * self-describing.
+ *
+ * The campaign rides in the signed part when the link is in a campaign, so an
+ * unsubscribe can be counted against the campaign it came from: our own link wrote
+ * the do-not-email row and nothing else, and every campaign's "Unsubscribed" read 0
+ * however many readers left (piggles persona issue 985). Signed, so nobody can pin
+ * their unsubscribe on a campaign they never got. `~` is not a base64url character,
+ * and a token without it is the older form, which still verifies.
+ */
+export function signUnsubscribeToken(
+  tenantId: string,
+  email: string,
+  broadcastId?: string | null
+): string {
+  const who = Buffer.from(`${tenantId}:${email.toLowerCase()}`).toString('base64url');
+  const data = broadcastId ? `${who}~${Buffer.from(broadcastId).toString('base64url')}` : who;
   return `${data}.${hmac(data)}`;
 }
 
 /** Verify + decode a token. Null on any tampering / malformed input. */
-export function verifyUnsubscribeToken(token: string): { tenantId: string; email: string } | null {
+export function verifyUnsubscribeToken(
+  token: string
+): { tenantId: string; email: string; broadcastId: string | null } | null {
   const dot = token.lastIndexOf('.');
   if (dot <= 0) return null;
   const data = token.slice(0, dot);
@@ -42,17 +59,50 @@ export function verifyUnsubscribeToken(token: string): { tenantId: string; email
   const sigBuf = Buffer.from(sig);
   const expBuf = Buffer.from(expected);
   if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) return null;
-  const payload = Buffer.from(data, 'base64url').toString('utf8');
+  const [who = '', campaign] = data.split('~');
+  const payload = Buffer.from(who, 'base64url').toString('utf8');
   const idx = payload.indexOf(':');
   if (idx === -1) return null;
   const tenantId = payload.slice(0, idx);
   const email = payload.slice(idx + 1);
   if (!tenantId || !email) return null;
-  return { tenantId, email };
+  const broadcastId = campaign ? Buffer.from(campaign, 'base64url').toString('utf8') : '';
+  return { tenantId, email, broadcastId: broadcastId || null };
 }
 
 /** The absolute one-click unsubscribe URL the renderer + header use. */
-export function unsubscribeUrl(tenantId: string, email: string): string {
-  const token = signUnsubscribeToken(tenantId, email);
+export function unsubscribeUrl(
+  tenantId: string,
+  email: string,
+  broadcastId?: string | null
+): string {
+  const token = signUnsubscribeToken(tenantId, email, broadcastId);
   return `${API_BASE}/v1/public/email/unsubscribe?token=${encodeURIComponent(token)}`;
+}
+
+/** The headers that put a mail app's own Unsubscribe button beside the sender
+ *  (RFC 2369 + RFC 8058 one-click). */
+export function unsubscribeHeaders(url: string): Record<string, string> {
+  return {
+    'List-Unsubscribe': `<${url}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  };
+}
+
+/**
+ * A campaign drawn once for every reader, given THIS reader's unsubscribe link: the
+ * placeholder swapped in the HTML and the text, and the headers to send with it.
+ * Unchanged, with no headers, when the body carries no placeholder.
+ */
+export function personalizeUnsubscribe(
+  body: { html: string; text: string },
+  placeholder: string,
+  url: string
+): { html: string; text: string; headers?: Record<string, string> } {
+  if (!body.html.includes(placeholder) && !body.text.includes(placeholder)) return body;
+  return {
+    html: body.html.split(placeholder).join(url),
+    text: body.text.split(placeholder).join(url),
+    headers: unsubscribeHeaders(url),
+  };
 }

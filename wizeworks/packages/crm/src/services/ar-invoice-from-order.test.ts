@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { computeBillingTotals } from './billing-totals';
-import { itemizedFromOrder } from './ar-invoice-lines';
+import { invoiceTaxRate, itemizedFromOrder } from './ar-invoice-lines';
 
 const ACTUATORS = {
   name: 'Holset Reman Turbo Actuator, X15 EPA17 6382093HX',
@@ -86,3 +86,48 @@ describe('itemizedFromOrder', () => {
     expect(itemizedFromOrder({ ...O_000012, items: [] }, 3715)).toBeNull();
   });
 });
+
+// INV-000029 printed "Tax (7.24%)" on Renée's two Stanadyne additives: $1.81 on
+// $25.00, divided backwards. Utah taxed it at 7.25%, and the order now keeps the
+// rate the checkout charged (sparx persona issue 228).
+describe('the tax rate an invoice prints', () => {
+  const ADDITIVES = {
+    name: 'Stanadyne Diesel Fuel Additive: All Season Protection, Cetane/Detergents, 16 fl oz',
+    sku: '38565',
+    quantity: 2,
+    unitPrice: 12.5,
+    lineSubtotal: 25,
+    discountAmount: 0,
+    taxAmount: 1.81,
+    coreCharge: null,
+    productId: 'additive',
+    variantId: 'additive-v',
+  };
+  const O_000030 = {
+    shippingTotal: 15,
+    surchargeTotal: 0,
+    metadata: { taxRateBasisPoints: 725 },
+    items: [ADDITIVES],
+  };
+
+  it('is the rate the order was taxed at', () => {
+    expect(itemizedFromOrder(O_000030, 41.81)?.taxRate).toBe(0.0725);
+  });
+
+  it('is worked out from the lines for an order that kept no rate', () => {
+    expect(itemizedFromOrder({ ...O_000030, metadata: {} }, 41.81)?.taxRate).toBe(0.0724);
+  });
+
+  it('is worked out from the lines when the kept rate does not give their tax', () => {
+    expect(invoiceTaxRate([{ ...ADDITIVES, taxAmount: 2 }], { taxRateBasisPoints: 725 })).toBe(
+      0.08
+    );
+  });
+
+  it('is worked out on what the line sold for, after its discount', () => {
+    // $42.00 less 15%, $35.70, taxed $2.59 at 7.25%.
+    const line = { lineSubtotal: 42, discountAmount: 6.3, taxAmount: 2.59 };
+    expect(invoiceTaxRate([line], {})).toBe(0.0725);
+  });
+});
+

@@ -95,6 +95,8 @@ export function useRecordFulfillment(id: string) {
       status: 'shipped' | 'delivered';
       lines: { orderItemId: string; quantity: number }[];
       carrier?: string;
+      /** The courier's name when the carrier is `other` (sparx persona issue 219). */
+      carrierOther?: string;
       service?: string;
       trackingNumber?: string;
       notes?: string;
@@ -103,6 +105,9 @@ export function useRecordFulfillment(id: string) {
         status: input.status,
         lines: input.lines,
         ...(input.carrier ? { carrier: input.carrier } : {}),
+        ...(input.carrier === 'other' && input.carrierOther?.trim()
+          ? { carrierOther: input.carrierOther.trim() }
+          : {}),
         ...(input.service ? { service: input.service } : {}),
         ...(input.trackingNumber?.trim() ? { trackingNumber: input.trackingNumber.trim() } : {}),
         ...(input.notes?.trim() ? { notes: input.notes.trim() } : {}),

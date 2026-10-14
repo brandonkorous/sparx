@@ -16,7 +16,8 @@
 
 import type { FastifyBaseLogger } from 'fastify';
 
-import { Prisma, SAMPLE_SETTINGS, withTenant } from '@wizeworks/db';
+import { Prisma, SAMPLE_SETTINGS, afterCommit, withTenant } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 import { listEnabledModules, type ModuleSlug } from '@wizeworks/auth';
 import {
   categoryService,
@@ -53,6 +54,12 @@ import { decodeBindingRef, encodeBindingRef, type SilicaNode } from '@wizeworks/
 
 import { captureBaselines, resolveBlueprintArtifacts } from './blueprint-baseline.js';
 import { replacedInstallIds } from './blueprint-replaced.js';
+import {
+  signalBookingPolicy,
+  signalResource,
+  signalSchedulingLocation,
+  signalSchedulingService,
+} from './scheduling-search.js';
 
 /** What the person installing chose, as distinct from what the design declares. */
 export interface InstallOptions {
@@ -968,6 +975,17 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
             })
           ).id;
         taxonomyIdByKey.set(key, id);
+        // A reused vocabulary is left as it stands, so only a new one has news.
+        if (!existing) {
+          await afterCommit('index taxonomy', () =>
+            indexEntity({
+              tenantId,
+              actorId: ctx.userId ?? null,
+              entityType: 'taxonomy',
+              recordId: key,
+            })
+          );
+        }
         return id;
       };
       const ensureTerm = async (
@@ -1231,6 +1249,12 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
         },
       });
     });
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'product_type',
+      recordId: pt.key,
+    });
   }
 
   // The line between structure and examples runs right here (issue 098). Above it
@@ -1439,6 +1463,8 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
 
   const idmap = result.scheduling ?? { locations: {}, policies: {}, resources: {}, services: [] };
   result.scheduling = idmap;
+  // Who search credits with each row this slice creates.
+  const who = { tenantId, actorId: ctx.userId ?? null };
 
   // A resource/service image is a hot-linked URL on the scheduling row, not a
   // MediaAsset ref — resolve the manifest asset id to its declared http(s) URL
@@ -1498,6 +1524,8 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           skipDuplicates: true,
         });
       });
+      // Its sites may have just widened, which is part of who can find it.
+      await signalSchedulingLocation(who, reusedId);
       continue;
     }
     // Minted: scoped to the site being installed, so a sibling business's diary
@@ -1509,6 +1537,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
       propertyIds: [propertyId],
     });
     locationIds.set(l.handle, created.id);
+    await signalSchedulingLocation(who, created.id);
   }
   idmap.locations = Object.fromEntries(locationIds);
 
@@ -1547,6 +1576,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
         skipDuplicates: true,
       });
     });
+    await signalSchedulingLocation(who, seeded);
   }
 
   // Policies — reconcile by name; attach seeded ones stay untouched.
@@ -1570,6 +1600,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
         })
       );
       id = created.id;
+      await signalBookingPolicy(who, id);
     }
     policyIds.set(p.handle, id);
     idmap.policies[p.handle] = id;
@@ -1604,6 +1635,8 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
         })
       );
       id = created.id;
+      // A staff resource also puts a person on the team; both become findable.
+      await signalResource(who, id);
       if (r.windows.length > 0) {
         await setAvailabilityWindows(tenantId, {
           resourceId: id,
@@ -1627,6 +1660,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
           skipDuplicates: true,
         });
       });
+      await signalResource(who, resourceId);
     }
     idmap.resources[r.handle] = id;
   }
@@ -1665,6 +1699,7 @@ export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
         })
       );
       id = created.id;
+      await signalSchedulingService(who, id);
     }
     idmap.services.push({ handle: s.handle, id });
   }

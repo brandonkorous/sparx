@@ -24,6 +24,12 @@
 // SAVING is `editor`. `/fields` is `viewer` too: it exposes field NAMES — the
 // reportable spine's, plus the tenant's own declared properties — and never a
 // value, so it says nothing anyone who can read a record cannot already see.
+//
+// WHO SEES WHICH ONE (persona issue 264). A board or report with sharing off is
+// its maker's alone: every route below lists, opens, runs, changes, copies and
+// deletes only what the services let this person see, and answers one kept to
+// somebody else as not found. A shared board's card for its maker's private
+// report comes back as `privateReport: true` with no report and no title.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';

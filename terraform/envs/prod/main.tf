@@ -413,6 +413,7 @@ module "pubsub" {
     # A page's live settings saved without a publish (persona issue 133). Same
     # consumer, same reason for being topic-only.
     "builder.page.settings.changed" = []
+    "builder.page.deleted"          = []
     # A site's own settings changed without a publish: its name, links, contact
     # details, brand, cookie banner, shop settings, payment method or footer legal
     # links. Same consumer, same reason for being topic-only.

@@ -42,6 +42,11 @@ export const SegmentField = z.enum([
   'customer.assignedRepId',
   'customer.doNotContact',
   'customer.b2bAccountId',
+  // The tier the account is priced on, by its id: what a segment offers. The
+  // NAME beside it is kept so a rule saved on it still reads, but a name typed
+  // by hand matched only exactly and lost every member when the tier was
+  // renamed (sparx persona issue 149).
+  'b2bAccount.pricingTierId',
   'b2bAccount.pricingTier',
   'b2bAccount.creditUtilization',
   'b2bAccount.fleetSize',
@@ -198,6 +203,7 @@ export const CustomerProjection = z.object({
   }),
   b2bAccount: z
     .object({
+      pricingTierId: z.string().uuid().nullable(),
       pricingTier: z.string().nullable(),
       creditUtilization: z.number(), // 0–1 ratio of credit_used / credit_limit
       fleetSize: z.number().int().nullable(),

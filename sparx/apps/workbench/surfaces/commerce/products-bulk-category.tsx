@@ -12,6 +12,7 @@
 // in another pane, and come back to a selection that a search box would have
 // cleared on the way.
 
+import { failureMessage } from '../../lib/api/write-failure';
 import { useMemo, useState } from 'react';
 import {
   Alert,
@@ -33,8 +34,8 @@ import {
 import { FolderMinus, FolderPlus } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { afterPaneChange } from '../../lib/defer';
+import { loadFailureWords } from '../../lib/api-error';
 import {
-  categoryErrorMessage,
   flattenCategories,
   useCategoryTree,
   useCreateCategory,
@@ -110,7 +111,7 @@ export function BulkCategoryDialog({
     } catch (error) {
       // The server's own sentence when it has one. A category made a moment ago
       // stays made: it is real, empty, and in the list the next time this opens.
-      setFailure(categoryErrorMessage(error, 'This is a problem reaching the server.'));
+      setFailure(failureMessage(error, 'Nothing has been changed. Try again.'));
     }
   };
 
@@ -126,7 +127,10 @@ export function BulkCategoryDialog({
           <AlertContent>
             <AlertTitle>Could not load your categories</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server. Nothing has been changed.
+              {loadFailureWords(
+                tree.error,
+                'This is a problem reaching the server. Nothing has been changed.'
+              )}
             </AlertDescription>
           </AlertContent>
           <Button

@@ -15,8 +15,11 @@ import { prisma } from '@wizeworks/db';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import { forbidden } from '@wizeworks/api-core/errors';
 
-const VERIFY_EMAIL_MESSAGE =
-  'Confirm your email address to use this feature. Check your inbox, or resend the link from the dashboard.';
+/** Names the notice both consoles show an unconfirmed owner. It said "resend
+ *  the link from the dashboard", a console that no longer exists (sparx
+ *  persona issue 157). */
+export const VERIFY_EMAIL_MESSAGE =
+  'Confirm your email address to use this. We sent you a link when you signed up. For a new one, press “Send the link again” at the top of your console.';
 
 // `tenants.settings.onboarding.finishedAt` is the completion signal (set when the
 // wizard finishes or the user bows out). Mirrors readOnboarding() in routes/v1/tenant.ts.

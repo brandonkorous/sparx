@@ -28,12 +28,12 @@ import {
 import { Boxes, Plus, ServerCrash, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import { CollectionSetting } from './collection-setting';
 import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { coverageSummary } from '../../lib/geo';
 import {
-  shippingErrorMessage,
   useShippingProfiles,
   useShippingReadiness,
   useShippingZones,
@@ -190,25 +190,15 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {zones.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load your shipping setup"
-              description={shippingErrorMessage(
-                zones.error,
-                'This is a problem reaching the server. Your delivery settings are unaffected.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void zones.refetch();
-                    void profiles.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Your delivery settings are unaffected."
+              error={zones.error}
+              onRetry={() => {
+                void zones.refetch();
+                void profiles.refetch();
+              }}
             />
           ) : (
             <>

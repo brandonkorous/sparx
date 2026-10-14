@@ -3008,6 +3008,12 @@ export interface DropshipLink {
      *  orphaned, and saying so is the whole reason the flag is carried. */
     disconnected: boolean;
     lastSyncAt: string | null;
+    /** True when this product came from their own product list (and can be
+     *  pulled again); false when it was pointed at them by hand, for a supplier
+     *  who takes orders by email (sparx persona issue 171). */
+    catalogSync: boolean;
+    /** Where their orders go, for a supplier who takes them by email. */
+    ordersTo: string | null;
   };
   source: {
     id: string;

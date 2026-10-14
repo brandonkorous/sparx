@@ -23,7 +23,7 @@
 // Explicit-save only: one Save button, last write wins. An unsaved edit registers
 // the leave-guard, so closing or navigating away asks first.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
 import {
   Alert,
   AlertContent,
@@ -1110,33 +1110,37 @@ function FieldConfig({ field, depth, siblingKeys, typeOptions, onChange }: Field
 
 /* ── Per-type extras ────────────────────────────────────────────────────── */
 
+/**
+ * A whole-number box. Its own callback is `onValueChange`: `FieldControl`
+ * merges its change-EVENT handler into `onChange`, and handed a number that
+ * handler threw on every keystroke (sparx persona issue 148). The field's props
+ * (its id, its label's id, the event) pass through to the input.
+ */
 function NumInput({
   value,
+  onValueChange,
   onChange,
-  placeholder,
-  min,
-}: {
+  ...rest
+}: Omit<ComponentProps<typeof Input>, 'value'> & {
   value: number | undefined;
-  onChange: (next: number | undefined) => void;
-  placeholder?: string;
-  min?: number;
+  onValueChange: (next: number | undefined) => void;
 }) {
   return (
     <Input
       color="module"
       type="number"
       inputMode="numeric"
+      {...rest}
       value={value === undefined ? '' : String(value)}
-      placeholder={placeholder}
-      min={min}
       onChange={(event) => {
+        onChange?.(event);
         const raw = event.target.value;
         if (raw.trim() === '') {
-          onChange(undefined);
+          onValueChange(undefined);
           return;
         }
         const parsed = Number(raw);
-        onChange(Number.isFinite(parsed) ? parsed : undefined);
+        onValueChange(Number.isFinite(parsed) ? parsed : undefined);
       }}
     />
   );
@@ -1196,7 +1200,7 @@ function TypeSpecificConfig({
                   value={field.rows}
                   min={1}
                   placeholder="4"
-                  onChange={(rows) => {
+                  onValueChange={(rows) => {
                     patch({ rows });
                   }}
                 />
@@ -1248,7 +1252,7 @@ function TypeSpecificConfig({
                 <NumInput
                   value={field.max}
                   min={1}
-                  onChange={(max) => {
+                  onValueChange={(max) => {
                     patch({ max });
                   }}
                 />
@@ -1268,7 +1272,7 @@ function TypeSpecificConfig({
                 render={
                   <NumInput
                     value={field.min}
-                    onChange={(min) => {
+                    onValueChange={(min) => {
                       patch({ min });
                     }}
                   />
@@ -1281,7 +1285,7 @@ function TypeSpecificConfig({
                 render={
                   <NumInput
                     value={field.max}
-                    onChange={(max) => {
+                    onValueChange={(max) => {
                       patch({ max });
                     }}
                   />
@@ -1363,7 +1367,7 @@ function TypeSpecificConfig({
                     <NumInput
                       value={field.min}
                       min={0}
-                      onChange={(min) => {
+                      onValueChange={(min) => {
                         patch({ min });
                       }}
                     />
@@ -1377,7 +1381,7 @@ function TypeSpecificConfig({
                     <NumInput
                       value={field.max}
                       min={1}
-                      onChange={(max) => {
+                      onValueChange={(max) => {
                         patch({ max });
                       }}
                     />
@@ -1478,7 +1482,7 @@ function TypeSpecificConfig({
                   <NumInput
                     value={field.min}
                     min={0}
-                    onChange={(min) => {
+                    onValueChange={(min) => {
                       patch({ min });
                     }}
                   />
@@ -1492,7 +1496,7 @@ function TypeSpecificConfig({
                   <NumInput
                     value={field.max}
                     min={1}
-                    onChange={(max) => {
+                    onValueChange={(max) => {
                       patch({ max });
                     }}
                   />
@@ -1540,11 +1544,11 @@ function LengthLimits({
     <div className="grid gap-4 @lg:grid-cols-2">
       <Field>
         <FieldLabel>Shortest (characters)</FieldLabel>
-        <FieldControl render={<NumInput value={min} min={0} onChange={onMin} />} />
+        <FieldControl render={<NumInput value={min} min={0} onValueChange={onMin} />} />
       </Field>
       <Field>
         <FieldLabel>Longest (characters)</FieldLabel>
-        <FieldControl render={<NumInput value={max} min={1} onChange={onMax} />} />
+        <FieldControl render={<NumInput value={max} min={1} onValueChange={onMax} />} />
       </Field>
     </div>
   );

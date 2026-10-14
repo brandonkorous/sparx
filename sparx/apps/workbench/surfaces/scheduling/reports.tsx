@@ -33,7 +33,6 @@ import {
   AlertContent,
   AlertDescription,
   AlertTitle,
-  Button,
   EmptyState,
   Heading,
   NativeSelect,
@@ -68,6 +67,7 @@ import {
   type Utilisation,
   type WeekdayBucket,
 } from './reports-data';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 
@@ -486,21 +486,14 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
 
     if (report.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<BarChart3 className="size-6" aria-hidden />}
           title="Could not load your reports"
           description="This is a problem reaching the server. Your bookings are unaffected: the figures just could not be worked out just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void report.refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={report.error}
+          onRetry={() => {
+            void report.refetch();
+          }}
         />
       );
     }

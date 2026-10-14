@@ -391,8 +391,8 @@ function Holds({ data }: { data: StockProvenance }) {
           Who is holding it
         </Heading>
         <Text className="text-sm">
-          &ldquo;{NUMBER.format(data.allocated)} spoken for&rdquo; is a number. This is what is
-          holding them, and when (if ever) it frees up.
+          “{NUMBER.format(data.allocated)} spoken for” is a number. This is what is holding them,
+          and when (if ever) it frees up.
         </Text>
       </div>
       <ul className="flex flex-col gap-2">

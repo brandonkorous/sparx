@@ -562,12 +562,28 @@ export function contentRail(opts: {
   // `isEmptyValue` counts as absent, so the heading + CTA drop when there's nothing
   // to show (and a non-CMS tenant, where the ref is unknown, drops too).
   const contentGate = { kind: 'value' as const, ref };
-  const COL = { image: 26, text: 70 } as const;
   const headingSection: SectionNode = {
     ...section([text(opts.heading, { size: 20, weight: 'bold' })], 16),
     data: contentGate,
   };
-  const cardRow: SectionNode = {
+  const cardRow = contentCards(ref);
+  const cta: SectionNode = {
+    ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
+    data: contentGate,
+  };
+  return [headingSection, cardRow, cta];
+}
+
+/**
+ * The repeating half of `contentRail` on its own: one clickable card per published piece
+ * of `ref` (`cms.<kind>`), picture beside headline and summary. What the email
+ * designer's "Latest …" block drops, so a publisher builds an edition from her own pieces
+ * instead of retyping each one (Piggles persona P09). The send fills it from the kind's
+ * own field names (api-rest `email-content-card.ts`).
+ */
+export function contentCards(ref: string): SectionNode {
+  const COL = { image: 26, text: 70 } as const;
+  return {
     ...section(
       [
         columns([
@@ -587,11 +603,6 @@ export function contentRail(opts: {
     align: 'left',
     data: { kind: 'collection', ref },
   };
-  const cta: SectionNode = {
-    ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
-    data: contentGate,
-  };
-  return [headingSection, cardRow, cta];
 }
 
 // ── The document ─────────────────────────────────────────────────────────────

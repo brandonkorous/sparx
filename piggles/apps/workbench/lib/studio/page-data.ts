@@ -28,6 +28,9 @@ export interface PageSummary {
   /** Whether a visitor can reach this page right now — wider than `published`, because
    *  the platform serves record templates and starter addresses that nobody published. */
   live: boolean;
+  /** The module this site switched off that takes the page off it, or null/absent.
+   *  A journal with Selling off has no `/shop`, whatever its account has. */
+  offOnSite?: 'commerce' | 'scheduling' | 'cms' | null;
   publishedAt: string | null;
   position: number;
 }

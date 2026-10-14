@@ -1,27 +1,25 @@
 'use client';
 
-// BOOKING RULES — the notice you need, what happens on a cancellation, and
-// whether a deposit is taken up front. Each set of rules is a named policy a
-// service points at, so a machine shop's 24-hour cancellation terms never bind a
-// cake-tasting customer.
-//
-// A table, like every other list. A policy is a name plus a plain-language
-// summary of what it asks of a customer. Search goes to the SERVER; there is no
-// state to badge — a policy is a set of terms, not a thing with a lifecycle.
+// BOOKING RULES: the notice you need, what a cancellation costs, and whether a
+// deposit is taken. Each set is a named policy a service points at, so one
+// service's 24-hour cancellation terms never bind another service's customer.
+
+// A table: a name plus a plain-language summary. Search goes to the SERVER; there
+// is no state to badge, because a policy is a set of terms, not a lifecycle.
 
 import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { Card, SearchInput } from '@wizeworks/silicaui-react';
 import { faPlus, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { policySummary, reminderSummary, usePolicies, type BookingPolicy } from './setup-data';
+import { usePolicies, type BookingPolicy } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PoliciesEmpty, PoliciesTable } from './policies-table';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -29,217 +27,190 @@ const MODULE = 'scheduling';
 
 const DETAIL_KEY = 'scheduling.policies.detail';
 
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+interface OpenEvent {
+  shiftKey: boolean;
+  altKey: boolean;
+}
+
+function targetFor(event: OpenEvent): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
 }
 
-export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [search, setSearch] = useState('');
-
+function usePaging() {
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState<number>(50);
-
-  const skip = (page - 1) * pageSize;
-
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = usePolicies({
-    q: search.trim(),
+  return {
+    pageSize,
+    page,
     take,
-    skip,
-  });
-
-  const rows = data?.items ?? [];
-  const total = data?.total;
-  const narrowed = search.trim() !== '';
-
-  const resetWindow = () => {
-    setPage(1);
-    setTake(pageSize);
+    skip: (page - 1) * pageSize,
+    resetWindow: () => {
+      setPage(1);
+      setTake(pageSize);
+    },
+    loadMore: () => {
+      setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+    },
+    changePage: (next: number) => {
+      setPage(next);
+      setTake(pageSize);
+    },
+    changePageSize: (size: PageSize) => {
+      setPageSize(size);
+      setPage(1);
+      setTake(size);
+    },
   };
+}
 
-  const openNew = (event: { shiftKey: boolean; altKey: boolean }) => {
+interface BodyProps {
+  query: ReturnType<typeof usePolicies>;
+  rows: BookingPolicy[];
+  narrowed: boolean;
+  openNew: (event: OpenEvent) => void;
+  open: (policy: BookingPolicy, event: OpenEvent) => void;
+}
+
+function PoliciesBody({ query, rows, narrowed, openNew, open }: BodyProps) {
+  if (query.isError) {
+    return (
+      <PaneLoadError
+        module={MODULE}
+        icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
+        title="Could not load your booking rules"
+        description="This is a problem reaching the server. Your rules are unaffected: the list just could not be read just now."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    );
+  }
+
+  if (query.isPending) {
+    return <PaneWaiting label="Loading booking rules…" />;
+  }
+
+  if (rows.length === 0) {
+    return <PoliciesEmpty narrowed={narrowed} openNew={openNew} />;
+  }
+
+  return <PoliciesTable rows={rows} onOpen={open} />;
+}
+
+interface ToolbarProps {
+  search: string;
+  onSearch: (next: string) => void;
+  openNew: (event: OpenEvent) => void;
+  query: ReturnType<typeof usePolicies>;
+}
+
+function PoliciesToolbar({ search, onSearch, openNew, query }: ToolbarProps) {
+  return (
+    <PaneToolbar
+      label="Booking rules controls"
+      search={
+        <div className="max-w-xs min-w-0 flex-1">
+          <SearchInput
+            size="sm"
+            aria-label="Search booking rules"
+            placeholder="Rule set name…"
+            value={search}
+            onValueChange={onSearch}
+          />
+        </div>
+      }
+      primaryAction={{
+        label: 'New rule set',
+        icon: faPlus,
+        onClick: openNew,
+        title: 'New rule set: hold Shift to open alongside, Alt for a new window',
+      }}
+      views={{
+        target: '/scheduling/policies',
+        params: { q: search.trim() },
+        onApply: (next) => {
+          onSearch(next.q ?? '');
+        },
+      }}
+      refresh={
+        <RefreshButton
+          isFetching={query.isFetching}
+          updatedAt={query.data ? query.dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void query.refetch();
+          }}
+        />
+      }
+    />
+  );
+}
+
+export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const [search, setSearch] = useState('');
+  const paging = usePaging();
+  const query = usePolicies({ q: search.trim(), take: paging.take, skip: paging.skip });
+
+  const rows = query.data?.items ?? [];
+  const openNew = (event: OpenEvent) => {
     ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
   };
-
-  const open = (policy: BookingPolicy, event: { shiftKey: boolean; altKey: boolean }) => {
+  const open = (policy: BookingPolicy, event: OpenEvent) => {
     ctx.open(DETAIL_KEY, { id: policy.id }, { target: targetFor(event) });
-  };
-
-  const body = () => {
-    if (isError) {
-      return (
-        <EmptyState
-          icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
-          title="Could not load your booking rules"
-          description="This is a problem reaching the server. Your rules are unaffected: the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
-        />
-      );
-    }
-
-    if (isPending) {
-      return <PaneWaiting label="Loading booking rules…" />;
-    }
-
-    if (rows.length === 0) {
-      return (
-        <ListEmptyState
-          module={MODULE}
-          filtered={narrowed}
-          noResults={{
-            icon: <Icon glyph={faShieldCheck} className="size-6" aria-hidden />,
-            title: 'Nothing matches that',
-            description: 'Try part of a rule set’s name.',
-          }}
-          firstRun={{
-            title: 'No booking rules yet',
-            description:
-              'Booking rules decide how much notice you need, what happens if someone cancels late or misses a booking, and whether a deposit is taken. Set up a rule set and you can apply it to any service.',
-            actions: (
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  openNew({ shiftKey: false, altKey: false });
-                }}
-              >
-                <Icon glyph={faPlus} className="size-4" aria-hidden />
-                New rule set
-              </Button>
-            ),
-          }}
-        />
-      );
-    }
-
-    return (
-      <Table size="sm" hover>
-        <thead>
-          <tr>
-            <th>Rule set</th>
-            <th className="hidden whitespace-nowrap @md:table-cell">What it asks of a customer</th>
-            {/* Reminders are the half of a rule set nobody thinks to look for — they
-                are not a term a customer agrees to, they are what the product DOES —
-                so they get their own column rather than a clause in the summary. */}
-            <th className="hidden whitespace-nowrap @md:table-cell">Before the booking</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((policy) => (
-            <tr
-              key={policy.id}
-              className="cursor-pointer"
-              tabIndex={0}
-              role="button"
-              onClick={(event) => {
-                open(policy, event);
-              }}
-              onKeyDown={(event) => {
-                if (event.key !== 'Enter' && event.key !== ' ') return;
-                event.preventDefault();
-                open(policy, event);
-              }}
-            >
-              <td className="w-full max-w-0 min-w-56">
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate font-medium">{policy.name}</span>
-                  {/* Two lines rather than one joined by a dot: at 390px the join
-                      truncated at "Reminder 1…", cutting the half that is hardest
-                      to find anywhere else. */}
-                  <span className="truncate text-sm @md:hidden">{policySummary(policy)}</span>
-                  <span className="truncate text-sm @md:hidden">{reminderSummary(policy)}</span>
-                </span>
-              </td>
-              <td className="hidden whitespace-nowrap @md:table-cell">{policySummary(policy)}</td>
-              <td className="hidden whitespace-nowrap @md:table-cell">{reminderSummary(policy)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    );
   };
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Booking rules controls"
-        search={
-          <div className="max-w-xs min-w-0 flex-1">
-            <SearchInput
-              size="sm"
-              aria-label="Search booking rules"
-              placeholder="Rule set name…"
-              value={search}
-              onValueChange={(next) => {
-                setSearch(next);
-                resetWindow();
-              }}
-            />
-          </div>
-        }
-        primaryAction={{
-          label: 'New rule set',
-          icon: faPlus,
-          onClick: openNew,
-          title: 'New rule set: hold Shift to open alongside, Alt for a new window',
+      <PoliciesToolbar
+        search={search}
+        onSearch={(next) => {
+          setSearch(next);
+          paging.resetWindow();
         }}
-        views={{
-          target: '/scheduling/policies',
-          params: { q: search.trim() },
-          onApply: (next) => {
-            setSearch(next.q ?? '');
-            resetWindow();
-          },
-        }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+        openNew={openNew}
+        query={query}
       />
 
-      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">{body()}</Card>
-
-      <div className="mx-auto w-full max-w-4xl shrink-0">
-        <ListPagination
-          shown={rows.length}
-          firstRow={rows.length === 0 ? 0 : skip + 1}
-          total={total}
-          page={page}
-          pageSize={pageSize}
-          canLoadMore={take < MAX_TAKE}
-          busy={isFetching}
-          onLoadMore={() => {
-            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
-          }}
-          onPageChange={(next) => {
-            setPage(next);
-            setTake(pageSize);
-          }}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-            setTake(size);
-          }}
+      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">
+        <PoliciesBody
+          query={query}
+          rows={rows}
+          narrowed={search.trim() !== ''}
+          openNew={openNew}
+          open={open}
         />
-        {rows.length > 0 ? <RowOpenHint /> : null}
-      </div>
+      </Card>
+
+      <PoliciesFooter paging={paging} query={query} rowCount={rows.length} />
+    </div>
+  );
+}
+
+interface FooterProps {
+  paging: ReturnType<typeof usePaging>;
+  query: ReturnType<typeof usePolicies>;
+  rowCount: number;
+}
+
+function PoliciesFooter({ paging, query, rowCount }: FooterProps) {
+  return (
+    <div className="mx-auto w-full max-w-4xl shrink-0">
+      <ListPagination
+        shown={rowCount}
+        firstRow={rowCount === 0 ? 0 : paging.skip + 1}
+        total={query.data?.total}
+        page={paging.page}
+        pageSize={paging.pageSize}
+        canLoadMore={paging.take < MAX_TAKE}
+        busy={query.isFetching}
+        onLoadMore={paging.loadMore}
+        onPageChange={paging.changePage}
+        onPageSizeChange={paging.changePageSize}
+      />
+      {rowCount > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

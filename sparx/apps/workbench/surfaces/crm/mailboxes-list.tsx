@@ -252,10 +252,14 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
         </Card>
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        sparx checks connected mailboxes every few minutes. Use the refresh button on a row to check
-        one right now.
-      </p>
+      {/* Only beside a row: with none listed it pointed at a button that was not
+          there (sparx persona issue 236). */}
+      {rows.length > 0 ? (
+        <p className="shrink-0 px-1 text-xs">
+          sparx checks connected mailboxes every few minutes. Use the refresh button on a row to
+          check one right now.
+        </p>
+      ) : null}
     </div>
   );
 }

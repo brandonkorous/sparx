@@ -19,6 +19,8 @@ import { Database, FlaskConical, Trash2, Warehouse } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnly, ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
@@ -124,9 +126,11 @@ function KeptLocations({ ctx, counts }: { ctx: SurfaceContext; counts: SampleDat
 export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSampleDataStatus();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useSampleDataStatus();
   const load = useLoadSampleData();
   const clear = useClearSampleData();
+  const rights = useManageRights();
 
   useEffect(() => {
     ctx.setTitle('Sample data');
@@ -142,6 +146,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneLoadError
         title="Could not load the sample-data status"
         description="This is a problem reaching the server. Any sample data you have is unaffected."
+        error={error}
         onRetry={() => {
           void refetch();
         }}
@@ -230,25 +235,27 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="Sample data actions"
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={load.isPending}
-            disabled={busy}
-            onClick={() => {
-              void onLoad();
-            }}
-          >
-            <Database className="size-4" aria-hidden />
-            {load.isPending
-              ? loaded
-                ? 'Replacing…'
-                : 'Loading…'
-              : loaded
-                ? 'Reload sample data'
-                : 'Load sample data'}
-          </Button>
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              loading={load.isPending}
+              disabled={busy}
+              onClick={() => {
+                void onLoad();
+              }}
+            >
+              <Database className="size-4" aria-hidden />
+              {load.isPending
+                ? loaded
+                  ? 'Replacing…'
+                  : 'Loading…'
+                : loaded
+                  ? 'Reload sample data'
+                  : 'Load sample data'}
+            </Button>
+          )
         }
         refresh={
           <RefreshButton
@@ -267,93 +274,98 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
             Loading…
           </p>
         ) : (
-          <div className={COLUMN}>
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Sample data
-                </Heading>
-                <Badge color={loaded ? 'success' : undefined} variant="soft" size="sm">
-                  {loaded ? 'Loaded' : 'Not loaded'}
-                </Badge>
+          <ManagersOnly>
+            <div className={COLUMN}>
+              {/* Only an owner or an admin may change this; the server refuses
+                everybody else (sparx persona issue 168). */}
+              <ManagersOnlyNotice change="load or remove sample data" />
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Heading level={1} className="text-2xl font-semibold">
+                    Sample data
+                  </Heading>
+                  <Badge color={loaded ? 'success' : undefined} variant="soft" size="sm">
+                    {loaded ? 'Loaded' : 'Not loaded'}
+                  </Badge>
+                </div>
+                <Text>
+                  Fill your account with realistic made-up records so you can try things out before
+                  your real ones exist. Each one is tagged as a sample behind the scenes, so you can
+                  remove them all in one go, whenever you like, without touching a real record.
+                </Text>
               </div>
-              <Text>
-                Fill your account with realistic made-up records so you can try things out before
-                your real ones exist. Each one is tagged as a sample behind the scenes, so you can
-                remove them all in one go, whenever you like, without touching a real record.
-              </Text>
-            </div>
 
-            <FormSection
-              title={loaded ? "What's loaded now" : 'What would be added'}
-              description={
-                data.packSummary ||
-                `A ${data.packLabel} set built to show sparx working with real-looking records.`
-              }
-            >
-              {modules.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  <Text className="text-sm">
-                    {loaded
-                      ? 'Sample records are in place across:'
-                      : 'A load would fill the parts of sparx you have switched on:'}
-                  </Text>
-                  <div className="flex flex-wrap gap-1.5">
-                    {modules.map((slug) => (
-                      <ModuleChip key={slug} slug={slug} />
-                    ))}
+              <FormSection
+                title={loaded ? "What's loaded now" : 'What would be added'}
+                description={
+                  data.packSummary ||
+                  `A ${data.packLabel} set built to show sparx working with real-looking records.`
+                }
+              >
+                {modules.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    <Text className="text-sm">
+                      {loaded
+                        ? 'Sample records are in place across:'
+                        : 'A load would fill the parts of sparx you have switched on:'}
+                    </Text>
+                    <div className="flex flex-wrap gap-1.5">
+                      {modules.map((slug) => (
+                        <ModuleChip key={slug} slug={slug} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Text className="text-sm">
-                  You have no matching parts of sparx switched on yet, so a load would add only a
-                  small baseline. Switch on a module like the online store or bookings first to get
-                  a fuller set.
-                </Text>
-              )}
-
-              {loaded ? (
-                countsTotal(data.counts) > 0 ? (
-                  <CountsGrid counts={data.counts} />
-                ) : null
-              ) : (
-                <Text className="text-sm">
-                  Nothing is loaded right now. Loading is safe to undo. One click removes every
-                  sample record except any locations it adds, and leaves your real records exactly
-                  as they are.
-                </Text>
-              )}
-              <KeptLocations ctx={ctx} counts={data.counts} />
-            </FormSection>
-
-            {/* Destructive action: a quiet row after the work, under a divider —
-                never a card competing with the positive action above it. */}
-            {loaded ? (
-              <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-                <div className="flex min-w-0 flex-col">
-                  <span className="text-base font-medium">Remove all sample data</span>
+                ) : (
                   <Text className="text-sm">
-                    {kept > 0
-                      ? 'Deletes every sample record except the locations above. Your real records are left untouched.'
-                      : 'Deletes every sample record. Your real records are left untouched.'}
+                    You have no matching parts of sparx switched on yet, so a load would add only a
+                    small baseline. Switch on a module like the online store or bookings first to
+                    get a fuller set.
                   </Text>
+                )}
+
+                {loaded ? (
+                  countsTotal(data.counts) > 0 ? (
+                    <CountsGrid counts={data.counts} />
+                  ) : null
+                ) : (
+                  <Text className="text-sm">
+                    Nothing is loaded right now. Loading is safe to undo. One click removes every
+                    sample record except any locations it adds, and leaves your real records exactly
+                    as they are.
+                  </Text>
+                )}
+                <KeptLocations ctx={ctx} counts={data.counts} />
+              </FormSection>
+
+              {/* Destructive action: a quiet row after the work, under a divider —
+                never a card competing with the positive action above it. */}
+              {loaded ? (
+                <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                  <div className="flex min-w-0 flex-col">
+                    <span className="text-base font-medium">Remove all sample data</span>
+                    <Text className="text-sm">
+                      {kept > 0
+                        ? 'Deletes every sample record except the locations above. Your real records are left untouched.'
+                        : 'Deletes every sample record. Your real records are left untouched.'}
+                    </Text>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    color="error"
+                    loading={clear.isPending}
+                    disabled={busy}
+                    onClick={() => {
+                      void onClear();
+                    }}
+                  >
+                    <Trash2 className="size-4" aria-hidden />
+                    Remove sample data
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="error"
-                  loading={clear.isPending}
-                  disabled={busy}
-                  onClick={() => {
-                    void onClear();
-                  }}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                  Remove sample data
-                </Button>
-              </div>
-            ) : null}
-          </div>
+              ) : null}
+            </div>
+          </ManagersOnly>
         )}
       </div>
 

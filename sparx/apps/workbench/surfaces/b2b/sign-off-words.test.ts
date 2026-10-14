@@ -423,3 +423,38 @@ describe('heldOrderNotice', () => {
     );
   });
 });
+
+const DECIDE_FILE = './approvals.tsx';
+
+// Approving after the account has paid (sparx persona issue 188): the dialog said
+// "What they owe will go past their credit limit" about an order that now fit.
+describe('the credit, as it stands when they approve', () => {
+  const now = (partial: Partial<DecisionFacts>): DecisionFacts => ({
+    orderNumber: 'O-000022',
+    buyer: WASATCH,
+    total: '$2,026.38',
+    companyName: WASATCH,
+    signOff: signOff(),
+    overCreditLimit: false,
+    ...partial,
+  });
+
+  it('does not say it goes past the credit once the account has paid', () => {
+    const words = approveWords(now({ heldForCredit: true, creditLeftNow: '$3,795.68' }));
+    expect(words).not.toContain('go past');
+    expect(words).toContain('they now have $3,795.68 of credit left, enough for this order');
+  });
+
+  it('says how much is left when it still goes past', () => {
+    expect(
+      approveWords(now({ overCreditLimit: true, heldForCredit: true, creditLeftNow: '$1,676.08' }))
+    ).toContain('What they owe will go past their credit limit: they have $1,676.08 left.');
+  });
+
+  it('the dialog asks today’s figure, not the one at placement', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { fileURLToPath } = await import('node:url');
+    const source = readFileSync(fileURLToPath(new URL(DECIDE_FILE, import.meta.url)), 'utf8');
+    expect(source).toContain('item.totalCents > leftNow');
+  });
+});

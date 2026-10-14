@@ -21,11 +21,23 @@ import {
   UpdateTemplateInput,
 } from '@wizeworks/crm-schemas';
 import { withTenant } from '@wizeworks/db';
-import type { SalesSnippet, SalesTemplate } from '@wizeworks/db';
+import type { Prisma, SalesSnippet, SalesTemplate } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { CrmConflictError, CrmNotFoundError } from '../errors';
+import { type OwnerColumns, visibleWhere } from './owner-visibility';
+
+/**
+ * Who may see a template or a paragraph: the business-wide rule in
+ * `owner-visibility.ts`, over these tables' own column names. Every read, change,
+ * removal and count below asks it, so one kept to its maker answers anybody else
+ * exactly as one that does not exist (persona issue 264).
+ */
+const SALES_COLUMNS: OwnerColumns<'ownerUserId', 'isShared'> = {
+  owner: 'ownerUserId',
+  shared: 'isShared',
+};
 
 /* ── Templates ──────────────────────────────────────────────────────────── */
 
@@ -45,7 +57,8 @@ export async function listTemplates(
       where: {
         ...(args.includeArchived ? {} : { archivedAt: null }),
         ...(args.folder ? { folder: args.folder } : {}),
-        ...(args.userId ? { OR: [{ isShared: true }, { ownerUserId: args.userId }] } : {}),
+        // A caller with no person (an API key) gets the shared ones, never all.
+        ...visibleWhere(args.userId ?? ctx.userId, SALES_COLUMNS),
       },
       // Most-used first: the one someone reaches for daily should not be the one
       // they scroll to.
@@ -56,9 +69,37 @@ export async function listTemplates(
 
 export async function getTemplate(ctx: ServiceContext, templateId: string): Promise<SalesTemplate> {
   const row = await withTenant(ctx, (tx) =>
-    tx.salesTemplate.findUnique({ where: { id: templateId } })
+    tx.salesTemplate.findFirst({
+      where: { id: templateId, ...visibleWhere(ctx.userId, SALES_COLUMNS) },
+    })
   );
   if (!row) throw new CrmNotFoundError('SalesTemplate', templateId);
+  return row;
+}
+
+/** The template, inside a write, if this person may see it; not found if not. */
+async function visibleTemplate(
+  ctx: ServiceContext,
+  tx: Prisma.TransactionClient,
+  templateId: string
+): Promise<SalesTemplate> {
+  const row = await tx.salesTemplate.findFirst({
+    where: { id: templateId, ...visibleWhere(ctx.userId, SALES_COLUMNS) },
+  });
+  if (!row) throw new CrmNotFoundError('SalesTemplate', templateId);
+  return row;
+}
+
+/** The paragraph, inside a write, if this person may see it; not found if not. */
+async function visibleSnippet(
+  ctx: ServiceContext,
+  tx: Prisma.TransactionClient,
+  snippetId: string
+): Promise<SalesSnippet> {
+  const row = await tx.salesSnippet.findFirst({
+    where: { id: snippetId, ...visibleWhere(ctx.userId, SALES_COLUMNS) },
+  });
+  if (!row) throw new CrmNotFoundError('SalesSnippet', snippetId);
   return row;
 }
 
@@ -116,8 +157,7 @@ export async function updateTemplate(
   const input = UpdateTemplateInput.parse(rawInput);
 
   return withTenant(ctx, async (tx) => {
-    const before = await tx.salesTemplate.findUnique({ where: { id: templateId } });
-    if (!before) throw new CrmNotFoundError('SalesTemplate', templateId);
+    const before = await visibleTemplate(ctx, tx, templateId);
 
     if (input.name !== undefined && input.name !== before.name) {
       const clash = await tx.salesTemplate.findFirst({
@@ -153,8 +193,7 @@ export async function archiveTemplate(
   templateId: string
 ): Promise<SalesTemplate> {
   return withTenant(ctx, async (tx) => {
-    const before = await tx.salesTemplate.findUnique({ where: { id: templateId } });
-    if (!before) throw new CrmNotFoundError('SalesTemplate', templateId);
+    await visibleTemplate(ctx, tx, templateId);
     return tx.salesTemplate.update({
       where: { id: templateId },
       data: { archivedAt: new Date() },
@@ -179,8 +218,7 @@ export async function restoreTemplate(
   templateId: string
 ): Promise<SalesTemplate> {
   return withTenant(ctx, async (tx) => {
-    const before = await tx.salesTemplate.findUnique({ where: { id: templateId } });
-    if (!before) throw new CrmNotFoundError('SalesTemplate', templateId);
+    const before = await visibleTemplate(ctx, tx, templateId);
     if (before.archivedAt === null) return before;
     return tx.salesTemplate.update({ where: { id: templateId }, data: { archivedAt: null } });
   });
@@ -240,7 +278,8 @@ export async function listSnippets(
 ): Promise<SalesSnippet[]> {
   return withTenant(ctx, (tx) =>
     tx.salesSnippet.findMany({
-      where: args.userId ? { OR: [{ isShared: true }, { ownerUserId: args.userId }] } : {},
+      // A caller with no person (an API key) gets the shared ones, never all.
+      where: visibleWhere(args.userId ?? ctx.userId, SALES_COLUMNS),
       orderBy: [{ useCount: 'desc' }, { shortcut: 'asc' }],
     })
   );
@@ -277,9 +316,10 @@ export async function updateSnippet(
 ): Promise<SalesSnippet> {
   const input = UpdateSnippetInput.parse(rawInput);
 
+  // A shared paragraph is usually a fact about the business, so anyone on the
+  // team may correct it; one kept to its maker is hers alone.
   return withTenant(ctx, async (tx) => {
-    const before = await tx.salesSnippet.findUnique({ where: { id: snippetId } });
-    if (!before) throw new CrmNotFoundError('SalesSnippet', snippetId);
+    await visibleSnippet(ctx, tx, snippetId);
     return tx.salesSnippet.update({
       where: { id: snippetId },
       data: {
@@ -293,8 +333,7 @@ export async function updateSnippet(
 
 export async function deleteSnippet(ctx: ServiceContext, snippetId: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
-    const before = await tx.salesSnippet.findUnique({ where: { id: snippetId } });
-    if (!before) throw new CrmNotFoundError('SalesSnippet', snippetId);
+    await visibleSnippet(ctx, tx, snippetId);
     await tx.salesSnippet.delete({ where: { id: snippetId } });
   });
 }
@@ -304,6 +343,10 @@ export async function noteSnippetUsed(ctx: ServiceContext, snippetId: string): P
   // updateMany, so a snippet deleted between insert and count does not throw —
   // the tally is telemetry, not the point of the interaction.
   await withTenant(ctx, (tx) =>
-    tx.salesSnippet.updateMany({ where: { id: snippetId }, data: { useCount: { increment: 1 } } })
+    tx.salesSnippet.updateMany({
+      // Somebody else's private paragraph is not counted, and not confirmed.
+      where: { id: snippetId, ...visibleWhere(ctx.userId, SALES_COLUMNS) },
+      data: { useCount: { increment: 1 } },
+    })
   );
 }

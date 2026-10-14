@@ -8,11 +8,12 @@
 // not a wide table inventing columns to fill.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { DollarSign, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { discountSummary, formatCents, useTiers, type TierRow } from './pricing-tiers-data';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -26,7 +27,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTiers({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useTiers({
     q: search.trim(),
     take: 100,
     skip: 0,
@@ -88,10 +89,11 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto p-2">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<DollarSign className="size-6" aria-hidden />}
             title="Could not load your price tiers"
             description="This is a problem reaching the server. Your tiers are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

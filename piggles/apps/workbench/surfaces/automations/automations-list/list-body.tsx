@@ -47,14 +47,16 @@ function ListEmpty({ ctx, filtering }: { ctx: SurfaceContext; filtering: boolean
 }
 
 export function ListBody({ ctx, list }: { ctx: SurfaceContext; list: AutomationsList }) {
-  const { isError, isPending, rows, filtering, refetch } = list;
+  const { isError, error, isPending, rows, filtering, refetch } = list;
   return (
     <Card className="min-h-0 flex-1 overflow-y-auto">
       {isError ? (
         <PaneLoadError
+          module={MODULE}
           icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
           title="Could not load your automations"
           description="Something went wrong reaching the server. Your rules are unaffected and still running. Try again in a moment."
+          error={error}
           onRetry={() => {
             void refetch();
           }}

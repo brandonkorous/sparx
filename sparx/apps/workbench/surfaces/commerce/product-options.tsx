@@ -68,6 +68,7 @@ import { useConfirm } from '../../lib/confirm';
 import { ChevronDown, ChevronUp, Plus, Shapes, Trash2, X } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { FormSection } from '../../components/form-section';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { SwatchPicker } from '../../components/swatch-picker';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -316,28 +317,16 @@ export function ProductOptionsTab({ ctx, product }: { ctx: SurfaceContext; produ
   // button invites someone to rebuild a lattice on top of nothing.
   if (options.isError || variants.isError) {
     return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load this product&apos;s choices</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing about the product has changed: how it is
-            sold just could not be read just now.
-          </AlertDescription>
-        </AlertContent>
-        <AlertActions>
-          <Button
-            size="sm"
-            color="error"
-            variant="soft"
-            onClick={() => {
-              void options.refetch();
-              void variants.refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </AlertActions>
-      </Alert>
+      <PaneLoadError
+        title="Could not load this product's choices"
+        description="This is a problem reaching the server. Nothing about the product has changed: how it is sold just could not be read just now."
+        error={options.error ?? variants.error}
+        noun="product"
+        onRetry={() => {
+          void options.refetch();
+          void variants.refetch();
+        }}
+      />
     );
   }
 

@@ -140,9 +140,8 @@ function rowToVariant(
   mapping: CsvColumnMapping
 ): NormalizedProductVariant {
   const options: Record<string, string> = {};
-  if (mapping.variantColor && row[mapping.variantColor])
-    options['color'] = row[mapping.variantColor]!;
-  if (mapping.variantSize && row[mapping.variantSize]) options['size'] = row[mapping.variantSize]!;
+  if (mapping.variantColor && row[mapping.variantColor]) options.color = row[mapping.variantColor]!;
+  if (mapping.variantSize && row[mapping.variantSize]) options.size = row[mapping.variantSize]!;
 
   const imageUrls = mapping.imageUrls
     ? (row[mapping.imageUrls] ?? '')
@@ -211,7 +210,7 @@ function rowsToProducts(
       tags,
       imageUrls,
       variants: pRows.map((r) => rowToVariant(r, mapping)),
-      raw: first as Record<string, unknown>,
+      raw: first,
     });
   }
   return products;
@@ -260,17 +259,19 @@ export class CsvAdapter implements SupplierAdapter {
     }
   }
 
-  async submitOrder(order: Order): Promise<SupplierOrderResult> {
-    return {
+  // Nothing failed: this supplier takes orders by hand, so the order waits for
+  // the owner to send it and record it placed (sparx persona issue 170). It read
+  // "failed" before, with no way to move it on.
+  submitOrder(order: Order): Promise<SupplierOrderResult> {
+    return Promise.resolve({
       supplierOrderId: `manual-${order.sparxOrderId}`,
-      status: 'failed',
-      errorMessage:
-        'CSV suppliers do not support automated order submission. Place this order manually with your supplier.',
-    };
+      status: 'pending',
+      errorMessage: 'Send this order to the supplier yourself, then record it here as placed.',
+    });
   }
 
-  async getTrackingUpdate(_supplierOrderId: string): Promise<TrackingInfo> {
-    throw new Error('CSV suppliers do not support automated tracking.');
+  getTrackingUpdate(_supplierOrderId: string): Promise<TrackingInfo> {
+    return Promise.reject(new Error('CSV suppliers do not support automated tracking.'));
   }
 
   async checkInventory(skus: string[]): Promise<InventoryMap> {

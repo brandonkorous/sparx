@@ -108,7 +108,17 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <Card
         className="flex cursor-pointer items-start justify-between gap-4 p-4"
+        // Opens from the keyboard like every list row (persona issue 246). The
+        // target check keeps Enter on the copy or delete button for that button.
+        tabIndex={0}
+        role="button"
         onClick={(event) => open(report, event.shiftKey)}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          open(report, event.shiftKey);
+        }}
       >
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -163,6 +173,22 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Build a report controls"
+        primary={
+          <Button
+            color="module"
+            size="sm"
+            className="ml-auto shrink-0"
+            onClick={(event) =>
+              ctx.open(
+                'crm.report.builder',
+                { id: 'new' },
+                { target: event.shiftKey ? 'beside' : 'tab' }
+              )
+            }
+          >
+            New report
+          </Button>
+        }
         controls={
           <>
             <div className="max-w-xs min-w-0 flex-1">
@@ -177,24 +203,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
             </div>
           </>
         }
-        refresh={
-          <div className="ml-auto flex items-center gap-2">
-            <Button
-              color="module"
-              size="sm"
-              onClick={(event) =>
-                ctx.open(
-                  'crm.report.builder',
-                  { id: 'new' },
-                  { target: event.shiftKey ? 'beside' : 'tab' }
-                )
-              }
-            >
-              New report
-            </Button>
-            <RefreshButton isFetching={isFetching} onRefresh={() => void refetch()} />
-          </div>
-        }
+        refresh={<RefreshButton isFetching={isFetching} onRefresh={() => void refetch()} />}
       />
 
       <div className="flex flex-col gap-6 overflow-auto p-6 [&>*]:shrink-0">

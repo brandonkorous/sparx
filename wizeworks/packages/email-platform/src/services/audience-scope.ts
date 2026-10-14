@@ -28,3 +28,33 @@ export function audienceScope(propertyId: string | null): Prisma.SegmentMemberWh
   if (!propertyId) return {};
   return { customer: { OR: [{ propertyId: null }, { propertyId }] } };
 }
+
+/** A segment member as the send reads one. */
+export interface AudienceMember {
+  customerId: string | null;
+  customer: { email: string | null; doNotContact: boolean };
+}
+
+/**
+ * The people a broadcast will actually mail, from its segment members: no email, marked
+ * do not contact, on the do-not-email list, or a repeat address are all skipped.
+ *
+ * The send AND the "Right now, N people would receive this" count both go through here, so the
+ * number on screen is the number that goes out. The count used to be the raw member
+ * count, and read 40 over a group the send mailed 39 of (piggles persona issue 967).
+ */
+export function sendableRecipients(
+  members: readonly AudienceMember[],
+  suppressedEmails: readonly string[]
+): { email: string; customerId: string | null }[] {
+  const blocked = new Set(suppressedEmails.map((e) => e.toLowerCase()));
+  const seen = new Set<string>();
+  const out: { email: string; customerId: string | null }[] = [];
+  for (const m of members) {
+    const email = m.customer.email?.toLowerCase();
+    if (!email || m.customer.doNotContact || blocked.has(email) || seen.has(email)) continue;
+    seen.add(email);
+    out.push({ email, customerId: m.customerId });
+  }
+  return out;
+}

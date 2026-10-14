@@ -234,12 +234,35 @@ export function lengthHint(value: string, ideal: number): { text: string; over: 
   return { text: `${n} characters`, over: false };
 }
 
-const RECORD_WORDING: Record<string, { each: string; where: string }> = {
-  'commerce.product': { each: 'product', where: 'the product itself, under Selling' },
-  'commerce.collection': { each: 'collection', where: 'the collection itself, under Selling' },
-  'commerce.category': { each: 'category', where: 'the category itself, under Selling' },
-  'scheduling.service': { each: 'service', where: 'the service itself, under Scheduling' },
-  'cms.blog_post': { each: 'post', where: 'the post itself, under Content' },
+/** What a record page's notice says. `title` and `fallback` replace the general
+ *  sentences where "its" would be wrong: an author is a person. */
+interface RecordWording {
+  each: string;
+  where: string;
+  title: string;
+  fallback: string;
+}
+
+const general = (each: string, where: string): RecordWording => ({
+  each,
+  where,
+  title: `Each ${each} writes its own`,
+  fallback: `Leave a ${each}’s own fields empty and its name and description are used.`,
+});
+
+const RECORD_WORDING: Record<string, RecordWording> = {
+  'commerce.product': general('product', 'the product itself, under Selling'),
+  'commerce.collection': general('collection', 'the collection itself, under Selling'),
+  'commerce.category': general('category', 'the category itself, under Selling'),
+  'scheduling.service': general('service', 'the service itself, under Scheduling'),
+  'cms.blog_post': general('post', 'the post itself, under Content'),
+  'cms.author': {
+    each: 'author',
+    where: 'each author’s name and biography, under Content in Authors',
+    title: 'Each author has their own',
+    fallback:
+      'Their name is the page title, and the first sentence of their biography is its description.',
+  },
 };
 
 /** For a page that designs many records (one product page serves the whole catalog),
@@ -248,7 +271,7 @@ const RECORD_WORDING: Record<string, { each: string; where: string }> = {
  *  two places that offer these fields agree on which pages have them. */
 export function recordWordingFor(
   page: Pick<PageSettingsDto, 'kind' | 'recordType'> | undefined
-): { each: string; where: string } | undefined {
+): RecordWording | undefined {
   return page?.kind === 'collection' && page.recordType
     ? RECORD_WORDING[page.recordType]
     : undefined;
@@ -403,13 +426,13 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
                    A greyed-out Page title still reads as "this is where it goes, someday". */
         <Alert color="info">
           <AlertContent>
-            <AlertTitle>Each {record.each} writes its own</AlertTitle>
+            <AlertTitle>{record.title}</AlertTitle>
             <AlertDescription>
               This one page designs every {record.each} you have, so it cannot carry the words a
               search result shows. Those come from {record.where}, which is where you set them.
               Anything you typed here would be the same on all of them, and search engines treat a
-              thousand pages sharing one description as a thousand copies of nothing. Leave a{' '}
-              {record.each}’s own fields empty and its name and description are used.
+              thousand pages sharing one description as a thousand copies of nothing.{' '}
+              {record.fallback}
             </AlertDescription>
           </AlertContent>
         </Alert>

@@ -67,6 +67,7 @@ import {
 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -1008,27 +1009,16 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
     // live count buttons would invite someone to correct a count they cannot see.
     if (failedToLoad) {
       return (
-        <Alert color="danger" variant="soft">
-          <AlertContent>
-            <AlertTitle>Could not load stock for this product</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. Nothing about your stock has changed. It just
-              could not be read just now.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="danger"
-            variant="soft"
-            onClick={() => {
-              void stock.refetch();
-              void variantsQuery.refetch();
-              void locationsQuery.refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
+        <PaneLoadError
+          title="Could not load stock for this product"
+          description="This is a problem reaching the server. Nothing about your stock has changed. It just could not be read just now."
+          error={stock.error ?? variantsQuery.error ?? locationsQuery.error}
+          onRetry={() => {
+            void stock.refetch();
+            void variantsQuery.refetch();
+            void locationsQuery.refetch();
+          }}
+        />
       );
     }
 

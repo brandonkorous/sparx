@@ -87,6 +87,7 @@ import {
 import { PaneLoadError } from '../../components/pane-load-error';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { tierChoiceItems, useTierChoices } from '../b2b/accounts-data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -353,7 +354,7 @@ function CompanyEditor({
 
   const { members } = useTeamRoster();
   const { data: viewer } = useViewer();
-  const canDelete = viewer?.role === 'admin' || viewer?.role === 'owner';
+  const canDelete = canManageBusiness(viewer?.role);
 
   const saved = useMemo(() => (account ? toDraft(account) : emptyDraft()), [account]);
   const [draft, setDraft] = useState<Draft>(saved);
@@ -1033,7 +1034,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                           open('commerce.order.detail', row.id, event);
                         }}
                       >
-                        <td className="font-mono text-sm">{row.orderNumber}</td>
+                        <td className="font-mono text-sm whitespace-nowrap">{row.orderNumber}</td>
                         <td className="hidden text-sm @lg:table-cell">
                           {formatOrderDate(row.placedAt)}
                         </td>
@@ -1110,7 +1111,9 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                           open('invoicing.invoice.edit', doc.id, event);
                         }}
                       >
-                        <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
+                        <td className="font-mono text-sm whitespace-nowrap">
+                          {doc.number ?? 'Draft'}
+                        </td>
                         <td>
                           <Badge color={state.tone} variant={state.tone && 'soft'} size="sm">
                             {state.label}

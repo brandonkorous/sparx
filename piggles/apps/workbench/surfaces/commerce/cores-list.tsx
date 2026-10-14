@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Button, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
 import { faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { RefreshButton } from '../../components/refresh-button';
@@ -77,7 +78,7 @@ function CoresEmpty({ ctx, filter }: { ctx: SurfaceContext; filter: Filter }) {
 
 function CoresBody({
   ctx,
-  failed,
+  error,
   loading,
   rows,
   filter,
@@ -85,19 +86,20 @@ function CoresBody({
   onMove,
 }: {
   ctx: SurfaceContext;
-  failed: boolean;
+  error: unknown;
   loading: boolean;
   rows: CoreOwed[];
   filter: Filter;
   onOpen: (row: CoreOwed, event: { shiftKey: boolean; altKey: boolean }) => void;
   onMove: (row: CoreOwed, move: CoreMove) => void;
 }) {
-  if (failed) {
+  if (error) {
     return (
-      <EmptyState
+      <PaneLoadError
         icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
         title="Could not load the cores owed"
         description="This is a problem reaching the server. Nothing has changed on any order."
+        error={error}
       />
     );
   }
@@ -169,7 +171,7 @@ export function CoresListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-y-auto">
         <CoresBody
           ctx={ctx}
-          failed={Boolean(error)}
+          error={error}
           loading={isLoading}
           rows={rows}
           filter={active}

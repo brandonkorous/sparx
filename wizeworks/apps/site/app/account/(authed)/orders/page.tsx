@@ -1,12 +1,11 @@
 'use client';
 
 // Order history. Lists the signed-in customer's orders (most recent first)
-// with status + total, linking to per-order detail.
+// with status + total, linking to per-order detail. The row is the shared
+// `OrderRow`.
 //
-// Layout is utilities, not inline `style`. `.card` is itself a flex COLUMN, and
-// an inline `display:flex` that never names a direction cannot undo that — the
-// row rendered as a centred stack for exactly that reason (issue 294). A
-// `flex-row` utility says the axis out loud.
+// It pages. It asked for the first 10 and had no way on, so a buyer's 11th order
+// could not be reached from here (sparx persona issue 194).
 //
 // A wholesale buyer can Order again from here (sparx persona issue 086): the
 // order's items into the cart at today's prices for their account.
@@ -15,24 +14,20 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
-import { orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
+import { ListPager } from '@/components/account/list-pager';
+import { OrderRow } from '@/components/account/order-row';
 import { getOrders, reorderOwnOrder, type OrderSummary } from '@/lib/customer-client';
 import { FillCartButton } from '@/components/account/order-again-button';
 import { useOrderingAccounts } from '@/components/account/ordering-accounts';
-import { formatMoney } from '@/lib/format';
-import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
+const PAGE_SIZE = 20;
 
 export default function OrdersPage() {
   const { tenantSlug } = useCustomer();
   const [orders, setOrders] = useState<OrderSummary[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [error, setError] = useState<string | null>(null);
   // Order again is for a contact who can order on a wholesale account.
   const { accounts } = useOrderingAccounts();
@@ -40,13 +35,19 @@ export default function OrdersPage() {
 
   useEffect(() => {
     let active = true;
-    getOrders(tenantSlug)
-      .then((res) => active && setOrders(res.orders))
+    setOrders(null);
+    setError(null);
+    getOrders(tenantSlug, offset / PAGE_SIZE + 1, PAGE_SIZE)
+      .then((res) => {
+        if (!active) return;
+        setOrders(res.orders);
+        setTotal(res.total);
+      })
       .catch(() => active && setError('Could not load your orders.'));
     return () => {
       active = false;
     };
-  }, [tenantSlug]);
+  }, [tenantSlug, offset]);
 
   return (
     <div>
@@ -66,39 +67,33 @@ export default function OrdersPage() {
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {orders.map((o) => (
-            <div key={o.id} className="flex flex-col gap-2">
-              <Link
-                href={`/account/orders/${o.id}`}
-                // Wraps rather than overflows: at 360px the number, the status and the
-                // total do not fit on one line, and the total was sitting on the border.
-                className="card border-base-300 flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2 border px-5 py-4 sm:gap-x-4"
-              >
-                <div className="min-w-0">
-                  {/* An order number is one token: it must not break across lines at 360px. */}
-                  <strong className="whitespace-nowrap">#{o.orderNumber}</strong>
-                  <div className="text-base-content text-sm">{formatDate(o.placedAt)}</div>
-                </div>
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <Badge color={orderStatusTone(o.status)} variant="soft">
-                    {orderStatusLabel(o.status)}
-                  </Badge>
-                  <strong>{formatMoney(o.totalCents, o.currency)}</strong>
-                </div>
-              </Link>
-              {canOrderAgain && (
-                <FillCartButton
-                  label="Order again"
-                  busyLabel="Adding to your cart…"
-                  size="sm"
-                  variant="outline"
-                  run={(cartId) => reorderOwnOrder(tenantSlug, o.id, cartId)}
+        <>
+          <div className="flex flex-col gap-3">
+            {orders.map((o) => (
+              <div key={o.id} className="flex flex-col gap-2">
+                <OrderRow
+                  href={`/account/orders/${o.id}`}
+                  orderNumber={o.orderNumber}
+                  placedAt={o.placedAt}
+                  status={o.status}
+                  collecting={o.collecting}
+                  totalCents={o.totalCents}
+                  currency={o.currency}
                 />
-              )}
-            </div>
-          ))}
-        </div>
+                {canOrderAgain && (
+                  <FillCartButton
+                    label="Order again"
+                    busyLabel="Adding to your cart…"
+                    size="sm"
+                    variant="outline"
+                    run={(cartId) => reorderOwnOrder(tenantSlug, o.id, cartId)}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <ListPager offset={offset} pageSize={PAGE_SIZE} total={total} onMove={setOffset} />
+        </>
       )}
     </div>
   );

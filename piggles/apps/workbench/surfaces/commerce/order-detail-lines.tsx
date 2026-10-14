@@ -9,7 +9,7 @@ import { Text } from '@wizeworks/silicaui-react';
 
 import { FormSection } from '../../components/form-section';
 import { MoneyRow } from './order-detail-blocks';
-import { amountDue, customerName, formatMoney, type Order } from './data';
+import { amountDue, customerName, formatMoney, paidIn, type Order } from './data';
 import { deliveryPlan } from './order-types';
 import { refundNote } from './refund-note';
 import { OrderLineCore } from './order-cores';
@@ -94,8 +94,8 @@ function OrderTotals({ order }: { order: Order }) {
           in" with its code. Repeating it here as a negative would take the same
           $150 off twice on one screen. */}
       <MoneyRow label="Order total" amount={order.total} currency={currency} emphasis />
-      {order.amountPaid > 0 ? (
-        <MoneyRow label="Paid so far" amount={order.amountPaid} currency={currency} />
+      {paidIn(order) > 0 ? (
+        <MoneyRow label="Paid so far" amount={paidIn(order)} currency={currency} />
       ) : null}
       {order.refundTotal > 0 ? (
         <MoneyRow label="Given back" amount={order.refundTotal} currency={currency} />

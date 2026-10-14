@@ -62,11 +62,12 @@ import {
   type ProviderKind,
 } from './provider-connection';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 function canManage(role: string | undefined): boolean {
-  return role === 'admin' || role === 'owner';
+  return canManageBusiness(role);
 }
 
 function formatDate(iso: string): string {

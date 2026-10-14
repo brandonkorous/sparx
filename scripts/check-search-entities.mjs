@@ -45,6 +45,13 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PROJECTOR_FILES = [
   'wizeworks/packages/commerce/src/universal-projection.ts',
   'wizeworks/packages/commerce-indexer/src/messaging-projection.ts',
+  // What an owner names on a screen of its own (persona issue 261), one file per
+  // part of the console. `universal-projection-owner-named.ts` gathers them for
+  // the registry and declares none itself, so it is not listed.
+  'wizeworks/packages/commerce/src/universal-projection-crm.ts',
+  'wizeworks/packages/commerce/src/universal-projection-stock.ts',
+  'wizeworks/packages/commerce/src/universal-projection-selling.ts',
+  'wizeworks/packages/commerce/src/universal-projection-setup.ts',
 ];
 
 const ROUTES_FILE = 'wizeworks/packages/links/src/routes.ts';

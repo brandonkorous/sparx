@@ -15,6 +15,7 @@ export type {
   ClassVerdict,
   EmailPreviewHost,
   InspectorContext,
+  ListSourceChoice,
   PickedAsset,
   StudioHost,
 } from './host';

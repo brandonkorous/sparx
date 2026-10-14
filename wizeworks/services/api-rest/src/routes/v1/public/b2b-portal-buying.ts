@@ -64,6 +64,7 @@ import {
 } from '../../../lib/public-commerce-context.js';
 import { requireCustomerId } from '../../../lib/customer-session.js';
 import { requirePortalWriter } from '../../../lib/portal-writer.js';
+import { isCollectedOrder } from '../../../lib/collected-order.js';
 import { accountPricer } from '../../../lib/portal-quote-prices.js';
 
 const PathAccountId = z.object({ accountId: z.string().uuid() });
@@ -286,6 +287,8 @@ const b2bPortalBuyingRoutes: FastifyPluginAsync = async (app) => {
         ? [who.firstName, who.lastName].filter(Boolean).join(' ').trim() || who.email
         : null,
       poNumber: poNumberOf(order.metadata),
+      // Says Collected, not Delivered (sparx persona issue 177).
+      collecting: isCollectedOrder(order.metadata),
       totals: {
         subtotalCents: cents(order.subtotal),
         discountCents: cents(order.discountTotal),

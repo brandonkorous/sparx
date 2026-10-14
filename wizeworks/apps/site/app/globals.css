@@ -96,6 +96,14 @@ body {
 /* Storefront-rendered TipTap output. Style the basics so a freshly authored
    page has reasonable typography out of the box. Tenants who want custom
    themes will override via tenant-scoped CSS. */
+/* Reading size. A body of prose is read for minutes, not scanned, and 16px with an
+   article column of 768px put 87 letters on a line of a journal's essay (P09). 18px
+   is the house reading size, and in the same column it is about 77 letters, inside
+   the range a reader's eye returns along without losing its place. Headings below
+   are in rem, so they keep their own sizes. */
+.sparx-content {
+  font-size: 1.125rem;
+}
 .sparx-content h1 {
   font-size: 2.25rem;
   font-weight: 600;

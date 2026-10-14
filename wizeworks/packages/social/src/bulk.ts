@@ -17,6 +17,7 @@
 
 import { withTenant } from '@wizeworks/db';
 
+import { wallTimeToInstant } from './cadence.js';
 import type { SocialContext } from './context.js';
 import { getSocialSettings } from './lifecycle.js';
 
@@ -106,13 +107,123 @@ function normalizeHeader(raw: string): keyof SocialCsvRow | 'targets' | null {
   return COLUMN_ALIASES[raw.trim().toLowerCase()] ?? null;
 }
 
+/* ── Whose clock a spreadsheet's times are on ─────────────────────────────── */
+
+// A time typed in a spreadsheet ("2026-10-15 09:00") names no zone, and it was read on
+// THE SERVER's clock, which is UTC: a business in London planned 09:00 and her post went
+// at 10:00 her time all summer (piggles persona issue 990). A time with no zone of its
+// own is now read on the business's clock. One that names its zone ("...Z",
+// "...+01:00", "GMT") is taken as written.
+
+/** A zone this runtime can read, or UTC. A bad zone must never throw mid-import. */
+export function readableZone(zone: string | null | undefined): string {
+  const candidate = zone?.trim();
+  if (!candidate) return 'UTC';
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: candidate });
+    return candidate;
+  } catch {
+    return 'UTC';
+  }
+}
+
+/** A time that says which zone it is on: a trailing Z or offset after a clock time, or
+ *  the words UTC/GMT. */
+const NAMES_ITS_ZONE =
+  /\d{1,2}:\d{2}(?::\d{2}(?:\.\d+)?)?\s*(?:Z|[+-]\d{2}:?\d{2})$|\b(?:UTC|GMT)\b/i;
+
+/** "2026-10-15", "2026-10-15 09:00", "2026-10-15T09:00:30": a wall time and nothing else. */
+const WALL_TIME = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/;
+
+function onZone(
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  second: number,
+  timeZone: string
+): Date | null {
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  if (hour > 23 || minute > 59 || second > 59) return null;
+  const at = wallTimeToInstant(year, month, day, hour * 60 + minute, timeZone);
+  const instant = new Date(at.getTime() + second * 1000);
+  return Number.isNaN(instant.getTime()) ? null : instant;
+}
+
+/**
+ * One cell of the date column, as an instant. A time that names no zone is read on
+ * `timeZone`'s clock. Null for something that is not a date.
+ */
+export function readScheduleCell(value: string, timeZone: string): Date | null {
+  const text = value.trim();
+  if (!text) return null;
+
+  if (NAMES_ITS_ZONE.test(text)) {
+    const at = new Date(text);
+    return Number.isNaN(at.getTime()) ? null : at;
+  }
+
+  const wall = WALL_TIME.exec(text);
+  if (wall) {
+    const [, y, mo, d, h, mi, sec] = wall;
+    return onZone(
+      Number(y),
+      Number(mo),
+      Number(d),
+      Number(h ?? 0),
+      Number(mi ?? 0),
+      Number(sec ?? 0),
+      timeZone
+    );
+  }
+
+  // Any other way a spreadsheet writes a date ("10/15/2026 9:00 AM"). The engine reads
+  // such a string on the runtime's own clock, so its local fields ARE what was typed;
+  // read them again on the business's clock.
+  const loose = new Date(text);
+  if (Number.isNaN(loose.getTime())) return null;
+  return onZone(
+    loose.getFullYear(),
+    loose.getMonth() + 1,
+    loose.getDate(),
+    loose.getHours(),
+    loose.getMinutes(),
+    loose.getSeconds(),
+    timeZone
+  );
+}
+
+/**
+ * The zone an import's times are read on: the business's own when it has set one,
+ * otherwise `fallback` (the zone of the computer the file was sent from, which is what
+ * the import screen tells the person), otherwise UTC.
+ */
+export async function importTimeZone(
+  ctx: SocialContext,
+  fallback?: string | null
+): Promise<string> {
+  const business = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    tx.tenantBusiness.findUnique({
+      where: { tenantId: ctx.tenantId },
+      select: { timezone: true },
+    })
+  );
+  const own = business?.timezone?.trim();
+  if (own && readableZone(own) === own) return own;
+  return readableZone(fallback);
+}
+
 /**
  * Parse a pasted or uploaded CSV.
  *
  * Reports rather than throws: a file with three bad rows should import the other
  * twenty-seven and tell someone exactly which three, on which lines, and why.
+ *
+ * `timeZone` is the clock a time with no zone of its own is read on: the business's.
  */
-export function parseSocialCsv(text: string): SocialCsvParse {
+export function parseSocialCsv(text: string, timeZone = 'UTC'): SocialCsvParse {
+  const zone = readableZone(timeZone);
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
   if (lines.length === 0) {
     return { rows: [], problems: [{ line: 0, message: 'That file looks empty.' }] };
@@ -155,8 +266,8 @@ export function parseSocialCsv(text: string): SocialCsvParse {
           .map((n) => n.trim())
           .filter(Boolean);
       } else if (header === 'scheduledAt') {
-        const parsed = new Date(value);
-        if (Number.isNaN(parsed.getTime())) {
+        const parsed = readScheduleCell(value, zone);
+        if (parsed === null) {
           problems.push({ line, message: `"${value}" isn't a date we could read.` });
         } else {
           scheduledAt = parsed;

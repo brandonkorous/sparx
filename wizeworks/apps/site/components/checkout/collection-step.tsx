@@ -10,6 +10,7 @@
 
 import { Button } from '@wizeworks/silicaui-react';
 
+import { addressOnOneLine } from '@/lib/address-line';
 import type { ShippingRate } from '@/lib/checkout-client';
 import { RateChoices } from './rate-choices';
 
@@ -20,6 +21,7 @@ export function CollectionStep({
   currency,
   contactName,
   contactPhone,
+  collectAt,
   onBack,
   onSubmit,
   busy,
@@ -31,6 +33,8 @@ export function CollectionStep({
   currency: string;
   contactName: string;
   contactPhone: string;
+  /** Where to collect it; null when the business has given no address. */
+  collectAt: string | null;
   onBack: () => void;
   onSubmit: (e: React.FormEvent) => void;
   busy: boolean;
@@ -51,6 +55,14 @@ export function CollectionStep({
         legend="Ready for you to collect"
       />
 
+      {/* Where to go: "Collect in person" with no place named left the buyer
+          to guess between a shop and a warehouse (sparx persona issue 191). */}
+      {collectAt ? (
+        <p className="text-base-content">
+          Collect it from <strong>{addressOnOneLine(collectAt)}</strong>.
+        </p>
+      ) : null}
+
       {/* Reads back what the counter will actually have, so nobody wonders
           whether they were supposed to give an address somewhere. */}
       <p className="text-base-content">
@@ -62,8 +74,8 @@ export function CollectionStep({
           <>We&rsquo;ll have this ready for you.</>
         )}{' '}
         {contactPhone
-          ? `We'll call ${contactPhone} when it's ready.`
-          : "We'll email you when it's ready."}
+          ? `We’ll call ${contactPhone} when it’s ready.`
+          : 'We’ll email you when it’s ready.'}
       </p>
 
       {/* The one thing on this screen only the buyer can answer. It reaches the

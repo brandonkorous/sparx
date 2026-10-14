@@ -16,6 +16,7 @@ import { useCallback } from 'react';
 import {
   Button,
   Field,
+  FieldControl,
   FieldDescription,
   FieldLabel,
   Input,
@@ -28,6 +29,7 @@ import { refOf } from '../../documents/types';
 import type { AddressableNode } from '../../tree/walk';
 import { idOf, ownText } from '../../tree/walk';
 import { useApply, useDoc, useStudioHost } from '../context';
+import { ListSource } from './list-source';
 
 /** A document's own root id — a theme has no tree, so it has none. */
 function rootId(doc: StudioDoc): string | undefined {
@@ -56,7 +58,7 @@ function BoundWords({ reference, shown }: { reference: string; shown: string }) 
   return (
     <Field>
       <FieldLabel>Words</FieldLabel>
-      <Input value={shown} readOnly />
+      <FieldControl render={<Input value={shown} readOnly />} />
       <FieldDescription>
         {where
           ? `These words come from ${where}. Change them there and every page that shows them follows.`
@@ -150,20 +152,26 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
 
   return (
     <div className="flex flex-col gap-4 p-3">
+      <ListSource node={node} />
+
       {boundRef ? <BoundWords reference={boundRef} shown={text ?? ''} /> : null}
 
       {text !== undefined && !boundRef ? (
         <Field>
           <FieldLabel>Words</FieldLabel>
-          <Textarea
+          <FieldControl
             key={fieldKey(id, 'text', text)}
-            defaultValue={text}
-            rows={3}
-            onBlur={(event) => {
-              const value = event.currentTarget.value;
-              if (value === text) return;
-              apply('Edit words', [{ kind: 'node.setText', id, value }]);
-            }}
+            render={
+              <Textarea
+                defaultValue={text}
+                rows={3}
+                onBlur={(event) => {
+                  const value = event.currentTarget.value;
+                  if (value === text) return;
+                  apply('Edit words', [{ kind: 'node.setText', id, value }]);
+                }}
+              />
+            }
           />
         </Field>
       ) : null}
@@ -172,23 +180,31 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
         <>
           <Field>
             <FieldLabel>Words</FieldLabel>
-            <Input
+            <FieldControl
               key={fieldKey(id, 'prop:label', textProp(node, 'label'))}
-              defaultValue={textProp(node, 'label')}
-              onBlur={(event) => {
-                setProp('label', event.currentTarget.value);
-              }}
+              render={
+                <Input
+                  defaultValue={textProp(node, 'label')}
+                  onBlur={(event) => {
+                    setProp('label', event.currentTarget.value);
+                  }}
+                />
+              }
             />
           </Field>
           <Field>
             <FieldLabel>Goes to</FieldLabel>
-            <Input
+            <FieldControl
               key={fieldKey(id, 'prop:href', textProp(node, 'href'))}
-              defaultValue={textProp(node, 'href')}
-              placeholder="/contact"
-              onBlur={(event) => {
-                setProp('href', event.currentTarget.value.trim());
-              }}
+              render={
+                <Input
+                  defaultValue={textProp(node, 'href')}
+                  placeholder="/contact"
+                  onBlur={(event) => {
+                    setProp('href', event.currentTarget.value.trim());
+                  }}
+                />
+              }
             />
             <FieldDescription>
               A page on your own site starts with a slash, like <code>/contact</code>.
@@ -200,21 +216,26 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
       {['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'].includes(tag) ? (
         <Field>
           <FieldLabel>Kind of text</FieldLabel>
-          <NativeSelect
+          {/* FieldControl ties the label to the select (see list-source.tsx). */}
+          <FieldControl
             key={fieldKey(id, 'tag', tag)}
-            defaultValue={tag}
-            onChange={(event) =>
-              apply('Change kind of text', [
-                { kind: 'node.setTag', id, value: event.currentTarget.value },
-              ])
+            render={
+              <NativeSelect
+                defaultValue={tag}
+                onChange={(event) =>
+                  apply('Change kind of text', [
+                    { kind: 'node.setTag', id, value: event.currentTarget.value },
+                  ])
+                }
+              >
+                {HEADING_TAGS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </NativeSelect>
             }
-          >
-            {HEADING_TAGS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </NativeSelect>
+          />
           <FieldDescription>
             Search engines and screen readers use this to understand your page, so keep the biggest
             heading for the page’s real title.
@@ -225,15 +246,19 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
       {tag === 'a' ? (
         <Field>
           <FieldLabel>Goes to</FieldLabel>
-          <Input
+          <FieldControl
             key={fieldKey(
               id,
               'href',
               String(node.kind === 'element' ? (node.attrs?.href ?? '') : '')
             )}
-            defaultValue={String(node.kind === 'element' ? (node.attrs?.href ?? '') : '')}
-            placeholder="/contact"
-            onBlur={(event) => setAttr('href', event.currentTarget.value.trim())}
+            render={
+              <Input
+                defaultValue={String(node.kind === 'element' ? (node.attrs?.href ?? '') : '')}
+                placeholder="/contact"
+                onBlur={(event) => setAttr('href', event.currentTarget.value.trim())}
+              />
+            }
           />
           <FieldDescription>
             A page on your own site starts with a slash, like <code>/contact</code>.
@@ -249,17 +274,21 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
           same page. This is that option. */}
       <Field>
         <FieldLabel>Link straight to this part</FieldLabel>
-        <Input
+        <FieldControl
           key={fieldKey(
             id,
             'anchor',
             String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')
           )}
-          defaultValue={String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')}
-          placeholder="opening-hours"
-          onBlur={(event) => {
-            setAttr('id', partName(event.currentTarget.value));
-          }}
+          render={
+            <Input
+              defaultValue={String(node.kind === 'element' ? (node.attrs?.id ?? '') : '')}
+              placeholder="opening-hours"
+              onBlur={(event) => {
+                setAttr('id', partName(event.currentTarget.value));
+              }}
+            />
+          }
         />
         <FieldDescription>
           Give this part a short name and any button can jump straight to it. Put the name after a{' '}
@@ -272,14 +301,18 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
           <Field>
             <FieldLabel>Picture</FieldLabel>
             <div className="flex items-center gap-2">
-              <Input
+              <FieldControl
                 key={fieldKey(
                   id,
                   'src',
                   String(node.kind === 'element' ? (node.attrs?.src ?? '') : '')
                 )}
-                defaultValue={String(node.kind === 'element' ? (node.attrs?.src ?? '') : '')}
-                onBlur={(event) => setAttr('src', event.currentTarget.value.trim())}
+                render={
+                  <Input
+                    defaultValue={String(node.kind === 'element' ? (node.attrs?.src ?? '') : '')}
+                    onBlur={(event) => setAttr('src', event.currentTarget.value.trim())}
+                  />
+                }
               />
               {host.pickAsset ? (
                 <Button size="sm" color="primary" onClick={() => void choosePicture()}>
@@ -290,14 +323,18 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
           </Field>
           <Field>
             <FieldLabel>Describe the picture</FieldLabel>
-            <Input
+            <FieldControl
               key={fieldKey(
                 id,
                 'alt',
                 String(node.kind === 'element' ? (node.attrs?.alt ?? '') : '')
               )}
-              defaultValue={String(node.kind === 'element' ? (node.attrs?.alt ?? '') : '')}
-              onBlur={(event) => setAttr('alt', event.currentTarget.value.trim())}
+              render={
+                <Input
+                  defaultValue={String(node.kind === 'element' ? (node.attrs?.alt ?? '') : '')}
+                  onBlur={(event) => setAttr('alt', event.currentTarget.value.trim())}
+                />
+              }
             />
             <FieldDescription>
               Read aloud to anyone using a screen reader, and shown if the picture can’t load.
@@ -308,15 +345,19 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
 
       <Field>
         <FieldLabel>Name this layer</FieldLabel>
-        <Input
+        <FieldControl
           key={fieldKey(id, 'label', node.label ?? '')}
-          defaultValue={node.label ?? ''}
-          placeholder="Hero, Prices, Opening hours…"
-          onBlur={(event) => {
-            const value = event.currentTarget.value.trim();
-            if (value === (node.label ?? '')) return;
-            apply('Rename layer', [{ kind: 'node.setLabel', id, value: value || undefined }]);
-          }}
+          render={
+            <Input
+              defaultValue={node.label ?? ''}
+              placeholder="Hero, Prices, Opening hours…"
+              onBlur={(event) => {
+                const value = event.currentTarget.value.trim();
+                if (value === (node.label ?? '')) return;
+                apply('Rename layer', [{ kind: 'node.setLabel', id, value: value || undefined }]);
+              }}
+            />
+          }
         />
         <FieldDescription>Only you see this. It makes the Layers list readable.</FieldDescription>
       </Field>

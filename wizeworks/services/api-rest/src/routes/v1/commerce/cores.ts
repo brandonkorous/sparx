@@ -42,6 +42,17 @@ const coreRoutes: FastifyPluginAsync = async (app) => {
     );
   });
 
+  // Where a returned core's deposit on this line would go: the open invoice it
+  // comes off first, or none. The dialog reads it before the click, so it never
+  // says "give back" about a deposit sitting on an unpaid invoice (sparx persona
+  // issue 183). The same lookup the refund itself uses.
+  app.get('/v1/commerce/order-items/:id/cores/open-invoice', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await coreService.openInvoiceForLine(toCommerceContext(request), id));
+  });
+
   // Old parts came back for one order line. Moves money, so an editor or above.
   app.post('/v1/commerce/order-items/:id/cores/received', async (request) => {
     requireRole(request, 'editor');

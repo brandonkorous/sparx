@@ -92,7 +92,14 @@ for (const bucket of byLength.values()) {
   });
 }
 
-const bySurface = new Map<string, AppRoute>(ROUTES.map((route) => [route.surface, route]));
+// A surface's address is its shared row when it has one. A branded row may give a
+// shared address a second meaning in one product (`/builder` in Piggles), and that
+// must never become the screen's own address in buildPath.
+const bySurface = new Map<string, AppRoute>(
+  [...ROUTES]
+    .sort((a, b) => Number(a.brand === undefined) - Number(b.brand === undefined))
+    .map((route) => [route.surface, route])
+);
 const byEntity = new Map<string, AppRoute>(
   ROUTES.filter((route) => route.entity !== undefined).map((route) => [route.entity!, route])
 );
@@ -153,6 +160,19 @@ function readQuery(search: string | URLSearchParams | undefined): URLSearchParam
   return typeof search === 'string' ? new URLSearchParams(search) : search;
 }
 
+/** The product this process serves, for a caller that names no brand. */
+let appBrand: string | undefined;
+
+/**
+ * Say once, at start-up, which product this process is. Piggles' search box resolves
+ * a found site page with no brand, so it got the shared answer (sparx's whole-site
+ * editor, which Piggles does not have) and dropped the page: "Contributors" found
+ * nothing in Ctrl K (persona P09, issue 940). A caller that passes a brand still wins.
+ */
+export function setLinkBrand(brand: string | undefined): void {
+  appBrand = brand;
+}
+
 /**
  * Resolve a path (and optional query) to the surface it opens.
  *
@@ -163,7 +183,8 @@ function readQuery(search: string | URLSearchParams | undefined): URLSearchParam
  * `brand` names the product doing the asking, for the handful of addresses that
  * mean something different in each. Omit it and the unbranded route answers,
  * which is every route but one — so a caller that has no brand to give is not
- * choosing wrong, it is choosing the shared answer.
+ * choosing wrong, it is choosing the shared answer. A process that called
+ * `setLinkBrand` answers as that brand when the caller names none.
  */
 export function matchPath(
   pathname: string,
@@ -172,6 +193,7 @@ export function matchPath(
 ): MatchedLink | null {
   const path = normalizePath(pathname);
   if (path === '/') return null;
+  const asking = brand ?? appBrand;
 
   const parts = path.split('/').filter(Boolean);
   const candidates = byLength.get(parts.length);
@@ -185,7 +207,7 @@ export function matchPath(
   let fallback: MatchedLink | null = null;
 
   for (const candidate of candidates) {
-    if (candidate.route.brand !== undefined && candidate.route.brand !== brand) continue;
+    if (candidate.route.brand !== undefined && candidate.route.brand !== asking) continue;
     const params: Record<string, string> = {};
     let matched = true;
 
@@ -330,6 +352,35 @@ export function routeAcceptsId(route: AppRoute): boolean {
   return route.path.includes('/:');
 }
 
+/** The path parameters a route cannot be built without, in order. */
+function requiredParams(route: AppRoute): string[] {
+  return route.path
+    .split('/')
+    .filter((segment) => segment.startsWith(':') && !segment.endsWith('?'))
+    .map((segment) => segment.slice(1));
+}
+
+/**
+ * The params that open one record on its entity's home, from its id alone.
+ *
+ * The record id goes under whatever name the route gives its one parameter:
+ * `:id` for most, `:key` where a screen is addressed by key (a record type, a
+ * content type, a saved piece), `:variantId` for a stock item. Those projectors
+ * index the record BY that key, so the id the search entry carries is the value
+ * the screen reads. It used to be `{ id }` for every route, which opened a keyed
+ * screen blank (persona issue 261).
+ *
+ * `{}` for a home that is a list. Undefined when the route needs more than one
+ * value (a record of a custom type is `:objectKey/:id`): the id alone cannot say,
+ * and the caller has to find the rest in the address the projector stored.
+ */
+function paramsForRecord(route: AppRoute, recordId: string): Record<string, string> | undefined {
+  const names = requiredParams(route);
+  if (names.length === 0) return {};
+  if (names.length === 1) return { [names[0]!]: recordId };
+  return undefined;
+}
+
 /**
  * The address for an indexed record: `entity_type` + id in, path out.
  *
@@ -344,7 +395,9 @@ export function pathForEntity(
 ): string | null {
   const route = byEntity.get(entityType);
   if (!route) return null;
-  const params = routeAcceptsId(route) ? { id: recordId } : undefined;
+  const params = paramsForRecord(route, recordId ?? '');
+  // A two-part address cannot be built from one id; null, never half an address.
+  if (params === undefined) return null;
   return buildPath(route.surface, params, options);
 }
 
@@ -371,15 +424,26 @@ export function recordDestination(
 ): MatchedLink | null {
   const route = byEntity.get(entityType);
   if (!route) return null;
-  if (!routeAcceptsId(route) && storedUrl !== undefined && storedUrl !== '') {
+  const own = paramsForRecord(route, recordId);
+  // The stored address is read only where the route cannot say on its own: a
+  // home that is a list (any pane naming THIS record will do), or a home that
+  // needs more than the id (its own pane, naming this record, and nothing else).
+  const listHome = own !== undefined && Object.keys(own).length === 0;
+  if ((listHome || own === undefined) && storedUrl !== undefined && storedUrl !== '') {
     const [pathname = '', search] = storedUrl.split('?', 2);
     const matched = matchPath(pathname, search, brand);
-    if (matched && Object.values(matched.params).includes(recordId)) return matched;
+    if (
+      matched &&
+      Object.values(matched.params).includes(recordId) &&
+      (listHome || matched.surface === route.surface)
+    ) {
+      return matched;
+    }
   }
-  return {
-    surface: route.surface,
-    params: routeAcceptsId(route) ? { id: recordId } : {},
-  };
+  // Half an address would open the pane blank, so a two-part home with no usable
+  // stored address opens nothing (persona issue 261).
+  if (own === undefined) return null;
+  return { surface: route.surface, params: own };
 }
 
 /**

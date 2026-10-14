@@ -47,6 +47,37 @@ describe('recordDestination', () => {
     });
   });
 
+  // Persona issue 261. A screen addressed by something other than `:id` was
+  // handed `{ id }` and opened blank: a record type is `/crm/record-types/:key`,
+  // a record of one `/crm/records/:objectKey/:id`.
+  it('opens a screen addressed by key under the name the route gives it', () => {
+    expect(recordDestination('crm_object_type', 'course')).toEqual({
+      surface: 'crm.object-type.detail',
+      params: { key: 'course' },
+    });
+    expect(recordDestination('product_type', 'apparel')).toEqual({
+      surface: 'commerce.product-types.detail',
+      params: { key: 'apparel' },
+    });
+    expect(recordDestination('variant', OTHER)).toEqual({
+      surface: 'inventory.stock.item',
+      params: { variantId: OTHER },
+    });
+  });
+
+  it('reads a two-part address from the stored one when it names this record', () => {
+    expect(recordDestination('crm_record', INVOICE, `/crm/records/course/${INVOICE}`)).toEqual({
+      surface: 'crm.record.detail',
+      params: { objectKey: 'course', id: INVOICE },
+    });
+  });
+
+  it('opens nothing rather than another record or half an address', () => {
+    expect(recordDestination('crm_record', INVOICE, `/crm/records/course/${OTHER}`)).toBe(null);
+    expect(recordDestination('crm_record', INVOICE, `/crm/report-builder/${INVOICE}`)).toBe(null);
+    expect(recordDestination('crm_record', INVOICE)).toBe(null);
+  });
+
   it('has no destination for a type with no home', () => {
     expect(recordDestination('no_such_thing', INVOICE, `/wholesale/invoices/${INVOICE}`)).toBe(
       null

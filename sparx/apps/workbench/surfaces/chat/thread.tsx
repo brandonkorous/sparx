@@ -83,6 +83,7 @@ import {
 } from './data';
 import { emitTyping, useChatLive, useTypingIndicator } from './live';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { CANVAS_CORNER_CLEARANCE } from '../../components/canvas-corner';
 
 /* ── The "who you're talking to" card ─────────────────────────────────────── */
 
@@ -107,7 +108,7 @@ function ContextCard({
   const note = whoNote(match, name, data?.name ?? null);
 
   return (
-    <section className="card bg-base-100 flex flex-col gap-2 p-3">
+    <section className="card bg-base-100 flex max-h-[30%] shrink-0 flex-col gap-2 overflow-y-auto p-3">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <Text as="span" className="text-base font-semibold">
           {name}
@@ -151,9 +152,22 @@ function ContextCard({
             <span className="font-semibold tabular-nums">{data.orderCount}</span>{' '}
             {data.orderCount === 1 ? 'order' : 'orders'}
           </span>
+          {/* What the orders come to, then what was paid: a customer on account
+              or paying on collection read "$0.00 spent" above thousands of
+              orders (sparx persona issue 163), the words the customer page
+              already uses since persona issue 113. */}
+          {data.orderCount > 0 ? (
+            <span>
+              <span className="font-semibold tabular-nums">{formatMoney(data.orderedValue)}</span>{' '}
+              ordered
+            </span>
+          ) : null}
           <span>
             <span className="font-semibold tabular-nums">{formatMoney(data.lifetimeValue)}</span>{' '}
-            spent
+            paid
+            {data.orderedValue > data.lifetimeValue
+              ? `, ${formatMoney(data.orderedValue - data.lifetimeValue)} still to come`
+              : ''}
           </span>
           {data.lastOrderAt ? <span>Last ordered {describeAgo(data.lastOrderAt)}</span> : null}
         </div>
@@ -351,7 +365,9 @@ function Composer({ id, disabled }: { id: string; disabled: boolean }) {
           }
         }}
       />
-      <div className="mt-2 flex items-center gap-2">
+      {/* Send ends this row, at the pane's foot: the corner the workspace tools
+          float in. It was under them (sparx persona issue 166). */}
+      <div className={`mt-2 flex items-center gap-2 ${CANVAS_CORNER_CLEARANCE}`}>
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button size="sm" variant="ghost" color="neutral" disabled={disabled}>
@@ -635,7 +651,9 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
         ]}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-2">
+      {/* Scrolls as a whole only when the pane is too short for the card, the
+          messages' floor and the reply box together: nothing is ever cut off. */}
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
         <ContextCard conversation={data} siteName={siteName} ctx={ctx} />
 
         {/* Assigning lives here, beside the identity, rather than crowding the
@@ -659,7 +677,11 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         </div>
 
-        <ol ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto p-1">
+        {/* The conversation is what the pane is for: it keeps a floor, and the
+            card above gives way, capped and scrolling inside itself. The card
+            used to take all it wanted and leave the messages one line (sparx
+            persona issue 234). */}
+        <ol ref={scrollRef} className="min-h-48 flex-1 space-y-3 overflow-y-auto p-1">
           {data.messages.length === 0 ? (
             <li>
               <Text className="text-sm">

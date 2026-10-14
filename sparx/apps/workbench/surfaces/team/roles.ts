@@ -18,6 +18,7 @@
 import { ORG_ROLES, type OrgRole } from '@wizeworks/auth/org-roles';
 import { roleIgnoresModuleAccess } from '@wizeworks/auth/module-access';
 import { roleIgnoresPropertyAccess } from '@wizeworks/auth/property-access';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 /** The role names as a person reads them. */
 const ROLE_LABELS: Record<OrgRole, string> = {
@@ -90,7 +91,7 @@ export const ASSIGNABLE_ROLES: readonly OrgRole[] = ORG_ROLES.filter((role) => r
  *  sees the roster — knowing who your colleagues are is not privileged — and
  *  no controls at all. */
 export function canManageTeam(viewerRole: string | undefined): boolean {
-  return viewerRole === 'owner' || viewerRole === 'admin';
+  return canManageBusiness(viewerRole);
 }
 
 /**

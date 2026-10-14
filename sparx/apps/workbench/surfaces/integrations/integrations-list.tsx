@@ -332,6 +332,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<Plug className="size-6" aria-hidden />}
         title="Could not load your integrations"
         description="This is a problem reaching the server. Your existing connections are unaffected and still working."
+        error={catalog.error}
         onRetry={() => {
           void catalog.refetch();
         }}

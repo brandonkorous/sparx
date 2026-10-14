@@ -39,6 +39,8 @@ import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { useReaderClock } from '../../lib/business-timezone';
+import { onClock } from '../../lib/publish-clock';
 import {
   customerDisplay,
   enrollmentState,
@@ -71,6 +73,10 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
   const unenroll = useUnenrollFromSequence(sequenceId);
   const confirm = useConfirm();
   const toast = useToast();
+  // The exact time behind "in 2 days" was this computer's clock, unnamed. It is
+  // the business's, named, like a campaign's (Piggles persona issue 984).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   const totalSteps = sequence.data?.steps.length ?? 0;
   const sequenceName = sequence.data?.name ?? 'Sequence';
@@ -260,11 +266,19 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
                         : String(row.currentStep)}
                     </td>
                     <td className="hidden text-sm @xl:table-cell">
-                      <Timestamp value={row.enrolledAt} format="relative" />
+                      <Timestamp
+                        value={row.enrolledAt}
+                        format="relative"
+                        title={onClock(row.enrolledAt, clock)}
+                      />
                     </td>
                     <td className="hidden text-sm @lg:table-cell">
                       {row.status === 'active' ? (
-                        <Timestamp value={row.nextRunAt} format="relative" />
+                        <Timestamp
+                          value={row.nextRunAt}
+                          format="relative"
+                          title={onClock(row.nextRunAt, clock)}
+                        />
                       ) : (
                         '—'
                       )}

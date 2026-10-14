@@ -36,8 +36,11 @@ export function orderStatusTone(status: string): SilicaColor {
 
 /** The status in the SHOPPER's words, shared by the order list and the order
  *  detail so the two can never call one fact two things. `fulfilled` is the
- *  warehouse's word for it; she is waiting on a parcel (issue 295). */
-export function orderStatusLabel(status: string): string {
+ *  warehouse's word for it; she is waiting on a parcel (issue 295). An order she
+ *  took at the counter or came to fetch was never delivered: it was collected
+ *  (sparx persona issue 177). */
+export function orderStatusLabel(status: string, collecting = false): string {
+  if (collecting && (status === 'delivered' || status === 'fulfilled')) return 'Collected';
   switch (status) {
     case 'placed':
       return 'Placed';

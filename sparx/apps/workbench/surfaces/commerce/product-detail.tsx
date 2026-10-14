@@ -82,6 +82,8 @@ import { ProductMediaTab } from './product-media';
 import { ProductPricingTab } from './product-pricing';
 import { ProductAttributesTab } from './product-attributes';
 import { ProductSeoTab } from './product-seo';
+import { pageAddress } from './page-address';
+import { siteHostOf, useSiteHost } from '../domains/site-host';
 import {
   productErrorMessage,
   productState,
@@ -120,6 +122,7 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
   // themselves, at which point it is theirs and typing more of the name must not
   // overwrite it.
   const effectiveHandle = touchedHandle ? handle : slugifyHandle(title);
+  const host = useSiteHost();
   const effectiveSku = touchedSku ? sku : suggestSku(title);
 
   const trimmed = title.trim();
@@ -262,8 +265,8 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                The end of this product&apos;s page address on your website: yoursite.com/products/
-                {effectiveHandle || '…'}
+                The end of this product&apos;s page address on your website:{' '}
+                {pageAddress(host, 'commerce.product', effectiveHandle)}
               </FieldDescription>
             </Field>
           </FormSection>
@@ -459,13 +462,10 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   // The address a shopper would reach this product at, on the site being worked
   // in. Every site has at least its sparx.zone address, so this is normally
   // present.
-  const propertyId = currentSiteId ?? null;
-  const mine = (domains ?? []).filter(
-    (domain) =>
-      domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)
-  );
-  const host = (mine.find((domain) => domain.isCanonical) ?? mine[0])?.host ?? null;
-  const productUrl = host ? `https://${host}/products/${product.handle}` : null;
+  const host = siteHostOf(domains, currentSiteId ?? null);
+  const productUrl = host
+    ? `https://${pageAddress(host, 'commerce.product', product.handle)}`
+    : null;
 
   const togglePublished = async () => {
     if (onSale) {

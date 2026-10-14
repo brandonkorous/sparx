@@ -202,8 +202,9 @@ function createAuth() {
     // `requireEmailVerification: false` above so a fresh signup is auto-signed-in
     // and lands in onboarding immediately (the "live in 5 minutes" goal). The
     // verification email is still sent (triggered explicitly after signUpMerchant,
-    // since our signup bypasses Better Auth's own signUpEmail), a banner nudges in
-    // the dashboard, and sensitive actions gate on `emailVerified`. Same platform
+    // since our signup bypasses Better Auth's own signUpEmail), a notice with a
+    // "Send the link again" button nudges at the top of each console (sparx
+    // persona issue 157), and sensitive actions gate on `emailVerified`. Same platform
     // path as password-reset: publish `email.send`, email-worker renders + relays.
     emailVerification: {
       autoSignInAfterVerification: true,

@@ -45,6 +45,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { CurrencyField } from '../../components/currency-field';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { isUsableCurrency } from '../../lib/money-format';
 import { buyingErrorMessage } from './suppliers-data';
@@ -137,14 +138,11 @@ export function CostingSettingsSurface() {
   const body = () => {
     if (policy.isError) {
       return (
-        <Alert color="danger" variant="soft" className="m-4">
-          <AlertContent>
-            <AlertTitle>Could not load this setting</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. How your stock is valued is unaffected.
-            </AlertDescription>
-          </AlertContent>
-        </Alert>
+        <PaneLoadError
+          title="Could not load this setting"
+          description="This is a problem reaching the server. How your stock is valued is unaffected."
+          error={policy.error}
+        />
       );
     }
     if (!form) {

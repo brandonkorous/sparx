@@ -177,11 +177,5 @@ export function ratingTone(rating: number): Tone {
   return 'success';
 }
 
-export function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
+// When an item came in is shown on the business's clock with `whenOn` from
+// social-clock.ts (piggles persona issue 990).

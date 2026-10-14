@@ -74,10 +74,25 @@ export interface SavedReport {
   /** Set on the reports sparx ships — read-only in place, duplicate to change. */
   builtinSlug: string | null;
   shared: boolean;
+  /** Who made it; null for the ready-made ones, which belong to the business. */
+  ownerId: string | null;
   propertyId: string | null;
   createdAt: string;
   updatedAt: string;
 }
+
+/** A report kept to the person who made it, rather than one the team shares. */
+export function keptToItsMaker(report: Pick<SavedReport, 'shared' | 'ownerId'>): boolean {
+  return !report.shared && report.ownerId !== null;
+}
+
+/** What a teammate's board card says in place of a report kept private (issue 264). */
+export const PRIVATE_CARD_WORDS =
+  'This card shows a report kept private by the person who made it.';
+
+/** What adding a private report to a shared board says first. */
+export const PRIVATE_ON_SHARED_WARNING =
+  'This report is kept to you, so teammates who open this board will see its card but not its name or numbers.';
 
 export interface ReportField {
   path: string;
@@ -93,12 +108,17 @@ export interface ReportableObject {
 }
 
 export interface ReportResult {
-  columns: { key: string; label: string }[];
+  /** `kind` marks money and plain numbers so they print as such (issue 251). */
+  columns: { key: string; label: string; kind?: 'number' | 'currency' }[];
   rows: Record<string, unknown>[];
   grouped: boolean;
   /** The row cap was hit — the surface must say so rather than presenting a
    *  truncated answer as the whole one. */
   truncated: boolean;
+  /** For a breakdown by an id: each id's name, keyed by the id (issue 247). */
+  groupLabels?: Record<string, string>;
+  /** The business's currency, sent when a column holds money (issue 251). */
+  currency?: string;
 }
 
 export interface DashboardWidget {
@@ -109,7 +129,10 @@ export interface DashboardWidget {
   w: number;
   h: number;
   title: string | null;
-  report: SavedReport;
+  /** Null, with `privateReport`, when the card is for a report its maker kept
+   *  to herself: the board is shared, the report is not (persona issue 264). */
+  report: SavedReport | null;
+  privateReport?: boolean;
 }
 
 export interface Dashboard {
@@ -440,7 +463,7 @@ export function useUpdateDashboard(id: string) {
 export function useSetWidgets(id: string) {
   const invalidate = useInvalidateDashboards();
   return useMutation({
-    mutationFn: (widgets: Omit<DashboardWidget, 'id' | 'report'>[]) =>
+    mutationFn: (widgets: Omit<DashboardWidget, 'id' | 'report' | 'privateReport'>[]) =>
       api.put<Dashboard>(`/v1/crm/dashboards/${id}/widgets`, { widgets }),
     onSuccess: invalidate,
   });

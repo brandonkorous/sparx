@@ -28,6 +28,7 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/integration-framework": "workspace:*",
     "@wizeworks/modules": "workspace:*",
+    "@wizeworks/time": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -12,6 +12,7 @@
 // single record, so the record (object) CMS sources are dropped for email.
 
 import {
+  AUTHOR_SOURCES,
   COMMERCE_SOURCES,
   CRM_SOURCES,
   EMAIL_SOURCES,
@@ -35,8 +36,26 @@ async function loadCmsSources(tx: Prisma.TransactionClient): Promise<DataSource[
   // order so the dedupe keeps the tenant's fork over the platform row.
   const rows = await tx.contentType.findMany({
     orderBy: [{ isBuiltIn: 'asc' }, { key: 'asc' }],
-    select: { key: true, name: true, pluralName: true, isSingleton: true, schemaJson: true },
+    select: {
+      key: true,
+      name: true,
+      pluralName: true,
+      isSingleton: true,
+      schemaJson: true,
+      isBuiltIn: true,
+    },
   });
+  // Which kinds the business has written in, so a built-in it never touched is marked
+  // unused (`DataSource.used`). One grouped count, not one per kind.
+  const written = new Set(
+    (
+      await tx.contentEntry.groupBy({
+        by: ['typeKey'],
+        where: { deletedAt: null },
+        _count: { _all: true },
+      })
+    ).map((g) => g.typeKey)
+  );
   const seen = new Set<string>();
   const types = rows.filter((t) => {
     if (seen.has(t.key)) return false;
@@ -51,6 +70,7 @@ async function loadCmsSources(tx: Prisma.TransactionClient): Promise<DataSource[
       pluralName: t.pluralName,
       isSingleton: t.isSingleton,
       fields,
+      used: !t.isBuiltIn || written.has(t.key),
     });
   });
 }
@@ -121,6 +141,7 @@ export function getSchema(
     return {
       sources: [
         ...cmsSources,
+        ...AUTHOR_SOURCES,
         ...commerce,
         ...categorySources,
         ...CRM_SOURCES,

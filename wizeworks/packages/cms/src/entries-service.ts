@@ -29,9 +29,9 @@ export type EntryStatus = 'draft' | 'scheduled' | 'published' | 'archived';
  *
  *  `existing` keeps a row's original publish date when a write is only touching
  *  its status or body — the date a post went live is a fact about the post, not
- *  about the last edit. Pass nothing on a create. The deliberate re-dating on an
- *  explicit publish action stays in `publishEntryTx`, which is a person choosing
- *  to publish rather than a write that happens to carry a status.
+ *  about the last edit. Pass nothing on a create. That holds for an explicit
+ *  Publish too (`publishEntryTx`): putting back a piece that was taken down keeps
+ *  the date readers first saw on it.
  *
  *  The database enforces the same rule (`content_entries_published_has_date`), so
  *  a future write path that forgets this fails loudly instead of quietly
@@ -285,8 +285,14 @@ export async function publishEntryTx(
     data: {
       status: nextStatus,
       scheduledAt: nextStatus === 'scheduled' ? scheduled : null,
-      // Keep the prior publish time when scheduling.
-      publishedAt: nextStatus === 'published' ? now : existing.publishedAt,
+      // Keep the date the piece first went live, whether this publishes it or
+      // schedules it. Taking a piece down and putting it back re-dated it to the
+      // moment of the click, so an article from last week led the home page as
+      // that day's news and no screen could set its date back (persona P09).
+      publishedAt:
+        nextStatus === 'published'
+          ? publishTimestamp('published', existing.publishedAt, now)
+          : existing.publishedAt,
       archivedAt: null,
     },
   });
@@ -413,6 +419,22 @@ export async function deleteEntry(
 // and records a NEW revision summarising the restore (so history stays append-
 // only). No Pub/Sub event: it's an in-place edit, same as a manual body update.
 
+/** What a restore says in the piece's history. The list reads "Version 3", so the note
+ *  does too: "Restored from revision #3" named the same thing a second way (P09). */
+export function restoreNote(revisionNumber: number): string {
+  return `Brought back from version ${revisionNumber}`;
+}
+
+/**
+ * What a restore tells the rest of the platform: that the entry changed, exactly as a
+ * save does. It told nobody, so bringing back an older version of a PUBLISHED piece
+ * rewrote what the database serves while every cached copy of the site kept showing the
+ * newer text (P09: she brought a correction back out and her live page did not move).
+ */
+export function restoredEvents(entry: { id: string; typeKey: string }): CmsEmittedEvent[] {
+  return [{ type: 'content.entry.updated', data: { entryId: entry.id, typeKey: entry.typeKey } }];
+}
+
 export async function restoreRevisionTx(
   tx: TxClient,
   ctx: CmsWriteContext,
@@ -444,10 +466,10 @@ export async function restoreRevisionTx(
     status: after.status,
     kind: 'manual',
     authorId: ctx.actorId,
-    summary: `Restored from revision #${revisionNumber}`,
+    summary: restoreNote(revisionNumber),
   });
 
-  return { entry: after, events: [] };
+  return { entry: after, events: restoredEvents(after) };
 }
 
 export async function restoreRevision(

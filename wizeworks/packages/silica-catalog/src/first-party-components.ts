@@ -49,6 +49,8 @@ import type { Node } from '@wizeworks/silicaui-html';
  *  one place. */
 export const GROUP_FACET: Record<string, string> = {
   commerce: 'Products',
+  // The live list of the business's own writing (`WRITING_CATALOG`).
+  writing: 'Your writing',
   sparx_layout: 'Page structure',
   sparx_gallery: 'Pictures',
   sparx_feature: 'Big pictures',

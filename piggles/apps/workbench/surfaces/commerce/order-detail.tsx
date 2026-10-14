@@ -30,6 +30,7 @@ import { OrderToolbar } from './order-detail-toolbar';
 import { OrderBody } from './order-detail-body';
 import { orderFacts } from './order-detail-facts';
 import { useOrder, useOrderFulfillments, useOrderPayments, useOrderRefunds } from './data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
@@ -56,7 +57,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const modules = useModuleStates();
   const canSeeCommission =
     (modules.data?.some((m) => m.slug === 'staff' && m.enabled) ?? false) &&
-    (viewer.data?.role === 'admin' || viewer.data?.role === 'owner');
+    canManageBusiness(viewer.data?.role);
 
   // Keyed on the NUMBER, not the order object. Depending on the object retitles
   // the tab on every refetch — including the one after a cancellation, which

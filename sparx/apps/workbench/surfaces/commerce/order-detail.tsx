@@ -56,6 +56,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import {
   addressLines,
   amountDue,
+  paidIn,
   channelLabel,
   customerName,
   deliveryPlan,
@@ -93,6 +94,7 @@ import {
   nothingHandedOverWords,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 /** The one column everything sits in. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -504,7 +506,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const modules = useModuleStates();
   const canSeeCommission =
     (modules.data?.some((m) => m.slug === 'staff' && m.enabled) ?? false) &&
-    (viewer.data?.role === 'admin' || viewer.data?.role === 'owner');
+    canManageBusiness(viewer.data?.role);
 
   // Keyed on the NUMBER, not the order object. Depending on the object retitles
   // the tab on every refetch — including the one that follows a cancellation,
@@ -909,8 +911,8 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   of what was sold. Repeating it as a negative here would take the
                   same $150 off twice on one screen. */}
               <MoneyRow label="Order total" amount={order.total} currency={currency} emphasis />
-              {order.amountPaid > 0 ? (
-                <MoneyRow label="Paid so far" amount={order.amountPaid} currency={currency} />
+              {paidIn(order) > 0 ? (
+                <MoneyRow label="Paid so far" amount={paidIn(order)} currency={currency} />
               ) : null}
               {order.refundTotal > 0 ? (
                 <MoneyRow label="Given back" amount={order.refundTotal} currency={currency} />

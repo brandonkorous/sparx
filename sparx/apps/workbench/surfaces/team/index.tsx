@@ -33,11 +33,6 @@
 
 import { useEffect, useId, useMemo, useState } from 'react';
 import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Avatar,
   Badge,
   Button,
@@ -60,7 +55,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Plus, Send, TriangleAlert, UserX, Users, X } from 'lucide-react';
+import { Plus, Send, UserX, Users, X } from 'lucide-react';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useSites, useViewer } from '../../lib/api/shell-data';
@@ -76,6 +71,7 @@ import {
 } from '../../lib/api/team';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { describeReach, type ReachNames } from './reach';
 import {
   ASSIGNABLE_ROLES,
@@ -311,7 +307,7 @@ function InviteModal({ open, onClose }: { open: boolean; onClose: () => void }) 
 export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { people, ready, isError, refetch } = useTeamRoster();
+  const { people, ready, isError, error, refetch } = useTeamRoster();
   const { data: viewer } = useViewer();
   // Already in the cache: the site switcher in the chrome loads the same query
   // before any pane exists, so naming a site here costs no request.
@@ -482,30 +478,14 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
   // act on it — re-inviting a colleague who never left.
   if (isError) {
     return (
-      <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <TriangleAlert />
-          <AlertContent>
-            <AlertTitle>Could not load your team</AlertTitle>
-            <AlertDescription>
-              Nobody has been removed and no invitation has been lost. This is a problem reaching
-              the server, not with your team.
-            </AlertDescription>
-          </AlertContent>
-          <AlertActions>
-            <Button
-              size="sm"
-              color="error"
-              variant="soft"
-              onClick={() => {
-                refetch();
-              }}
-            >
-              Try again
-            </Button>
-          </AlertActions>
-        </Alert>
-      </div>
+      <PaneLoadError
+        title="Could not load your team"
+        description="Nobody has been removed and no invitation has been lost. This is a problem reaching the server, not with your team."
+        error={error}
+        onRetry={() => {
+          refetch();
+        }}
+      />
     );
   }
 

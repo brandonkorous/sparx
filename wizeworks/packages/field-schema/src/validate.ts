@@ -111,7 +111,8 @@ function buildField(field: FieldDef): z.ZodType {
         currency: z.string().regex(/^[A-Z]{3}$/),
       });
     }
-    case 'user': {
+    case 'user':
+    case 'author': {
       const inner = z.string().uuid();
       return field.multiple ? z.array(inner) : inner;
     }

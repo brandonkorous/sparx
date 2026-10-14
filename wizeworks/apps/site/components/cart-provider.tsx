@@ -26,6 +26,7 @@ import type { RepeatCadence } from '@wizeworks/commerce-schemas';
 
 import type { CartAccountRules } from '@/lib/account-buying-rules';
 import { errorCodeOf, isBoughtCart, isBoughtCartError } from '@/lib/bought-cart';
+import { cartEndsWithSession } from '@/lib/cart-session';
 import { mediaUrl } from '@/lib/media';
 import { stockRefusalOf, stockRefusalSentence } from '@/lib/stock-refusal-words';
 import {
@@ -431,13 +432,26 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
   // adopt it so items priced retail while anonymous show correctly instead
   // of the cart silently appearing empty (its old cached id/token 404s once
   // the server has merged/deleted that cart — ownership is token-only).
-  const { cartHandoff, clearCartHandoff } = useCustomer();
+  const { cartHandoff, clearCartHandoff, customer, status } = useCustomer();
   useEffect(() => {
     if (!cartHandoff) return;
     persist(cartHandoff.cartId, cartHandoff.guestToken);
     void refresh();
     clearCartHandoff();
   }, [cartHandoff, clearCartHandoff, persist, refresh]);
+
+  // The cart ends with the session of the buyer it was kept for: Renée signed out
+  // and Brynn, on the same browser, opened Renée's cart at Wasatch's fleet price
+  // (sparx persona issue 192). Undefined while the session is unknown (loading,
+  // or no answer), which changes nothing.
+  const buyerId =
+    status === 'authenticated' ? (customer?.id ?? null) : status === 'anonymous' ? null : undefined;
+  const keptFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (buyerId === undefined) return;
+    if (cartEndsWithSession(keptFor.current, buyerId)) forget();
+    keptFor.current = buyerId;
+  }, [buyerId, forget]);
 
   // Create a cart on first write, capturing the issued ownership token.
   const ensureCart = useCallback(async (): Promise<string> => {

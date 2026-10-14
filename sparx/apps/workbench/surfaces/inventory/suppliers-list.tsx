@@ -31,6 +31,7 @@ import {
 import { Archive, Plus, Truck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { supplierState, supplierTerms, useSuppliers } from './suppliers-data';
@@ -53,7 +54,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useSuppliers({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useSuppliers({
     q: search.trim(),
     includeArchived,
     take,
@@ -76,10 +77,11 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Truck className="size-6" aria-hidden />}
           title="Could not load your suppliers"
           description="This is a problem reaching the server. Your suppliers are unaffected: the list just could not be read just now."
+          error={error}
         />
       );
     }
@@ -228,6 +230,19 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           </div>
         }
+        primary={
+          <Button
+            size="sm"
+            color="module"
+            className="ml-auto shrink-0 whitespace-nowrap"
+            onClick={() => {
+              ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            <ActionLabel>New supplier</ActionLabel>
+          </Button>
+        }
         controls={
           <>
             <ToggleGroup
@@ -249,17 +264,6 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <span className="hidden @2xl:inline">Archived</span>
               </ToggleGroupItem>
             </ToggleGroup>
-            <Button
-              size="sm"
-              color="module"
-              className="shrink-0 whitespace-nowrap"
-              onClick={() => {
-                ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
-              }}
-            >
-              <Plus className="size-4" aria-hidden />
-              <ActionLabel>New supplier</ActionLabel>
-            </Button>
           </>
         }
         refresh={

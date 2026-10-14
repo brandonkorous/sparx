@@ -26,6 +26,7 @@ import type { TxClient } from '@wizeworks/db';
 import type { SyncTrigger } from '@wizeworks/commerce-schemas';
 
 import type { ServiceContext } from '../errors';
+import { indexInventoryEntityOnCommit } from '../events';
 
 import { reconcileStockLevel } from './sync';
 
@@ -202,10 +203,18 @@ export async function ingestFeed(
       },
       select: { id: true },
     });
+    const prior = await tx.inventorySource.findUnique({
+      where: { id: source.id },
+      select: { status: true },
+    });
     await tx.inventorySource.update({
       where: { id: source.id },
       data: { lastSyncAt: now, status: 'active', updatedAt: now },
     });
+    // A routine sync only moves timestamps; re-index when it lifts an error status.
+    if (prior && prior.status !== 'active') {
+      await indexInventoryEntityOnCommit(ctx, 'inventory_source', source.id);
+    }
     return run.id;
   });
 

@@ -47,6 +47,7 @@ import { CalendarDate, calendarDateText } from '../../components/calendar-date';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
+import { loadFailureWords } from '../../lib/api-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, stockErrorMessage } from './data';
 import {
@@ -190,7 +191,10 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>Could not work that out just now</AlertTitle>
                 <AlertDescription>
-                  This is a problem reaching the server. Your stock and your figures are unaffected.
+                  {loadFailureWords(
+                    report.error,
+                    'This is a problem reaching the server. Your stock and your figures are unaffected.'
+                  )}
                 </AlertDescription>
               </AlertContent>
             </Alert>

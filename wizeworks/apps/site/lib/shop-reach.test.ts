@@ -135,6 +135,14 @@ describe('reading the signed-in shopper', () => {
     expect(await getMe('juniper')).toBeNull();
   });
 
+  it('a visitor with no session is signed out, read without a 401 in their console', async () => {
+    // Every page asks; most visitors have no session (persona issue 947).
+    fetchMock.mockResolvedValue(envelope(200, { success: true, data: { customer: null } }));
+
+    expect(await readSession('juniper')).toEqual({ kind: 'signed-out' });
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain('/account/session');
+  });
+
   it('the old proxy’s bare 500 is "could not check", never "signed out"', async () => {
     fetchMock.mockImplementation(() => Promise.resolve(new Response(null, { status: 500 })));
 

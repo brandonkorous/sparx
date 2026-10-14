@@ -33,6 +33,7 @@ import { formatCents, plural } from './data';
 import { slowMoverLabel, slowMoverTone, useSlowMovers } from './planning-data';
 import { PlanningShell, targetFor, useHasBeenMeasured } from './planning-shell';
 import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 export function PlanningIdleSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useSlowMovers('');
@@ -64,10 +65,11 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
   // live while api-rest was restarting, and it was completely convincing.
   if (report.isError) {
     return (
-      <EmptyState
+      <PaneLoadError
         icon={<PackageX className="size-6" aria-hidden />}
         title="Could not work out what is not selling"
         description="This is a problem reaching the server, not a finding about your stock. Nothing here is a real answer until it loads. Try again in a moment."
+        error={report.error}
       />
     );
   }

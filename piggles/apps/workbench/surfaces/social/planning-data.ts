@@ -31,6 +31,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { thisComputersTimezone } from '../../lib/business-timezone';
 import { socialKeys } from './data';
 
 /* ── Saved hashtag blocks ───────────────────────────────────────────────── */
@@ -156,19 +157,18 @@ export interface BestTimeReport {
   buckets: BestTimeBucket[];
 }
 
-/** The browser's own zone, so the answer is expressed in the hours a person thinks in. */
-export function localTimezone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
-  }
-}
-
-export function useBestTime(timezone: string) {
+/**
+ * The best times, in the hours of the zone given: the business's, or this computer's when
+ * it has none. It used to ask on this computer's zone whatever the business kept, so a
+ * shop in London read on a laptop in California was told its best hour was 1 AM
+ * (piggles persona issue 990). Undefined while the business's zone is still loading:
+ * nothing is asked until the answer can be on the right clock.
+ */
+export function useBestTime(timezone: string | undefined) {
   return useQuery({
-    queryKey: socialKeys.bestTime(timezone),
-    queryFn: () => api.get<BestTimeReport>('/v1/social/best-time', { timezone }),
+    queryKey: socialKeys.bestTime(timezone ?? ''),
+    queryFn: () => api.get<BestTimeReport>('/v1/social/best-time', { timezone: timezone! }),
+    enabled: timezone !== undefined,
   });
 }
 
@@ -231,7 +231,13 @@ export interface ImportResult {
 export function usePreviewImport() {
   return useMutation({
     meta: { running: 'read that file' },
-    mutationFn: (csv: string) => api.post<ImportPreview>('/v1/social/import/preview', { csv }),
+    // This computer's zone goes along, used only when the business has none of its own:
+    // a time in the file is read on the business's clock (piggles persona issue 990).
+    mutationFn: (csv: string) =>
+      api.post<ImportPreview>('/v1/social/import/preview', {
+        csv,
+        timezone: thisComputersTimezone(),
+      }),
   });
 }
 
@@ -239,7 +245,7 @@ export function useRunImport() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { csv: string; defaultTargetIds?: string[] }) =>
-      api.post<ImportResult>('/v1/social/import', input),
+      api.post<ImportResult>('/v1/social/import', { ...input, timezone: thisComputersTimezone() }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['social', 'posts'] });
     },

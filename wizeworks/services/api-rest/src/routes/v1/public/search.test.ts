@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { PUBLIC_ENTITY_TYPES, pathFrom } from './search.js';
+import { PUBLIC_ENTITY_TYPES, publicEntityTypesFor } from './search.js';
 
 describe('PUBLIC_ENTITY_TYPES', () => {
   it('includes the CMS articles a shop writes', () => {
@@ -29,27 +29,18 @@ describe('PUBLIC_ENTITY_TYPES', () => {
   });
 });
 
-describe('pathFrom', () => {
-  it('builds a blog post address from its type pattern', () => {
-    expect(pathFrom('/blog/{slug}', 'caring-for-knitwear')).toBe('/blog/caring-for-knitwear');
+// A journal that switched its shop off was offered a shop collection by its own
+// search (P09): the public route searched every public type on every site.
+describe('publicEntityTypesFor', () => {
+  it('drops products and collections on a site whose shop is off', () => {
+    expect(publicEntityTypesFor(['commerce', 'scheduling'])).toEqual(['cms_page', 'cms_entry']);
   });
 
-  it('builds a top-level page address', () => {
-    expect(pathFrom('/{slug}', 'returns-policy')).toBe('/returns-policy');
+  it('drops pages and articles on a site whose content is off', () => {
+    expect(publicEntityTypesFor(['cms'])).toEqual(['product', 'collection']);
   });
 
-  it('handles the deeper patterns the seeded types declare', () => {
-    expect(pathFrom('/case-studies/{slug}', 'a-b')).toBe('/case-studies/a-b');
-    expect(pathFrom('/careers/{slug}', 'cutter')).toBe('/careers/cutter');
-    expect(pathFrom('/team/{slug}', 'ines')).toBe('/team/ines');
-  });
-
-  it('leaves a pattern with no placeholder alone rather than losing the slug', () => {
-    // Better a wrong-but-real address than one silently missing its slug.
-    expect(pathFrom('/press', 'anything')).toBe('/press');
-  });
-
-  it('replaces only the first placeholder, so a slug cannot be injected twice', () => {
-    expect(pathFrom('/{slug}/{slug}', 'x')).toBe('/x/{slug}');
+  it('keeps every public type when nothing is switched off', () => {
+    expect(publicEntityTypesFor([])).toEqual(PUBLIC_ENTITY_TYPES);
   });
 });

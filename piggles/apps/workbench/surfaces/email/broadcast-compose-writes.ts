@@ -20,7 +20,8 @@ import {
   useSendBroadcast,
   useUpdateBroadcast,
 } from './broadcasts-mutations';
-import { DETAIL_KEY, formatWhen, peopleCount, serialize, type Draft } from './broadcast-draft';
+import { onClock } from '../../lib/publish-clock';
+import { DETAIL_KEY, peopleCount, serialize, type Draft } from './broadcast-draft';
 
 export interface CommitArgs {
   ctx: SurfaceContext;
@@ -34,7 +35,11 @@ export interface CommitArgs {
   /** The `From` line, as a recipient will read it — named in the confirmation. */
   senderLine: string;
   recipientCount: number | undefined;
-  scheduledAt: string;
+  /** The chosen send time as an instant, already read on `clock`. */
+  scheduledIso: string | null;
+  /** The business's zone, or this computer's when it has none: the clock the
+   *  confirm names the time on (Piggles persona issue 984). */
+  clock: string;
 }
 
 export function useBroadcastCommit(args: CommitArgs) {
@@ -149,18 +154,20 @@ export function useBroadcastCommit(args: CommitArgs) {
   };
 
   const scheduleFor = async () => {
-    const { draft, senderLine, recipientCount, scheduledAt } = latest.current;
-    const when = new Date(scheduledAt);
+    const { draft, senderLine, recipientCount, scheduledIso, clock } = latest.current;
+    // Already read on the business's clock by the composer. `new Date(box)` here
+    // read it on this computer's (Piggles persona issue 984).
+    if (scheduledIso === null) return;
     const ok = await confirm({
       title: `Schedule this for ${peopleCount(recipientCount ?? 0)}?`,
-      description: `“${draft.subject.trim()}” goes out on ${formatWhen(when.toISOString())} from ${senderLine}. You can cancel it any time before then.`,
+      description: `“${draft.subject.trim()}” goes out on ${onClock(scheduledIso, clock)} from ${senderLine}. You can cancel it any time before then.`,
       confirmLabel: 'Schedule it',
       cancelLabel: 'Not yet',
       color: 'module',
     });
     if (!ok) return;
     await commit(
-      (id) => schedule.mutateAsync({ id, scheduledAt: when.toISOString() }),
+      (id) => schedule.mutateAsync({ id, scheduledAt: scheduledIso }),
       { title: 'Broadcast scheduled' },
       'Could not schedule this broadcast. Nothing was changed.'
     );

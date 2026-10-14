@@ -6,6 +6,7 @@ export {
 } from './extensions';
 export { renderDocToHtml, ALLOWED_CODE_LANGUAGES, type SerializeOptions } from './serialize';
 export { ContentBlockEditor, type CmsDoc, type ContentBlockEditorProps } from './editor';
+export { readHref, type LinkSuggestion, type LinkSuggestFn } from './ask';
 export {
   Callout,
   CALLOUT_VARIANTS,

@@ -331,6 +331,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
             icon={<Search className="size-6" aria-hidden />}
             title="Could not load your site checks"
             description="This is a problem reaching the server. Your pages are unaffected: the scores just could not be read."
+            error={audits.error}
             onRetry={() => {
               void audits.refetch();
             }}

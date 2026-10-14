@@ -31,6 +31,7 @@ import {
 } from '@wizeworks/dropship';
 import { prisma, withTenant } from '@wizeworks/db';
 
+import { recordDropshipShipment } from './dropship-shipment.js';
 import { publishDomainEvent } from './staff-events.js';
 
 export interface TrackingPollResult {
@@ -53,6 +54,8 @@ export interface TrackingPollResult {
 export interface TrackingPollDeps {
   makeAdapter?: (type: string, credentials: Credentials) => SupplierAdapter;
   publish?: typeof publishDomainEvent;
+  /** Records the shipment on the customer's order (sparx persona issue 170). */
+  recordShipment?: typeof recordDropshipShipment;
 }
 
 /** The statuses worth asking about. `delivered` is finished and `pending` has
@@ -91,6 +94,7 @@ export async function pollDropshipTracking(
 ): Promise<TrackingPollResult> {
   const makeAdapter = deps.makeAdapter ?? createAdapter;
   const publish = deps.publish ?? publishDomainEvent;
+  const recordShipment = deps.recordShipment ?? recordDropshipShipment;
 
   const rows = await withTenant({ tenantId }, (tx) =>
     tx.dropshipOrder.findMany({
@@ -160,6 +164,31 @@ export async function pollDropshipTracking(
 
     if (next === 'shipped') result.shipped += 1;
     else result.delivered += 1;
+
+    // The customer's own order moves on with it, which is what sends them their
+    // tracking (sparx persona issue 170). Guarded like the poll itself: one order
+    // that cannot be recorded must not stop the sweep.
+    if (next === 'shipped') {
+      try {
+        await recordShipment(tenantId, null, {
+          dropshipOrderId: row.id,
+          carrier: info.carrier ?? null,
+          trackingNumber: info.trackingNumber,
+          trackingUrl: info.trackingUrl,
+        });
+      } catch (error) {
+        await withTenant({ tenantId }, (tx) =>
+          tx.dropshipOrder.update({
+            where: { id: row.id },
+            data: {
+              errorMessage: `Shipped, but could not be recorded on the order: ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            },
+          })
+        );
+      }
+    }
 
     await publish(
       next === 'shipped' ? 'dropship.order.shipped' : 'dropship.order.delivered',

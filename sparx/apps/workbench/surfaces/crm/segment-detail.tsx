@@ -41,6 +41,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { customerName, customerTypeMeta } from './customers-data';
 import { useAccounts } from './companies-data';
+import { usePickedNames } from './segment-picked-names';
 import {
   segmentErrorMessage,
   segmentMembership,
@@ -213,6 +214,8 @@ function SegmentEditor({
     for (const a of accounts?.items ?? []) items[a.id] = a.companyName;
     return items;
   }, [accounts]);
+  const picked = usePickedNames();
+  const tierItems = useMemo(() => picked.tier ?? {}, [picked.tier]);
 
   /* ── Serialize + live preview ─────────────────────────────────────────── */
 
@@ -568,6 +571,7 @@ function SegmentEditor({
                 node={root}
                 repItems={repItems}
                 accountItems={accountItems}
+                tierItems={tierItems}
                 onChange={changeRoot}
               />
             </FormSection>

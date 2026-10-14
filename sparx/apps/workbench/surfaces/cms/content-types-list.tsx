@@ -18,7 +18,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   Heading,
@@ -29,6 +28,7 @@ import {
 import { Database, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -157,21 +157,14 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the list — a false "nothing here" over a
           // connection failure is the worst thing to say about a schema.
           <Card className="flex-1">
-            <EmptyState
+            <PaneLoadError
               icon={<Database className="size-6" aria-hidden />}
               title="Could not load your content types"
               description="This is a problem reaching the server. Nothing you have defined is affected."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              error={error}
+              onRetry={() => {
+                void refetch();
+              }}
             />
           </Card>
         ) : isLoading ? (
@@ -313,7 +306,9 @@ function TypeGroup({ title, description, types, counts, emptyHint, onOpen }: Typ
                       </span>
                     ) : null}
                   </td>
-                  <td className="hidden font-mono text-sm @xl:table-cell">{type.key}</td>
+                  <td className="hidden font-mono text-sm whitespace-nowrap @xl:table-cell">
+                    {type.key}
+                  </td>
                   <td className="hidden text-sm @2xl:table-cell">
                     <span className="flex flex-col">
                       <span className="whitespace-nowrap">{usage}</span>

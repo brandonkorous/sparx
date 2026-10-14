@@ -27,12 +27,14 @@ import { ArrowLeftRight, CircleCheck, Eraser } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
 import { useBarcodeConflicts, useResolveBarcodeConflict } from './scan-data';
 
 export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useBarcodeConflicts();
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } =
+    useBarcodeConflicts();
   const resolve = useResolveBarcodeConflict();
   const confirm = useConfirm();
 
@@ -65,10 +67,11 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ArrowLeftRight className="size-6" aria-hidden />}
           title="Could not check for shared barcodes"
           description="This is a problem reaching the server. Your codes are unaffected."
+          error={error}
         />
       );
     }

@@ -53,9 +53,9 @@ type Literal = string | number | boolean | null;
 /* ── Field metadata — what each field is and how it is edited ────────────── */
 
 /** How a field's value is entered, which drives the operator set and the value
- *  control. `rep`/`account` are uuid fields backed by a live picker. */
+ *  control. `rep`/`account`/`tier` are uuid fields backed by a live picker. */
 export type ValueKind =
-  'enum' | 'text' | 'number' | 'date' | 'boolean' | 'tags' | 'rep' | 'account';
+  'enum' | 'text' | 'number' | 'date' | 'boolean' | 'tags' | 'rep' | 'account' | 'tier';
 
 interface FieldMeta {
   label: string;
@@ -126,11 +126,16 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     group: 'Customer',
     kind: 'account',
   },
+  // Picked from the business's tiers and stored by id, so renaming a tier keeps
+  // its segments (sparx persona issue 149).
+  'b2bAccount.pricingTierId': { label: 'Price tier', group: 'Wholesale account', kind: 'tier' },
+  // The typed name it replaced. Not offered; kept so a rule saved on it still
+  // reads and can be switched over.
   'b2bAccount.pricingTier': {
-    label: 'Price tier',
+    label: 'Price tier name (typed)',
     group: 'Wholesale account',
     kind: 'text',
-    hint: 'The name of the tier, as it reads under Price tiers.',
+    hint: 'Matches only the exact name, and stops matching if the tier is renamed. Choose “Price tier” instead to pick it from your tiers.',
   },
   'b2bAccount.creditUtilization': {
     label: 'Credit used (share)',
@@ -244,7 +249,7 @@ export const OFFERED_FIELDS: SegmentField[] = [
   'customer.doNotContact',
   'customer.b2bAccountId',
   'b2bAccount.status',
-  'b2bAccount.pricingTier',
+  'b2bAccount.pricingTierId',
   'b2bAccount.paymentTerms',
   'b2bAccount.fleetSize',
   'b2bAccount.creditUtilization',
@@ -290,6 +295,7 @@ const OPERATORS_BY_KIND: Record<ValueKind, SegmentOperator[]> = {
   tags: ['contains', 'not_contains'],
   rep: ['eq', 'neq', 'is_null', 'is_not_null'],
   account: ['eq', 'neq', 'is_null', 'is_not_null'],
+  tier: ['eq', 'neq', 'is_null', 'is_not_null'],
 };
 
 /** The operators offered for a field, always including `current` so a stored
@@ -404,10 +410,11 @@ export function newPredicate(
   custom: CustomFieldIndex = {}
 ): PredNode {
   const op = defaultOperator(field, custom);
-  const meta = fieldMeta(field, custom);
-  const value =
-    meta.kind === 'enum' ? (meta.options?.[0]?.value ?? '') : meta.kind === 'boolean' ? 'true' : '';
-  return { id: newId(), kind: 'predicate', field, op, value, value2: '' };
+  // No value until the owner picks one. Filling in the first choice (or yes)
+  // was a rule nobody chose: a new segment matched 31 people before anything was
+  // picked, and under any of an added condition put 30 more in the audience
+  // (sparx persona issue 150).
+  return { id: newId(), kind: 'predicate', field, op, value: '', value2: '' };
 }
 
 export function newGroup(combinator: Combinator = 'and'): GroupNode {
@@ -462,7 +469,8 @@ function serializePredicate(node: PredNode, custom: CustomFieldIndex = {}): Pred
       value: parts.map((p) => coerceScalar(kind, p)),
     };
   }
-  if (node.value.trim() === '' && kind !== 'boolean') return null;
+  // Empty is unfilled for every kind. A yes/no read empty as no (issue 150).
+  if (node.value.trim() === '') return null;
   const value = coerceScalar(kind, node.value);
   if (typeof value === 'number' && Number.isNaN(value)) return null;
   return { kind: 'predicate', field: node.field, op: node.op, value };

@@ -7,12 +7,16 @@
 // row (detail / is / value) or a nested group. "Add group" nests one level
 // deeper, up to the schema's maximum, then hides itself.
 //
-// Fields and values are open (`field: string`, `value: unknown`), so the field
-// uses an autocomplete that suggests common paths while accepting free text, and
-// values are lightly coerced (true/false → boolean, numeric → number) so a
-// natural entry like `order.total ≥ 100` stores a real number.
+// The field picker names each detail in words ("Booking · Status") and stores
+// its code name (`booking.status`); see `condition-fields.ts`. The comparison
+// list fits the detail, and a detail with a known set of values offers them to
+// pick, so a rule on a booking's status cannot be typed "Confirmed" when the
+// server stores "confirmed". A detail the list does not know (a rule written by
+// an assistant) keeps its place under its own name, with the free-text value box
+// it always had, lightly coerced (true/false → boolean, numeric → number) so
+// `order.total ≥ 100` stores a real number.
 
-import { Autocomplete, Button, Input, Select } from '@wizeworks/silicaui-react';
+import { Button, Combobox, Input, Select } from '@wizeworks/silicaui-react';
 import { faFolderPlus, faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import {
@@ -23,12 +27,17 @@ import {
   type ConditionNode,
   type ConditionOperator,
 } from '@wizeworks/automation-schemas';
+import { CONDITION_OPERATORS, operatorDef, primitiveText } from './automations-catalog';
 import {
-  COMMON_CONDITION_FIELDS,
-  CONDITION_OPERATORS,
-  operatorDef,
-  primitiveText,
-} from './automations-catalog';
+  conditionField,
+  conditionFieldItems,
+  conditionFieldMatches,
+  operatorsFor,
+  startingOperator,
+  startingValue,
+  type ConditionChoice,
+  type ConditionFieldDef,
+} from './condition-fields';
 
 function coerceScalar(raw: string): unknown {
   const s = raw.trim();
@@ -56,7 +65,98 @@ function valueToInputText(value: unknown): string {
 const emptyCondition = (): Condition => ({ field: '', operator: 'eq', value: '' });
 const emptyGroup = (): ConditionGroup => ({ logic: 'AND', conditions: [] });
 
-const FIELD_SUGGESTIONS = [...COMMON_CONDITION_FIELDS];
+/** The empty value a comparison starts on for this detail. */
+function blankValue(def: ConditionFieldDef | undefined, operator: ConditionOperator): unknown {
+  const op = operatorDef(operator);
+  if (op?.valueless) return undefined;
+  if (def?.kind === 'yesno') return true;
+  return op?.list && def?.kind === 'choice' ? [] : '';
+}
+
+function ValueControl({
+  condition,
+  def,
+  onChange,
+}: {
+  condition: Condition;
+  def: ConditionFieldDef | undefined;
+  onChange: (value: unknown) => void;
+}) {
+  const op = operatorDef(condition.operator);
+  if (op?.valueless) return null;
+
+  if (def?.kind === 'yesno') {
+    return (
+      <div className="w-28 shrink-0">
+        <Select
+          color="module"
+          aria-label="Value"
+          value={condition.value === false ? 'no' : 'yes'}
+          items={{ yes: 'Yes', no: 'No' }}
+          onValueChange={(next) => {
+            onChange(next === 'yes');
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (def?.kind === 'choice' && def.choices) {
+    const items = def.choices.map((c: ConditionChoice) => ({ value: c.value, label: c.label }));
+    if (op?.list) {
+      const picked = Array.isArray(condition.value)
+        ? condition.value.filter((v): v is string => typeof v === 'string')
+        : [];
+      return (
+        <div className="w-60 min-w-0">
+          <Select
+            multiple
+            color="module"
+            aria-label="Values"
+            placeholder="Pick one or more"
+            value={picked}
+            items={items}
+            onValueChange={(next) => {
+              onChange(Array.isArray(next) ? next : []);
+            }}
+          />
+        </div>
+      );
+    }
+    return (
+      <div className="w-52 min-w-0">
+        <Select
+          color="module"
+          aria-label="Value"
+          placeholder="Pick one"
+          value={
+            typeof condition.value === 'string' && condition.value !== '' ? condition.value : null
+          }
+          items={items}
+          onValueChange={(next) => {
+            onChange(typeof next === 'string' ? next : '');
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-44 min-w-0">
+      <Input
+        color="module"
+        aria-label="Value"
+        type={def?.kind === 'number' && !op?.list ? 'number' : 'text'}
+        inputMode={def?.kind === 'number' ? 'decimal' : undefined}
+        value={valueToInputText(condition.value)}
+        placeholder={op?.list ? 'a, b, c' : def?.kind === 'number' ? '0' : 'value'}
+        onChange={(event) => {
+          onChange(op?.list ? coerceList(event.target.value) : coerceScalar(event.target.value));
+        }}
+      />
+    </div>
+  );
+}
 
 function ConditionRow({
   condition,
@@ -67,20 +167,34 @@ function ConditionRow({
   onChange: (next: Condition) => void;
   onRemove: () => void;
 }) {
-  const def = operatorDef(condition.operator);
+  const def = conditionField(condition.field);
+  const fieldItems = conditionFieldItems(condition.field);
+  const offered = operatorsFor(condition.field, condition.operator);
+  const operators =
+    offered.length > 0
+      ? CONDITION_OPERATORS.filter((o) => offered.includes(o.value))
+      : CONDITION_OPERATORS;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="w-52 min-w-0">
-        <Autocomplete
+      <div className="w-72 min-w-0">
+        <Combobox
           color="module"
           aria-label="Detail to check"
-          items={FIELD_SUGGESTIONS}
-          value={condition.field}
-          placeholder="customer.type"
-          className="font-mono"
-          onValueChange={(field) => {
-            onChange({ ...condition, field });
+          placeholder="Type a word, like booked"
+          emptyMessage="No detail matches that. Try another word."
+          clearable={false}
+          filter={conditionFieldMatches}
+          items={fieldItems}
+          value={fieldItems.find((i) => i.value === condition.field) ?? null}
+          onValueChange={(next) => {
+            const chosen = next as ConditionChoice | null;
+            if (!chosen || chosen.value === condition.field) return;
+            onChange({
+              field: chosen.value,
+              operator: startingOperator(chosen.value),
+              value: startingValue(chosen.value),
+            });
           }}
         />
       </div>
@@ -89,35 +203,20 @@ function ConditionRow({
           color="module"
           aria-label="Comparison"
           value={condition.operator}
-          items={Object.fromEntries(CONDITION_OPERATORS.map((o) => [o.value, o.label]))}
+          items={Object.fromEntries(operators.map((o) => [o.value, o.label]))}
           onValueChange={(next) => {
-            const op = operatorDef(next as ConditionOperator);
-            onChange({
-              ...condition,
-              operator: next as ConditionOperator,
-              value: op?.valueless ? undefined : '',
-            });
+            const operator = next as ConditionOperator;
+            onChange({ ...condition, operator, value: blankValue(def, operator) });
           }}
         />
       </div>
-      {def?.valueless ? null : (
-        <div className="w-44 min-w-0">
-          <Input
-            color="module"
-            aria-label="Value"
-            value={valueToInputText(condition.value)}
-            placeholder={def?.list ? 'a, b, c' : 'value'}
-            onChange={(event) => {
-              onChange({
-                ...condition,
-                value: def?.list
-                  ? coerceList(event.target.value)
-                  : coerceScalar(event.target.value),
-              });
-            }}
-          />
-        </div>
-      )}
+      <ValueControl
+        condition={condition}
+        def={def}
+        onChange={(value) => {
+          onChange({ ...condition, value });
+        }}
+      />
       <Button
         variant="ghost"
         size="sm"

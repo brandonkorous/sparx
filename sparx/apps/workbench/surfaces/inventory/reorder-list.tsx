@@ -78,6 +78,7 @@ import {
 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, locationLabel, plural, stockErrorMessage, useStockLocations } from './data';
@@ -154,14 +155,15 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const summary = useReorderSummary();
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useReorderWorklist({
-    q: search.trim(),
-    ...(locationId ? { warehouseId: locationId } : {}),
-    ...(supplierId ? { supplierId } : {}),
-    sort,
-    take,
-    skip,
-  });
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } =
+    useReorderWorklist({
+      q: search.trim(),
+      ...(locationId ? { warehouseId: locationId } : {}),
+      ...(supplierId ? { supplierId } : {}),
+      sort,
+      take,
+      skip,
+    });
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -281,10 +283,11 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
     // the reading that nothing needs reordering, which is the opposite of unknown.
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageX className="size-6" aria-hidden />}
           title="Could not work out what needs reordering"
           description="This is a problem reaching the server. Your stock and orders are unaffected: the list just could not be read right now."
+          error={error}
         />
       );
     }

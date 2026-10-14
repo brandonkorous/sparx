@@ -39,6 +39,7 @@ import { CalendarPlus, Link2, RefreshCw, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { loadFailureWords } from '../../lib/api-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useSchedulingResources } from './bookings-data';
@@ -272,7 +273,10 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>Could not load linked calendars</AlertTitle>
                 <AlertDescription>
-                  This is a problem reaching the server. Any calendars already linked keep working.
+                  {loadFailureWords(
+                    connections.error,
+                    'This is a problem reaching the server. Any calendars already linked keep working.'
+                  )}
                 </AlertDescription>
               </AlertContent>
             </Alert>

@@ -21,6 +21,8 @@ import {
 import { Alert, Button, NativeSelect, Textarea } from '@wizeworks/silicaui-react';
 
 import { ReturnLineRow, type LinePick } from './line-row';
+import { ReturnsPolicyNote } from '@/components/returns/returns-policy-note';
+import { returnValueOf, returnValueSentence } from '@/lib/return-value-words';
 
 export default function RequestReturnPage() {
   const { tenantSlug } = useCustomer();
@@ -54,6 +56,23 @@ export default function RequestReturnPage() {
   }, [tenantSlug, params.orderId]);
 
   const chosen = Object.entries(picks).filter(([, p]) => p.quantity > 0);
+  const valueSentence = state
+    ? returnValueSentence(
+        returnValueOf(
+          state.lines.map((line) => ({
+            orderItemId: line.orderItemId,
+            quantity: line.quantity,
+            // An older api-rest sends the unit price only: no tax is claimed then.
+            goodsPaidCents: line.goodsPaidCents ?? line.unitPriceCents * line.quantity,
+            taxPaidCents: line.taxPaidCents ?? 0,
+            coreDepositCents: line.coreDepositCents ?? null,
+            coresOwed: line.coresOwed ?? 0,
+          })),
+          Object.fromEntries(chosen.map(([id, p]) => [id, p.quantity]))
+        ),
+        state.currency ?? 'USD'
+      )
+    : null;
   const canSend = chosen.length > 0 && chosen.every(([, p]) => p.reasonCode !== null);
 
   async function send() {
@@ -167,9 +186,14 @@ export default function RequestReturnPage() {
           </NativeSelect>
           <span className="text-base-content text-sm">
             {outcome === 'exchange'
-              ? 'Tell us below which size or color you would like instead.'
-              : 'We will put the money back the way you paid.'}
+              ? 'Tell us below what you would like instead.'
+              : 'We give the money back the way you paid: to your card, or in person if you paid us in person.'}
           </span>
+          {/* What the chosen goods come to, the figure the shop starts from (sparx
+              persona issue 211). Nothing until something is chosen. */}
+          {outcome === 'refund' && valueSentence ? (
+            <span className="text-base-content font-medium">{valueSentence}</span>
+          ) : null}
         </label>
 
         <label className="flex flex-col gap-1.5">
@@ -182,7 +206,7 @@ export default function RequestReturnPage() {
             rows={3}
             maxLength={2000}
             className="max-w-xl"
-            placeholder="A size up in the same color, if you have it."
+            placeholder="For example, what you would like instead, or what went wrong."
           />
         </label>
       </div>
@@ -214,13 +238,7 @@ export default function RequestReturnPage() {
         </p>
       ) : null}
 
-      <p className="text-base-content mt-8 text-sm">
-        Our{' '}
-        <Link href="/returns-policy" className="link">
-          returns policy
-        </Link>{' '}
-        explains what we can take back and how long you have.
-      </p>
+      <ReturnsPolicyNote className="text-base-content mt-8 text-sm" />
     </div>
   );
 }

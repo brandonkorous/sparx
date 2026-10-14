@@ -72,6 +72,8 @@ export interface OrderLineItem {
 
 export interface ShippingAddress {
   name: string;
+  /** The business at the address, when the customer gave one. */
+  company?: string;
   line1: string;
   line2?: string;
   city: string;
@@ -205,6 +207,14 @@ export interface SupplierAdapter {
 
   /** Report a publish FAILED (also unlocks the product), with a reason. */
   failPublish?(supplierProductId: string, reason: string): Promise<void>;
+
+  // ── Orders by email (a supplier with no system of its own) ────────────────
+  // Present only on an adapter whose orders go to a person: the order router
+  // then emails them the order instead of calling `submitOrder`, because sending
+  // mail is the event bus's job and an adapter never publishes (see the header).
+
+  /** Where this supplier takes orders, and who to address them to. */
+  orderRecipient?(): { email: string; contactName: string | null };
 }
 
 // ── Supplier type discriminant ────────────────────────────────────────────────
@@ -212,7 +222,10 @@ export interface SupplierAdapter {
 // Only suppliers with a real, self-serve integration. Suppliers without a
 // usable public API (Tapstitch, PODPartner, Zendrop, AutoDS, Faire) are
 // deliberately excluded — see the vendor-API verdict matrix in docs/14 §3.
-export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'printify' | 'printful';
+// `direct` is the business's own supplier, a maker or wholesaler who ships when
+// sent the order: no system to plug into, so each order goes to them by email
+// (sparx persona issue 171).
+export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'printify' | 'printful' | 'direct';
 
 // ── dropship_supplier row view (after DB fetch) ───────────────────────────────
 

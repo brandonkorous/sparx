@@ -34,6 +34,7 @@ import { ChromeBoundary } from './chrome-boundary';
 import { useCopyLink, usePaneLink } from './copy-pane-link';
 import { MobileStack } from './mobile-stack';
 import { BillingBanner } from './billing/billing-banner';
+import { VerifyEmailBanner } from './verify-email-banner';
 import { AccountMenu } from './mobile/account-menu';
 import { ModulesSheet } from './mobile/modules-sheet';
 import { NavBar, type NavTab } from './mobile/nav-bar';
@@ -143,6 +144,14 @@ export function MobileShell({
         whatStopped="Notices about your plan and payments have stopped showing."
       >
         <BillingBanner />
+      </ChromeBoundary>
+
+      {/* Confirm-your-email notice (sparx persona issue 157). */}
+      <ChromeBoundary
+        region="verify-email-banner"
+        whatStopped="The notice about confirming your email address has stopped showing."
+      >
+        <VerifyEmailBanner />
       </ChromeBoundary>
 
       {/* `relative`: the bar floats against THIS box, over the stack and over any

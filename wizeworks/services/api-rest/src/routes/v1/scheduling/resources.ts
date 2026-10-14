@@ -27,6 +27,7 @@ import {
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
 import { resourceFeedUrl } from '../../../lib/scheduling-ical.js';
+import { signalResource } from '../../../lib/scheduling-search.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -64,9 +65,11 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/scheduling/resources', async (request, reply) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const input = CreateResourceInput.parse(request.body);
     const row = await createResource(tenantId, input);
+    // A staff resource also puts a person on the team; that one is signaled too.
+    await signalResource({ tenantId, actorId: userId }, row.id);
     return reply.code(201).send(ok(resourceView(row, input.propertyIds)));
   });
 
@@ -96,19 +99,22 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/scheduling/resources/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = UpdateResourceInput.parse({ ...(request.body as object), id });
     const row = await updateResource(tenantId, input);
+    // A rename can carry the person on the team with it (renameOnRoster).
+    await signalResource({ tenantId, actorId: userId }, id);
     return ok(resourceView(row, await getResourcePropertyIds(tenantId, id)));
   });
 
   app.delete('/v1/scheduling/resources/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     await deleteResource(tenantId, id);
+    await signalResource({ tenantId, actorId: userId }, id);
     return ok({ id, deleted: true });
   });
 };

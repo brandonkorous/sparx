@@ -75,6 +75,11 @@ export interface FormSubmission {
    *  rather than crashing. */
   status: SubmissionStatus | (string & {});
   customerId: string | null;
+  /** Who it is from, when that is a customer on file. Sent with ONE submission
+   *  only (the list leaves it out). `record`: linked to them; `email`: the address
+   *  it carries is theirs (a hint, never written as a link). Null without
+   *  Customers or when nobody matches (sparx persona issue 162). */
+  customer?: SubmissionCustomer | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -176,6 +181,21 @@ export function useSetSubmissionStatus(id: string) {
   });
 }
 
+/** Mark a New submission Read because it was OPENED, not because anybody chose
+ *  to. The same write as `useSetSubmissionStatus(id).mutate('read')`, flagged as
+ *  housekeeping so the status bar does not report a save nobody made (sparx
+ *  persona issue 165). Their own status changes stay on the hook above. */
+export function useMarkSubmissionRead(id: string) {
+  const invalidate = useInvalidateSubmissions();
+  return useMutation({
+    meta: { housekeeping: true },
+    mutationFn: () => api.patch<FormSubmission>(`/v1/forms/submissions/${id}`, { status: 'read' }),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
 export function useDeleteSubmission(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -189,4 +209,11 @@ export function useDeleteSubmission(id: string) {
       void queryClient.invalidateQueries({ queryKey: formsKeys.lists() });
     },
   });
+}
+
+export interface SubmissionCustomer {
+  id: string;
+  name: string;
+  email: string | null;
+  match: 'record' | 'email';
 }

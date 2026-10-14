@@ -46,6 +46,7 @@ import {
 } from '@/lib/trade-account-words';
 import { Alert, Badge, Button, Label, Textarea } from '@wizeworks/silicaui-react';
 import { QuoteRequestBuilder } from './quote-request-builder';
+import { ListPager } from '@/components/account/list-pager';
 
 const PAGE_SIZE = 20;
 
@@ -485,31 +486,7 @@ export default function B2bQuotesPage() {
             })}
           </div>
 
-          {total > PAGE_SIZE && (
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip === 0}
-                onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
-              >
-                Previous
-              </Button>
-              <span className="text-base-content text-sm">
-                {skip + 1} to {Math.min(skip + PAGE_SIZE, total)} of {total}
-              </span>
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip + PAGE_SIZE >= total}
-                onClick={() => setSkip(skip + PAGE_SIZE)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <ListPager offset={skip} pageSize={PAGE_SIZE} total={total} onMove={setSkip} />
         </>
       )}
     </div>

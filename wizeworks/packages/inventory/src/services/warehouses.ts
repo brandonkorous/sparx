@@ -12,7 +12,7 @@ import {
   InventoryValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
-import { indexInventoryEntity } from '../events';
+import { indexInventoryEntity, indexInventoryEntityOnCommit } from '../events';
 import { CHANNEL_CANDIDATE_SELECT, channelDefaultId } from './channel-default';
 
 export interface WarehouseRow {
@@ -334,6 +334,7 @@ export async function updateWarehouse(
       },
     });
     await releaseChannelsOnTx(tx, ctx, updated.id, input.defaultForChannel ?? []);
+    if (updated.name !== before.name) await reindexNamedByWarehouse(tx, ctx, updated.id);
 
     await writeAuditLog({
       tx,
@@ -355,6 +356,30 @@ export async function updateWarehouse(
   await indexInventoryEntity(ctx, 'warehouse', warehouseId);
 
   return serializeWarehouse(result.updated, undefined, result.updated.id === result.shipsFrom);
+}
+
+/** Shelves, counting schedules and spending limits say which location they are
+ *  at in their search entries, so a renamed location re-projects each of them. */
+async function reindexNamedByWarehouse(
+  tx: TxClient,
+  ctx: ServiceContext,
+  warehouseId: string
+): Promise<void> {
+  const bins = await tx.inventoryBin.findMany({
+    where: { warehouseId, deletedAt: null },
+    select: { id: true },
+  });
+  for (const b of bins) await indexInventoryEntityOnCommit(ctx, 'bin', b.id);
+  const schedules = await tx.cycleCountSchedule.findMany({
+    where: { warehouseId },
+    select: { id: true },
+  });
+  for (const s of schedules) await indexInventoryEntityOnCommit(ctx, 'count_schedule', s.id);
+  const rules = await tx.purchaseOrderApprovalRule.findMany({
+    where: { warehouseId },
+    select: { id: true },
+  });
+  for (const r of rules) await indexInventoryEntityOnCommit(ctx, 'po_approval_rule', r.id);
 }
 
 export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string): Promise<void> {

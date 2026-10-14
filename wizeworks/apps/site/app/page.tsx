@@ -64,7 +64,6 @@ export async function generateMetadata({ searchParams }: RootPageProps): Promise
     clean(silicaHome.ogImage) ??
     ogImageUrl({
       title: clean(silicaHome.seoTitle) ?? site.name,
-      eyebrow: 'Home',
       brand: site.name,
       accent: site.theme?.colorPrimary,
       platformBrand: site.platformBrand,

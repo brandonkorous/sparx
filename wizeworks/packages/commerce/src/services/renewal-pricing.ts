@@ -24,7 +24,7 @@ import { withTenant } from '@wizeworks/db';
 import { AddressSnapshot, type RateOption, type TaxBreakdown } from '@wizeworks/commerce-schemas';
 
 import type { ServiceContext } from '../errors';
-import { describeRate, isCollection } from './collection-option';
+import { describeRate, isCollection, rateNames } from './collection-option';
 import { resolveShipFromAddress } from './shipping-request-resolver';
 import * as shippingService from './shipping-service';
 import * as taxService from './tax-service';
@@ -103,7 +103,8 @@ export function pickRenewalRate(
       (choice.description
         ? rates.find(
             (rate) =>
-              rate.providerSlug === choice.providerSlug && describeRate(rate) === choice.description
+              rate.providerSlug === choice.providerSlug &&
+              rateNames(rate).includes(choice.description ?? '')
           )
         : undefined);
     if (same) return { rate: same, replaced: false };

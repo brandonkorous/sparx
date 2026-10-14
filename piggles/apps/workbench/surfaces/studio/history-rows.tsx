@@ -14,7 +14,8 @@
 import { Fragment } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import type { HistoryEntry } from '../../lib/studio/history-data';
-import { CLOCK, DAY, TIME_CELL } from './when';
+import { TIME_CELL, versionClock, versionClockNote, versionDay } from './when';
+import { useReaderClock } from '../../lib/business-timezone';
 
 /** What produced an entry, in words and in a color that distinguishes it. */
 function describe(source: string): {
@@ -41,6 +42,9 @@ export function HistoryRows({
   pendingId?: string | null;
   empty: string;
 }) {
+  // Her business's clock, or this computer's until she sets one (issue 987).
+  const { zone, device } = useReaderClock();
+  const clock = zone ?? device;
   if (entries.length === 0) {
     return <p className="text-base-content px-1 py-6 text-sm">{empty}</p>;
   }
@@ -48,8 +52,13 @@ export function HistoryRows({
   let lastDay = '';
   return (
     <ul className="flex flex-col gap-1">
+      {zone !== undefined ? (
+        <li className="text-base-content px-1 text-sm">
+          {versionClockNote(zone, device, new Date())}
+        </li>
+      ) : null}
       {entries.map((entry) => {
-        const day = DAY.format(new Date(entry.createdAt));
+        const day = versionDay(entry.createdAt, clock);
         const heading = day === lastDay ? null : day;
         lastDay = day;
         return (
@@ -62,6 +71,7 @@ export function HistoryRows({
               action={action}
               onAction={onAction}
               pending={pendingId === entry.id}
+              clock={clock}
             />
           </Fragment>
         );
@@ -75,16 +85,18 @@ function Row({
   action,
   onAction,
   pending,
+  clock,
 }: {
   entry: HistoryEntry;
   action: string | null;
   onAction?: (entry: HistoryEntry) => void;
   pending: boolean;
+  clock: string;
 }) {
   const { label, tone } = describe(entry.source);
   return (
     <li className="flex items-center gap-2 px-1 py-1">
-      <span className={TIME_CELL}>{CLOCK.format(new Date(entry.createdAt))}</span>
+      <span className={TIME_CELL}>{versionClock(entry.createdAt, clock)}</span>
       <Badge color={tone} variant="soft">
         {label}
       </Badge>

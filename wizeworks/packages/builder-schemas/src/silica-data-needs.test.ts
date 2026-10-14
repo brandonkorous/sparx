@@ -77,10 +77,31 @@ describe('collectSilicaSourceNeeds', () => {
       commerce: false,
       products: { catalog: false, featured: false, fresh: false, related: false, categories: [] },
       cmsTypes: [],
+      cmsWhere: [],
+      authors: false,
       productPins: [],
       cmsPins: [],
       limits: {},
     });
+  });
+
+  it('asks for the site’s authors when a contributors list is on the page, not for a kind', () => {
+    const list = repeat(el('div', '', { children: [bind(el('h3'), 'name')] }), 'cmsAuthors');
+    const needs = collectSilicaSourceNeeds(el('div', '', { children: [list] }));
+    expect(needs.authors).toBe(true);
+    expect(needs.cmsTypes).toEqual([]);
+  });
+
+  it('reads an author page’s own lists as the record’s, with nothing to fetch', () => {
+    const page = repeat(
+      el('div', '', {
+        children: [repeat(el('div', '', { children: [bind(el('h3'), 'title')] }), 'written')],
+      }),
+      'author'
+    );
+    const needs = collectSilicaSourceNeeds(page);
+    expect(needs.authors).toBe(false);
+    expect(needs.cmsTypes).toEqual([]);
   });
 
   it('classifies each configurable product source (catalog/featured/new/related/category)', () => {

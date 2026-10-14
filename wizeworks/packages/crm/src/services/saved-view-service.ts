@@ -31,6 +31,12 @@ export function isAuthor(ctx: ServiceContext, view: CrmSavedView): boolean {
   return ctx.userId !== undefined && view.userId === ctx.userId;
 }
 
+/** A private view of somebody else's: answered as not found, never as "not
+ *  yours", because saying so confirms it exists (persona issue 264). */
+function hiddenFrom(ctx: ServiceContext, view: CrmSavedView): boolean {
+  return !view.isShared && !isAuthor(ctx, view);
+}
+
 /**
  * Every view this person may see, own ones first.
  *
@@ -67,12 +73,9 @@ export async function list(
 
 export async function get(ctx: ServiceContext, id: string): Promise<CrmSavedView> {
   const view = await withTenant(ctx, (tx) => tx.crmSavedView.findUnique({ where: { id } }));
-  if (!view) throw new CrmNotFoundError('CrmSavedView', id);
-  if (!view.isShared && !isAuthor(ctx, view)) {
-    // Not-found rather than forbidden: a private view's EXISTENCE is part of what
-    // is private, and "you may not see this" tells a caller it is there.
-    throw new CrmNotFoundError('CrmSavedView', id);
-  }
+  // Not-found rather than forbidden: a private view's EXISTENCE is part of what
+  // is private, and "you may not see this" tells a caller it is there.
+  if (!view || hiddenFrom(ctx, view)) throw new CrmNotFoundError('CrmSavedView', id);
   return view;
 }
 
@@ -115,7 +118,7 @@ export async function update(
 
   return withTenant(ctx, async (tx) => {
     const before = await tx.crmSavedView.findUnique({ where: { id } });
-    if (!before) throw new CrmNotFoundError('CrmSavedView', id);
+    if (!before || hiddenFrom(ctx, before)) throw new CrmNotFoundError('CrmSavedView', id);
     if (!isAuthor(ctx, before)) {
       throw new CrmValidationError(
         'Only the person who made this view can change it. Save your own copy instead.'
@@ -141,7 +144,7 @@ export async function update(
 export async function remove(ctx: ServiceContext, id: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const before = await tx.crmSavedView.findUnique({ where: { id } });
-    if (!before) throw new CrmNotFoundError('CrmSavedView', id);
+    if (!before || hiddenFrom(ctx, before)) throw new CrmNotFoundError('CrmSavedView', id);
     if (!isAuthor(ctx, before)) {
       throw new CrmValidationError('Only the person who made this view can delete it.');
     }

@@ -9,6 +9,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { HeaderNotice, type HeaderNoticeData } from '@piggles/ui';
 import { LifecycleBand } from '@/components/lifecycle-band';
+import { VerifyEmailBand } from '@/components/verify-email-band';
 import { WorkbenchProvider } from '@/lib/workbench/context';
 import { StudioSessionProvider } from '@/lib/studio/provider';
 import { BackNavigation } from '@/lib/workbench/nav-history';
@@ -114,6 +115,9 @@ export function DesktopShell({
                 have used for screen space. Silent while the rail's card is
                 showing the calm version of it. */}
             <LifecycleBand accountOrigin={accountOrigin} railCardVisible={railExpanded} />
+            {/* An unconfirmed address, with the door to a new link (sparx persona
+                issue 157). */}
+            <VerifyEmailBand accountOrigin={accountOrigin} />
 
             {/* Every chrome region is crash-isolated from the panels and from
               each other — the panels hold the unsaved work. */}

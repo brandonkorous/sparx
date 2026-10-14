@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   renderBillingDocumentHtml,
+  withCoreRows,
   type BillingRenderData,
 } from '../../src/services/billing-document-html';
 
@@ -26,7 +27,7 @@ function baseData(overrides: Partial<BillingRenderData> = {}): BillingRenderData
         description: 'Fuel injector',
         quantity: 2,
         unitPrice: 150,
-        lineTotal: 300,
+        amount: 300,
         taxable: true,
       },
     ],
@@ -129,7 +130,7 @@ describe('renderBillingDocumentHtml', () => {
             description: 'Widget <b>&</b> "thing"',
             quantity: 1,
             unitPrice: 10,
-            lineTotal: 10,
+            amount: 10,
             taxable: false,
           },
         ],
@@ -150,7 +151,7 @@ describe('renderBillingDocumentHtml', () => {
             description: 'Diagnostic',
             quantity: 2.5,
             unitPrice: 120,
-            lineTotal: 300,
+            amount: 300,
             taxable: false,
           },
         ],
@@ -200,12 +201,57 @@ describe('renderBillingDocumentHtml', () => {
             description: 'Service',
             quantity: 1,
             unitPrice: 100,
-            lineTotal: 100,
+            amount: 100,
             taxable: false,
           },
         ],
       })
     );
     expect(html).toContain('€100.00'); // €100.00
+  });
+});
+
+// Renée's invoice read "2 · $12.50 · $26.81": the row's amount had its sales tax
+// added in, so the rows did not come to the Subtotal and the tax showed twice. The
+// editor showed $25.00 (sparx persona issue 227).
+describe('a printed row', () => {
+  // A saved line, as the database holds it: both figures are there.
+  const additive = {
+    typeLabel: null,
+    description: 'Stanadyne Diesel Fuel Additive (38565)',
+    quantity: 2,
+    unitPrice: 12.5,
+    lineSubtotal: 25,
+    lineTotal: 26.81,
+    taxable: true,
+    coreCharge: null,
+  };
+
+  it('is worth quantity times unit price, before tax', () => {
+    const html = renderBillingDocumentHtml(
+      baseData({
+        lines: withCoreRows([additive]),
+        totals: {
+          subtotal: 25,
+          discountTotal: 0,
+          taxTotal: 1.81,
+          taxRate: 0.0725,
+          shippingTotal: 15,
+          surchargeTotal: 0,
+          total: 41.81,
+          depositTotal: 0,
+          amountPaid: 0,
+          balance: 41.81,
+        },
+      })
+    );
+    const row = html.slice(html.indexOf('<tbody>'), html.indexOf('</tbody>'));
+    expect(row).toContain('$25.00');
+    expect(row).not.toContain('$26.81');
+  });
+
+  it("prints a core deposit's row at the deposit times the quantity", () => {
+    const rows = withCoreRows([{ ...additive, coreCharge: 75 }]);
+    expect(rows.map((r) => r.amount)).toEqual([25, 150]);
   });
 });

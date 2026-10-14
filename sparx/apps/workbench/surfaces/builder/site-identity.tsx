@@ -89,12 +89,13 @@ export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className={PANE_SHELL}>
-        {/* No missing-state: these two queries describe a site that exists by
-            definition — you reached this pane through it. Only unreachable is
-            possible here. */}
+        {/* No `noun`: these two queries describe a site that exists by
+            definition, since you reached this pane through it. The error still
+            tells a server fault or a refusal from a lost connection. */}
         <PaneLoadError
           title="Could not load this site's identity"
           description="This is a problem reaching the server. Your site's name and logo are unaffected."
+          error={brandQuery.error ?? propertyQuery.error}
           onRetry={() => {
             void brandQuery.refetch();
             void propertyQuery.refetch();

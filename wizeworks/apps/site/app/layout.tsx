@@ -29,8 +29,9 @@ import { RevealController } from '@/components/reveal-controller';
 import { MotionController } from '@/components/motion-controller';
 import { SiteSuspended } from '@/components/site-suspended';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
+import { canonicalUrl } from '@/lib/canonical';
 import { SilicaChrome } from '@/components/silica-chrome';
-import { pruneHiddenLinks } from '@/lib/site-modules';
+import { pruneHiddenLinks, siteShowsModule } from '@/lib/site-modules';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
 import { SiteBuilderRuntime } from '@/components/site-builder-runtime';
@@ -103,6 +104,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = mdHdrs.get('x-forwarded-host') ?? mdHdrs.get('host');
   const proto = mdHdrs.get('x-forwarded-proto') ?? 'https';
   const origin = host ? `${proto}://${host}` : undefined;
+  // This page's one address, on the site's own host (`lib/canonical.ts`). A page that
+  // names its own canonical in its Search wording overrides this.
+  const path = mdHdrs.get('x-sparx-path');
+  const canonicalOrigin = site.siteOrigin ?? origin;
+  const canonical =
+    canonicalOrigin && path
+      ? canonicalUrl(canonicalOrigin, path, mdHdrs.get('x-sparx-page'))
+      : undefined;
 
   // The description a search engine prints under the title. It read
   // `Shop ${site.name}.` for EVERY tenant — an assumption that the business
@@ -132,7 +141,6 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         ogImageUrl({
           title: site.name,
-          eyebrow: 'Site',
           brand: site.name,
           accent: site.theme?.colorPrimary,
           platformBrand: site.platformBrand,
@@ -140,6 +148,15 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     robots: { index: true, follow: true },
+    // The site's feed, named in every page's head so a reader's feed app finds it
+    // from the site's address (`app/feed.xml`). Not on a site that switched its
+    // writing off, where the address answers 404.
+    alternates: {
+      ...(canonical ? { canonical } : {}),
+      ...(siteShowsModule(site, 'cms')
+        ? { types: { 'application/rss+xml': [{ url: '/feed.xml', title: site.name }] } }
+        : {}),
+    },
     // The tenant's own favicon, always — their upload if they made one, otherwise
     // their initial on their own primary color, drawn by `app/favicon.ico`.
     //
@@ -455,12 +472,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Site-wide structured data (docs/50): Organization identity (logo + social
   // `sameAs`) and a WebSite with the site search action — so search and
   // answer engines attribute pages to this site and can surface a sitelinks
-  // search box. Needs the public origin (forwarded host) for absolute URLs.
+  // search box. Names the site's own origin, the host its sitemap and canonical links
+  // name, and falls back to the host that served this request.
   const sdHost = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
   const sdProto = hdrs.get('x-forwarded-proto') ?? 'https';
-  const origin = sdHost ? `${sdProto}://${sdHost}` : null;
+  const origin = site?.siteOrigin ?? (sdHost ? `${sdProto}://${sdHost}` : null);
   const logo = site ? mediaUrl(site.theme?.logoMediaId ?? null, site.slug) : null;
-  const sameAs = site ? Object.values(site.socials).filter(Boolean) : [];
+  // The profile ADDRESSES. `socials` is a list of `{ platform, url }`, and this read
+  // `Object.values` of it, which put the objects themselves into `sameAs`: a search
+  // engine wants a list of URLs and got a list it could not read.
+  const sameAs = site ? site.socials.map((social) => social.url).filter(Boolean) : [];
   const orgJsonLd =
     site && origin
       ? {

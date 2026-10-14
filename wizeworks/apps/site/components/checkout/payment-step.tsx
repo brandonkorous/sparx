@@ -90,6 +90,7 @@ function ApprovalNotice({
   card,
   then,
   otherwise,
+  billing,
 }: Pick<PaymentStepProps, 'session' | 'shopName' | 'accountName'> & {
   /** On the card form, whether the card is held or charged meanwhile. */
   card?: HeldCard;
@@ -99,19 +100,25 @@ function ApprovalNotice({
   then?: string;
   /** That step's note when no approval is needed, in the same one box. */
   otherwise?: string;
+  /** Billing it to the account: an order past the credit left then waits for
+   *  the business too, and says so (sparx persona issue 187). */
+  billing?: boolean;
 }) {
   const preview = session.approvalPreview;
-  const sentence = preview
-    ? approvalPreviewSentence({
-        waitingOn: preview.waitingOn,
-        accountApprovers: preview.accountApprovers,
-        limitCents: preview.limitCents,
-        currency: session.currency,
-        accountName,
-        shopName,
-        ...(card ? { card } : {}),
-      })
-    : null;
+  const overCredit = billing ? (session.creditPreview ?? null) : null;
+  const sentence =
+    preview || overCredit
+      ? approvalPreviewSentence({
+          waitingOn: preview?.waitingOn ?? [],
+          accountApprovers: preview?.accountApprovers ?? [],
+          limitCents: preview?.limitCents ?? null,
+          overCredit,
+          currency: session.currency,
+          accountName,
+          shopName,
+          ...(card ? { card } : {}),
+        })
+      : null;
   const text = paymentNotice(sentence, then, otherwise);
   return text ? <Alert color="info">{text}</Alert> : null;
 }
@@ -355,6 +362,7 @@ function AccountPaymentStep({
         accountName={accountName}
         then={accountTermsSentence(session.b2bAccountPaymentTerms, true)}
         otherwise={accountTermsSentence(session.b2bAccountPaymentTerms)}
+        billing
       />
       <label className="flex flex-col gap-1.5">
         <span className="text-base-content text-sm font-medium">Your PO number (optional)</span>

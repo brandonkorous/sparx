@@ -33,8 +33,9 @@
 // `created_at = updated_at`. See
 // `20270518000000_the_ready_made_reports_say_what_this_file_says`.
 
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import type { ServiceContext } from '../errors';
 
@@ -59,7 +60,8 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     description:
       'How many open deals are sitting at each step of your process, and what they are worth. The classic “where is everything?” view.',
     objectKey: 'deal',
-    filters: NO_FILTER,
+    // Open means not closed: a won or lost deal has a close date (issue 250).
+    filters: { logic: 'AND', conditions: [{ field: 'closedAt', operator: 'is_not_set' }] },
     groupBy: { field: 'stageId' },
     measures: [
       { fn: 'count', label: 'Deals' },
@@ -121,8 +123,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
   {
     slug: 'requests-by-urgency',
     name: 'Requests by urgency',
-    description:
-      'Requests nobody has answered yet, grouped by how urgent they are: what to pick up first.',
+    description: 'Requests not sorted yet, grouped by how urgent they are: what to pick up first.',
     objectKey: 'ticket',
     filters: { logic: 'AND', conditions: [{ field: 'resolvedAt', operator: 'is_not_set' }] },
     groupBy: { field: 'priority' },
@@ -147,7 +148,8 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     name: 'Who is carrying what',
     description: 'Everything still to do, grouped by the person it belongs to.',
     objectKey: 'task',
-    filters: { logic: 'AND', conditions: [{ field: 'completedAt', operator: 'is_not_set' }] },
+    // Open, not just uncompleted: a canceled task has no completion date (issue 250).
+    filters: { logic: 'AND', conditions: [{ field: 'status', operator: 'eq', value: 'open' }] },
     groupBy: { field: 'assignedToUserId' },
     measures: [{ fn: 'count', label: 'Open tasks' }],
     visualization: 'table',
@@ -193,6 +195,22 @@ export async function seedBuiltinReports(ctx: ServiceContext): Promise<number> {
         shared: true,
       })),
       skipDuplicates: true,
+    });
+    // `createMany` hands back no ids, and seeded reports are as findable by name
+    // as any other (persona issue 261), so read the new ones back and tell search.
+    const seeded = await tx.crmReport.findMany({
+      where: { propertyId: null, builtinSlug: { in: missing.map((r) => r.slug) } },
+      select: { id: true },
+    });
+    await afterCommit(`index ${String(seeded.length)} ready-made reports`, async () => {
+      for (const row of seeded) {
+        await indexEntity({
+          tenantId: ctx.tenantId,
+          actorId: ctx.userId ?? null,
+          entityType: 'report',
+          recordId: row.id,
+        });
+      }
     });
     return missing.length;
   });

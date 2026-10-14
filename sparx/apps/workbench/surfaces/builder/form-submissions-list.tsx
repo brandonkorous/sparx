@@ -32,6 +32,8 @@ import { Inbox } from 'lucide-react';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -215,8 +217,10 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not check for new submissions just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. What you see below is what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. What you see below is what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -235,21 +239,14 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the table — "nothing submitted yet" over a
           // connection failure is a lie about their enquiries, the worst one to tell.
-          <EmptyState
+          <PaneLoadError
             icon={<Inbox className="size-6" aria-hidden />}
             title="Could not load your submissions"
             description="This is a problem reaching the server. Nothing anyone sent has been lost: none of it is affected."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

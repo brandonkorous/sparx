@@ -134,14 +134,24 @@ export const CheckoutSessionSnapshot = z.object({
   b2bAccountPaymentTerms: z.string().optional(),
   // Who will be asked to sign this order off if it is placed as it stands, so
   // the buyer is told BEFORE they place it rather than after (sparx persona
-  // issue 087). Absent when no spending limit covers it. The credit limit is
-  // not foreseen here: it depends on how they pay.
+  // issue 087). Absent when no spending limit covers it.
   approvalPreview: z
     .object({
       waitingOn: z.array(z.enum(['account', 'business'])),
       /** Names, oldest first. Empty unless the account is asked. */
       accountApprovers: z.array(z.string()),
       limitCents: z.number().int(),
+    })
+    .optional(),
+  // The credit an order BILLED TO THE ACCOUNT would run past, so the payment step
+  // can say so before Place order: the business signs such an order off (sparx
+  // persona issue 187). Absent when it fits, or the account is not on terms. It
+  // applies only when they bill it to the account; a card pays up front.
+  creditPreview: z
+    .object({
+      creditLeftCents: z.number().int(),
+      orderTotalCents: z.number().int(),
+      currency: z.string(),
     })
     .optional(),
   shippingAddress: AddressSnapshot.optional(),

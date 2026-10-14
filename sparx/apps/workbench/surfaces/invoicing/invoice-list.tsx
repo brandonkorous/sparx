@@ -376,7 +376,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
                       );
                     }}
                   >
-                    <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
+                    <td className="font-mono text-sm whitespace-nowrap">{doc.number ?? 'Draft'}</td>
                     <td className="hidden max-w-48 truncate @lg:table-cell">
                       {/* Server-resolved: the frozen bill-to where the document
                           has one, otherwise the live customer or account. */}

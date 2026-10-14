@@ -166,6 +166,12 @@ export interface SurfaceDefinition {
   /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
   readonly createLabel?: string;
   /**
+   * Only an owner or an admin can make one: the server refuses everybody else.
+   * The `+` and the search box's matching action are left out for them, rather
+   * than leading to a form that cannot be saved (sparx persona issue 168).
+   */
+  readonly createManagersOnly?: boolean;
+  /**
    * Extra params the `+` opens the create surface with, on top of `id: 'new'`.
    *
    * For the case where ONE create surface serves two doors and they are not the

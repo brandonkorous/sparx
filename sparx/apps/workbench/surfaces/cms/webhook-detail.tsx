@@ -71,6 +71,7 @@ import {
   type WebhookSubscription,
 } from './webhooks-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -259,7 +260,7 @@ function SecretBox({ value, onCopy }: { value: string; onCopy?: () => void }) {
 // pane.
 
 function WebhookDeliveries({ id }: { id: string }) {
-  const { data, isPending, isError, refetch } = useWebhookDeliveries(id);
+  const { data, isPending, isError, error, refetch } = useWebhookDeliveries(id);
   const items = data?.items ?? [];
 
   return (
@@ -272,8 +273,10 @@ function WebhookDeliveries({ id }: { id: string }) {
       {isError ? (
         <div className="flex flex-wrap items-center gap-3">
           <Text className="text-sm">
-            We could not check this just now. It is a problem reaching the server, not a problem
-            with your notifications.
+            {loadFailureWords(
+              error,
+              'We could not check this just now. It is a problem reaching the server, not a problem with your notifications.'
+            )}
           </Text>
           <Button
             size="sm"
@@ -498,7 +501,7 @@ function EditWebhook({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   // The toolbar refresh reloads the list row AND the delivery history, so the
   // badge and the "What has been sent" panel cannot answer from two moments.
   const refreshAll = useInvalidateWebhooks();
-  const { webhook, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useWebhook(id);
+  const { webhook, isLoading, isError, error, isFetching, dataUpdatedAt, refetch } = useWebhook(id);
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const initialRef = useRef<string>('');
@@ -534,6 +537,8 @@ function EditWebhook({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <PaneLoadError
         title="Could not load this webhook"
         description="This is a problem reaching the server. The webhook itself is unaffected."
+        error={error}
+        noun="webhook"
         onRetry={() => {
           void refetch();
         }}
@@ -541,29 +546,11 @@ function EditWebhook({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  // Loaded, but no such webhook — deleted elsewhere, or a stale saved layout.
+  // Loaded, but no such webhook: deleted elsewhere, or a stale saved layout. The
+  // shared "no longer here" state, as every other pane says it (sparx persona
+  // issue 235); it had a yellow box of its own.
   if (!isLoading && !webhook) {
-    return (
-      <div className="flex h-full items-center justify-center p-8">
-        <Alert color="warning" className="max-w-md">
-          <AlertContent>
-            <AlertTitle>This webhook no longer exists</AlertTitle>
-            <AlertDescription>
-              It looks like it was deleted. You can close this and set up a new one if you need it.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              ctx.close();
-            }}
-          >
-            Close
-          </Button>
-        </Alert>
-      </div>
-    );
+    return <PaneLoadError reason="missing" noun="webhook" title="That webhook is no longer here" />;
   }
 
   if (isLoading || !webhook || !draft) {

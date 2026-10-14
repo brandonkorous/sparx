@@ -39,6 +39,15 @@
  *      see from above and nearly invisible from inside one service, which is
  *      the definition of something a structural check should own.
  *
+ *   4. A service that renders email (it depends on @wizeworks/email,
+ *      @wizeworks/email-worker or @wizeworks/brand-core) names every brand in
+ *      its `.env.example`: `<BRAND>_BRAND_NAME`. Claim 2 cannot see this one,
+ *      because the name is never REQUIRED: brand-core falls back to the brand's
+ *      lowercase key. So event-worker, which renders every queued email, sent
+ *      Piggles owners "Confirm your piggles email" in dev for as long as it had
+ *      a .env (piggles persona issue 981). Production sets it from the config
+ *      map; the example is the only guard for a laptop.
+ *
  * Only `wizeworks/services/*` is scanned: an app under `sparx/` or `piggles/`
  * is a Next.js process whose env is `NEXT_PUBLIC_*` conventions and a different
  * problem. If that changes, add the root here — and the assertion below will
@@ -53,6 +62,12 @@ import { fileURLToPath } from 'node:url';
 // checks went blind in one tree move by doing the latter.
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const SCAN_ROOTS = ['wizeworks/services'];
+
+/** The brands the platform speaks as (brand-core keys, upper-cased). A new brand
+ *  is added here, which is the point: every email-rendering service then has to
+ *  name it. */
+const BRANDS = ['SPARX', 'PIGGLES'];
+const EMAIL_DEPS = ['@wizeworks/email', '@wizeworks/email-worker', '@wizeworks/brand-core'];
 
 /** Services with no environment of their own to declare. Each is a decision. */
 const NO_ENV = new Set([]);
@@ -86,6 +101,7 @@ const problems = [];
 /** port -> the services claiming it. */
 const ports = new Map();
 let services = 0;
+let emailServices = 0;
 
 /** The port a service will actually bind: its `.env.example` wins, its schema
  *  default answers when the example is silent. Null when it has no listener. */
@@ -131,14 +147,32 @@ for (const root of SCAN_ROOTS) {
       ports.get(port).push(name);
     }
 
-    const required = requiredKeys(dir);
-    if (!required) continue;
     const declared = new Set(
       exampleSrc
         .split('\n')
         .map((l) => /^\s*(?:export\s+)?([A-Z][A-Z0-9_]*)\s*=/.exec(l.trim())?.[1])
         .filter(Boolean)
     );
+
+    const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
+    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+    if (EMAIL_DEPS.some((d) => d in deps)) {
+      emailServices += 1;
+      const unnamed = BRANDS.map((b) => b + '_BRAND_NAME').filter((k) => !declared.has(k));
+      if (unnamed.length > 0) {
+        problems.push({
+          service: name,
+          detail:
+            'renders email but its .env.example does not set ' +
+            unnamed.join(', ') +
+            '. An unnamed brand falls back to its lowercase key, so its emails name ' +
+            '"piggles" instead of "Piggles".',
+        });
+      }
+    }
+
+    const required = requiredKeys(dir);
+    if (!required) continue;
     const missing = required.keys.filter((k) => !declared.has(k));
     if (missing.length > 0) {
       problems.push({
@@ -168,13 +202,20 @@ for (const [port, claimants] of ports) {
 }
 
 console.log(
-  'Service env check: ' + services + ' service(s) scanned, ' + ports.size + ' distinct port(s).'
+  'Service env check: ' +
+    services +
+    ' service(s) scanned, ' +
+    ports.size +
+    ' distinct port(s), ' +
+    emailServices +
+    ' rendering email.'
 );
 
 if (problems.length > 0) {
   console.error('\nService env check FAILED: ' + problems.length + ' service(s).\n');
   for (const p of problems) console.error('  ' + p.service + '\n    ' + p.detail + '\n');
-  console.error('  A service that cannot start is not caught by typecheck, lint or tests —');
+  console.error('  A service that cannot start, or starts speaking as the wrong brand, is not');
+  console.error('  caught by typecheck, lint or tests —');
   console.error('  none of them boot it. The committed .env.example is the only guard.\n');
   process.exit(1);
 }

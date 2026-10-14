@@ -59,7 +59,7 @@ export function RepeatNeedsSignIn({ lines }: { lines: CartLine[] }) {
         </Button>
       </div>
       <p className="text-base-content m-0 text-base">
-        Or <Link href="/cart">go back to your basket</Link> and choose Buy once instead.
+        Or <Link href="/cart">go back to your cart</Link> and choose Buy once instead.
       </p>
     </div>
   );
@@ -72,7 +72,7 @@ export function RepeatNeedsDelivery({ lines }: { lines: CartLine[] }) {
         <strong>This shop only offers collection, and a repeat has to be delivered.</strong>
         <RepeatList lines={lines} />
         <span>
-          <Link href="/cart">Go back to your basket</Link> and choose Buy once for these.
+          <Link href="/cart">Go back to your cart</Link> and choose Buy once for these.
         </span>
       </div>
     </Alert>

@@ -39,6 +39,7 @@ import {
   Tooltip,
 } from '@wizeworks/silicaui-react';
 import { Boxes, Gauge, PackageX, TriangleAlert } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import {
@@ -83,10 +84,11 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
 
   if (risk.isError) {
     return (
-      <EmptyState
+      <PaneLoadError
         icon={<PackageX className="size-6" aria-hidden />}
         title="Could not work out what is at risk"
         description="This is a problem reaching the server. Your stock is unaffected: the figures just could not be read right now."
+        error={risk.error}
       />
     );
   }

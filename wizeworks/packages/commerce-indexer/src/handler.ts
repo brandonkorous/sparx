@@ -255,6 +255,15 @@ export async function handleEvent(
         return { outcome: 'deleted', details: { orderId } };
       }
       await upsertOrder(document);
+      // The buyer's document carries their order count, what their orders come
+      // to and what they have paid. Those are written in the order's own
+      // transaction (crm customer-rollup.ts), which raises no customer event, so
+      // every one of these moves them. Without this the AI app said a fleet had
+      // six orders and $150 when it had twelve worth $11,285.69 (sparx persona
+      // issue 223). Their other orders copy nothing that moved, so not those.
+      if (document.customer_id) {
+        await reindexCustomer(ctx, document.customer_id, false, false);
+      }
       return { outcome: 'indexed', details: { orderId } };
     }
 

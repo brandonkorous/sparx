@@ -217,7 +217,9 @@ export async function readSession(
 ): Promise<SessionRead> {
   let res: Response;
   try {
-    res = await fetch(url('/v1/public/commerce/account/me', tenantSlug, propertySlug), {
+    // `/session`, not `/me`: it answers a visitor with no session `customer: null`
+    // rather than a 401, which every browser prints as an error on every page.
+    res = await fetch(url('/v1/public/commerce/account/session', tenantSlug, propertySlug), {
       cache: 'no-store',
     });
   } catch {
@@ -227,7 +229,8 @@ export async function readSession(
   if (outcome === 'signed-out') return { kind: 'signed-out' };
   if (outcome === 'unknown') return { kind: 'unreachable' };
   try {
-    const body = await parse<{ customer: Customer; offers?: AccountOffers }>(res);
+    const body = await parse<{ customer: Customer | null; offers?: AccountOffers }>(res);
+    if (!body.customer) return { kind: 'signed-out' };
     return { kind: 'signed-in', customer: body.customer, offers: body.offers ?? NO_OFFERS };
   } catch {
     // A 200 whose body could not be read answered nothing either.
@@ -270,12 +273,16 @@ export interface OrderSummary {
   totalCents: number;
   currency: string;
   placedAt: string;
+  /** Taken at the counter or fetched, never sent (sparx persona issue 177). */
+  collecting?: boolean;
 }
 
 export interface OrderFulfillmentView {
   id: string;
   status: string;
   carrier: string | null;
+  /** The carrier's name as the owner typed it, when it has no code (issue 216). */
+  carrierOther?: string | null;
   service: string | null;
   trackingNumber: string | null;
   trackingUrl: string | null;
@@ -425,12 +432,23 @@ export interface ReturnableLine {
   spokenFor: number;
   returnableQuantity: number;
   unitPriceCents: number;
+  /** The whole line's goods after their discount, and the sales tax on them
+   *  (sparx persona issue 231). Absent from an older api-rest. */
+  goodsPaidCents?: number;
+  taxPaidCents?: number;
+  /** The core deposit on one unit, null when none (sparx persona issue 211).
+   *  Absent from an older api-rest. */
+  coreDepositCents?: number | null;
+  /** How many units still owe their old part. Absent from an older api-rest. */
+  coresOwed?: number;
 }
 
 export interface OrderReturnability {
   eligible: boolean;
   /** Why not, when not — so the page can say it rather than hiding the button. */
   reason: 'not_sent_yet' | 'nothing_left' | null;
+  /** The order's currency. Absent from an older api-rest. */
+  currency?: string;
   lines: ReturnableLine[];
 }
 
@@ -452,6 +470,9 @@ export interface ReturnDetailView extends ReturnSummaryView {
   refundedAmountCents: number | null;
   /** Money kept back out of the refund. Hers, so she is told. */
   restockingFeeCents: number | null;
+  /** How a settled refund reached her: back to how she paid, handed to her, or
+   *  store credit. Null until it is settled (sparx persona issue 178). */
+  refundedAs?: 'payment' | 'by_hand' | 'store_credit' | null;
   /** Only ever set on a declined request — the shop's reason, so a refusal is
    *  never a dead end. Null on every other status. */
   declinedReason: string | null;
@@ -651,6 +672,8 @@ export interface B2bPortalSummary {
     totalCents: number;
     currency: string;
     createdAt: string;
+    /** Taken at the counter or fetched (sparx persona issue 177). */
+    collecting?: boolean;
   }[];
 }
 
@@ -682,6 +705,8 @@ export interface B2bOrderEntry {
   createdAt: string;
   customerName: string | null;
   customerEmail: string | null;
+  /** Taken at the counter or fetched (sparx persona issue 177). */
+  collecting?: boolean;
 }
 
 // A quote IS a BillingDocument on the system `b2b-quotes` workflow — its state
@@ -807,6 +832,22 @@ export async function searchQuoteProducts(
 
 function b2bPortalUrl(path: string, tenantSlug: string): string {
   return `${API_BASE}/v1/public/b2b/portal${path}?tenant=${encodeURIComponent(tenantSlug)}`;
+}
+
+// ── The shop's published legal pages ──────────────────────────────────────
+
+/** The legal pages this site has published, for a link to one from an account
+ *  page (sparx persona issue 210). The same read the footer makes. Empty when it
+ *  cannot be read: a missing link, never a broken one. */
+export async function getLegalLinks(
+  tenantSlug: string,
+  propertySlug?: string
+): Promise<{ href: string; legalKind: string | null }[]> {
+  const res = await fetch(
+    `${url('/v1/public/legal/placements', tenantSlug, propertySlug)}&placement=footer`,
+    { cache: 'no-store' }
+  );
+  return parse<{ href: string; legalKind: string | null }[]>(res).catch(() => []);
 }
 
 export async function getB2bAccounts(tenantSlug: string): Promise<B2bAccountEntry[]> {
@@ -1114,6 +1155,8 @@ export interface B2bOrderDetail {
   placedAt: string;
   placedBy: string | null;
   poNumber: string | null;
+  /** Taken at the counter or fetched (sparx persona issue 177). */
+  collecting?: boolean;
   totals: {
     subtotalCents: number;
     discountCents: number;
@@ -1134,7 +1177,19 @@ export interface B2bOrderDetail {
   /** Where a held order's sign-off stands, and whether the contact looking may
    *  approve or turn it down now (sparx persona issue 087). Null once the order
    *  is decided, and absent from an older api-rest. */
-  signOff?: (SignOffView & { canDecide: boolean; limitCents: number | null }) | null;
+  signOff?:
+    | (SignOffView & {
+        canDecide: boolean;
+        limitCents: number | null;
+        /** The credit it ran past, when that held it too (sparx persona issue
+         *  187). Absent from an older api-rest. */
+        overCredit?: {
+          creditLeftCents: number;
+          orderTotalCents: number;
+          currency: string;
+        } | null;
+      })
+    | null;
   /** Approved, but the card held for it could not be charged, so it has gone
    *  ahead unpaid (sparx persona issue 087). Absent from an older api-rest. */
   cardNotCharged?: boolean;

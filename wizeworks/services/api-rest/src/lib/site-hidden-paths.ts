@@ -22,26 +22,14 @@
 // returns early if it is called anyway.
 
 import { withTenant } from '@wizeworks/db';
+import { hostKeysIn, moduleForKey } from '@wizeworks/silica-catalog';
 
-/** Every host core key in a published tree. The key's first segment is its
- *  module, which is what makes this answerable without a second table. */
-function hostKeysIn(node: unknown, found: string[]): void {
-  if (!node || typeof node !== 'object') return;
-  const n = node as { kind?: string; component?: unknown; children?: unknown[] };
-  if (n.kind === 'host' && typeof n.component === 'string') found.push(n.component);
-  if (Array.isArray(n.children)) for (const child of n.children) hostKeysIn(child, found);
-}
-
-/** The module a core key or record type belongs to, or null.
- *
- *  `commerce.auth` is excluded deliberately: it is the sign-in panel, and a
- *  visitor still signs in on a site that sells nothing — to ask a question, to
- *  look at a quote, to keep an appointment. The storefront's `moduleForKey`
- *  makes the same exception, and the two must agree. */
+/** The module a core key or record type belongs to, or null — the storefront's own
+ *  answer (`moduleForKey`), so the two cannot disagree. This file kept a copy of it,
+ *  and when site search became the whole site's (issue 945) the copy did not follow:
+ *  a journal's footer lost its Search link while `/search` worked (issue 947). */
 function moduleOf(key: string | null | undefined): string | null {
-  if (!key || key === 'commerce.auth') return null;
-  const head = key.split('.')[0];
-  return head && head !== 'site' ? head : null;
+  return key ? moduleForKey(key) : null;
 }
 
 /** A stored page slug as the path a visitor types. The home page's slug is
@@ -84,6 +72,20 @@ export async function siteHiddenPaths(
     })
   );
 
+  return hiddenPathsOf(rows, off);
+}
+
+/** The published pages whose own module, or a core on them, this site switched off.
+ *  Pure, for its test. */
+export function hiddenPathsOf(
+  rows: readonly {
+    slug: string | null;
+    recordType: string | null;
+    publishedTree: unknown;
+    silicaPublishedTree: unknown;
+  }[],
+  off: ReadonlySet<string>
+): string[] {
   const hidden: string[] = [];
   for (const row of rows) {
     const path = pathOf(row.slug);
@@ -92,9 +94,7 @@ export async function siteHiddenPaths(
     // business must never be told it does not exist.
     if (path === null || path === '/') continue;
 
-    const keys: string[] = [];
-    hostKeysIn(row.silicaPublishedTree, keys);
-    hostKeysIn(row.publishedTree, keys);
+    const keys = [...hostKeysIn(row.silicaPublishedTree), ...hostKeysIn(row.publishedTree)];
     const owners = [moduleOf(row.recordType), ...keys.map(moduleOf)];
     if (owners.some((owner) => owner !== null && off.has(owner))) hidden.push(path);
   }

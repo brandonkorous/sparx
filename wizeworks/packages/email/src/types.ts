@@ -59,6 +59,16 @@ export interface SendableEmail {
    * silently too big to deliver.
    */
   attachments?: EmailAttachment[];
+  /**
+   * Message headers the send must carry, by name: `List-Unsubscribe` and
+   * `List-Unsubscribe-Post`, which put a mail app's own Unsubscribe button beside
+   * the sender and are required of bulk senders by Gmail and Yahoo.
+   *
+   * Built for every campaign and dropped on the way: no field here, none on the
+   * worker's raw schema, and no provider wrote one, so not one campaign ever went
+   * out with them (piggles persona issue 985).
+   */
+  headers?: Record<string, string>;
 }
 
 export interface EmailAttachment {

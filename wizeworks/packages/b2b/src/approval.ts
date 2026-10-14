@@ -409,6 +409,37 @@ export type QueueHoldReason =
   | { kind: 'approval_rule'; limitCents: number | null }
   | Extract<accountOrderGate.HoldReason, { kind: 'over_credit_limit' }>;
 
+/** The credit a held order ran past, in cents, from its own hold reasons. Null
+ *  when the credit did not hold it. The order page says it (sparx persona issue
+ *  187): it gave the spending limit as the only reason on an order the account's
+ *  credit held too. */
+export function creditHoldOf(
+  metadata: unknown
+): { creditLeftCents: number; orderTotalCents: number; currency: string } | null {
+  const credit = accountOrderGate
+    .approvalHoldReasons(metadata)
+    .find((reason) => reason.kind === 'over_credit_limit');
+  if (!credit) return null;
+  return {
+    creditLeftCents: Math.round(credit.creditLeft * 100),
+    orderTotalCents: Math.round(credit.orderTotal * 100),
+    currency: credit.currency,
+  };
+}
+
+/** What an account has left to spend on terms TODAY, in cents; zero past its
+ *  limit, null when no limit is set. A held order's reason carries the figure at
+ *  placement; this is the one to decide on (sparx persona issue 188). */
+export function creditLeftNowCents(account: {
+  creditLimit: unknown;
+  creditUsed: unknown;
+}): number | null {
+  if (account.creditLimit === null || account.creditLimit === undefined) return null;
+  const left = Number(account.creditLimit) - Number(account.creditUsed ?? 0);
+  if (!Number.isFinite(left)) return null;
+  return Math.max(0, Math.round(left * 100));
+}
+
 /** Where a held order's sign-off stands, as the console and the site show it:
  *  who has to say yes, who already has, and who at the account may sign. */
 export interface SignOffView {
@@ -457,7 +488,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
     ]),
   };
 
-  const { orders, total, accounts, limits, activeRules, approvers } = await withTenant(
+  const { orders, total, accounts, credits, limits, activeRules, approvers } = await withTenant(
     ctx,
     async (tx) => {
       const [orders, total] = await Promise.all([
@@ -510,7 +541,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
           ? []
           : await tx.company.findMany({
               where: { id: { in: accountIds } },
-              select: { id: true, companyName: true },
+              select: { id: true, companyName: true, creditLimit: true, creditUsed: true },
             });
       // The spending limits the page's held orders name, in one query.
       const ruleIds = [
@@ -533,6 +564,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
         orders,
         total,
         accounts: new Map(accounts.map((a) => [a.id, a.companyName])),
+        credits: new Map(accounts.map((a) => [a.id, creditLeftNowCents(a)])),
         limits: new Map(rules.map((r) => [r.id, r.minAmountCents])),
         // Who each order waits on (sparx persona issue 087): the rules once, and
         // the page's accounts' approvers in one query.
@@ -558,6 +590,10 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
       customerEmail: o.customer.email,
       companyId: o.customer.companyId,
       companyName: o.customer.companyId ? (accounts.get(o.customer.companyId) ?? null) : null,
+      // Today's credit left, beside the figure that held it (issue 188).
+      accountCreditLeftCents: o.customer.companyId
+        ? (credits.get(o.customer.companyId) ?? null)
+        : null,
       holdReasons: accountOrderGate
         .approvalHoldReasons(o.metadata)
         .map((reason): QueueHoldReason =>
@@ -931,7 +967,7 @@ async function signHeldOrder(
         actorType: trail.actorType,
         customerId: existing.customerId,
         type: 'note',
-        description: `Order #${existing.orderNumber} approved by ${trail.who}${because}. ${next}`,
+        description: `Order ${existing.orderNumber} approved by ${trail.who}${because}. ${next}`,
         occurredAt: new Date(),
       },
     });
@@ -965,7 +1001,7 @@ async function signHeldOrder(
       actorType: trail.actorType,
       customerId: existing.customerId,
       type: 'note',
-      description: `Order #${existing.orderNumber} approved by ${trail.who}${because}`,
+      description: `Order ${existing.orderNumber} approved by ${trail.who}${because}`,
       occurredAt: new Date(),
     },
   });
@@ -1100,7 +1136,7 @@ async function turnDownHeldOrder(
       actorType: trail.actorType,
       customerId: existing.customerId,
       type: 'note',
-      description: `Order #${existing.orderNumber} rejected by ${trail.who}${trail.reason ? `: ${trail.reason}` : ''}`,
+      description: `Order ${existing.orderNumber} rejected by ${trail.who}${trail.reason ? `: ${trail.reason}` : ''}`,
       occurredAt: new Date(),
     },
   });
@@ -1405,7 +1441,14 @@ export async function accountOrderSignOff(
     totalCents: number;
     metadata: unknown;
   }
-): Promise<(SignOffView & { canDecide: boolean; limitCents: number | null }) | null> {
+): Promise<
+  | (SignOffView & {
+      canDecide: boolean;
+      limitCents: number | null;
+      overCredit: ReturnType<typeof creditHoldOf>;
+    })
+  | null
+> {
   if (order.status !== 'pending_approval') return null;
   return withTenant({ tenantId: decider.tenantId }, async (tx) => {
     const signOff = await accountOrderGate.loadOrderSignOff(tx, decider.tenantId, {
@@ -1427,6 +1470,7 @@ export async function accountOrderSignOff(
       ...queueSignOff(signOff.state, signOff.approvers),
       canDecide,
       limitCents: signOff.rule?.minAmountCents ?? null,
+      overCredit: creditHoldOf(order.metadata),
     };
   });
 }

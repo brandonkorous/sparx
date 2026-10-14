@@ -39,6 +39,7 @@ import {
 } from './launcher-rows';
 import { SEARCH_MOST_CHARS } from './launcher-search-words';
 import { EnterKey } from './shortcut-keys';
+import { focusOpenedPane } from './pane-focus';
 import { useSearchStatus } from '../lib/api/search';
 
 export function Launcher({
@@ -55,6 +56,8 @@ export function Launcher({
   // somebody typing a new one asked for.
   const [pages, setPages] = useState(1);
   const listRef = useRef<HTMLDivElement>(null);
+  // Set when a row is opened, so closing knows it was not a dismissal.
+  const openedRef = useRef(false);
 
   const navEntries = useNavEntries();
   const {
@@ -137,6 +140,7 @@ export function Launcher({
   const select = (index: number, mods: { shiftKey?: boolean; altKey?: boolean }) => {
     const entry = entries[index];
     if (!entry) return;
+    openedRef.current = true;
     entry.run(mods);
     onOpenChange(false);
   };
@@ -168,7 +172,17 @@ export function Launcher({
           finger (issue 414). Pinning the height pins the top edge, so the panel
           opens in one place and stays there for the whole interaction — which
           costs nothing, because the resting list already fills it. */}
-      <DialogContent className="flex h-[70dvh] w-full max-w-xl flex-col overflow-hidden p-0">
+      <DialogContent
+        className="flex h-[70dvh] w-full max-w-xl flex-col overflow-hidden p-0"
+        // Dismissed: focus goes back where it was. Opened something: it goes to
+        // what was opened, once that has mounted (`focusOpenedPane`).
+        finalFocus={() => {
+          if (!openedRef.current) return true;
+          openedRef.current = false;
+          window.setTimeout(focusOpenedPane, 0);
+          return false;
+        }}
+      >
         <DialogTitle className="sr-only">Search everything</DialogTitle>
 
         {/* The keydown handler rides the search field itself — arrows move the

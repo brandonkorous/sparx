@@ -22,6 +22,7 @@ import { purchaseOrderMcpTools } from './purchase-order-tools.js';
 import { b2bPriceMcpTools } from './b2b-price-tools.js';
 import { b2bApprovalMcpTools } from './b2b-approval-tools.js';
 import { schedulingEndingMcpTools } from './scheduling-ending-tools.js';
+import { withSchedulingSearch } from './scheduling-search-tools.js';
 import { searchAdminMcpTools } from './search-admin-tools.js';
 
 // Structural type spanning every module's tool definition. Each module declares
@@ -66,7 +67,9 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(invoicingMcpTools as unknown as AnyMcpTool[]),
   // Scheduling (docs/79 §11) — own read:scheduling / write:scheduling scopes;
   // additionally gated on the `scheduling` module flag in server.ts.
-  ...(schedulingMcpTools as unknown as AnyMcpTool[]),
+  // Wrapped so a service, place or person an assistant sets up is findable by
+  // name at once; the scheduling package cannot signal search itself.
+  ...withSchedulingSearch(schedulingMcpTools),
   // Ending a booking settles the card on it, which needs the payment gateways
   // the scheduling package does not carry (sparx persona issue 087).
   ...(schedulingEndingMcpTools as unknown as AnyMcpTool[]),

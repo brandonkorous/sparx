@@ -22,8 +22,15 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { pageService, layoutService, siteService, surfaceCssService } from '@wizeworks/builder';
+import {
+  pageService,
+  layoutService,
+  removedStarterPaths,
+  siteService,
+  surfaceCssService,
+} from '@wizeworks/builder';
 import type { SiteStage } from '@wizeworks/builder';
+import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { notFound } from '@wizeworks/api-core/errors';
 import { isModuleEnabled } from '@wizeworks/auth';
@@ -205,6 +212,12 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
       // would be a 404 the business put in its own chrome. Costs nothing on a
       // site that has switched nothing off, which is almost every site.
       hiddenPaths: await siteHiddenPaths(tenantId, propertyId, siteOff),
+      // The platform's own pages this site's owner deleted (`/blog` on a journal that
+      // writes no blog posts). The storefront serves a starter page at its address only
+      // while it is not one of these (persona issue 947).
+      removedPages: await withTenant({ tenantId }, (tx) =>
+        tx.property.findUnique({ where: { id: propertyId }, select: { settings: true } })
+      ).then((row) => removedStarterPaths(row?.settings)),
     });
   });
 

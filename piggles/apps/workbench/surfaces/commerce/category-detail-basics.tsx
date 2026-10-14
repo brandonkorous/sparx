@@ -13,6 +13,8 @@ import {
   Switch,
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
+import { useSiteHost } from '../domains/site-host';
+import { pageAddress } from './page-address';
 import { slugifyTyping } from '../../lib/slugify';
 import { ParentPicker } from './category-parent-picker';
 import type { Draft } from './category-draft';
@@ -40,6 +42,7 @@ export function CategoryBasics({
   /** Whether this category exists yet, which changes what the address warns about. */
   isNew: boolean;
 }) {
+  const host = useSiteHost();
   return (
     <FormSection title="Name and place">
       <Field>
@@ -89,8 +92,8 @@ export function CategoryBasics({
             (pages, groups, products) all print their real address; only this one
             printed one that does not exist. */}
         <FieldDescription>
-          The end of this category&apos;s page address: yoursite.com/category/
-          {effectiveHandle || '…'}.{' '}
+          The end of this category&apos;s page address:{' '}
+          {pageAddress(host, 'commerce.category', effectiveHandle)}.{' '}
           {isNew ? '' : 'Changing it breaks any link already shared to this page.'}
         </FieldDescription>
       </Field>

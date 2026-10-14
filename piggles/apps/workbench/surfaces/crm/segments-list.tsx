@@ -22,7 +22,8 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { segmentMembership, useSegments, type Segment } from './segments-data';
 import { RecomputeAllButton } from './segments-recompute-all';
-import { describeRule } from './segment-summary';
+import { describeRule, type PickedNames } from './segment-summary';
+import { usePickedNames } from './segment-picked-names';
 import { ListFooter } from '../../components/list-footer';
 import { countLabel } from '../../components/list-footer-words';
 import { productCopy } from '../../lib/product';
@@ -38,8 +39,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 /** A hand-picked list has no rules to describe — somebody chose who is in it. */
-function ruleSummary(segment: Segment): string {
-  return segment.kind === 'static' ? 'Picked by hand' : describeRule(segment.rules);
+function ruleSummary(segment: Segment, names: PickedNames): string {
+  return segment.kind === 'static' ? 'Picked by hand' : describeRule(segment.rules, {}, names);
 }
 
 /**
@@ -68,6 +69,7 @@ function KindBadge({ segment }: { segment: Segment }) {
 }
 
 export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const picked = usePickedNames();
   const [search, setSearch] = useState('');
   const [scope, setScope] = useState<'active' | 'all'>('active');
 
@@ -224,14 +226,14 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ) : null}
                     {segment.description ? (
                       <span className="block truncate text-sm @md:hidden">
-                        {ruleSummary(segment)}
+                        {ruleSummary(segment, picked)}
                       </span>
                     ) : null}
                   </td>
                   <td className="text-right text-sm tabular-nums">
                     {segment._count ? segmentMembership(segment._count.members) : '—'}
                   </td>
-                  <td className="hidden text-sm @lg:table-cell">{ruleSummary(segment)}</td>
+                  <td className="hidden text-sm @lg:table-cell">{ruleSummary(segment, picked)}</td>
                   <td>
                     <KindBadge segment={segment} />
                   </td>

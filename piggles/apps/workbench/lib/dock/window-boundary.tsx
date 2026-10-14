@@ -35,7 +35,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import { ImperativeAlertDialogProvider, PortalContainerProvider } from '@wizeworks/silicaui-react';
+import { PortalContainerProvider } from '@wizeworks/silicaui-react';
 
 /** The slice of dockview's panel/group api the boundary needs — both expose it. */
 interface LocationAwareApi {
@@ -141,10 +141,12 @@ export function PaneWindowBoundary({ api, children }: PaneWindowBoundaryProps) {
     >
       <PortalContainerProvider container={container}>
         <PaneElementContext.Provider value={paneElement}>
-          {/* Confirms stay per-pane: a confirm belongs to the action that raised
-              it and must appear over that pane, in that pane's window. Toasts
-              are the opposite — one app-wide stack (see the note above). */}
-          <ImperativeAlertDialogProvider>{children}</ImperativeAlertDialogProvider>
+          {/* Confirms stay per-pane, but the provider is SurfaceMount's, inside
+              this one: it knows the pane's module, which the confirm has to wear
+              (sparx persona issue 179). It still sits under this
+              PortalContainerProvider, so it opens in the pane's own window.
+              Toasts are the opposite: one app-wide stack (see the note above). */}
+          {children}
         </PaneElementContext.Provider>
       </PortalContainerProvider>
     </div>

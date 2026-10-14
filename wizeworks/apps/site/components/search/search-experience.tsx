@@ -21,6 +21,7 @@ import {
   type SiteSearchHit,
 } from '@/lib/commerce';
 import type { ResolvedSite } from '@/lib/site-context';
+import { siteShowsModule } from '@/lib/site-modules';
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -52,6 +53,11 @@ export async function SearchExperience({
 }) {
   const sp = searchParams;
   const q = (one(sp.q) ?? '').trim();
+
+  // A site that switched Selling off has no catalog to search, and no product pages to
+  // send anyone to. Its search is the rest: pages and articles.
+  if (!siteShowsModule(site, 'commerce')) return <SiteSearch site={site} q={q} />;
+
   const sort = (one(sp.sort) ?? 'relevance') as ProductSort;
   const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
   const minPrice = one(sp.minPrice);
@@ -125,7 +131,8 @@ export async function SearchExperience({
 
       {siteHits.length > 0 ? (
         <section className="my-6">
-          <h2 className="mb-2 text-base">Pages &amp; collections</h2>
+          {/* Articles land here too (issue 378), so the heading names no one kind. */}
+          <h2 className="mb-2 text-base">Elsewhere on this site</h2>
           <ul className="m-0 grid list-none gap-1.5 p-0">
             {siteHits.map((h) => (
               <li key={h.url}>
@@ -212,6 +219,58 @@ export async function SearchExperience({
             )}
           </div>
         </div>
+      )}
+    </>
+  );
+}
+
+/**
+ * Search on a site that sells nothing: one field, and every page and article that
+ * matched, each named by its kind ("Article", "Page"). The product grid, its filters
+ * and "Browse all products" all describe a shop this site does not have.
+ */
+async function SiteSearch({ site, q }: { site: ResolvedSite; q: string }) {
+  const hits = q ? await searchEverything(site.slug, q, 50) : [];
+  return (
+    <>
+      <form action="/search" role="search" className="relative w-full max-w-[560px]">
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="Search this site…"
+          aria-label="Search this site"
+          className="input w-full"
+        />
+      </form>
+      {!q ? (
+        <EmptyState
+          icon="🔎"
+          title="Search this site"
+          description="Type a word above to find a page or an article."
+        />
+      ) : hits.length === 0 ? (
+        <EmptyState
+          icon="🤷"
+          title={`Nothing matches “${q}”`}
+          description="Check your spelling, or try a shorter word."
+        />
+      ) : (
+        <section className="my-6">
+          <p className="mb-3 text-base">
+            {hits.length} {hits.length === 1 ? 'result' : 'results'} for “{q}”
+          </p>
+          <ul className="m-0 grid list-none gap-3 p-0">
+            {hits.map((h) => (
+              <li key={h.url}>
+                <a href={h.url} className="inline-flex items-baseline gap-2 text-lg">
+                  <span>{h.title}</span>
+                  <span className="badge badge-sm">{labelFor(h)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </>
   );

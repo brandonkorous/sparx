@@ -78,7 +78,12 @@ export const OPEN_SUBTREES: readonly string[] = [
 
 /** Which caller-supplied roster backs each parameterized route. */
 export type RosterKey =
-  'productHandles' | 'collectionHandles' | 'categoryHandles' | 'postSlugs' | 'serviceIds';
+  | 'productHandles'
+  | 'collectionHandles'
+  | 'categoryHandles'
+  | 'postSlugs'
+  | 'authorSlugs'
+  | 'serviceIds';
 
 export interface DynamicRoute {
   /** Always with a trailing slash — `/products/`. The trailing slash is load-bearing:
@@ -111,6 +116,7 @@ const ROUTE_EXTRAS: Record<string, { roster: RosterKey; noun: string }> = {
   'commerce.collection': { roster: 'collectionHandles', noun: 'collection' },
   'commerce.category': { roster: 'categoryHandles', noun: 'category' },
   'cms.blog_post': { roster: 'postSlugs', noun: 'blog post' },
+  'cms.author': { roster: 'authorSlugs', noun: 'author' },
   'scheduling.service': { roster: 'serviceIds', noun: 'bookable service' },
 };
 

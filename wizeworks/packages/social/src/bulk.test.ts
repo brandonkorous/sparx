@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseSocialCsv, splitCsvLine } from './bulk.js';
+import { parseSocialCsv, readScheduleCell, readableZone, splitCsvLine } from './bulk.js';
 
 // The parser's job is to be HONEST about a messy file: a spreadsheet exported from
 // anywhere, with quoted commas, blank rows and a date somebody typed by hand. It must
@@ -94,5 +94,54 @@ describe('parseSocialCsv', () => {
   it('says so plainly when the file is empty', () => {
     const { problems } = parseSocialCsv('   ');
     expect(problems[0]?.message).toContain('empty');
+  });
+});
+
+// A time typed in a spreadsheet names no zone, and it was read on the server's clock:
+// a business in London planned 09:00 and it went out at 10:00 her time (piggles persona
+// issue 990). It is read on the business's clock now.
+describe('the clock a spreadsheet time is read on', () => {
+  it('reads 08:30 typed in London as 07:30Z in October and 08:30Z in December', () => {
+    expect(readScheduleCell('2026-10-15 08:30', 'Europe/London')?.toISOString()).toBe(
+      '2026-10-15T07:30:00.000Z'
+    );
+    expect(readScheduleCell('2026-12-15T08:30', 'Europe/London')?.toISOString()).toBe(
+      '2026-12-15T08:30:00.000Z'
+    );
+    expect(readScheduleCell('2026-10-15 08:30', 'America/Los_Angeles')?.toISOString()).toBe(
+      '2026-10-15T15:30:00.000Z'
+    );
+  });
+
+  it('reads the way a spreadsheet writes a date on the business clock too', () => {
+    expect(readScheduleCell('10/15/2026 8:30 AM', 'Europe/London')?.toISOString()).toBe(
+      '2026-10-15T07:30:00.000Z'
+    );
+  });
+
+  it('takes a time that names its own zone as written', () => {
+    expect(readScheduleCell('2026-10-15T08:30:00Z', 'Europe/London')?.toISOString()).toBe(
+      '2026-10-15T08:30:00.000Z'
+    );
+    expect(readScheduleCell('2026-10-15T08:30:00-07:00', 'Europe/London')?.toISOString()).toBe(
+      '2026-10-15T15:30:00.000Z'
+    );
+  });
+
+  it('parses a whole file on the business clock', () => {
+    const { rows } = parseSocialCsv('body,when\nFresh loaves,2026-10-15 08:30', 'Europe/London');
+    expect(rows[0]?.scheduledAt?.toISOString()).toBe('2026-10-15T07:30:00.000Z');
+  });
+
+  it('falls back to UTC for a zone this runtime cannot read, rather than throwing', () => {
+    expect(readableZone('Mars/Olympus_Mons')).toBe('UTC');
+    expect(readableZone(null)).toBe('UTC');
+    expect(readableZone('Europe/London')).toBe('Europe/London');
+    const { rows } = parseSocialCsv('body,when\nHi,2026-10-15 08:30', 'Mars/Olympus_Mons');
+    expect(rows[0]?.scheduledAt?.toISOString()).toBe('2026-10-15T08:30:00.000Z');
+  });
+
+  it('refuses a date that is not on the calendar', () => {
+    expect(readScheduleCell('2026-13-40 08:30', 'Europe/London')).toBeNull();
   });
 });

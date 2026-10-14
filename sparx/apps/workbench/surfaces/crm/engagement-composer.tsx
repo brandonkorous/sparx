@@ -113,6 +113,9 @@ export interface EngagementComposerProps {
   /** Whether this person has an email address at all — the Email tab is not
    *  offered without one, rather than offered and then refused. */
   canEmail?: boolean;
+  /** Which action is the solid one. A customer's page leads with a note; a message
+   *  waiting for an answer leads with Email (sparx persona issue 162). */
+  lead?: Mode;
 }
 
 export function EngagementComposer({
@@ -120,6 +123,7 @@ export function EngagementComposer({
   dealId,
   ticketId,
   canEmail,
+  lead = 'note',
 }: EngagementComposerProps) {
   const toast = useToast();
   const [mode, setMode] = useState<Mode>('note');
@@ -337,7 +341,7 @@ export function EngagementComposer({
           key={entry.value}
           size="sm"
           color="module"
-          variant={entry.value === 'note' ? 'solid' : 'outline'}
+          variant={entry.value === lead ? 'solid' : 'outline'}
           onClick={() => {
             setMode(entry.value);
             setOpen(true);

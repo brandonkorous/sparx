@@ -20,7 +20,11 @@
 // address without `?site=` opens the right surface against the wrong data. It is
 // the difference between "here's the order" and "here's an order screen".
 
-import { buildPath } from '@wizeworks/links';
+import { buildPath, setLinkBrand } from '@wizeworks/links';
+
+// Every link this console resolves is a Piggles link, including the ones whose
+// callers name no brand (the search box's record hits).
+setLinkBrand('piggles');
 import type { PaneDescriptor } from '../surfaces/descriptor';
 
 /** The workbench root: your layout, no destination. What an unaddressable pane falls back to. */

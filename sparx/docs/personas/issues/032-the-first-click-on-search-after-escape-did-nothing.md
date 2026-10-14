@@ -5,9 +5,9 @@
 **Found by:** P01 · Gillett Diesel Service · act 2
 **Surface:** workbench › top bar › Search everything
 **Filed:** 2026-10-01
-**Fixed:** —
+**Fixed:** 2026-10-13 (silicaui, not yet released)
 **Confirmed by:** —
-**Blocked on:** —
+**Blocked on:** silicaui PR #112 merged and released, then the `@wizeworks/silicaui` catalog version raised in `pnpm-workspace.yaml` and installed
 
 ## What happened
 
@@ -51,7 +51,40 @@ The browser tool drops input, not the page:
 So this is the tool, not the product, on every case measured. It stays open only
 for the one check the tool cannot make.
 
-## Next
+## Cause found, 2026-10-13
+
+It is the product. The 2026-10-06 reading ("the tool, not the product") was wrong for
+this case.
+
+Reproduced in sparx as Doty, three times, with no page load anywhere near: open Search
+everything, press Escape, click the search box at once. Nothing opens, and "Monday
+numbers" typed next was lost. With a one-second pause before the click, it opens.
+
+A pointer probe named the target of the swallowed click:
+`div.dialog-backdrop[data-closed][data-ending-style]`, 76 ms after Escape. Base UI keeps
+the backdrop mounted for its 150 ms fade-out. It is transparent by then, but it still
+covers the page, so it takes the click.
+
+## The fix
+
+In silicaui, the one place every console's dialogs get their look: the backdrop and
+popup of `dialog`, `drawer`, `command-palette` and `lightbox` drop pointer events while
+`[data-ending-style]` is set. That covers Search everything and every confirm box,
+dialog and drawer in both consoles.
+
+- silicaui PR #112, branch `fix/closing-backdrop-lets-clicks-through`, with a patch
+  changeset. Not merged: merging is Brandon's.
+- Check: `pnpm verify:closing-overlays` in `packages/silicaui`, red 8 of 8, then green.
+  Full `pnpm verify` passes.
+- Proved on the live sparx page before the commit: with the same rule added to the page,
+  Escape and an immediate click opened the search and kept "Alliant" as typed.
+
+## Confirmed by
+
+Not yet with the released package. After the release and the catalog bump: Escape the
+search, click the box at once, and type.
+
+## Next (superseded by the cause above)
 
 1. Brandon: one real-mouse check. Reload the workbench and click "Search
    everything" once. Does it open?

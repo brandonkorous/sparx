@@ -71,4 +71,17 @@ export interface ChatWidgetProps {
   /** Notified whenever the widget requests an open-state change (e.g. its close
    *  button). The required companion to a controlled `open`. */
   onOpenChange?: (open: boolean) => void;
+  /** The site the widget sits on (its slug), sent as `property=` on every call, so
+   *  the conversation lands in THAT business's inbox. Without it every chat went
+   *  to the tenant's primary site. */
+  propertySlug?: string;
+  /** Where to send the FIRST message, when that is not `apiUrl`: a same-origin
+   *  relay that carries the shopper's sign-in cookie (the tenant site's
+   *  `/api/sparx`). api-rest takes no cross-origin credentials, so a chat started
+   *  straight at `apiUrl` never knows who is signed in (sparx persona issue 164). */
+  startVia?: string;
+  /** The signed-in shopper, when there is one. The pre-chat form then says who
+   *  they are chatting as instead of asking a known customer for their name and
+   *  email. */
+  signedInAs?: { name: string | null; email: string | null } | null;
 }

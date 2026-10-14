@@ -76,6 +76,8 @@ export interface LinkTargets {
   categoryHandles?: readonly string[];
   /** Blog post slugs, for `/blog/<slug>`. */
   postSlugs?: readonly string[];
+  /** Authors with something published here, for `/authors/<slug>`. */
+  authorSlugs?: readonly string[];
   /** Bookable service ids, for `/book/<serviceId>`. */
   serviceIds?: readonly string[];
 }

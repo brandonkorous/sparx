@@ -91,7 +91,7 @@ const SAMPLE_DATA: BillingRenderData = {
       description: 'Something you sell',
       quantity: 2,
       unitPrice: 150,
-      lineTotal: 300,
+      amount: 300,
       taxable: true,
     },
     {
@@ -99,7 +99,7 @@ const SAMPLE_DATA: BillingRenderData = {
       description: 'Work you did, by the hour',
       quantity: 2.5,
       unitPrice: 120,
-      lineTotal: 300,
+      amount: 300,
       taxable: false,
     },
   ],

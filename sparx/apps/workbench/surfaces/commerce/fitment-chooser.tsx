@@ -31,6 +31,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { ChevronRight } from 'lucide-react';
+import { loadFailureWords } from '../../lib/api-error';
 import {
   useFitmentNodes,
   type FitmentDimension,
@@ -184,7 +185,10 @@ function Level({ choice }: { choice: FitmentChoice }) {
         <AlertContent>
           <AlertTitle>Could not load the list</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing has been changed.
+            {loadFailureWords(
+              nodes.error,
+              'This is a problem reaching the server. Nothing has been changed.'
+            )}
           </AlertDescription>
         </AlertContent>
         <Button

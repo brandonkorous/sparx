@@ -16,6 +16,7 @@ import { faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { SaveFailure } from '../../components/save-failure';
+import { loadFailureWords } from '../../lib/api-error';
 import { CookieBannerSummary } from './cookie-banner-summary';
 import { CookieBannerFields } from './cookie-banner-fields';
 import {
@@ -39,6 +40,7 @@ export function CookieBannerSection({ cookiePolicy }: { cookiePolicy: ChecklistI
     <FormSection title="Cookie banner" description={description}>
       {editor.settings.isError ? (
         <LoadFailure
+          error={editor.settings.error}
           onRetry={() => {
             void editor.settings.refetch();
           }}
@@ -75,13 +77,16 @@ export function CookieBannerSection({ cookiePolicy }: { cookiePolicy: ChecklistI
   );
 }
 
-function LoadFailure({ onRetry }: { onRetry: () => void }) {
+function LoadFailure({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   return (
     <Alert color="warning">
       <AlertContent>
         <AlertTitle>Could not load your cookie banner settings</AlertTitle>
         <AlertDescription>
-          This is a problem reaching the server. Your site keeps whatever it was showing.
+          {loadFailureWords(
+            error,
+            'This is a problem reaching the server. Your site keeps whatever it was showing.'
+          )}
         </AlertDescription>
       </AlertContent>
       <Button size="sm" color="warning" variant="soft" onClick={onRetry}>

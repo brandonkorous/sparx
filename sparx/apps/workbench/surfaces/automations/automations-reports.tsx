@@ -12,7 +12,6 @@
 import { useMemo, useState } from 'react';
 import {
   Badge,
-  Button,
   EmptyState,
   Heading,
   Select,
@@ -26,6 +25,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -230,18 +230,15 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {series.isError && summary.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load the report"
               description={automationErrorMessage(
                 series.error ?? summary.error,
                 'This is a problem reaching the server. Try again in a moment.'
               )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
+              error={series.error ?? summary.error}
+              onRetry={refetchAll}
             />
           ) : (
             <>

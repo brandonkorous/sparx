@@ -157,6 +157,11 @@ export const HOST_KEYS = {
    *  Per-record: the route hands the entry's doc to the live-site renderer, so the
    *  core needs no props — the author places it, and the routed post fills it. */
   cmsArticleBody: 'cms.article-body',
+  /** Everything the site has published, by month: a row of years, then each month of the
+   *  chosen one with its pieces (date, section, headline), linked. A journal's archive,
+   *  browsable at any size one year at a time. Reads the year from the URL (`?year=`);
+   *  needs nothing else. */
+  cmsArchive: 'cms.archive',
   /** A light/dark theme toggle — a button that flips the site between its light and dark
    *  palettes. A host core, not an authored button, for two reasons a static silica tree
    *  cannot meet: it is INTERACTIVE (client state + the `sparx_theme` cookie the SSR
@@ -737,6 +742,17 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // text past ~75 characters is measurably harder to read, and this core is nothing
     // but body text.
     defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
+  },
+  {
+    key: HOST_KEYS.cmsArchive,
+    label: 'Archive by month',
+    category: 'Your writing',
+    icon: 'calendar',
+    hint: 'Everything you have published, month by month, one year at a time: each piece with its date and headline, linking to it. Stays easy to browse however much you publish.',
+    // The page measure the catalog's sections use, so it lines up under a Page top; the
+    // list inside keeps to a reading width of its own.
+    defaultClass: 'mx-auto w-full max-w-6xl px-6 py-10',
+    pinned: false,
   },
   {
     key: HOST_KEYS.siteMap,

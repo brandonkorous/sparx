@@ -99,3 +99,19 @@ describe('every field is reachable by the name printed beside it', () => {
     expect(unreachable).toEqual([]);
   });
 });
+
+// The Marrow Review's own list (P09). "Subscribed" was left out, so Hugh Ashdown, who
+// had unsubscribed, would have come in as a reader to email.
+describe('a subscriber list', () => {
+  it('reads the yes/no column as the email opt-in', () => {
+    const mapping = guessMapping('customers', [
+      'First name',
+      'Last name',
+      'Email',
+      'Subscribed',
+      'Signed up',
+    ]);
+    expect(mapping.Subscribed).toBe('accepts_marketing');
+    expect(mapping.Email).toBe('email');
+  });
+});

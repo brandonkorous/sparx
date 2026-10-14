@@ -21,6 +21,20 @@ import type {
 import type { BrandTokens } from '../components/brand';
 
 /** Per-recipient compliance values rendered into the marketing legal footer. */
+
+/**
+ * The unsubscribe address a campaign drawn ONCE for every reader carries, until the
+ * send gives each reader their own (piggles persona issue 985).
+ *
+ * A campaign with no per-reader words is rendered once, when it is queued, and had
+ * no reader to sign a link for, so its Unsubscribe went to `#` and it carried no
+ * List-Unsubscribe header: nobody who got it could leave the list. It now carries
+ * this, and api-rest's dispatch swaps it, in the HTML and the text, for the reader's
+ * own signed link as each one goes out. `.invalid` can never resolve, so a copy that
+ * somehow escaped unswapped goes nowhere rather than somewhere wrong.
+ */
+export const UNSUBSCRIBE_PLACEHOLDER = 'https://unsubscribe.invalid/each-reader';
+
 export interface EmailCompliance {
   /** The one-click unsubscribe URL (also fed to the `List-Unsubscribe` header by
    *  the caller). Falls back to `#` in a static preview. */
@@ -267,9 +281,9 @@ function footerSection(
   // better with it too.
   if (opts.compliance?.physicalAddress) {
     parts.push(
-      `<p style="margin:0;font-size:12px;line-height:1.5;${base}">${
-        name ? `${name} &middot; ` : ''
-      }${escapeHtml(opts.compliance.physicalAddress)}</p>`
+      `<p style="margin:0;font-size:12px;line-height:1.5;${base}">${escapeHtml(
+        legalLine(signature ?? null, opts.compliance.physicalAddress)
+      )}</p>`
     );
   }
   parts.push(attributionHtml(brand, base));
@@ -326,4 +340,25 @@ export function composeSendDocument(doc: EmailDocument, opts: ComposeOptions): E
   ];
   const root: EmailBody = { ...doc.root, children };
   return { ...doc, root };
+}
+
+/**
+ * The legal line: who the mail is from, then where they are, on one line.
+ *
+ * A business writes its postal address the way it goes on an envelope, name
+ * first, so "name · address" printed the name twice; and the address's line breaks
+ * reached the HTML as spaces, running the street into the city (sparx persona
+ * issue 221). The name is left out when the address already starts with it, and
+ * the lines are joined with commas.
+ */
+export function legalLine(name: string | null, address: string): string {
+  const lines = address
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/,$/, ''))
+    .filter((line) => line !== '');
+  const who = name?.trim() ?? '';
+  const startsWithName = who !== '' && lines[0]?.toLowerCase() === who.toLowerCase();
+  const where = (startsWithName ? lines.slice(1) : lines).join(', ');
+  if (who === '') return where;
+  return where === '' ? who : `${who} · ${where}`;
 }

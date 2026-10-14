@@ -46,6 +46,7 @@ import {
 import { ArrowDown, ArrowUp, Boxes, PackageCheck, ShieldCheck, TrendingDown } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { surfaceTitle, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -175,7 +176,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
   const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
   const locationName = activeLocations.find((location) => location.id === locationId)?.name ?? null;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useStockLevels({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useStockLevels({
     q: search.trim(),
     ...(locationId ? { warehouseId: locationId } : {}),
     lowStockOnly: level === 'low',
@@ -270,10 +271,11 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     // filters invites someone to conclude they have no stock.
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Boxes className="size-6" aria-hidden />}
           title="Could not load your stock"
           description="This is a problem reaching the server. Your stock is unaffected: the numbers just could not be read just now."
+          error={error}
         />
       );
     }

@@ -95,7 +95,6 @@ const SPARX_DEBT = new Set([
   'sparx/apps/workbench/surfaces/commerce/product-configurator.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-detail.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-fitment.tsx',
-  'sparx/apps/workbench/surfaces/commerce/product-translations.tsx',
   'sparx/apps/workbench/surfaces/crm/customers-list.tsx',
   'sparx/apps/workbench/surfaces/email/sequence-detail.tsx',
   'sparx/apps/workbench/surfaces/finance/expense-detail.tsx',
@@ -110,6 +109,11 @@ const SPARX_DEBT = new Set([
 
 /** Persists work that is otherwise lost. Always `primary`. */
 const COMMIT_TEXT = /^\s*(Save|Save [a-z ]+|Create|Create [a-z ]+|Add [a-z][a-z ]*)\s*$/;
+
+/** A list's own create button ("New report"): the thing the list exists to hold.
+ *  Matched on BUTTONS in a folding slot only; as a `label:` it is often the one
+ *  object a `primary` button and an empty state share (persona issue 244). */
+const CREATE_ENTRY_TEXT = /^\s*New [a-z][a-z ]*\s*$/;
 
 /** What a button reading `createLabel` counts as: a create action, so a commit.
  *  Worded so `COMMIT_TEXT` matches it and a failure says where it came from. */
@@ -298,7 +302,9 @@ if (scanned.length === 0) {
 }
 for (const file of scanned) {
   const source = readFileSync(file, 'utf8');
-  const hasControls = source.includes('controls={');
+  // `refresh` folds into the popover too, and two lists had parked their "New"
+  // or "Add" button beside the refresh icon there (persona issue 244).
+  const hasControls = source.includes('controls={') || source.includes('refresh={');
   const hasActions = source.includes('actions={');
   if (!hasControls && !hasActions) continue;
   // A toolbar with nothing holding its commit action means a lifecycle verb in a
@@ -307,17 +313,13 @@ for (const file of scanned) {
   const holdsCommit = source.includes('primary={') || source.includes('save={');
   const offend = (text) => COMMIT_TEXT.test(text) || (!holdsCommit && LIFECYCLE_TEXT.test(text));
 
-  for (const region of controlsRegions(source)) {
-    for (const text of buttonTexts(region)) {
-      if (offend(text)) {
-        failures.push({
-          file: rel(file),
-          label: text.trim(),
-          slot: 'controls',
-        });
-        break;
-      }
-    }
+  const foldable = [
+    ...controlsRegions(source).map((region) => ({ region, slot: 'controls' })),
+    ...propRegions(source, 'refresh').map((region) => ({ region, slot: 'refresh' })),
+  ];
+  for (const { region, slot } of foldable) {
+    const text = buttonTexts(region).find((t) => offend(t) || CREATE_ENTRY_TEXT.test(t));
+    if (text !== undefined) failures.push({ file: rel(file), label: text.trim(), slot });
   }
   if (!hasActions) continue;
   for (const text of foldableLabels(source)) {

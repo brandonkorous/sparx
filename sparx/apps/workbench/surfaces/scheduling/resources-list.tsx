@@ -14,7 +14,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   Table,
   ToggleGroup,
@@ -35,6 +34,7 @@ import {
 } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { resourceKindGlyph } from './resource-kind-icon';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const DETAIL_KEY = 'scheduling.resources.detail';
 
@@ -63,7 +63,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [kind, setKind] = useState('');
   const [activeOnly, setActiveOnly] = useState(false);
 
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useResources({
+  const { data, isPending, isFetching, dataUpdatedAt, isError, error, refetch } = useResources({
     ...(kind ? { kind: kind as ResourceKind } : {}),
     activeOnly,
   });
@@ -83,21 +83,14 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Users className="size-6" aria-hidden />}
           title="Could not load your people & equipment"
           description="This is a problem reaching the server. Nothing is affected: the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
         />
       );
     }

@@ -20,6 +20,7 @@ import {
   viewParamsOf,
 } from '../surfaces/registry';
 import { createDescriptor, type PaneDescriptor, type SurfaceParams } from '../surfaces/descriptor';
+import { focusOpenedPane } from '../../components/pane-focus';
 
 export interface DirtyGuard {
   isDirty: () => boolean;
@@ -261,6 +262,10 @@ export class WorkbenchController {
     this.descriptors.set(paneId, retargeted);
     this.host.retarget(paneId, titleFor(retargeted));
     this.emit();
+    // The old view unmounted under whatever held focus, so the keyboard fell to the
+    // page itself: Rosalind pressed Create on a new piece and her next Tab went to
+    // the rail (P09). Once the new view is in, focus goes back into the pane.
+    if (typeof document !== 'undefined') setTimeout(focusOpenedPane, 0);
     return paneId;
   }
 

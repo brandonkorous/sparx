@@ -340,6 +340,8 @@ const searchRoutes: FastifyPluginAsync = (app) => {
       q: q.q,
       modules,
       entityTypes: csv(q.types),
+      // A board or report kept to its maker is found by her alone (issue 264).
+      viewerId: auth.actorId,
       page: q.page,
       perPage: q.per_page,
     });

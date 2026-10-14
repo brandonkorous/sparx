@@ -22,6 +22,8 @@ import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnly, ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
@@ -57,6 +59,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSampleDataStatus();
   const load = useLoadSampleData();
   const clear = useClearSampleData();
+  const rights = useManageRights();
 
   // The BRAND's name for this screen, not the literal. The rail calls it
   // "Practice data" (lib/console/vocabulary.ts) and this line called the dock tab
@@ -163,25 +166,27 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="Practice data actions"
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={load.isPending}
-            disabled={busy}
-            onClick={() => {
-              void onLoad();
-            }}
-          >
-            <Icon glyph={faDatabase} className="size-4" aria-hidden />
-            {load.isPending
-              ? loaded
-                ? 'Replacing…'
-                : 'Loading…'
-              : loaded
-                ? 'Reload practice data'
-                : 'Load practice data'}
-          </Button>
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              loading={load.isPending}
+              disabled={busy}
+              onClick={() => {
+                void onLoad();
+              }}
+            >
+              <Icon glyph={faDatabase} className="size-4" aria-hidden />
+              {load.isPending
+                ? loaded
+                  ? 'Replacing…'
+                  : 'Loading…'
+                : loaded
+                  ? 'Reload practice data'
+                  : 'Load practice data'}
+            </Button>
+          )
         }
         refresh={
           <RefreshButton
@@ -200,94 +205,99 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneWaiting />
           </Card>
         ) : (
-          <div className={COLUMN}>
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge color={loaded ? 'success' : undefined} variant="soft" size="sm">
-                  {loaded ? 'Loaded' : 'Not loaded'}
-                </Badge>
+          <ManagersOnly>
+            <div className={COLUMN}>
+              {/* Only an owner or an admin may change this; the server refuses
+                everybody else (sparx persona issue 168). */}
+              <ManagersOnlyNotice change="load or remove practice data" />
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge color={loaded ? 'success' : undefined} variant="soft" size="sm">
+                    {loaded ? 'Loaded' : 'Not loaded'}
+                  </Badge>
+                </div>
+                <Text>
+                  Fill your account with realistic made-up records so you can try things out before
+                  your real ones exist. Each one is tagged as practice behind the scenes, so you can
+                  remove them all in one go, whenever you like, without touching a real record.
+                </Text>
               </div>
-              <Text>
-                Fill your account with realistic made-up records so you can try things out before
-                your real ones exist. Each one is tagged as practice behind the scenes, so you can
-                remove them all in one go, whenever you like, without touching a real record.
-              </Text>
-            </div>
 
-            <FormSection
-              title={loaded ? "What's loaded now" : 'What would be added'}
-              description={
-                data.packSummary ||
-                productCopyWith(
-                  'sampleData.packSummary',
-                  `A ${data.packLabel} set built to show Piggles working with real-looking records.`,
-                  { pack: data.packLabel }
-                )
-              }
-            >
-              {modules.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  <Text className="text-sm">
-                    {loaded
-                      ? 'Practice records are in place across:'
-                      : productCopy(
-                          'sampleData.scopeIntro',
-                          'A load would fill the apps you have switched on:'
-                        )}
-                  </Text>
-                  <div className="flex flex-wrap gap-1.5">
-                    {modules.map((slug) => (
-                      <ModuleChip key={slug} slug={slug} />
-                    ))}
+              <FormSection
+                title={loaded ? "What's loaded now" : 'What would be added'}
+                description={
+                  data.packSummary ||
+                  productCopyWith(
+                    'sampleData.packSummary',
+                    `A ${data.packLabel} set built to show Piggles working with real-looking records.`,
+                    { pack: data.packLabel }
+                  )
+                }
+              >
+                {modules.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    <Text className="text-sm">
+                      {loaded
+                        ? 'Practice records are in place across:'
+                        : productCopy(
+                            'sampleData.scopeIntro',
+                            'A load would fill the apps you have switched on:'
+                          )}
+                    </Text>
+                    <div className="flex flex-wrap gap-1.5">
+                      {modules.map((slug) => (
+                        <ModuleChip key={slug} slug={slug} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Text className="text-sm">
-                  {productCopy(
-                    'sampleData.nothingOn',
-                    'You have no matching apps switched on yet, so a load would add only a small baseline. Add an app like Sell or Bookings first to get a fuller set.'
-                  )}
-                </Text>
-              )}
-
-              {loaded ? (
-                countsTotal(data.counts) > 0 ? (
-                  <CountsGrid counts={data.counts} />
-                ) : null
-              ) : (
-                <Text className="text-sm">
-                  Nothing is loaded right now. Loading is safe to undo. One click removes every
-                  practice record and leaves your real ones exactly as they are.
-                </Text>
-              )}
-            </FormSection>
-
-            {/* Destructive action: a quiet row after the work, under a divider —
-                never a card competing with the positive action above it. */}
-            {loaded ? (
-              <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-                <div className="flex min-w-0 flex-col">
-                  <span className="text-base font-medium">Remove all practice data</span>
+                ) : (
                   <Text className="text-sm">
-                    Deletes every practice record. Your real records are left untouched.
+                    {productCopy(
+                      'sampleData.nothingOn',
+                      'You have no matching apps switched on yet, so a load would add only a small baseline. Add an app like Sell or Bookings first to get a fuller set.'
+                    )}
                   </Text>
+                )}
+
+                {loaded ? (
+                  countsTotal(data.counts) > 0 ? (
+                    <CountsGrid counts={data.counts} />
+                  ) : null
+                ) : (
+                  <Text className="text-sm">
+                    Nothing is loaded right now. Loading is safe to undo. One click removes every
+                    practice record and leaves your real ones exactly as they are.
+                  </Text>
+                )}
+              </FormSection>
+
+              {/* Destructive action: a quiet row after the work, under a divider —
+                never a card competing with the positive action above it. */}
+              {loaded ? (
+                <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                  <div className="flex min-w-0 flex-col">
+                    <span className="text-base font-medium">Remove all practice data</span>
+                    <Text className="text-sm">
+                      Deletes every practice record. Your real records are left untouched.
+                    </Text>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    color="error"
+                    loading={clear.isPending}
+                    disabled={busy}
+                    onClick={() => {
+                      void onClear();
+                    }}
+                  >
+                    <Icon glyph={faTrashCan} className="size-4" aria-hidden />
+                    Remove practice data
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="error"
-                  loading={clear.isPending}
-                  disabled={busy}
-                  onClick={() => {
-                    void onClear();
-                  }}
-                >
-                  <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-                  Remove practice data
-                </Button>
-              </div>
-            ) : null}
-          </div>
+              ) : null}
+            </div>
+          </ManagersOnly>
         )}
       </div>
 

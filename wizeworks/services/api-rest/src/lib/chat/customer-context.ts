@@ -63,7 +63,13 @@ export interface CustomerContextDto {
   company: string | null;
   type: string | null;
   orderCount: number;
+  /** Money RECEIVED from them (`customers.total_spent`). */
   lifetimeValue: number;
+  /** What their orders are WORTH, net of refunds (`customers.total_ordered`). Sent
+   *  beside the money received because a customer on account or paying on
+   *  collection showed "$0.00 spent" above thousands of orders (sparx persona
+   *  issue 163). The customer page answers both since persona issue 113. */
+  orderedValue: number;
   lastOrderAt: string | null;
 }
 
@@ -77,6 +83,7 @@ const CUSTOMER_SELECT = {
   type: true,
   orderCount: true,
   totalSpent: true,
+  totalOrdered: true,
   lastOrderAt: true,
 } as const;
 
@@ -90,6 +97,7 @@ interface CustomerRow {
   type: string;
   orderCount: number;
   totalSpent: unknown;
+  totalOrdered: unknown;
   lastOrderAt: Date | null;
 }
 
@@ -101,6 +109,7 @@ const ANONYMOUS = {
   type: null,
   orderCount: 0,
   lifetimeValue: 0,
+  orderedValue: 0,
   lastOrderAt: null,
 } as const;
 
@@ -116,6 +125,7 @@ function toContext(customer: CustomerRow, match: 'record' | 'email'): CustomerCo
     type: customer.type,
     orderCount: customer.orderCount,
     lifetimeValue: Number(customer.totalSpent),
+    orderedValue: Number(customer.totalOrdered),
     lastOrderAt: customer.lastOrderAt?.toISOString() ?? null,
   };
 }

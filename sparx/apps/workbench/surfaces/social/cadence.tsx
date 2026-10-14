@@ -41,10 +41,12 @@ import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
+import { useReaderClock } from '../../lib/business-timezone';
+import { clockName, clockNote } from '../../lib/publish-clock';
+import { importClockNote } from './social-clock';
 import { canApprove, canCompose, socialErrorMessage, useSocialOverview } from './data';
 import {
   formatMinuteOfDay,
-  localTimezone,
   timeInputToMinuteOfDay,
   useDeleteHashtagSet,
   useDeleteSlot,
@@ -85,7 +87,7 @@ function SlotRow({
         </Text>
         <Text className="text-sm">
           {destinationNames.length > 0 ? destinationNames.join(', ') : 'No accounts chosen'} ·{' '}
-          {slot.timezone}
+          {clockName(slot.timezone, new Date())}
         </Text>
       </div>
       {slot.autoFill ? (
@@ -122,17 +124,24 @@ function AddSlot({
   const [time, setTime] = useState('09:00');
   const [autoFill, setAutoFill] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
+  // A posting time is kept on the business's clock: "Tuesdays at 9" means nine where the
+  // business is. It was stamped with this computer's zone, so a time added from a laptop
+  // in California ran at 9 in California (piggles persona issue 990). This computer's
+  // only when the business has none, and the line under the box says so. Held while the
+  // business's zone loads, so nothing is stamped with a guess.
+  const reader = useReaderClock();
+  const zone = reader.zone === undefined ? undefined : (reader.zone ?? reader.device);
 
   const minuteOfDay = timeInputToMinuteOfDay(time);
-  const valid = minuteOfDay !== null && (!autoFill || picked.size > 0);
+  const valid = minuteOfDay !== null && zone !== undefined && (!autoFill || picked.size > 0);
 
   const submit = () => {
-    if (minuteOfDay === null) return;
+    if (minuteOfDay === null || zone === undefined) return;
     save.mutate(
       {
         weekday: Number(weekday),
         minuteOfDay,
-        timezone: localTimezone(),
+        timezone: zone,
         targetIds: [...picked],
         autoFill,
       },
@@ -188,7 +197,9 @@ function AddSlot({
               />
             }
           />
-          <FieldDescription>Your local time ({localTimezone()}).</FieldDescription>
+          {reader.zone === undefined ? null : (
+            <FieldDescription>{clockNote(reader.zone, reader.device, new Date())}</FieldDescription>
+          )}
         </Field>
       </div>
 
@@ -382,6 +393,7 @@ function AddHashtagSet({ onDone }: { onDone: () => void }) {
 
 function ImportPanel({ destinations }: { destinations: { id: string; name: string }[] }) {
   const toast = useToast();
+  const reader = useReaderClock();
   const preview = usePreviewImport();
   const run = useRunImport();
   const [csv, setCsv] = useState('');
@@ -458,6 +470,11 @@ function ImportPanel({ destinations }: { destinations: { id: string; name: strin
           for the date and time and <strong>accounts</strong> for where it goes (separate several
           with a semicolon).
         </FieldDescription>
+        {reader.zone === undefined ? null : (
+          <FieldDescription>
+            {importClockNote(reader.zone, reader.device, new Date())}
+          </FieldDescription>
+        )}
       </Field>
 
       <Field>

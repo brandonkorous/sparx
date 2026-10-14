@@ -54,6 +54,7 @@ import { CalendarX2, Percent, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ItemName, itemNameText } from './item-name';
@@ -111,10 +112,11 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
   const body = () => {
     if (report.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<CalendarX2 className="size-6" aria-hidden />}
           title="Could not check what is expiring"
           description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
+          error={report.error}
         />
       );
     }

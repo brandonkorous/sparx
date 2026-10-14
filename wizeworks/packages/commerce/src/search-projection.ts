@@ -297,8 +297,10 @@ export interface CustomerProjectionResult {
  * Project a single customer into its search document. Returns null when the
  * customer is soft-deleted or gone, in which case the caller should
  * `deleteCustomer(tenantId, customerId)`. The denormalized commerce stats
- * (total_spent, order_count, last_order_at) are stored columns maintained by
- * the order-events consumer, so we read them straight off the row.
+ * (total_spent, total_ordered, order_count, last_order_at) are stored columns
+ * derived in the order's own transaction (crm customer-rollup.ts), so we read
+ * them straight off the row. An order event re-reads this document for that
+ * reason (commerce-indexer handler.ts).
  */
 export async function projectCustomer(
   ctx: ServiceContext,
@@ -348,6 +350,7 @@ export async function projectCustomer(
       b2b_account_id: customer.companyId ?? undefined,
       tags: customer.tags.length > 0 ? customer.tags : undefined,
       total_spent_cents: Math.round(Number(customer.totalSpent) * 100),
+      total_ordered_cents: Math.round(Number(customer.totalOrdered) * 100),
       order_count: customer.orderCount,
       last_order_at: customer.lastOrderAt
         ? Math.floor(customer.lastOrderAt.getTime() / 1000)

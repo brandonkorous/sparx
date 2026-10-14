@@ -25,7 +25,7 @@ export function RevenueNotes({ data, currency }: { data: RevenueSummary; currenc
       {held > 0 ? (
         <Text className="text-sm">
           {formatCents(held, currency)} in core deposits is still waiting on old parts to come back.
-          It is the customers&rsquo; money until then, so it is not counted in the revenue above.
+          It is the customers’ money until then, so it is not counted in the revenue above.
         </Text>
       ) : null}
       {data.refundedCents > 0 ? (

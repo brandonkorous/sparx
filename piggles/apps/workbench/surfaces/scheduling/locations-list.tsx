@@ -1,15 +1,10 @@
 'use client';
 
-// PLACES — the premises a business serves customers from: the shop, the clinic,
-// the studio, the yard. Every person, service and booking is filed against one.
-//
-// A table, like every other list. A place is its name and where it is, plus what
-// is filed there — the count is the useful column, because it is what tells you
-// whether a place is really in use before you switch it off.
-//
-// Most businesses have exactly one, so this list is usually a single row. That is
-// fine: the row is where they name it and set its address and time zone, which
-// until now nothing in the product let them do.
+// PLACES: the premises a business serves customers from (shop, clinic, studio,
+// yard). Every person, service and booking is filed against one.
+
+// A table: name, where, and what is filed there. The count tells you whether a
+// place is really in use before you switch it off. Most businesses have one row.
 
 import { useState } from 'react';
 import { Card, ToggleGroup, ToggleGroupItem } from '@wizeworks/silicaui-react';
@@ -110,11 +105,10 @@ function useOpenPlace(ctx: SurfaceContext) {
 
 export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [activeOnly, setActiveOnly] = useState(false);
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useLocations(activeOnly);
-  // A cached read shared with Business details. `undefined` while it loads is
-  // treated as "not set" for one frame, which shows "Not set" rather than a
-  // wrong city — the safe way round for a value this column exists to be honest
-  // about.
+  const { data, isPending, isFetching, dataUpdatedAt, isError, error, refetch } =
+    useLocations(activeOnly);
+  // A cached read shared with Business details. While it loads it reads as "Not
+  // set" for one frame rather than a wrong city: the safe way round.
   const businessZone = useBusinessZone();
   const { openNew, open } = useOpenPlace(ctx);
 
@@ -141,6 +135,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">
         <LocationsBody
           isError={isError}
+          error={error}
           isPending={isPending}
           rows={rows}
           activeOnly={activeOnly}

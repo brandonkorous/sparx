@@ -29,7 +29,6 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -64,6 +63,8 @@ import {
   type RedirectStatusCode,
 } from './redirects-data';
 import { ActionLabel } from '../../components/action-label';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 
 /** The server's single-request ceiling. A config table well within it. */
 const WINDOW = 250;
@@ -408,8 +409,10 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. What you see below is what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. What you see below is what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -426,21 +429,14 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
 
         {error && !staleAfterFailure ? (
-          <EmptyState
+          <PaneLoadError
             icon={<CornerUpRight className="size-6" aria-hidden />}
             title="Could not load your redirects"
             description="This is a problem reaching the server. None of your redirects have been lost. They are still sending visitors on as before."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

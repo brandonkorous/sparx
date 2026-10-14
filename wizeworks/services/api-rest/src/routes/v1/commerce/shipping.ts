@@ -2,7 +2,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { shippingService, taxService } from '@wizeworks/commerce';
+import { quoteTaxForSale, shippingService, taxService } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
@@ -228,6 +228,15 @@ const shippingRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await taxService.deleteRate(toCommerceContext(request), id);
     reply.code(204);
+  });
+
+  // The sales tax on a sale at the counter, worked out the way checkout works it
+  // out for an order collected at the shop. Take a sale charged none at all
+  // (sparx persona issue 230).
+  app.post('/v1/commerce/tax/sale-quote', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    return ok(await quoteTaxForSale(toCommerceContext(request), request.body));
   });
 
   // The certificates on file for ONE customer or ONE wholesale account (the

@@ -1,84 +1,142 @@
 'use client';
 
-// Every address your email can be sent FROM.
-//
-// A sending address is a domain you own (yourbusiness.com) that you have proven
+// Every address your email can be sent FROM: a domain you own and have proven
 // to the email provider, so mail goes out as hello@yourbusiness.com and reaches
-// inboxes instead of spam folders. A tenant has a handful of these, so this is a
-// short list of one-line things: a card with a row each, NOT a table — a table
-// would invent columns to justify itself. The address IS the content of a row;
-// everything else is a note about it (whether it is verified, whether this site
-// sends from it by default).
+// inboxes instead of spam folders.
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, Heading, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { faEnvelopeCircleCheck, faPaperPlane, faPlus } from '@fortawesome/pro-solid-svg-icons';
+import { Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { faEnvelopeCircleCheck, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { ListEmptyState } from '../../components/list-empty-state';
+import { ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import {
-  sendingDomainState,
-  useEmailSettings,
-  useSendingDomains,
-  type SendingDomain,
-} from './domains-data';
+import { useEmailSettings, useSendingDomains, type SendingDomain } from './domains-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { SendingDomainsBody } from './domains-list-body';
 
-/** Registry module for this surface, so the brand's empty-state artwork is this
- *  app's own picture rather than the generic one. */
-const MODULE = 'email';
+interface OpenEvent {
+  shiftKey: boolean;
+  altKey: boolean;
+}
 
 /** Same modifier contract as every other list in the app. */
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+function targetFor(event: OpenEvent): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
 }
 
-function AddressRow({
-  domain,
-  isDefault,
-  onOpen,
-}: {
-  domain: SendingDomain;
-  isDefault: boolean;
-  onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
-}) {
-  const state = sendingDomainState(domain);
+function AddressCount(props: { needle: string; matched: number; all: number }) {
+  const { needle, matched, all } = props;
   return (
-    <li className="border-base-300 hover:bg-base-200 border-b last:border-b-0">
-      <button
-        type="button"
-        className="flex w-full min-w-0 cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left"
-        onClick={onOpen}
-      >
-        {/* The address is the content of this row — nothing else gets to be its
-            size. */}
-        <span className="min-w-0 font-mono text-base break-all">{domain.domain}</span>
-        {isDefault ? (
-          <Badge color="module" variant="soft" size="sm">
-            Default here
-          </Badge>
-        ) : null}
-        <span className="flex-1" />
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-      </button>
-    </li>
+    <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
+      {needle
+        ? `${String(matched)} of ${String(all)}`
+        : all === 1
+          ? '1 address'
+          : `${String(all)} addresses`}
+    </p>
   );
 }
 
-export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSendingDomains();
+function AddButton({ onAdd }: { onAdd: (event: OpenEvent) => void }) {
+  return (
+    <Button
+      color="module"
+      size="sm"
+      className="ml-auto shrink-0 whitespace-nowrap"
+      title="Add a sending address. Hold Shift to open alongside, Alt for a new window"
+      onClick={onAdd}
+    >
+      <Icon glyph={faPlus} className="size-4" aria-hidden />
+      Add a sending address
+    </Button>
+  );
+}
+
+function SendingDomainsToolbar(props: {
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
+  count: { needle: string; matched: number; all: number };
+  locked: boolean;
+  onAdd: (event: OpenEvent) => void;
+  query: ReturnType<typeof useSendingDomains>;
+}) {
+  const { search, setSearch, query } = props;
+  return (
+    <PaneToolbar
+      label="Sending addresses controls"
+      search={
+        // The width sits on a WRAPPER: SearchInput forwards className to its
+        // inner <input>, which is not the element that lays out.
+        <div className="max-w-xs min-w-0 flex-1">
+          <SearchInput
+            size="sm"
+            aria-label="Search sending addresses"
+            placeholder="Search addresses…"
+            value={search}
+            onValueChange={setSearch}
+          />
+        </div>
+      }
+      status={<AddressCount {...props.count} />}
+      statusReady={!query.isPending}
+      statusFailed={query.isError}
+      primary={props.locked ? undefined : <AddButton onAdd={props.onAdd} />}
+      views={{
+        target: '/email/domains',
+        params: { q: search.trim() },
+        onApply: (next) => {
+          setSearch(next.q ?? '');
+        },
+      }}
+      refresh={<ToolbarRefresh query={query} />}
+    />
+  );
+}
+
+/** ALWAYS the last child of a list toolbar; see RefreshButton. */
+function ToolbarRefresh({ query }: { query: ReturnType<typeof useSendingDomains> }) {
+  return (
+    <RefreshButton
+      isFetching={query.isFetching}
+      updatedAt={query.data ? query.dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void query.refetch();
+      }}
+    />
+  );
+}
+
+function SendingDomainsLoadFailed({ query }: { query: ReturnType<typeof useSendingDomains> }) {
+  return (
+    <Card className="min-h-0 flex-1 items-center justify-center">
+      <PaneLoadError
+        icon={<Icon glyph={faEnvelopeCircleCheck} className="size-6" aria-hidden />}
+        title="Could not load your sending addresses"
+        description="This is a problem reaching the server. Your addresses are unaffected. Nothing has been lost."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    </Card>
+  );
+}
+
+/** The addresses, the ones the search matches, and this site's default. */
+function useSendingDomainsPane() {
+  const query = useSendingDomains();
   const { data: settings } = useEmailSettings();
   const [search, setSearch] = useState('');
+  const rights = useManageRights();
+  const locked = rights.known && !rights.canManage;
 
-  const all = useMemo(() => data ?? [], [data]);
+  const all = useMemo(() => query.data ?? [], [query.data]);
   const defaultId = settings?.defaultSendingDomainId ?? null;
 
   const needle = search.trim().toLowerCase();
@@ -86,149 +144,47 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
     () => (needle ? all.filter((domain) => domain.domain.toLowerCase().includes(needle)) : all),
     [all, needle]
   );
+  return { query, search, setSearch, locked, all, defaultId, needle, matches };
+}
 
-  const open = (domain: SendingDomain, event: { shiftKey: boolean; altKey: boolean }) => {
+export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const { query, search, setSearch, locked, all, defaultId, needle, matches } =
+    useSendingDomainsPane();
+
+  const open = (domain: SendingDomain, event: OpenEvent) => {
     ctx.open('email.domains.detail', { id: domain.id }, { target: targetFor(event) });
   };
+  const onAdd = (event: OpenEvent) => {
+    ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
+  };
 
-  if (isError) {
-    return (
-      <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneLoadError
-          icon={<Icon glyph={faEnvelopeCircleCheck} className="size-6" aria-hidden />}
-          title="Could not load your sending addresses"
-          description="This is a problem reaching the server. Your addresses are unaffected. Nothing has been lost."
-          onRetry={() => {
-            void refetch();
-          }}
-        />
-      </Card>
-    );
-  }
+  if (query.isError) return <SendingDomainsLoadFailed query={query} />;
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Sending addresses controls"
-        search={
-          /* The width sits on a WRAPPER: SearchInput forwards className to its
-            inner <input>, so a class aimed at the control never reaches the
-            element that lays out. */
-          <div className="max-w-xs min-w-0 flex-1">
-            <SearchInput
-              size="sm"
-              aria-label="Search sending addresses"
-              placeholder="Search addresses…"
-              value={search}
-              onValueChange={setSearch}
-            />
-          </div>
-        }
-        status={
-          <p className="hidden shrink-0 text-sm whitespace-nowrap @xl:block">
-            {needle
-              ? `${String(matches.length)} of ${String(all.length)}`
-              : all.length === 1
-                ? '1 address'
-                : `${String(all.length)} addresses`}
-          </p>
-        }
-        statusReady={!isPending}
-        statusFailed={isError}
-        primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add a sending address. Hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Add a sending address
-          </Button>
-        }
-        views={{
-          target: '/email/domains',
-          params: { q: search.trim() },
-          onApply: (next) => {
-            setSearch(next.q ?? '');
-          },
-        }}
-        refresh={
-          /* ALWAYS the last child of a list toolbar — see RefreshButton. */
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+      <SendingDomainsToolbar
+        search={search}
+        setSearch={setSearch}
+        count={{ needle, matched: matches.length, all: all.length }}
+        locked={locked}
+        onAdd={onAdd}
+        query={query}
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {isPending ? (
-          <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneWaiting />
-          </Card>
-        ) : matches.length === 0 ? (
-          <ListEmptyState
-            module={MODULE}
-            filtered={needle !== ''}
-            noResults={{
-              icon: <Icon glyph={faPaperPlane} className="size-6" aria-hidden />,
-              title: 'No addresses match that',
-              description: 'Try part of the address, or clear the search to see them all.',
-            }}
-            firstRun={{
-              title: 'No sending addresses yet',
-              description:
-                'A sending address is a domain you own that your email goes out from, so customers see mail from your own address, like hello@yourbusiness.com, and it lands in inboxes instead of spam. Add one and add a few records at your domain provider to prove it is yours.',
-              actions: (
-                <Button
-                  color="module"
-                  size="sm"
-                  onClick={(event) => {
-                    ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
-                  }}
-                >
-                  <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  Add a sending address
-                </Button>
-              ),
-            }}
-          />
-        ) : (
-          // Capped and centred: a pane torn onto a second monitor is otherwise
-          // 2000px wide with the status badges a foot from their addresses.
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-            <section className="card bg-base-100 overflow-hidden">
-              <header className="border-base-300 flex flex-wrap items-center gap-2 border-b px-4 py-3">
-                <Heading level={2} className="text-base font-semibold">
-                  Your sending addresses
-                </Heading>
-                <div className="flex-1" />
-                <Text className="text-sm">
-                  {all.length === 1 ? '1 address' : `${String(all.length)} addresses`}
-                </Text>
-              </header>
-              <ul>
-                {matches.map((domain) => (
-                  <AddressRow
-                    key={domain.id}
-                    domain={domain}
-                    isDefault={domain.id === defaultId}
-                    onOpen={(event) => {
-                      open(domain, event);
-                    }}
-                  />
-                ))}
-              </ul>
-            </section>
-          </div>
-        )}
+        {/* Only an owner or an admin adds or changes these (sparx persona
+            issue 168); each address still opens for anybody to read. */}
+        <ManagersOnlyNotice change="add, check or remove sending addresses" className="px-4 pt-4" />
+        <SendingDomainsBody
+          pending={query.isPending}
+          needle={needle}
+          locked={locked}
+          all={all}
+          matches={matches}
+          defaultId={defaultId}
+          onOpen={open}
+          onAdd={onAdd}
+        />
       </div>
 
       {matches.length > 0 ? <RowOpenHint what="an address to set it up" /> : null}

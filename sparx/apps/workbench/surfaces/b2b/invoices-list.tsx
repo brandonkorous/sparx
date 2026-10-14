@@ -13,7 +13,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   SearchInput,
@@ -24,6 +23,7 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatCents,
@@ -65,7 +65,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const skip = (page - 1) * pageSize;
   const narrowed = filter !== 'all' || search.trim() !== '';
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useInvoices({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useInvoices({
     accountId,
     status: active.status,
     take,
@@ -179,10 +179,11 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Receipt className="size-6" aria-hidden />}
             title="Could not load your invoices"
             description="This is a problem reaching the server. Your invoices are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -232,7 +233,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(invoice, event);
                     }}
                   >
-                    <td className="font-mono text-sm">{invoice.invoiceNumber}</td>
+                    <td className="font-mono text-sm whitespace-nowrap">{invoice.invoiceNumber}</td>
                     <td className="hidden max-w-48 truncate @lg:table-cell">
                       {invoice.account?.companyName ?? '—'}
                     </td>

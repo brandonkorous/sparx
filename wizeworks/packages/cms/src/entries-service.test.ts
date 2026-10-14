@@ -8,8 +8,9 @@
 // wears a blank date line, while the console shows the same green Published badge
 // as a healthy row. These tests pin the rule so the next write path inherits it.
 
+import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
-import { publishTimestamp } from './entries-service.js';
+import { publishTimestamp, restoredEvents, restoreNote } from './entries-service.js';
 
 const NOW = new Date('2026-09-01T10:00:00.000Z');
 const EARLIER = new Date('2026-03-14T08:30:00.000Z');
@@ -101,5 +102,39 @@ describe('publishTimestamp', () => {
     const a = publishTimestamp('published', undefined, NOW);
     const b = publishTimestamp('published', undefined, NOW);
     expect(a).toEqual(b);
+  });
+});
+
+// P09: bringing back an older version of a published piece changed what the database
+// serves and refreshed nothing, so her live page kept the newer text.
+describe('a restore', () => {
+  it('tells the platform the entry changed, the way a save does', () => {
+    expect(restoredEvents({ id: 'e1', typeKey: 'article' })).toEqual([
+      { type: 'content.entry.updated', data: { entryId: 'e1', typeKey: 'article' } },
+    ]);
+  });
+
+  it('is what restoreRevisionTx returns and writes', () => {
+    const source = readFileSync(new URL('./entries-service.ts', import.meta.url), 'utf8');
+    const body = source.slice(source.indexOf('export async function restoreRevisionTx('));
+    const fn = body.slice(0, body.indexOf('\n}\n'));
+    expect(fn).toContain('events: restoredEvents(after)');
+    expect(fn).toContain('summary: restoreNote(revisionNumber)');
+  });
+
+  it('names the version the way the history list does', () => {
+    expect(restoreNote(3)).toBe('Brought back from version 3');
+  });
+});
+
+// P09: she took a week-old piece down and put it back; Publish stamped it with the
+// moment of the click, and it led her home page as that day's news.
+describe('publishing a piece again', () => {
+  it('keeps the date it first went live', () => {
+    const source = readFileSync(new URL('./entries-service.ts', import.meta.url), 'utf8');
+    const body = source.slice(source.indexOf('export async function publishEntryTx('));
+    const fn = body.slice(0, body.indexOf('\n}\n'));
+    expect(fn).toContain("publishTimestamp('published', existing.publishedAt, now)");
+    expect(publishTimestamp('published', EARLIER, NOW)).toEqual(EARLIER);
   });
 });

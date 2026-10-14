@@ -1,6 +1,7 @@
 // The automations builder vocabulary (triggers, condition operators, actions) in owner words.
-// Event types and condition fields are free-text SUGGESTIONS, never an enum; only actions with
-// a registered executor (`available: true`) are offered for a new step. Pure and client-safe.
+// Event types are free-text SUGGESTIONS, never an enum. Condition fields are worded in
+// `../condition-fields.ts`. Only actions with a registered executor (`available: true`) are
+// offered for a new step. Pure and client-safe.
 
 /** What this console calls a part of the platform: ONE table, in `lib/surfaces/nav.ts`. A copy
  *  here drifted (`commerce` had six names across two consoles): one order reading four ways on
@@ -26,7 +27,7 @@ export {
   moduleForScanEntity,
   scanEntityLabel,
 } from './schedule';
-export { COMMON_CONDITION_FIELDS, CONDITION_OPERATORS, operatorDef } from './conditions';
+export { CONDITION_OPERATORS, operatorDef } from './conditions';
 export {
   ACTION_DEFS,
   actionDef,

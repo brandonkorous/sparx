@@ -20,7 +20,7 @@
 //   the screen tells you when you are finished instead of making you press a button
 //   to find out.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -29,6 +29,7 @@ import {
   Badge,
   Heading,
   Select,
+  SelectItem,
   Text,
 } from '@wizeworks/silicaui-react';
 import {
@@ -69,6 +70,18 @@ const ALIASES: Record<string, string[]> = {
   phone: ['telephone', 'mobile', 'cell', 'contact number', 'phone number'],
   first_name: ['firstname', 'given name', 'forename'],
   last_name: ['lastname', 'surname', 'family name'],
+  // A subscriber list's yes/no column (Piggles persona P09). Left unmatched, a reader
+  // who had unsubscribed was one click from coming back onto the list.
+  accepts_marketing: [
+    'subscribed',
+    'subscriber',
+    'email subscriber',
+    'accepts marketing',
+    'opted in',
+    'opt in',
+    'newsletter',
+    'mailing list',
+  ],
   company: ['company name', 'business', 'organisation', 'organization', 'account'],
   name: ['full name', 'company name', 'contact name'],
   location: ['warehouse', 'store', 'shop', 'site', 'branch', 'depot'],
@@ -198,15 +211,15 @@ export function ColumnMapper({ headers, raw, onChange }: ColumnMapperProps) {
 
   const mapped = useMemo(() => mapManually(entity, raw, mapping), [entity, raw, mapping]);
 
-  // Report upward on every change. `useMemo` above makes this cheap enough to do in
-  // render for a file of a few thousand rows; anything larger is chunked by the API
-  // anyway and the validator is linear.
-  const signature = `${entity}:${mapped.report.okCount}:${mapped.report.errorCount}:${mapped.report.blocked}`;
-  const [lastSignature, setLastSignature] = useState<string | null>(null);
-  if (signature !== lastSignature) {
-    setLastSignature(signature);
-    onChange(mapped.report.blocked ? null : mapped);
-  }
+  // Report upward on every change of the mapping itself, not of its counts: matching
+  // "Subscribed" to Email opt-in leaves 40 rows ready either way, and a count-keyed
+  // report kept the import on the old mapping (persona P09). After render, because
+  // the surface's state is not this component's to set while it draws.
+  const report = useRef(onChange);
+  report.current = onChange;
+  useEffect(() => {
+    report.current(mapped.report.blocked ? null : mapped);
+  }, [mapped]);
 
   const fields = ENTITY_FIELDS[entity];
   const guessedCount = Object.keys(mapping).length;
@@ -237,9 +250,9 @@ export function ColumnMapper({ headers, raw, onChange }: ColumnMapperProps) {
             }}
           >
             {CANONICAL_ENTITIES.map((option) => (
-              <option key={option} value={option}>
+              <SelectItem key={option} value={option}>
                 {ENTITY_LABEL[option].many}
-              </option>
+              </SelectItem>
             ))}
           </Select>
         </label>
@@ -296,12 +309,15 @@ export function ColumnMapper({ headers, raw, onChange }: ColumnMapperProps) {
                       })
                     }
                   >
-                    <option value="">Leave this column out</option>
+                    {/* SelectItem, not <option>: inside silica's Select a bare option
+                        draws in the list and ignores the click, so no column could be
+                        matched by hand (persona P09). */}
+                    <SelectItem value="">Leave this column out</SelectItem>
                     {fields.map((field) => (
-                      <option key={field.key} value={field.key}>
+                      <SelectItem key={field.key} value={field.key}>
                         {field.label}
                         {field.required === true ? ' (needed)' : ''}
-                      </option>
+                      </SelectItem>
                     ))}
                   </Select>
                   {spec?.help !== undefined ? <Text className="text-sm">{spec.help}</Text> : null}

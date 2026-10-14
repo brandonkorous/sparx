@@ -35,6 +35,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { CalendarClock, Plus, Send } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -126,10 +127,11 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (schedules.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<CalendarClock className="size-6" aria-hidden />}
           title="Could not load your scheduled reports"
           description="This is a problem reaching the server. Nothing has stopped sending: the list just could not be loaded."
+          error={schedules.error}
         />
       );
     }

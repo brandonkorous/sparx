@@ -91,6 +91,7 @@ import {
 } from './companies-data';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { WholesaleGroupField } from './wholesale-group-field';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -314,7 +315,7 @@ function CompanyEditor({
 
   const { members } = useTeamRoster();
   const { data: viewer } = useViewer();
-  const canDelete = viewer?.role === 'admin' || viewer?.role === 'owner';
+  const canDelete = canManageBusiness(viewer?.role);
 
   const saved = useMemo(() => (account ? toDraft(account) : emptyDraft()), [account]);
   const [draft, setDraft] = useState<Draft>(saved);

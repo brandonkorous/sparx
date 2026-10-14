@@ -23,6 +23,7 @@ import {
 } from '@/lib/surfaces/registry';
 import { surfaceWaiting, WaitingBadge } from '@/components/rail/waiting';
 import type { useAttention } from '@/lib/console/home-data';
+import { useManageRights } from '@/lib/manage-rights';
 
 type Attention = ReturnType<typeof useAttention>;
 
@@ -81,6 +82,10 @@ export function NavRow({
   const label = resolveTitle(surface, {});
   // Through the brand, like the name above it. Both are copy somebody reads.
   const createLabel = resolveCreateLabel(surface);
+  // No `+` the server would refuse this person (sparx persona issue 168).
+  const rights = useManageRights();
+  const canCreate =
+    Boolean(surface.createSurface) && !(surface.createManagersOnly && !rights.canManage);
   const hint = focused
     ? `${label}: you are looking at this`
     : open
@@ -120,7 +125,7 @@ export function NavRow({
         </SidebarItem>
       </Tooltip>
 
-      {surface.createSurface ? (
+      {canCreate ? (
         <Tooltip content={createLabel ?? 'New'}>
           <Button
             size="xs"

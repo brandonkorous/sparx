@@ -93,14 +93,8 @@ import {
   type ReleaseDto,
   type RestoreReleaseResult,
 } from './data';
-
-/** Locale-aware, built once — `Intl` objects are expensive to construct per render. */
-const CLOCK = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
-const DAY = new Intl.DateTimeFormat(undefined, {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-});
+import { versionClock, versionClockNote, versionDayLabel } from './version-clock';
+import { useReaderClock } from '../../../lib/business-timezone';
 
 /** A short "2 minutes ago" — used in the CONFIRM, where it reads as a sentence
  *  ("Restore the version from 3 hours ago?"). The list uses clock times instead,
@@ -117,22 +111,14 @@ function timeAgo(iso: string): string {
   return `${days} day${days === 1 ? '' : 's'} ago`;
 }
 
-/** "Today" / "Yesterday" / "Mon 28 Jul" — compared by calendar day, not by elapsed
- *  hours, so a save at 11pm and one at 1am are correctly two different days. */
-function dayLabel(date: Date): string {
-  const midnight = (d: Date): number =>
-    new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-  const days = Math.round((midnight(new Date()) - midnight(date)) / 86_400_000);
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  return DAY.format(date);
-}
-
 /** Group a newest-first ladder into consecutive day runs, preserving order. */
-function byDay<T extends { createdAt: string }>(rows: T[]): { day: string; rows: T[] }[] {
+function byDay<T extends { createdAt: string }>(
+  rows: T[],
+  zone: string
+): { day: string; rows: T[] }[] {
   const out: { day: string; rows: T[] }[] = [];
   for (const row of rows) {
-    const day = dayLabel(new Date(row.createdAt));
+    const day = versionDayLabel(row.createdAt, zone);
     const last = out[out.length - 1];
     if (last?.day === day) last.rows.push(row);
     else out.push({ day, rows: [row] });
@@ -210,17 +196,28 @@ interface RowProps {
   action?: { label: string; color: 'primary' | 'danger' };
   pending: boolean;
   onAct: () => void;
+  /** The business's zone, or this computer's until one is set (issue 987). */
+  clock: string;
 }
 
 /** One entry in either ladder: when + how big on the first line, who on the second,
  *  and either the state it is in or the one thing you can do to it, trailing. */
-function HistoryRow({ createdAt, pageCount, actor, state, action, pending, onAct }: RowProps) {
+function HistoryRow({
+  createdAt,
+  pageCount,
+  actor,
+  state,
+  action,
+  pending,
+  onAct,
+  clock,
+}: RowProps) {
   const ActorIcon = actor.icon;
   return (
     <ListRow>
       <ListColGrow>
         <div className="text-base">
-          {CLOCK.format(new Date(createdAt))} · {pageCount} page{pageCount === 1 ? '' : 's'}
+          {versionClock(createdAt, clock)} · {pageCount} page{pageCount === 1 ? '' : 's'}
         </div>
         <Badge color={actor.color} variant="soft" size="sm">
           <ActorIcon className="size-3.5 shrink-0" aria-hidden />
@@ -260,6 +257,9 @@ export function VersionHistoryPanel({ onReload }: Props) {
   const rollback = useRestoreRelease();
   const confirm = useConfirm();
   const toast = useToast();
+  // Her business's clock, or this computer's until she sets one (issue 987).
+  const { zone, device } = useReaderClock();
+  const clock = zone ?? device;
 
   const onRestore = async (v: DraftVersionDto): Promise<void> => {
     const ok = await confirm({
@@ -363,6 +363,9 @@ export function VersionHistoryPanel({ onReload }: Props) {
           Published
         </TabsTab>
       </TabsList>
+      {zone !== undefined ? (
+        <p className="text-base">{versionClockNote(zone, device, new Date())}</p>
+      ) : null}
 
       <TabsPanel value="drafts" className="flex flex-col gap-3">
         <p className="text-base">
@@ -381,7 +384,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
           />
         ) : (
           <List>
-            {byDay(versions.data).map((group) => (
+            {byDay(versions.data, clock).map((group) => (
               <Fragment key={group.day}>
                 <DayHeading>{group.day}</DayHeading>
                 {group.rows.map((v) => (
@@ -390,6 +393,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
                     createdAt={v.createdAt}
                     pageCount={v.pageCount}
                     actor={draftActor(v.source)}
+                    clock={clock}
                     {...(v.current
                       ? { state: { label: 'Current', solid: false } }
                       : { action: { label: 'Restore', color: 'primary' as const } })}
@@ -438,7 +442,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
           />
         ) : (
           <List>
-            {byDay(releases.data).map((group) => (
+            {byDay(releases.data, clock).map((group) => (
               <Fragment key={group.day}>
                 <DayHeading>{group.day}</DayHeading>
                 {group.rows.map((r) => (
@@ -447,6 +451,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
                     createdAt={r.createdAt}
                     pageCount={r.pageCount}
                     actor={releaseActor(r.source)}
+                    clock={clock}
                     {...(r.current
                       ? { state: { label: 'Live now', solid: true } }
                       : { action: { label: 'Put back', color: 'danger' as const } })}

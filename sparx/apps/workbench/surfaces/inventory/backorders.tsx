@@ -39,6 +39,7 @@ import { CalendarSync, Inbox, PackageSearch } from 'lucide-react';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { ItemName } from './item-name';
@@ -88,10 +89,11 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (list.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageSearch className="size-6" aria-hidden />}
           title="Could not load the queue"
           description="This is a problem reaching the server, not a finding about your commitments. Try again in a moment."
+          error={list.error}
         />
       );
     }

@@ -233,7 +233,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(row.id, event);
                     }}
                   >
-                    <td className="font-mono font-semibold">{row.code}</td>
+                    <td className="font-mono font-semibold whitespace-nowrap">{row.code}</td>
                     <td className="hidden max-w-48 truncate text-sm @lg:table-cell">
                       {who ?? '—'}
                     </td>

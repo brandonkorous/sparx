@@ -35,6 +35,7 @@ import {
 import { Handshake, PackageSearch } from 'lucide-react';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { ItemName } from './item-name';
@@ -62,10 +63,11 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (list.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageSearch className="size-6" aria-hidden />}
           title="Could not load ownership"
           description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
+          error={list.error}
         />
       );
     }

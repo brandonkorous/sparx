@@ -50,6 +50,10 @@ export interface LegalChecklistItem {
     acknowledged: boolean;
     /** Wired into the footer via a placement — the reason a footer legal link resolves. */
     placed: boolean;
+    /** Does the page tell visitors they can make cookie choices (a banner, a cookie
+     *  button)? The starter Cookie Policy does; one rewritten for a site with only the
+     *  cookies it needs does not, and must not be told it promises a banner. */
+    promisesCookieChoices: boolean;
   } | null;
   /**
    * Sentences on this page that are still the starter's guess about how this
@@ -207,6 +211,7 @@ export async function getLegalChecklistTx(
             currentVersion: t.templateVersion,
             acknowledged: entry.legalDisclaimerAckAt !== null,
             placed,
+            promisesCookieChoices: promisesCookieChoices(entry.body),
           }
         : null,
     };
@@ -393,6 +398,13 @@ function bodyIsStillTheStarter(body: unknown, template: LegalTemplate): boolean 
   // window has.
   const stored = (body as { body?: unknown } | null)?.body;
   return docText(stored).join('\n') === docText(template.doc).join('\n');
+}
+
+/** Does a page tell visitors where to make their cookie choices? The starter Cookie
+ *  Policy sends them to "the cookie banner or … the cookie button". */
+export function promisesCookieChoices(body: unknown): boolean {
+  const text = docText((body as { body?: unknown } | null)?.body).join(' ');
+  return /\bbanner\b|cookie button|manage cookies/i.test(text);
 }
 
 /** Every string a document would put on the page, in order. */

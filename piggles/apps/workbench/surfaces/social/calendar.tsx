@@ -47,7 +47,24 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import type { MediaAsset } from '../cms/media';
-import { PostThumb, excerpt, formatTime, postDate } from './post-visuals';
+import { PostThumb, excerpt, postInstant } from './post-visuals';
+import {
+  byDayOn,
+  dateNumber,
+  dayLabel as nameDay,
+  dayOn,
+  dayStartOn,
+  monthGrid,
+  monthOf,
+  rangeLabel as nameRange,
+  startOfMonth,
+  startOfWeek,
+  stepCursor,
+  timeOn,
+  timesNote,
+  todayOn,
+  weekDays,
+} from './social-clock';
 import { useSocialBoard } from './board';
 import { isEditablePost, postStatusMeta, socialErrorMessage, type Post } from './data';
 import { usePostingSlots, type PostingSlot } from './planning-data';
@@ -66,12 +83,16 @@ interface CalendarProps {
   /** Nothing is connected yet, so the first thing to do is not writing a post. */
   nothingConnected: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
-  onNewOnDay: (day: Date) => void;
+  /** A calendar day ("2026-10-11"), on the business's clock. */
+  onNewOnDay: (day: string) => void;
   /** Start a post at an exact moment — clicking an empty posting time. */
   onNewAt: (at: Date) => void;
   /** Drop a post onto a day → (re)schedule it there. Only fired for editable posts
    *  (a published one is pinned to when it went out). */
-  onReschedule: (post: Post, day: Date) => void;
+  onReschedule: (post: Post, day: string) => void;
+  /** The business's zone (undefined while it loads, null when it has none) and this
+   *  computer's. Every day and time on the grid is on `zone ?? device`. */
+  reader: { zone: string | null | undefined; device: string };
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -85,56 +106,15 @@ const TONE_DOT: Record<string, string> = {
   neutral: 'bg-base-content/40',
 };
 
-function dayKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-    date.getDate()
-  ).padStart(2, '0')}`;
-}
-
-/** `2026-07-24` → a local Date at midnight — the inverse of dayKey, for turning a
- *  drop target's id back into the day the post was dropped on. */
-function parseDayKey(key: string): Date {
-  const [y, m, d] = key.split('-').map(Number);
-  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
-}
-
-function startOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-/** The Sunday on or before `date` — the week a day belongs to. */
-function startOfWeek(date: Date): Date {
-  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  start.setDate(start.getDate() - start.getDay());
-  return start;
-}
-
-/** The seven days of the week `cursor` starts. */
-function buildWeek(cursor: Date): Date[] {
-  const start = startOfWeek(cursor);
-  return Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(start);
-    day.setDate(start.getDate() + i);
-    return day;
-  });
-}
+// The grid is built from calendar DAYS ("2026-10-11"), not this computer's midnights,
+// and a post sits under the day its time falls on, on the business's clock: a post at
+// half past midnight in London is on her Sunday, whatever a laptop in California says
+// (piggles persona issue 990). The day arithmetic lives in social-clock.ts.
 
 /** How close a post has to be to a posting time to count as filling it. Matches the
  *  server-side filler exactly, so a slot the calendar draws as free is precisely one the
  *  evergreen filler would claim. */
 const OCCUPIED_WINDOW_MS = 90 * 60_000;
-
-/** The 42 cells (6 stable weeks) of the month around `cursor`, Sunday-first. */
-function buildGrid(cursor: Date): Date[] {
-  const first = startOfMonth(cursor);
-  const start = new Date(first);
-  start.setDate(1 - first.getDay());
-  return Array.from({ length: 42 }, (_, i) => {
-    const day = new Date(start);
-    day.setDate(start.getDate() + i);
-    return day;
-  });
-}
 
 /* ── One post, as a calendar chip ─────────────────────────────────────────── */
 
@@ -142,11 +122,13 @@ function DayChip({
   post,
   assetsById,
   canWrite,
+  clock,
   onOpen,
 }: {
   post: Post;
   assetsById: Map<string, MediaAsset>;
   canWrite: boolean;
+  clock: string;
   onOpen: (event: OpenEvent) => void;
 }) {
   const meta = postStatusMeta(post.status);
@@ -174,7 +156,7 @@ function DayChip({
       <span className={`size-1.5 shrink-0 rounded-full ${TONE_DOT[meta.tone]}`} aria-hidden />
       <PostThumb post={post} assetsById={assetsById} size="xs" />
       <span className="min-w-0 flex-1 truncate text-xs">
-        {iso ? <span className="font-semibold">{formatTime(iso)} </span> : null}
+        {iso ? <span className="font-semibold">{timeOn(iso, clock)} </span> : null}
         {excerpt(post.body, 32)}
       </span>
     </button>
@@ -194,18 +176,21 @@ function DayChip({
 function EmptySlotChip({
   at,
   canWrite,
+  clock,
   onFill,
 }: {
   at: Date;
   canWrite: boolean;
+  clock: string;
   onFill: () => void;
 }) {
-  const label = `${formatTime(at.toISOString())}: nothing planned`;
+  const time = timeOn(at.toISOString(), clock);
+  const label = `${time}: nothing planned`;
   return (
     <button
       type="button"
       disabled={!canWrite}
-      title={canWrite ? `Write a post for ${formatTime(at.toISOString())}` : label}
+      title={canWrite ? `Write a post for ${time}` : label}
       aria-label={label}
       onClick={onFill}
       className={`border-module/50 text-module flex w-full min-w-0 items-center gap-1.5 rounded-md border border-dashed px-1 py-1 text-left ${
@@ -214,7 +199,7 @@ function EmptySlotChip({
     >
       <Icon glyph={faCalendarPlus} className="size-3 shrink-0" aria-hidden />
       <span className="min-w-0 flex-1 truncate text-xs">
-        <span className="font-semibold">{formatTime(at.toISOString())}</span> free
+        <span className="font-semibold">{time}</span> free
       </span>
     </button>
   );
@@ -228,11 +213,13 @@ function DayCell({
   openSlots,
   assetsById,
   canWrite,
+  clock,
   onOpenPost,
   onNewOnDay,
   onNewAt,
 }: {
-  day: Date;
+  /** A calendar day, "2026-10-11". */
+  day: string;
   inMonth: boolean;
   isToday: boolean;
   dayPosts: Post[];
@@ -240,18 +227,15 @@ function DayCell({
   openSlots: Date[];
   assetsById: Map<string, MediaAsset>;
   canWrite: boolean;
+  clock: string;
   onOpenPost: (post: Post, event: OpenEvent) => void;
-  onNewOnDay: (day: Date) => void;
+  onNewOnDay: (day: string) => void;
   onNewAt: (at: Date) => void;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: dayKey(day) });
+  const { setNodeRef, isOver } = useDroppable({ id: day });
   const shown = dayPosts.slice(0, 3);
   const overflow = dayPosts.length - shown.length;
-  const dayLabel = day.toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  });
+  const dayLabel = nameDay(day);
 
   return (
     <div
@@ -287,7 +271,7 @@ function DayCell({
                 : 'grid size-6 place-items-center text-sm font-medium'
             }
           >
-            {day.getDate()}
+            {dateNumber(day)}
           </span>
           {canWrite ? (
             <span
@@ -304,6 +288,7 @@ function DayCell({
               post={post}
               assetsById={assetsById}
               canWrite={canWrite}
+              clock={clock}
               onOpen={(event) => {
                 onOpenPost(post, event);
               }}
@@ -318,6 +303,7 @@ function DayCell({
                 <EmptySlotChip
                   at={at}
                   canWrite={canWrite}
+                  clock={clock}
                   onFill={() => {
                     onNewAt(at);
                   }}
@@ -346,26 +332,29 @@ function CalendarGrid({
   openSlotsByDay,
   assetsById,
   canWrite,
+  clock,
+  todayKey,
   tall,
   onOpenPost,
   onNewOnDay,
   onNewAt,
 }: {
-  days: Date[];
-  /** Which month counts as "this one", for dimming the spill-over days. */
-  month: number | null;
+  days: string[];
+  /** Which month counts as "this one" ("2026-10"), for dimming the spill-over days. */
+  month: string | null;
   postsByDay: Map<string, Post[]>;
   openSlotsByDay: Map<string, Date[]>;
   assetsById: Map<string, MediaAsset>;
   canWrite: boolean;
+  clock: string;
+  /** Today on the business's clock, not this computer's. */
+  todayKey: string;
   /** A week has one row, so its cells can afford real height. */
   tall?: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
-  onNewOnDay: (day: Date) => void;
+  onNewOnDay: (day: string) => void;
   onNewAt: (at: Date) => void;
 }) {
-  const todayKey = dayKey(new Date());
-
   return (
     // `flex-1`, NOT `h-full`. This card is a flex ITEM of a column flex parent, and
     // `height: 100%` there resolves against a containing block that flex sizing does
@@ -399,17 +388,17 @@ function CalendarGrid({
         }`}
       >
         {days.map((day) => {
-          const key = dayKey(day);
           return (
             <DayCell
-              key={key}
+              key={day}
               day={day}
-              inMonth={month === null || day.getMonth() === month}
-              isToday={key === todayKey}
-              dayPosts={postsByDay.get(key) ?? []}
-              openSlots={openSlotsByDay.get(key) ?? []}
+              inMonth={month === null || monthOf(day) === month}
+              isToday={day === todayKey}
+              dayPosts={postsByDay.get(day) ?? []}
+              openSlots={openSlotsByDay.get(day) ?? []}
               assetsById={assetsById}
               canWrite={canWrite}
+              clock={clock}
               onOpenPost={onOpenPost}
               onNewOnDay={onNewOnDay}
               onNewAt={onNewAt}
@@ -510,23 +499,26 @@ export function PostsCalendar({
   onNewOnDay,
   onNewAt,
   onReschedule,
+  reader,
 }: CalendarProps) {
   const [view, setView] = useState<'month' | 'week'>('month');
-  const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
+  const clock = reader.zone ?? reader.device;
+  const todayKey = todayOn(clock);
+  // Null follows today on the business's clock, so the opening month is HER month even
+  // when her zone arrives a moment after the first paint. A day once someone steps.
+  const [picked, setPicked] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // The cursor means "the month" or "the start of the week" depending on the view, so
   // switching views has to re-anchor it — otherwise Week opens on the 1st of a month
   // that may be four weeks from where the person was looking.
+  const anchor = (day: string, on: 'month' | 'week') =>
+    on === 'week' ? startOfWeek(day) : startOfMonth(day);
+  const cursor = anchor(picked ?? todayKey, view);
   const changeView = (next: 'month' | 'week') => {
-    setCursor((c) => (next === 'week' ? startOfWeek(c) : startOfMonth(c)));
+    if (picked !== null) setPicked(anchor(picked, next));
     setView(next);
   };
-
-  const step = (from: Date, direction: number): Date =>
-    view === 'month'
-      ? new Date(from.getFullYear(), from.getMonth() + direction, 1)
-      : new Date(from.getFullYear(), from.getMonth(), from.getDate() + direction * 7);
 
   // 6px before a drag begins, so a tap still opens the post (matches the workbench's
   // other drag surfaces). Pointer-only: the equivalent keyboard path is opening the
@@ -541,20 +533,11 @@ export function PostsCalendar({
     if (!over) return;
     const post = posts.find((p) => p.id === String(active.id));
     if (!post) return;
-    const day = parseDayKey(String(over.id));
-    onReschedule(post, day);
+    onReschedule(post, String(over.id));
   };
 
   const postsByDay = useMemo(() => {
-    const byDay = new Map<string, Post[]>();
-    for (const post of posts) {
-      const date = postDate(post);
-      if (!date) continue;
-      const key = dayKey(date);
-      const list = byDay.get(key);
-      if (list) list.push(post);
-      else byDay.set(key, [post]);
-    }
+    const byDay = byDayOn(posts, postInstant, clock);
     // Within a day, order by the moment it goes out / went out.
     for (const list of byDay.values()) {
       list.sort((a, b) => {
@@ -564,7 +547,7 @@ export function PostsCalendar({
       });
     }
     return byDay;
-  }, [posts]);
+  }, [posts, clock]);
 
   const drafts = useMemo(
     () => posts.filter((post) => post.status === 'draft' && !post.scheduledAt),
@@ -572,7 +555,7 @@ export function PostsCalendar({
   );
 
   const days = useMemo(
-    () => (view === 'month' ? buildGrid(cursor) : buildWeek(cursor)),
+    () => (view === 'month' ? monthGrid(cursor) : weekDays(cursor)),
     [view, cursor]
   );
 
@@ -587,12 +570,14 @@ export function PostsCalendar({
     const out = new Map<string, Date[]>();
     if (days.length === 0 || slots.length === 0) return out;
 
-    const from = new Date(days[0]!.getTime() - 1);
+    const firstStart = dayStartOn(days[0]!, clock);
+    if (!firstStart) return out;
+    const from = new Date(firstStart.getTime() - 1);
     const spanDays = days.length;
     const scheduled = posts
-      .map((p) => postDate(p))
-      .filter((d): d is Date => d !== null)
-      .map((d) => d.getTime());
+      .map((p) => postInstant(p))
+      .filter((iso): iso is string => iso !== null)
+      .map((iso) => Date.parse(iso));
 
     for (const slot of slots) {
       if (!slot.enabled) continue;
@@ -603,7 +588,8 @@ export function PostsCalendar({
       )) {
         const taken = scheduled.some((t) => Math.abs(t - at.getTime()) <= OCCUPIED_WINDOW_MS);
         if (taken) continue;
-        const key = dayKey(at);
+        const key = dayOn(at.toISOString(), clock);
+        if (!key) continue;
         const list = out.get(key);
         if (list) list.push(at);
         else out.set(key, [at]);
@@ -611,16 +597,9 @@ export function PostsCalendar({
     }
     for (const list of out.values()) list.sort((a, b) => a.getTime() - b.getTime());
     return out;
-  }, [days, slots, posts]);
+  }, [days, slots, posts, clock]);
 
-  const rangeLabel =
-    view === 'month'
-      ? cursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
-      : `${cursor.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${new Date(
-          cursor.getFullYear(),
-          cursor.getMonth(),
-          cursor.getDate() + 6
-        ).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  const rangeLabel = nameRange(view, cursor);
 
   return (
     <DndContext
@@ -666,7 +645,7 @@ export function PostsCalendar({
             variant="ghost"
             aria-label={view === 'month' ? 'Previous month' : 'Previous week'}
             onClick={() => {
-              setCursor((c) => step(c, -1));
+              setPicked(stepCursor(cursor, view, -1));
             }}
           >
             <Icon glyph={faChevronLeft} className="size-4" aria-hidden />
@@ -675,7 +654,7 @@ export function PostsCalendar({
             size="sm"
             variant="ghost"
             onClick={() => {
-              setCursor(view === 'month' ? startOfMonth(new Date()) : startOfWeek(new Date()));
+              setPicked(null);
             }}
           >
             Today
@@ -685,7 +664,7 @@ export function PostsCalendar({
             variant="ghost"
             aria-label={view === 'month' ? 'Next month' : 'Next week'}
             onClick={() => {
-              setCursor((c) => step(c, 1));
+              setPicked(stepCursor(cursor, view, 1));
             }}
           >
             <Icon glyph={faChevronRight} className="size-4" aria-hidden />
@@ -706,17 +685,27 @@ export function PostsCalendar({
           </Text>
         ) : null}
 
+        {/* Whose clock the days and times are on. Held back while the business's zone is
+            still loading, so it never names the wrong one (piggles persona issue 990). */}
+        {reader.zone === undefined ? null : (
+          <Text className="shrink-0 text-sm">
+            {timesNote(reader.zone, reader.device, new Date())}
+          </Text>
+        )}
+
         {/* A grid is always the view — it never degrades into a list. On a pane too
             narrow for seven legible columns it scrolls sideways instead. */}
         <div className="-mx-1 flex min-h-0 flex-1 flex-col overflow-x-auto px-1">
           <div className="flex min-w-[44rem] flex-1 flex-col">
             <CalendarGrid
               days={days}
-              month={view === 'month' ? cursor.getMonth() : null}
+              month={view === 'month' ? monthOf(cursor) : null}
               postsByDay={postsByDay}
               openSlotsByDay={openSlotsByDay}
               assetsById={assetsById}
               canWrite={canWrite}
+              clock={clock}
+              todayKey={todayKey}
               tall={view === 'week'}
               onOpenPost={onOpenPost}
               onNewOnDay={onNewOnDay}
@@ -835,6 +824,7 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               onNewOnDay={board.newOnDay}
               onNewAt={board.newAt}
               onReschedule={board.onReschedule}
+              reader={board.reader}
             />
           </div>
         )}

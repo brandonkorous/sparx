@@ -59,6 +59,7 @@ import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
 import { requireCustomerId } from '../../../lib/customer-session.js';
 import { requirePortalWriter } from '../../../lib/portal-writer.js';
+import { isCollectedOrder } from '../../../lib/collected-order.js';
 import {
   accountPricer,
   portalDocumentPrintable,
@@ -295,6 +296,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
           total: true,
           currency: true,
           createdAt: true,
+          metadata: true,
         },
         orderBy: { createdAt: 'desc' },
         take: 5,
@@ -324,6 +326,10 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     return ok({
       account: {
         ...account,
+        // The name the accounts list uses, which the site's type promises. The
+        // row's own key is `id`; the account overview read `accountId` and
+        // linked to /account/b2b/undefined (sparx persona issue 193).
+        accountId: account.id,
         creditLimit: Number(account.creditLimit),
         creditUsed: Number(account.creditUsed),
         creditAvailable: Math.max(0, Number(account.creditLimit) - Number(account.creditUsed)),
@@ -339,6 +345,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
         totalCents: Math.round(Number(o.total) * 100),
         currency: o.currency,
         createdAt: o.createdAt.toISOString(),
+        collecting: isCollectedOrder(o.metadata),
       })),
     });
   });
@@ -451,6 +458,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
             total: true,
             currency: true,
             createdAt: true,
+            metadata: true,
             customer: { select: { id: true, firstName: true, lastName: true, email: true } },
           },
           orderBy: { createdAt: 'desc' },
@@ -475,6 +483,8 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
         customerName:
           [o.customer?.firstName, o.customer?.lastName].filter(Boolean).join(' ') || null,
         customerEmail: o.customer?.email ?? null,
+        // Says Collected, not Delivered (sparx persona issue 177).
+        collecting: isCollectedOrder(o.metadata),
       })),
       { total: orderTotal, skip: q.skip, take: q.take }
     );

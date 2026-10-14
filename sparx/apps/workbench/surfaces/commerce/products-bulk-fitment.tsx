@@ -11,6 +11,7 @@
 // fits, and an entry it already has with the same years is skipped. Removing
 // takes off exactly the entries chosen here, whatever years they were set for.
 
+import { failureMessage } from '../../lib/api/write-failure';
 import { useState } from 'react';
 import {
   Alert,
@@ -32,9 +33,10 @@ import { CornerDownLeft, Puzzle, X } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
+import { loadFailureWords } from '../../lib/api-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { productErrorMessage, useFitmentDomains, type FitmentDomain } from './products-data';
+import { useFitmentDomains, type FitmentDomain } from './products-data';
 import { FitmentChooserFields, useFitmentChoice, type ChosenRule } from './fitment-chooser';
 import { rangeLabel, ruleTitle } from './fitment-rule-words';
 import { useBulkAddFitment, useBulkRemoveFitment } from './products-bulk';
@@ -216,7 +218,7 @@ function Body({
         finish(fitmentRemovedToast(result, what), result.productsChanged);
       }
     } catch (error) {
-      setFailure(productErrorMessage(error, 'This is a problem reaching the server.'));
+      setFailure(failureMessage(error, 'Nothing has been changed. Try again.'));
     }
   };
 
@@ -341,7 +343,10 @@ export function BulkFitmentDialog({
           <AlertContent>
             <AlertTitle>Could not load your compatibility lists</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server. Nothing has been changed.
+              {loadFailureWords(
+                domains.error,
+                'This is a problem reaching the server. Nothing has been changed.'
+              )}
             </AlertDescription>
           </AlertContent>
           <Button

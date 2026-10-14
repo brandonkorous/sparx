@@ -15,9 +15,10 @@ import { Badge, Button, useToast } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { useReleases, useRestoreRelease, type Release } from '../../lib/studio/publish-data';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { CLOCK, DAY, TIME_CELL } from './when';
+import { TIME_CELL, versionClock, versionClockNote, versionDay } from './when';
 import { currentReleaseLabel, restoreConfirmDetail } from './publish-words';
 import { useSiteIsDark } from '../../lib/billing/site-live';
+import { useReaderClock } from '../../lib/business-timezone';
 
 export function PublishReleases() {
   const releases = useReleases();
@@ -27,9 +28,12 @@ export function PublishReleases() {
   const restore = useRestoreRelease();
   const confirm = useConfirm();
   const toast = useToast();
+  // Her business's clock, or this computer's until she sets one (issue 987).
+  const { zone, device } = useReaderClock();
+  const clock = zone ?? device;
 
   const putBack = async (release: Release) => {
-    const when = `${DAY.format(new Date(release.createdAt))} at ${CLOCK.format(new Date(release.createdAt))}`;
+    const when = `${versionDay(release.createdAt, clock)} at ${versionClock(release.createdAt, clock)}`;
     const ok = await confirm({
       title: 'Put your website back to this version?',
       description: restoreConfirmDetail(when, siteIsDark),
@@ -56,6 +60,11 @@ export function PublishReleases() {
         Your website goes back all together: pages, header and footer, and the pieces inside them
         are one connected thing.
       </p>
+      {zone !== undefined ? (
+        <p className="text-base-content mb-2 text-sm">
+          {versionClockNote(zone, device, new Date())}
+        </p>
+      ) : null}
 
       {rows.length === 0 ? (
         <p className="text-base-content py-4 text-sm">
@@ -67,6 +76,7 @@ export function PublishReleases() {
           pending={restore.variables ?? null}
           onPutBack={putBack}
           siteIsDark={siteIsDark}
+          clock={clock}
         />
       )}
     </section>
@@ -78,17 +88,19 @@ function ReleaseList({
   pending,
   onPutBack,
   siteIsDark,
+  clock,
 }: {
   rows: Release[];
   pending: string | null;
   onPutBack: (release: Release) => Promise<void>;
   siteIsDark: boolean;
+  clock: string;
 }) {
   let lastDay = '';
   return (
     <ul className="flex flex-col gap-1">
       {rows.map((release) => {
-        const day = DAY.format(new Date(release.createdAt));
+        const day = versionDay(release.createdAt, clock);
         const heading = day === lastDay ? null : day;
         lastDay = day;
         return (
@@ -101,6 +113,7 @@ function ReleaseList({
               pending={pending === release.id}
               onPutBack={onPutBack}
               siteIsDark={siteIsDark}
+              clock={clock}
             />
           </Fragment>
         );
@@ -114,15 +127,17 @@ function ReleaseRow({
   pending,
   onPutBack,
   siteIsDark,
+  clock,
 }: {
   release: Release;
   pending: boolean;
   onPutBack: (release: Release) => Promise<void>;
   siteIsDark: boolean;
+  clock: string;
 }) {
   return (
     <li className="flex items-center gap-2 px-1 py-1">
-      <span className={TIME_CELL}>{CLOCK.format(new Date(release.createdAt))}</span>
+      <span className={TIME_CELL}>{versionClock(release.createdAt, clock)}</span>
       <Badge color={release.source === 'restore' ? 'warning' : 'info'} variant="soft">
         {release.source === 'restore' ? 'Put back' : 'Published'}
       </Badge>

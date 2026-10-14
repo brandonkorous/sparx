@@ -242,6 +242,12 @@ const COLLAPSE = [
     path: 'lib/tour/~deep-tours',
     why: 'one file per color group; sparx keeps one module-tours.ts',
   },
+  {
+    side: 'piggles',
+    path: 'components/pane-toolbar-popover',
+    into: 'components/pane-toolbar-overflow',
+    why: 'the folded toolbar popover, lifted out of pane-toolbar-overflow.tsx under the 250-line rule; sparx keeps both in one file',
+  },
 ];
 
 /**
@@ -744,7 +750,13 @@ const EXCEPTIONS = [
  * does not either gets carried or gets pinned here with its harm, never
  * neither.
  */
-const SHAPE_DEBT = [];
+const SHAPE_DEBT = [
+  {
+    only: 'sparx',
+    shape: 'CustomerVisits.error',
+    harm: 'The Piggles customer overview still says a failed bookings read was "a problem reaching the server" whatever the cause (persona issue 260). Its reader, crm/customer-overview.tsx, is over the 250-line rule and in PIGGLES_DEBT of check-load-failure-words; carry the field with it when that file is split.',
+  },
+];
 
 /** Furniture that must be REACHABLE from the root layout, not merely present. */
 const MOUNTED = [

@@ -46,6 +46,8 @@ import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -112,6 +114,7 @@ function RecordBlock({ record }: { record: DnsRecord }) {
 function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const provision = useProvisionSendingDomain();
+  const rights = useManageRights();
 
   const [domain, setDomain] = useState('');
   const [region, setRegion] = useState<SendingRegion>('us');
@@ -162,22 +165,27 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="Add a sending address actions"
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={provision.isPending}
-            disabled={trimmed === '' || !looksValid}
-            onClick={submit}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Add address
-          </Button>
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              loading={provision.isPending}
+              disabled={trimmed === '' || !looksValid}
+              onClick={submit}
+            >
+              <Icon glyph={faPlus} className="size-4" aria-hidden />
+              Add address
+            </Button>
+          )
         }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
+          {/* Sending addresses are an owner's or an admin's to change; the
+              server refuses everybody else (sparx persona issue 168). */}
+          <ManagersOnlyNotice change="add, check or remove sending addresses" />
           <Text>
             {productCopy(
               'email.domain.addIntro',
@@ -276,6 +284,8 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
   const verify = useVerifySendingDomain(id);
   const setDefault = useSetDefaultSendingDomain(id);
   const remove = useDeleteSendingDomain(id);
+  const rights = useManageRights();
+  const locked = rights.known && !rights.canManage;
 
   useEffect(() => {
     if (domain) ctx.setTitle(domain.domain);
@@ -435,27 +445,31 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
         /* A VALUE, not bespoke JSX. It sat in `primary`, which is
            for the ONE commit action, and drew a bare red bin there.
            scripts/check-toolbar-glyph.mjs holds the line. */
-        actions={[
-          {
-            label: 'Remove',
-            title: 'Remove this address',
-            icon: faTrashCan,
-            tone: 'danger' as const,
-            loading: remove.isPending,
-            onClick: () => {
-              void onDelete();
-            },
-          },
-        ]}
+        actions={
+          locked
+            ? []
+            : [
+                {
+                  label: 'Remove',
+                  title: 'Remove this address',
+                  icon: faTrashCan,
+                  tone: 'danger' as const,
+                  loading: remove.isPending,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
+        }
         controls={
           <>
-            {isVerified ? null : (
+            {isVerified || locked ? null : (
               <Button size="sm" color="module" loading={verify.isPending} onClick={onCheck}>
                 <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
                 Check now
               </Button>
             )}
-            {isVerified && !isDefault ? (
+            {isVerified && !isDefault && !locked ? (
               <Button
                 size="sm"
                 variant="outline"
@@ -473,6 +487,9 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
+          {/* Sending addresses are an owner's or an admin's to change; the
+              server refuses everybody else (sparx persona issue 168). */}
+          <ManagersOnlyNotice change="add, check or remove sending addresses" />
           {/* The address IS the identity of this pane, and the pane TAB carries
               it — so the body opens with the two facts about it instead. */}
           <Text className="text-sm">

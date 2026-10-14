@@ -208,10 +208,10 @@ export default function OrderDetailPage() {
       </Link>
       <div className="mt-2 mb-6 flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-base-content text-3xl font-semibold tracking-tight">
-          Order #{order.orderNumber}
+          Order {order.orderNumber}
         </h1>
         <Badge color={orderStatusTone(order.status)} variant="soft">
-          {orderStatusLabel(order.status)}
+          {orderStatusLabel(order.status, order.collecting)}
         </Badge>
       </div>
       <p className="text-base-content mb-6">

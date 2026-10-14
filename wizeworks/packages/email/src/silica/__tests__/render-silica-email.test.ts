@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { EmailDocument } from '@wizeworks/silicaui-builder/email';
 
 import { renderSilicaEmail } from '../render-silica-email';
+import { UNSUBSCRIBE_PLACEHOLDER } from '../frame';
 
 /** A minimal but real silica email: a greeting with a `{{token}}`, a section bound
  *  to `order.items` that repeats a bound row, all inside one section. */
@@ -99,6 +100,25 @@ describe('renderSilicaEmail', () => {
   it('injects the branded wordmark header', () => {
     const out = renderSilicaEmail({ doc: fixtureDoc(), to: 'a@b.com', data }, { brand });
     expect(out.html).toContain('Acme');
+  });
+
+  // A campaign drawn once for every reader carries the placeholder in BOTH its HTML
+  // and its text, so the send can give each reader their own link (piggles persona
+  // issue 985). It used to carry `#`.
+  it('carries the per-reader placeholder in the HTML and the text of a render-once campaign', () => {
+    const once = renderSilicaEmail(
+      {
+        doc: fixtureDoc(),
+        to: 'broadcast@example.com',
+        data,
+        marketing: true,
+        compliance: { unsubscribeUrl: UNSUBSCRIBE_PLACEHOLDER, physicalAddress: '1 Main St' },
+      },
+      { brand }
+    );
+    expect(once.html).toContain(UNSUBSCRIBE_PLACEHOLDER);
+    expect(once.text).toContain(UNSUBSCRIBE_PLACEHOLDER);
+    expect(once.html).not.toContain('href="#"');
   });
 
   it('injects the legal footer only for marketing sends', () => {

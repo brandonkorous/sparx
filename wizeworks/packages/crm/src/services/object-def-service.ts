@@ -26,8 +26,9 @@ import {
   checkPropertySchema,
   type BuiltinObjectKey,
 } from '@wizeworks/crm-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { CrmObjectDef, Prisma } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -147,6 +148,18 @@ export async function ensureBuiltins(ctx: ServiceContext): Promise<void> {
     const present = await tx.crmObjectDef.count({ where: { kind: 'builtin' } });
     if (present >= BUILTIN_OBJECT_KEYS.length) return;
 
+    // Seeded without a `crm.object_def.*` event, so search is told here: a record
+    // type is found by its name like one the owner made (persona issue 261).
+    await afterCommit('index built-in record types', async () => {
+      for (const key of BUILTIN_OBJECT_KEYS) {
+        await indexEntity({
+          tenantId: ctx.tenantId,
+          actorId: ctx.userId ?? null,
+          entityType: 'crm_object_type',
+          recordId: key,
+        });
+      }
+    });
     for (const key of BUILTIN_OBJECT_KEYS) {
       const seed = BUILTIN_OBJECT_SEEDS[key];
       await tx.crmObjectDef.upsert({

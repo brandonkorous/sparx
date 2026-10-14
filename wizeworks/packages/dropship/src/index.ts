@@ -27,6 +27,8 @@ export {
   SpocketAdapter,
   PrintifyAdapter,
   PrintfulAdapter,
+  DirectAdapter,
+  directOrderEmail,
 } from './adapters/index.js';
 export type {
   CsvCredentials,
@@ -35,6 +37,7 @@ export type {
   SpocketCredentials,
   PrintifyCredentials,
   PrintfulCredentials,
+  DirectCredentials,
 } from './adapters/index.js';
 
 // Vendor catalog — also available via the server-safe `@wizeworks/dropship/vendors`

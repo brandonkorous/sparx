@@ -32,12 +32,13 @@ import {
   UpdatePriceListInput,
 } from '@wizeworks/commerce-schemas';
 import { companyService } from '@wizeworks/crm';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Prisma, PriceList, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
+import { indexCommerceEntity } from '../events';
 import {
   explainAccountStep,
   tradePriceWords,
@@ -172,6 +173,10 @@ export async function createPriceList(
     });
     return created;
   });
+  // Queued, not fired: a caller may have composed this into its own open transaction.
+  await afterCommit(`index price_list ${result.id}`, () =>
+    indexCommerceEntity(ctx, 'price_list', result.id)
+  );
   return { id: result.id };
 }
 
@@ -238,6 +243,7 @@ export async function updatePriceList(
       diff: { before: { status: before.status }, after: { status: input.status ?? before.status } },
     });
   });
+  await afterCommit(`index price_list ${id}`, () => indexCommerceEntity(ctx, 'price_list', id));
 }
 
 export async function archivePriceList(ctx: ServiceContext, id: string): Promise<void> {
@@ -259,6 +265,8 @@ export async function archivePriceList(ctx: ServiceContext, id: string): Promise
       diff: { before: { status: before.status } },
     });
   });
+  // The projector drops archived rows, so the same signal removes the entry.
+  await afterCommit(`index price_list ${id}`, () => indexCommerceEntity(ctx, 'price_list', id));
 }
 
 // ─── Price list entries ──────────────────────────────────────────────

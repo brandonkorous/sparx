@@ -141,6 +141,8 @@ export * from './reviews';
 
 // Phase 5/7 — returns / RMA.
 export * from './returns';
+// What returned units cost the buyer, tax and discount included (persona issue 231).
+export * from './return-paid';
 // Core charges: refundable deposits on rebuilt parts (persona issue 051).
 export * from './cores';
 // A core charge a store faked as a choice, read back into a real deposit (issue 057).

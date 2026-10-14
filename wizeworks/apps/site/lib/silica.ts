@@ -67,6 +67,8 @@ function starterHomeDto(commerceEnabled: boolean): PublishedSilicaPageDto | null
  *  page when Commerce is off, nor a Book page when Scheduling is off (see `starterPages`). */
 function starterPageDtoForSlug(slug: string, flags: ModuleFlags): PublishedSilicaPageDto | null {
   const target = STARTER_SLUG(slug);
+  // The owner deleted the platform's page here: the address is gone, not standard.
+  if (flags.removedPages?.includes(target)) return null;
   const page = starterPages(flags).find((p) => STARTER_SLUG(p.slug) === target && target !== '');
   return page ? starterPageDto(page.name, STARTER_SLUG(page.slug), page.root) : null;
 }
@@ -232,6 +234,8 @@ interface ModuleFlags {
   commerceEnabled: boolean;
   schedulingEnabled: boolean;
   cmsEnabled: boolean;
+  /** Starter addresses the owner deleted: never served from the starter. */
+  removedPages?: string[];
 }
 
 async function resolveModuleFlags(tenantSlug: string, previewToken?: string): Promise<ModuleFlags> {
@@ -243,6 +247,7 @@ async function resolveModuleFlags(tenantSlug: string, previewToken?: string): Pr
     // loses a Journal link, which is recoverable. Failing open would advertise a blog
     // index to every tenant without the module, where it renders an empty grid.
     cmsEnabled: data?.cmsEnabled ?? false,
+    removedPages: data?.removedPages ?? [],
   };
 }
 
@@ -383,22 +388,9 @@ export function treeHasHostNode(node: unknown): boolean {
   return Array.isArray(n.children) && n.children.some(treeHasHostNode);
 }
 
-/**
- * Every host core key in a tree — `commerce.plp`, `cms.article-body`, and so on.
- *
- * A page's cores are how it says what it is FOR. A tenant names a page "Shop"
- * or "Our things" or nothing at all, so the name answers nothing; the product
- * grid inside it answers everything. That is what lets a site with Selling
- * switched off refuse the right pages without a list of slugs to keep in step.
- * See `siteShowsPage` in `site-modules.ts`.
- */
-export function hostKeysIn(node: unknown, found: string[] = []): string[] {
-  if (!node || typeof node !== 'object') return found;
-  const n = node as { kind?: string; component?: unknown; children?: unknown[] };
-  if (n.kind === 'host' && typeof n.component === 'string') found.push(n.component);
-  if (Array.isArray(n.children)) for (const child of n.children) hostKeysIn(child, found);
-  return found;
-}
+/** Every host core key in a tree. One walker, shared with the console's page list
+ *  (`@wizeworks/silica-catalog`), so both judge a page by the same cores. */
+export { hostKeysIn } from '@wizeworks/silica-catalog';
 
 // Every product card on a published page carries the signed-in trade buyer's fleet
 // badges (sparx persona issue 086). Added on read, so pages stamped before fleets

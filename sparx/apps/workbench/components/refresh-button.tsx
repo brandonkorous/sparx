@@ -1,6 +1,6 @@
 'use client';
 
-// Re-read this list from the server, now.
+// Re-read this pane from the server, now.
 //
 // Why this exists at all, given the query client already sets `staleTime: 60s`
 // and `refetchOnWindowFocus: true`: those defaults assume a PAGE you navigate
@@ -70,7 +70,7 @@ export function RefreshButton({
         onClick={onRefresh}
       >
         <RefreshCw className="size-4" aria-hidden />
-        <span>Refresh this list</span>
+        <span>Refresh</span>
         {updatedAt ? (
           <span className="ml-auto text-sm [&_time]:text-inherit">
             <Timestamp value={updatedAt} format="relative" />
@@ -114,7 +114,7 @@ export function RefreshButton({
         variant="ghost"
         shape="square"
         className={className}
-        aria-label="Refresh this list"
+        aria-label="Refresh"
         // `loading` swaps in silica's spinner AND makes the button
         // non-interactive, so a second click cannot queue a second fetch.
         loading={isFetching}

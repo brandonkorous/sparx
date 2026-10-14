@@ -10,7 +10,7 @@
 // invite somebody to give the same deposit back twice.
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
-import { unitsWaitingForCore } from '@wizeworks/commerce-schemas';
+import { coresOutstanding, unitsWaitingForCore } from '@wizeworks/commerce-schemas';
 import { api } from '../../lib/api/client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { ORDERS_KEY, type OrderItem } from './data';
@@ -44,8 +44,34 @@ export interface CoreOwed {
   coresReturned: number;
   coresKept: number;
   owedCents: number;
+  /** The order's open invoice: a returned deposit comes off it first, so none of
+   *  it is given back (sparx persona issue 183). */
+  openInvoice: OpenInvoice | null;
   daysOut: number;
   currency: string;
+}
+
+export interface OpenInvoice {
+  number: string;
+  balanceCents: number;
+}
+
+/**
+ * The open invoice a returned core's deposit on this line would come off, or null.
+ * The server's own lookup, the one the refund uses, so "Core came back" can say
+ * what will happen before the click (sparx persona issue 183). Undefined while it
+ * loads.
+ */
+export function useCoreOpenInvoice(orderItemId: string, enabled: boolean) {
+  const query = useQuery({
+    queryKey: [...CORES_KEY, 'open-invoice', orderItemId],
+    queryFn: () =>
+      api.get<{ openInvoice: OpenInvoice | null }>(
+        `/v1/commerce/order-items/${orderItemId}/cores/open-invoice`
+      ),
+    enabled,
+  });
+  return query.data ? query.data.openInvoice : undefined;
 }
 
 export interface CoresQuery {
@@ -140,6 +166,9 @@ export interface CoreLine {
   coreFirst: boolean;
   /** Old parts still to come in. */
   owed: number;
+  /** Of those, the ones owed NOW: one per part handed over. The rest are due once
+   *  the part goes out (sparx persona issue 184). */
+  outstanding: number;
   /** Units that cannot ship until their old part arrives. */
   waiting: number;
   /** The business chose to ship it without waiting for the old part. */
@@ -156,6 +185,7 @@ export function coreLineOfItem(item: OrderItem, currency: string, customerName: 
     depositCents: Math.round((item.coreCharge ?? 0) * 100),
     coreFirst: item.coreFirst,
     owed: coresOwedOn(item),
+    outstanding: coresOutstanding(item),
     waiting: unitsWaitingForCore(item),
     released: item.coreHoldReleasedAt !== null,
   };
@@ -171,6 +201,8 @@ export function coreLineOfOwed(row: CoreOwed): CoreLine {
     depositCents: row.coreFirst ? 0 : row.coreChargeCents,
     coreFirst: row.coreFirst,
     owed: row.coresOwed,
+    // The list holds only what is owed now, so the two are the same.
+    outstanding: row.coresOwed,
     waiting: row.waitingToShip,
     released: row.holdReleasedAt !== null,
   };

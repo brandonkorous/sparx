@@ -839,7 +839,7 @@ export async function applyGiftCardToCart(
       settled.discountTotalCents
     );
     if (appliedCents <= 0) {
-      throw new CommercePricingError('There is nothing left to pay on this basket.');
+      throw new CommercePricingError('There is nothing left to pay on this cart.');
     }
 
     // One card per basket (the cart models a single scalar). The id and the code

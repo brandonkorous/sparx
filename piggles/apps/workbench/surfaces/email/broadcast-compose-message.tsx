@@ -8,6 +8,7 @@ import {
   AlertContent,
   AlertDescription,
   AlertTitle,
+  Button,
   Field,
   FieldControl,
   FieldDescription,
@@ -17,8 +18,10 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import type { ReactNode } from 'react';
+import { faFilter } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
-import { peopleCount, type ComposeBodyProps } from './broadcast-draft';
+import { NEW_AUDIENCE_KEY, peopleCount, type ComposeBodyProps } from './broadcast-draft';
 
 /** One labelled text box on the draft, with an optional line under it. */
 function DraftTextField({
@@ -95,11 +98,22 @@ export function TheEmail({ draft, set }: ComposeBodyProps) {
 }
 
 export function WhoItGoesTo(props: ComposeBodyProps) {
-  const { audiences } = props;
+  const { ctx, audiences } = props;
   return (
     <FormSection
       title="Who it goes to"
       description="An audience is a saved group of your customers. This broadcast reaches everyone in it, apart from anyone who has unsubscribed."
+      action={
+        <Button
+          size="sm"
+          onClick={() => {
+            ctx.open(NEW_AUDIENCE_KEY, { id: 'new' }, { target: 'beside' });
+          }}
+        >
+          <Icon glyph={faFilter} className="size-4" aria-hidden />
+          Make an audience
+        </Button>
+      }
     >
       {audiences.isError ? (
         <Alert color="warning">
@@ -112,8 +126,8 @@ export function WhoItGoesTo(props: ComposeBodyProps) {
         </Alert>
       ) : audiences.isSuccess && audiences.items.length === 0 ? (
         <Text className="text-sm">
-          You don’t have any saved audiences yet. Audiences are built from your customer list:
-          create one, then come back to send to it.
+          You don’t have any saved audiences yet. Use “Make an audience” above to build one from
+          your customer list. Once it is saved, it shows up here to choose.
         </Text>
       ) : (
         <AudienceField {...props} />
@@ -155,8 +169,8 @@ function AudienceField({
             : recipientCount === undefined
               ? ''
               : recipientCount === 0
-                ? 'Nobody matches this audience yet, so there is no one to send to.'
-                : `About ${peopleCount(recipientCount)} will receive this.`}
+                ? 'Nobody in this audience can be emailed yet, so there is no one to send to.'
+                : `Right now, ${peopleCount(recipientCount)} would receive this.`}
         </FieldDescription>
       ) : null}
     </Field>

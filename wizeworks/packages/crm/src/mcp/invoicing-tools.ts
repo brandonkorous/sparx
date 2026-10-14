@@ -145,7 +145,7 @@ const writeTools: InvoicingMcpTool[] = [
   {
     name: 'record_billing_payment',
     description:
-      "Record a deposit, payment, or refund against a billing document. The document's amount paid, balance, and AR status recompute automatically.",
+      "Record a deposit, payment, refund, or credit against a billing document. A credit takes money off what is owed when no money moved (for example a returned part's deposit); it is never counted as money collected. The document's amount paid, balance, and AR status recompute automatically.",
     scope: 'write:invoicing',
     confirmation: true,
     input: RecordPaymentInput,

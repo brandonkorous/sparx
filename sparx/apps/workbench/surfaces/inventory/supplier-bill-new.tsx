@@ -22,6 +22,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -199,7 +200,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
               type: saved.match.ok === false ? 'warning' : 'success',
             });
           });
-          ctx.open('inventory.supplier-bills.detail', { id: saved.id });
+          ctx.open('inventory.supplier-bills.detail', { id: saved.id }, { target: 'replace' });
         },
         onError: (error) => {
           afterCommit(() => {
@@ -252,7 +253,30 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
           </Field>
         </FormSection>
 
-        {purchaseOrderId === '' ? (
+        {/* No placed order at all is a different state from not having picked
+            one yet, and only the first needs a way forward (persona issue 252). */}
+        {purchaseOrderId === '' && orders.isSuccess && billable.length === 0 ? (
+          <Alert color="info">
+            <AlertContent>
+              <AlertTitle>No order to enter an invoice against yet</AlertTitle>
+              <AlertDescription>
+                A supplier&apos;s invoice is entered against the order you placed with them, so its
+                lines and prices come across. Place the order first, then enter the invoice when it
+                arrives.
+              </AlertDescription>
+              <AlertActions>
+                <Button
+                  color="module"
+                  onClick={() => {
+                    ctx.open('inventory.purchase-orders.detail', { id: 'new' }, { target: 'tab' });
+                  }}
+                >
+                  New order
+                </Button>
+              </AlertActions>
+            </AlertContent>
+          </Alert>
+        ) : purchaseOrderId === '' ? (
           <Alert color="info">
             <AlertContent>
               <AlertTitle>Choose an order to start</AlertTitle>

@@ -15,9 +15,11 @@ import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@wizeworks/db';
 import { publish } from '@wizeworks/api-core/pubsub';
 import { emailService } from '@wizeworks/builder';
+import { UNSUBSCRIBE_PLACEHOLDER } from '@wizeworks/email/silica';
 import type { RawEmailSendPayload } from '@wizeworks/events';
 import type { EmailRecipientRef } from './email-data.js';
 import { buildFrom, loadSenderIdentity, renderBuilderEmailDoc } from './tenant-email.js';
+import { personalizeUnsubscribe, unsubscribeUrl } from './email-unsubscribe.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = ADVISORY_LOCKS.EMAIL_DISPATCH;
 const DEFAULT_INTERVAL_MS = 60_000;
@@ -66,6 +68,21 @@ function strOrNull(v: unknown): string | null {
 
 /** Record a terminal failure on a send the tick already marked 'sent' (an
  *  unpublished template, a compliance refusal). RLS-scoped via withTenant. */
+/**
+ * The provider tags a send carries: the enqueuer's (broadcast_id, automation_key,
+ * campaign) plus `customer_id` when the queued row names its customer. email-worker's
+ * `accepted` row and the delivery webhook both read `customer_id` from these tags, and
+ * no sender ever set it, so every one of a business's delivery events had no customer
+ * (sparx persona issue 161). Undefined when there is nothing to tag.
+ */
+export function sendVariables(
+  variables: Record<string, string> | undefined,
+  customerId: string | null | undefined
+): Record<string, string> | undefined {
+  const out = { ...(variables ?? {}), ...(customerId ? { customer_id: customerId } : {}) };
+  return Object.keys(out).length ? out : undefined;
+}
+
 async function markSendFailed(tenantId: string, sendId: string, reason: string): Promise<void> {
   await withTenant({ tenantId }, (tx) =>
     tx.scheduledSend.update({
@@ -116,6 +133,8 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             // (docs/91 §3).
             entityRefs: send.entityRefs,
             entitySnapshot: send.entitySnapshot,
+            // The campaign it belongs to: its unsubscribe link counts against it.
+            broadcastId: send.broadcastId,
             payload,
           };
         });
@@ -141,11 +160,12 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
         // The CAN-SPAM postal address for the compliance footer node — this
         // site's, not the tenant's first business's.
         const physicalAddress = identity.physicalAddress;
+        const variables = sendVariables(payload.variables, customerId);
         const common = {
           to,
           from,
           ...(replyTo ? { replyTo } : {}),
-          ...(payload.variables ? { variables: payload.variables } : {}),
+          ...(variables ? { variables } : {}),
         };
 
         let data: Record<string, unknown>;
@@ -215,6 +235,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             marketing,
             physicalAddress,
             snapshot: dispatch.entitySnapshot as Record<string, unknown> | null,
+            broadcastId: dispatch.broadcastId,
             subjectOverride: payload.defer.subject,
             preheaderOverride: payload.defer.preheader,
           });
@@ -222,12 +243,21 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
           // payload without it is silently dropped); `satisfies` locks that in.
           data = { ...raw, ...common } satisfies RawEmailSendPayload;
         } else if (payload.raw) {
-          // Pre-rendered (broadcast) → delivered as-is.
+          // Pre-rendered (broadcast) → delivered as drawn, except for the one thing
+          // that is each reader's own: the unsubscribe link and its header, swapped in
+          // here for the placeholder the render-once body carries (piggles persona
+          // issue 985). It went out as `#`, with no header, to every reader.
+          const own = personalizeUnsubscribe(
+            { html: payload.raw.html, text: payload.raw.text },
+            UNSUBSCRIBE_PLACEHOLDER,
+            unsubscribeUrl(row.tenant_id, to, dispatch.broadcastId)
+          );
           data = {
             kind: 'raw',
             subject: payload.raw.subject,
-            html: payload.raw.html,
-            text: payload.raw.text,
+            html: own.html,
+            text: own.text,
+            ...(own.headers ? { headers: own.headers } : {}),
             ...(payload.raw.templateId ? { templateId: payload.raw.templateId } : {}),
             // The broadcast's site → property_id stamp for per-site analytics
             // (docs/49 Phase 7). The body was already branded at compose time.

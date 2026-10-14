@@ -47,6 +47,7 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
+import { useReaderClock } from '../../lib/business-timezone';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
   canCompose,
@@ -56,7 +57,6 @@ import {
   useSocialOverview,
 } from './data';
 import {
-  formatWhen,
   inboxKindLabel,
   inboxStatusMeta,
   ratingTone,
@@ -67,6 +67,7 @@ import {
   type InboxFilter,
   type InboxItem,
 } from './inbox-data';
+import { timesNote, whenOn } from './social-clock';
 import { productCopy } from '../../lib/product';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -115,11 +116,15 @@ function InboxRow({
   item,
   active,
   platformLabel,
+  clock,
   onOpen,
 }: {
   item: InboxItem;
   active: boolean;
   platformLabel: string;
+  /** The business's clock, so a comment that came in at 9:00 reads 9:00 to her
+   *  (piggles persona issue 990). */
+  clock: string;
   onOpen: () => void;
 }) {
   const meta = inboxStatusMeta(item.status);
@@ -155,7 +160,7 @@ function InboxRow({
           </span>
           <span className="text-sm">
             {inboxKindLabel(item.kind)} on {item.targetName} · {platformLabel} ·{' '}
-            {formatWhen(item.receivedAt)}
+            {whenOn(item.receivedAt, clock)}
           </span>
         </span>
       </button>
@@ -165,7 +170,7 @@ function InboxRow({
 
 /* ── The conversation ─────────────────────────────────────────────────────── */
 
-function ThreadMessage({ item }: { item: InboxItem }) {
+function ThreadMessage({ item, clock }: { item: InboxItem; clock: string }) {
   const ours = item.direction === 'outbound';
   const meta = inboxStatusMeta(item.status);
   return (
@@ -179,7 +184,7 @@ function ThreadMessage({ item }: { item: InboxItem }) {
           {ours ? 'You' : (item.authorName ?? item.authorHandle ?? 'Someone')}
         </Text>
         {item.rating !== null ? <Stars rating={item.rating} /> : null}
-        <Text className="text-sm">{formatWhen(item.receivedAt)}</Text>
+        <Text className="text-sm">{whenOn(item.receivedAt, clock)}</Text>
         {ours && item.status !== 'replied' ? (
           <Badge color={meta.tone} variant="soft" size="sm">
             {meta.label}
@@ -198,11 +203,13 @@ function Conversation({
   canReply,
   onArchive,
   archiving,
+  clock,
 }: {
   itemId: string;
   canReply: boolean;
   onArchive: (status: 'open' | 'archived') => void;
   archiving: boolean;
+  clock: string;
 }) {
   const toast = useToast();
   const thread = useInboxThread(itemId);
@@ -275,7 +282,7 @@ function Conversation({
             </a>
           ) : null}
           {thread.data.map((item) => (
-            <ThreadMessage key={item.id} item={item} />
+            <ThreadMessage key={item.id} item={item} clock={clock} />
           ))}
         </div>
       </div>
@@ -354,6 +361,8 @@ export function SocialInboxSurface() {
   const setItemStatus = useSetInboxItemStatus();
 
   const canReply = canCompose(viewer.data?.role);
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
   const catalogMap = useMemo(
     () => catalogByPlatform(overview.data?.catalog ?? []),
     [overview.data]
@@ -459,6 +468,13 @@ export function SocialInboxSurface() {
           // conversation, so the whole thing still works on a phone.
           <div className="flex h-full min-h-0 flex-col lg:flex-row">
             <div className="border-base-300 min-h-0 shrink-0 overflow-y-auto border-b lg:w-[380px] lg:border-r lg:border-b-0">
+              {/* Only when the business has no zone of its own: then the times are this
+                  computer's, and the list has to say so. */}
+              {reader.zone === null ? (
+                <Text className="border-base-300 border-b px-4 py-3 text-sm">
+                  {timesNote(null, reader.device, new Date())}
+                </Text>
+              ) : null}
               <ul>
                 {list.map((item) => (
                   <InboxRow
@@ -466,6 +482,7 @@ export function SocialInboxSurface() {
                     item={item}
                     active={selected?.id === item.id}
                     platformLabel={platformName(item.platform, catalogMap)}
+                    clock={clock}
                     onOpen={() => {
                       setSelectedId(item.id);
                     }}
@@ -482,6 +499,7 @@ export function SocialInboxSurface() {
                   canReply={canReply}
                   onArchive={archive}
                   archiving={setItemStatus.isPending}
+                  clock={clock}
                 />
               ) : null}
             </div>

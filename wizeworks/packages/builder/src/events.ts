@@ -36,6 +36,7 @@ export type BuilderTopic =
   | 'builder.layout.activated'
   | 'builder.theme.published'
   | 'builder.page.settings.changed'
+  | 'builder.page.deleted'
   | 'builder.email.published';
 
 // Fails to compile when a topic above is missing from `EventType`.

@@ -125,6 +125,10 @@ export function createMailgunProvider(config: MailgunConfig): EmailProvider {
       form.set('text', email.text);
       if (email.replyTo) form.set('h:Reply-To', email.replyTo);
       if (email.templateId) form.append('o:tag', email.templateId);
+      // The message's own headers (List-Unsubscribe and its one-click partner).
+      for (const [name, value] of Object.entries(email.headers ?? {})) {
+        form.append(`h:${name}`, value);
+      }
       if (email.tags) {
         for (const [k, v] of Object.entries(email.tags)) {
           form.append(`h:X-sparx-${k}`, v);

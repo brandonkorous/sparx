@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { pageAddress, starterAddresses, type SiteContent } from './sitemap-urls';
+import {
+  modulesOff,
+  pageAddress,
+  pageShownOnSite,
+  starterAddresses,
+  type SiteContent,
+} from './sitemap-urls';
 
 const NONE = new Set<string>();
 const FULL: SiteContent = { products: 4, collections: 2, categories: 3, posts: 6, bookable: 1 };
@@ -96,5 +102,40 @@ describe('starterAddresses', () => {
     );
     expect(noCms).not.toContain('/blog');
     expect(noCms).toContain('/shop');
+  });
+});
+
+// The Marrow Review (P09): a journal with Selling and Bookings switched off. Its blueprint
+// had published Shop, Products, Collections, Category and Book pages, and the sitemap
+// listed all five beside two product collections. The site answers each with a 404.
+describe('pages a site does not show', () => {
+  const journal = modulesOff(
+    { commerceEnabled: false, schedulingEnabled: false, cmsEnabled: true },
+    ['commerce', 'scheduling', 'b2b']
+  );
+  const grid = { kind: 'host', component: 'commerce.plp' };
+  const shopPage = { kind: 'element', tag: 'main', children: [grid] };
+
+  it('counts a switch on the site and a module the account lacks as off', () => {
+    expect([...journal].sort()).toEqual(['b2b', 'commerce', 'scheduling']);
+    const noShopAccount = modulesOff({ ...EVERY_MODULE, commerceEnabled: false }, []);
+    expect(noShopAccount.has('commerce')).toBe(true);
+    expect(noShopAccount.has('cms')).toBe(false);
+  });
+
+  it('leaves out an address a switched-off module owns', () => {
+    expect(pageShownOnSite('/products', null, journal)).toBe(false);
+    expect(pageShownOnSite('/book', null, journal)).toBe(false);
+    expect(pageShownOnSite('/collections', null, journal)).toBe(false);
+  });
+
+  it('leaves out a page whose reason to exist is a switched-off block, whatever it is called', () => {
+    expect(pageShownOnSite('/shop', shopPage, journal)).toBe(false);
+  });
+
+  it('keeps her own pages, and the same pages on a site that sells', () => {
+    expect(pageShownOnSite('/ledger', { kind: 'element', tag: 'main' }, journal)).toBe(true);
+    expect(pageShownOnSite('/shop', shopPage, new Set())).toBe(true);
+    expect(pageShownOnSite('/products', null, new Set())).toBe(true);
   });
 });

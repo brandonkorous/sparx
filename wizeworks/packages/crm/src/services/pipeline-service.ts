@@ -16,8 +16,9 @@ import {
   type StageType,
 } from '@wizeworks/crm-schemas';
 import { DEFAULT_PIPELINE_TEMPLATE } from '@wizeworks/crm-schemas/builtins';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Pipeline, PipelineStage, Prisma } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -370,6 +371,12 @@ export async function deleteStage(
             where: { stageId: args.stageId, deletedAt: null },
             select: { id: true },
           });
+      const movedTickets = isTickets
+        ? await tx.ticket.findMany({
+            where: { stageId: args.stageId, deletedAt: null },
+            select: { id: true },
+          })
+        : [];
       const moved = isTickets
         ? await tx.ticket.updateMany({
             where: { stageId: args.stageId, deletedAt: null },
@@ -380,6 +387,20 @@ export async function deleteStage(
             data: { stageId: args.reassignToStageId },
           });
       movedRecords = moved.count;
+      // A moved request's line in search names its stage; nothing else announces
+      // this move, so search is told here (persona issue 261).
+      if (isTickets) {
+        await afterCommit('index requests moved off a removed stage', async () => {
+          for (const t of movedTickets) {
+            await indexEntity({
+              tenantId: ctx.tenantId,
+              actorId: ctx.userId ?? null,
+              entityType: 'ticket',
+              recordId: t.id,
+            });
+          }
+        });
+      }
       await closeWhenDealMovesOn(tx, ctx, {
         dealIds: movingDeals.map((d) => d.id),
         byUserId: ctx.userId ?? null,

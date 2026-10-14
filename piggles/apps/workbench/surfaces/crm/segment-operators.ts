@@ -21,6 +21,7 @@ const OPERATORS_BY_KIND: Record<ValueKind, SegmentOperator[]> = {
   tags: ['contains', 'not_contains'],
   rep: ['eq', 'neq', 'is_null', 'is_not_null'],
   account: ['eq', 'neq', 'is_null', 'is_not_null'],
+  tier: ['eq', 'neq', 'is_null', 'is_not_null'],
 };
 
 /** The operators offered for a field, always including `current` so a stored

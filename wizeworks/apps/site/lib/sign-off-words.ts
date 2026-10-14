@@ -89,12 +89,22 @@ function cardWhileWaiting(card: HeldCard | undefined): string | null {
   return null;
 }
 
+/** The credit an order billed to the account runs past (sparx persona issue
+ *  187). The business signs such an order off. */
+export interface OverCredit {
+  creditLeftCents: number;
+  orderTotalCents: number;
+}
+
 export interface ApprovalPreviewInput {
-  /** Who will be asked if the order is placed as it stands. */
+  /** Who a spending limit will ask if the order is placed as it stands. */
   waitingOn: SignOffSide[];
   /** The account's approvers by name, oldest first. Empty unless asked. */
   accountApprovers: string[];
-  limitCents: number;
+  /** The spending limit it goes over; null when none covers it. */
+  limitCents: number | null;
+  /** Set when it is billed to the account and runs past the credit left. */
+  overCredit?: OverCredit | null;
   currency: string;
   /** The trade account's own name, when the checkout knows it. */
   accountName: string | null;
@@ -111,19 +121,40 @@ export interface ApprovalPreviewInput {
  * asked, so nothing is drawn.
  */
 export function approvalPreviewSentence(input: ApprovalPreviewInput): string | null {
-  if (input.waitingOn.length === 0) return null;
+  const credit = input.overCredit ?? null;
+  const byLimit = input.limitCents !== null && input.waitingOn.length > 0;
+  // An order past the credit left waits for the business as well (issue 187).
+  const waitingOn: SignOffSide[] =
+    credit && !input.waitingOn.includes('business')
+      ? [...input.waitingOn, 'business']
+      : input.waitingOn;
+  if (waitingOn.length === 0) return null;
   const account = input.accountName?.trim() ?? '';
   const whose = account.length > 0 ? `${account}’s` : 'your account’s';
-  const over = `This order is over ${whose} ${formatMoney(input.limitCents, input.currency)} limit`;
-  const asked = whoIsAsked(input.waitingOn, input.accountApprovers, input.shopName);
+  const money = (cents: number) => formatMoney(cents, input.currency);
+  // "Limit for one order": her account page also shows a CREDIT limit, and two
+  // things called "limit" on her screens are one too many (issue 187).
+  const overLimit =
+    byLimit && input.limitCents !== null
+      ? `This order is over ${whose} ${money(input.limitCents)} limit for one order`
+      : null;
+  let why: string;
+  if (overLimit && credit) {
+    why = `${overLimit}, and it comes to ${money(credit.orderTotalCents)} with ${money(credit.creditLeftCents)} of credit left`;
+  } else if (credit) {
+    why = `This order comes to ${money(credit.orderTotalCents)}, and ${account.length > 0 ? account : 'your account'} has ${money(credit.creditLeftCents)} of credit left`;
+  } else {
+    why = overLimit ?? `This order needs approval`;
+  }
+  const asked = whoIsAsked(waitingOn, input.accountApprovers, input.shopName);
   const then = cardWhileWaiting(input.card) ?? 'Nothing is sent until then.';
   if (asked.both) {
-    return `${over}, so it needs two approvals before it goes ahead: ${asked.text}. ${then}`;
+    return `${why}, so it needs two approvals before it goes ahead: ${asked.text}. ${then}`;
   }
-  if (input.waitingOn.includes('account')) {
-    return `${over}, so ${asked.text} approves it before it goes ahead. ${then}`;
+  if (waitingOn.includes('account')) {
+    return `${why}, so ${asked.text} approves it before it goes ahead. ${then}`;
   }
-  return `${over}, so ${businessApproves(input.shopName)} it before it goes ahead. ${then}`;
+  return `${why}, so ${businessApproves(input.shopName)} it before it goes ahead. ${then}`;
 }
 
 /** What the checkout's complete call says about a held order. */
@@ -131,6 +162,9 @@ export interface PlacedApproval {
   waitingOn: SignOffSide[];
   accountApprovers: string[];
   limitCents: number | null;
+  /** The credit it ran past, when that held it too (sparx persona issue 187).
+   *  Absent from an older api-rest. */
+  overCredit?: (OverCredit & { currency: string }) | null;
 }
 
 /**
@@ -151,9 +185,14 @@ export function heldOrderSentence(input: {
   const waitingOn: SignOffSide[] =
     input.approval && input.approval.waitingOn.length > 0 ? input.approval.waitingOn : ['business'];
   const asked = whoIsAsked(waitingOn, input.approval?.accountApprovers ?? [], input.shopName);
+  const credit = input.approval?.overCredit ?? null;
+  // Why the business signs it, when the reason is the account's credit (187).
+  const creditWhy = credit
+    ? ` It comes to ${formatMoney(credit.orderTotalCents, credit.currency)}, and your account has ${formatMoney(credit.creditLeftCents, credit.currency)} of credit left.`
+    : '';
   const head = asked.both
-    ? `needs two approvals: ${asked.text}.`
-    : `is waiting for ${asked.text} to approve it.`;
+    ? `needs two approvals: ${asked.text}.${creditWhy}`
+    : `is waiting for ${asked.text} to approve it.${creditWhy}`;
   const email = 'we will email you as soon as it is approved';
   if (input.card === 'held') {
     return `${head} Your card is not charged unless it is approved, and nothing is sent until then. We will email you as soon as it is.`;
@@ -283,11 +322,23 @@ export function signedSentences(
   return out;
 }
 
-/** "This order is over your account’s $1,000.00 limit." Null when the order
- *  was not held by a spending limit (or the limit has since been removed). */
+/** "This order is over your account’s $1,000.00 limit for one order." Null when
+ *  the order was not held by a spending limit (or it has since been removed).
+ *  "For one order": the account page also shows a CREDIT limit (issue 187). */
 export function overLimitSentence(limitCents: number | null, currency: string): string | null {
   if (limitCents === null) return null;
-  return `This order is over your account’s ${formatMoney(limitCents, currency)} limit.`;
+  return `This order is over your account’s ${formatMoney(limitCents, currency)} limit for one order.`;
+}
+
+/** "When it was placed, it came to $2,026.38 and your account had $1,676.08 of
+ *  credit left." Null when the account's credit did not hold the order (sparx
+ *  persona issue 187). Past tense: a payment can free the credit before it is
+ *  signed off, and these are the figures that held it (issue 188). */
+export function overCreditSentence(
+  overCredit: (OverCredit & { currency: string }) | null | undefined
+): string | null {
+  if (!overCredit) return null;
+  return `When it was placed, it came to ${formatMoney(overCredit.orderTotalCents, overCredit.currency)} and your account had ${formatMoney(overCredit.creditLeftCents, overCredit.currency)} of credit left.`;
 }
 
 /** What an approver's decision did, for the order page they made it on. */
@@ -384,7 +435,9 @@ export function approvalItemFacts(item: {
 }): string[] {
   const facts = [`Placed by ${item.placedBy} on ${dayWords(item.createdAt)}`];
   if (item.limitCents !== null) {
-    facts.push(`Over your account’s ${formatMoney(item.limitCents, item.currency)} limit`);
+    facts.push(
+      `Over your account’s ${formatMoney(item.limitCents, item.currency)} limit for one order`
+    );
   }
   if (item.poNumber) facts.push(`Your PO number ${item.poNumber}`);
   facts.push(itemCountWords(item.itemCount));

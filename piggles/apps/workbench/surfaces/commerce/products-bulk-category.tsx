@@ -4,6 +4,7 @@
 // product keeps every other category. Adding can make the category on the spot,
 // so a search-built selection survives (issue 065).
 
+import { failureMessage } from '../../lib/api/write-failure';
 import { useMemo, useState } from 'react';
 import {
   Alert,
@@ -23,12 +24,7 @@ import { faFolderMinus, faFolderPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { afterPaneChange } from '../../lib/defer';
-import {
-  categoryErrorMessage,
-  flattenCategories,
-  useCategoryTree,
-  useCreateCategory,
-} from './categories-data';
+import { flattenCategories, useCategoryTree, useCreateCategory } from './categories-data';
 import { useBulkCategory } from './products-bulk';
 import { CategoryChoices, NEW_CATEGORY, filterCategories } from './products-bulk-category-list';
 import {
@@ -105,7 +101,7 @@ function useSubmit(direction: Direction, target: BulkTarget, done: () => void) {
       return result.changed;
     } catch (error) {
       // A category made a moment ago stays made: real, empty, listed next time.
-      setFailure(categoryErrorMessage(error, 'This is a problem reaching the server.'));
+      setFailure(failureMessage(error, 'Nothing has been changed. Try again.'));
       return null;
     }
   };
@@ -161,6 +157,41 @@ function Footer({
   );
 }
 
+function DialogFields({
+  direction,
+  pick,
+  failure,
+}: {
+  direction: Direction;
+  pick: ReturnType<typeof useCategoryPick>;
+  failure: string | null;
+}) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
+      <SearchInput
+        size="sm"
+        aria-label={WORDS[direction].find}
+        placeholder={`${WORDS[direction].find}…`}
+        value={pick.search}
+        onValueChange={pick.setSearch}
+      />
+      <CategoryChoices
+        state={pick.tree.isError ? 'error' : pick.tree.isPending ? 'pending' : 'ready'}
+        error={pick.tree.error}
+        all={pick.all}
+        matches={pick.matches}
+        typed={pick.typed}
+        canMake={pick.canMake}
+        adding={direction === 'add'}
+        picked={pick.picked}
+        onPick={pick.setPicked}
+        onRetry={() => void pick.tree.refetch()}
+      />
+      {failure ? <Failure text={failure} /> : null}
+    </div>
+  );
+}
+
 export function BulkCategoryDialog({
   direction,
   target,
@@ -192,27 +223,7 @@ export function BulkCategoryDialog({
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
           <DialogTitle>{words.title(n)}</DialogTitle>
           <DialogDescription>{words.lead}</DialogDescription>
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
-            <SearchInput
-              size="sm"
-              aria-label={words.find}
-              placeholder={`${words.find}…`}
-              value={pick.search}
-              onValueChange={pick.setSearch}
-            />
-            <CategoryChoices
-              state={pick.tree.isError ? 'error' : pick.tree.isPending ? 'pending' : 'ready'}
-              all={pick.all}
-              matches={pick.matches}
-              typed={pick.typed}
-              canMake={pick.canMake}
-              adding={direction === 'add'}
-              picked={pick.picked}
-              onPick={pick.setPicked}
-              onRetry={() => void pick.tree.refetch()}
-            />
-            {submit.failure ? <Failure text={submit.failure} /> : null}
-          </div>
+          <DialogFields direction={direction} pick={pick} failure={submit.failure} />
           <Footer
             direction={direction}
             label={pick.name ? words.action(n, pick.name) : words.title(n)}

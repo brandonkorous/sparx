@@ -13,7 +13,6 @@
 import {
   Button,
   Field,
-  FieldControl,
   FieldDescription,
   FieldLabel,
   Input,
@@ -61,11 +60,13 @@ function ValueControl({
   onChange,
   repItems,
   accountItems,
+  tierItems,
 }: {
   node: PredNode;
   onChange: (next: PredNode) => void;
   repItems: Record<string, string>;
   accountItems: Record<string, string>;
+  tierItems: Record<string, string>;
 }) {
   const meta = fieldMeta(node.field);
   const set = (value: string) => {
@@ -207,6 +208,22 @@ function ValueControl({
           }}
         />
       );
+    case 'tier':
+      return (
+        <Select
+          color="module"
+          aria-label="Wholesale group"
+          value={node.value}
+          items={itemsIncluding(
+            Object.entries(tierItems).map(([value, label]) => ({ value, label })),
+            node.value,
+            'A group since removed'
+          )}
+          onValueChange={(next) => {
+            set(next as string);
+          }}
+        />
+      );
     default:
       return (
         <Input
@@ -230,12 +247,14 @@ function PredicateEditor({
   onRemove,
   repItems,
   accountItems,
+  tierItems,
 }: {
   node: PredNode;
   onChange: (next: PredNode) => void;
   onRemove: () => void;
   repItems: Record<string, string>;
   accountItems: Record<string, string>;
+  tierItems: Record<string, string>;
 }) {
   const meta = fieldMeta(node.field);
 
@@ -288,15 +307,16 @@ function PredicateEditor({
       {operatorTakesValue(node.op) ? (
         <Field>
           <FieldLabel>Value</FieldLabel>
-          <FieldControl
-            render={
-              <ValueControl
-                node={node}
-                onChange={onChange}
-                repItems={repItems}
-                accountItems={accountItems}
-              />
-            }
+          {/* Not inside a FieldControl: its clone merges Base UI's change-EVENT
+              handler into `onChange`, which this calls with the rule, so every
+              keystroke threw (sparx persona issue 148). Each control names
+              itself with its own aria-label. */}
+          <ValueControl
+            node={node}
+            onChange={onChange}
+            repItems={repItems}
+            accountItems={accountItems}
+            tierItems={tierItems}
           />
           {meta.hint ? <FieldDescription>{meta.hint}</FieldDescription> : null}
         </Field>
@@ -314,6 +334,7 @@ export function RuleGroupEditor({
   depth = 0,
   repItems,
   accountItems,
+  tierItems,
 }: {
   node: GroupNode;
   onChange: (next: GroupNode) => void;
@@ -322,6 +343,7 @@ export function RuleGroupEditor({
   depth?: number;
   repItems: Record<string, string>;
   accountItems: Record<string, string>;
+  tierItems: Record<string, string>;
 }) {
   const changeChild = (index: number, next: EditorNode) => {
     onChange({ ...node, children: node.children.map((c, i) => (i === index ? next : c)) });
@@ -393,6 +415,7 @@ export function RuleGroupEditor({
                 depth={depth + 1}
                 repItems={repItems}
                 accountItems={accountItems}
+                tierItems={tierItems}
                 onChange={(next) => {
                   changeChild(index, next);
                 }}
@@ -406,6 +429,7 @@ export function RuleGroupEditor({
                 node={child}
                 repItems={repItems}
                 accountItems={accountItems}
+                tierItems={tierItems}
                 onChange={(next) => {
                   changeChild(index, next);
                 }}

@@ -20,6 +20,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { CreditCard } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -150,10 +151,11 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<CreditCard className="size-6" aria-hidden />}
             title="Could not load checkout sessions"
             description="This is a problem reaching the server. Your sales are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

@@ -5,7 +5,7 @@
 import type { Logger } from 'pino';
 import type { Prisma } from '@prisma/client';
 import { withTenant } from '@wizeworks/db';
-import { createPublisher, publishEvent, type Publisher } from '@wizeworks/events';
+import { createPublisher, indexEntity, publishEvent, type Publisher } from '@wizeworks/events';
 import { createAdapter } from '@wizeworks/dropship';
 
 export interface SyncStartedPayload {
@@ -59,6 +59,7 @@ export async function handleSyncStarted(
         data: { status: 'error' },
       });
     });
+    await reindexOnStatusChange(tenantId, supplierId, supplier.status, 'error');
     return;
   }
 
@@ -146,6 +147,7 @@ export async function handleSyncStarted(
         data: { lastSyncAt: new Date(), status: 'active' },
       });
     });
+    await reindexOnStatusChange(tenantId, supplierId, supplier.status, 'active');
 
     const publisher = createPublisher({
       logger: log,
@@ -175,6 +177,7 @@ export async function handleSyncStarted(
         data: { status: 'error' },
       });
     });
+    await reindexOnStatusChange(tenantId, supplierId, supplier.status, 'error');
     const publisher = createPublisher({
       logger: log,
     });
@@ -187,6 +190,18 @@ export async function handleSyncStarted(
       log
     );
   }
+}
+
+// The search entry shows the supplier's status, and nothing else a sync writes.
+// A routine sync that leaves it unchanged sends nothing.
+async function reindexOnStatusChange(
+  tenantId: string,
+  supplierId: string,
+  before: string,
+  after: string
+): Promise<void> {
+  if (before === after) return;
+  await indexEntity({ tenantId, entityType: 'dropship_supplier', recordId: supplierId });
 }
 
 // Resolve which catalog variants are linked to the dropship products whose cost

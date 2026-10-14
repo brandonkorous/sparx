@@ -38,7 +38,7 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
 import { deriveDocumentStatus } from './billing-ar';
 import { businessTimeZone } from './business-clock';
-import { invoiceLineName, quoteCostsForItems, taxRateFrom } from './ar-invoice-lines';
+import { invoiceLineName, invoiceTaxRate, quoteCostsForItems } from './ar-invoice-lines';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { invoicePaymentMethod, invoicePaymentNote } from './invoice-payment-method';
 
@@ -381,7 +381,7 @@ export async function createInvoiceForOrder(
         // business's debt and its payment terms apply (issue 077).
         companyId: quote?.companyId ?? null,
         currency: order.currency,
-        taxRate: taxRateFrom(items),
+        taxRate: invoiceTaxRate(items, order.metadata),
         // Frozen on the order at checkout, so this is where the goods actually
         // went — not wherever the customer record points today. Translated into
         // the invoice's own party shape on the way across; see `partyFromOrder`.

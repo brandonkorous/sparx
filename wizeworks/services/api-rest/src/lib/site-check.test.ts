@@ -27,6 +27,8 @@ function stubTx(rows: {
   categories?: { handle: string }[];
   entries?: { slug: string | null; typeKey: string }[];
   services?: { id: string }[];
+  /** Authors of the site, and how many published pieces each wrote. */
+  authors?: { id: string; slug: string; written: number }[];
 }) {
   const calls: string[] = [];
   const tx = {
@@ -48,7 +50,38 @@ function stubTx(rows: {
         return Promise.resolve(rows.categories ?? []);
       },
     },
+    contentType: {
+      findMany: () =>
+        Promise.resolve([
+          {
+            key: 'blog_post',
+            name: 'Blog post',
+            pluralName: 'Blog posts',
+            urlPattern: '/blog/{slug}',
+            schemaJson: { fields: [] },
+          },
+        ]),
+    },
+    author: {
+      findMany: () => {
+        calls.push('author');
+        return Promise.resolve(
+          (rows.authors ?? []).map((a) => ({
+            id: a.id,
+            slug: a.slug,
+            displayName: a.slug,
+            bio: null,
+            avatarAssetId: null,
+          }))
+        );
+      },
+    },
     contentEntry: {
+      groupBy: () =>
+        Promise.resolve(
+          (rows.authors ?? []).map((a) => ({ authorId: a.id, _count: { _all: a.written } }))
+        ),
+      count: () => Promise.resolve(0),
       findMany: (args: { where: { typeKey: string } }) => {
         calls.push(`contentEntry:${args.where.typeKey}`);
         return Promise.resolve(
@@ -84,6 +117,10 @@ describe('linkTargets', () => {
         { slug: 'first-post', typeKey: 'blog_post' },
       ],
       services: [{ id: 'svc-1' }],
+      authors: [
+        { id: 'a1', slug: 'rosalind-pike', written: 3 },
+        { id: 'a2', slug: 'eleanor-vance', written: 0 },
+      ],
     });
 
     const targets = await linkTargets(tx, CTX);
@@ -93,6 +130,8 @@ describe('linkTargets', () => {
     expect(targets.categoryHandles).toEqual(['filters']);
     expect(targets.postSlugs).toEqual(['first-post']);
     expect(targets.serviceIds).toEqual(['svc-1']);
+    // Only an author with something published has a page to link to.
+    expect(targets.authorSlugs).toEqual(['rosalind-pike']);
   });
 
   it('leaves a disabled module UNDEFINED rather than empty, and never queries it', async () => {

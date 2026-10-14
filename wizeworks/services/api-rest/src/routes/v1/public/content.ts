@@ -1,7 +1,9 @@
 // Public read endpoints for headless storefronts and the marketing site.
 //
 //   GET /v1/public/content/entries          ?tenant=<slug>&type=<key>[&limit=&cursor=|&page=]
+//                                           [&where_field=<field>&where_value=<value>]
 //   GET /v1/public/content/entries/by-slug  ?tenant=<slug>&type=<key>&slug=<>
+//   GET /v1/public/content/entries/by-path  ?tenant=<slug>&path=</articles/x>
 //   GET /v1/public/content/types/:key       ?tenant=<slug>
 //
 // No auth required: results are restricted to `status='published'` and
@@ -22,11 +24,14 @@ import { checkoutService, commerceSiteService } from '@wizeworks/commerce';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { notFound, badRequest } from '@wizeworks/api-core/errors';
 import { serializeEntry, PUBLIC_ENTRY_BYLINE_INCLUDE } from '@wizeworks/cms';
+import { kindAddressForPath, kindAddressFromPattern } from '@wizeworks/silica-catalog';
+import { creditFieldsOf, creditedIds } from '../../../lib/author-credits.js';
 import { tryVerifyPreviewToken } from '../../../lib/preview.js';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';
 import { resolvePublicPropertyId, contentSiteVisibilityWhere } from '../../../lib/property.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
+import { canonicalSiteHost } from '../../../lib/site-origin.js';
 import { resolveBillingPhase, isPlatformTenant } from '@wizeworks/billing';
 
 // `property` (a stable site slug) scopes content to one web PROPERTY (docs/49
@@ -47,6 +52,13 @@ const ListQuery = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(250).default(50),
   page: z.coerce.number().int().min(1).max(10_000).optional(),
+  // Only the entries filed under one choice: `where_field=section&where_value=field` for a
+  // journal's Field section. Both or neither.
+  where_field: z
+    .string()
+    .regex(/^[a-zA-Z][a-zA-Z0-9_]{0,62}$/)
+    .optional(),
+  where_value: z.string().min(1).max(255).optional(),
 });
 
 const BySlugQuery = z.object({
@@ -71,6 +83,15 @@ const ByIdsQuery = z.object({
     .min(1)
     .transform((raw) => raw.split(',').filter(Boolean))
     .pipe(z.array(z.string().uuid()).min(1).max(50)),
+});
+
+// A piece of a content kind, by the web address its kind gives it — `/articles/x` for a
+// kind whose pattern is `/articles/{slug}`. The storefront's catch-all asks this for any
+// path no page owns.
+const ByPathQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
+  path: z.string().min(1).max(512),
 });
 
 const TypeKeyParams = z.object({ key: z.string().min(1).max(63) });
@@ -225,11 +246,17 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     // Model B: only entries published to the active site (global or scoped here).
+    if ((q.where_field === undefined) !== (q.where_value === undefined)) {
+      throw badRequest('where_field and where_value go together.');
+    }
     const where = {
       typeKey: q.type,
       status: 'published',
       deletedAt: null,
       ...contentSiteVisibilityWhere(propertyId),
+      ...(q.where_field && q.where_value
+        ? { body: { path: [q.where_field], equals: q.where_value } }
+        : {}),
     };
     const orderBy = [{ publishedAt: 'desc' as const }, { id: 'desc' as const }];
 
@@ -301,6 +328,79 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     );
     if (!row) throw notFound(`${q.type}`, q.slug);
     return ok(serializeEntry(row));
+  });
+
+  // A content kind's piece at its web address. Registered BEFORE `/entries/:id`, which
+  // would otherwise read "by-path" as an id.
+  //
+  // Answers the KIND as well as the piece, because the storefront builds the page from
+  // the kind's fields when the owner has not made one of her own, and needs its names
+  // for the page's words. A kind is matched on its address SHAPE (`kindAddressFromPattern`),
+  // the same rule the page seeding and the sitemap use, so a pattern the storefront
+  // cannot serve is never answered here either.
+  app.get('/v1/public/content/entries/by-path', async (request) => {
+    const q = ByPathQuery.parse(request.query);
+    const address = kindAddressForPath(q.path);
+    if (!address) throw notFound('Entry', q.path);
+    const slug = q.path.replace(/\/+$/, '').split('/').pop() ?? '';
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const preview = await tryVerifyPreviewToken(app, request);
+    const found = await withTenant({ tenantId }, async (tx) => {
+      const types = await tx.contentType.findMany({
+        where: { isSingleton: false, OR: [{ propertyId: null }, { propertyId }] },
+        // The tenant's own kind shadows a built-in of the same key.
+        orderBy: [{ isBuiltIn: 'asc' }, { key: 'asc' }],
+        select: { key: true, name: true, pluralName: true, urlPattern: true, schemaJson: true },
+      });
+      const seen = new Set<string>();
+      const kinds = types.filter((t) => {
+        if (seen.has(t.key)) return false;
+        seen.add(t.key);
+        return kindAddressFromPattern(t.urlPattern)?.slug === address.slug;
+      });
+      if (kinds.length === 0) return null;
+      const row = await tx.contentEntry.findFirst({
+        where: {
+          typeKey: { in: kinds.map((k) => k.key) },
+          slug,
+          deletedAt: null,
+          ...contentSiteVisibilityWhere(propertyId),
+          ...(preview
+            ? { OR: [{ status: 'published' }, { id: preview.entryId }] }
+            : { status: 'published' }),
+        },
+        include: PUBLIC_ENTRY_BYLINE_INCLUDE,
+      });
+      if (!row) return null;
+      const kind = kinds.find((k) => k.key === row.typeKey)!;
+      const fields = (kind.schemaJson as { fields?: unknown[] } | null)?.fields ?? [];
+      // The people its credit fields name ("Photograph by"), so the page can print
+      // and link them rather than an id.
+      const ids = creditedIds(creditFieldsOf(fields), (row.body ?? {}) as Record<string, unknown>);
+      const people =
+        ids.length === 0
+          ? []
+          : await tx.author.findMany({
+              where: { id: { in: ids }, OR: [{ propertyId: null }, { propertyId }] },
+              select: { id: true, slug: true, displayName: true },
+            });
+      return {
+        entry: serializeEntry(row),
+        kind: {
+          key: kind.key,
+          name: kind.name,
+          pluralName: kind.pluralName,
+          prefix: address.prefix,
+          fields,
+        },
+        people: Object.fromEntries(
+          people.map((p) => [p.id, { display_name: p.displayName, slug: p.slug }])
+        ),
+      };
+    });
+    if (!found) throw notFound('Entry', q.path);
+    return ok(found);
   });
 
   // Batch lookup by id (docs/127 §7) — the storefront hydrates every CMS entry a
@@ -527,7 +627,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // theme row is one-per-(tenant, property); settings stays one-per-tenant. A
     // missing row means the site hasn't customized, so we fall back to
     // nulls/defaults the storefront's token layer reads as "use the default theme".
-    const [theme, storefront, brand, consent, propertyRow] = await withTenant(
+    const [theme, storefront, brand, consent, propertyRow, business] = await withTenant(
       { tenantId: tenant.id },
       (tx) =>
         Promise.all([
@@ -589,12 +689,21 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           tx.property.findUnique({
             where: { id: propertyId },
             select: {
+              id: true,
+              slug: true,
+              isPrimary: true,
               name: true,
               settings: true,
               showPlatformCredit: true,
               brandOverride: true,
               moduleScope: true,
             },
+          }),
+          // The business's own clock, so a date the site prints ("October 1, 2026")
+          // is the day it was on that clock, not on whichever server rendered it.
+          tx.tenantBusiness.findUnique({
+            where: { tenantId: tenant.id },
+            select: { timezone: true },
           }),
         ])
     );
@@ -672,9 +781,20 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           }
         : null;
 
+    // The site's ONE public address, from the helper the sitemap and the feed use. A
+    // page names it as its canonical link, so search engines are told one address
+    // per page whichever host served it (P09: no page said which address was its own).
+    const siteOrigin = `https://${await canonicalSiteHost({
+      tenantId: tenant.id,
+      tenantSlug: tenant.slug,
+      tenantSettings: tenant.settings,
+      property: propertyRow,
+    })}`;
+
     return ok({
       id: tenant.id,
       slug: tenant.slug,
+      siteOrigin,
       // `name` (legal/org tenant name) + `businessName` (brand) stay for rollout
       // back-compat but are NON-authoritative for display. `propertyName` is the
       // customer-facing SITE name the storefront renders (docs/49) — the active
@@ -705,6 +825,8 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       // PER-SITE contact details — the phone/email/postal address a starter site's
       // Contact page binds. No tenant fallback (see readSiteContact).
       contact: readSiteContact(propertyRow?.settings),
+      // The business's time zone (Business details), or null when none is set.
+      timezone: business?.timezone ?? null,
       theme: mergedTheme,
       commerce: {
         // Per-site override wins; falls back to tenant CommerceSiteSettings then hardcoded default.

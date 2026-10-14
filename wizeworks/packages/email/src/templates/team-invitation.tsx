@@ -33,6 +33,12 @@ export interface TeamInvitationEmailProps {
   expiresInDays: number;
 }
 
+/** "an editor", "an admin", "a member": the article read off the role's first letter.
+ *  It said "as a editor" to every editor ever invited (piggles persona issue 989). */
+export function roleWithArticle(role: string): string {
+  return `${/^[aeiou]/i.test(role) ? 'an' : 'a'} ${role}`;
+}
+
 export function TeamInvitationEmail({
   inviteeEmail,
   orgName,
@@ -49,8 +55,8 @@ export function TeamInvitationEmail({
     >
       <EmailDisplayHeading>You&apos;re invited to join {orgName}</EmailDisplayHeading>
       <EmailParagraph>
-        {inviterName} invited you to join <strong>{orgName}</strong> on {platform} as a{' '}
-        <strong>{role}</strong>. Accept the invitation to get access to the workspace.
+        {inviterName} invited you to join <strong>{orgName}</strong> on {platform} as{' '}
+        <strong>{roleWithArticle(role)}</strong>. Accept the invitation to start working in it.
       </EmailParagraph>
       <EmailCallout tone="info">
         This invitation was sent to {inviteeEmail}. Sign in with that address (or create an account

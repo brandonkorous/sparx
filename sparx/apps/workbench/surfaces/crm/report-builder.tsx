@@ -67,6 +67,7 @@ import {
   type ReportResult,
   type Visualization,
 } from './report-builder-data';
+import { emptyAnswer, formatCell, groupText } from './report-group-words';
 import { failureMessage } from '../../lib/api/write-failure';
 
 /* ── Draft ──────────────────────────────────────────────────────────────── */
@@ -216,38 +217,34 @@ function toGroupBy(draft: Draft, fields: ReportField[]): GroupBy | null {
 
 /* ── Rendering an answer ────────────────────────────────────────────────── */
 
-function formatCell(value: unknown): string {
-  if (value === null || value === undefined) return '—';
-  if (typeof value === 'number') {
-    return Number.isInteger(value) ? value.toLocaleString() : value.toFixed(2);
-  }
-  if (typeof value === 'bigint') return value.toLocaleString();
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  // A grouped custom property comes back as whatever was in the JSONB bag, which
-  // is not always a scalar. `String({})` is "[object Object]" — a cell that looks
-  // like data and is not, so it is rendered as absent instead.
-  if (typeof value !== 'string') return '—';
-  const text = value;
-  // A DATE_TRUNC bucket comes back as a timestamp; nobody wants to read the
-  // time part of "the month of March".
-  const asDate = /^\d{4}-\d{2}-\d{2}T/.exec(text) ? new Date(text) : null;
-  return asDate ? asDate.toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : text;
-}
-
 function ResultView({
   result,
   visualization,
   accent,
+  objectKey,
+  groupField,
+  empty,
 }: {
   result: ReportResult;
   visualization: Visualization;
   accent: string | undefined;
+  /** What the breakdown is OF, so each group can be named (issue 247). */
+  objectKey: string;
+  groupField: string | undefined;
+  /** What to say when nothing came back; see `emptyAnswer`. */
+  empty: string;
 }) {
+  const naming = useMemo(
+    () => ({ objectKey, field: groupField, groupLabels: result.groupLabels }),
+    [objectKey, groupField, result.groupLabels]
+  );
   const option = useMemo<EChartsOption | null>(() => {
     if (!result.grouped || result.rows.length === 0) return null;
+    // "A table" is drawn as the table below, never as bars (issue 248).
+    if (visualization === 'table') return null;
     const [group, ...measures] = result.columns;
     if (!group) return null;
-    const labels = result.rows.map((row) => formatCell(row[group.key]));
+    const labels = result.rows.map((row) => groupText(row[group.key], naming));
     const series = measures.map((column) => ({
       name: column.label,
       type: visualization === 'line' ? ('line' as const) : ('bar' as const),
@@ -267,7 +264,7 @@ function ResultView({
             type: visualization === 'pie' ? 'pie' : 'funnel',
             radius: visualization === 'pie' ? ['45%', '72%'] : undefined,
             data: result.rows.map((row) => ({
-              name: formatCell(row[group.key]),
+              name: groupText(row[group.key], naming),
               value: Number(row[first.key] ?? 0),
             })),
           },
@@ -287,12 +284,12 @@ function ResultView({
       yAxis: { type: 'value', splitNumber: 3, minInterval: 1 },
       series,
     };
-  }, [result, visualization, accent]);
+  }, [result, visualization, accent, naming]);
 
   if (result.rows.length === 0) {
     return (
       <div className="border-base-300 rounded-box border p-8 text-center">
-        <Text>Nothing matches yet. Loosen a filter, or widen the period.</Text>
+        <Text>{empty}</Text>
       </div>
     );
   }
@@ -304,7 +301,9 @@ function ResultView({
     return (
       <div className="border-base-300 rounded-box flex flex-col gap-1 border p-8 text-center">
         <span className="text-5xl font-semibold">
-          {column && row ? formatCell(row[column.key]) : '—'}
+          {column && row
+            ? formatCell(row[column.key], { kind: column.kind, currency: result.currency })
+            : '—'}
         </span>
         <Text>{column?.label ?? ''}</Text>
       </div>
@@ -332,8 +331,12 @@ function ResultView({
         <tbody>
           {result.rows.map((row, index) => (
             <tr key={index}>
-              {result.columns.map((column) => (
-                <td key={column.key}>{formatCell(row[column.key])}</td>
+              {result.columns.map((column, at) => (
+                <td key={column.key}>
+                  {result.grouped && at === 0
+                    ? groupText(row[column.key], naming)
+                    : formatCell(row[column.key], { kind: column.kind, currency: result.currency })}
+                </td>
               ))}
             </tr>
           ))}
@@ -484,7 +487,9 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
       </PaneToolbar>
 
-      <div className="grid grid-cols-[minmax(320px,380px)_minmax(0,1fr)] gap-6 overflow-auto p-6 max-[900px]:grid-cols-1">
+      {/* Two columns only when the PANE is wide: a docked pane is often narrow in
+          a wide window, and a window rule left the answer about 60px (issue 249). */}
+      <div className="grid grid-cols-1 gap-6 overflow-auto p-6 @4xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)]">
         {/* The question, read top to bottom as a sentence. */}
         <div className="flex flex-col gap-5">
           {readOnly ? (
@@ -937,6 +942,12 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 result={preview.data}
                 visualization={draft.visualization}
                 accent={accent}
+                objectKey={draft.objectKey}
+                groupField={draft.groupByField || undefined}
+                empty={emptyAnswer({
+                  narrowed: definition.filters.conditions.length > 0 || draft.rangeKind !== 'all',
+                  labelPlural: object?.labelPlural ?? 'records',
+                })}
               />
               {preview.data.truncated ? (
                 <Alert color="info">

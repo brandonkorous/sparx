@@ -39,6 +39,7 @@ import { FormSection } from '../../components/form-section';
 const MODULE = 'commerce';
 import { afterCommit } from '../../lib/defer';
 import {
+  conditionLabel,
   dispositionLabel,
   dispositionTone,
   useReturnDispositions,
@@ -168,7 +169,7 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
                     </span>
                   </td>
                   <td className="text-right tabular-nums">{row.quantity}</td>
-                  <td className="text-sm whitespace-nowrap">{row.condition.replace(/_/g, ' ')}</td>
+                  <td className="text-sm whitespace-nowrap">{conditionLabel(row.condition)}</td>
                   <td>
                     {row.disposition ? (
                       <span className="flex flex-col gap-0.5">

@@ -352,7 +352,10 @@ export const UpdateBillingDocumentInput = z
 export type UpdateBillingDocumentInput = z.infer<typeof UpdateBillingDocumentInput>;
 
 // ── Payments / AR (Phase 4, §8) ──────────────────────────────────────────────
-export const BillingPaymentKind = z.enum(['deposit', 'payment', 'refund']);
+// `credit` takes money off what is owed without any money moving: a returned
+// core's deposit coming off the invoice it was billed on. It settles the balance
+// like a payment, and is never counted as money collected (sparx persona issue 185).
+export const BillingPaymentKind = z.enum(['deposit', 'payment', 'refund', 'credit']);
 export type BillingPaymentKind = z.infer<typeof BillingPaymentKind>;
 
 export const BillingPaymentMethod = z.enum([
@@ -368,7 +371,7 @@ export const BillingPaymentMethod = z.enum([
 ]);
 export type BillingPaymentMethod = z.infer<typeof BillingPaymentMethod>;
 
-// Record a deposit / payment / refund against a document. Append-only: a
+// Record a deposit / payment / refund / credit against a document. Append-only: a
 // correction is a new `refund` row, never an edit. `amount` is always positive;
 // `kind` decides the direction.
 export const RecordBillingPaymentInput = z.object({

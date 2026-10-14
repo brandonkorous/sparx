@@ -45,6 +45,8 @@ import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaField } from './media-field';
+import { pageAddress } from './page-address';
+import { useSiteHost } from '../domains/site-host';
 import { CollectionRulesEditor } from './collection-rules';
 import { CollectionProductsEditor } from './collection-products';
 import { filedInGroup, membershipLine } from './collection-members-words';
@@ -207,6 +209,7 @@ function CollectionEditor({
   };
 
   const effectiveHandle = isNew && !handleTouched ? slugifyHandle(draft.name) : draft.handle;
+  const host = useSiteHost();
   const nameError = draft.name.trim() === '' ? 'Give the collection a name.' : null;
 
   const membershipChanged = draft.type === 'manual' && !sameSet(draft.productIds, saved.productIds);
@@ -483,8 +486,8 @@ function CollectionEditor({
                 }
               />
               <FieldDescription>
-                The end of this collection&apos;s page address: yoursite.com/collections/
-                {effectiveHandle || '…'}.
+                The end of this collection&apos;s page address:{' '}
+                {pageAddress(host, 'commerce.collection', effectiveHandle)}.
               </FieldDescription>
             </Field>
 

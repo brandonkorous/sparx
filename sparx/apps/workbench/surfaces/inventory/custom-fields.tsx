@@ -389,7 +389,9 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
                 <Text className="text-sm">{field.options.join(', ')}</Text>
               ) : null}
             </td>
-            <td className="hidden font-mono text-sm @lg:table-cell">cf_{field.key}</td>
+            <td className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell">
+              cf_{field.key}
+            </td>
             {HAS_EDITABLE_LIST[entity] ? (
               <td className="text-center">
                 <Switch

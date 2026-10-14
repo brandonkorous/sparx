@@ -90,10 +90,34 @@ const STATES: Record<string, ReturnState> = {
   },
 };
 
+/** How a settled refund reached her. "Sent back" is true only when it went back
+ *  to how she paid: cash or a cheque was handed to her, and store credit sits on
+ *  her account. Every refund said "sent back", so a counter refund sent her
+ *  looking at a card statement (sparx persona issue 178). */
+export type RefundRoute = 'payment' | 'by_hand' | 'store_credit';
+
+const REFUNDED_HINT: Record<RefundRoute, string> = {
+  payment: 'Your money has gone back.',
+  by_hand: 'We gave your money back to you.',
+  store_credit: 'Your refund is on your account as store credit.',
+};
+
+/** The line under "Refunded to you", with the day it happened. */
+export function refundedLine(route: RefundRoute | null, day: string): string {
+  if (route === 'payment') return `Sent back ${day}`;
+  if (route === 'by_hand') return `Given back to you ${day}`;
+  if (route === 'store_credit') return `Added to your account ${day}`;
+  return `Refunded ${day}`;
+}
+
 /** Unknown states are possible: the stored vocabulary can grow ahead of this
  *  file. Say the raw word rather than nothing — a blank badge is worse than an
- *  unfamiliar one — and claim no action. */
-export function returnState(status: string): ReturnState {
+ *  unfamiliar one — and claim no action. `route`, when the page knows it, says
+ *  how a refund reached her. */
+export function returnState(status: string, route: RefundRoute | null = null): ReturnState {
+  if (status === 'refunded' && route) {
+    return { ...STATES.refunded!, hint: REFUNDED_HINT[route] };
+  }
   return (
     STATES[status] ?? {
       label: status.replace(/_/g, ' '),

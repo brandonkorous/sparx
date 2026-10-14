@@ -25,7 +25,7 @@
 // recently is the one they are most likely designing against, and it keeps the whole set
 // to five single-row lookups.
 
-import { RECORD_ADDRESSES, type RecordAddress } from '@wizeworks/silica-catalog';
+import { RECORD_ADDRESSES, kindPath, type RecordAddress } from '@wizeworks/silica-catalog';
 import {
   categorySiteVisibilityWhere,
   collectionSiteVisibilityWhere,
@@ -36,6 +36,7 @@ import {
 import type { Prisma } from '@wizeworks/db';
 
 import type { PropertyContext } from '../errors';
+import { servedKindsTx } from './kind-pages';
 
 /** A record page's storefront path, per record type — `{'commerce.product':
  *  '/products/brake-kit'}`. A record type is ABSENT when the tenant has no visible record
@@ -91,6 +92,21 @@ const RESOLVERS: Record<
     });
     return row?.slug ?? null;
   },
+  // An author with a published piece on this site: the storefront answers an author's
+  // page only then. The writer of the newest piece, so Preview opens someone current.
+  'cms.author': async (tx, propertyId) => {
+    const row = await tx.contentEntry.findFirst({
+      where: {
+        status: 'published',
+        deletedAt: null,
+        author: { OR: [{ propertyId: null }, { propertyId }] },
+        ...contentSiteVisibilityWhere(propertyId),
+      },
+      orderBy: { publishedAt: 'desc' },
+      select: { author: { select: { slug: true } } },
+    });
+    return row?.author?.slug ?? null;
+  },
   // Scheduling routes on the service ID, not a handle — and `/book/:serviceId` is only
   // reachable for a service the site actually offers online. `propertyId: null` is the
   // tenant-wide service (docs/131 §4), which every site offers.
@@ -130,6 +146,26 @@ export function recordSamplePaths(ctx: PropertyContext): Promise<RecordSamplePat
       } catch {
         // Leave this address unresolved — see the note above.
       }
+    }
+    // A content kind's page ("Each article") is keyed by its ADDRESS, because a kind is
+    // not one of the fixed record types: `/articles/:slug` → `/articles/the-last-mill`.
+    try {
+      for (const kind of await servedKindsTx(tx, ctx.propertyId)) {
+        const row = await tx.contentEntry.findFirst({
+          where: {
+            typeKey: kind.key,
+            status: 'published',
+            deletedAt: null,
+            slug: { not: null },
+            ...contentSiteVisibilityWhere(ctx.propertyId),
+          },
+          orderBy: { updatedAt: 'desc' },
+          select: { slug: true },
+        });
+        if (row?.slug) paths[kind.address.slug] = kindPath(kind.address, row.slug);
+      }
+    } catch {
+      // As above: a missing sample costs only its own preview.
     }
     return paths;
   });

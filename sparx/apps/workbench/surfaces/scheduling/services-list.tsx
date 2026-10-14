@@ -25,7 +25,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
   Table,
@@ -53,6 +52,7 @@ import {
   servicePriceSuffix,
 } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const DETAIL_KEY = 'scheduling.services.detail';
 
@@ -94,7 +94,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useServices({
+  const { data, isPending, isFetching, dataUpdatedAt, isError, error, refetch } = useServices({
     q: search.trim(),
     ...(type ? { bookingType: type as BookingType } : {}),
     activeOnly,
@@ -147,21 +147,14 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Briefcase className="size-6" aria-hidden />}
           title="Could not load your services"
           description="This is a problem reaching the server. Your services are unaffected: the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
         />
       );
     }

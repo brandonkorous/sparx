@@ -154,6 +154,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
           icon={<Server className="size-6" aria-hidden />}
           title="Could not load your AI usage"
           description="This is a problem reaching the server. Your connected apps and keys are unaffected."
+          error={summary.error}
           onRetry={() => {
             void summary.refetch();
           }}

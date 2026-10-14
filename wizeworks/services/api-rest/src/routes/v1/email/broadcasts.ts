@@ -137,11 +137,29 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     if (!broadcast.builderEmailId) {
       return ok({ ready: false, reason: 'no-email' as const });
     }
-    const doc = await emailService.getPublishedById(ctx, broadcast.builderEmailId);
-    if (!doc) return ok({ ready: false, reason: 'not-published' as const });
+    // A SENT broadcast shows the version of its design that was live when it went
+    // out, not today's: the design can be published again afterwards, and this
+    // preview is the only record of what the audience received (sparx persona issue
+    // 161). If that version is not kept, say so rather than show today's as it.
+    const doc = broadcast.sentAt
+      ? await emailService.getPublishedAsOf(
+          ctx,
+          broadcast.builderEmailId,
+          new Date(broadcast.sentAt)
+        )
+      : await emailService.getPublishedById(ctx, broadcast.builderEmailId);
+    if (!doc) {
+      return ok({
+        ready: false,
+        reason: broadcast.sentAt ? ('sent-version-not-kept' as const) : ('not-published' as const),
+      });
+    }
     // A real recipient, or nobody — previewing as an invented person would prove
-    // the tags render, not that they render right.
-    const recipient = await broadcastService.previewRecipient(ctx, id);
+    // the tags render, not that they render right. A sent broadcast is shown as
+    // somebody it went to; today's audience may hold people who joined since.
+    const recipient =
+      (broadcast.sentAt ? await broadcastService.sentRecipient(ctx, id) : null) ??
+      (await broadcastService.previewRecipient(ctx, id));
     if (!recipient) return ok({ ready: false, reason: 'no-audience' as const });
 
     const identity = await loadSenderIdentity(ctx.tenantId, broadcast.propertyId);

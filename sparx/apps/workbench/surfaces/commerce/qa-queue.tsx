@@ -24,6 +24,7 @@ import {
 import { Check, EyeOff, HelpCircle, Reply, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, questionState } from './products-data';
 import {
@@ -366,24 +367,14 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {questions.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load the questions queue"
-              description={productErrorMessage(
-                questions.error,
-                'This is a problem reaching the server. Nothing customers asked has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void questions.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing customers asked has been lost."
+              error={questions.error}
+              onRetry={() => {
+                void questions.refetch();
+              }}
             />
           ) : questions.isLoading ? (
             <p className="text-sm" role="status">

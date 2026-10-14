@@ -25,7 +25,8 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { segmentMembership, useSegments, type Segment } from './segments-data';
-import { describeRule } from './segment-summary';
+import { describeRule, type PickedNames } from './segment-summary';
+import { usePickedNames } from './segment-picked-names';
 import { ListFooter } from '../../components/list-footer';
 import { countLabel } from '../../components/list-footer-words';
 
@@ -44,8 +45,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
  * that reads like a statement about the group rather than like a value nothing
  * could compute. Piggles fixed this; this console never got it.
  */
-function ruleSummary(segment: Segment): string {
-  return describeRule(segment.rules);
+function ruleSummary(segment: Segment, names: PickedNames): string {
+  return describeRule(segment.rules, {}, names);
 }
 
 /**
@@ -74,6 +75,7 @@ function KindBadge({ segment }: { segment: Segment }) {
 }
 
 export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const picked = usePickedNames();
   const [search, setSearch] = useState('');
   const [scope, setScope] = useState<'active' | 'all'>('active');
 
@@ -230,14 +232,14 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ) : null}
                     {segment.description ? (
                       <span className="block truncate text-sm @md:hidden">
-                        {ruleSummary(segment)}
+                        {ruleSummary(segment, picked)}
                       </span>
                     ) : null}
                   </td>
                   <td className="text-right text-sm tabular-nums">
                     {segment._count ? segmentMembership(segment._count.members) : '—'}
                   </td>
-                  <td className="hidden text-sm @lg:table-cell">{ruleSummary(segment)}</td>
+                  <td className="hidden text-sm @lg:table-cell">{ruleSummary(segment, picked)}</td>
                   <td>
                     <KindBadge segment={segment} />
                   </td>

@@ -10,12 +10,14 @@ import { arrangeWindows, type ArrangeStyle } from '../window-arrange';
 import { rescaleWindows, type ZoomLevel } from '../window-zoom';
 import {
   boxOf,
+  cascadeBox,
   fillBox,
   floatingGroups,
   sameBox,
   snapBox,
   type FloatBox,
   type FloatViewport,
+  windowsToRefill,
 } from '../window-placement';
 
 export interface CanvasCommandOptions {
@@ -41,6 +43,9 @@ export interface CanvasCommands {
    *  (sparx persona issue 030). */
   toggleFill: (group: DockviewGroupPanel) => boolean;
   isFilled: (groupId: string) => boolean;
+  /** Fit every filled window to the screen as it is NOW. Run whenever the screen
+   *  changes size and once a saved layout is on screen (sparx persona issue 167). */
+  refill: () => void;
 }
 
 export function useCanvasCommands({
@@ -55,12 +60,20 @@ export function useCanvasCommands({
   // The zoom ON SCREEN. The FIRST value is deliberately not applied: the layout
   // was saved at that zoom, so the boxes it restored are already the right size.
   const applied = useRef<ZoomLevel>(zoom);
+  // Each filled window's box from before it filled, by group id. Kept here, not in the
+  // title bar: re-placing a window rebuilds its frame, and the bar remounts with it.
+  const unfilled = useRef(new Map<string, FloatBox>());
+  // `refill`, for the zoom effect below, which comes before it is defined.
+  const refillRef = useRef<() => void>(() => undefined);
   useEffect(() => {
     const dock = api.current;
     if (!dock || applied.current === zoom) return;
     const previous = applied.current;
     applied.current = zoom;
     rescaleWindows(dock, previous, zoom, canvas.current, bases.current);
+    // A filled window is as big as what you can see, whatever the zoom (see
+    // fillBox), so the rescale must not shrink it.
+    refillRef.current();
     fit();
   }, [api, bases, canvas, fit, zoom]);
 
@@ -87,6 +100,9 @@ export function useCanvasCommands({
       const groups = floatingGroups(dock);
       const dragged = groups.find((group) => moved.contains(group.element));
       if (!dragged) return;
+      // Moved by hand, so no longer filling the screen: a resize must not snap it
+      // back.
+      unfilled.current.delete(dragged.id);
 
       const box = boxOf(dragged, ground);
       const snapped = snapBox(
@@ -100,10 +116,6 @@ export function useCanvasCommands({
     },
     [api, canvas, fit, forget, readViewport]
   );
-
-  // Each filled window's box from before it filled, by group id. Kept here, not in the
-  // title bar: re-placing a window rebuilds its frame, and the bar remounts with it.
-  const unfilled = useRef(new Map<string, FloatBox>());
 
   const toggleFill = useCallback(
     (group: DockviewGroupPanel): boolean => {
@@ -127,5 +139,31 @@ export function useCanvasCommands({
 
   const isFilled = useCallback((groupId: string) => unfilled.current.has(groupId), []);
 
-  return { arrange, dragEnded, toggleFill, isFilled };
+  const refill = useCallback(() => {
+    const dock = api.current;
+    const ground = canvas.current;
+    if (!dock || !ground) return;
+    const view = readViewport();
+    const groups = floatingGroups(dock);
+    const plan = windowsToRefill(
+      groups.map((group) => ({ id: group.id, box: boxOf(group, ground) })),
+      new Set(unfilled.current.keys()),
+      view
+    );
+    const ids = new Set(plan.ids);
+    if (ids.size === 0) return;
+    for (const group of groups) {
+      if (!ids.has(group.id)) continue;
+      // A filled window restored from a saved layout has no box of its own to go
+      // back to (which ones were filled is not saved), so its title bar's restore
+      // puts it where a new window would open.
+      if (!unfilled.current.has(group.id)) unfilled.current.set(group.id, cascadeBox(view, 0));
+      dock.addFloatingGroup(group, plan.box);
+    }
+    forget();
+    fit();
+  }, [api, canvas, fit, forget, readViewport]);
+  refillRef.current = refill;
+
+  return { arrange, dragEnded, toggleFill, isFilled, refill };
 }

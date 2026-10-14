@@ -83,10 +83,21 @@ const financeProfitRoutes: FastifyPluginAsync = async (app) => {
     if (query.refresh) await rebuild(tenantId, query.from, query.to);
 
     const prev = previousRange(query.from, query.to);
-    const [current, previous] = await Promise.all([
+    let [current, previous] = await Promise.all([
       profitForRange(tenantId, query.from, query.to, propertyId),
       profitForRange(tenantId, prev.from, prev.to, propertyId),
     ]);
+    // Never worked out is not "nothing happened". A period the nightly job has
+    // not reached yet came back as no rows, and the screen read that as "No money
+    // came in" over a month of paid orders (sparx persona issue 172). So the
+    // first read of such a period works it out, both halves of the comparison.
+    if (!query.refresh && (current.computedAt === null || previous.computedAt === null)) {
+      await rebuild(tenantId, prev.from, query.to);
+      [current, previous] = await Promise.all([
+        profitForRange(tenantId, query.from, query.to, propertyId),
+        profitForRange(tenantId, prev.from, prev.to, propertyId),
+      ]);
+    }
 
     const series = query.series
       ? await prisma.$transaction(async (tx) => {

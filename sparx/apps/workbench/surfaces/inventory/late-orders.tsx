@@ -35,6 +35,7 @@ import {
 import { CalendarClock, PackageSearch } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import { formatDay, formatMoment } from './purchase-orders-data';
@@ -75,10 +76,11 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (report.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageSearch className="size-6" aria-hidden />}
           title="Could not check what is overdue"
           description="This is a problem reaching the server, not a finding about your orders. Try again in a moment."
+          error={report.error}
         />
       );
     }

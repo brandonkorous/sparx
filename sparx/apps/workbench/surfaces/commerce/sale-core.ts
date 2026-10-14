@@ -19,6 +19,7 @@
 
 import type { SaleLine } from './sale-data';
 import { formatCents } from './products-data';
+import { taxByLine, type SaleTaxQuote } from './sale-tax';
 
 /** What a version asks about its old part. */
 export interface CoreOffer {
@@ -80,11 +81,13 @@ export interface SaleTotals {
   goods: number;
   /** Refundable core deposits taken now. Paid back as the old parts come in. */
   coreDeposits: number;
-  /** What the sale comes to, deposits included. The figure the till asks for. */
+  /** Sales tax on the goods, never on a deposit (sparx persona issue 230). */
+  tax: number;
+  /** What the sale comes to, deposits and tax included. The figure the till asks for. */
   total: number;
 }
 
-export function saleTotals(lines: readonly SaleLine[]): SaleTotals {
+export function saleTotals(lines: readonly SaleLine[], taxCents = 0): SaleTotals {
   let goods = 0;
   let coreDeposits = 0;
   for (const line of lines) {
@@ -93,10 +96,12 @@ export function saleTotals(lines: readonly SaleLine[]): SaleTotals {
   }
   const roundedGoods = cents2(goods);
   const roundedDeposits = cents2(coreDeposits);
+  const tax = taxCents / 100;
   return {
     goods: roundedGoods,
     coreDeposits: roundedDeposits,
-    total: cents2(roundedGoods + roundedDeposits),
+    tax,
+    total: cents2(roundedGoods + roundedDeposits + tax),
   };
 }
 
@@ -111,6 +116,8 @@ export interface SaleItemPayload {
   /** Deposit per unit, in whole currency units. */
   coreCharge?: number;
   coreFirst?: true;
+  /** This line's sales tax, in whole currency units. */
+  taxAmount?: number;
 }
 
 /**
@@ -119,7 +126,7 @@ export interface SaleItemPayload {
  * Never both core fields on one line: the server refuses that, and it would mean
  * a deposit taken from somebody who was promised there would not be one.
  */
-export function saleItem(line: SaleLine): SaleItemPayload {
+export function saleItem(line: SaleLine, taxAmount = 0): SaleItemPayload {
   const item: SaleItemPayload = {
     sku: line.sku,
     name: line.name,
@@ -127,10 +134,47 @@ export function saleItem(line: SaleLine): SaleItemPayload {
     unitPrice: Number(line.price),
     ...(line.productId ? { productId: line.productId } : {}),
     ...(line.variantId ? { variantId: line.variantId } : {}),
+    ...(taxAmount > 0 ? { taxAmount } : {}),
   };
   if (!line.core) return item;
   if (bringsOldPartFirst(line)) return { ...item, coreFirst: true };
   return { ...item, coreCharge: line.core.depositCents / 100 };
+}
+
+/** The same rate ref checkout writes when a shopper chooses to collect, so the
+ *  order pane reads a counter sale as collected and stops offering a carrier, a
+ *  tracking number and a warehouse walk. See `deliveryPlan` in data.ts. */
+export const COLLECTION_RATE_REF = 'collection:in-person';
+
+/**
+ * The order a sale is written as (`POST /v1/orders`).
+ *
+ * The tax goes on each line and on the order, with the rate it was charged at,
+ * as a checkout order keeps it (issues 226, 228), so the receipt, the takings and
+ * an invoice made from it all show it. It used to go nowhere (issue 230).
+ */
+export function saleOrderBody(input: {
+  customerId: string;
+  currency: string;
+  propertyId: string | null;
+  lines: readonly SaleLine[];
+  tax: SaleTaxQuote | null;
+}) {
+  const tax = input.tax ? taxByLine(input.tax) : new Map<string, number>();
+  return {
+    customerId: input.customerId,
+    currency: input.currency,
+    channel: 'admin',
+    source: 'till',
+    ...(input.propertyId ? { propertyId: input.propertyId } : {}),
+    ...(input.tax ? { taxTotal: input.tax.totalTaxCents / 100 } : {}),
+    metadata: {
+      shippingRateRef: COLLECTION_RATE_REF,
+      shippingDescription: 'Taken at the counter',
+      ...(input.tax?.rateBasisPoints ? { taxRateBasisPoints: input.tax.rateBasisPoints } : {}),
+    },
+    items: input.lines.map((line) => saleItem(line, tax.get(line.id) ?? 0)),
+  };
 }
 
 /** The order lines that can be handed over the moment the sale is written down.

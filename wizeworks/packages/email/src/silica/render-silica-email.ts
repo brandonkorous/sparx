@@ -178,11 +178,15 @@ export function renderSilicaEmail(
   // against a record that has none. Left in, `src=""` makes the client fetch the email
   // itself and draw its broken-image icon — see `empty-images.ts`.
   const html = dropEmptyEmailImages(
-    interpolateEmailTokens(toEmailHtml(resolvedDoc, head ? { head } : undefined), resolveToken)
+    joinSiteSlashes(
+      interpolateEmailTokens(toEmailHtml(resolvedDoc, head ? { head } : undefined), resolveToken)
+    )
   );
 
   // 4. Plain text from the resolved tree, tokens interpolated the same way.
-  const text = interpolateEmailTokens(emailDocumentToText(resolvedDoc), resolveToken);
+  const text = joinSiteSlashes(
+    interpolateEmailTokens(emailDocumentToText(resolvedDoc), resolveToken)
+  );
 
   // 5. Attribution: tag on-site links so the tenant's analytics credit this email
   //    (docs/impl transactional-email Slice 10). Runs LAST, on the concrete
@@ -201,4 +205,15 @@ export function renderSilicaEmail(
     html: trackedHtml,
     text: trackedText,
   };
+}
+
+/**
+ * One slash after a site, never two. `{{site.url}}` is the home with its trailing
+ * slash, and the page an owner writes after it starts with its own, so
+ * `{{site.url}}/book` came out `https://host//book` in every send (sparx persona
+ * issue 154). Only the slashes straight after the host are joined: a doubled
+ * slash further down a path is somebody's real address, and is left alone.
+ */
+export function joinSiteSlashes(body: string): string {
+  return body.replace(/(https?:\/\/[^/\s"'<>()]+)\/{2,}/g, '$1/');
 }

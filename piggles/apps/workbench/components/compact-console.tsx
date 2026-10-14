@@ -24,6 +24,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import { faShareNodes } from '@fortawesome/pro-solid-svg-icons';
 import { HeaderNotice, type HeaderNoticeData, Icon } from '@piggles/ui';
 import { LifecycleBand } from '@/components/lifecycle-band';
+import { VerifyEmailBand } from '@/components/verify-email-band';
 import { Button } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { MODULE_TO_APP, PRODUCT } from '@piggles/config';
@@ -124,6 +125,7 @@ export function CompactConsole({
           Before this, a phone showed NOTHING about a trial ending and then the
           site went dark. */}
       <LifecycleBand accountOrigin={accountOrigin} railCardVisible={false} />
+      <VerifyEmailBand accountOrigin={accountOrigin} />
 
       {/* Crash-isolated from the stack below, for the same reason as desktop:
           the panels hold the unsaved work and the header must never cost them. */}

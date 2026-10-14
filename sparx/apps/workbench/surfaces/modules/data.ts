@@ -264,6 +264,22 @@ export const MODULE_META: ModuleMeta[] = [
 
 export const MODULE_META_BY_SLUG = new Map(MODULE_META.map((m) => [m.slug, m]));
 
+/**
+ * A module as a line on the bill: the name and the line this screen gives it.
+ *
+ * The bill kept a table of its own, twelve names long when there were sixteen
+ * modules, so Gillett's bill read "staff" with nothing under it (sparx persona
+ * issue 169). One catalog, so the bill and the switch that turns a module on can
+ * never call it two different things. A slug this catalog has never heard of is
+ * still never printed as a slug.
+ */
+export function moduleBillLabel(slug: string): { name: string; blurb: string } {
+  const meta = MODULE_META_BY_SLUG.get(slug);
+  if (meta) return { name: meta.name, blurb: meta.blurb };
+  const words = slug.replace(/[_-]+/g, ' ').trim();
+  return { name: words.charAt(0).toUpperCase() + words.slice(1), blurb: '' };
+}
+
 /** A module's on/off state in plain words, with its own color axis for the
  *  badge. `bundled` names the provider so "Included with the Online store" reads
  *  as an answer rather than a puzzle. Returns `null` for a plain off module —

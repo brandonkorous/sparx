@@ -163,7 +163,7 @@ export function CustomerOrdersTab({
                     ctx.open('commerce.order.detail', { id: row.id }, { target: targetFor(event) });
                   })}
                 >
-                  <td className="font-mono text-sm">{row.orderNumber}</td>
+                  <td className="font-mono text-sm whitespace-nowrap">{row.orderNumber}</td>
                   <td className="hidden text-sm @lg:table-cell">{formatOrderDate(row.placedAt)}</td>
                   <td>
                     <Badge color={state.tone} variant="soft" size="sm">
@@ -261,7 +261,7 @@ export function CustomerInvoicesTab({
                 >
                   {/* A document with no number has not been issued yet — saying
                     "Draft" is the honest reading of a blank there. */}
-                  <td className="font-mono text-sm">{row.number ?? 'Draft'}</td>
+                  <td className="font-mono text-sm whitespace-nowrap">{row.number ?? 'Draft'}</td>
                   <td className="hidden text-sm @lg:table-cell">
                     {row.dueAt ? formatOrderDate(row.dueAt) : 'No due date'}
                   </td>

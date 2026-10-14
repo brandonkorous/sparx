@@ -13,12 +13,12 @@
 // The numbers come from one combined endpoint (wishlists/analytics): the
 // headline counts and the most-saved products in a single read.
 
-import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
 import { Heart, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { productErrorMessage } from './products-data';
 import { useWishlistAnalytics, type WishlistTopVariant } from './moderation-data';
 
 const LABEL = 'Wishlists';
@@ -103,24 +103,14 @@ export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {analytics.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load wishlists"
-              description={productErrorMessage(
-                analytics.error,
-                'This is a problem reaching the server. Nobody’s saved list has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void analytics.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nobody’s saved list has changed."
+              error={analytics.error}
+              onRetry={() => {
+                void analytics.refetch();
+              }}
             />
           ) : data === undefined ? (
             <p className="text-sm" role="status">

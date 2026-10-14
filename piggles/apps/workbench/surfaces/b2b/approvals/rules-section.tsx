@@ -88,6 +88,7 @@ function RulesList({
           icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
           title="Could not load your limits"
           description="This is a problem reaching the server. Your limits are unaffected: they just could not be read just now."
+          error={rulesQuery.error}
           onRetry={() => {
             void rulesQuery.refetch();
           }}
@@ -96,10 +97,7 @@ function RulesList({
         <PaneWaiting module={MODULE} />
       ) : rules.length === 0 ? (
         !adding ? (
-          <Text className="text-sm">
-            No rules yet, so no orders are held. Everything a wholesale customer places goes
-            through. Add a rule to hold big orders for sign-off.
-          </Text>
+          <NoRulesYet />
         ) : null
       ) : (
         <RuleRows
@@ -113,6 +111,15 @@ function RulesList({
         />
       )}
     </>
+  );
+}
+
+function NoRulesYet() {
+  return (
+    <Text className="text-sm">
+      No rules yet, so no orders are held. Everything a wholesale customer places goes through. Add
+      a rule to hold big orders for sign-off.
+    </Text>
   );
 }
 

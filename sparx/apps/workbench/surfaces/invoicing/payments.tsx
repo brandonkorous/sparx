@@ -41,7 +41,7 @@ import { formatMoney, type BillingDocument } from './types';
 
 export interface PaymentRow {
   id: string;
-  kind: 'deposit' | 'payment' | 'refund';
+  kind: 'deposit' | 'payment' | 'refund' | 'credit';
   method: string;
   amount: number | string;
   reference: string | null;
@@ -65,6 +65,7 @@ const KIND_LABELS: Record<PaymentRow['kind'], string> = {
   deposit: 'Deposit',
   payment: 'Payment',
   refund: 'Refund',
+  credit: 'Credit',
 };
 
 function usePayments(documentId: string, enabled: boolean) {

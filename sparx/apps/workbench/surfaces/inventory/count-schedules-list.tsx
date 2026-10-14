@@ -43,6 +43,7 @@ import {
 import { CalendarClock, ClipboardCheck, Play, PlusCircle } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage, useStockLocations } from './data';
 import {
@@ -112,10 +113,11 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (schedules.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ClipboardCheck className="size-6" aria-hidden />}
           title="Could not load your counting schedules"
           description="This is a problem reaching the server. Nothing has changed: the list just could not be read right now."
+          error={schedules.error}
         />
       );
     }

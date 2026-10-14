@@ -20,6 +20,7 @@ import {
 } from '@wizeworks/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
+import { signalSchedulingLocation } from '../../../lib/scheduling-search.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -47,8 +48,10 @@ const schedulingLocationRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/scheduling/locations', async (request, reply) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
-    return reply.code(201).send(ok(await createLocation(tenantId, request.body)));
+    const { tenantId, userId } = toSchedulingContext(request);
+    const row = await createLocation(tenantId, request.body);
+    await signalSchedulingLocation({ tenantId, actorId: userId }, row.id);
+    return reply.code(201).send(ok(row));
   });
 
   app.get('/v1/scheduling/locations/:id', async (request) => {
@@ -62,17 +65,20 @@ const schedulingLocationRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/scheduling/locations/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    return ok(await updateLocation(tenantId, { ...(request.body as object), id }));
+    const row = await updateLocation(tenantId, { ...(request.body as object), id });
+    await signalSchedulingLocation({ tenantId, actorId: userId }, id);
+    return ok(row);
   });
 
   app.delete('/v1/scheduling/locations/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     await deleteLocation(tenantId, id);
+    await signalSchedulingLocation({ tenantId, actorId: userId }, id);
     return ok({ id, deleted: true });
   });
 };

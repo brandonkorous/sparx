@@ -1,15 +1,20 @@
 'use client';
 
-// Account overview — greeting + quick links. Order history, addresses, and
-// profile editing are their own pages; this is the hub.
+// Account overview: what the person's account holds right now, then the way on.
 //
 // An approver on a wholesale account is told here, first, when orders are
 // waiting for their approval (sparx persona issue 087): this is the page they
-// land on, and it used to say nothing about it.
+// land on, and it used to say nothing about it. The same was true of everything
+// else: it said "Manage your orders and details here" over two fixed links, to a
+// fleet buyer with eight orders and an account close to its credit limit (sparx
+// persona issue 193). So it shows where each wholesale account stands and the
+// last few orders. Each draws nothing when there is nothing to show.
 
 import Link from 'next/link';
 
+import { AccountStanding } from '@/components/account/account-standing';
 import { ApprovalsSummary } from '@/components/account/approvals-summary';
+import { RecentOrders } from '@/components/account/recent-orders';
 import { useCustomer } from '@/components/customer-provider';
 
 export default function AccountOverviewPage() {
@@ -26,6 +31,10 @@ export default function AccountOverviewPage() {
       </div>
 
       <ApprovalsSummary />
+
+      <AccountStanding />
+
+      <RecentOrders />
 
       <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
         <Link href="/products" className="card border-base-300 block border p-5">

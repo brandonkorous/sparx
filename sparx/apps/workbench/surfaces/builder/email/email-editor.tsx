@@ -106,6 +106,7 @@ import {
 import {
   createSilicaResolver,
   defaultSilicaFormat,
+  emailEditSignature,
   emailMergeTags,
   EMAIL_CONTENT_BLOCKS,
   EMAIL_SOURCES,
@@ -147,6 +148,7 @@ import {
   useSiteBuilderConfig,
   useTenantBrand,
   EMAIL_BLOCKS_KEY,
+  EMAILS_KEY,
   type EmailCheck,
   type EmailCheckLevel,
   type EmailDesign,
@@ -154,6 +156,8 @@ import {
   type EmailVersion,
   type SavedEmailBlock,
 } from './email-data';
+import { emailToShow, renameToCommit, withCreatedEmail } from './email-switching';
+import { publishDescription } from './email-publish-words';
 import { PaneLoadError } from '../../../components/pane-load-error';
 import { ActionLabel } from '../../../components/action-label';
 
@@ -263,7 +267,7 @@ export function EmailEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data: emails, isPending, isError, refetch } = useEmails();
+  const { data: emails, isPending, isError, error: loadError, refetch } = useEmails();
   const { data: sites } = useSites();
   const currentSiteId = useActivePropertyId();
 
@@ -327,17 +331,23 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   // Publish read the CURRENT document.
   const docRef = useRef<EmailDocument | null>(null);
   const seededForId = useRef<string | null>(null);
-  // The document as it was seeded or last saved. `dirty` is the comparison
-  // against it, made in onChange because the document lives in a ref rather
-  // than in state. The flag used to be sticky: any edit set it and only a save
+  // What the document as seeded or last saved SAYS (`emailEditSignature`). `dirty`
+  // is the comparison against it, made in onChange because the document lives in a
+  // ref rather than in state. A signature, not the raw JSON: opening the designer
+  // repaints brand-following colors and fills in ordering keys, and both reach
+  // onChange, so an email nobody touched read "unsaved changes" (sparx persona
+  // issue 152). The flag used to be sticky: any edit set it and only a save
   // cleared it, so undoing back to the saved design still left the pane
   // claiming unsaved work and still confirmed on close (issue 507).
   const baselineRef = useRef<string>('');
   const [dirty, setDirty] = useState(false);
 
-  const [renaming, setRenaming] = useState(false);
+  // The email the name box was opened for, by id, or null when it is closed. The
+  // box commits to THIS email, never to whichever one is showing by then
+  // (sparx persona issue 153).
+  const [renamingFor, setRenamingFor] = useState<string | null>(null);
+  const renaming = renamingFor !== null;
   const [nameDraft, setNameDraft] = useState('');
-  const renameInputRef = useRef<HTMLInputElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [rendered, setRendered] = useState<EmailPreview | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -357,13 +367,13 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   if (active && seededForId.current !== active.id) {
     seededForId.current = active.id;
     docRef.current = active.silicaDoc as EmailDocument;
-    baselineRef.current = JSON.stringify(active.silicaDoc);
+    baselineRef.current = emailEditSignature(active.silicaDoc);
     setDirty(false);
   }
 
   const create = useCreateEmail();
   const targetId = activeId ?? '';
-  const rename = useRenameEmail(targetId);
+  const rename = useRenameEmail();
   const save = useSaveEmailDoc(targetId);
   const publish = usePublishEmail(targetId);
   const preview = usePreviewEmail(targetId);
@@ -448,10 +458,14 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const createNew = useCallback(async () => {
     try {
       const email = await create.mutateAsync({ name: 'Untitled email' });
+      // Into the list BEFORE it becomes active. The list is refetched only after
+      // this, and the step that settles the active email fell back to the first
+      // one, the automatic Welcome email (sparx persona issue 153).
+      queryClient.setQueryData<EmailDesign[]>(EMAILS_KEY, (list) => withCreatedEmail(list, email));
       setActiveId(email.id);
       // Land straight in rename: a fresh email's first job is a name.
       setNameDraft(email.name);
-      setRenaming(true);
+      setRenamingFor(email.id);
     } catch (error) {
       toast.add({
         title: 'Could not create an email',
@@ -459,7 +473,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         type: 'error',
       });
     }
-  }, [create, toast]);
+  }, [create, queryClient, toast]);
 
   // Settle the active email once the catalog loads.
   useEffect(() => {
@@ -469,9 +483,11 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
       void createNew();
       return;
     }
-    if (activeId && emails.some((e) => e.id === activeId)) return;
-    const deep = paramId && paramId !== 'new' ? emails.find((e) => e.id === paramId) : undefined;
-    setActiveId(deep?.id ?? emails[0]?.id ?? null);
+    const show = emailToShow(emails, activeId, paramId === 'new' ? undefined : paramId);
+    if (show === activeId) return;
+    // Moving off an email closes its name box: it was opened for that one.
+    setRenamingFor(null);
+    setActiveId(show);
   }, [emails, paramId, activeId, createNew]);
 
   // Keep the tab label in step with the active email.
@@ -479,11 +495,14 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(active ? active.name : 'Emails');
   }, [ctx, active]);
 
-  // Focus + select the name on entering rename mode (rather than autoFocus, which
-  // trips a11y and can steal focus on mount).
-  useEffect(() => {
-    if (renaming) renameInputRef.current?.select();
-  }, [renaming]);
+  // Focus + select the name whenever the name box appears (rather than autoFocus,
+  // which trips a11y and can steal focus on mount). On the box itself, not on
+  // entering rename mode: the box lives in the editor's toolbar, and "+" rebuilds
+  // the editor for the new email, so the box it was selected in was replaced and
+  // typing went nowhere (sparx persona issue 153).
+  const selectNameOnMount = useCallback((el: HTMLInputElement | null) => {
+    el?.select();
+  }, []);
 
   useDirtySource(dirty, 'This email has unsaved changes. Close it anyway?');
 
@@ -491,15 +510,19 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     const doc = project.templates[0]?.document;
     if (!doc) return;
     docRef.current = doc;
-    setDirty(JSON.stringify(doc) !== baselineRef.current);
+    setDirty(emailEditSignature(doc) !== baselineRef.current);
   }, []);
 
   const onSave = useCallback(async () => {
     const doc = docRef.current;
     if (!doc || !activeId) return;
+    // Nothing an author changed: Preview, Send test and Publish all save first, and
+    // saving the designer's own repaint is what turned an untouched email into one
+    // with "Unpublished changes".
+    if (emailEditSignature(doc) === baselineRef.current) return;
     try {
       await save.mutateAsync(doc);
-      baselineRef.current = JSON.stringify(doc);
+      baselineRef.current = emailEditSignature(doc);
       setDirty(false);
     } catch (error) {
       toast.add({
@@ -527,7 +550,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const attemptSwitch = async (nextId: string) => {
     if (nextId === activeId) return;
     if (!(await confirmLeave())) return;
-    setRenaming(false);
+    setRenamingFor(null);
     setActiveId(nextId);
   };
 
@@ -571,11 +594,11 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   );
 
   const commitName = () => {
-    setRenaming(false);
-    const next = nameDraft.trim();
-    if (!active || next === '' || next === active.name) return;
-    ctx.setTitle(next);
-    rename.mutate(next, {
+    const change = renameToCommit(emails ?? [], renamingFor, nameDraft);
+    setRenamingFor(null);
+    if (!change) return;
+    if (change.id === activeId) ctx.setTitle(change.name);
+    rename.mutate(change, {
       onError: (error) => {
         toast.add({
           title: 'Could not rename',
@@ -605,8 +628,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     if (!active) return;
     const ok = await confirm({
       title: `Publish “${active.name}”?`,
-      description:
-        'Publishing makes this exact design the one your customers receive from now on. Your current draft is saved and captured as the live version.',
+      description: publishDescription(active),
       confirmLabel: 'Save and publish',
       cancelLabel: 'Keep editing',
       color: 'warning',
@@ -723,6 +745,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
       <PaneLoadError
         title="Could not load your emails"
         description="This is a problem reaching the server, or the site builder is switched off for this account. Your emails are unaffected."
+        error={loadError}
         onRetry={() => {
           void refetch();
         }}
@@ -795,7 +818,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     <div className="flex flex-wrap items-center gap-2">
       {renaming ? (
         <Input
-          ref={renameInputRef}
+          ref={selectNameOnMount}
           color="module"
           size="sm"
           className="w-44 @lg:w-56"
@@ -809,7 +832,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
             if (event.key === 'Enter') event.currentTarget.blur();
             if (event.key === 'Escape') {
               setNameDraft(active.name);
-              setRenaming(false);
+              setRenamingFor(null);
             }
           }}
         />
@@ -858,7 +881,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         disabled={busy || renaming}
         onClick={() => {
           setNameDraft(active.name);
-          setRenaming(true);
+          setRenamingFor(active.id);
         }}
       >
         <Pencil className="size-4" aria-hidden />

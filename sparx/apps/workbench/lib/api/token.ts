@@ -21,6 +21,8 @@ export interface TokenState {
    *  token route carries this and why it is never a control. */
   userId: string;
   role: string;
+  email: string;
+  emailVerified: boolean;
 }
 
 /** Refresh once 80% of the lifetime has burned, so a request never races expiry. */
@@ -62,6 +64,8 @@ async function fetchToken(): Promise<TokenState> {
     propertyId: body.propertyId,
     userId: body.userId,
     role: body.role,
+    email: body.email,
+    emailVerified: body.emailVerified,
   };
 }
 

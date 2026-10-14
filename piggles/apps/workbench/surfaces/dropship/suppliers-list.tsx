@@ -231,7 +231,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No suppliers yet',
               description:
-                'A supplier is a business that holds the stock and posts it to your customers for you. Connect your first one to import its products and route orders to it automatically.',
+                'A supplier is a business that holds the stock and posts it to your customers for you. Connect your first one, and orders for the products it ships go to it.',
               actions: (
                 <Button
                   size="sm"
@@ -287,8 +287,10 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden text-sm @xl:table-cell">
                       {supplier.lastSyncAt ? (
                         <Timestamp value={supplier.lastSyncAt} format="relative" />
-                      ) : (
+                      ) : supplier.capabilities.catalogSync ? (
                         'Not synced yet'
+                      ) : (
+                        'Takes orders by email'
                       )}
                     </td>
                     <td className="hidden text-right tabular-nums @2xl:table-cell">

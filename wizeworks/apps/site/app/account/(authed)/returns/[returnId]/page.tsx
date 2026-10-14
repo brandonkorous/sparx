@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
-import { returnState, outcomeAsked } from '@/components/returns/return-status';
+import { refundedLine, returnState, outcomeAsked } from '@/components/returns/return-status';
 import {
   getReturn,
   AccountError,
@@ -20,6 +20,7 @@ import {
 } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
+import { ReturnsPolicyNote } from '@/components/returns/returns-policy-note';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -71,7 +72,7 @@ export default function ReturnDetailPage() {
   }
   if (!detail) return <div className="skeleton h-80" />;
 
-  const state = returnState(detail.status);
+  const state = returnState(detail.status, detail.refundedAs ?? null);
   const tracking = detail.labels.find((l) => l.trackingNumber ?? l.trackingUrl);
   const moneyMoved = detail.refundedAmountCents !== null && detail.refundedAmountCents > 0;
 
@@ -82,7 +83,18 @@ export default function ReturnDetailPage() {
       </Link>
       <div className="mt-2 mb-2 flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-base-content text-3xl font-semibold tracking-tight">
-          {detail.orderNumber ? `Return from #${detail.orderNumber}` : 'Your return'}
+          {/* The order it came from is one click away: the heading named it and
+              gave no way to it (sparx persona issue 195). */}
+          {detail.orderNumber ? (
+            <>
+              Return from order{' '}
+              <Link href={`/account/orders/${detail.orderId}`} className="link link-primary">
+                {detail.orderNumber}
+              </Link>
+            </>
+          ) : (
+            'Your return'
+          )}
         </h1>
         <Badge color={state.tone} variant="soft">
           {state.label}
@@ -162,19 +174,13 @@ export default function ReturnDetailPage() {
           </div>
           {detail.refundedAt ? (
             <span className="text-base-content text-sm">
-              Sent back {formatDate(detail.refundedAt)}
+              {refundedLine(detail.refundedAs ?? null, formatDate(detail.refundedAt))}
             </span>
           ) : null}
         </div>
       ) : null}
 
-      <p className="text-base-content mt-8 text-sm">
-        Our{' '}
-        <Link href="/returns-policy" className="link">
-          returns policy
-        </Link>{' '}
-        explains what we can take back and how long you have.
-      </p>
+      <ReturnsPolicyNote className="text-base-content mt-8 text-sm" />
     </div>
   );
 }

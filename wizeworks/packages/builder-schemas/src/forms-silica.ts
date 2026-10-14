@@ -33,6 +33,13 @@ import type { SilicaNode } from './site-sync';
  *  the public submit endpoint; the server checks for it when verifying the node. */
 export const SILICA_FORM_ACTION = 'contact' as const;
 
+/** Every name a contact form goes by. The catalog's designs author their Contact page
+ *  form as `submit`, which nothing answered: the visitor read "Submitted." and the
+ *  message went nowhere, on every design-built Contact page (persona P09). The site's
+ *  `onAction` reads the same list, so the two can never disagree about which forms
+ *  are live. */
+export const CONTACT_FORM_ACTIONS: readonly string[] = [SILICA_FORM_ACTION, 'submit'];
+
 /** The behavior marker silica lowers a `<form>` to. A node is a live, submittable form
  *  only if it carries BOTH this behavior and the action ref — the behavior alone is
  *  what does the client-side work, the action is what points it at a host. */
@@ -193,9 +200,9 @@ export function isSilicaFormNode(node: SilicaNode): boolean {
   // The ref reaches the DOM as `data-sui-action`, and it can arrive either as the
   // `Form` component's `action` prop (how the shipped block authors it) or as an
   // explicit action data-marker (how a hand-composed tree would).
-  const hasAction =
-    n.props?.action === SILICA_FORM_ACTION ||
-    (n.data?.kind === 'action' && n.data.ref === SILICA_FORM_ACTION);
+  const named = (ref: unknown): boolean =>
+    typeof ref === 'string' && CONTACT_FORM_ACTIONS.includes(ref);
+  const hasAction = named(n.props?.action) || (n.data?.kind === 'action' && named(n.data.ref));
   return hasBehavior && hasAction;
 }
 

@@ -29,6 +29,7 @@ import { useWorkbench } from '../lib/workbench/context';
 import { useFeedback } from './feedback/provider';
 import { groupLabel, targetFor, type Entry } from './launcher-match';
 import { createActions } from './launcher-create';
+import { useManageRights } from '../lib/manage-rights';
 import { SEARCH_MOST_CHARS } from './launcher-search-words';
 
 /** Every screen this viewer can open, plus the one action that is not a screen. */
@@ -38,6 +39,7 @@ export function useNavEntries(): Entry[] {
   const { data: favorites } = useFavorites();
   const reachable = useReachableModules();
   const known = useKnownModules();
+  const rights = useManageRights();
 
   return useMemo<Entry[]>(() => {
     const favoriteKeys = new Set((favorites ?? []).map((f) => f.actionId));
@@ -67,8 +69,11 @@ export function useNavEntries(): Entry[] {
 
     // What the `+` beside each row says, as something to do. See
     // launcher-create.ts (issue 904).
-    const creates: Entry[] = createActions(surfaces, resolveCreateLabel, (s) =>
-      resolveTitle(s, {})
+    const creates: Entry[] = createActions(
+      surfaces,
+      resolveCreateLabel,
+      (s) => resolveTitle(s, {}),
+      { canManage: rights.canManage }
     ).map((action) => ({
       id: action.id,
       group: groupLabel(action.surface.module),
@@ -88,7 +93,7 @@ export function useNavEntries(): Entry[] {
       ...creates,
       sendFeedback,
     ];
-  }, [controller, favorites, reachable, known, feedback]);
+  }, [controller, favorites, reachable, known, feedback, rights.canManage]);
 }
 
 /**

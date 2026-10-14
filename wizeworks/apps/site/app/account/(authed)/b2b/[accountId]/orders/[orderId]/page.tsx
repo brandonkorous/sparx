@@ -133,7 +133,7 @@ export default function B2bOrderDetailPage() {
             Order {order.orderNumber}
           </h1>
           <Badge color={orderStatusTone(order.status)} variant="soft">
-            {orderStatusLabel(order.status)}
+            {orderStatusLabel(order.status, order.collecting)}
           </Badge>
         </div>
         <p className="text-base-content m-0">

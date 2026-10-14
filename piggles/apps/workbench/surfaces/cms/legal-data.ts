@@ -55,6 +55,9 @@ export interface ChecklistEntry {
   acknowledged: boolean;
   /** Is it linked in the site footer? */
   placed: boolean;
+  /** Does the page tell visitors where to make cookie choices (a banner, a cookie
+   *  button)? Absent on an older server, which reads as yes, as before. */
+  promisesCookieChoices?: boolean;
 }
 
 /** One row of the checklist — one policy document the business may need. */

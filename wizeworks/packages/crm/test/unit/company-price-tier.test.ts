@@ -194,6 +194,8 @@ describe('a segment rule on price tier', () => {
     companyFindUnique.mockResolvedValueOnce(wasatchAccount());
     const projection = await buildSegmentRuleProjection(CTX, 'c1');
     expect(projection.b2bAccount?.pricingTier).toBe('Fleet');
+    // By id too: what a segment picks, so a renamed tier keeps its members (issue 149).
+    expect(projection.b2bAccount?.pricingTierId).toBe(FLEET);
     expect(companyFindUnique.mock.calls[0]?.[0]).toMatchObject({
       where: { id: ACCOUNT },
       include: { pricingTierFk: { select: { name: true, deletedAt: true } } },
@@ -208,6 +210,7 @@ describe('a segment rule on price tier', () => {
     );
     const projection = await buildSegmentRuleProjection(CTX, 'c1');
     expect(projection.b2bAccount?.pricingTier).toBeNull();
+    expect(projection.b2bAccount?.pricingTierId).toBeNull();
   });
 });
 
@@ -217,6 +220,7 @@ describe('a segment rule on the trade account', () => {
     const projection = await buildSegmentRuleProjection(CTX, 'c1');
 
     expect(projection.b2bAccount).toEqual({
+      pricingTierId: FLEET,
       pricingTier: 'Fleet',
       creditUtilization: 0.25,
       fleetSize: 12,

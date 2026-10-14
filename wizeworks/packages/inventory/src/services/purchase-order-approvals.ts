@@ -123,6 +123,7 @@ export async function createPoApprovalRule(
       include: RULE_INCLUDE,
     });
     await audit(tx, ctx, 'approval_rule.created', row.id, { name: input.name });
+    await indexInventoryEntityOnCommit(ctx, 'po_approval_rule', row.id);
     return serializeRule(row);
   });
 }
@@ -161,6 +162,7 @@ export async function updatePoApprovalRule(
       include: RULE_INCLUDE,
     });
     await audit(tx, ctx, 'approval_rule.updated', id, { name: row.name });
+    await indexInventoryEntityOnCommit(ctx, 'po_approval_rule', id);
     return serializeRule(row);
   });
 }
@@ -174,6 +176,7 @@ export async function deletePoApprovalRule(ctx: ServiceContext, id: string): Pro
     if (!existing) throw new InventoryNotFoundError('PurchaseOrderApprovalRule', id);
     await tx.purchaseOrderApprovalRule.delete({ where: { id } });
     await audit(tx, ctx, 'approval_rule.deleted', id, { name: existing.name });
+    await indexInventoryEntityOnCommit(ctx, 'po_approval_rule', id, 'delete');
   });
 }
 

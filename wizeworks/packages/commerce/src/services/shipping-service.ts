@@ -14,12 +14,13 @@ import {
   UpdateShippingZoneInput,
   ZoneTargeting,
 } from '@wizeworks/commerce-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { ShippingProfile, ShippingRate, ShippingZone, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
+import { indexCommerceEntity } from '../events';
 import {
   buyOutboundLabel,
   trackOutboundShipment,
@@ -36,7 +37,7 @@ import {
   resolveShipFromAddress,
 } from './shipping-request-resolver';
 import { listInstallations } from './provider-service';
-import { collectionOption } from './collection-option';
+import { collectionOption, forWhatShips } from './collection-option';
 
 export {
   isAddressUsableForLiveRating,
@@ -135,7 +136,7 @@ export async function getZone(ctx: ServiceContext, id: string): Promise<Shipping
 
 export async function createZone(ctx: ServiceContext, rawInput: unknown): Promise<{ id: string }> {
   const input = CreateShippingZoneInput.parse(rawInput);
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const created = await tx.shippingZone.create({
       data: {
         tenantId: ctx.tenantId,
@@ -157,6 +158,11 @@ export async function createZone(ctx: ServiceContext, rawInput: unknown): Promis
     });
     return created;
   });
+  // Queued, not fired: a caller may have composed this into its own open transaction.
+  await afterCommit(`index shipping_zone ${result.id}`, () =>
+    indexCommerceEntity(ctx, 'shipping_zone', result.id)
+  );
+  return result;
 }
 
 export async function updateZone(
@@ -187,12 +193,21 @@ export async function updateZone(
       diff: null,
     });
   });
+  await afterCommit(`index shipping_zone ${id}`, () =>
+    indexCommerceEntity(ctx, 'shipping_zone', id)
+  );
 }
 
 export async function deleteZone(ctx: ServiceContext, id: string): Promise<void> {
-  await withTenant(ctx, async (tx) => {
+  const profileIds = await withTenant(ctx, async (tx) => {
     const before = await tx.shippingZone.findFirst({ where: { id } });
     if (!before) throw new CommerceNotFoundError('ShippingZone', id);
+    // Its rates go with it, so the groups those rates belonged to change too.
+    const rates = await tx.shippingRate.findMany({
+      where: { zoneId: id },
+      select: { profileId: true },
+      distinct: ['profileId'],
+    });
     await tx.shippingZone.delete({ where: { id } });
     await writeAuditLog({
       tx,
@@ -204,7 +219,16 @@ export async function deleteZone(ctx: ServiceContext, id: string): Promise<void>
       entityId: id,
       diff: null,
     });
+    return rates.map((rate) => rate.profileId);
   });
+  await afterCommit(`index shipping_zone ${id}`, () =>
+    indexCommerceEntity(ctx, 'shipping_zone', id, 'delete')
+  );
+  for (const profileId of profileIds) {
+    await afterCommit(`index shipping_profile ${profileId}`, () =>
+      indexCommerceEntity(ctx, 'shipping_profile', profileId)
+    );
+  }
 }
 
 // ─── Profiles ────────────────────────────────────────────────────────
@@ -266,7 +290,7 @@ export async function createProfile(
   rawInput: unknown
 ): Promise<{ id: string }> {
   const input = CreateShippingProfileInput.parse(rawInput);
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const created = await tx.shippingProfile.create({
       data: {
         tenantId: ctx.tenantId,
@@ -291,6 +315,10 @@ export async function createProfile(
     });
     return created;
   });
+  await afterCommit(`index shipping_profile ${result.id}`, () =>
+    indexCommerceEntity(ctx, 'shipping_profile', result.id)
+  );
+  return result;
 }
 
 export async function updateProfile(
@@ -330,12 +358,21 @@ export async function updateProfile(
       diff: null,
     });
   });
+  await afterCommit(`index shipping_profile ${id}`, () =>
+    indexCommerceEntity(ctx, 'shipping_profile', id)
+  );
 }
 
 export async function deleteProfile(ctx: ServiceContext, id: string): Promise<void> {
-  await withTenant(ctx, async (tx) => {
+  const zoneIds = await withTenant(ctx, async (tx) => {
     const before = await tx.shippingProfile.findFirst({ where: { id } });
     if (!before) throw new CommerceNotFoundError('ShippingProfile', id);
+    // Its rates go with it, so the zones those rates priced change too.
+    const rates = await tx.shippingRate.findMany({
+      where: { profileId: id },
+      select: { zoneId: true },
+      distinct: ['zoneId'],
+    });
     await tx.shippingProfile.delete({ where: { id } });
     await writeAuditLog({
       tx,
@@ -347,7 +384,16 @@ export async function deleteProfile(ctx: ServiceContext, id: string): Promise<vo
       entityId: id,
       diff: null,
     });
+    return rates.map((rate) => rate.zoneId);
   });
+  await afterCommit(`index shipping_profile ${id}`, () =>
+    indexCommerceEntity(ctx, 'shipping_profile', id, 'delete')
+  );
+  for (const zoneId of zoneIds) {
+    await afterCommit(`index shipping_zone ${zoneId}`, () =>
+      indexCommerceEntity(ctx, 'shipping_zone', zoneId)
+    );
+  }
 }
 
 export async function assignProductsToProfile(
@@ -358,7 +404,7 @@ export async function assignProductsToProfile(
   if (!input?.profileId || !Array.isArray(input.productIds) || input.productIds.length === 0) {
     throw new CommerceValidationError('profileId and at least one productId are required');
   }
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const profile = await tx.shippingProfile.findFirst({
       where: { id: input.profileId },
       select: { id: true },
@@ -370,6 +416,10 @@ export async function assignProductsToProfile(
     });
     return { updated: input.productIds.length };
   });
+  await afterCommit(`index shipping_profile ${input.profileId}`, () =>
+    indexCommerceEntity(ctx, 'shipping_profile', input.profileId)
+  );
+  return result;
 }
 
 // ─── Manual rates ────────────────────────────────────────────────────
@@ -377,7 +427,7 @@ export async function assignProductsToProfile(
 export async function createRate(ctx: ServiceContext, rawInput: unknown): Promise<{ id: string }> {
   const input = CreateShippingRateInput.parse(rawInput);
   assertRateInputCoherent(input);
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     await assertZoneExists(tx, input.zoneId);
     let profileId = input.profileId;
     if (profileId) {
@@ -412,8 +462,16 @@ export async function createRate(ctx: ServiceContext, rawInput: unknown): Promis
       entityId: created.id,
       diff: { after: { type: input.type } },
     });
-    return created;
+    return { id: created.id, profileId };
   });
+  // Also covers the default group made above on a shop's first delivery option.
+  await afterCommit(`index shipping_zone ${input.zoneId}`, () =>
+    indexCommerceEntity(ctx, 'shipping_zone', input.zoneId)
+  );
+  await afterCommit(`index shipping_profile ${result.profileId}`, () =>
+    indexCommerceEntity(ctx, 'shipping_profile', result.profileId)
+  );
+  return { id: result.id };
 }
 
 export async function listRatesForZone(
@@ -431,7 +489,7 @@ export async function listRatesForZone(
 }
 
 export async function deleteRate(ctx: ServiceContext, id: string): Promise<void> {
-  await withTenant(ctx, async (tx) => {
+  const before = await withTenant(ctx, async (tx) => {
     const before = await tx.shippingRate.findFirst({ where: { id } });
     if (!before) throw new CommerceNotFoundError('ShippingRate', id);
     await tx.shippingRate.delete({ where: { id } });
@@ -445,7 +503,14 @@ export async function deleteRate(ctx: ServiceContext, id: string): Promise<void>
       entityId: id,
       diff: null,
     });
+    return before;
   });
+  await afterCommit(`index shipping_zone ${before.zoneId}`, () =>
+    indexCommerceEntity(ctx, 'shipping_zone', before.zoneId)
+  );
+  await afterCommit(`index shipping_profile ${before.profileId}`, () =>
+    indexCommerceEntity(ctx, 'shipping_profile', before.profileId)
+  );
 }
 
 /**
@@ -724,6 +789,7 @@ export async function quoteForLines(
         lengthMm: true,
         widthMm: true,
         heightMm: true,
+        dropshipSourceId: true,
         product: {
           select: {
             weightGrams: true,
@@ -774,7 +840,7 @@ export async function quoteForLines(
     country: 'US',
   }));
 
-  return rateShipment(
+  const options = await rateShipment(
     ctx,
     {
       ...(input.propertyId ? { propertyId: input.propertyId } : {}),
@@ -786,6 +852,13 @@ export async function quoteForLines(
       packages: [shipmentPackage],
     },
     contents
+  );
+  // A part a supplier ships is not at the counter to collect (sparx persona
+  // issue 215). Here, because the checkout's question and the price it charges
+  // both come through this one quote.
+  return forWhatShips(
+    options,
+    variants.some((variant) => variant.dropshipSourceId !== null)
   );
 }
 

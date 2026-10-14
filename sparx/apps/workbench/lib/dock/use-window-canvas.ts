@@ -70,12 +70,16 @@ export interface WindowCanvasOptions {
   /** A window drag finished — see `CanvasGestureOptions.onDragEnd`. */
   onDragEnd: (moved: HTMLElement | null) => void;
   onZoomStep: (direction: 1 | -1) => void;
+  /** The screen changed size: a filled window has to follow it (sparx persona
+   *  issue 167). */
+  onResize: () => void;
 }
 
 export function useWindowCanvas({
   zoom,
   onDragEnd,
   onZoomStep,
+  onResize,
 }: WindowCanvasOptions): WindowCanvasHandle {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const clipRef = useRef<HTMLDivElement | null>(null);
@@ -88,6 +92,8 @@ export function useWindowCanvas({
   dragEndRef.current = onDragEnd;
   const zoomStepRef = useRef(onZoomStep);
   zoomStepRef.current = onZoomStep;
+  const resizeRef = useRef(onResize);
+  resizeRef.current = onResize;
 
   const size = useCallback((mayShrink: boolean) => {
     const frame = frameRef.current;
@@ -174,6 +180,7 @@ export function useWindowCanvas({
     // re-floors the extent, which is how a workspace that now fits loses its
     // scrollbars again.
     const observer = new ResizeObserver(() => {
+      resizeRef.current();
       size(true);
     });
     observer.observe(frame);

@@ -112,6 +112,8 @@ export type { FulfillmentLabelRow } from './fulfillment-label-store';
 export { fulfillPackedShipment, closeAndFulfillPackage } from './pack-fulfillment';
 export type { FulfillPackedShipmentInput, FulfillPackedShipmentResult } from './pack-fulfillment';
 export * as taxService from './tax-service';
+// Sales tax on a sale at the counter, which has no cart (persona issue 230).
+export { quoteTaxForSale, SaleTaxRequest, type SaleTaxQuote } from './sale-tax';
 export * as providerService from './provider-service';
 
 // Phase 5/7 — returns / RMA

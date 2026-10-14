@@ -70,6 +70,40 @@ export function isCollection(option: { providerSlug: string | null }): boolean {
  * `${carrier} ${service}` would put "Collection Collect in person" on the order
  * and in the confirmation email.
  */
+/**
+ * Every name a rate has been stored under. A choice saved before sparx persona
+ * issue 217 holds the carrier twice ("USPS USPS Ground Advantage"), and a live
+ * carrier's option is found again by name because its ref changes every quote.
+ */
+export function rateNames(
+  option: Pick<RateOption, 'providerSlug' | 'carrier' | 'service'>
+): string[] {
+  const now = describeRate(option);
+  const before = isCollection(option) ? now : `${option.carrier} ${option.service}`.trim();
+  return now === before ? [now] : [now, before];
+}
+
 export function describeRate(option: Pick<RateOption, 'providerSlug' | 'carrier' | 'service'>) {
-  return isCollection(option) ? option.service : `${option.carrier} ${option.service}`.trim();
+  if (isCollection(option)) return option.service;
+  // A rate named with its carrier ("UPS Ground", carried by UPS) says it once: the
+  // order read "UPS UPS Ground" (sparx persona issue 217). A whole word only, so
+  // a service that merely begins with the same letters keeps its carrier.
+  const carrier = option.carrier.trim().toLowerCase();
+  const service = option.service.trim().toLowerCase();
+  if (carrier !== '' && (service === carrier || service.startsWith(`${carrier} `))) {
+    return option.service.trim();
+  }
+  return `${option.carrier} ${option.service}`.trim();
+}
+
+/**
+ * The options for a cart, given whether a supplier ships any of it.
+ *
+ * A part a supplier ships straight to the customer is never at the business's
+ * counter, so it cannot be collected there: the cart has to be delivered (sparx
+ * persona issue 215). No options is the honest answer when collecting was the
+ * only one.
+ */
+export function forWhatShips(options: RateOption[], shipsFromSupplier: boolean): RateOption[] {
+  return shipsFromSupplier ? options.filter((option) => !isCollection(option)) : options;
 }

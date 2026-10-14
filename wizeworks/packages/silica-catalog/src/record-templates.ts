@@ -15,6 +15,7 @@
 
 import type { Node } from '@wizeworks/silicaui-html';
 
+import { authorPage } from './author-page';
 import { blogPostPage } from './cms';
 import { categoryDetailPage, collectionDetailPage, productDetailPage } from './commerce';
 import { serviceDetailPage } from './scheduling';
@@ -24,7 +25,7 @@ import { serviceDetailPage } from './scheduling';
  *
  *  Keep in step with the `getPublishedSilicaCollection(...)` call sites under
  *  `wizeworks/apps/site/app`: today `products/[handle]`, `collections/[handle]`,
- *  `category/[handle]`, `book/[serviceId]`, `blog/[slug]`. A route with no entry here
+ *  `category/[handle]`, `book/[serviceId]`, `blog/[slug]`, `authors/[slug]`. A route with no entry here
  *  renders its records through the bare fallback — which is exactly the bug this file
  *  exists to make impossible to reintroduce quietly. */
 export const ROUTED_RECORD_TYPES = [
@@ -33,6 +34,7 @@ export const ROUTED_RECORD_TYPES = [
   'commerce.category',
   'scheduling.service',
   'cms.blog_post',
+  'cms.author',
 ] as const;
 
 export type RoutedRecordType = (typeof ROUTED_RECORD_TYPES)[number];
@@ -59,6 +61,7 @@ export const RECORD_TEMPLATES: Record<RoutedRecordType, () => Node> = {
   'commerce.category': categoryDetailPage,
   'scheduling.service': serviceDetailPage,
   'cms.blog_post': blogPostPage,
+  'cms.author': authorPage,
 };
 
 /**
@@ -87,6 +90,7 @@ export const RECORD_TEMPLATE_LABELS: Record<RoutedRecordType, string> = {
   'commerce.category': 'Each category',
   'scheduling.service': 'Each service',
   'cms.blog_post': 'Each blog post',
+  'cms.author': 'Each author',
 };
 
 /**
@@ -205,6 +209,7 @@ export const RECORD_ADDRESSES: readonly RecordAddress[] = (
     },
     { recordType: 'commerce.category', prefix: '/category/', param: 'handle', module: 'commerce' },
     { recordType: 'cms.blog_post', prefix: '/blog/', param: 'slug', module: 'cms' },
+    { recordType: 'cms.author', prefix: '/authors/', param: 'slug', module: 'cms' },
     {
       recordType: 'scheduling.service',
       prefix: '/book/',
@@ -225,6 +230,11 @@ function bare(slug: string): string {
   return slug.replace(/^\/+/, '');
 }
 
+/** Where one author's page lives — `/authors/rosalind-pike`. A byline links here. */
+export function authorPath(slug: string): string {
+  return `/authors/${slug}`;
+}
+
 /** The address for a record type, or null for a type the platform does not route. */
 export function recordAddressFor(recordType: string): RecordAddress | null {
   return RECORD_ADDRESSES.find((a) => a.recordType === recordType) ?? null;
@@ -239,10 +249,164 @@ export function recordAddressAt(slug: string | null | undefined): RecordAddress 
   return RECORD_ADDRESSES.find((a) => bare(a.slug) === target) ?? null;
 }
 
-/** Is this slug one of the five platform addresses? The predicate every consumer that
- *  must SKIP a record page asks — the sitemap, the SEO audit, the link roster. */
+/** Is this slug a record page's address — one of the five platform addresses, or the
+ *  address of a content kind's page (see {@link kindAddressAt})? The predicate every
+ *  consumer that must SKIP a record page asks — the sitemap, the SEO audit, the link
+ *  roster. A kind page is as much a pattern as `/products/:handle` is, and a sitemap
+ *  listing `/articles/:slug` would send a crawler to a 404. */
 export function isRecordAddress(slug: string | null | undefined): boolean {
-  return recordAddressAt(slug) !== null;
+  return recordAddressAt(slug) !== null || kindAddressAt(slug) !== null;
+}
+
+/* ── Content kind addresses ─────────────────────────────────────────────────── */
+
+/**
+ * Where a content KIND's pieces live — `/articles/the-last-mill` for a kind whose web
+ * address pattern is `/articles/{slug}`.
+ *
+ * WHY KINDS ARE NOT IN `RECORD_ADDRESSES`. Those five are routes the storefront has a
+ * directory for. A kind is the tenant's own: a journal makes an Article kind, a venue an
+ * Event kind, and each one names its own address. Every kind's pattern already went into
+ * the sitemap, the RSS feed and site search — and every one of those links was a 404,
+ * because nothing served it. A kind's page now lives in the storefront's catch-all.
+ *
+ * STILL NOT A PATTERN LANGUAGE. A kind address is recognised by its SHAPE alone: literal
+ * lowercase segments, then exactly `:slug`. So `isRecordAddress` and
+ * `slugCandidatesForPath` stay pure functions of a string, with no tenant data to look
+ * up, which is what the closed set above was protecting. What a kind's page renders is
+ * decided by the row's `recordType` (`cms.<kind key>`), never by parsing the slug.
+ */
+export interface KindAddress {
+  /** Where visitors land, trailing slash included — `/articles/`. */
+  prefix: string;
+  /** The stored `BuilderPage.slug` — `/articles/:slug`. */
+  slug: string;
+}
+
+/** The one parameter a kind address takes. A kind's pieces are found by their slug. */
+export const KIND_ADDRESS_PARAM = 'slug';
+
+/**
+ * First segments a kind may not use, because the storefront already routes them.
+ *
+ * A kind at `/products/{slug}` would never be reached: `app/products/[handle]` wins. The
+ * test beside the route table proves this list against the real `app` directory, so a
+ * new storefront route cannot quietly shadow a kind.
+ */
+export const RESERVED_KIND_SEGMENTS: readonly string[] = [
+  'account',
+  'api',
+  'authors',
+  'blog',
+  'book',
+  'booking',
+  'cart',
+  'category',
+  'checkout',
+  'collections',
+  'meet',
+  'products',
+  'search',
+  'sign',
+  // Next's own, and the files the storefront serves at the root.
+  '_next',
+  'favicon.ico',
+  'llms.txt',
+  'robots.txt',
+  'sitemap.xml',
+];
+
+/**
+ * The addresses the storefront answers with a route of its own (`app/<name>/page.tsx`),
+ * whether or not the site has a page there. `/blog` is not one: its index is the page
+ * read, and a page there is the only thing that serves it. The test beside the route
+ * table proves this list against the real `app` directory.
+ */
+export const SITE_OWN_ROUTES: readonly string[] = [
+  'book',
+  'cart',
+  'category',
+  'checkout',
+  'collections',
+  'products',
+  'search',
+];
+
+/** Does the storefront answer this address itself, page or no page — its own routes,
+ *  and everything under `/account` and `/sign`? */
+export function isSiteOwnRoute(path: string | null | undefined): boolean {
+  const address = bare(path ?? '').replace(/\/+$/, '');
+  return SITE_OWN_ROUTES.includes(address) || /^(account|sign)(\/|$)/.test(address);
+}
+
+const KIND_SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** The literal segments of a kind prefix, or null when any is not a plain lowercase
+ *  word or the first is a route the storefront already owns. */
+function kindSegments(prefix: string): string[] | null {
+  const segments = bare(prefix)
+    .replace(/\/+$/, '')
+    .split('/')
+    .filter((s) => s !== '');
+  if (segments.length === 0) return null;
+  if (!segments.every((s) => KIND_SEGMENT.test(s))) return null;
+  if (RESERVED_KIND_SEGMENTS.includes(segments[0]!)) return null;
+  return segments;
+}
+
+function kindAddressFrom(segments: string[]): KindAddress {
+  const prefix = `/${segments.join('/')}/`;
+  return { prefix, slug: `${prefix}:${KIND_ADDRESS_PARAM}` };
+}
+
+/**
+ * The address a kind's web address pattern gives its pieces, or null when the pattern
+ * cannot be served: no `{slug}`, `{slug}` anywhere but the end, nothing before it, or a
+ * first word the storefront already uses.
+ *
+ * `/{slug}` (the built-in Page kind) is null on purpose. Those pieces ARE pages, served
+ * by the catch-all's page read, and a kind there would compete with every page on the site.
+ */
+export function kindAddressFromPattern(pattern: string | null | undefined): KindAddress | null {
+  const trimmed = (pattern ?? '').trim();
+  if (!trimmed.startsWith('/') || trimmed.includes('//')) return null;
+  const marker = '{slug}';
+  if (!trimmed.endsWith(`/${marker}`)) return null;
+  const prefix = trimmed.slice(0, -marker.length);
+  if (prefix.includes('{') || prefix.includes('}')) return null;
+  const segments = kindSegments(prefix);
+  return segments ? kindAddressFrom(segments) : null;
+}
+
+/** The kind address a stored slug IS, or null. Exact, like {@link recordAddressAt}: a
+ *  visitor's `/articles/the-last-mill` is a location, not an address. One of the five
+ *  platform addresses is never a kind address. */
+export function kindAddressAt(slug: string | null | undefined): KindAddress | null {
+  if (!slug) return null;
+  const target = bare(slug);
+  const suffix = `/:${KIND_ADDRESS_PARAM}`;
+  if (!target.endsWith(suffix)) return null;
+  if (recordAddressAt(target) !== null) return null;
+  const segments = kindSegments(target.slice(0, -suffix.length));
+  return segments ? kindAddressFrom(segments) : null;
+}
+
+/** A kind's piece at its address — `/articles/` + `the-last-mill`. */
+export function kindPath(address: KindAddress, slug: string): string {
+  return `${address.prefix}${slug}`;
+}
+
+/** The kind address that would own a visitor's path — `/articles/the-last-mill` →
+ *  `/articles/:slug` — or null when the path cannot be a kind's piece. Shape only:
+ *  whether any kind actually lives there is the caller's question. */
+export function kindAddressForPath(path: string): KindAddress | null {
+  const target = bare(path).replace(/\/+$/, '');
+  const cut = target.lastIndexOf('/');
+  if (cut <= 0) return null;
+  const last = target.slice(cut + 1);
+  if (!last) return null;
+  const segments = kindSegments(target.slice(0, cut));
+  return segments ? kindAddressFrom(segments) : null;
 }
 
 /** Where a record page's own Preview should go, since its address is not a URL a browser
@@ -311,6 +475,15 @@ export function slugCandidatesForPath(path: string): string[] {
     // is the index page — an ordinary page with its own row and its own frame.
     return rest !== '' && !rest.includes('/');
   });
-  if (address) candidates.push(bare(address.slug), address.slug);
+  if (address) {
+    candidates.push(bare(address.slug), address.slug);
+    return candidates;
+  }
+
+  // A content kind's page, last: a literal page the tenant made at `/articles/x` wins.
+  // Only the frame read consults this candidate to pick a kind page's chrome; the page
+  // read refuses record addresses as bodies, because a kind page needs its piece bound.
+  const kind = kindAddressForPath(target);
+  if (kind) candidates.push(bare(kind.slug), kind.slug);
   return candidates;
 }

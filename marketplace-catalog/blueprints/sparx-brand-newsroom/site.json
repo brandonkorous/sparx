@@ -762,12 +762,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-200 @container px-6 py-14",
+            "class": "bg-base-200 @container py-14",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto grid w-full max-w-6xl items-center gap-8 @4xl:grid-cols-2",
+                "class": "mx-auto grid w-full max-w-6xl px-6 items-center gap-8 @4xl:grid-cols-2",
                 "children": [
                   {
                     "kind": "element",
@@ -846,12 +846,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 pt-14 pb-2",
+            "class": "bg-base-100 @container pt-14 pb-2",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-6xl flex-col gap-3",
+                "class": "mx-auto flex w-full max-w-6xl px-6 flex-col gap-3",
                 "children": [
                   {
                     "kind": "element",
@@ -993,12 +993,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-200 @container px-6 py-14",
+            "class": "bg-base-200 @container py-14",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-6xl flex-col gap-6",
+                "class": "mx-auto flex w-full max-w-6xl px-6 flex-col gap-6",
                 "children": [
                   {
                     "kind": "element",
@@ -1291,12 +1291,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-14",
+            "class": "bg-base-100 @container py-14",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto grid w-full max-w-6xl items-center gap-8 @4xl:grid-cols-2",
+                "class": "mx-auto grid w-full max-w-6xl px-6 items-center gap-8 @4xl:grid-cols-2",
                 "children": [
                   {
                     "kind": "element",
@@ -1367,12 +1367,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-12",
+            "class": "bg-base-100 @container py-12",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",
@@ -1573,12 +1573,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-200 @container px-6 py-14",
+            "class": "bg-base-200 @container py-14",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-6xl flex-col gap-6",
+                "class": "mx-auto flex w-full max-w-6xl px-6 flex-col gap-6",
                 "children": [
                   {
                     "kind": "element",
@@ -1676,12 +1676,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "class": "bg-base-100 @container pt-12 pb-4",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",

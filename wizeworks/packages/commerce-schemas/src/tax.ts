@@ -114,8 +114,10 @@ export type CreateTaxExemptionInput = z.infer<typeof CreateTaxExemptionInput>;
 // ─── Calculation in/out ───────────────────────────────────────────────
 
 export const TaxCalculationLine = z.object({
-  variantId: Uuid,
-  productId: Uuid,
+  // Absent on a line that sells nothing from the catalog: one typed in at the
+  // counter, or an hour of labor. It is still taxed (sparx persona issue 230).
+  variantId: Uuid.optional(),
+  productId: Uuid.optional(),
   productTaxClass: z.string().max(63).optional(),
   quantity: z.number().int().positive(),
   unitPriceCents: MoneyCents,
@@ -160,6 +162,10 @@ export type TaxCalculationRequest = z.infer<typeof TaxCalculationRequest>;
 
 export const TaxBreakdownLine = z.object({
   lineRef: z.number().int().nonnegative(), // index into request.lines
+  // The basket line this taxes, when the quote was taken for a basket. A position
+  // in one request is not a name the order can find the line by later; checkout
+  // stamps it so each order item keeps its own tax (sparx persona issue 226).
+  cartItemId: z.string().optional(),
   taxableAmountCents: MoneyCents,
   taxAmountCents: MoneyCents,
   jurisdictions: z

@@ -28,6 +28,8 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useToast } from '@wizeworks/silicaui-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnly, ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import { FormSection } from '../../components/form-section';
 import { CurrencyField } from '../../components/currency-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -90,10 +92,8 @@ export function CommerceSettingsSurface() {
       <div className={PANE_SHELL}>
         <PaneLoadError
           title="Could not load your selling settings"
-          description={settingsErrorMessage(
-            error,
-            'This is a problem reaching the server. Your settings are unaffected.'
-          )}
+          description="This is a problem reaching the server. Your settings are unaffected."
+          error={error}
           onRetry={() => {
             void refetch();
           }}
@@ -118,6 +118,7 @@ export function CommerceSettingsSurface() {
 function SettingsForm({ settings }: { settings: CommerceSettings }) {
   const toast = useToast();
   const update = useUpdateCommerceSettings();
+  const rights = useManageRights();
 
   const saved = useMemo(() => toDraft(settings), [settings]);
   const [draft, setDraft] = useState<Draft>(saved);
@@ -179,164 +180,176 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
       <PaneToolbar
         label="Selling settings actions"
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={update.isPending}
-            disabled={!dirty}
-            onClick={submit}
-          >
-            Save
-          </Button>
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              loading={update.isPending}
+              disabled={!dirty}
+              onClick={submit}
+            >
+              Save
+            </Button>
+          )
         }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Selling settings
-            </Heading>
-            <Text className="text-sm">
-              The rules that apply to every sale on this site. These affect what shoppers see and
-              how checkout works.
-            </Text>
-          </div>
+        <ManagersOnly>
+          <div className={COLUMN}>
+            {/* Only an owner or an admin may change this; the server refuses
+              everybody else (sparx persona issue 168). */}
+            <ManagersOnlyNotice change="change how your shop sells" />
+            <div className="flex flex-col gap-1">
+              <Heading level={1} className="text-2xl font-semibold">
+                Selling settings
+              </Heading>
+              <Text className="text-sm">
+                The rules that apply to every sale on this site. These affect what shoppers see and
+                how checkout works.
+              </Text>
+            </div>
 
-          <SaveFailure title="Could not save your settings" message={failure} />
+            <SaveFailure title="Could not save your settings" message={failure} />
 
-          <FormSection
-            title="Currency and language"
-            description="What your prices are shown in, and the language used for dates and numbers."
-          >
-            <CurrencyField
-              required
-              value={draft.defaultCurrency}
-              onChange={(next) => {
-                set('defaultCurrency', next === '' ? 'USD' : next);
-              }}
-              description="All prices on this site are shown and charged in this currency."
-            />
+            <FormSection
+              title="Currency and language"
+              description="What your prices are shown in, and the language used for dates and numbers."
+            >
+              <CurrencyField
+                required
+                value={draft.defaultCurrency}
+                onChange={(next) => {
+                  set('defaultCurrency', next === '' ? 'USD' : next);
+                }}
+                description="All prices on this site are shown and charged in this currency."
+              />
 
-            <Field>
-              <FieldLabel>Language and formatting</FieldLabel>
-              <FieldControl
-                render={
-                  <div className="max-w-sm">
-                    <Select
+              <Field>
+                <FieldLabel>Language and formatting</FieldLabel>
+                <FieldControl
+                  render={
+                    <div className="max-w-sm">
+                      <Select
+                        color="module"
+                        aria-label="Language and formatting"
+                        value={draft.defaultLocale}
+                        items={LOCALE_OPTIONS}
+                        onValueChange={(next) => {
+                          set('defaultLocale', (next as string) ?? 'en-US');
+                        }}
+                      />
+                    </div>
+                  }
+                />
+                <FieldDescription>
+                  Sets how dates, numbers and prices are formatted.
+                </FieldDescription>
+              </Field>
+            </FormSection>
+
+            <FormSection
+              title="At checkout"
+              description="What a customer has to do to buy from you."
+            >
+              <Field>
+                <FieldLabel>Require an account to check out</FieldLabel>
+                <FieldControl
+                  render={
+                    <Switch
                       color="module"
-                      aria-label="Language and formatting"
-                      value={draft.defaultLocale}
-                      items={LOCALE_OPTIONS}
-                      onValueChange={(next) => {
-                        set('defaultLocale', (next as string) ?? 'en-US');
+                      checked={draft.requireAuthForCheckout}
+                      onCheckedChange={(next: boolean) => {
+                        set('requireAuthForCheckout', next);
                       }}
                     />
-                  </div>
-                }
-              />
-              <FieldDescription>Sets how dates, numbers and prices are formatted.</FieldDescription>
-            </Field>
-          </FormSection>
+                  }
+                />
+                <FieldDescription>
+                  On, shoppers must sign in or create an account before paying. Off, they can check
+                  out as a guest, usually the smoother choice.
+                </FieldDescription>
+              </Field>
 
-          <FormSection title="At checkout" description="What a customer has to do to buy from you.">
-            <Field>
-              <FieldLabel>Require an account to check out</FieldLabel>
-              <FieldControl
-                render={
-                  <Switch
-                    color="module"
-                    checked={draft.requireAuthForCheckout}
-                    onCheckedChange={(next: boolean) => {
-                      set('requireAuthForCheckout', next);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                On, shoppers must sign in or create an account before paying. Off, they can check
-                out as a guest, usually the smoother choice.
-              </FieldDescription>
-            </Field>
+              <Field>
+                <FieldLabel>Hide prices until a shopper signs in</FieldLabel>
+                <FieldControl
+                  render={
+                    <Switch
+                      color="module"
+                      checked={draft.hidePricesWhenSignedOut}
+                      onCheckedChange={(next: boolean) => {
+                        set('hidePricesWhenSignedOut', next);
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  For trade or members-only sites where prices should only show to signed-in
+                  customers. Leave off for a normal shop.
+                </FieldDescription>
+              </Field>
+            </FormSection>
 
-            <Field>
-              <FieldLabel>Hide prices until a shopper signs in</FieldLabel>
-              <FieldControl
-                render={
-                  <Switch
-                    color="module"
-                    checked={draft.hidePricesWhenSignedOut}
-                    onCheckedChange={(next: boolean) => {
-                      set('hidePricesWhenSignedOut', next);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                For trade or members-only sites where prices should only show to signed-in
-                customers. Leave off for a normal shop.
-              </FieldDescription>
-            </Field>
-          </FormSection>
+            <FormSection title="Stock and carts">
+              <Field>
+                <FieldLabel>Show a &ldquo;low stock&rdquo; note when stock falls below</FieldLabel>
+                <FieldControl
+                  render={
+                    <NumberField
+                      label="Low stock threshold"
+                      className="max-w-[10rem]"
+                      min={0}
+                      value={draft.showStockBelow}
+                      onValueChange={(next) => {
+                        set(
+                          'showStockBelow',
+                          typeof next === 'number' && !Number.isNaN(next) ? next : 0
+                        );
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  Nudges shoppers to buy before it runs out. Set to 0 to never show it.
+                </FieldDescription>
+              </Field>
 
-          <FormSection title="Stock and carts">
-            <Field>
-              <FieldLabel>Show a &ldquo;low stock&rdquo; note when stock falls below</FieldLabel>
-              <FieldControl
-                render={
-                  <NumberField
-                    label="Low stock threshold"
-                    className="max-w-[10rem]"
-                    min={0}
-                    value={draft.showStockBelow}
-                    onValueChange={(next) => {
-                      set(
-                        'showStockBelow',
-                        typeof next === 'number' && !Number.isNaN(next) ? next : 0
-                      );
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                Nudges shoppers to buy before it runs out. Set to 0 to never show it.
-              </FieldDescription>
-            </Field>
+              <Field>
+                <FieldLabel>Count an unfinished cart as abandoned after (minutes)</FieldLabel>
+                <FieldControl
+                  render={
+                    <NumberField
+                      label="Cart abandonment minutes"
+                      className="max-w-[10rem]"
+                      min={ABANDON_MIN}
+                      max={ABANDON_MAX}
+                      value={draft.cartAbandonmentMinutes}
+                      onValueChange={(next) => {
+                        set(
+                          'cartAbandonmentMinutes',
+                          typeof next === 'number' && !Number.isNaN(next) ? next : ABANDON_MIN
+                        );
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  How long a cart can sit untouched before it counts as abandoned in your reports
+                  and reminder emails. Between 15 minutes and 30 days.
+                </FieldDescription>
+              </Field>
+            </FormSection>
 
-            <Field>
-              <FieldLabel>Count an unfinished cart as abandoned after (minutes)</FieldLabel>
-              <FieldControl
-                render={
-                  <NumberField
-                    label="Cart abandonment minutes"
-                    className="max-w-[10rem]"
-                    min={ABANDON_MIN}
-                    max={ABANDON_MAX}
-                    value={draft.cartAbandonmentMinutes}
-                    onValueChange={(next) => {
-                      set(
-                        'cartAbandonmentMinutes',
-                        typeof next === 'number' && !Number.isNaN(next) ? next : ABANDON_MIN
-                      );
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                How long a cart can sit untouched before it counts as abandoned in your reports and
-                reminder emails. Between 15 minutes and 30 days.
-              </FieldDescription>
-            </Field>
-          </FormSection>
-
-          <FailedPaymentsSection
-            policy={draft.dunning}
-            onChange={(next) => {
-              set('dunning', next);
-            }}
-          />
-        </div>
+            <FailedPaymentsSection
+              policy={draft.dunning}
+              onChange={(next) => {
+                set('dunning', next);
+              }}
+            />
+          </div>
+        </ManagersOnly>
       </div>
     </div>
   );

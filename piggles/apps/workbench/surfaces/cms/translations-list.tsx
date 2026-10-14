@@ -1,59 +1,27 @@
 'use client';
 
-// Your products, and which languages each one is written in.
-//
-// A worklist: the question it answers is "what still needs translating", so
-// every row carries its coverage — the languages already authored, or a plain
-// "Not translated". Click a row to open that product's translation editor.
-//
-// It is registered under Content (localization is a content concern) but the
-// thing it works on is a COMMERCE product, so the whole surface wears the
-// commerce hue via <ModuleScope module="commerce">: the pane's chrome stays
-// Content-teal, the content it holds reads as commerce-orange, which is the
-// color-follows-functionality rule made literal.
-//
-// A table, because the rows are genuinely tabular — same three facts each
-// (what it is, whether it's on sale, what it's translated into) — and people
-// scan DOWN the coverage column for the gaps. Search + paging are server-side;
-// coverage is fetched per visible row (see useCoverage) because the products
-// list endpoint carries no translation join.
+// Your products, and which languages each one is written in: a worklist for "what
+// still needs translating". Registered under Content, but it works on COMMERCE
+// products, so the surface wears the commerce hue via <ModuleScope module="commerce">.
 
 import { useState } from 'react';
-import { PaneWaiting } from '../../components/pane-waiting';
-import { PaneLoadError } from '../../components/pane-load-error';
-import { Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
-import { faLanguage } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
+import { Card } from '@wizeworks/silicaui-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { RefreshButton } from '../../components/refresh-button';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import { ModuleScope } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   useCoverage,
   useTranslatableProducts,
-  type ProductStatus,
   type TranslatableProduct,
 } from './translations-data';
-import { TranslationRow } from './translation-row';
 import { RowOpenHint } from '../../components/row-open-hint';
-
-/** The status chips ARE questions someone opens this list to answer. Each maps
- *  to a server-side filter, never a browser sieve over the loaded page. */
-const STATUS_FILTERS = [
-  { value: 'all', label: 'All', status: undefined, includeArchived: false },
-  { value: 'active', label: 'On sale', status: 'active', includeArchived: false },
-  { value: 'draft', label: 'Drafts', status: 'draft', includeArchived: false },
-  { value: 'archived', label: 'Retired', status: 'archived', includeArchived: true },
-] as const satisfies readonly {
-  value: string;
-  label: string;
-  status: ProductStatus | undefined;
-  includeArchived: boolean;
-}[];
-
-type StatusFilterValue = (typeof STATUS_FILTERS)[number]['value'];
+import {
+  STATUS_FILTERS,
+  TranslationsToolbar,
+  type StatusFilterValue,
+} from './translations-list-toolbar';
+import { TranslationsBody } from './translations-list-body';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -62,162 +30,121 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>('all');
-
+// Search and paging are server-side: the page, its size, and how far "Load more" has
+// reached. Any change to the question starts again at page one.
+function usePaging() {
   const [pageSize, setPageSize] = useState<PageSize>(25);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState<number>(25);
-
-  const active = STATUS_FILTERS.find((entry) => entry.value === statusFilter) ?? STATUS_FILTERS[0];
-  const skip = (page - 1) * pageSize;
-  const narrowed = statusFilter !== 'all' || search.trim() !== '';
-
-  const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useTranslatableProducts({
-    q: search.trim(),
-    ...(active.status ? { status: active.status } : {}),
-    includeArchived: active.includeArchived,
-    take,
-    skip,
-  });
-
-  const rows = data?.items ?? [];
-  const total = data?.total;
-
-  // Coverage for the rows on screen — one light, cached request each, shared
-  // with the editor's own read. Bounded by the page, so a bigger page is a
-  // deliberate cost the operator chose with the size picker.
-  const { byProduct, loading: coverageLoading } = useCoverage(rows.map((row) => row.id));
-
   const resetWindow = () => {
     setPage(1);
     setTake(pageSize);
   };
+  const paging = { pageSize, page, take, skip: (page - 1) * pageSize };
+  return { ...paging, setPageSize, setPage, setTake, resetWindow };
+}
 
-  const open = (product: TranslatableProduct, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('cms.translations.detail', { id: product.id }, { target: targetFor(event) });
+type Paging = ReturnType<typeof usePaging>;
+
+function TranslationsPagination(props: {
+  paging: Paging;
+  shown: number;
+  total: number | undefined;
+  busy: boolean;
+}) {
+  const { paging, shown } = props;
+  return (
+    <ListPagination
+      shown={shown}
+      firstRow={shown === 0 ? 0 : paging.skip + 1}
+      total={props.total}
+      page={paging.page}
+      pageSize={paging.pageSize}
+      canLoadMore={paging.take < MAX_TAKE}
+      busy={props.busy}
+      onLoadMore={() => {
+        paging.setTake((current) => Math.min(current + paging.pageSize, MAX_TAKE));
+      }}
+      onPageChange={(next) => {
+        paging.setPage(next);
+        paging.setTake(paging.pageSize);
+      }}
+      onPageSizeChange={(size) => {
+        paging.setPageSize(size);
+        paging.setPage(1);
+        paging.setTake(size);
+      }}
+    />
+  );
+}
+
+function useTranslationsView() {
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>('all');
+  const paging = usePaging();
+  const active = STATUS_FILTERS.find((entry) => entry.value === statusFilter) ?? STATUS_FILTERS[0];
+  const query = useTranslatableProducts({
+    q: search.trim(),
+    ...(active.status ? { status: active.status } : {}),
+    includeArchived: active.includeArchived,
+    take: paging.take,
+    skip: paging.skip,
+  });
+  const rows = query.data?.items ?? [];
+  // Coverage for the rows on screen: one light, cached request each, bounded by the
+  // page, so a bigger page is a cost the operator chose with the size picker.
+  const { byProduct, loading: coverageLoading } = useCoverage(rows.map((row) => row.id));
+  const onSearch = (next: string) => {
+    setSearch(next);
+    paging.resetWindow();
+  };
+  const onStatusFilter = (next: StatusFilterValue) => {
+    setStatusFilter(next);
+    paging.resetWindow();
+  };
+  const coverage = { byProduct, coverageLoading };
+  return { search, onSearch, statusFilter, onStatusFilter, paging, query, rows, ...coverage };
+}
+
+export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const view = useTranslationsView();
+  const { search, statusFilter, paging, query, rows } = view;
+  const { data, isFetching, refetch } = query;
+  const retry = () => {
+    void refetch();
   };
 
   return (
     <ModuleScope module="commerce" className={PANE_SHELL}>
-      <PaneToolbar
-        label="Translations controls"
-        search={
-          <div className="max-w-xs min-w-0 flex-1">
-            <SearchInput
-              size="sm"
-              aria-label="Search products"
-              placeholder="Product name or web address…"
-              value={search}
-              onValueChange={(next) => {
-                setSearch(next);
-                resetWindow();
-              }}
-            />
-          </div>
-        }
-        filters={[
-          {
-            label: 'Status',
-            key: 'status',
-            value: statusFilter,
-            onValueChange: (next) => {
-              setStatusFilter((next as StatusFilterValue | null) ?? 'all');
-              resetWindow();
-            },
-            options: STATUS_FILTERS,
-          },
-        ]}
-        views={{
-          target: '/cms/translations',
-          params: { q: search },
-          onApply: (next) => {
-            setSearch(next.q ?? '');
-            resetWindow();
-          },
-        }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+      <TranslationsToolbar
+        search={search}
+        onSearch={view.onSearch}
+        statusFilter={statusFilter}
+        onStatusFilter={view.onStatusFilter}
+        isFetching={isFetching}
+        updatedAt={data ? query.dataUpdatedAt : undefined}
+        onRefresh={retry}
       />
-
       <Card className="min-h-0 flex-1 overflow-y-auto">
-        {error ? (
-          // A failed load REPLACES the table — "no products yet" over a
-          // connection failure is a lie about their catalogue.
-          <PaneLoadError
-            icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
-            title="Could not load your products"
-            description="This is a problem reaching the server. Nothing you have written or translated is affected: none of it has been lost."
-            onRetry={() => {
-              void refetch();
-            }}
-          />
-        ) : isLoading ? (
-          <PaneWaiting />
-        ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
-            title={narrowed ? 'Nothing matches that' : 'No products to translate yet'}
-            description={
-              narrowed
-                ? 'Try part of the product name, or widen the filter to see the rest of your catalog.'
-                : 'Once you add a product, this is where you translate its name and description into the other languages your customers read.'
-            }
-          />
-        ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th className="hidden @2xl:table-cell">Status</th>
-                <th className="hidden @4xl:table-cell">Last translated</th>
-                <th>Languages</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((product) => (
-                <TranslationRow
-                  key={product.id}
-                  product={product}
-                  languages={byProduct.get(product.id)}
-                  coverageLoading={coverageLoading}
-                  onOpen={open}
-                />
-              ))}
-            </tbody>
-          </Table>
-        )}
+        <TranslationsBody
+          error={query.error}
+          isLoading={query.isLoading}
+          narrowed={statusFilter !== 'all' || search.trim() !== ''}
+          rows={rows}
+          byProduct={view.byProduct}
+          coverageLoading={view.coverageLoading}
+          onRetry={retry}
+          onOpen={(product: TranslatableProduct, event) => {
+            ctx.open('cms.translations.detail', { id: product.id }, { target: targetFor(event) });
+          }}
+        />
       </Card>
-
       <div className="shrink-0">
-        <ListPagination
+        <TranslationsPagination
+          paging={paging}
           shown={rows.length}
-          firstRow={rows.length === 0 ? 0 : skip + 1}
-          total={total}
-          page={page}
-          pageSize={pageSize}
-          canLoadMore={take < MAX_TAKE}
+          total={data?.total}
           busy={isFetching}
-          onLoadMore={() => {
-            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
-          }}
-          onPageChange={(next) => {
-            setPage(next);
-            setTake(pageSize);
-          }}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-            setTake(size);
-          }}
         />
         {rows.length > 0 ? <RowOpenHint /> : null}
       </div>

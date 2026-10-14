@@ -44,6 +44,7 @@ import { Grid3x3, QrCode, Search } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useStockLocations } from './data';
 import {
@@ -101,7 +102,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const activeLocations = (locations.data?.items ?? []).filter((l) => l.isActive);
   const locationName = activeLocations.find((l) => l.id === locationId)?.name ?? null;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useBins({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useBins({
     q: search.trim(),
     ...(locationId ? { warehouseId: locationId } : {}),
     ...(type ? { type } : {}),
@@ -156,10 +157,11 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Grid3x3 className="size-6" aria-hidden />}
           title="Could not load your shelves"
           description="This is a problem reaching the server. Your shelves and their stock are unaffected. They just could not be read just now."
+          error={error}
         />
       );
     }
@@ -307,17 +309,20 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           />
         }
+        primary={
+          <Button
+            color="module-inventory"
+            size="sm"
+            className="ml-auto shrink-0"
+            onClick={() => {
+              ctx.open('inventory.bins.detail', { id: 'new' });
+            }}
+          >
+            New shelf
+          </Button>
+        }
         controls={
           <>
-            <Button
-              color="module-inventory"
-              size="sm"
-              onClick={() => {
-                ctx.open('inventory.bins.detail', { id: 'new' });
-              }}
-            >
-              New shelf
-            </Button>
             <Tooltip content="Print labels for the shelves you are looking at">
               <Button
                 size="sm"

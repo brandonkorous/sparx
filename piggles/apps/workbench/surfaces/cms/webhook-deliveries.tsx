@@ -1,16 +1,13 @@
 'use client';
 
-// What we actually sent, and whether it arrived.
-//
-// Until this existed the pane could only report the SETTING ("Active"), never
-// the result, so a mistyped address looked exactly like a working one.
-//
-// A stacked list rather than a table: four facts per attempt, one of them a
-// sentence, and a table squeezed that sentence to one word per line at 360px.
+// What we actually sent, and whether it arrived, so a mistyped address no longer
+// looks exactly like a working one. A stacked list, not a table: one of the four
+// facts is a sentence, and a table squeezed it to a word per line at 360px.
 
 import { Badge, Button, Text } from '@wizeworks/silicaui-react';
 import { InlineWaiting } from '../../components/inline-waiting';
 import { FormSection } from '../../components/form-section';
+import { loadFailureWords } from '../../lib/api-error';
 import {
   deliveryState,
   eventLabel,
@@ -20,7 +17,7 @@ import {
 } from './webhooks-data';
 
 export function WebhookDeliveries({ id }: { id: string }) {
-  const { data, isLoading, isError, refetch } = useWebhookDeliveries(id);
+  const { data, isLoading, isError, error, refetch } = useWebhookDeliveries(id);
   const items = data?.items ?? [];
 
   return (
@@ -33,8 +30,10 @@ export function WebhookDeliveries({ id }: { id: string }) {
       {isError ? (
         <div className="flex flex-wrap items-center gap-3">
           <Text className="text-sm">
-            We could not check this just now. It is a problem reaching the server, not a problem
-            with your notifications.
+            {loadFailureWords(
+              error,
+              'We could not check this just now. It is a problem reaching the server, not a problem with your notifications.'
+            )}
           </Text>
           <Button
             size="sm"

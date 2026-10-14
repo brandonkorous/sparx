@@ -16,10 +16,32 @@ import { ChatWidget } from '@wizeworks/chat-widget';
 import type { ComponentProps } from 'react';
 
 import { useCart } from './cart-provider';
+import { useCustomer } from './customer-provider';
 
-type Props = Omit<ComponentProps<typeof ChatWidget>, 'hideLauncher'>;
+type Props = Omit<
+  ComponentProps<typeof ChatWidget>,
+  'hideLauncher' | 'propertySlug' | 'startVia' | 'signedInAs'
+>;
 
+// Who is chatting (sparx persona issue 164). A shopper signed in on this site was
+// asked for their name and email like a stranger, and their chat reached the shop
+// as a "Possible customer" matched on a typed address. The first message now goes
+// through this site's own `/api/sparx` relay, which carries the sign-in cookie, so
+// the server ties the chat to their customer record; and the widget says who they
+// are chatting as instead of asking.
 export function SiteChatWidget(props: Props) {
   const { drawerOpen } = useCart();
-  return <ChatWidget {...props} hideLauncher={drawerOpen} />;
+  const { customer, propertySlug } = useCustomer();
+  const name = customer
+    ? [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim() || null
+    : null;
+  return (
+    <ChatWidget
+      {...props}
+      hideLauncher={drawerOpen}
+      propertySlug={propertySlug}
+      startVia="/api/sparx"
+      signedInAs={customer ? { name, email: customer.email } : null}
+    />
+  );
 }

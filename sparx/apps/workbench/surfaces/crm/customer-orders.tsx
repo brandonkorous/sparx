@@ -189,7 +189,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                         open(row, event);
                       }}
                     >
-                      <td className="font-mono text-sm">{row.orderNumber}</td>
+                      <td className="font-mono text-sm whitespace-nowrap">{row.orderNumber}</td>
                       <td className="hidden @md:table-cell">{customerName(row.customer)}</td>
                       <td className="hidden text-sm @lg:table-cell">{formatDate(row.placedAt)}</td>
                       <td>

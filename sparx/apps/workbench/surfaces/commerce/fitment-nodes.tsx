@@ -30,6 +30,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
+import { loadFailureWords } from '../../lib/api-error';
 import { ArrowDown, ArrowUp, Check, ChevronRight, Pencil, Plus, Trash2, X } from 'lucide-react';
 import {
   fitmentErrorMessage,
@@ -313,7 +314,10 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
           <AlertContent>
             <AlertTitle>Could not load this level</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server. Nothing has been changed.
+              {loadFailureWords(
+                nodes.error,
+                'This is a problem reaching the server. Nothing has been changed.'
+              )}
             </AlertDescription>
           </AlertContent>
           <Button

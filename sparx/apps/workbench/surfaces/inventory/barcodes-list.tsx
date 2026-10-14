@@ -45,6 +45,7 @@ import { Barcode, CircleAlert, Printer, Search, Sparkles } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
 import {
@@ -88,7 +89,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
 
   const skip = (page - 1) * pageSize;
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useBarcodes({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useBarcodes({
     q: search.trim(),
     includeInactive,
     limit: take,
@@ -121,10 +122,11 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Barcode className="size-6" aria-hidden />}
           title="Could not load your barcodes"
           description="This is a problem reaching the server. Nothing about your codes has changed. They just could not be read right now."
+          error={error}
         />
       );
     }

@@ -123,7 +123,61 @@ export function dropEmptyUrlAttrs(node: Node): Node {
  * back TO. A src-less `<iframe>` or `<video>` gets nothing here on purpose.
  */
 export function fillMissingImageSrc(node: Node): Node {
-  return fillWalk(node) as Node;
+  return (fillWalk(node) ?? node) as Node;
+}
+
+/* ── A piece with no picture is a piece with no picture ─────────────────────── */
+
+/** Marks an image bound inside a list of writing, before resolution, so the last stage
+ *  can tell "this piece has no picture" from "an image goes here". */
+export const DROP_WHEN_EMPTY = 'data-drop-when-empty';
+
+/** A list of writing: every kind's list is `cms.<kind>` (`binding.ts`). */
+export function isWritingListRef(ref: string): boolean {
+  return ref.startsWith('cms.');
+}
+
+/**
+ * Mark every bound image inside a list of writing (`isWritingListRef`), for a visitor's
+ * render only.
+ *
+ * The grey placeholder is right for a shop's grid, where a product with no photograph
+ * beside four with one reads as a hole. It is wrong for writing: a journal's front page
+ * led with a piece that has no photograph yet, and drew the platform's "an image goes
+ * here" art above its headline, on the live site (P09). A piece with no picture is laid
+ * out as one, so `fillMissingImageSrc` drops a marked image that resolved to nothing.
+ */
+export function markWritingListImages(node: Node): Node {
+  return markWalk(node, false) as Node;
+}
+
+function markWalk(child: Child, inWriting: boolean): Child {
+  if (typeof child === 'string' || child.kind === 'outlet') return child;
+  const data = (child as { data?: { kind?: string; ref?: string } }).data;
+  const writing = inWriting || (data?.kind === 'collection' && isWritingListRef(data.ref ?? ''));
+  let out: Child = child;
+  // `featuredImage` is a post's picture wherever it is bound, a list or the post page
+  // itself; nothing a shop sells binds that name (`binding.ts`).
+  const writingImage = writing || data?.ref === 'featuredImage';
+  if (writingImage && data?.kind === 'value' && imageSlot(child) !== null) {
+    out = {
+      ...child,
+      attrs: {
+        ...((child as { attrs?: Record<string, unknown> }).attrs ?? {}),
+        [DROP_WHEN_EMPTY]: '',
+      },
+    } as unknown as Child;
+  }
+  if (typeof out === 'string' || out.kind === 'outlet') return out;
+  const children = out.children;
+  if (!children?.length) return out;
+  let changed = false;
+  const next = children.map((c) => {
+    const r = markWalk(c, writing);
+    if (r !== c) changed = true;
+    return r;
+  });
+  return changed ? { ...out, children: next } : out;
 }
 
 /** An image, whichever shape it is at this point: the `Image` component atom the catalog
@@ -135,9 +189,22 @@ function imageSlot(child: Child): 'props' | 'attrs' | null {
   return null;
 }
 
-function fillWalk(child: Child): Child {
+/** The marker off, whatever else happens to the node: it is for this pass, not the page. */
+function withoutMarker(child: Child): Child {
+  if (typeof child === 'string' || child.kind === 'outlet') return child;
+  const attrs = (child as { attrs?: Record<string, unknown> }).attrs;
+  if (!attrs || !(DROP_WHEN_EMPTY in attrs)) return child;
+  const { [DROP_WHEN_EMPTY]: _marker, ...rest } = attrs;
+  return { ...child, attrs: rest } as unknown as Child;
+}
+
+function fillWalk(child: Child): Child | null {
   const slot = imageSlot(child);
-  let out = child;
+  const marked =
+    typeof child !== 'string' &&
+    child.kind !== 'outlet' &&
+    DROP_WHEN_EMPTY in ((child as { attrs?: Record<string, unknown> }).attrs ?? {});
+  let out = withoutMarker(child);
 
   if (slot && typeof child !== 'string' && child.kind !== 'outlet') {
     const bag = (child as unknown as Record<string, Record<string, unknown> | undefined>)[slot];
@@ -146,6 +213,8 @@ function fillWalk(child: Child): Child {
     // data URI and `toHtml`'s sanitiser drops those outright, so leaving one here
     // renders a broken glyph just as surely as an empty string does.
     const usable = typeof src === 'string' && src !== '' && !src.startsWith('data:');
+    // A piece of writing with no picture: no image, not a picture of "no image".
+    if (!usable && marked) return null;
     if (!usable) {
       const patched: Record<string, unknown> = {
         ...child,
@@ -157,7 +226,7 @@ function fillWalk(child: Child): Child {
       if ((child as { data?: { kind?: string } }).data?.kind === 'value') delete patched.data;
       // Through `unknown`: the patched object is structurally the same node with one
       // prop swapped, but it was widened to a Record to write a computed key.
-      out = patched as unknown as Child;
+      out = withoutMarker(patched as unknown as Child);
     }
   }
 
@@ -165,11 +234,12 @@ function fillWalk(child: Child): Child {
   const children = out.children;
   if (!children?.length) return out;
   let changed = false;
-  const next = children.map((c) => {
+  const next: Child[] = [];
+  for (const c of children) {
     const r = fillWalk(c);
     if (r !== c) changed = true;
-    return r;
-  });
+    if (r !== null) next.push(r);
+  }
   return changed ? { ...out, children: next } : out;
 }
 

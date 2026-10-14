@@ -109,7 +109,8 @@ function repoRoot(): string {
 describe('the item picker', () => {
   const pane = () =>
     readFileSync(
-      join(repoRoot(), 'piggles/apps/workbench/surfaces/commerce/sale-lines.tsx'),
+      // The picker moved out of sale-lines.tsx (sparx persona issue 230).
+      join(repoRoot(), 'piggles/apps/workbench/surfaces/commerce/sale-sellable-picker.tsx'),
       'utf8'
     );
 

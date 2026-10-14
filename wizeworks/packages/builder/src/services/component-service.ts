@@ -31,7 +31,8 @@ import {
   type SilicaPieceDto,
 } from '@wizeworks/builder-schemas';
 import type { BuilderComponent, BuilderComponentVersion, Prisma } from '@wizeworks/db';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -41,6 +42,19 @@ import { BuilderNotFoundError, BuilderValidationError } from '../errors';
 /** The symbol id a tenant library piece is materialized under in a silica tree.
  *  The console derives the same string (`saved-pieces.ts`); it is the contract that
  *  lets a page reference a shared master without minting a per-site id for it. */
+/** Re-read a saved piece into search once the write commits, by the key its screen
+ *  opens on. Keys never change after create, so there is no old entry to drop. */
+function reindexComponent(ctx: ServiceContext, key: string): Promise<void> {
+  return afterCommit('index builder_component', () =>
+    indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'builder_component',
+      recordId: key,
+    })
+  );
+}
+
 function tenantSymbolId(key: string): string {
   return `tenant:${key}`;
 }
@@ -365,6 +379,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
       entityId: component.id,
       diff: { before: null, after: { key: component.key, name: component.name } },
     });
+    await reindexComponent(ctx, component.key);
     return toDto(component, version);
   });
 }
@@ -439,6 +454,7 @@ export async function update(
         after: { version: updated.latestVersion, name: updated.name },
       },
     });
+    await reindexComponent(ctx, updated.key);
     return toDto(updated, versionRow);
   });
 }
@@ -739,5 +755,6 @@ export async function remove(ctx: ServiceContext, key: string): Promise<void> {
       entityId: existing.id,
       diff: { before: { key: existing.key, name: existing.name }, after: null },
     });
+    await reindexComponent(ctx, existing.key);
   });
 }

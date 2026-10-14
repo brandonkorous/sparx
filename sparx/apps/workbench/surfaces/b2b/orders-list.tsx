@@ -33,6 +33,7 @@ import { Plus, ShoppingCart, X } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   customerName,
@@ -63,16 +64,17 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const skip = (page - 1) * pageSize;
   const narrowed = filter !== 'all' || search.trim() !== '';
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useWholesaleOrders({
-    q: search.trim(),
-    status: active.status,
-    owing: active.owing,
-    accountId,
-    sortBy: 'placedAt',
-    order: 'desc',
-    take,
-    skip,
-  });
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useWholesaleOrders({
+      q: search.trim(),
+      status: active.status,
+      owing: active.owing,
+      accountId,
+      sortBy: 'placedAt',
+      order: 'desc',
+      take,
+      skip,
+    });
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -167,10 +169,11 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<ShoppingCart className="size-6" aria-hidden />}
             title="Could not load your wholesale orders"
             description="This is a problem reaching the server. Your orders are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -232,7 +235,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(order, event);
                     }}
                   >
-                    <td className="font-mono text-sm">{order.orderNumber}</td>
+                    <td className="font-mono text-sm whitespace-nowrap">{order.orderNumber}</td>
                     <td className="hidden max-w-48 truncate @lg:table-cell">
                       {customerName(order.customer)}
                     </td>

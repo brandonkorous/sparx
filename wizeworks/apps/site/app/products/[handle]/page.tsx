@@ -67,7 +67,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     mediaUrl(product.images[0]?.mediaAssetId ?? null, site.slug) ??
     ogImageUrl({
       title: product.seoTitle ?? product.title,
-      eyebrow: 'Product',
       brand: site.name,
       accent: site.theme?.colorPrimary,
       platformBrand: site.platformBrand,

@@ -15,6 +15,10 @@ import {
   RECORD_TEMPLATE_LABELS,
   ROUTED_RECORD_TYPES,
   isRecordAddress,
+  kindAddressAt,
+  kindAddressForPath,
+  kindAddressFromPattern,
+  kindPath,
   recordAddressAt,
   recordAddressFor,
   recordIndexPath,
@@ -279,5 +283,76 @@ describe('record page names are the switcher, not a DTO field', () => {
     const seeded = site.pages.filter((p) => isRecordAddress(p.slug));
     expect(seeded.length).toBe(ROUTED_RECORD_TYPES.length);
     for (const page of seeded) expect(labels).toContain(page.name);
+  });
+});
+
+describe('content kind addresses', () => {
+  it('reads a kind pattern into the address its pieces live under', () => {
+    expect(kindAddressFromPattern('/articles/{slug}')).toEqual({
+      prefix: '/articles/',
+      slug: '/articles/:slug',
+    });
+    expect(kindAddressFromPattern('/journal/field-notes/{slug}')?.slug).toBe(
+      '/journal/field-notes/:slug'
+    );
+  });
+
+  it('refuses a pattern the storefront cannot serve', () => {
+    for (const pattern of [
+      '/{slug}', // the pages' own addresses
+      '/articles', // no slug, so every piece would claim one address
+      'articles/{slug}',
+      '/articles/{slug}/more',
+      '/Articles/{slug}',
+      '/articles//{slug}',
+      '/products/{slug}', // app/products/[handle] wins
+      '/blog/{slug}', // the post route
+      'C:/Program Files/Git/articles/{slug}',
+      null,
+      '',
+    ]) {
+      expect(kindAddressFromPattern(pattern), String(pattern)).toBeNull();
+    }
+  });
+
+  it('knows a kind address by its shape, and never mistakes a platform address for one', () => {
+    expect(kindAddressAt('/articles/:slug')?.prefix).toBe('/articles/');
+    expect(kindAddressAt('articles/:slug')?.prefix).toBe('/articles/');
+    expect(kindAddressAt('/blog/:slug')).toBeNull();
+    expect(kindAddressAt('/products/:handle')).toBeNull();
+    expect(kindAddressAt('/articles/the-last-mill')).toBeNull();
+    expect(kindAddressAt('/articles/:handle')).toBeNull();
+  });
+
+  it('counts a kind page as a record page, so a sitemap never lists its pattern', () => {
+    expect(isRecordAddress('/articles/:slug')).toBe(true);
+    expect(isRecordAddress('/articles')).toBe(false);
+    expect(isRecordAddress('/articles/the-last-mill')).toBe(false);
+  });
+
+  it('offers a kind page as the LAST candidate for one of its pieces, after the literal page', () => {
+    expect(slugCandidatesForPath('/articles/the-last-mill')).toEqual([
+      'articles/the-last-mill',
+      '/articles/the-last-mill',
+      'articles/:slug',
+      '/articles/:slug',
+    ]);
+    // One segment is a page, never a piece.
+    expect(slugCandidatesForPath('/articles')).toEqual(['articles', '/articles']);
+    // A platform record route keeps its own address and no kind's.
+    expect(slugCandidatesForPath('/products/lamp')).toEqual([
+      'products/lamp',
+      '/products/lamp',
+      'products/:handle',
+      '/products/:handle',
+    ]);
+  });
+
+  it('names the path a piece lives at', () => {
+    const address = kindAddressFromPattern('/articles/{slug}')!;
+    expect(kindPath(address, 'the-last-mill')).toBe('/articles/the-last-mill');
+    expect(kindAddressForPath('/articles/the-last-mill')?.slug).toBe('/articles/:slug');
+    expect(kindAddressForPath('/about')).toBeNull();
+    expect(kindAddressForPath('/cart/x')).toBeNull();
   });
 });

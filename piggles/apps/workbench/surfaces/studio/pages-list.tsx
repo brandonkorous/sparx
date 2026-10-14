@@ -1,10 +1,8 @@
 'use client';
 
-// Every page on the site, and the way into each one.
-//
-// A TABLE, like every other list in the app: each page carries the same four facts
-// and people scan DOWN one of them — "which of these is still not live", "what
-// claims /about". It is also the answer to "how do I get two pages side by side".
+// Every page on the site, and the way into each one. A TABLE: people scan DOWN one
+// fact ("which is still not live", "what claims /about"). It is also the answer to
+// "how do I get two pages side by side".
 
 import { useState, type ReactNode } from 'react';
 import { Button, Card, EmptyState, Input, Text } from '@wizeworks/silicaui-react';
@@ -50,6 +48,7 @@ export function PagesList({
       <Card className="min-h-0 flex-1 overflow-y-auto">
         <PagesBody
           state={pages.isError ? 'error' : pages.isPending ? 'loading' : 'ready'}
+          error={pages.error}
           rows={rows}
           onRetry={retry}
           onOpen={onOpen}
@@ -68,12 +67,15 @@ export function PagesList({
  *  library, or the table. */
 function PagesBody({
   state,
+  error,
   rows,
   onRetry,
   onOpen,
   onOpenBeside,
 }: {
   state: 'error' | 'loading' | 'ready';
+  /** The failed read's error, so the failure says WHY it failed (issue 260). */
+  error: unknown;
   rows: readonly PageSummary[];
   onRetry: () => void;
   onOpen: (pageId: string) => void;
@@ -85,6 +87,7 @@ function PagesBody({
         icon={GLYPH}
         title="Could not load your pages"
         description="This is a problem reaching the server. None of your pages are affected. Nothing has been lost."
+        error={error}
         onRetry={onRetry}
       />
     );

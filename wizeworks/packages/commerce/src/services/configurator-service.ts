@@ -25,7 +25,7 @@ import {
   UpdateBundleInput,
   UpdateConfigurationTemplateInput,
 } from '@wizeworks/commerce-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -632,6 +632,10 @@ export async function createTemplate(
     return created;
   });
 
+  // Queued, not fired: a caller may have composed this into its own open transaction.
+  await afterCommit(`index configurator_template ${result.id}`, () =>
+    indexCommerceEntity(ctx, 'configurator_template', result.id)
+  );
   return { id: result.id };
 }
 
@@ -726,6 +730,9 @@ export async function updateTemplate(
       diff: { before: { status: before.status }, after: { status: input.status ?? before.status } },
     });
   });
+  await afterCommit(`index configurator_template ${id}`, () =>
+    indexCommerceEntity(ctx, 'configurator_template', id)
+  );
 }
 
 export async function deleteTemplate(ctx: ServiceContext, id: string): Promise<void> {
@@ -744,6 +751,9 @@ export async function deleteTemplate(ctx: ServiceContext, id: string): Promise<v
       diff: { before: { name: before.name } },
     });
   });
+  await afterCommit(`index configurator_template ${id}`, () =>
+    indexCommerceEntity(ctx, 'configurator_template', id, 'delete')
+  );
 }
 
 // ─── Resolution ───────────────────────────────────────────────────────

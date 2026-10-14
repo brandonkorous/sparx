@@ -45,6 +45,7 @@ export {
   walkTree,
 } from './tree/walk';
 export { insertChild, moveNode, removeNode, replaceNode } from './tree/edit';
+export { listSourceOf, retargetListOps } from './tree/retarget-list';
 
 export type { EmailPlace } from './email/walk';
 export {

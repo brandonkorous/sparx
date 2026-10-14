@@ -39,7 +39,7 @@ import {
   resolveSilicaEmailData,
   type EmailRecipientRef,
 } from './email-data.js';
-import { unsubscribeUrl } from './email-unsubscribe.js';
+import { unsubscribeHeaders, unsubscribeUrl } from './email-unsubscribe.js';
 import { resolvePrimaryPropertyId } from './property.js';
 
 /**
@@ -148,6 +148,9 @@ export interface RenderBuilderEmailArgs {
   /** Automation trigger-time scalar snapshot (a since-deleted entity's last-known
    *  values). Omitted by direct sends, which always have a live entity. */
   snapshot?: Record<string, unknown> | null;
+  /** The campaign this send belongs to, so its unsubscribe link is counted against
+   *  it (piggles persona issue 985). */
+  broadcastId?: string | null;
   /** Override the email's own subject/preheader (the automation broadcast path). */
   subjectOverride?: string;
   preheaderOverride?: string | null;
@@ -189,7 +192,9 @@ export async function renderBuilderEmailDoc(
   const finalPreheader =
     preheader != null ? interpolateEmailTokens(preheader, resolveToken) : undefined;
 
-  const unsubUrl = args.marketing ? unsubscribeUrl(ctx.tenantId, args.to) : undefined;
+  const unsubUrl = args.marketing
+    ? unsubscribeUrl(ctx.tenantId, args.to, args.broadcastId)
+    : undefined;
   const brand = (await brandService.resolveEmailBrand(ctx, args.propertyId ?? null)) ?? undefined;
   // The footer's utility + legal links (account · contact · privacy · terms · …) for
   // THIS site — same published-legal-page source as the storefront footer.
@@ -233,14 +238,7 @@ export async function renderBuilderEmailDoc(
     html: rendered.html,
     text: rendered.text,
     ...(args.propertyId ? { propertyId: args.propertyId } : {}),
-    ...(unsubUrl
-      ? {
-          headers: {
-            'List-Unsubscribe': `<${unsubUrl}>`,
-            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-          },
-        }
-      : {}),
+    ...(unsubUrl ? { headers: unsubscribeHeaders(unsubUrl) } : {}),
   };
 }
 

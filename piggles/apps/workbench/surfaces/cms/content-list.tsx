@@ -44,6 +44,7 @@ import {
   type ContentEntry,
   type EntryStatus,
 } from './data';
+import { entryHref } from './routable';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { useSites } from '../sites/data';
 import { showSiteColumn, siteScopeCell } from './content-sites';
@@ -124,6 +125,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
     for (const type of types ?? []) map.set(type.key, type.name);
     return map;
   }, [types]);
+  const typeByKey = useMemo(() => new Map((types ?? []).map((type) => [type.key, type])), [types]);
 
   const authorName = useMemo(() => {
     const map = new Map<string, string>();
@@ -329,6 +331,9 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
               {rows.map((entry) => {
                 const state = entryStatusState(entry.status, siteIsDark);
                 const kind = typeName.get(entry.type_key) ?? entry.type_key;
+                // Its real address, the one under its Web address box: an article
+                // read "/the-last-mill" here and lives at /articles/the-last-mill.
+                const address = entryHref(entry, typeByKey.get(entry.type_key));
                 const author = entry.author_id ? (authorName.get(entry.author_id) ?? '—') : '—';
                 const scope = siteScopeCell(entry.propertyIds, (id) => siteName.get(id));
                 return (
@@ -350,10 +355,8 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="block max-w-72 truncate font-medium">
                         {entryTitle(entry)}
                       </span>
-                      {entry.slug ? (
-                        <span className="block max-w-72 truncate font-mono text-sm">
-                          /{entry.slug}
-                        </span>
+                      {address ? (
+                        <span className="block max-w-72 truncate font-mono text-sm">{address}</span>
                       ) : null}
                     </td>
                     <td className="hidden max-w-40 truncate @xl:table-cell">{kind}</td>

@@ -22,11 +22,6 @@
 
 import { useEffect, useId, useState } from 'react';
 import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Avatar,
   Badge,
   Button,
@@ -45,11 +40,12 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Handshake, Plus, Send, Settings2, TriangleAlert, UserMinus, X } from 'lucide-react';
+import { Handshake, Plus, Send, Settings2, UserMinus, X } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ASSIGNABLE_ROLES, canManageTeam, roleDescription, roleLabel } from '../team/roles';
@@ -342,8 +338,16 @@ function PartnerRow({
 export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { partners, memberCount, ready, isError, isFetching, dataUpdatedAt, refetch } =
-    usePartnerAccess();
+  const {
+    partners,
+    memberCount,
+    ready,
+    isError,
+    error: loadError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = usePartnerAccess();
   const { data: viewer } = useViewer();
 
   const resend = useResendPartnerInvitation();
@@ -430,30 +434,14 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError) {
     return (
       <div className={PANE_SHELL}>
-        <div className="flex h-full flex-col items-center justify-center p-8">
-          <Alert color="error" className="max-w-md">
-            <TriangleAlert />
-            <AlertContent>
-              <AlertTitle>Could not load partner access</AlertTitle>
-              <AlertDescription>
-                No access has changed. This is a problem reaching the server, not with who can get
-                into your account.
-              </AlertDescription>
-            </AlertContent>
-            <AlertActions>
-              <Button
-                size="sm"
-                color="error"
-                variant="soft"
-                onClick={() => {
-                  refetch();
-                }}
-              >
-                Try again
-              </Button>
-            </AlertActions>
-          </Alert>
-        </div>
+        <PaneLoadError
+          title="Could not load partner access"
+          description="No access has changed. This is a problem reaching the server, not with who can get into your account."
+          error={loadError}
+          onRetry={() => {
+            refetch();
+          }}
+        />
       </div>
     );
   }

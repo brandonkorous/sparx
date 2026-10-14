@@ -79,10 +79,11 @@ export function newPredicate(
   custom: CustomFieldIndex = {}
 ): PredNode {
   const op = defaultOperator(field, custom);
-  const meta = fieldMeta(field, custom);
-  const value =
-    meta.kind === 'enum' ? (meta.options?.[0]?.value ?? '') : meta.kind === 'boolean' ? 'true' : '';
-  return { id: newId(), kind: 'predicate', field, op, value, value2: '' };
+  // No value until the owner picks one. Filling in the first choice (or yes)
+  // was a rule nobody chose: a new segment matched 31 people before anything was
+  // picked, and under any of an added condition put 30 more in the audience
+  // (sparx persona issue 150).
+  return { id: newId(), kind: 'predicate', field, op, value: '', value2: '' };
 }
 
 export function newGroup(combinator: Combinator = 'and'): GroupNode {
@@ -137,7 +138,8 @@ function serializePredicate(node: PredNode, custom: CustomFieldIndex = {}): Pred
       value: parts.map((p) => coerceScalar(kind, p)),
     };
   }
-  if (node.value.trim() === '' && kind !== 'boolean') return null;
+  // Empty is unfilled for every kind. A yes/no read empty as no (issue 150).
+  if (node.value.trim() === '') return null;
   const value = coerceScalar(kind, node.value);
   if (typeof value === 'number' && Number.isNaN(value)) return null;
   return { kind: 'predicate', field: node.field, op: node.op, value };

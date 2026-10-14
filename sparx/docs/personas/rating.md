@@ -1,14 +1,14 @@
 # sparx workbench — pane ratings
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-01
+**Last Updated:** 2026-10-13
 
 Every pane in the sparx workbench, scored on **Design** and **Ease** as the
 personas open them. How and when to score is RULE #6 in [CLAUDE.md](CLAUDE.md);
 this file is where the numbers live.
 
-**Scored so far: 0 of 338 panes.** Plus the non-console list at the foot. Update
+**Scored so far: 76 of 340 panes.** Plus the non-console list at the foot. Update
 that line as rows fill in. It is the denominator, and a rating file that does not
 show what it has not looked at is the same lie as an empty issue list.
 
@@ -86,14 +86,14 @@ tenant reaching one is itself a finding.
 
 ### Automations (`automations`) — 6 panes
 
-| Pane                                   | Key                   | Design | Ease | Gap to 10 | Persona |
-| -------------------------------------- | --------------------- | ------ | ---- | --------- | ------- |
-| Automation _(opened from a list)_      | `automations.detail`  | —      | —    | —         | —       |
-| Automations                            | `automations.list`    | —      | —    | —         | —       |
-| Recipe library                         | `automations.recipes` | —      | —    | —         | —       |
-| Activity & reports                     | `automations.reports` | —      | —    | —         | —       |
-| Automation run _(opened from a list)_  | `automations.run`     | —      | —    | —         | —       |
-| Automation runs _(opened from a list)_ | `automations.runs`    | —      | —    | —         | —       |
+| Pane                                   | Key                   | Design | Ease | Gap to 10                                                                                     | Persona |
+| -------------------------------------- | --------------------- | ------ | ---- | --------------------------------------------------------------------------------------------- | ------- |
+| Automation _(opened from a list)_      | `automations.detail`  | 8      | 8    | at 360px the On and "Managed by sparx" state drops out of the toolbar                         | P01     |
+| Automations                            | `automations.list`    | 8      | 8    | "Set up by sparx" badge repeats on every row; at 360px "When it runs" needs a sideways scroll | P01     |
+| Recipe library                         | `automations.recipes` | —      | —    | —                                                                                             | —       |
+| Activity & reports                     | `automations.reports` | —      | —    | —                                                                                             | —       |
+| Automation run _(opened from a list)_  | `automations.run`     | —      | —    | —                                                                                             | —       |
+| Automation runs _(opened from a list)_ | `automations.runs`    | —      | —    | —                                                                                             | —       |
 
 ### Campaigns (`funnels`) — 2 panes
 
@@ -104,78 +104,78 @@ tenant reaching one is itself a finding.
 
 ### Content (`cms`) — 18 panes
 
-| Pane                                    | Key                             | Design | Ease | Gap to 10 | Persona |
-| --------------------------------------- | ------------------------------- | ------ | ---- | --------- | ------- |
-| Author _(opened from a list)_           | `cms.authors.detail`            | —      | —    | —         | —       |
-| Authors                                 | `cms.authors.list`              | —      | —    | —         | —       |
-| Content _(opened from a list)_          | `cms.content.detail`            | —      | —    | —         | —       |
-| Content                                 | `cms.content.list`              | —      | —    | —         | —       |
-| Legal pages                             | `cms.legal.list`                | —      | —    | —         | —       |
-| Media _(opened from a list)_            | `cms.media.detail`              | —      | —    | —         | —       |
-| Media                                   | `cms.media.list`                | —      | —    | —         | —       |
-| Import redirects _(opened from a list)_ | `cms.redirects.import`          | —      | —    | —         | —       |
-| Redirects                               | `cms.redirects.list`            | —      | —    | —         | —       |
-| Tags & topics _(opened from a list)_    | `cms.taxonomy.detail`           | —      | —    | —         | —       |
-| Tags & topics                           | `cms.taxonomy.list`             | —      | —    | —         | —       |
-| Translations _(opened from a list)_     | `cms.translations.detail`       | —      | —    | —         | —       |
-| Translations                            | `cms.translations.list`         | —      | —    | —         | —       |
-| Content type _(opened from a list)_     | `cms.types.detail`              | —      | —    | —         | —       |
-| Content types                           | `cms.types.list`                | —      | —    | —         | —       |
-| Webhook _(opened from a list)_          | `cms.webhooks.detail`           | —      | —    | —         | —       |
-| Webhooks                                | `cms.webhooks.list`             | —      | —    | —         | —       |
-| Product translations                    | `commerce.product.translations` | —      | —    | —         | —       |
+| Pane                                    | Key                             | Design | Ease  | Gap to 10                                                                                       | Persona |
+| --------------------------------------- | ------------------------------- | ------ | ----- | ----------------------------------------------------------------------------------------------- | ------- |
+| Author _(opened from a list)_           | `cms.authors.detail`            | 8      | 8     | no link to the author's page on the site                                                        | P01     |
+| Authors                                 | `cms.authors.list`              | 8      | 8     | at 360px the web address is dropped                                                             | P01     |
+| Content _(opened from a list)_          | `cms.content.detail`            | 8      | 8     | "Published" shows twice, a badge and a banner; the missing-entry state reads well               | P01     |
+| Content                                 | `cms.content.list`              | 7      | 6     | at 360px the Status column is cut off at the right edge behind a sideways scroll                | P01     |
+| Legal pages                             | `cms.legal.list`                | 8      | 8     | "3 of 4 required pages ready" shows twice; the missing page is below the fold                   | P01     |
+| Media _(opened from a list)_            | `cms.media.detail`              | —      | —     | —                                                                                               | —       |
+| Media                                   | `cms.media.list`                | —      | —     | —                                                                                               | —       |
+| Import redirects _(opened from a list)_ | `cms.redirects.import`          | —      | —     | —                                                                                               | —       |
+| Redirects                               | `cms.redirects.list`            | —      | —     | —                                                                                               | —       |
+| Tags & topics _(opened from a list)_    | `cms.taxonomy.detail`           | —      | —     | —                                                                                               | —       |
+| Tags & topics                           | `cms.taxonomy.list`             | —      | —     | —                                                                                               | —       |
+| Translations _(opened from a list)_     | `cms.translations.detail`       | —      | —     | —                                                                                               | —       |
+| Translations                            | `cms.translations.list`         | —      | —     | —                                                                                               | —       |
+| Content type _(opened from a list)_     | `cms.types.detail`              | —      | —     | —                                                                                               | —       |
+| Content types                           | `cms.types.list`                | —      | —     | —                                                                                               | —       |
+| Webhook _(opened from a list)_          | `cms.webhooks.detail`           | 6 → 8  | 7 → 8 | 235 fixed (its own not-found box); not checked: the editor itself (Gillett has no live webhook) | P01     |
+| Webhooks                                | `cms.webhooks.list`             | 8      | 8     | two add buttons at once, toolbar and empty state                                                | P01     |
+| Product translations                    | `commerce.product.translations` | —      | —     | —                                                                                               | —       |
 
 ### Customers (`crm`) — 35 panes
 
-| Pane                                          | Key                        | Design | Ease | Gap to 10 | Persona |
-| --------------------------------------------- | -------------------------- | ------ | ---- | --------- | ------- |
-| Company _(opened from a list)_                | `crm.account.detail`       | —      | —    | —         | —       |
-| Companies                                     | `crm.accounts.list`        | —      | —    | —         | —       |
-| Customer _(opened from a list)_               | `crm.customer.detail`      | —      | —    | —         | —       |
-| Customers                                     | `crm.customers.list`       | —      | —    | —         | —       |
-| Dashboard _(opened from a list)_              | `crm.dashboard.detail`     | —      | —    | —         | —       |
-| Dashboards                                    | `crm.dashboards`           | —      | —    | —         | —       |
-| Deal _(opened from a list)_                   | `crm.deal.detail`          | —      | —    | —         | —       |
-| Deals                                         | `crm.deals.list`           | —      | —    | —         | —       |
-| Duplicates                                    | `crm.duplicates.list`      | —      | —    | —         | —       |
-| Connect a mailbox _(opened from a list)_      | `crm.mailbox.connect`      | —      | —    | —         | —       |
-| Mailboxes                                     | `crm.mailboxes.list`       | —      | —    | —         | —       |
-| Booking links                                 | `crm.meeting-links`        | —      | —    | —         | —       |
-| Record type _(opened from a list)_            | `crm.object-type.detail`   | —      | —    | —         | —       |
-| Record types                                  | `crm.object-types.list`    | —      | —    | —         | —       |
-| Customer orders                               | `crm.orders.list`          | —      | —    | —         | —       |
-| Connect a phone system _(opened from a list)_ | `crm.phone-system.connect` | —      | —    | —         | —       |
-| Phone systems                                 | `crm.phone-systems.list`   | —      | —    | —         | —       |
-| Pipeline _(opened from a list)_               | `crm.pipeline.detail`      | —      | —    | —         | —       |
-| Pipelines                                     | `crm.pipelines.list`       | —      | —    | —         | —       |
-| Record _(opened from a list)_                 | `crm.record.detail`        | —      | —    | —         | —       |
-| Records _(opened from a list)_                | `crm.records.list`         | —      | —    | —         | —       |
-| Report _(opened from a list)_                 | `crm.report.builder`       | —      | —    | —         | —       |
-| Build a report                                | `crm.report.library`       | —      | —    | —         | —       |
-| Reports                                       | `crm.reports`              | —      | —    | —         | —       |
-| Scoring                                       | `crm.scoring`              | —      | —    | —         | —       |
-| Segment _(opened from a list)_                | `crm.segment.detail`       | —      | —    | —         | —       |
-| Segments                                      | `crm.segments.list`        | —      | —    | —         | —       |
-| How the CRM behaves                           | `crm.settings`             | —      | —    | —         | —       |
-| Response times                                | `crm.sla-policies`         | —      | —    | —         | —       |
-| Saved paragraphs                              | `crm.snippets.list`        | —      | —    | —         | —       |
-| Task _(opened from a list)_                   | `crm.task.detail`          | —      | —    | —         | —       |
-| Tasks                                         | `crm.tasks.list`           | —      | —    | —         | —       |
-| Email templates                               | `crm.templates.list`       | —      | —    | —         | —       |
-| Request _(opened from a list)_                | `crm.ticket.detail`        | —      | —    | —         | —       |
-| Requests                                      | `crm.tickets.list`         | —      | —    | —         | —       |
+| Pane                                          | Key                        | Design | Ease | Gap to 10                                                                                                                                                                                                                                                               | Persona |
+| --------------------------------------------- | -------------------------- | ------ | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Company _(opened from a list)_                | `crm.account.detail`       | 8      | 8    | $117.92 of credit left reads as plain header text, not a warning; placeholders name a made-up rivera business                                                                                                                                                           | P01     |
+| Companies                                     | `crm.accounts.list`        | 9      | 8    | at 360px the table scrolls sideways and the status column is cut off                                                                                                                                                                                                    | P01     |
+| Customer _(opened from a list)_               | `crm.customer.detail`      | 9      | 8    | the tab row needs arrows to reach Subscriptions and beyond; the score callout takes the room under the numbers                                                                                                                                                          | P01     |
+| Customers                                     | `crm.customers.list`       | 9      | 8    | at 360px the table scrolls sideways and what they spent is cut off                                                                                                                                                                                                      | P01     |
+| Dashboard _(opened from a list)_              | `crm.dashboard.detail`     | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Dashboards                                    | `crm.dashboards`           | 8      | 9    | the empty state offers New dashboard and Create one, two buttons for one move                                                                                                                                                                                           | P01     |
+| Deal _(opened from a list)_                   | `crm.deal.detail`          | 9      | 8    | the company comes in filled but the customer from that company still has to be typed; the pipeline sits below the fold                                                                                                                                                  | P01     |
+| Deals                                         | `crm.deals.list`           | 9      | 8    | every step badge is the same cyan, so First call and Proposal sent look alike; at 360px who it is for is gone                                                                                                                                                           | P01     |
+| Duplicates                                    | `crm.duplicates.list`      | 9      | 9    | None found in the bar repeats the empty state under it                                                                                                                                                                                                                  | P01     |
+| Connect a mailbox _(opened from a list)_      | `crm.mailbox.connect`      | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Mailboxes                                     | `crm.mailboxes.list`       | 9      | 8    | Connect a mailbox twice on one empty screen (fixed 236: the note about a row that was not there)                                                                                                                                                                        | P01     |
+| Booking links                                 | `crm.meeting-links`        | 9      | 8    | the bar repeats No booking links yet over the empty state (fixed 237: it was a bare heading in a blank column)                                                                                                                                                          | P01     |
+| Record type _(opened from a list)_            | `crm.object-type.detail`   | 9      | 8    | the form card does not fill the column like the other editors; Save sits pale until a name is typed                                                                                                                                                                     | P01     |
+| Record types                                  | `crm.object-types.list`    | 9      | 8    | Extra details shows a dash on every row; at 360px what each type is for is gone                                                                                                                                                                                         | P01     |
+| Customer orders                               | `crm.orders.list`          | 8      | 8    | the refunded order shows its full total with no sign of the refund; one long status pushes the total off a phone (fixed 238: numbers broke in two)                                                                                                                      | P01     |
+| Connect a phone system _(opened from a list)_ | `crm.phone-system.connect` | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Phone systems                                 | `crm.phone-systems.list`   | 9      | 8    | Connect a phone system twice on one empty screen (fixed 239: a note about a number that was not there)                                                                                                                                                                  | P01     |
+| Pipeline _(opened from a list)_               | `crm.pipeline.detail`      | 8      | 7    | Short id is a technical word with a placeholder that does not match the name; the solid info bar is louder than the form it sits under                                                                                                                                  | P01     |
+| Pipelines                                     | `crm.pipelines.list`       | 9      | 8    | two rows both say Default, which reads as a clash until you see they move different things                                                                                                                                                                              | P01     |
+| Record _(opened from a list)_                 | `crm.record.detail`        | 9      | 9    | Gillett has no record types of its own, so only the gone state was seen; it reads right                                                                                                                                                                                 | P01     |
+| Records _(opened from a list)_                | `crm.records.list`         | 9      | 9    | a saved list for a type that is gone; the gone state reads right (fixed 240: it drew a working empty list with an Add button)                                                                                                                                           | P01     |
+| Report _(opened from a list)_                 | `crm.report.builder`       | 9      | 9    | a saved report since deleted; only the gone state was seen                                                                                                                                                                                                              | P01     |
+| Build a report                                | `crm.report.library`       | 8      | 8    | the visualization badge and the copy button are color="neutral" (needs approval); the copy action is an icon with no word, so its meaning rests on a tooltip (fixed 244: New report hid in the menu on a phone; fixed 246: no report could be opened from the keyboard) | P01     |
+| Reports                                       | `crm.reports`              | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Scoring                                       | `crm.scoring`              | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Segment _(opened from a list)_                | `crm.segment.detail`       | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Segments                                      | `crm.segments.list`        | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| How the CRM behaves                           | `crm.settings`             | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Response times                                | `crm.sla-policies`         | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Saved paragraphs                              | `crm.snippets.list`        | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Task _(opened from a list)_                   | `crm.task.detail`          | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Tasks                                         | `crm.tasks.list`           | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Email templates                               | `crm.templates.list`       | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Request _(opened from a list)_                | `crm.ticket.detail`        | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
+| Requests                                      | `crm.tickets.list`         | —      | —    | —                                                                                                                                                                                                                                                                       | —       |
 
 ### Dropshipping (`dropship`) — 7 panes
 
-| Pane                                  | Key                         | Design | Ease | Gap to 10 | Persona |
-| ------------------------------------- | --------------------------- | ------ | ---- | --------- | ------- |
-| Product dropshipping                  | `commerce.product.dropship` | —      | —    | —         | —       |
-| Profitability                         | `dropship.analytics`        | —      | —    | —         | —       |
-| Supplier order _(opened from a list)_ | `dropship.order.detail`     | —      | —    | —         | —       |
-| Supplier orders                       | `dropship.orders.list`      | —      | —    | —         | —       |
-| Supplier products                     | `dropship.products.list`    | —      | —    | —         | —       |
-| Supplier _(opened from a list)_       | `dropship.supplier.detail`  | —      | —    | —         | —       |
-| Suppliers                             | `dropship.suppliers.list`   | —      | —    | —         | —       |
+| Pane                                  | Key                         | Design | Ease | Gap to 10                                                                                                 | Persona |
+| ------------------------------------- | --------------------------- | ------ | ---- | --------------------------------------------------------------------------------------------------------- | ------- |
+| Product dropshipping                  | `commerce.product.dropship` | 8      | 8    | with one supplier it is picked for him without saying why (it still needs the cost typed before it links) | P01     |
+| Profitability                         | `dropship.analytics`        | —      | —    | —                                                                                                         | —       |
+| Supplier order _(opened from a list)_ | `dropship.order.detail`     | —      | —    | —                                                                                                         | —       |
+| Supplier orders                       | `dropship.orders.list`      | —      | —    | —                                                                                                         | —       |
+| Supplier products                     | `dropship.products.list`    | —      | —    | —                                                                                                         | —       |
+| Supplier _(opened from a list)_       | `dropship.supplier.detail`  | —      | —    | —                                                                                                         | —       |
+| Suppliers                             | `dropship.suppliers.list`   | —      | —    | —                                                                                                         | —       |
 
 ### Email (`email`) — 9 panes
 
@@ -213,88 +213,88 @@ tenant reaching one is itself a finding.
 
 ### Inventory (`inventory`) — 80 panes
 
-| Pane                                                             | Key                                               | Design | Ease | Gap to 10 | Persona |
-| ---------------------------------------------------------------- | ------------------------------------------------- | ------ | ---- | --------- | ------- |
-| Product stock                                                    | `commerce.product.stock`                          | —      | —    | —         | —       |
-| On the way                                                       | `inventory.advance-ship-notices`                  | —      | —    | —         | —       |
-| Shipment _(opened from a list)_                                  | `inventory.advance-ship-notices.detail`           | —      | —    | —         | —       |
-| Plan a run / Run _(opened from a list)_                          | `inventory.assemblies.detail`                     | —      | —    | —         | —       |
-| Runs                                                             | `inventory.assemblies.list`                       | —      | —    | —         | —       |
-| Waiting list                                                     | `inventory.backorders`                            | —      | —    | —         | —       |
-| Owed _(opened from a list)_                                      | `inventory.backorders.detail`                     | —      | —    | —         | —       |
-| Shared barcodes                                                  | `inventory.barcodes.conflicts`                    | —      | —    | —         | —       |
-| Product labels                                                   | `inventory.barcodes.labels`                       | —      | —    | —         | —       |
-| Barcodes                                                         | `inventory.barcodes.list`                         | —      | —    | —         | —       |
-| New shelf / Shelf _(opened from a list)_                         | `inventory.bins.detail`                           | —      | —    | —         | —       |
-| Shelf labels                                                     | `inventory.bins.labels`                           | —      | —    | —         | —       |
-| Shelves                                                          | `inventory.bins.list`                             | —      | —    | —         | —       |
-| New recipe / Recipe _(opened from a list)_                       | `inventory.boms.detail`                           | —      | —    | —         | —       |
-| Recipes                                                          | `inventory.boms.list`                             | —      | —    | —         | —       |
-| Consignment settlement                                           | `inventory.consignment`                           | —      | —    | —         | —       |
-| Settlement _(opened from a list)_                                | `inventory.consignment.detail`                    | —      | —    | —         | —       |
-| How stock is valued                                              | `inventory.costing.settings`                      | —      | —    | —         | —       |
-| What your stock cost you                                         | `inventory.costing.uncosted`                      | —      | —    | —         | —       |
-| Cost vs plan                                                     | `inventory.costing.variance`                      | —      | —    | —         | —       |
-| Counting schedules                                               | `inventory.count-schedules`                       | —      | —    | —         | —       |
-| New counting schedule / Counting schedule _(opened from a list)_ | `inventory.count-schedules.detail`                | —      | —    | —         | —       |
-| New count / Stock count _(opened from a list)_                   | `inventory.counts.detail`                         | —      | —    | —         | —       |
-| Stock counts                                                     | `inventory.counts.list`                           | —      | —    | —         | —       |
-| Your own columns                                                 | `inventory.custom-fields`                         | —      | —    | —         | —       |
-| Print a label _(opened from a list)_                             | `inventory.documents.label`                       | —      | —    | —         | —       |
-| Expiring stock                                                   | `inventory.expiring`                              | —      | —    | —         | —       |
-| Integrity                                                        | `inventory.integrity`                             | —      | —    | —         | —       |
-| Batch _(opened from a list)_                                     | `inventory.lots.detail`                           | —      | —    | —         | —       |
-| Lots & serials                                                   | `inventory.lots.list`                             | —      | —    | —         | —       |
-| Movements                                                        | `inventory.movements.list`                        | —      | —    | —         | —       |
-| Whose stock                                                      | `inventory.ownership`                             | —      | —    | —         | —       |
-| Pack bench                                                       | `inventory.packing.bench`                         | —      | —    | —         | —       |
-| Walk _(opened from a list)_                                      | `inventory.picking.detail`                        | —      | —    | —         | —       |
-| Picking _(opened from a list)_                                   | `inventory.picking.guided`                        | —      | —    | —         | —       |
-| Walks                                                            | `inventory.picking.list`                          | —      | —    | —         | —       |
-| Pick & pack throughput                                           | `inventory.picking.throughput`                    | —      | —    | —         | —       |
-| At risk                                                          | `inventory.planning`                              | —      | —    | —         | —       |
-| What matters                                                     | `inventory.planning.classes`                      | —      | —    | —         | —       |
-| Why this number _(opened from a list)_                           | `inventory.planning.explain`                      | —      | —    | —         | —       |
-| Cost to keep                                                     | `inventory.planning.holding`                      | —      | —    | —         | —       |
-| Not selling                                                      | `inventory.planning.idle`                         | —      | —    | —         | —       |
-| Planning settings                                                | `inventory.planning.settings`                     | —      | —    | —         | —       |
-| Preorders                                                        | `inventory.preorders`                             | —      | —    | —         | —       |
-| Spending limits                                                  | `inventory.purchase-orders.approval-rules`        | —      | —    | —         | —       |
-| New spending limit / Spending limit _(opened from a list)_       | `inventory.purchase-orders.approval-rules.detail` | —      | —    | —         | —       |
-| Sign-offs                                                        | `inventory.purchase-orders.approvals`             | —      | —    | —         | —       |
-| New purchase order / Purchase order _(opened from a list)_       | `inventory.purchase-orders.detail`                | —      | —    | —         | —       |
-| Overdue deliveries                                               | `inventory.purchase-orders.late`                  | —      | —    | —         | —       |
-| Purchase orders                                                  | `inventory.purchase-orders.list`                  | —      | —    | —         | —       |
-| Receive a delivery / Delivery _(opened from a list)_             | `inventory.receiving.detail`                      | —      | —    | —         | —       |
-| Receiving                                                        | `inventory.receiving.list`                        | —      | —    | —         | —       |
-| Scan a delivery _(opened from a list)_                           | `inventory.receiving.scan`                        | —      | —    | —         | —       |
-| Stock versus your books                                          | `inventory.reconciliation.books`                  | —      | —    | —         | —       |
-| Reorder                                                          | `inventory.reorder`                               | —      | —    | —         | —       |
-| Reports                                                          | `inventory.reports`                               | —      | —    | —         | —       |
-| How it is performing                                             | `inventory.reports.performance`                   | —      | —    | —         | —       |
-| Send a report / Scheduled report _(opened from a list)_          | `inventory.reports.schedule`                      | —      | —    | —         | —       |
-| Sent to your inbox                                               | `inventory.reports.schedules`                     | —      | —    | —         | —       |
-| Set up your stock                                                | `inventory.setup`                                 | —      | —    | —         | —       |
-| Stock sources                                                    | `inventory.sources`                               | —      | —    | —         | —       |
-| Add a source / Stock source _(opened from a list)_               | `inventory.sources.detail`                        | —      | —    | —         | —       |
-| Edit stock in a grid                                             | `inventory.stock.grid`                            | —      | —    | —         | —       |
-| Import from a spreadsheet                                        | `inventory.stock.import`                          | —      | —    | —         | —       |
-| Stock item _(opened from a list)_                                | `inventory.stock.item`                            | —      | —    | —         | —       |
-| Stock                                                            | `inventory.stock.list`                            | —      | —    | —         | —       |
-| Where this number came from _(opened from a list)_               | `inventory.stock.provenance`                      | —      | —    | —         | —       |
-| Bills to pay                                                     | `inventory.supplier-bills`                        | —      | —    | —         | —       |
-| Enter an invoice / Supplier invoice _(opened from a list)_       | `inventory.supplier-bills.detail`                 | —      | —    | —         | —       |
-| Sent back                                                        | `inventory.supplier-returns`                      | —      | —    | —         | —       |
-| Send something back / Return _(opened from a list)_              | `inventory.supplier-returns.detail`               | —      | —    | —         | —       |
-| New supplier / Supplier _(opened from a list)_                   | `inventory.suppliers.detail`                      | —      | —    | —         | —       |
-| Suppliers                                                        | `inventory.suppliers.list`                        | —      | —    | —         | —       |
-| Supplier performance                                             | `inventory.suppliers.scorecards`                  | —      | —    | —         | —       |
-| New transfer / Transfer _(opened from a list)_                   | `inventory.transfers.detail`                      | —      | —    | —         | —       |
-| Transfers                                                        | `inventory.transfers.list`                        | —      | —    | —         | —       |
-| Units                                                            | `inventory.units`                                 | —      | —    | —         | —       |
-| Warehouse mode                                                   | `inventory.warehouse`                             | —      | —    | —         | —       |
-| New location / Location _(opened from a list)_                   | `inventory.warehouses.detail`                     | —      | —    | —         | —       |
-| Locations                                                        | `inventory.warehouses.list`                       | —      | —    | —         | —       |
+| Pane                                                             | Key                                               | Design | Ease | Gap to 10                                                  | Persona |
+| ---------------------------------------------------------------- | ------------------------------------------------- | ------ | ---- | ---------------------------------------------------------- | ------- |
+| Product stock                                                    | `commerce.product.stock`                          | 8      | 8    | "0 to sell" in the toolbar repeats the red banner below it | P01     |
+| On the way                                                       | `inventory.advance-ship-notices`                  | —      | —    | —                                                          | —       |
+| Shipment _(opened from a list)_                                  | `inventory.advance-ship-notices.detail`           | —      | —    | —                                                          | —       |
+| Plan a run / Run _(opened from a list)_                          | `inventory.assemblies.detail`                     | —      | —    | —                                                          | —       |
+| Runs                                                             | `inventory.assemblies.list`                       | —      | —    | —                                                          | —       |
+| Waiting list                                                     | `inventory.backorders`                            | —      | —    | —                                                          | —       |
+| Owed _(opened from a list)_                                      | `inventory.backorders.detail`                     | —      | —    | —                                                          | —       |
+| Shared barcodes                                                  | `inventory.barcodes.conflicts`                    | —      | —    | —                                                          | —       |
+| Product labels                                                   | `inventory.barcodes.labels`                       | —      | —    | —                                                          | —       |
+| Barcodes                                                         | `inventory.barcodes.list`                         | —      | —    | —                                                          | —       |
+| New shelf / Shelf _(opened from a list)_                         | `inventory.bins.detail`                           | —      | —    | —                                                          | —       |
+| Shelf labels                                                     | `inventory.bins.labels`                           | —      | —    | —                                                          | —       |
+| Shelves                                                          | `inventory.bins.list`                             | —      | —    | —                                                          | —       |
+| New recipe / Recipe _(opened from a list)_                       | `inventory.boms.detail`                           | —      | —    | —                                                          | —       |
+| Recipes                                                          | `inventory.boms.list`                             | —      | —    | —                                                          | —       |
+| Consignment settlement                                           | `inventory.consignment`                           | —      | —    | —                                                          | —       |
+| Settlement _(opened from a list)_                                | `inventory.consignment.detail`                    | —      | —    | —                                                          | —       |
+| How stock is valued                                              | `inventory.costing.settings`                      | —      | —    | —                                                          | —       |
+| What your stock cost you                                         | `inventory.costing.uncosted`                      | —      | —    | —                                                          | —       |
+| Cost vs plan                                                     | `inventory.costing.variance`                      | —      | —    | —                                                          | —       |
+| Counting schedules                                               | `inventory.count-schedules`                       | —      | —    | —                                                          | —       |
+| New counting schedule / Counting schedule _(opened from a list)_ | `inventory.count-schedules.detail`                | —      | —    | —                                                          | —       |
+| New count / Stock count _(opened from a list)_                   | `inventory.counts.detail`                         | —      | —    | —                                                          | —       |
+| Stock counts                                                     | `inventory.counts.list`                           | —      | —    | —                                                          | —       |
+| Your own columns                                                 | `inventory.custom-fields`                         | —      | —    | —                                                          | —       |
+| Print a label _(opened from a list)_                             | `inventory.documents.label`                       | —      | —    | —                                                          | —       |
+| Expiring stock                                                   | `inventory.expiring`                              | —      | —    | —                                                          | —       |
+| Integrity                                                        | `inventory.integrity`                             | —      | —    | —                                                          | —       |
+| Batch _(opened from a list)_                                     | `inventory.lots.detail`                           | —      | —    | —                                                          | —       |
+| Lots & serials                                                   | `inventory.lots.list`                             | —      | —    | —                                                          | —       |
+| Movements                                                        | `inventory.movements.list`                        | —      | —    | —                                                          | —       |
+| Whose stock                                                      | `inventory.ownership`                             | —      | —    | —                                                          | —       |
+| Pack bench                                                       | `inventory.packing.bench`                         | —      | —    | —                                                          | —       |
+| Walk _(opened from a list)_                                      | `inventory.picking.detail`                        | —      | —    | —                                                          | —       |
+| Picking _(opened from a list)_                                   | `inventory.picking.guided`                        | —      | —    | —                                                          | —       |
+| Walks                                                            | `inventory.picking.list`                          | —      | —    | —                                                          | —       |
+| Pick & pack throughput                                           | `inventory.picking.throughput`                    | —      | —    | —                                                          | —       |
+| At risk                                                          | `inventory.planning`                              | —      | —    | —                                                          | —       |
+| What matters                                                     | `inventory.planning.classes`                      | —      | —    | —                                                          | —       |
+| Why this number _(opened from a list)_                           | `inventory.planning.explain`                      | —      | —    | —                                                          | —       |
+| Cost to keep                                                     | `inventory.planning.holding`                      | —      | —    | —                                                          | —       |
+| Not selling                                                      | `inventory.planning.idle`                         | —      | —    | —                                                          | —       |
+| Planning settings                                                | `inventory.planning.settings`                     | —      | —    | —                                                          | —       |
+| Preorders                                                        | `inventory.preorders`                             | —      | —    | —                                                          | —       |
+| Spending limits                                                  | `inventory.purchase-orders.approval-rules`        | —      | —    | —                                                          | —       |
+| New spending limit / Spending limit _(opened from a list)_       | `inventory.purchase-orders.approval-rules.detail` | —      | —    | —                                                          | —       |
+| Sign-offs                                                        | `inventory.purchase-orders.approvals`             | —      | —    | —                                                          | —       |
+| New purchase order / Purchase order _(opened from a list)_       | `inventory.purchase-orders.detail`                | —      | —    | —                                                          | —       |
+| Overdue deliveries                                               | `inventory.purchase-orders.late`                  | —      | —    | —                                                          | —       |
+| Purchase orders                                                  | `inventory.purchase-orders.list`                  | —      | —    | —                                                          | —       |
+| Receive a delivery / Delivery _(opened from a list)_             | `inventory.receiving.detail`                      | —      | —    | —                                                          | —       |
+| Receiving                                                        | `inventory.receiving.list`                        | —      | —    | —                                                          | —       |
+| Scan a delivery _(opened from a list)_                           | `inventory.receiving.scan`                        | —      | —    | —                                                          | —       |
+| Stock versus your books                                          | `inventory.reconciliation.books`                  | —      | —    | —                                                          | —       |
+| Reorder                                                          | `inventory.reorder`                               | —      | —    | —                                                          | —       |
+| Reports                                                          | `inventory.reports`                               | —      | —    | —                                                          | —       |
+| How it is performing                                             | `inventory.reports.performance`                   | —      | —    | —                                                          | —       |
+| Send a report / Scheduled report _(opened from a list)_          | `inventory.reports.schedule`                      | —      | —    | —                                                          | —       |
+| Sent to your inbox                                               | `inventory.reports.schedules`                     | —      | —    | —                                                          | —       |
+| Set up your stock                                                | `inventory.setup`                                 | —      | —    | —                                                          | —       |
+| Stock sources                                                    | `inventory.sources`                               | —      | —    | —                                                          | —       |
+| Add a source / Stock source _(opened from a list)_               | `inventory.sources.detail`                        | —      | —    | —                                                          | —       |
+| Edit stock in a grid                                             | `inventory.stock.grid`                            | —      | —    | —                                                          | —       |
+| Import from a spreadsheet                                        | `inventory.stock.import`                          | —      | —    | —                                                          | —       |
+| Stock item _(opened from a list)_                                | `inventory.stock.item`                            | —      | —    | —                                                          | —       |
+| Stock                                                            | `inventory.stock.list`                            | —      | —    | —                                                          | —       |
+| Where this number came from _(opened from a list)_               | `inventory.stock.provenance`                      | —      | —    | —                                                          | —       |
+| Bills to pay                                                     | `inventory.supplier-bills`                        | —      | —    | —                                                          | —       |
+| Enter an invoice / Supplier invoice _(opened from a list)_       | `inventory.supplier-bills.detail`                 | —      | —    | —                                                          | —       |
+| Sent back                                                        | `inventory.supplier-returns`                      | —      | —    | —                                                          | —       |
+| Send something back / Return _(opened from a list)_              | `inventory.supplier-returns.detail`               | —      | —    | —                                                          | —       |
+| New supplier / Supplier _(opened from a list)_                   | `inventory.suppliers.detail`                      | —      | —    | —                                                          | —       |
+| Suppliers                                                        | `inventory.suppliers.list`                        | —      | —    | —                                                          | —       |
+| Supplier performance                                             | `inventory.suppliers.scorecards`                  | —      | —    | —                                                          | —       |
+| New transfer / Transfer _(opened from a list)_                   | `inventory.transfers.detail`                      | —      | —    | —                                                          | —       |
+| Transfers                                                        | `inventory.transfers.list`                        | —      | —    | —                                                          | —       |
+| Units                                                            | `inventory.units`                                 | —      | —    | —                                                          | —       |
+| Warehouse mode                                                   | `inventory.warehouse`                             | —      | —    | —                                                          | —       |
+| New location / Location _(opened from a list)_                   | `inventory.warehouses.detail`                     | —      | —    | —                                                          | —       |
+| Locations                                                        | `inventory.warehouses.list`                       | —      | —    | —                                                          | —       |
 
 ### Invoicing (`invoicing`) — 8 panes
 
@@ -311,13 +311,13 @@ tenant reaching one is itself a finding.
 
 ### Messages (`chat`) — 5 panes
 
-| Pane                                | Key                  | Design | Ease | Gap to 10 | Persona |
-| ----------------------------------- | -------------------- | ------ | ---- | --------- | ------- |
-| Inbox                               | `chat.inbox`         | —      | —    | —         | —       |
-| Conversation _(opened from a list)_ | `chat.inbox.thread`  | —      | —    | —         | —       |
-| Overview                            | `chat.overview`      | —      | —    | —         | —       |
-| Quick replies                       | `chat.quick-replies` | —      | —    | —         | —       |
-| Chat settings                       | `chat.settings`      | —      | —    | —         | —       |
+| Pane                                | Key                  | Design | Ease  | Gap to 10                                                                            | Persona |
+| ----------------------------------- | -------------------- | ------ | ----- | ------------------------------------------------------------------------------------ | ------- |
+| Inbox                               | `chat.inbox`         | 8      | 8     | each row previews the shop's own last reply without saying who spoke last            | P01     |
+| Conversation _(opened from a list)_ | `chat.inbox.thread`  | 6 → 8  | 5 → 8 | 234 fixed (conversation squeezed to one line); at 360px the reply box needs a scroll | P01     |
+| Overview                            | `chat.overview`      | —      | —     | —                                                                                    | —       |
+| Quick replies                       | `chat.quick-replies` | —      | —     | —                                                                                    | —       |
+| Chat settings                       | `chat.settings`      | —      | —     | —                                                                                    | —       |
 
 ### Partners (`partner`) — 8 panes
 
@@ -354,66 +354,68 @@ tenant reaching one is itself a finding.
 | Services                                                         | `scheduling.services.list`        | —      | —    | —         | —       |
 | Waiting list                                                     | `scheduling.waitlist`             | —      | —    | —         | —       |
 
-### Selling (`commerce`) — 53 panes
+### Selling (`commerce`) — 55 panes
 
-| Pane                                      | Key                                     | Design | Ease | Gap to 10 | Persona |
-| ----------------------------------------- | --------------------------------------- | ------ | ---- | --------- | ------- |
-| Account credit                            | `commerce.account-credit.list`          | —      | —    | —         | —       |
-| Bundle _(opened from a list)_             | `commerce.bundle.detail`                | —      | —    | —         | —       |
-| Bundles                                   | `commerce.bundles.list`                 | —      | —    | —         | —       |
-| Basket _(opened from a list)_             | `commerce.cart.detail`                  | —      | —    | —         | —       |
-| Carts                                     | `commerce.carts.list`                   | —      | —    | —         | —       |
-| Categories                                | `commerce.categories.list`              | —      | —    | —         | —       |
-| Category _(opened from a list)_           | `commerce.category.detail`              | —      | —    | —         | —       |
-| Sales channels                            | `commerce.channels.list`                | —      | —    | —         | —       |
-| Checkout session _(opened from a list)_   | `commerce.checkout-session.detail`      | —      | —    | —         | —       |
-| Checkout sessions                         | `commerce.checkout-sessions.list`       | —      | —    | —         | —       |
-| Collection _(opened from a list)_         | `commerce.collection.detail`            | —      | —    | —         | —       |
-| Collections                               | `commerce.collections.list`             | —      | —    | —         | —       |
-| Build template _(opened from a list)_     | `commerce.configurator-template.detail` | —      | —    | —         | —       |
-| Configurator                              | `commerce.configurator.list`            | —      | —    | —         | —       |
-| Core charges set up as choices            | `commerce.core-choices.list`            | —      | —    | —         | —       |
-| Cores owed                                | `commerce.cores.list`                   | —      | —    | —         | —       |
-| Discount _(opened from a list)_           | `commerce.discount.detail`              | —      | —    | —         | —       |
-| Discounts                                 | `commerce.discounts.list`               | —      | —    | —         | —       |
-| Compatibility list _(opened from a list)_ | `commerce.fitment.domain.detail`        | —      | —    | —         | —       |
-| Fitment                                   | `commerce.fitment.list`                 | —      | —    | —         | —       |
-| Gift card _(opened from a list)_          | `commerce.giftcard.detail`              | —      | —    | —         | —       |
-| Gift cards                                | `commerce.giftcards.list`               | —      | —    | —         | —       |
-| sparx.market                              | `commerce.market`                       | —      | —    | —         | —       |
-| Order _(opened from a list)_              | `commerce.order.detail`                 | —      | —    | —         | —       |
-| Orders                                    | `commerce.orders.list`                  | —      | —    | —         | —       |
-| Price list _(opened from a list)_         | `commerce.pricelist.detail`             | —      | —    | —         | —       |
-| Price lists                               | `commerce.pricing.list`                 | —      | —    | —         | —       |
-| Product type _(opened from a list)_       | `commerce.product-types.detail`         | —      | —    | —         | —       |
-| Product types                             | `commerce.product-types.list`           | —      | —    | —         | —       |
-| Product listings                          | `commerce.product.channels`             | —      | —    | —         | —       |
-| Product configurator                      | `commerce.product.configurator`         | —      | —    | —         | —       |
-| Product _(opened from a list)_            | `commerce.product.detail`               | —      | —    | —         | —       |
-| Product fitment                           | `commerce.product.fitment`              | —      | —    | —         | —       |
-| Product reviews & questions               | `commerce.product.reviews`              | —      | —    | —         | —       |
-| Product subscriptions                     | `commerce.product.subscriptions`        | —      | —    | —         | —       |
-| Products                                  | `commerce.products.list`                | —      | —    | —         | —       |
-| Payment provider _(opened from a list)_   | `commerce.provider.detail`              | —      | —    | —         | —       |
-| Payment providers                         | `commerce.providers`                    | —      | —    | —         | —       |
-| Questions & answers                       | `commerce.qa.list`                      | —      | —    | —         | —       |
-| Questions queue _(opened from a list)_    | `commerce.qa.queue`                     | —      | —    | —         | —       |
-| Reports                                   | `commerce.reports`                      | —      | —    | —         | —       |
-| Take a sale                               | `commerce.sale.new`                     | —      | —    | —         | —       |
-| Return _(opened from a list)_             | `commerce.return.detail`                | —      | —    | —         | —       |
-| Returns                                   | `commerce.returns.list`                 | —      | —    | —         | —       |
-| Reviews                                   | `commerce.reviews.list`                 | —      | —    | —         | —       |
-| Reviews queue _(opened from a list)_      | `commerce.reviews.queue`                | —      | —    | —         | —       |
-| Selling settings                          | `commerce.settings`                     | —      | —    | —         | —       |
-| Shipping                                  | `commerce.shipping.list`                | —      | —    | —         | —       |
-| Delivery profile _(opened from a list)_   | `commerce.shipping.profile.detail`      | —      | —    | —         | —       |
-| Delivery region _(opened from a list)_    | `commerce.shipping.zone.detail`         | —      | —    | —         | —       |
-| Subscription _(opened from a list)_       | `commerce.subscription.detail`          | —      | —    | —         | —       |
-| New subscription _(opened from a list)_   | `commerce.subscription.new`             | —      | —    | —         | —       |
-| Subscriptions                             | `commerce.subscriptions.list`           | —      | —    | —         | —       |
-| Tax                                       | `commerce.tax.list`                     | —      | —    | —         | —       |
-| Tax place _(opened from a list)_          | `commerce.tax.zone.detail`              | —      | —    | —         | —       |
-| Wishlists                                 | `commerce.wishlists.list`               | —      | —    | —         | —       |
+| Pane                                      | Key                                     | Design | Ease  | Gap to 10                                                                                                                                             | Persona |
+| ----------------------------------------- | --------------------------------------- | ------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Account credit                            | `commerce.account-credit.list`          | —      | —     | —                                                                                                                                                     | —       |
+| Bundle _(opened from a list)_             | `commerce.bundle.detail`                | —      | —     | —                                                                                                                                                     | —       |
+| Bundles                                   | `commerce.bundles.list`                 | —      | —     | —                                                                                                                                                     | —       |
+| Basket _(opened from a list)_             | `commerce.cart.detail`                  | —      | —     | —                                                                                                                                                     | —       |
+| Carts                                     | `commerce.carts.list`                   | 8      | 7     | at 360px the In progress / Walked away / Came back views disappear; not checked: a real abandoned cart (the sweep does not run in local dev)          | P01     |
+| Categories                                | `commerce.categories.list`              | —      | —     | —                                                                                                                                                     | —       |
+| Category _(opened from a list)_           | `commerce.category.detail`              | 8      | 7     | the parent picker is a long box of every category inside the form                                                                                     | P01     |
+| Sales channels                            | `commerce.channels.list`                | —      | —     | —                                                                                                                                                     | —       |
+| Checkout session _(opened from a list)_   | `commerce.checkout-session.detail`      | —      | —     | —                                                                                                                                                     | —       |
+| Checkout sessions                         | `commerce.checkout-sessions.list`       | —      | —     | —                                                                                                                                                     | —       |
+| Collection _(opened from a list)_         | `commerce.collection.detail`            | —      | —     | —                                                                                                                                                     | —       |
+| Collections                               | `commerce.collections.list`             | —      | —     | —                                                                                                                                                     | —       |
+| Build template _(opened from a list)_     | `commerce.configurator-template.detail` | —      | —     | —                                                                                                                                                     | —       |
+| Configurator                              | `commerce.configurator.list`            | —      | —     | —                                                                                                                                                     | —       |
+| Core charges set up as choices            | `commerce.core-choices.list`            | 7      | 8     | with nothing to change the toolbar still shows a disabled "Change all 0"                                                                              | P01     |
+| Cores owed                                | `commerce.cores.list`                   | 8      | 7     | at 360px order numbers break mid-number and the action buttons sit off-screen                                                                         | P01     |
+| Discount _(opened from a list)_           | `commerce.discount.detail`              | 8      | 7     | a "Name" section holding a "Name" field; nothing near the top says it applies to the whole order                                                      | P01     |
+| Discounts                                 | `commerce.discounts.list`               | 8      | 7     | at 360px the list scrolls sideways and its State is off-screen; the code badge is plain grey                                                          | P01     |
+| Compatibility list _(opened from a list)_ | `commerce.fitment.domain.detail`        | 8      | 7     | sixteen picture tiles fill the top of the form, above the makes and models that matter                                                                | P01     |
+| Fitment                                   | `commerce.fitment.list`                 | 8      | 7     | at 360px "Entries" is cut off at the edge ("5 make")                                                                                                  | P01     |
+| Gift card _(opened from a list)_          | `commerce.giftcard.detail`              | —      | —     | —                                                                                                                                                     | —       |
+| Gift cards                                | `commerce.giftcards.list`               | —      | —     | —                                                                                                                                                     | —       |
+| sparx.market                              | `commerce.market`                       | —      | —     | —                                                                                                                                                     | —       |
+| Markup rule _(opened from a list)_        | `commerce.markup-rule.detail`           | 6 → 8  | 7     | 233 fixed (name shown twice); how the price is worked out sits below the fold                                                                         | P01     |
+| Markup rules                              | `commerce.markup-rules.list`            | 8      | 8     | the "Quotes" badge is the only cue to what a rule prices                                                                                              | P01     |
+| Order _(opened from a list)_              | `commerce.order.detail`                 | 8 → 8  | 6 → 8 | 232 fixed: "Paid so far" was net of refunds; at 360px the toolbar keeps only the total                                                                | P01     |
+| Orders                                    | `commerce.orders.list`                  | 8      | 7     | at 360px Total is cut off at the right edge ("$1,587.0")                                                                                              | P01     |
+| Price list _(opened from a list)_         | `commerce.pricelist.detail`             | 8      | 8     | rated on its "no longer here" state only; not checked: the editor (Gillett has no price list)                                                         | P01     |
+| Price lists                               | `commerce.pricing.list`                 | —      | —     | —                                                                                                                                                     | —       |
+| Product type _(opened from a list)_       | `commerce.product-types.detail`         | —      | —     | —                                                                                                                                                     | —       |
+| Product types                             | `commerce.product-types.list`           | —      | —     | —                                                                                                                                                     | —       |
+| Product listings                          | `commerce.product.channels`             | —      | —     | —                                                                                                                                                     | —       |
+| Product configurator                      | `commerce.product.configurator`         | —      | —     | —                                                                                                                                                     | —       |
+| Product _(opened from a list)_            | `commerce.product.detail`               | 8      | 7     | "On sale" shows twice (badge and banner); the description is a small scrolling box; at 360px Save, View, Share and Take off sale all hide in the menu | P01     |
+| Product fitment                           | `commerce.product.fitment`              | —      | —     | —                                                                                                                                                     | —       |
+| Product reviews & questions               | `commerce.product.reviews`              | —      | —     | —                                                                                                                                                     | —       |
+| Product subscriptions                     | `commerce.product.subscriptions`        | —      | —     | —                                                                                                                                                     | —       |
+| Products                                  | `commerce.products.list`                | 8      | 7     | at 360px price and status are off-screen; two ways to page at once                                                                                    | P01     |
+| Payment provider _(opened from a list)_   | `commerce.provider.detail`              | 8      | 8     | "Chosen: finish setup to go live" and "Details still needed" say it twice; the dark-mode callout is a loud bright blue                                | P01     |
+| Payment providers                         | `commerce.providers`                    | 7      | 7     | at 360px the description wraps one word per line beside its badge; "Available" badges are plain grey                                                  | P01     |
+| Questions & answers                       | `commerce.qa.list`                      | —      | —     | —                                                                                                                                                     | —       |
+| Questions queue _(opened from a list)_    | `commerce.qa.queue`                     | —      | —     | —                                                                                                                                                     | —       |
+| Reports                                   | `commerce.reports`                      | 8      | 8     | revenue in whole dollars beside an average in cents; the day chart has no axis labels                                                                 | P01     |
+| Take a sale                               | `commerce.sale.new`                     | 8      | 7     | the item list scrolls inside a pane that also scrolls; Write it down sits pale until the sale is complete with no word on what is missing             | P01     |
+| Return _(opened from a list)_             | `commerce.return.detail`                | 8      | 8     | the returned line shows the $600.00 price each while it settled at $793.50 with tax and deposit                                                       | P01     |
+| Returns                                   | `commerce.returns.list`                 | 8      | 8     | at 360px the customer and date columns are gone and the stage filters fold into a menu                                                                | P01     |
+| Reviews                                   | `commerce.reviews.list`                 | —      | —     | —                                                                                                                                                     | —       |
+| Reviews queue _(opened from a list)_      | `commerce.reviews.queue`                | —      | —     | —                                                                                                                                                     | —       |
+| Selling settings                          | `commerce.settings`                     | 8      | 8     | a narrow centered column in a wide pane; the resting Save reads as a pale button                                                                      | P01     |
+| Shipping                                  | `commerce.shipping.list`                | 9      | 9     | product groups and the rest sit below the fold with no summary at the top                                                                             | P01     |
+| Delivery profile _(opened from a list)_   | `commerce.shipping.profile.detail`      | —      | —     | —                                                                                                                                                     | —       |
+| Delivery region _(opened from a list)_    | `commerce.shipping.zone.detail`         | 9      | 8     | the priority stepper needs a long note to explain itself                                                                                              | P01     |
+| Subscription _(opened from a list)_       | `commerce.subscription.detail`          | —      | —     | —                                                                                                                                                     | —       |
+| New subscription _(opened from a list)_   | `commerce.subscription.new`             | —      | —     | —                                                                                                                                                     | —       |
+| Subscriptions                             | `commerce.subscriptions.list`           | —      | —     | —                                                                                                                                                     | —       |
+| Tax                                       | `commerce.tax.list`                     | 8      | 8     | a place that is off still shows a No rate set warning beside it                                                                                       | P01     |
+| Tax place _(opened from a list)_          | `commerce.tax.zone.detail`              | 9      | 8     | the rate, the part that matters, sits below the fold under the paperwork fields                                                                       | P01     |
+| Wishlists                                 | `commerce.wishlists.list`               | —      | —     | —                                                                                                                                                     | —       |
 
 ### SEO (`seo`) — 4 panes
 
@@ -426,18 +428,18 @@ tenant reaching one is itself a finding.
 
 ### Site (`builder`) — 10 panes
 
-| Pane                               | Key                  | Design | Ease | Gap to 10 | Persona |
-| ---------------------------------- | -------------------- | ------ | ---- | --------- | ------- |
-| Blueprint _(opened from a list)_   | `builder.blueprint`  | —      | —    | —         | —       |
-| Blueprints                         | `builder.blueprints` | —      | —    | —         | —       |
-| Saved piece _(opened from a list)_ | `builder.component`  | —      | —    | —         | —       |
-| Saved pieces                       | `builder.components` | —      | —    | —         | —       |
-| Email designs                      | `builder.email`      | —      | —    | —         | —       |
-| Form submissions                   | `builder.forms`      | —      | —    | —         | —       |
-| Page results                       | `builder.pages`      | —      | —    | —         | —       |
-| Site                               | `builder.site`       | —      | —    | —         | —       |
-| Editor                             | `builder.studio`     | —      | —    | —         | —       |
-| Submission _(opened from a list)_  | `builder.submission` | —      | —    | —         | —       |
+| Pane                               | Key                  | Design | Ease | Gap to 10                                                                                                 | Persona |
+| ---------------------------------- | -------------------- | ------ | ---- | --------------------------------------------------------------------------------------------------------- | ------- |
+| Blueprint _(opened from a list)_   | `builder.blueprint`  | 8      | 7    | the action that adds this design is out of view; at 360px the toolbar holds only the menu                 | P01     |
+| Blueprints                         | `builder.blueprints` | 8      | 8    | two ways to page at once: "Load 25 more" and page numbers                                                 | P01     |
+| Saved piece _(opened from a list)_ | `builder.component`  | —      | —    | —                                                                                                         | —       |
+| Saved pieces                       | `builder.components` | —      | —    | —                                                                                                         | —       |
+| Email designs                      | `builder.email`      | 7      | 6    | three toolbar rows on desktop; at 360px the toolbar fills half the screen and the canvas scrolls sideways | P01     |
+| Form submissions                   | `builder.forms`      | 8      | 8    | no search; the "Read" badge is plain grey                                                                 | P01     |
+| Page results                       | `builder.pages`      | —      | —    | —                                                                                                         | —       |
+| Site                               | `builder.site`       | 8      | 8    | at 360px the web address breaks mid-word ("gille / ttdiesel")                                             | P01     |
+| Editor                             | `builder.studio`     | 7      | 6    | at 360px the page is cut off sideways and the status line runs off the edge                               | P01     |
+| Submission _(opened from a list)_  | `builder.submission` | 7      | 7    | the status sits in a grey box; at 360px "Mark as handled", the main action, hides in the menu             | P01     |
 
 ### Social (`social`) — 8 panes
 
@@ -454,19 +456,19 @@ tenant reaching one is itself a finding.
 
 ### Wholesale (`b2b`) — 11 panes
 
-| Pane                                               | Key                              | Design | Ease | Gap to 10 | Persona |
-| -------------------------------------------------- | -------------------------------- | ------ | ---- | --------- | ------- |
-| New account / Account _(opened from a list)_       | `b2b.account.detail`             | —      | —    | —         | —       |
-| Accounts                                           | `b2b.accounts.list`              | —      | —    | —         | —       |
-| Approvals                                          | `b2b.approvals`                  | —      | —    | —         | —       |
-| New invoice / Invoice _(opened from a list)_       | `b2b.invoice.detail`             | —      | —    | —         | —       |
-| Wholesale invoices                                 | `b2b.invoices.list`              | —      | —    | —         | —       |
-| Wholesale orders                                   | `b2b.orders.list`                | —      | —    | —         | —       |
-| New price tier / Price tier _(opened from a list)_ | `b2b.pricing-tier.detail`        | —      | —    | —         | —       |
-| Price tiers                                        | `b2b.pricing-tiers.list`         | —      | —    | —         | —       |
-| Quote _(opened from a list)_                       | `b2b.quote.detail`               | —      | —    | —         | —       |
-| Quotes                                             | `b2b.quotes.list`                | —      | —    | —         | —       |
-| Product trade pricing                              | `commerce.product.trade-pricing` | —      | —    | —         | —       |
+| Pane                                               | Key                              | Design | Ease | Gap to 10                                                                              | Persona |
+| -------------------------------------------------- | -------------------------------- | ------ | ---- | -------------------------------------------------------------------------------------- | ------- |
+| New account / Account _(opened from a list)_       | `b2b.account.detail`             | 6 → 8  | 7    | 233 fixed (name shown twice); a long single form, Save off until a change              | P01     |
+| Accounts                                           | `b2b.accounts.list`              | 8      | 8    | at 360px "Credit used", the figure most needed, is dropped                             | P01     |
+| Approvals                                          | `b2b.approvals`                  | 8      | 8    | the rule's approver picker cuts off the approver's name at desktop width               | P01     |
+| New invoice / Invoice _(opened from a list)_       | `b2b.invoice.detail`             | 7      | 7    | at 360px Print or save as PDF and Open the full bill hide in the menu                  | P01     |
+| Wholesale invoices                                 | `b2b.invoices.list`              | 8      | 7    | at 360px each row keeps only number and standing: who owes it and how much are dropped | P01     |
+| Wholesale orders                                   | `b2b.orders.list`                | —      | —    | —                                                                                      | —       |
+| New price tier / Price tier _(opened from a list)_ | `b2b.pricing-tier.detail`        | 8      | 8    | the "1 account" badge names no account and links nowhere                               | P01     |
+| Price tiers                                        | `b2b.pricing-tiers.list`         | 7      | 8    | the "% off" badges are plain grey; at 360px the account count is dropped               | P01     |
+| Quote _(opened from a list)_                       | `b2b.quote.detail`               | 8      | 8    | the "Submitted" badge reads nearly grey                                                | P01     |
+| Quotes                                             | `b2b.quotes.list`                | 8      | 8    | filtered to one account, "Who asked" still repeats its name on every row               | P01     |
+| Product trade pricing                              | `commerce.product.trade-pricing` | 8      | 8    | each tier says how many businesses are in it without naming them                       | P01     |
 
 ### Workbench (`platform`) — 29 panes
 

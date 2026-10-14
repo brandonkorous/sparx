@@ -29,7 +29,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
   Table,
@@ -39,6 +38,7 @@ import {
 import { ArrowLeftRight, ArrowRight, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { useStockLocations } from './data';
@@ -96,7 +96,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const locationName = activeLocations.find((location) => location.id === locationId)?.name ?? null;
   const statusLabel = STATUS_OPTIONS.find((option) => option.value === status)?.label ?? null;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useTransfers({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useTransfers({
     q: search.trim(),
     ...(status ? { status } : {}),
     ...(locationId ? { warehouseId: locationId } : {}),
@@ -126,10 +126,11 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
     // which reads as "you have no transfers".
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ArrowLeftRight className="size-6" aria-hidden />}
           title="Could not load your transfers"
           description="This is a problem reaching the server. Your transfers are unaffected. They just could not be read just now."
+          error={error}
         />
       );
     }

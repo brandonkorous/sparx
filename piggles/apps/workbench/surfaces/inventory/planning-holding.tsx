@@ -1,44 +1,34 @@
 'use client';
 
-// COST TO KEEP — what a year of holding all of it comes to.
-//
-// The figure nobody has, and the one that makes every other planning decision
-// arguable. Stock is normally discussed as an asset, so "too much of it" reads
-// as a mild inefficiency rather than a bill. Putting a pound figure on a year of
-// storage, insurance, tied-up money, breakage and obsolescence is what turns
-// "we have plenty" into a number you can weigh against a discount.
-//
-// The second table is the point of the screen: the most expensive things to KEEP
-// are not the most valuable things to own. A slow line ties its money up for far
-// longer than a fast one of the same value, and only this ranking shows it.
+// COST TO KEEP: what a year of holding all of it comes to. Stock is talked about
+// as an asset; a money figure for storage, insurance, tied-up cash and breakage
+// turns "we have plenty" into a number you can weigh against a discount.
+
+// The second table is the point: the most expensive things to KEEP are not the
+// most valuable things to own, since a slow line ties its money up for longer.
 
 import {
   Alert,
   AlertContent,
   AlertDescription,
   AlertTitle,
-  Badge,
-  Card,
   EmptyState,
-  Heading,
   Stat,
   StatDesc,
   StatTitle,
   StatValue,
   Stats,
-  Text,
-  Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
 import { faBoxOpen, faCoins } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { formatCents } from './data';
-import { abcLabel, abcTone, useHoldingCost } from './planning-data';
+import { useHoldingCost, type HoldingCostReport } from './planning-data';
 import { PlanningShell } from './planning-shell';
 import { InlineWaiting } from '../../components/inline-waiting';
-import { coverNote } from './cover-note';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
+import { HoldingByClassCard, HoldingTopItemsCard } from './planning-holding-tables';
 
 export function PlanningHoldingSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useHoldingCost('');
@@ -57,63 +47,33 @@ export function PlanningHoldingSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
-function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: string }) {
-  const report = useHoldingCost(locationId);
-  const data = report.data;
-
-  // Must come before the `!data` branch below, which would otherwise report a
-  // failed request as "there is no stock on hand" — a confident statement about
-  // the warehouse based on not having reached the server.
-  if (report.isError) {
-    return (
-      <EmptyState
-        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
-        title="Could not work out what your stock costs to keep"
-        description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
-      />
-    );
-  }
-  if (report.isLoading) {
-    return <InlineWaiting label="Working out what your stock costs to keep…" />;
-  }
-  if (!data) {
-    return (
-      <EmptyState
-        icon={<Icon glyph={faCoins} className="size-6" aria-hidden />}
-        title="Nothing to cost yet"
-        description="There is no stock on hand to work this out from."
-      />
-    );
-  }
-
-  const multiLocation = new Set(data.topItems.map((item) => item.warehouseId)).size > 1;
-  // Counted from the rows on screen, not from a new field: a count taken
-  // anywhere else could disagree with what the reader is looking at.
-  const coverMissing = coverNote(data.topItems);
-
+function CostStats({ data }: { data: HoldingCostReport }) {
   return (
-    <div className="flex flex-col gap-3">
-      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
-        <Stat>
-          <StatTitle>Stock is worth</StatTitle>
-          <StatValue>{formatCents(data.totalValueCents)}</StatValue>
-          <StatDesc>At what you paid for it</StatDesc>
-        </Stat>
-        <Stat>
-          <StatTitle>Costs a year to keep</StatTitle>
-          <StatValue className="text-warning">{formatCents(data.annualHoldingCostCents)}</StatValue>
-          <StatDesc>{formatCents(data.monthlyHoldingCostCents)} a month</StatDesc>
-        </Stat>
-        <Stat>
-          <StatTitle>Carrying rate</StatTitle>
-          <StatValue>{data.annualRatePct}%</StatValue>
-          <StatDesc>{data.usingDefaultRate ? 'The usual estimate' : 'Your figure'}</StatDesc>
-        </Stat>
-      </Stats>
+    <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
+      <Stat>
+        <StatTitle>Stock is worth</StatTitle>
+        <StatValue>{formatCents(data.totalValueCents)}</StatValue>
+        <StatDesc>At what you paid for it</StatDesc>
+      </Stat>
+      <Stat>
+        <StatTitle>Costs a year to keep</StatTitle>
+        <StatValue className="text-warning">{formatCents(data.annualHoldingCostCents)}</StatValue>
+        <StatDesc>{formatCents(data.monthlyHoldingCostCents)} a month</StatDesc>
+      </Stat>
+      <Stat>
+        <StatTitle>Carrying rate</StatTitle>
+        <StatValue>{data.annualRatePct}%</StatValue>
+        <StatDesc>{data.usingDefaultRate ? 'The usual estimate' : 'Your figure'}</StatDesc>
+      </Stat>
+    </Stats>
+  );
+}
 
-      {/* Every figure above is a sum, and a level with no cost price adds
-          nothing to it. A total that quietly understates is worse than one that
-          names its gap. */}
+// Every figure is a sum, and a level with no cost price adds nothing to it. A
+// total that quietly understates is worse than one that names its gap.
+function CostAlerts({ ctx, data }: { ctx: SurfaceContext; data: HoldingCostReport }) {
+  return (
+    <>
       {data.itemsWithoutCost > 0 ? (
         <Alert color="warning">
           <AlertContent>
@@ -147,96 +107,45 @@ function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
           </AlertContent>
         </Alert>
       ) : null}
+    </>
+  );
+}
 
-      <Card className="flex flex-col gap-2 p-3">
-        <Heading level={3} className="text-base">
-          By how much the item matters
-        </Heading>
-        <Table size="sm">
-          <thead>
-            <tr>
-              <th>Group</th>
-              <th className="text-right">Worth</th>
-              <th className="text-right">Costs a year</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.byClass.map((c) => (
-              <tr key={c.abcClass}>
-                <td>
-                  <Badge color={abcTone(c.abcClass)} variant="soft" size="sm">
-                    {abcLabel(c.abcClass === 'unclassified' ? null : c.abcClass)}
-                  </Badge>
-                </td>
-                <td className="text-right tabular-nums">{formatCents(c.valueCents)}</td>
-                <td className="text-right tabular-nums">{formatCents(c.annualHoldingCostCents)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Card>
+function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: string }) {
+  const report = useHoldingCost(locationId);
+  const data = report.data;
 
-      <Card className="flex flex-col gap-2 p-3">
-        <Heading level={3} className="text-base">
-          The most expensive things to keep
-        </Heading>
-        <Text className="text-sm">
-          Not the same list as the most valuable things to own: a slow item ties its money up for
-          far longer.
-        </Text>
-        {/* The screen already counts the levels with no cost price and says so
-            above. Cover is the OTHER absent measure on it, and it was a column
-            of dashes with nothing saying why. */}
-        {coverMissing ? <Text className="text-sm">{coverMissing}</Text> : null}
-        <div className="overflow-x-auto">
-          <Table size="sm">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th className="text-right">In stock</th>
-                <th className="text-right">Worth</th>
-                <th className="text-right">Cover</th>
-                <th className="text-right">Costs a year</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.topItems.map((item) => (
-                <tr key={`${item.variantId}:${item.warehouseId}`}>
-                  <td className="w-full max-w-0 min-w-56">
-                    <span className="flex min-w-0 flex-col">
-                      <span className="truncate">{item.title ?? 'Untitled product'}</span>
-                      <span className="truncate text-sm">
-                        <span className="font-mono">{item.sku ?? 'No code'}</span>
-                        {/* Stock kept in two places is two rows in this ranking,
-                            and both would otherwise read identically. */}
-                        {multiLocation && item.warehouseName ? (
-                          <span> · {item.warehouseName}</span>
-                        ) : null}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="text-right tabular-nums">{item.onHand}</td>
-                  <td className="text-right tabular-nums">
-                    {item.costKnown ? (
-                      formatCents(item.valueCents)
-                    ) : (
-                      <Tooltip content="No cost price recorded for this item, so what it is worth cannot be worked out.">
-                        <span>No cost set</span>
-                      </Tooltip>
-                    )}
-                  </td>
-                  <td className="text-right tabular-nums">
-                    {item.daysOfCover === null ? '—' : `${Math.round(item.daysOfCover)} days`}
-                  </td>
-                  <td className="text-right tabular-nums">
-                    {item.costKnown ? formatCents(item.annualHoldingCostCents) : '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      </Card>
+  // Before the `!data` branch, which would otherwise report a failed request as
+  // "there is no stock on hand", a confident statement based on nothing.
+  if (report.isError) {
+    return (
+      <PaneLoadError
+        icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
+        title="Could not work out what your stock costs to keep"
+        description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
+        error={report.error}
+      />
+    );
+  }
+  if (report.isLoading) {
+    return <InlineWaiting label="Working out what your stock costs to keep…" />;
+  }
+  if (!data) {
+    return (
+      <EmptyState
+        icon={<Icon glyph={faCoins} className="size-6" aria-hidden />}
+        title="Nothing to cost yet"
+        description="There is no stock on hand to work this out from."
+      />
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <CostStats data={data} />
+      <CostAlerts ctx={ctx} data={data} />
+      <HoldingByClassCard data={data} />
+      <HoldingTopItemsCard data={data} />
     </div>
   );
 }

@@ -47,6 +47,7 @@ import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { afterPaneChange } from '../../lib/defer';
+import { loadFailureWords } from '../../lib/api-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { CustomerPicker, customerName, type CustomerSummary } from '../invoicing/customer-picker';
@@ -165,7 +166,10 @@ function VariantPicker({ onPick }: { onPick: (variant: VariantChoice) => void })
         <AlertContent>
           <AlertTitle>Could not load what you sell</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server, not a problem with this repeat order.
+            {loadFailureWords(
+              catalog.error,
+              'This is a problem reaching the server, not a problem with this repeat order.'
+            )}
           </AlertDescription>
         </AlertContent>
         <AlertActions>
@@ -304,6 +308,7 @@ function DeliveryAddress({
   addresses,
   isLoading,
   isError,
+  error,
   chosenId,
   onChoose,
 }: {
@@ -311,6 +316,8 @@ function DeliveryAddress({
   addresses: CustomerAddressRow[];
   isLoading: boolean;
   isError: boolean;
+  /** The read's own error, so the words name the real cause (issue 260). */
+  error?: unknown;
   chosenId: string | null;
   onChoose: (id: string) => void;
 }) {
@@ -324,8 +331,10 @@ function DeliveryAddress({
         <AlertContent>
           <AlertTitle>Could not load their addresses</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about {customerName(customer)} has
-            changed. Try again in a moment.
+            {loadFailureWords(
+              error,
+              `This is a problem reaching the server. Nothing about ${customerName(customer)} has changed. Try again in a moment.`
+            )}
           </AlertDescription>
         </AlertContent>
       </Alert>
@@ -615,6 +624,7 @@ export function RepeatOrderNewSurface({ ctx }: { ctx: SurfaceContext }) {
               addresses={addressRows}
               isLoading={customer !== null && addresses.isPending}
               isError={addresses.isError}
+              error={addresses.error}
               chosenId={addressId}
               onChoose={setAddressId}
             />

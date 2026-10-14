@@ -95,6 +95,8 @@ export function usePartnerAccess(): {
   memberCount: number;
   ready: boolean;
   isError: boolean;
+  /** The failed read's error, so a load-failure message can say WHY (issue 260). */
+  error: unknown;
   isFetching: boolean;
   dataUpdatedAt: number;
   refetch: () => void;
@@ -128,6 +130,7 @@ export function usePartnerAccess(): {
     memberCount: partners.filter((person) => person.kind === 'member').length,
     ready: !members.isLoading && !invitations.isLoading,
     isError: members.isError || invitations.isError,
+    error: members.error ?? invitations.error,
     isFetching: members.isFetching || invitations.isFetching,
     dataUpdatedAt: Math.max(members.dataUpdatedAt, invitations.dataUpdatedAt),
     refetch: () => {

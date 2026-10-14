@@ -143,6 +143,8 @@ function fromDraftField(field: DraftField): FieldDef {
         }),
         ...(field.multiple ? { multiple: true } : {}),
       };
+    case 'author':
+      return { ...base, type: 'author', ...(field.multiple ? { multiple: true } : {}) };
     case 'object':
       return { ...base, type: 'object', fields: fromDraftFields(field.fields) };
     case 'repeater':

@@ -24,7 +24,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   NativeSelect,
@@ -49,6 +48,8 @@ import {
   type MediaListQuery,
 } from './media-admin';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 
 /** The chips ARE the questions people open the library to answer: "where are my
  *  videos", "what's still processing". */
@@ -345,8 +346,10 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. What you see below is what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. What you see below is what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -365,21 +368,14 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the grid — "no files yet" over a connection
           // failure is a lie about their library, and the worst one to tell.
-          <EmptyState
+          <PaneLoadError
             icon={<ImageIcon className="size-6" aria-hidden />}
             title="Could not load your library"
             description="This is a problem reaching the server. Nothing you have uploaded is affected: none of it has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

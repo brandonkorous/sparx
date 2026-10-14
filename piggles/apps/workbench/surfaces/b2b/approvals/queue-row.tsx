@@ -65,7 +65,14 @@ function QueueRowWhy({
       {item.holdReasons.length > 0 ? (
         <ul className="flex flex-col gap-1">
           {item.holdReasons.map((reason) => (
-            <li key={reason.kind}>{holdReasonWords(reason, formatCents, item.currency)}</li>
+            <li key={reason.kind}>
+              {holdReasonWords(
+                reason,
+                formatCents,
+                item.currency,
+                item.accountCreditLeftCents ?? null
+              )}
+            </li>
           ))}
         </ul>
       ) : null}

@@ -127,6 +127,11 @@ export async function proxy(req: NextRequest) {
   // expose the pathname to a server component either, so it is mirrored here. Query and
   // hash are deliberately excluded: chrome is chosen per page, not per filter.
   requestHeaders.set('x-sparx-path', req.nextUrl.pathname);
+  // The one query that makes a different page: `?page=`, for the canonical link
+  // (`lib/canonical.ts`). Page 2 of a journal names itself, not page 1.
+  const listPage = req.nextUrl.searchParams.get('page');
+  if (listPage) requestHeaders.set('x-sparx-page', listPage);
+  else requestHeaders.delete('x-sparx-page');
 
   const host = publicHost(req);
 

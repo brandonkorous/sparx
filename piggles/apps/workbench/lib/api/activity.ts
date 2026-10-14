@@ -1,15 +1,6 @@
-// Activity — what has been happening, read from the real audit log.
-//
-// This replaced a poll-and-merge "pulse" that hit `/v1/orders` and
-// `/v1/crm/customers` and diffed the newest few rows. That approach
-// reimplemented, shallowly and for exactly two entity types, a log the platform
-// already writes from ~337 sites across every module (docs/124). It could never
-// see a published page, a price change, or a refund, and every new module would
-// have needed another feed bolted on.
-//
-// Now there is one source: `GET /v1/activity`, which projects `audit_logs` into
-// sentences. Adding a module to the feed is now zero work — it already writes
-// audit, so it already appears.
+// Activity: what has been happening, read from the real audit log through
+// `GET /v1/activity`, which projects `audit_logs` into sentences. Any module that
+// writes audit already appears here (docs/124); no per-module feed is needed.
 
 import { useMemo } from 'react';
 import { useQuery } from '@wizeworks/query';
@@ -38,56 +29,22 @@ export interface ActivityItem {
   };
 }
 
-/**
- * Events worth INTERRUPTING someone about — things that happen *to* the
- * business rather than things an operator did. The status bar celebrates these;
- * the full feed shows everything.
- *
- * The test each entry has to pass: **money arrived, or a person did**. Those are
- * the two things an owner wants pulled out of a working day; everything else is
- * either their own edit or something they will look for when they are ready.
- *
- * Toasting "Product updated" would fire every time the viewer saves their own
- * work, which is the fastest way to teach someone to ignore the popup entirely —
- * so this list stays disciplined even as modules are added. Matched as PREFIXES
- * by /v1/activity, but written as whole action names so a future sibling verb
- * can't join by accident.
- *
- * Deliberately NOT here, and why:
- *   • `invoicing.payment.refund`, `commerce.return.refunded` — money OUT, and
- *     the operator's own act. They know; they just did it.
- *   • `commerce.cart.abandoned` — fires constantly on a live store, is negative,
- *     and there is nothing to do about any single one.
- *   • `commerce.review.submitted`, `commerce.question.submitted` — genuinely
- *     customer-initiated and arguably belong, but on a busy catalogue they would
- *     out-shout the sales. Worth revisiting as a separate, quieter signal.
- *   • `crm.deal.*` — pipeline movement is the operator dragging their own cards.
- *   • `booking.confirmed` / `checked_in` / `completed` / `no_show` — the staff
- *     working through their own day. The timeline on the booking has them.
- *
- * Scheduling writes its audit trail from the SERVICE, not the route —
- * `recordBookingEvent` in wizeworks/packages/scheduling/src/booking-history.ts, which is
- * also what feeds GET /v1/scheduling/bookings/:id/timeline. The Pub/Sub publish
- * beside it (publishBookingEvent) is a separate channel for the worker; do not
- * add audit writes at the call sites, they are already there.
- */
+// Events worth INTERRUPTING someone about: money arrived, or a person did. An
+// owner's own edits never toast. Matched as prefixes by /v1/activity, but written
+// as whole action names so a future sibling verb cannot join by accident.
 export const NOTABLE_ACTIONS = [
   // A sale, however it arrived.
   'crm.order.created',
   'commerce.checkout.completed',
-  // Money actually landing — the invoice half of the business, which had no
-  // representation here at all despite being where service work gets paid.
+  // Money actually landing, including the invoice half of the business.
   'crm.order.payment.recorded',
   'invoicing.payment.payment',
   'invoicing.payment.deposit',
-  // A new person: entered by the team, or one who arrived through a form on the
-  // site by themselves (`captured` is written with actorType 'system').
+  // A new person: entered by the team, or one who came in through a site form.
   'crm.customer.created',
   'crm.customer.captured',
-  // Someone took a slot in the day, or gave one back. A cancellation is the one
-  // entry here that is not good news, and it earns its place by being the most
-  // time-critical thing on the list: a hole in this afternoon is only useful to
-  // know about this afternoon.
+  // Someone took a slot in the day, or gave one back. A hole in this afternoon
+  // is only useful to know about this afternoon.
   'booking.created',
   'booking.cancelled',
 ] as const;
@@ -102,64 +59,36 @@ interface ActivityOptions {
   /** Action prefixes to narrow to. Omit for everything. */
   actions?: readonly string[];
   limit?: number;
-  /**
-   * Keyset cursor — return only rows strictly OLDER than this ISO instant.
-   * Undefined means the newest window.
-   *
-   * Keyset rather than an offset because the log is append-only and live: with
-   * `skip`, every row that arrives while someone reads page 1 pushes a row they
-   * already saw down onto page 2. A timestamp cursor is stable no matter how
-   * much lands above it.
-   */
+  /** Keyset cursor: only rows strictly OLDER than this ISO instant. A live,
+   *  append-only log would shift an offset page under the reader. */
   before?: string;
-  /**
-   * Narrow to one person's own trail — everything THEY did, nothing anyone
-   * else did. The endpoint has always supported it; nothing asked until a
-   * teammate's page needed to answer "what has this person been doing here?".
-   *
-   * Note it is the ACTOR's user id, not a subject: this is the audit trail of
-   * their actions, not of changes made to them.
-   */
+  /** Narrow to one person's own trail: the ACTOR's user id, not a subject. */
   actorId?: string;
   enabled?: boolean;
 }
 
-/**
- * The activity feed. One endpoint, one poll — a minute of latency is invisible
- * for events that arrive a handful of times a day, and it costs no socket kept
- * alive across detached windows.
- */
-export function useActivity(options: ActivityOptions = {}): {
+export interface ActivityFeed {
   items: ActivityItem[];
   ready: boolean;
-  /** A fetch is in flight — including a background poll over existing rows. */
+  /** A fetch is in flight, including a background poll over existing rows. */
   busy: boolean;
-  /**
-   * Whether older rows almost certainly exist, inferred from a FULL window
-   * coming back. It can be wrong exactly once, when the log's total is an exact
-   * multiple of the window: the reader steps older and finds an empty page.
-   * The alternative is a count() over audit_logs on every poll, which is a real
-   * cost on a table every module writes to — a rare empty page is the cheaper
-   * error, and it self-corrects the moment they step back.
-   */
+  /** Older rows almost certainly exist, inferred from a FULL window coming back;
+   *  wrong only when the total is an exact multiple of the window. */
   hasMore: boolean;
-  /** The read failed. Without this a caller cannot tell "no activity" from "the
-   *  server could not be reached", and both arrive as an empty `items`. */
+  /** The read failed, so "no activity" and "could not load" are told apart. */
   failed: boolean;
+  /** Why it failed, so the words name the real cause (persona issue 260). */
+  error: unknown;
   /** Re-runs the window, for the failure state's retry. */
   retry: () => void;
-} {
+}
+
+function useActivityQuery(options: ActivityOptions) {
   const { actions, limit = 50, before, actorId, enabled = true } = options;
   const actionParam = actions && actions.length > 0 ? actions.join(',') : undefined;
-
-  const query = useQuery({
-    // Every input that changes the ANSWER is part of the key: the status bar's
-    // notable-only feed and the Pulse pane's everything feed are different
-    // questions and must not share a cache entry. The cursor joins it for the
-    // same reason — each window is its own answer, so stepping back to one
-    // already read is instant. And the actor joins it because a teammate's feed
-    // is the narrowest question of all: leaving it out would let one person's
-    // trail be served from the account-wide cache entry, or overwrite it.
+  return useQuery({
+    // Every input that changes the ANSWER is in the key, so the notable feed, the
+    // full feed, each window and each teammate's trail never share a cache entry.
     queryKey: ['activity', actionParam ?? 'all', actorId ?? 'anyone', limit, before ?? 'newest'],
     queryFn: () =>
       api.get<{ items: ActivityItem[] }>('/v1/activity', {
@@ -170,19 +99,18 @@ export function useActivity(options: ActivityOptions = {}): {
       }),
     refetchInterval: FEED_POLL_MS,
     enabled,
-    // Keeps the window on screen while the next one loads, so stepping through
-    // time doesn't blink the feed out to empty and back.
+    // Keeps the window on screen while the next one loads, so it never blinks.
     placeholderData: (previous) => previous,
   });
+}
 
+/** The activity feed. One endpoint, one poll a minute. */
+export function useActivity(options: ActivityOptions = {}): ActivityFeed {
+  const limit = options.limit ?? 50;
+  const query = useActivityQuery(options);
   const raw = query.data?.items;
-  // THE ONE PLACE THE PLATFORM'S WORDS ENTER THIS CONSOLE.
-  //
-  // The sentence arrives composed by the API in sparx's vocabulary, and this
-  // brand has its own for a chunk of it. Swapped here rather than in the two
-  // places that draw a row — the Pulse feed and the status bar's toasts —
-  // because a rename applied at the drawing is a rename one new caller away
-  // from being half-applied. Same boundary rule as `useReportFields`.
+  // The one place the platform's words enter this console: the API composes the
+  // sentence in sparx's vocabulary, and this brand swaps in its own here.
   const items = useMemo(
     () => raw?.map((item) => ({ ...item, title: activityWord(item.action, item.title) })),
     [raw]
@@ -195,26 +123,17 @@ export function useActivity(options: ActivityOptions = {}): {
       busy: query.isFetching,
       hasMore: (items?.length ?? 0) >= limit,
       failed: query.isError,
+      error: query.error,
       retry: () => {
         void refetch();
       },
     }),
-    [items, query.isLoading, query.isFetching, query.isError, refetch, limit]
+    [items, query.isLoading, query.isFetching, query.isError, query.error, refetch, limit]
   );
 }
 
-/** "2m ago" phrasing — deliberately coarse; this is a heartbeat, not a receipt. */
-/**
- * The fresh events worth a toast for THIS viewer: not the ones they did
- * themselves.
- *
- * `crm.customer.created` is notable when a teammate or a form adds someone, but
- * when the owner types a customer in, the pane already said "Renée Castañeda
- * added", and a second "Customer created" a moment later told him what he had
- * just done (sparx persona issue 078). The chip still shows it; only the
- * interruption is skipped. An unknown viewer announces everything rather than
- * nothing.
- */
+// The fresh events worth a toast for THIS viewer: not the ones they did
+// themselves (sparx persona issue 078). An unknown viewer announces everything.
 export function announceable(
   fresh: ActivityItem[],
   viewerId: string | null | undefined
@@ -223,6 +142,7 @@ export function announceable(
   return fresh.filter((item) => item.actor.id !== viewerId);
 }
 
+/** "2m ago" phrasing, deliberately coarse: this is a heartbeat, not a receipt. */
 export function describeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
   const minutes = Math.floor(ms / 60_000);

@@ -102,6 +102,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 dashboards.error,
                 'This is a problem reaching the server. Nothing you are looking at is affected. It just could not be read.'
               )}
+              error={dashboards.error}
               onRetry={() => void dashboards.refetch()}
             />
           ) : dashboards.isPending ? (

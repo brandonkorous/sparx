@@ -21,15 +21,18 @@ import {
 } from '@wizeworks/builder-schemas';
 import type { BuilderPage, Prisma } from '@wizeworks/db';
 import { withTenant, type TxClient } from '@wizeworks/db';
-import { starterPages, type SiteChromeOptions } from '@wizeworks/silica-catalog';
+import { hostKeysIn, starterPages, type SiteChromeOptions } from '@wizeworks/silica-catalog';
 import type { Node as SilicaNode } from '@wizeworks/silicaui-html';
 
 import { writeAuditLog } from '../audit';
-import { atAddress, isLive } from './page-liveness';
+import { atAddress, isLive, offOnSite } from './page-liveness';
+import { rememberRemovedStarterTx, settleRemovedStartersTx } from './removed-starters';
+import { ensureRecordPagesForListTx } from './site-service';
 import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
 import type { PropertyContext, ServiceContext } from '../errors';
 import { indexPages, withPageSearch } from './page-search';
+import { ensureKindPagesTx } from './kind-pages';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
 import { expandTreeForPublish } from './component-service';
@@ -62,7 +65,13 @@ const PAGE_SUMMARY_SELECT = {
 
 type PageSummaryRow = Pick<BuilderPage, keyof typeof PAGE_SUMMARY_SELECT>;
 
-function toSummaryDto(row: PageSummaryRow, modules: SiteChromeOptions = {}): BuilderPageSummaryDto {
+function toSummaryDto(
+  row: PageSummaryRow,
+  modules: SiteChromeOptions = {},
+  siteModules: SiteChromeOptions = modules,
+  hostKeys: readonly string[] = []
+): BuilderPageSummaryDto {
+  const off = offOnSite(row, modules, siteModules, hostKeys);
   return {
     id: row.id,
     name: row.name,
@@ -73,7 +82,8 @@ function toSummaryDto(row: PageSummaryRow, modules: SiteChromeOptions = {}): Bui
     // A page is published iff it has been published — `publishedAt` answers that
     // without reading the tree it would otherwise be tested against.
     published: row.publishedAt != null,
-    live: isLive(row, modules),
+    live: off === null && isLive(row, modules),
+    offOnSite: off,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     isDefault: row.isDefault,
@@ -280,9 +290,9 @@ export function missingStarterPages(
  * end, so no existing page's position moves. Idempotent: a no-op once every starter
  * address is held.
  *
- * NOT a way to resurrect a page someone deleted on purpose — but it will, and that is
- * honest rather than a bug: deleting the row never took the address down, so a list
- * that shows it again is the first screen to tell the truth about it.
+ * NOT a way to resurrect a page someone deleted on purpose: deleting a starter page
+ * now takes its address down too, and the address is remembered so this skips it
+ * (`removed-starters.ts`, persona issue 947).
  */
 async function ensureStarterPagesTx(
   tx: TxClient,
@@ -293,7 +303,9 @@ async function ensureStarterPagesTx(
     where: { propertyId: ctx.propertyId },
     select: { slug: true },
   });
-  const missing = missingStarterPages(rows, modules);
+  // Not the ones she deleted: those stay deleted (`removed-starters.ts`).
+  const removed = new Set(await settleRemovedStartersTx(tx, ctx, rows));
+  const missing = missingStarterPages(rows, modules).filter((p) => !removed.has(atAddress(p.slug)));
   if (missing.length === 0) return false;
 
   const last = await tx.builderPage.findFirst({
@@ -350,13 +362,72 @@ export async function ensureHome(
   return home;
 }
 
+/**
+ * The host cores each page SERVES — its published tree's, else the starter's at its
+ * address, which is what the site falls back to — for `offOnSite`.
+ *
+ * Only read when this site switched something off: otherwise nothing can be off and
+ * the list stays the cheap summary read it has always been.
+ */
+async function servedCoresTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  rows: readonly PageSummaryRow[],
+  account: SiteChromeOptions,
+  site: SiteChromeOptions
+): Promise<Map<string, string[]>> {
+  const cores = new Map<string, string[]>();
+  const keys = ['commerceEnabled', 'schedulingEnabled', 'cmsEnabled'] as const;
+  if (keys.every((k) => account[k] === site[k])) return cores;
+  const published = rows.filter((r) => r.publishedAt != null).map((r) => r.id);
+  const trees = published.length
+    ? await tx.builderPage.findMany({
+        where: { propertyId: ctx.propertyId, id: { in: published } },
+        select: { id: true, silicaPublishedTree: true },
+      })
+    : [];
+  const starters = starterPages(account);
+  for (const row of rows) {
+    const tree =
+      trees.find((t) => t.id === row.id)?.silicaPublishedTree ??
+      starters.find((p) => atAddress(p.slug) === atAddress(row.slug))?.root;
+    if (tree) cores.set(row.id, hostKeysIn(tree));
+  }
+  return cores;
+}
+
+/**
+ * The pages this site does not serve because it switched their module off (the page
+ * list's "Off on this site"), by id. The site check reads it: a page no visitor can
+ * reach has no broken link, missing title or orphan for anyone to trip over.
+ */
+export async function pagesOffOnSiteTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  account: SiteChromeOptions,
+  site: SiteChromeOptions
+): Promise<Set<string>> {
+  const rows = await tx.builderPage.findMany({
+    where: { propertyId: ctx.propertyId },
+    select: PAGE_SUMMARY_SELECT,
+  });
+  const cores = await servedCoresTx(tx, ctx, rows, account, site);
+  return new Set(
+    rows.filter((r) => offOnSite(r, account, site, cores.get(r.id)) !== null).map((r) => r.id)
+  );
+}
+
 /** List the tenant's pages. On first use (zero rows) seed the curated starter
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Also heals a
  *  home-less property (pages but no slugless singleton) by injecting the default
  *  home, so every site that's ever opened has a `/`. Idempotent. */
 export async function listOrSeed(
   ctx: PropertyContext,
-  modules: SiteChromeOptions = {}
+  modules: SiteChromeOptions = {},
+  // What THIS site shows, under "What this site shows". Decides which record pages the
+  // site gets and which pages read as off here; `modules` (the account) still seeds the
+  // starter, so an author sees everything their account has.
+  siteModules: SiteChromeOptions = modules
 ): Promise<BuilderPageSummaryDto[]> {
   // The pages this read may create are pages like any other, so search is told
   // once they are committed (`page-search.ts`).
@@ -375,16 +446,24 @@ export async function listOrSeed(
       const hasHome = rows.some(isHomeRow);
       const healedHome = !hasHome && (await ensureHomeTx(tx, ctx, modules)) !== null;
       const healedStarters = await ensureStarterPagesTx(tx, ctx, modules);
-      if (healedHome || healedStarters) {
+      // A page for each content kind with a web address ("Each article"), so the owner
+      // can find and restyle the page every piece of that kind is shown on.
+      const healedKinds = siteModules.cmsEnabled ? await ensureKindPagesTx(tx, ctx) : false;
+      // The record pages ("Each product", "Each blog post") and the names the platform
+      // corrected on them — the step the other console runs on its site load.
+      const healedRecords = await ensureRecordPagesForListTx(tx, ctx, siteModules);
+      if (healedHome || healedStarters || healedKinds || healedRecords) {
         seeded = true;
         const healed = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
           select: PAGE_SUMMARY_SELECT,
           orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
         });
-        return healed.map((r) => toSummaryDto(r, modules));
+        const cores = await servedCoresTx(tx, ctx, healed, modules, siteModules);
+        return healed.map((r) => toSummaryDto(r, modules, siteModules, cores.get(r.id)));
       }
-      return rows.map((r) => toSummaryDto(r, modules));
+      const cores = await servedCoresTx(tx, ctx, rows, modules, siteModules);
+      return rows.map((r) => toSummaryDto(r, modules, siteModules, cores.get(r.id)));
     }
 
     // SILICA rows, not `STARTER_PAGES`.
@@ -594,10 +673,13 @@ export function remove(
 }
 
 async function removeWrite(ctx: PropertyContext, id: string): Promise<void> {
-  await withTenant(ctx, async (tx) => {
+  const removed = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
     await tx.builderPage.delete({ where: { id } });
+    // A starter address keeps being served by the platform with no page there; deleting
+    // the page is the owner taking the address down, so it is remembered.
+    await rememberRemovedStarterTx(tx, ctx, existing.slug);
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -608,7 +690,17 @@ async function removeWrite(ctx: PropertyContext, id: string): Promise<void> {
       entityId: id,
       diff: { before: { name: existing.name }, after: null },
     });
+    return existing;
   });
+  // The site serves a live page out of a five-minute cache; a deleted one has to leave
+  // it now, or visitors keep reading the page that is gone (persona issue 947).
+  if (removed.publishedAt || removed.silicaPublishedTree) {
+    await publishBuilderEvent({
+      tenantId: ctx.tenantId,
+      topic: 'builder.page.deleted',
+      payload: { pageId: id, name: removed.name },
+    });
+  }
 }
 
 /** Reorder the catalog. `orderedIds` must be exactly the tenant's page ids. */

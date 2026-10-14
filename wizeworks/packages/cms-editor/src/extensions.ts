@@ -65,7 +65,10 @@ export function cmsEditorExtensions(opts: CmsEditorExtensionsOptions = {}) {
       link: false,
       codeBlock: false,
     }),
-    Link.configure({
+    // A link ends where it ends. TipTap makes the mark inclusive whenever autolink is
+    // on, so a full stop typed after a link became part of it (persona P09): the
+    // underline ran on, and the sentence's punctuation went to the other page.
+    Link.extend({ inclusive: () => false }).configure({
       openOnClick: false,
       HTMLAttributes: {
         class: 'text-primary underline underline-offset-2',

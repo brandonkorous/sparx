@@ -16,9 +16,10 @@
 // surface prints it, because a list-price margin quietly mixed in with collected
 // ones is a number that misleads exactly the person relying on it.
 
-import { withTenant } from '@wizeworks/db';
+import { withTenant, type TxClient } from '@wizeworks/db';
+import { businessDayRange, businessDayStart } from '@wizeworks/time';
 
-import { endOfDayExclusive } from './rollup';
+import { businessZone } from './business-clock';
 import { ORDER_MOVEMENT_REFERENCE } from './stock-movements';
 
 export type JobType = 'order' | 'booking';
@@ -117,6 +118,22 @@ function toCents(value: { toString(): string } | null | undefined): number {
 const DEFAULT_LIMIT = 100;
 
 /**
+ * The moments a range of calendar days covers, cut on the BUSINESS's midnights.
+ *
+ * Orders and appointments are moments. Cut on UTC midnights, a sale at 7pm on
+ * Oct 31 in Denver was a November job here while Profit counted it in October
+ * (sparx persona issue 174).
+ */
+async function businessWindow(
+  tx: TxClient,
+  tenantId: string,
+  query: Pick<JobProfitQuery, 'from' | 'to'>
+): Promise<{ gte: Date; lt: Date }> {
+  const zone = await businessZone(tx, tenantId);
+  return { gte: businessDayStart(query.from, zone), lt: businessDayRange(query.to, zone).end };
+}
+
+/**
  * Rank the period's jobs by what each one made.
  *
  * Deliberately bounded: this reads per-job detail rather than a rollup, so it is
@@ -137,12 +154,13 @@ export async function jobProfitability(
       query.propertyId !== undefined && query.propertyId !== null
         ? { propertyId: query.propertyId }
         : {};
+    const period = await businessWindow(tx, tenantId, query);
 
     /* The orders in the window, with the revenue and fee they already carry. */
     const orders = wantsOrders
       ? await tx.order.findMany({
           where: {
-            placedAt: { gte: query.from, lt: endOfDayExclusive(query.to) },
+            placedAt: period,
             // A cancelled order is not a job anyone did — including it would
             // rank a row whose costs were never incurred.
             status: { notIn: ['cancelled'] },
@@ -171,7 +189,7 @@ export async function jobProfitability(
     const bookings = wantsBookings
       ? await tx.booking.findMany({
           where: {
-            startAt: { gte: query.from, lt: endOfDayExclusive(query.to) },
+            startAt: period,
             status: 'completed',
             deletedAt: null,
             ...siteFilter,
@@ -388,17 +406,17 @@ export async function openPastBookingCount(
   query: Pick<JobProfitQuery, 'from' | 'to' | 'propertyId'>,
   now: Date = new Date()
 ): Promise<number> {
-  const end = endOfDayExclusive(query.to);
-  return withTenant({ tenantId }, (tx) =>
-    tx.booking.count({
+  return withTenant({ tenantId }, async (tx) => {
+    const { gte, lt: end } = await businessWindow(tx, tenantId, query);
+    return tx.booking.count({
       where: {
-        startAt: { gte: query.from, lt: end < now ? end : now },
+        startAt: { gte, lt: end < now ? end : now },
         status: { in: ['confirmed', 'in_progress'] },
         deletedAt: null,
         ...(query.propertyId ? { propertyId: query.propertyId } : {}),
       },
-    })
-  );
+    });
+  });
 }
 
 function personName(

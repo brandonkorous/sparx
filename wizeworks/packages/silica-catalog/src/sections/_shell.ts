@@ -28,19 +28,25 @@
 
 import { el, type Node } from '@wizeworks/silicaui-html';
 
-/** The outer band: full-bleed surface, its own container context, page gutter and
- *  vertical rhythm. Everything else nests inside its measure. */
+/** The outer band: full-bleed surface, its own container context and vertical rhythm.
+ *  Everything else nests inside its measure.
+ *
+ *  THE GUTTER IS INSIDE THE MEASURE (`mx-auto max-w-6xl px-6`), the house rule since
+ *  piggles persona issue 950. It used to sit on the band, which made content 1,152px
+ *  wide where the header, the footer and every list the site draws itself are 1,104px,
+ *  so above 1,200px every page heading started 24px left of the header's name. Stored
+ *  bands drawn that way are moved by `insideMeasure` (`page-measure.ts`). */
 export function section(children: Node[]): Node {
-  return el('section', 'bg-base-100 @container px-6 py-16', {
-    children: [el('div', 'mx-auto flex w-full max-w-6xl flex-col gap-10', { children })],
+  return el('section', 'bg-base-100 @container py-16', {
+    children: [el('div', 'mx-auto flex w-full max-w-6xl px-6 flex-col gap-10', { children })],
   });
 }
 
 /** A band on the alternate surface, for a section that needs to separate from the one
- *  above it without a rule or a shadow. */
+ *  above it without a rule or a shadow. Same measure as `section()`. */
 export function sectionAlt(children: Node[]): Node {
-  return el('section', 'bg-base-200 @container px-6 py-16', {
-    children: [el('div', 'mx-auto flex w-full max-w-6xl flex-col gap-10', { children })],
+  return el('section', 'bg-base-200 @container py-16', {
+    children: [el('div', 'mx-auto flex w-full max-w-6xl px-6 flex-col gap-10', { children })],
   });
 }
 

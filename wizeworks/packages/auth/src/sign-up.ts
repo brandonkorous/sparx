@@ -229,7 +229,8 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
     // ourselves), so `sendOnSignUp` never fires; trigger it explicitly here. The
     // `emailVerification.sendVerificationEmail` callback publishes the `email.send`
     // event. Fire-and-forget: a hiccup must not roll back an otherwise good signup
-    // (the user can resend from the dashboard banner).
+    // (the owner can send a new link from the notice at the top of the console,
+    // and the link comes back to /verify-email there: sparx persona issue 157).
     try {
       await auth.api.sendVerificationEmail({
         body: { email, callbackURL: '/verify-email' },

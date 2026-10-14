@@ -36,6 +36,11 @@ export function customersSchema(
       { name: 'b2b_account_id', type: 'string', facet: true, optional: true },
       { name: 'tags', type: 'string[]', facet: true, optional: true },
       { name: 'total_spent_cents', type: 'int64', facet: false, sort: true },
+      // What their orders come to, paid or not. `total_spent_cents` is money
+      // received, so a fleet on account read "$150" over $11,285.69 of orders
+      // (sparx persona issue 223, the chat panel's issue 163 again). Optional so
+      // `ensureSchemas` adds it to the live collection on the next indexer boot.
+      { name: 'total_ordered_cents', type: 'int64', facet: false, sort: true, optional: true },
       { name: 'order_count', type: 'int32', facet: false, sort: true },
       { name: 'last_order_at', type: 'int64', facet: false, sort: true, optional: true },
       { name: 'created_at', type: 'int64', facet: false, sort: true },
@@ -59,7 +64,11 @@ export interface CustomerSearchDocument {
   lead_status?: string;
   b2b_account_id?: string;
   tags?: string[];
+  /** Money received from them, net of refunds. */
   total_spent_cents: number;
+  /** What their orders come to, net of refunds, paid or not. Absent on
+   *  documents written before it existed. */
+  total_ordered_cents?: number;
   order_count: number;
   last_order_at?: number;
   created_at: number;

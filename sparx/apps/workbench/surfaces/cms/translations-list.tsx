@@ -20,7 +20,6 @@
 
 import { useState } from 'react';
 import {
-  Button,
   Card,
   EmptyState,
   Filter,
@@ -42,6 +41,7 @@ import {
 } from './translations-data';
 import { TranslationRow } from './translation-row';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 /** The status chips ARE questions someone opens this list to answer. Each maps
  *  to a server-side filter, never a browser sieve over the loaded page. */
@@ -157,21 +157,14 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error ? (
           // A failed load REPLACES the table — "no products yet" over a
           // connection failure is a lie about their catalogue.
-          <EmptyState
+          <PaneLoadError
             icon={<Languages className="size-6" aria-hidden />}
             title="Could not load your products"
             description="This is a problem reaching the server. Nothing you have written or translated is affected: none of it has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

@@ -29,7 +29,6 @@
 import { useMemo, useState } from 'react';
 import {
   Button,
-  EmptyState,
   Join,
   NativeSelect,
   Text,
@@ -61,6 +60,7 @@ import { localDayKey, zoned } from './calendar-zone';
 import { useExceptions, useResourceWindows, useResourcesWindows } from './setup-data';
 import { TimeGrid, targetFor, type GridColumn } from './calendar-timegrid';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { resourceKindGlyph } from './resource-kind-icon';
 
 type View = 'week' | 'day';
@@ -251,7 +251,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const activeResources = useMemo(() => resources.data ?? [], [resources.data]);
 
   const range = view === 'week' ? weekWindow(anchor) : dayWindow(anchor);
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useCalendarRange({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useCalendarRange({
     ...range,
     ...(resourceId ? { resourceId } : {}),
   });
@@ -291,22 +291,14 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<CalendarOff className="size-6" aria-hidden />}
           title="Could not load your diary"
           description="This is a problem reaching the server. Nothing in your diary has changed: the bookings just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              variant="soft"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
         />
       );
     }

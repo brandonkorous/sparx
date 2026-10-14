@@ -9,6 +9,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDirtySource } from '../../lib/workbench/dirty';
+import { useReaderClock } from '../../lib/business-timezone';
+import { futureInstant, wallClockToIso } from '../../lib/publish-clock';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   useAudiences,
@@ -105,13 +107,29 @@ function useComposerLists() {
   return { audiences, designed, settings, lists };
 }
 
-/** Send now, or at a chosen time in the future. */
+/** Send now, or at a chosen time in the future.
+ *
+ *  The box is read on the business's clock, or this computer's when it has none,
+ *  and "in the future" is asked of the instant that gives. `new Date(box)` read
+ *  it on this computer's clock, so a London newsletter scheduled from a laptop
+ *  in California went out eight hours late (Piggles persona issue 984). */
 function useComposerSchedule() {
   const [timing, setTiming] = useState<'now' | 'schedule'>('now');
   const [scheduledAt, setScheduledAt] = useState<string>('');
-  const scheduleValid =
-    timing === 'now' || (scheduledAt !== '' && new Date(scheduledAt) > new Date());
-  return { timing, setTiming, scheduledAt, setScheduledAt, scheduleValid };
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
+  const scheduledIso = wallClockToIso(scheduledAt, clock);
+  const scheduleValid = timing === 'now' || futureInstant(scheduledAt, clock) !== null;
+  return {
+    timing,
+    setTiming,
+    scheduledAt,
+    setScheduledAt,
+    scheduleValid,
+    scheduledIso,
+    clock,
+    reader,
+  };
 }
 
 type Lists = ReturnType<typeof useComposerLists>;
@@ -174,7 +192,8 @@ export function useBroadcastComposer(ctx: SurfaceContext, broadcast: Broadcast |
     committing: state.committing,
     senderLine: senderDisplay(lists.settings.data),
     recipientCount,
-    scheduledAt: schedule.scheduledAt,
+    scheduledIso: schedule.scheduledIso,
+    clock: schedule.clock,
   });
 
   const toolbar: ComposeToolbarProps = {

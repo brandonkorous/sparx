@@ -56,9 +56,15 @@ export function createPostalProvider(config: PostalConfig): EmailProvider {
           html_body: email.html,
           plain_body: email.text,
           tag: email.templateId,
-          headers: email.tags
-            ? Object.fromEntries(Object.entries(email.tags).map(([k, v]) => [`x-sparx-${k}`, v]))
-            : undefined,
+          headers:
+            email.tags || email.headers
+              ? {
+                  ...Object.fromEntries(
+                    Object.entries(email.tags ?? {}).map(([k, v]) => [`x-sparx-${k}`, v])
+                  ),
+                  ...email.headers,
+                }
+              : undefined,
         }),
       });
 

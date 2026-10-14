@@ -15,14 +15,43 @@ import {
   UpdateDocumentWorkflowInput,
 } from '@wizeworks/crm-schemas';
 import { DEFAULT_DOCUMENT_WORKFLOWS, isSystemWorkflowSlug } from '@wizeworks/crm-schemas/builtins';
-import { withTenant } from '@wizeworks/db';
-import type { DocumentStage, DocumentWorkflow, Prisma } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
+import type { DocumentStage, DocumentWorkflow, Prisma, TxClient } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 
 type WorkflowWithStages = DocumentWorkflow & { stages: DocumentStage[] };
+
+/** Re-read a workflow into search once the write commits: its name, whether it is the
+ *  default and whether it is archived are what the entry shows, and its steps are
+ *  part of what it can be found by. */
+function reindexWorkflow(ctx: ServiceContext, id: string): Promise<void> {
+  return afterCommit('index document_workflow', () =>
+    indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'document_workflow',
+      recordId: id,
+    })
+  );
+}
+
+/** Stand down the current default(s), and tell search they are no longer it. */
+async function clearDefault(tx: TxClient, ctx: ServiceContext, exceptId?: string): Promise<void> {
+  const demoted = await tx.documentWorkflow.findMany({
+    where: { isDefault: true, ...(exceptId ? { id: { not: exceptId } } : {}) },
+    select: { id: true },
+  });
+  if (demoted.length === 0) return;
+  await tx.documentWorkflow.updateMany({
+    where: { id: { in: demoted.map((d) => d.id) } },
+    data: { isDefault: false },
+  });
+  for (const d of demoted) await reindexWorkflow(ctx, d.id);
+}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Workflows
@@ -172,12 +201,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
   return withTenant(ctx, async (tx) => {
     // Only one default per tenant — clearing here keeps the invariant even if
     // two workflows are created with isDefault in the same session.
-    if (input.isDefault) {
-      await tx.documentWorkflow.updateMany({
-        where: { isDefault: true },
-        data: { isDefault: false },
-      });
-    }
+    if (input.isDefault) await clearDefault(tx, ctx);
     const created = await tx.documentWorkflow.create({
       data: {
         tenantId: ctx.tenantId,
@@ -197,6 +221,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
       entityId: created.id,
       diff: { after: { name: created.name, slug: created.slug } },
     });
+    await reindexWorkflow(ctx, created.id);
     return created;
   });
 }
@@ -226,12 +251,7 @@ export async function update(
         [{ field: 'slug', message: 'This reference name cannot be changed.' }]
       );
     }
-    if (input.isDefault) {
-      await tx.documentWorkflow.updateMany({
-        where: { isDefault: true, id: { not: workflowId } },
-        data: { isDefault: false },
-      });
-    }
+    if (input.isDefault) await clearDefault(tx, ctx, workflowId);
     const updated = await tx.documentWorkflow.update({
       where: { id: workflowId },
       data: {
@@ -251,6 +271,7 @@ export async function update(
       entityId: updated.id,
       diff: null,
     });
+    await reindexWorkflow(ctx, updated.id);
     return updated;
   });
 }
@@ -273,6 +294,7 @@ export async function archive(ctx: ServiceContext, workflowId: string): Promise<
       entityId: updated.id,
       diff: null,
     });
+    await reindexWorkflow(ctx, updated.id);
     return updated;
   });
 }
@@ -310,6 +332,7 @@ export async function restore(ctx: ServiceContext, workflowId: string): Promise<
       entityId: updated.id,
       diff: null,
     });
+    await reindexWorkflow(ctx, updated.id);
     return updated;
   });
 }
@@ -352,6 +375,7 @@ export async function createStage(
       entityId: created.id,
       diff: { after: { name: created.name } },
     });
+    await reindexWorkflow(ctx, workflowId);
     return created;
   });
 }
@@ -389,6 +413,7 @@ export async function updateStage(
       entityId: updated.id,
       diff: null,
     });
+    await reindexWorkflow(ctx, updated.workflowId);
     return updated;
   });
 }
@@ -408,6 +433,7 @@ export async function deleteStage(ctx: ServiceContext, stageId: string): Promise
       entityId: stageId,
       diff: { before: { name: before.name } },
     });
+    await reindexWorkflow(ctx, before.workflowId);
     return { id: stageId };
   });
 }
@@ -446,6 +472,7 @@ export async function reorderStages(
       entityId: workflowId,
       diff: { after: { stageOrder: input.stageIds } },
     });
+    await reindexWorkflow(ctx, workflowId);
     return tx.documentStage.findMany({ where: { workflowId }, orderBy: { sortOrder: 'asc' } });
   });
 }
@@ -504,6 +531,7 @@ export async function bootstrapDefaultWorkflows(
         entityId: workflow.id,
         diff: { after: { slug: workflow.slug } },
       });
+      await reindexWorkflow(ctx, workflow.id);
       result.push(workflow);
     }
     return result;

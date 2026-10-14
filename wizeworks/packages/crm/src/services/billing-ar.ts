@@ -44,7 +44,8 @@ export interface PaymentRow {
 
 /** Aggregate payment rows into the document's cached money fields. A `refund`
  *  reduces amountPaid; a `deposit` counts toward both amountPaid and the deposit
- *  subtotal; anything else is treated as a regular payment. */
+ *  subtotal; anything else (a payment, or a `credit` taken off) settles the
+ *  balance like a regular payment. */
 export function aggregatePayments(rows: PaymentRow[]): {
   amountPaid: number;
   depositTotal: number;

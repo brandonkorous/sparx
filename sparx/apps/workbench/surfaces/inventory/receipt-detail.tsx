@@ -48,6 +48,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { loadFailureWords } from '../../lib/api-error';
 import { useConfirm } from '../../lib/confirm';
 import { ClipboardList, Coins, PackageCheck, PackageX, Plus, Printer, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -468,7 +469,10 @@ function BookDelivery({
                 <AlertDescription>
                   {isNotFound(poDetail.error)
                     ? 'The order could not be found. It may have been canceled.'
-                    : 'This is a problem reaching the server. Try again.'}
+                    : loadFailureWords(
+                        poDetail.error,
+                        'This is a problem reaching the server. Try again.'
+                      )}
                 </AlertDescription>
               </AlertContent>
             </Alert>

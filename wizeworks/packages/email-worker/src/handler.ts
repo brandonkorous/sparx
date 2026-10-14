@@ -27,7 +27,12 @@ import {
   renderTemplate,
   senderDomainOf,
 } from '@wizeworks/email';
-import { analyticsService, brandService, domainService } from '@wizeworks/email-platform';
+import {
+  analyticsService,
+  brandService,
+  domainService,
+  settingsService,
+} from '@wizeworks/email-platform';
 import { appOrigin } from '@wizeworks/links/server';
 import {
   platformBrandIdentity,
@@ -40,6 +45,7 @@ import {
 // The delivery gate lives in its own module — see the header there for why,
 // and for the four templates it silently dropped before it had a test.
 import { TemplateSendSchema, Variables } from './template-schema.js';
+import { asTheBusiness } from './send-as.js';
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and
 // authored-template sends. The body is already HTML/text; the worker delivers
@@ -58,6 +64,11 @@ const RawSendSchema = z.object({
   // is already branded (rendered at dispatch); this only rides along so the
   // worker stamps property_id for per-site analytics attribution.
   propertyId: z.string().nullable().optional(),
+  // A campaign's List-Unsubscribe pair. This schema had no such field, so zod
+  // stripped the headers from every campaign and no mail app ever offered its own
+  // Unsubscribe button (piggles persona issue 985). A header name is a token and a
+  // value is one line, so nothing in the bag can start a second header.
+  headers: z.record(z.string().regex(/^[A-Za-z0-9-]+$/), z.string().regex(/^[^\r\n]*$/)).optional(),
 });
 
 const EmailSendEvent = z.object({
@@ -218,6 +229,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
         html: data.html,
         text: data.text,
         templateId: data.templateId,
+        ...(data.headers ? { headers: data.headers } : {}),
       };
     } else {
       // Resolve the email brand so transactional mail renders in the right
@@ -235,7 +247,18 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
       } catch (brandErr) {
         childLog.warn({ err: brandErr }, 'brand resolution failed: rendering with defaults');
       }
-      rendered = await renderTemplate(data, {
+      // From the business, when the send asks and did not say who itself.
+      const input =
+        data.sendAs === 'tenant' && !data.from
+          ? asTheBusiness(
+              data,
+              await settingsService.senderHeaders(
+                { tenantId: event.tenantId },
+                data.propertyId ?? null
+              )
+            )
+          : data;
+      rendered = await renderTemplate(input, {
         // The tenant's brand when they have one, but the PLATFORM overlay either
         // way — see `platformOverlay`.
         brand: brand

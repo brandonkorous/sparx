@@ -26,6 +26,7 @@ import {
   actionLink,
   button,
   calloutCard,
+  contentCards,
   copyBlock,
   detailPanel,
   heading,
@@ -79,3 +80,27 @@ export const EMAIL_CONTENT_BLOCKS: EmailPaletteItem[] = [
     ])
   ),
 ];
+
+/**
+ * One "Latest …" block per kind of writing the business publishes: a card for each of its
+ * newest pieces, picture beside headline and summary, each linking to the piece. Built
+ * from the business's own kinds (`{ ref: 'cms.article', label: 'Articles' }`), so a journal
+ * is offered "Latest Articles" and a bakery with a blog "Latest Blog Posts". Before this
+ * the designer had no way to put a published piece into an email except retyping it
+ * (Piggles persona P09).
+ */
+export function writingBlocks(
+  kinds: readonly { ref: string; label: string }[]
+): EmailPaletteItem[] {
+  return kinds
+    .filter((kind) => /^cms\.[a-z0-9_]+$/.test(kind.ref))
+    .map((kind) =>
+      block(
+        `latest-${kind.ref.slice('cms.'.length)}`,
+        `Latest ${kind.label}`,
+        `A card for each of your newest ${kind.label}: picture, headline and summary, each linking to it`,
+        'stack',
+        () => contentCards(kind.ref)
+      )
+    );
+}

@@ -198,7 +198,8 @@ export function useRecordSearch(query: string, pages = 1): RecordSearchResult {
           key: `order:${o.order_id}`,
           entityType: 'order',
           recordId: o.order_id,
-          title: `#${o.order_number}`,
+          // The number as it is: it carries its own letters (sparx persona issue 195).
+          title: o.order_number,
           subtitle: line.length > 0 ? line : undefined,
         });
       }

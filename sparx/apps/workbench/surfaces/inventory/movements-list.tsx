@@ -54,6 +54,7 @@ import {
 } from './movements-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { DayInput } from '../../components/day-input';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -135,7 +136,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
   const locationName = activeLocations.find((location) => location.id === locationId)?.name ?? null;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useMovements({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = useMovements({
     q: search.trim(),
     ...(locationId ? { warehouseId: locationId } : {}),
     ...(reason ? { reason } : {}),
@@ -184,10 +185,11 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
     // as "nothing has ever moved", which is a far bigger claim than the truth.
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<History className="size-6" aria-hidden />}
           title="Could not load the history"
           description="This is a problem reaching the server. Your records are unaffected. They just could not be read just now."
+          error={error}
         />
       );
     }

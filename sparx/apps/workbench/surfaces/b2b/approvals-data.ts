@@ -38,6 +38,9 @@ export interface QueueItem {
   companyName: string | null;
   /** Why it is waiting. Empty on an order held before reasons were kept. */
   holdReasons: QueueHoldReason[];
+  /** What the account has left to spend today, in cents; null when no limit is
+   *  set (sparx persona issue 188). Absent from an older api-rest. */
+  accountCreditLeftCents?: number | null;
   /** Who it is waiting on: the business's team, the account's own approvers,
    *  or both, and who has already signed (sparx persona issue 087). */
   signOff: SignOff;

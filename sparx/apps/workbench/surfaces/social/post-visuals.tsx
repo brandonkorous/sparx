@@ -34,32 +34,13 @@ export function excerpt(body: string, max = 120): string {
   return first || 'Untitled post';
 }
 
-export function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
+// How a post's time READS (on whose clock, under which day) lives in social-clock.ts,
+// where it is tested (piggles persona issue 990).
 
-/** Just the clock part, for a calendar chip where the day is already implied. */
-export function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-}
-
-/** The one date that matters for a post, plus a verb — the line under its words. */
-export function whenLine(post: Post): string {
-  if (post.publishedAt) return `Posted ${formatWhen(post.publishedAt)}`;
-  if (post.scheduledAt) return `Goes out ${formatWhen(post.scheduledAt)}`;
-  return `Saved ${formatWhen(post.createdAt)}`;
-}
-
-/** The date a post lives on in a calendar — when it went out, else when it is due.
+/** The moment a post lives on in a calendar: when it went out, else when it is due.
  *  A draft has neither and belongs in the unscheduled tray, not on a day. */
-export function postDate(post: Post): Date | null {
-  const iso = post.publishedAt ?? post.scheduledAt;
-  return iso ? new Date(iso) : null;
+export function postInstant(post: Post): string | null {
+  return post.publishedAt ?? post.scheduledAt;
 }
 
 /* ── Resolving the lead picture for a set of posts ────────────────────────── */

@@ -117,3 +117,32 @@ export function appendEmailSlot(root: EmailNode, node: EmailNode): EmailDropTarg
   }
   return undefined;
 }
+
+/**
+ * Where a CLICKED palette row lands, given what is selected.
+ *
+ * INSIDE the selection when the selection can hold the block, at its end; otherwise
+ * beside it, climbing outward, exactly as a drop does. Nothing selected is the end of
+ * the email (`appendEmailSlot`).
+ *
+ * Beside-only was the old rule, and it refused the commonest act there is. An author
+ * adds a Section, it is selected, and she clicks Text: beside a section is the email
+ * body, which holds only sections, and nothing above the body exists, so the click
+ * was refused with "It needs to sit inside a section. Add a section first, or pick
+ * one in your email, then add this to it." She had done both (piggles persona issue
+ * 988). Picking a section, or a column, and clicking a block now adds it TO that
+ * section, which is what the sentence always promised. A block that cannot sit inside
+ * the selection (a Section with a section picked) still lands after it.
+ */
+export function clickedEmailSlot(
+  root: EmailNode,
+  anchorId: string | undefined,
+  node: EmailNode
+): EmailDropTarget | undefined {
+  if (!anchorId) return appendEmailSlot(root, node);
+  const anchor = findEmailNode(root, anchorId);
+  if (anchor && isEmailContainer(anchor) && canHold(anchor, node)) {
+    return { parentId: anchor.id, index: emailChildren(anchor).length };
+  }
+  return resolveEmailDrop(root, { targetId: anchorId, position: 'after' }, node);
+}

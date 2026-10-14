@@ -16,7 +16,6 @@
 import { useMemo, useState } from 'react';
 import {
   Badge,
-  Button,
   EmptyState,
   Heading,
   Select,
@@ -31,6 +30,7 @@ import {
 import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import { ConversionFunnelReport } from './conversion-funnel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -40,7 +40,6 @@ import {
   formatCents,
   formatCentsRounded,
   presetRange,
-  reportsErrorMessage,
   useChannelBreakdown,
   useConversionFunnel,
   useRevenueSummary,
@@ -169,18 +168,12 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {summary.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load your reports"
-              description={reportsErrorMessage(
-                summary.error,
-                'This is a problem reaching the server. Try again in a moment.'
-              )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Try again in a moment."
+              error={summary.error}
+              onRetry={refetchAll}
             />
           ) : summary.isPending || !data ? (
             <p className="text-sm" role="status">
@@ -193,7 +186,8 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                   {RANGE_LABEL[preset]}
                 </Heading>
                 <Text className="text-sm">
-                  Figures cover {data.rangeLabel}. Money is what customers paid, after any refunds.
+                  Figures cover {data.rangeLabel}. Revenue is what your orders sold after refunds,
+                  paid or still owed; sales tax and core deposits are left out.
                 </Text>
               </div>
 
@@ -226,8 +220,8 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                   {(data.coreDepositsHeldCents ?? 0) > 0 ? (
                     <Text className="text-sm">
                       {formatCents(data.coreDepositsHeldCents ?? 0, currency)} in core deposits is
-                      still waiting on old parts to come back. It is the customers&rsquo; money
-                      until then, so it is not counted in the revenue above.
+                      still waiting on old parts to come back. It is the customers’ money until
+                      then, so it is not counted in the revenue above.
                     </Text>
                   ) : null}
                   {data.refundedCents > 0 ? (

@@ -27,6 +27,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { PlusCircle, ShieldCheck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './data';
@@ -53,10 +54,11 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (rules.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ShieldCheck className="size-6" aria-hidden />}
           title="Could not load your spending limits"
           description="This is a problem reaching the server, not a statement that you have none. Try again in a moment."
+          error={rules.error}
         />
       );
     }

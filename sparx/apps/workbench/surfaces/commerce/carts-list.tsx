@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
 import { ShoppingCart } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -112,10 +113,11 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<ShoppingCart className="size-6" aria-hidden />}
             title="Could not load your carts"
             description="This is a problem reaching the server. Your carts are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

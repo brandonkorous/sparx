@@ -54,6 +54,7 @@ import {
   paymentComesFirst,
 } from '@/lib/order-status-words';
 import { signedSentences, signOffWaitingSentence } from '@/lib/sign-off-words';
+import { handoverSteps } from '../lib/order-handover';
 
 // The status words and tones live in `lib/order-status-words`, where they are
 // tested; re-exported here for the pages that already import them from this file.
@@ -103,7 +104,7 @@ function formatStamp(iso: string): string {
  *  the service. The shared helper returns '' for absent, which this `filter`
  *  already knows what to do with. */
 function ShipmentLine({ fulfillment }: { fulfillment: OrderFulfillmentView }): ReactNode {
-  const label = [carrierLabel(fulfillment.carrier), fulfillment.service]
+  const label = [carrierLabel(fulfillment.carrier, fulfillment.carrierOther), fulfillment.service]
     .filter(Boolean)
     .join(' · ');
   return (
@@ -194,40 +195,39 @@ function buildTimeline(
   };
   if (paidFirst) steps.push(payment);
 
-  const shippedComplete = Boolean(order.fulfilledAt);
-  const deliveredComplete = Boolean(order.deliveredAt);
-
-  // On a live order, show the road ahead (shipped/delivered as upcoming). On a
-  // terminal (cancelled/refunded) order, only show stages actually reached.
-  if (!terminal || shippedComplete) {
-    steps.push({
-      key: 'shipped',
-      label: 'On its way',
-      at: order.fulfilledAt,
-      complete: shippedComplete,
-      icon: <Truck size={16} aria-hidden />,
-      detail:
-        shippedComplete && shipments.length > 0 ? (
-          <>
-            {shipments.map((f) => (
-              <ShipmentLine key={f.id} fulfillment={f} />
-            ))}
-          </>
-        ) : undefined,
-    });
-  }
-  if (!terminal || deliveredComplete) {
-    steps.push({
-      key: 'delivered',
-      label: 'Delivered',
-      at: order.deliveredAt,
-      complete: deliveredComplete,
-      icon: deliveredComplete ? (
-        <CheckCircle2 size={16} aria-hidden />
-      ) : (
-        <Package size={16} aria-hidden />
-      ),
-    });
+  // How it reaches them: "On its way" then "Delivered", or one "Collected" for an
+  // order they took at the counter or came to fetch (sparx persona issue 177). On
+  // a live order the road ahead shows as upcoming; on a terminal (cancelled or
+  // refunded) one only the stages actually reached.
+  for (const handover of handoverSteps(
+    { ...order, partlyShipped: shipments.length > 0 },
+    terminal !== null
+  )) {
+    if (handover.key === 'shipped') {
+      steps.push({
+        ...handover,
+        icon: <Truck size={16} aria-hidden />,
+        // Every shipment that has left, under the step, whether or not the rest
+        // has (sparx persona issue 218).
+        detail:
+          shipments.length > 0 ? (
+            <>
+              {shipments.map((f) => (
+                <ShipmentLine key={f.id} fulfillment={f} />
+              ))}
+            </>
+          ) : undefined,
+      });
+    } else {
+      steps.push({
+        ...handover,
+        icon: handover.complete ? (
+          <CheckCircle2 size={16} aria-hidden />
+        ) : (
+          <Package size={16} aria-hidden />
+        ),
+      });
+    }
   }
 
   // Paid later: the last thing to happen to a live order. A canceled or

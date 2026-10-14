@@ -1,12 +1,12 @@
 'use client';
 
-// The three kinds of nothing on the locations list: the server could not be
-// reached, it is still loading, and there are genuinely none — which itself
-// splits by whether a filter is doing the emptying.
+// The three kinds of nothing on the locations list: the load failed, it is still
+// loading, and there are genuinely none, which splits by whether a filter is narrowing.
 
-import { Button, EmptyState } from '@wizeworks/silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { faPlus, faWarehouse } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { ListEmptyState } from '../../components/list-empty-state';
 
@@ -20,52 +20,26 @@ function firstRunDescription(includeClosed: boolean): string {
     : `${base} If you have closed a location before, switch on “Show closed” to see it.`;
 }
 
-export function LocationsListEmpty({
-  module,
-  isError,
-  isPending,
-  narrowed,
-  advice,
-  includeClosed,
-  onRetry,
-  onNew,
-}: {
+interface LocationsListEmptyProps {
   module: string;
   isError: boolean;
+  error: unknown;
   isPending: boolean;
   narrowed: boolean;
   advice: string;
   includeClosed: boolean;
   onRetry: () => void;
   onNew: () => void;
-}) {
-  // A failed load REPLACES the grid — never an empty grid under live filters,
-  // which invites someone to conclude they have no locations.
-  if (isError) {
-    return (
-      <EmptyState
-        icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
-        title="Could not load your locations"
-        description="This is a problem reaching the server. Your locations are unaffected: the list just could not be read just now."
-        actions={
-          <Button
-            size="sm"
-            color="module"
-            onClick={() => {
-              onRetry();
-            }}
-          >
-            Try again
-          </Button>
-        }
-      />
-    );
-  }
+}
 
-  if (isPending) {
-    return <PaneWaiting label="Loading locations…" />;
-  }
-
+/** Genuinely none, split by whether a filter is doing the emptying. */
+function LocationsNone({
+  module,
+  narrowed,
+  advice,
+  includeClosed,
+  onNew,
+}: LocationsListEmptyProps) {
   return (
     <ListEmptyState
       module={module}
@@ -93,4 +67,30 @@ export function LocationsListEmpty({
       }}
     />
   );
+}
+
+export function LocationsListEmpty(props: LocationsListEmptyProps) {
+  const { module, isError, error, isPending, onRetry } = props;
+  // A failed load REPLACES the grid — never an empty grid under live filters,
+  // which invites someone to conclude they have no locations.
+  if (isError) {
+    return (
+      <PaneLoadError
+        module={module}
+        icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
+        title="Could not load your locations"
+        description="This is a problem reaching the server. Your locations are unaffected: the list just could not be read just now."
+        error={error}
+        onRetry={() => {
+          onRetry();
+        }}
+      />
+    );
+  }
+
+  if (isPending) {
+    return <PaneWaiting label="Loading locations…" />;
+  }
+
+  return <LocationsNone {...props} />;
 }

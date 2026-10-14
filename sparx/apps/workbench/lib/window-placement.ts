@@ -104,6 +104,76 @@ export function fillBox(view: FloatViewport): FloatBox {
   return { x: view.scrollLeft, y: view.scrollTop, width: view.width, height: view.height };
 }
 
+/** How far a measured box may sit from the one it was given and still be it:
+ *  dockview's frame border and the rounding in `boxOf`. */
+const FILL_SLACK = 4;
+
+/** A window that covers everything you can see. As far as the screen can tell,
+ *  that is a filled window. Not "starts at the visible corner": a window too big
+ *  for the screen gives the workspace scroll bars, the scroll is saved, and the
+ *  reload Doty made came back 17px down a workspace his chat had overflowed. */
+export function coversView(box: FloatBox, view: FloatViewport): boolean {
+  return (
+    box.x <= view.scrollLeft + FILL_SLACK &&
+    box.y <= view.scrollTop + FILL_SLACK &&
+    box.x + box.width >= view.scrollLeft + view.width - FILL_SLACK &&
+    box.y + box.height >= view.scrollTop + view.height - FILL_SLACK
+  );
+}
+
+/**
+ * The windows to fill the screen again, now that the screen is a different size.
+ *
+ * A filled window was sized to the screen ONCE, at the moment it was filled. A
+ * banner that appeared above the workspace, a smaller browser window, or a reload
+ * on another screen left it at the old size, and Doty's chat ran off the bottom
+ * with its Send button out of sight (sparx persona issue 167). So: every window
+ * filled this session, and any window that covers the whole screen from its corner
+ * (which is what a filled window restored from a saved layout looks like, since
+ * which ones were filled is not saved). One already filling it exactly is left
+ * alone, so this is safe to run on every resize.
+ */
+export function windowsToRefill(
+  windows: readonly { id: string; box: FloatBox }[],
+  filled: ReadonlySet<string>,
+  view: FloatViewport
+): { ids: string[]; box: FloatBox } {
+  const target = fillBox(view);
+  if (view.width <= 0 || view.height <= 0) return { ids: [], box: target };
+  const filling = windows.filter((window) => filled.has(window.id) || coversView(window.box, view));
+  const others = windows.filter((window) => !filling.includes(window)).map((w) => w.box);
+  const box = fillBox(refillView(others, view));
+  return {
+    ids: filling.filter((window) => !nearBox(window.box, box)).map((window) => window.id),
+    box,
+  };
+}
+
+/**
+ * The screen to fill, given the windows that are NOT being filled.
+ *
+ * Filled where the workspace was scrolled to, Doty's chat kept the scroll bars
+ * its own overflow had caused, and scrolling up moved it 17px down the screen. So
+ * when every other window sits inside the unscrolled screen, the scroll was only
+ * ever the filled window's, and it fills the screen from the top. When something
+ * else is out on the desk, the scroll is somebody's arrangement and is kept.
+ */
+export function refillView(others: readonly FloatBox[], view: FloatViewport): FloatViewport {
+  const inside = others.every(
+    (box) => box.x + box.width <= view.width && box.y + box.height <= view.height
+  );
+  return inside ? { ...view, scrollLeft: 0, scrollTop: 0 } : view;
+}
+
+function nearBox(a: FloatBox, b: FloatBox): boolean {
+  return (
+    Math.abs(a.x - b.x) <= FILL_SLACK &&
+    Math.abs(a.y - b.y) <= FILL_SLACK &&
+    Math.abs(a.width - b.width) <= FILL_SLACK &&
+    Math.abs(a.height - b.height) <= FILL_SLACK
+  );
+}
+
 /** Where the `index`-th window of a cascade goes, in canvas coordinates. */
 export function cascadeBox(view: FloatViewport, index: number): FloatBox {
   const area = frame(view);

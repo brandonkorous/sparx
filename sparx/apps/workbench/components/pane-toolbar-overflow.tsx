@@ -15,7 +15,7 @@
 //   • A bar and a menu carry meaning differently. In a bar, POSITION does the
 //     work — refresh is always right-most — and a tooltip covers the rest. A
 //     menu has no position to read and no hover on a touch screen, so an
-//     unlabelled glyph is a button with no meaning. Those two controls now take
+//     unlabeled glyph is a button with no meaning. Those two controls now take
 //     `presentation="menu"` and wear their labels.
 //   • Two different KINDS of thing were in one undifferentiated stack. What you
 //     are looking at (filters, sorts) and what you can DO (refresh, copy a link)
@@ -65,6 +65,11 @@ interface PaneToolbarOverflowProps {
   label: string;
 }
 
+/** Controls that work INSIDE the menu: pickers, toggles, chips and anything that
+ *  opens a menu of its own. Pressing one leaves the panel open (issue 254). */
+const KEEPS_MENU_OPEN =
+  '[aria-haspopup],[aria-pressed],[aria-expanded],[role=combobox],[role=switch],[role=checkbox],[role=radio],[role=tab],[role=option],[data-keeps-menu-open]';
+
 export function PaneToolbarOverflow({
   controls,
   actions,
@@ -74,6 +79,18 @@ export function PaneToolbarOverflow({
   const titleId = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const [module, setModule] = useState<string | null>(null);
+  // Controlled so that choosing an action closes it: left open, it sat on top of
+  // the confirm box the action had just opened (persona issue 254).
+  const [open, setOpen] = useState(false);
+  // Any plain button pressed in the panel is an action, wherever the screen put
+  // it: "Place order" and "Cancel" live in the controls zone. Captured, so the
+  // menu is closing while the button's own click runs. Only a button IN this
+  // panel counts: a nested menu (Views) portals its rows elsewhere in the DOM.
+  const closeOnAction = (event: React.MouseEvent<HTMLElement>) => {
+    const button = (event.target as Element).closest('button');
+    if (!button || button.disabled || button.matches(KEEPS_MENU_OPEN)) return;
+    if (event.currentTarget.contains(button)) setOpen(false);
+  };
 
   // THE HUE DOES NOT SURVIVE THE PORTAL. `--color-module` is set by a
   // `data-module` attribute and CSS custom properties cascade by DOM, not by
@@ -91,7 +108,13 @@ export function PaneToolbarOverflow({
   };
 
   return (
-    <Popover onOpenChange={carryHue}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        carryHue(next);
+        setOpen(next);
+      }}
+    >
       <Tooltip
         // Right-most control on the bar, so a centred tooltip hangs off the pane
         // edge — same reasoning as RefreshButton.
@@ -138,6 +161,7 @@ export function PaneToolbarOverflow({
         // most of why the first version looked like loose buttons rather than a
         // panel. A floating surface has to state its own ground.
         className="bg-base-100 @container w-[min(20rem,calc(100vw-2rem))] p-0 shadow-lg"
+        onClickCapture={closeOnAction}
       >
         {/* A real heading, not `sr-only`. It is what turns a stack of controls
             into a panel that says what it is for — and it is free, because every

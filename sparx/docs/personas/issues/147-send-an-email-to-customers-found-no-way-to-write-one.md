@@ -1,12 +1,12 @@
 # 147 — "Send an email to customers" found no way to write one
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P01 · Gillett Diesel Service · act 10 (one email to the fleets)
 **Surface:** workbench › Search everything; Email › Broadcasts
 **Filed:** 2026-10-06
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-06
+**Confirmed by:** P01 on screen, 2026-10-08
 **Blocked on:** —
 
 ## What happened
@@ -45,7 +45,7 @@ Tests, proved red:
 
 ## Confirmed by
 
-Not yet on screen: the browser lost its tabs while the console recompiled. Tests only so far.
+P01 on screen, 2026-10-08, as Doty. Search everything, "send an email to customers": the first two rows are "Broadcasts" and "Write an email", under Email. "Write an email" opened the composer in a tab titled "New email".
 
 ## Rating effect
 

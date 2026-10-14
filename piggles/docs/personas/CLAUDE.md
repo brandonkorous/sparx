@@ -340,6 +340,20 @@ Two things to hold on to:
   reporting that an email was sent because a screen said so — that exact false
   report is issue 368.
 
+**Every email is also a file (issue [980](issues/980-dev-email-could-only-be-read-in-a-terminal.md)).**
+The console provider writes each send, from whichever process sent it, to
+`.dev-outbox/` at the repo root: a `.json` (to, subject, text, html, and its
+`links`) and an `.html` to open in a browser. Read it with:
+
+```
+pnpm dev:mail                  # the 10 newest, with their links
+pnpm dev:mail rosalind         # only those to an address containing "rosalind"
+pnpm dev:mail rosalind --last  # just the newest one's first link, to open
+```
+
+So a confirm link, an invite, a reset or a newsletter is opened by its link,
+not copied out of a terminal you cannot see. Nothing in production writes it.
+
 1. Read the persona file top to bottom before touching anything.
 2. Set `Status: in progress` and stamp the date in **Run log**.
 3. Work the acts in order. Each act names its jobs and what "done" means.
@@ -368,8 +382,7 @@ the whole point is a business starting from nothing.
 | Password | `Piggles-Test-2026!` for every persona (local docker only) |
 | Business | exactly the name in the persona file, apostrophes included |
 
-Dev email is delivered and rendered — read it in the event-worker's terminal
-(see above). The token is also in `verifications` if you would rather take it
+Dev email is delivered and rendered — open it with `pnpm dev:mail` (see above). The token is also in `verifications` if you would rather take it
 from there; either way, record which you did.
 
 ### Where things run

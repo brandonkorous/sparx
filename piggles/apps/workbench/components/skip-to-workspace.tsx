@@ -24,24 +24,9 @@
 
 import { Button } from '@wizeworks/silicaui-react';
 
-/** The dock that holds every open pane — what the control focuses, and what
- *  `DesktopShell` puts on its `<main>`. */
-export const WORKSPACE_ID = 'workspace';
+import { focusActivePane } from './pane-focus';
 
-/** Dockview's own marker for the focused group, and the body inside it. */
-const ACTIVE_PANE_BODY = '.dv-active-group .dv-content-container';
-
-/** Move focus to the pane in front, else to the workspace itself. Exported so a
- *  test can drive it without a dock. */
-export function focusActivePane(): void {
-  const body = document.querySelector<HTMLElement>(ACTIVE_PANE_BODY);
-  const target = body ?? document.getElementById(WORKSPACE_ID);
-  if (!target) return;
-  // A pane body is a plain container, so it takes focus only if told it may.
-  // -1 keeps it out of the Tab order, where it would be one more stop.
-  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
-  target.focus();
-}
+export { WORKSPACE_ID, focusActivePane } from './pane-focus';
 
 export function SkipToWorkspace() {
   return (

@@ -29,6 +29,8 @@ export interface CreatableSurface {
   module: string;
   createSurface?: string;
   createParams?: SurfaceParams;
+  /** Only an owner or an admin can make one (sparx persona issue 168). */
+  createManagersOnly?: boolean;
   /** The screen's own search words, which its `+` answers to as well. */
   keywords?: readonly string[];
 }
@@ -52,7 +54,8 @@ export interface CreateAction<S extends CreatableSurface = CreatableSurface> {
 export function createActions<S extends CreatableSurface>(
   surfaces: readonly S[],
   labelFor: (surface: S) => string | undefined,
-  titleFor: (surface: S) => string
+  titleFor: (surface: S) => string,
+  viewer: { canManage: boolean } = { canManage: true }
 ): CreateAction<S>[] {
   const seen = new Set<string>();
   const screens = new Set(
@@ -62,6 +65,8 @@ export function createActions<S extends CreatableSurface>(
   for (const surface of surfaces) {
     const createSurface = surface.createSurface;
     if (!createSurface) continue;
+    // A `+` the server would refuse this person is not offered to them.
+    if (surface.createManagersOnly && !viewer.canManage) continue;
     const label = labelFor(surface)?.trim();
     if (!label) continue;
     if (screens.has(`${label}\u0000${createSurface}`)) continue;

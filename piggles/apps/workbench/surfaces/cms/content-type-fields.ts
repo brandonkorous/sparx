@@ -47,6 +47,7 @@ export type DraftField =
   | (DraftBase & { type: 'email' })
   | (DraftBase & { type: 'reference'; to: string; multiple?: boolean; min?: number; max?: number })
   | (DraftBase & { type: 'asset'; accept?: string[]; multiple?: boolean })
+  | (DraftBase & { type: 'author'; multiple?: boolean })
   | (DraftBase & { type: 'object'; fields: DraftField[] })
   | (DraftBase & {
       type: 'repeater';
@@ -74,6 +75,7 @@ export const FIELD_TYPES: FieldType[] = [
   'email',
   'reference',
   'asset',
+  'author',
   'object',
   'repeater',
 ];

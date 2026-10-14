@@ -150,6 +150,8 @@ export interface OrderFulfillment {
   deliveredAt: string | null;
   notes: string | null;
   createdAt: string;
+  /** Holds `carrierOther`: the carrier's name as typed when it has no code. */
+  metadata?: unknown;
 }
 
 export interface OrderRefund {

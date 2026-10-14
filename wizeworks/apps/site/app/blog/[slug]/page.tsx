@@ -72,7 +72,6 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
     mediaUrl(typeof body.featuredImage === 'string' ? body.featuredImage : null, site.slug) ??
     ogImageUrl({
       title: body.title ?? site.name,
-      eyebrow: 'Article',
       brand: site.name,
       accent: site.theme?.colorPrimary,
       platformBrand: site.platformBrand,
@@ -125,7 +124,10 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
   if (silicaTemplate) {
     // No `searchParams`: a post is one record, so nothing on this page paginates.
     const { resolver } = await buildSilicaHost(site.slug, silicaTemplate.root, {
-      record: { key: 'blog_post', value: postToBuilderRecord(post, site.slug) },
+      record: {
+        key: 'blog_post',
+        value: postToBuilderRecord(post, site.slug, site.timezone, site.commerce.defaultLocale),
+      },
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
       // A post template binds `site.*` for the same reason every other route does

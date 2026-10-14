@@ -457,15 +457,12 @@ function AccountEditor({
               </Text>
             </div>
           ) : account ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {account.companyName}
-              </Heading>
-              <Text className="text-sm">
-                {accountTierWords(account) ? `${accountTierWords(account)} · ` : ''}
-                {paymentTermsLabel(account.paymentTerms)}
-              </Text>
-            </div>
+            // The name is shown once, in "Company name" below; this line says how
+            // they buy (sparx persona issue 233).
+            <Text className="text-sm">
+              {accountTierWords(account) ? `${accountTierWords(account)} · ` : ''}
+              {paymentTermsLabel(account.paymentTerms)}
+            </Text>
           ) : null}
 
           <SaveFailure title="Could not save this account" message={failure} />

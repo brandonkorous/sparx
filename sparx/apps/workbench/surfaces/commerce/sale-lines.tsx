@@ -28,6 +28,7 @@ import {
 import { Plus, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { loadFailureWords } from '../../lib/api-error';
 import { formatCents } from './products-data';
 import { formatMoney } from './data';
 import { priceNote } from './sale-price-note';
@@ -188,21 +189,38 @@ function ChosenLine({
   );
 }
 
-/** The sum, with the deposits on a row of their own. Drawn only when a deposit
- *  is on the sale: without one the total is the lines, and the money section
- *  below already says it. The rows and their name follow the website's checkout
- *  summary, so the till and the receipt add up the same way. */
-function DepositTotals({ totals, currency }: { totals: SaleTotals; currency: string }) {
-  if (totals.coreDeposits <= 0) return null;
+/** The sum: the goods, any deposits and the sales tax each on a row of their
+ *  own, as the website's checkout summary lays them out, so the till and the
+ *  receipt add up the same way. The tax row is always there once something is on
+ *  the sale; it used to be missing, and so was the tax (sparx persona issue 230). */
+function SaleTotalsRows({
+  totals,
+  currency,
+  taxLabel,
+  taxKnown,
+}: {
+  totals: SaleTotals;
+  currency: string;
+  taxLabel: string;
+  taxKnown: boolean;
+}) {
   return (
     <dl className="border-base-300 flex flex-col gap-1 border-t pt-3">
       <div className="flex justify-between gap-3">
         <dt>Subtotal</dt>
         <dd className="tabular-nums">{formatMoney(totals.goods, currency)}</dd>
       </div>
+      {totals.coreDeposits > 0 ? (
+        <div className="flex justify-between gap-3">
+          <dt>{CORE_DEPOSITS_ROW}</dt>
+          <dd className="tabular-nums">{formatMoney(totals.coreDeposits, currency)}</dd>
+        </div>
+      ) : null}
       <div className="flex justify-between gap-3">
-        <dt>{CORE_DEPOSITS_ROW}</dt>
-        <dd className="tabular-nums">{formatMoney(totals.coreDeposits, currency)}</dd>
+        <dt>{taxLabel}</dt>
+        <dd className="tabular-nums">
+          {taxKnown ? formatMoney(totals.tax, currency) : 'Working it out…'}
+        </dd>
       </div>
       <div className="flex justify-between gap-3 font-semibold">
         <dt>Total</dt>
@@ -216,7 +234,7 @@ function SellablePicker({ onPick }: { onPick: (s: Sellable) => void }) {
   const [search, setSearch] = useState('');
   const term = search.trim();
   // The server searches what is typed, however big the catalog (issue 069).
-  const { items, isPending, isError, searching, retry } = useSellables(search);
+  const { items, isPending, isError, error, searching, retry } = useSellables(search);
   // Name, version AND code, word by word: see sale-sellable-search.ts. Run on
   // the rows in hand too, so the list narrows on the keystroke rather than
   // waiting for the server's answer to the previous one.
@@ -228,8 +246,10 @@ function SellablePicker({ onPick }: { onPick: (s: Sellable) => void }) {
         <AlertContent>
           <AlertTitle>Could not load what you sell</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server, not a problem with this sale. You can still write
-            what they had in by hand below, or try again.
+            {loadFailureWords(
+              error,
+              'This is a problem reaching the server, not a problem with this sale. You can still write what they had in by hand below, or try again.'
+            )}
           </AlertDescription>
         </AlertContent>
         <AlertActions>
@@ -311,6 +331,8 @@ export function SaleLines({
   lines,
   currency,
   totals,
+  taxLabel,
+  taxKnown,
   onAdd,
   onChange,
   onRemove,
@@ -318,6 +340,8 @@ export function SaleLines({
   lines: SaleLine[];
   currency: string;
   totals: SaleTotals;
+  taxLabel: string;
+  taxKnown: boolean;
   onAdd: (sellable: Sellable | null) => void;
   onChange: (id: string, next: SaleLine) => void;
   onRemove: (id: string) => void;
@@ -345,7 +369,14 @@ export function SaleLines({
         </div>
       ) : null}
 
-      <DepositTotals totals={totals} currency={currency} />
+      {lines.length > 0 ? (
+        <SaleTotalsRows
+          totals={totals}
+          currency={currency}
+          taxLabel={taxLabel}
+          taxKnown={taxKnown}
+        />
+      ) : null}
 
       <SellablePicker onPick={onAdd} />
 

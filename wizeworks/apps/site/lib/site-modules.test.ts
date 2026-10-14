@@ -39,10 +39,14 @@ describe('which module owns a path', () => {
       '/category',
       '/category/jewelry',
       '/collections/new-in',
-      '/search',
     ]) {
       expect(moduleForPath(path), path).toBe('commerce');
     }
+  });
+
+  it('leaves search to the whole site, which a journal with no shop still needs', () => {
+    expect(moduleForPath('/search')).toBeNull();
+    expect(moduleForKey('commerce.search')).toBeNull();
   });
 
   it('gives the journal to Content', () => {

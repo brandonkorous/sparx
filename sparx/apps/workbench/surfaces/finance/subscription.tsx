@@ -31,27 +31,9 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useBill, useBillingPortal, useBillingCheckout, type Bill } from './bill-data';
 import { formatMoney, formatDate } from './format';
-
-// Plain-language module names + what each does — an owner pays for capabilities,
-// not slugs. Any module without an entry falls back to a tidied slug.
-const MODULE_LABELS: Record<string, { name: string; blurb: string }> = {
-  builder: { name: 'Website builder', blurb: 'Design and host your site' },
-  commerce: { name: 'Online store', blurb: 'Sell products online' },
-  cms: { name: 'Content & blog', blurb: 'Pages, posts and media' },
-  crm: { name: 'Customers & contacts', blurb: 'Track customers and deals' },
-  email: { name: 'Email marketing', blurb: 'Newsletters and campaigns' },
-  b2b: { name: 'Wholesale', blurb: 'Trade pricing and accounts' },
-  invoicing: { name: 'Invoicing', blurb: 'Estimates and invoices' },
-  inventory: { name: 'Stock control', blurb: 'Track stock across locations' },
-  chat: { name: 'Live chat', blurb: 'Talk to visitors on your site' },
-  ai: { name: 'AI assistant', blurb: 'AI tools across your business' },
-  scheduling: { name: 'Bookings', blurb: 'Appointments and classes' },
-  dropship: { name: 'Dropshipping', blurb: 'Sell supplier-shipped products' },
-};
-
-function moduleLabel(key: string): { name: string; blurb: string } {
-  return MODULE_LABELS[key] ?? { name: key.replace(/_/g, ' '), blurb: '' };
-}
+import { moduleBillLabel } from '../modules/data';
+import { ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 
 /** How the subscription is doing, in words + color. */
 function planState(bill: Bill): {
@@ -85,6 +67,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: bill, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBill();
   const portal = useBillingPortal();
   const checkout = useBillingCheckout();
+  const rights = useManageRights();
   const [actionError, setActionError] = useState<string | null>(null);
   const [returnStatus, setReturnStatus] = useState<'success' | 'cancelled' | null>(null);
 
@@ -273,7 +256,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                   </thead>
                   <tbody>
                     {bill.planModules.map((m) => {
-                      const label = moduleLabel(m.moduleKey);
+                      const label = moduleBillLabel(m.moduleKey);
                       return (
                         <tr key={m.moduleKey}>
                           <td>
@@ -307,9 +290,11 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               <Text className="mt-1">
                 {bill.card
                   ? `${bill.card.brand.replace(/\b\w/g, (ch) => ch.toUpperCase())} ending ${bill.card.last4} · expires ${String(bill.card.expMonth).padStart(2, '0')}/${String(bill.card.expYear).slice(-2)}`
-                  : inSetup
-                    ? 'No card on file yet. Set up billing to add your card and keep your plan active when the free trial ends.'
-                    : 'No card on file yet. Add one to keep your plan active.'}
+                  : rights.known && !rights.canManage
+                    ? 'No card on file yet.'
+                    : inSetup
+                      ? 'No card on file yet. Set up billing to add your card and keep your plan active when the free trial ends.'
+                      : 'No card on file yet. Add one to keep your plan active.'}
               </Text>
 
               {actionError ? (
@@ -318,22 +303,40 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Alert>
               ) : null}
 
-              <div className="mt-4">
-                <Button
-                  color="module"
-                  size="sm"
-                  loading={portal.isPending || checkout.isPending}
-                  onClick={openBilling}
-                >
-                  <ExternalLink className="size-4" aria-hidden />
-                  {inSetup ? 'Set up billing' : bill.card ? 'Manage billing & card' : 'Add a card'}
-                </Button>
-              </div>
-              <Text className="mt-2 text-sm">
-                {inSetup
-                  ? 'Opens sparx’s secure payment page in a new tab to add your card. Have a discount code? You can enter it there.'
-                  : 'Opens sparx’s secure billing portal in a new tab, where you can update your card, change your plan, or download past invoices.'}
-              </Text>
+              {/* Only an owner or an admin may add a card or change the plan: the
+                  server refuses everybody else, so they are told so here instead of
+                  being refused after (sparx persona issue 168). */}
+              {rights.known && !rights.canManage ? (
+                <div className="mt-4">
+                  <ManagersOnlyNotice
+                    title="An owner or an admin looks after the bill"
+                    change="add a card or change the plan"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="mt-4">
+                    <Button
+                      color="module"
+                      size="sm"
+                      loading={portal.isPending || checkout.isPending}
+                      onClick={openBilling}
+                    >
+                      <ExternalLink className="size-4" aria-hidden />
+                      {inSetup
+                        ? 'Set up billing'
+                        : bill.card
+                          ? 'Manage billing & card'
+                          : 'Add a card'}
+                    </Button>
+                  </div>
+                  <Text className="mt-2 text-sm">
+                    {inSetup
+                      ? 'Opens sparx’s secure payment page in a new tab to add your card. Have a discount code? You can enter it there.'
+                      : 'Opens sparx’s secure billing portal in a new tab, where you can update your card, change your plan, or download past invoices.'}
+                  </Text>
+                </>
+              )}
             </Card>
           </div>
         )}

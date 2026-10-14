@@ -1,22 +1,12 @@
 'use client';
 
-// Security — sign-in rules, the devices currently signed in, and a record of
-// who did what.
-//
-// One centred column, deliberately NOT EditorLayout: this is not a form with a
-// summary rail, it is three self-contained concerns stacked in reading order —
-// the password you sign in with, the devices that are in right now, and the
-// history of what has been done. Each is its own card; none is a KPI worth a
-// rail.
-//
-// The queries the toolbar's Refresh reloads (devices + activity) are owned HERE
-// and passed down, so one control refreshes the whole pane rather than each card
-// growing its own. Password change and two-step verification are mutations with
-// no list to refresh, so they stay entirely inside their cards.
-//
-// Two-step verification sits directly under the password because it is the same
-// question — how you prove it is you — and reads as the answer to the weakness
-// the card above it has.
+// Security: sign-in rules, the devices signed in now, and a record of who did what.
+// One centered column, NOT EditorLayout: three self-contained cards in reading
+// order, none a KPI worth a rail.
+
+// The queries Refresh reloads (devices + activity) are owned HERE, so one control
+// refreshes the whole pane. Two-step verification sits under the password because
+// it answers the same question: how you prove it is you.
 
 import { useState } from 'react';
 import { Text } from '@wizeworks/silicaui-react';
@@ -30,19 +20,55 @@ import { ACTIVITY_PAGE, useActivity, useSessions, useSignInMethods } from './sec
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
+interface ListCardsProps {
+  sessions: ReturnType<typeof useSessions>;
+  activity: ReturnType<typeof useActivity>;
+  activityLimit: number;
+  onShowMore: () => void;
+}
+
+function ListCards({ sessions, activity, activityLimit, onShowMore }: ListCardsProps) {
+  return (
+    <>
+      <SessionsCard
+        sessions={sessions.data}
+        isPending={sessions.isPending}
+        isError={sessions.isError}
+        refetch={() => {
+          void sessions.refetch();
+        }}
+      />
+
+      <ActivityCard
+        entries={activity.data}
+        isPending={activity.isPending}
+        isError={activity.isError}
+        error={activity.error}
+        isFetching={activity.isFetching}
+        limit={activityLimit}
+        refetch={() => {
+          void activity.refetch();
+        }}
+        onShowMore={onShowMore}
+      />
+    </>
+  );
+}
+
+// Read from the console's own account route: Better Auth's `useSession()` hit an
+// endpoint this origin does not serve, so the badge read "Off" on accounts that
+// had it on. See app/api/account/shared.ts.
+function useTwoFactorEnabled(): boolean {
+  const signIn = useSignInMethods();
+  return signIn.data?.twoFactorEnabled === true;
+}
+
 export function SecuritySurface() {
   const [activityLimit, setActivityLimit] = useState(ACTIVITY_PAGE);
 
   const sessions = useSessions();
   const activity = useActivity(activityLimit);
-
-  // Whether two-step verification is on is read from the console's own account
-  // route. It used to come off Better Auth's `useSession()`, which addresses
-  // /api/auth/get-session — an endpoint THIS origin does not serve, so it
-  // resolved to undefined and the card's badge read a flat "Off" on accounts
-  // that had it switched on. See app/api/account/shared.ts.
-  const signIn = useSignInMethods();
-  const twoFactorEnabled = signIn.data?.twoFactorEnabled === true;
+  const twoFactorEnabled = useTwoFactorEnabled();
 
   const refreshAll = () => {
     void sessions.refetch();
@@ -71,24 +97,10 @@ export function SecuritySurface() {
 
           <TwoFactorCard enabled={twoFactorEnabled} />
 
-          <SessionsCard
-            sessions={sessions.data}
-            isPending={sessions.isPending}
-            isError={sessions.isError}
-            refetch={() => {
-              void sessions.refetch();
-            }}
-          />
-
-          <ActivityCard
-            entries={activity.data}
-            isPending={activity.isPending}
-            isError={activity.isError}
-            isFetching={activity.isFetching}
-            limit={activityLimit}
-            refetch={() => {
-              void activity.refetch();
-            }}
+          <ListCards
+            sessions={sessions}
+            activity={activity}
+            activityLimit={activityLimit}
             onShowMore={() => {
               setActivityLimit((prev) => prev + ACTIVITY_PAGE);
             }}

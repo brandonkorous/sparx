@@ -216,6 +216,7 @@ export function coerceFromText(field: FieldDef, raw: string): CoercionResult {
     }
 
     case 'user':
+    case 'author':
     case 'reference':
     case 'asset': {
       // These point at other records, and a spreadsheet can only carry the id.

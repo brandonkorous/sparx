@@ -3,12 +3,17 @@
 // are grouped by supplier and dispatched as dropship_orders rows. Each supplier
 // group gets one adapter.submitOrder() call. Results are written back to the
 // dropship_orders rows and the appropriate event is published.
+//
+// A supplier with no system of its own (the business's own supplier, sparx persona
+// issue 171) is EMAILED the order instead: `adapter.orderRecipient` says where.
 
 import type { Logger } from 'pino';
 import { withTenant } from '@wizeworks/db';
 import { createPublisher, publishEvent } from '@wizeworks/events';
 import { createAdapter } from '@wizeworks/dropship';
 import type { Order, OrderLineItem, ShippingAddress } from '@wizeworks/dropship';
+import { supplierOrderEmail, type SupplierOrderLine } from './supplier-order-email.js';
+import { shipToOf } from './ship-to.js';
 
 export interface OrderRoutePayload {
   orderId: string;
@@ -42,7 +47,17 @@ export async function handleOrderRoute(
   }
 
   // Group line items by dropshipSourceId (== supplierId on the variant).
-  const bySupplier = new Map<string, { sku: string; quantity: number; unitPriceCents: number }[]>();
+  const bySupplier = new Map<
+    string,
+    {
+      sku: string;
+      quantity: number;
+      unitPriceCents: number;
+      name: string;
+      productId: string | null;
+      costCents: number | null;
+    }[]
+  >();
 
   for (const item of order.items) {
     const supplierId = item.variant?.dropshipSourceId;
@@ -52,6 +67,9 @@ export async function handleOrderRoute(
       sku: item.variant?.sku ?? '',
       quantity: item.quantity,
       unitPriceCents: item.variant?.costCents ?? Number(item.unitPrice) * 100,
+      name: item.name,
+      productId: item.productId,
+      costCents: item.variant?.costCents ?? null,
     });
     bySupplier.set(supplierId, bucket);
   }
@@ -61,17 +79,10 @@ export async function handleOrderRoute(
     return;
   }
 
-  const shippingAddr = order.shippingAddress as Record<string, string | null | undefined> | null;
-  const shipping: ShippingAddress = {
-    name: shippingAddr?.name ?? '',
-    line1: shippingAddr?.line1 ?? shippingAddr?.address1 ?? '',
-    line2: shippingAddr?.line2 ?? shippingAddr?.address2 ?? undefined,
-    city: shippingAddr?.city ?? '',
-    region: shippingAddr?.province ?? shippingAddr?.region ?? undefined,
-    postalCode: shippingAddr?.zip ?? shippingAddr?.postalCode ?? '',
-    countryCode: shippingAddr?.country ?? shippingAddr?.countryCode ?? 'US',
-    phone: shippingAddr?.phone ?? undefined,
-  };
+  // The address as the order stores it (sparx persona issue 214).
+  const shipping: ShippingAddress = shipToOf(
+    order.shippingAddress as Record<string, unknown> | null
+  );
 
   const publisher = createPublisher({
     logger: log,
@@ -126,6 +137,28 @@ export async function handleOrderRoute(
 
     try {
       const adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
+
+      if (adapter.orderRecipient) {
+        await emailOrderToSupplier({
+          tenantId,
+          orderId,
+          dropshipOrderId: dsOrder.id,
+          supplier: { id: supplierId, name: supplier.name },
+          recipient: adapter.orderRecipient(),
+          order: {
+            orderNumber: order.orderNumber,
+            currency: order.currency,
+            propertyId: order.propertyId,
+            customerNote: order.customerNote,
+          },
+          shipTo: shipping,
+          lines: lineItems,
+          publisher,
+          log,
+        });
+        continue;
+      }
+
       const result = await adapter.submitOrder(adapterOrder);
 
       await withTenant({ tenantId }, async (tx) => {
@@ -133,14 +166,18 @@ export async function handleOrderRoute(
           where: { id: dsOrder.id },
           data: {
             supplierOrderId: result.supplierOrderId,
-            status: result.status === 'failed' ? 'failed' : 'submitted',
+            // `pending` is an order waiting on someone (a supplier the owner orders
+            // from by hand), not one the supplier has (sparx persona issue 170).
+            status: result.status,
             errorMessage: result.errorMessage ?? null,
-            submittedAt: result.status !== 'failed' ? new Date() : null,
+            submittedAt: result.status === 'submitted' ? new Date() : null,
           },
         });
       });
 
-      if (result.status === 'failed') {
+      if (result.status === 'pending') {
+        log.info({ dsOrderId: dsOrder.id, supplierId }, 'dropship order waits for the owner');
+      } else if (result.status === 'failed') {
         await publishEvent(
           publisher,
           'dropship.order.failed',
@@ -193,4 +230,142 @@ export async function handleOrderRoute(
       );
     }
   }
+}
+
+/**
+ * Email the order to a supplier who takes orders by email (sparx persona issue
+ * 171), from the business, and record it as sent. When it cannot go (no cost for
+ * a line, no address) the order waits for the owner with the reason, the same as
+ * an order the owner places by hand (sparx persona issue 170).
+ */
+async function emailOrderToSupplier(args: {
+  tenantId: string;
+  orderId: string;
+  dropshipOrderId: string;
+  supplier: { id: string; name: string };
+  recipient: { email: string; contactName: string | null };
+  order: {
+    orderNumber: string;
+    currency: string;
+    propertyId: string | null;
+    customerNote: string | null;
+  };
+  shipTo: ShippingAddress;
+  lines: {
+    sku: string;
+    quantity: number;
+    name: string;
+    productId: string | null;
+    costCents: number | null;
+  }[];
+  publisher: ReturnType<typeof createPublisher>;
+  log: Logger;
+}): Promise<void> {
+  const { tenantId, supplier, log } = args;
+
+  // Their code and their price live on the link the owner made when they said
+  // this supplier ships the product; the variant's own SKU and cost stand in
+  // for a product sourced some other way.
+  const productIds = args.lines
+    .map((line) => line.productId)
+    .filter((id): id is string => id !== null);
+  const [links, business, tenant] = await withTenant({ tenantId }, (tx) =>
+    Promise.all([
+      tx.dropshipProductLink.findMany({
+        where: {
+          tenantId,
+          productId: { in: productIds },
+          dropshipProduct: { supplierId: supplier.id },
+        },
+        select: {
+          productId: true,
+          supplierSku: true,
+          dropshipProduct: { select: { costPriceCents: true } },
+        },
+      }),
+      tx.tenantBusiness.findUnique({ where: { tenantId }, select: { businessName: true } }),
+      tx.tenant.findUnique({ where: { id: tenantId }, select: { name: true } }),
+    ])
+  );
+  const linkOf = new Map(links.map((link) => [link.productId, link]));
+
+  const lines: SupplierOrderLine[] = args.lines.map((line) => {
+    const link = line.productId ? linkOf.get(line.productId) : undefined;
+    return {
+      title: line.name,
+      supplierSku: link?.supplierSku ?? line.sku,
+      quantity: line.quantity,
+      unitCostCents: link?.dropshipProduct.costPriceCents ?? line.costCents,
+    };
+  });
+
+  // The name the business prints on its own documents (resolveBusinessIdentity
+  // in api-rest): its business name, else the account's. `||` on purpose: a name
+  // that is blank after trimming falls through to the next.
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const fromName = business?.businessName?.trim() || tenant?.name.trim() || supplier.name;
+
+  const email = supplierOrderEmail({
+    fromName,
+    supplierName: supplier.name,
+    contactName: args.recipient.contactName,
+    orderNumber: args.order.orderNumber,
+    currency: args.order.currency,
+    shipTo: args.shipTo,
+    lines,
+    customerNote: args.order.customerNote,
+  });
+
+  if (!email.ok) {
+    await withTenant({ tenantId }, (tx) =>
+      tx.dropshipOrder.update({
+        where: { id: args.dropshipOrderId },
+        data: { status: 'pending', errorMessage: email.reason },
+      })
+    );
+    log.info(
+      { dsOrderId: args.dropshipOrderId, supplierId: supplier.id },
+      'dropship order waits for the owner'
+    );
+    return;
+  }
+
+  await publishEvent(
+    args.publisher,
+    'email.send',
+    tenantId,
+    null,
+    {
+      to: args.recipient.email,
+      template: 'purchase-order-sent',
+      sendAs: 'tenant',
+      ...(args.order.propertyId ? { propertyId: args.order.propertyId } : {}),
+      props: email.props,
+    },
+    log
+  );
+
+  await withTenant({ tenantId }, (tx) =>
+    tx.dropshipOrder.update({
+      where: { id: args.dropshipOrderId },
+      data: { status: 'submitted', submittedAt: new Date(), errorMessage: null },
+    })
+  );
+  await publishEvent(
+    args.publisher,
+    'dropship.order.submitted',
+    tenantId,
+    null,
+    {
+      dropshipOrderId: args.dropshipOrderId,
+      orderId: args.orderId,
+      supplierId: supplier.id,
+      supplierOrderId: null,
+    },
+    log
+  );
+  log.info(
+    { dsOrderId: args.dropshipOrderId, supplierId: supplier.id },
+    'dropship order emailed to supplier'
+  );
 }

@@ -20,7 +20,8 @@ import { api } from '../../lib/api/client';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { ORDERS_KEY, type Order } from './data';
 import { useVariantSearch, type VariantChoice } from './bundles-data';
-import { coreFieldsFrom, handedOverNow, saleItem, type CoreOffer } from './sale-core';
+import { coreFieldsFrom, handedOverNow, saleOrderBody, type CoreOffer } from './sale-core';
+import type { SaleTaxQuote } from './sale-tax';
 
 /** Anything the business can put on a sale: a thing off the shelf, or an hour of
  *  its own time. Both are lines on the same receipt, so both live in one list. */
@@ -238,6 +239,8 @@ export function useSellables(search: string) {
     items,
     isPending: variants.isPending || (services.isFetching && services.data === undefined),
     isError: variants.isError,
+    /** Why it failed, so the words name the real cause (issue 260). */
+    error: variants.error,
     /** The rows in hand answer an older search; never call them "no match". */
     searching: variants.searching,
     retry: variants.retry,
@@ -256,12 +259,9 @@ export interface TakeSaleInput {
    *  and every site-scoped money screen leaves it out of the totals while the
    *  order itself reads perfectly. */
   propertyId: string | null;
+  /** The sales tax on this exact sale (sparx persona issue 230). */
+  tax: SaleTaxQuote | null;
 }
-
-/** The same rate ref checkout writes when a shopper chooses to collect, so the
- *  order pane reads a counter sale as collected and stops offering a carrier, a
- *  tracking number and a warehouse walk. See `deliveryPlan` in data.ts. */
-const COLLECTION_RATE_REF = 'collection:in-person';
 
 async function handOver(order: Order): Promise<void> {
   const lines = handedOverNow(order.items ?? []);
@@ -291,18 +291,7 @@ export function useTakeSale() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: TakeSaleInput): Promise<Order> => {
-      const order = await api.post<Order>('/v1/orders', {
-        customerId: input.customerId,
-        currency: input.currency,
-        channel: 'admin',
-        source: 'till',
-        ...(input.propertyId ? { propertyId: input.propertyId } : {}),
-        metadata: {
-          shippingRateRef: COLLECTION_RATE_REF,
-          shippingDescription: 'Taken at the counter',
-        },
-        items: input.lines.map(saleItem),
-      });
+      const order = await api.post<Order>('/v1/orders', saleOrderBody(input));
       if (input.paid > 0) {
         await api.post(`/v1/orders/${order.id}/payments`, {
           amount: input.paid,

@@ -49,10 +49,6 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Badge,
   Button,
   Dialog,
@@ -67,6 +63,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { CornerDownLeft, Layers, Plus, Puzzle, Trash2 } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -318,26 +315,16 @@ function FitmentBody({
   const body = () => {
     if (fitment.isError || domainsQuery.isError) {
       return (
-        <Alert color="danger" variant="soft">
-          <AlertContent>
-            <AlertTitle>Could not load what this product fits</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. Nothing about the product has changed. It just
-              could not be read just now.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="danger"
-            variant="soft"
-            onClick={() => {
-              void fitment.refetch();
-              void domainsQuery.refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
+        <PaneLoadError
+          title="Could not load what this product fits"
+          description="This is a problem reaching the server. Nothing about the product has changed. It just could not be read just now."
+          error={fitment.error ?? domainsQuery.error}
+          noun="product"
+          onRetry={() => {
+            void fitment.refetch();
+            void domainsQuery.refetch();
+          }}
+        />
       );
     }
 

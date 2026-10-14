@@ -31,7 +31,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
   const createLabel = createLabelFor('cms.taxonomy.list');
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTaxonomies();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useTaxonomies();
   const [search, setSearch] = useState('');
 
   const all = useMemo(
@@ -63,6 +63,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<Tags className="size-6" aria-hidden />}
         title="Could not load your tags and topics"
         description="This is a problem reaching the server. None of your labels are affected."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

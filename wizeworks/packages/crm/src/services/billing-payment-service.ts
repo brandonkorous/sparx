@@ -99,7 +99,21 @@ export async function recordPayment(
           currency: before.currency,
           status: 'captured',
           capturedAt: payment.receivedAt,
-          metadata: { billingDocumentId: documentId, billingDocumentNumber: before.number },
+          metadata: {
+            billingDocumentId: documentId,
+            billingDocumentNumber: before.number,
+            // A credit settles the order the same way, but nobody paid it: the
+            // order's payment list says so in the note it draws (sparx persona
+            // issue 185).
+            ...(input.kind === 'credit'
+              ? {
+                  billingPaymentKind: 'credit',
+                  note: input.reference
+                    ? `Credit for ${input.reference.toLowerCase()}`
+                    : 'Credit taken off the invoice',
+                }
+              : {}),
+          },
         },
       });
       // The one place that knows how an order's paid/partly-paid/unpaid state is

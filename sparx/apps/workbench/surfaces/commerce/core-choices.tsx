@@ -36,6 +36,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ArrowLeftRight } from 'lucide-react';
 import { MoneyCentsInput } from '@/components/money-input';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -231,21 +232,14 @@ export function CoreChoicesSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {choices.isError ? (
             <Card>
-              <EmptyState
+              <PaneLoadError
                 icon={<ArrowLeftRight className="size-6" aria-hidden />}
                 title="Could not load these products"
                 description="This is a problem reaching the server. Nothing about your products has changed."
-                actions={
-                  <Button
-                    size="sm"
-                    color="module"
-                    onClick={() => {
-                      void choices.refetch();
-                    }}
-                  >
-                    Try again
-                  </Button>
-                }
+                error={choices.error}
+                onRetry={() => {
+                  void choices.refetch();
+                }}
               />
             </Card>
           ) : choices.isPending ? (

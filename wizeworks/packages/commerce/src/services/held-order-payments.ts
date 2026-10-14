@@ -121,7 +121,7 @@ async function capture(ctx: SettleContext, move: HeldOrderMoney): Promise<Settle
         actorId: null,
         actorType: 'system',
         type: 'note',
-        description: `Order #${move.orderNumber} was approved, but the ${money} held on the card could not be charged: ${reason}. The order has gone ahead and is not paid.`,
+        description: `Order ${move.orderNumber} was approved, but the ${money} held on the card could not be charged: ${reason}. The order has gone ahead and is not paid.`,
         occurredAt: new Date(),
       },
     });
@@ -165,7 +165,7 @@ async function release(ctx: SettleContext, move: HeldOrderMoney): Promise<Settle
         actorId: null,
         actorType: 'system',
         type: 'note',
-        description: `Order #${move.orderNumber} was turned down. Nothing was charged, but the ${formatCents(move.amountCents, move.currency)} hold on the card could not be lifted straight away (${reason}). It drops off the card by itself within about seven days.`,
+        description: `Order ${move.orderNumber} was turned down. Nothing was charged, but the ${formatCents(move.amountCents, move.currency)} hold on the card could not be lifted straight away (${reason}). It drops off the card by itself within about seven days.`,
         occurredAt: new Date(),
       },
     })

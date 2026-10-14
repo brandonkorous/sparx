@@ -43,6 +43,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { CalendarClock, Receipt, Truck } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
+import { loadFailureWords } from '../../lib/api-error';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
@@ -358,8 +359,10 @@ function Notices({ purchaseOrderId, purchaseOrderNumber, status, ctx }: Props) {
     >
       {notices.isError ? (
         <Text className="text-sm">
-          Could not check for shipment notices: a problem reaching the server, not a statement that
-          there are none.
+          {loadFailureWords(
+            notices.error,
+            'Could not check for shipment notices: a problem reaching the server, not a statement that there are none.'
+          )}
         </Text>
       ) : rows.length === 0 ? (
         <Text className="text-sm">
@@ -474,8 +477,10 @@ function Bills({ purchaseOrderId, currency, ctx }: Props) {
     >
       {bills.isError ? (
         <Text className="text-sm">
-          Could not check for invoices: a problem reaching the server, not a statement that none
-          have arrived.
+          {loadFailureWords(
+            bills.error,
+            'Could not check for invoices: a problem reaching the server, not a statement that none have arrived.'
+          )}
         </Text>
       ) : rows.length === 0 ? (
         <Text className="text-sm">No invoice entered against this order yet.</Text>

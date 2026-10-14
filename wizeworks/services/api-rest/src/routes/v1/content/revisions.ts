@@ -22,6 +22,7 @@ import {
   serializeRevisionMeta,
 } from '@wizeworks/cms';
 import { writeAudit } from '@wizeworks/api-core/audit';
+import { publish } from '@wizeworks/api-core/pubsub';
 import { indexContentEntry } from '../../../lib/content-search.js';
 
 const ListParams = z.object({ id: z.string().uuid() });
@@ -70,8 +71,8 @@ const revisionRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'editor');
     const { id, n } = OneParams.parse(request.params);
 
-    const updated = await withRequestTenant(request, async (tx) => {
-      const { entry } = await restoreRevisionTx(
+    const { entry: updated, events } = await withRequestTenant(request, async (tx) => {
+      const result = await restoreRevisionTx(
         tx,
         { tenantId: auth.tenantId, actorId: auth.actorId },
         id,
@@ -80,12 +81,17 @@ const revisionRoutes: FastifyPluginAsync = (app) => {
       await writeAudit(tx, request, auth, {
         action: 'content.entry.restored',
         entityType: 'content_entry',
-        entityId: entry.id,
+        entityId: result.entry.id,
         before: { revisionNumber: 'current' },
         after: { restoredFrom: n },
       });
-      return entry;
+      return result;
     });
+    // The same "entry changed" a save sends, so a published piece's live page, feed
+    // and lists refresh to the version brought back (P09).
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     // A restore rewrites the body, which is where the indexed title lives.
     await indexContentEntry(auth, id);

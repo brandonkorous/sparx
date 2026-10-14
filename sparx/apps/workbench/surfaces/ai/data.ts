@@ -20,6 +20,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { slugify as slugifyWebSegment } from '../../lib/slugify';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 /* ── Prompt library shapes (mirror wizeworks/services/api-rest/src/lib/ai/types.ts) ──── */
 
@@ -361,7 +362,7 @@ export function canEditPrompts(role: string | undefined): boolean {
 /** May this viewer install the default set, or change tool exposure?
  *  (Server bar: admin = rank 2.) */
 export function canAdminAi(role: string | undefined): boolean {
-  return (ROLE_RANK[role ?? ''] ?? 0) >= 2;
+  return canManageBusiness(role);
 }
 
 /* ── Presentation helpers (shared, so both surfaces speak alike) ───────────── */

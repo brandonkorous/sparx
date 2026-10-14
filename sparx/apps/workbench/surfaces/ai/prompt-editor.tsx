@@ -47,6 +47,7 @@ import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   aiErrorMessage,
   canEditPrompts,
@@ -128,6 +129,7 @@ function ManageInstruction({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: prompt,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -139,9 +141,11 @@ function ManageInstruction({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
   if (isError) {
     return (
-      <LoadError
+      <PaneLoadError
         title="Could not load this instruction"
         description="This is a problem reaching the server, or the instruction has been deleted. Nothing has been changed."
+        error={error}
+        noun="instruction"
         onRetry={() => {
           void refetch();
         }}
@@ -770,32 +774,6 @@ function InstructionEditor({
           ) : null}
         </div>
       </div>
-    </div>
-  );
-}
-
-function LoadError({
-  title,
-  description,
-  onRetry,
-}: {
-  title: string;
-  description?: string;
-  onRetry: () => void;
-}) {
-  return (
-    <div className="flex h-full items-center justify-center p-8">
-      <Alert color="error" className="max-w-md">
-        <AlertContent>
-          <AlertTitle>{title}</AlertTitle>
-          <AlertDescription>
-            {description ?? 'This is a problem reaching the server. Please try again.'}
-          </AlertDescription>
-        </AlertContent>
-        <Button size="sm" color="error" variant="soft" onClick={onRetry}>
-          Try again
-        </Button>
-      </Alert>
     </div>
   );
 }

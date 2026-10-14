@@ -1,7 +1,9 @@
 'use client';
 
-// Giving the customer their money back — the move that settles a refund,
-// moves real money, and cannot be undone.
+// Giving the customer their money back: the move that settles a refund and
+// cannot be undone. It moves money only when a gateway holds the charge; money
+// taken by hand is recorded here and handed back by a person (sparx persona
+// issue 178).
 
 import { useEffect, useState } from 'react';
 import {
@@ -15,6 +17,8 @@ import {
 
 import { MoneyTextInput } from '../../components/money-input';
 import { ActionDialog, money } from './return-action-dialog';
+import { paidTaxOf } from './return-refund-figures';
+import { paidBackNote, refundWords } from './return-refund-words';
 import { returnErrorMessage, useRefundReturn, type ReturnDetail } from './returns-data';
 
 /** What the operator has typed, reset each time the dialog opens. */
@@ -44,12 +48,12 @@ function useRefundForm(open: boolean, suggestedCents: number) {
 
 type RefundForm = ReturnType<typeof useRefundForm>;
 
-/** Sends the refund. `backCents` is the whole figure the customer gets, core
- *  deposits included, so the toast names the money that actually moved. */
-function useRefundSubmit(detail: ReturnDetail, currency: string, onClose: () => void) {
+/** Sends the refund. `doneTitle` names the whole figure, core deposits
+ *  included, and says how it went back. */
+function useRefundSubmit(detail: ReturnDetail, onClose: () => void) {
   const toast = useToast();
   const refund = useRefundReturn(detail.id);
-  const submit = (form: RefundForm, backCents: number) => {
+  const submit = (form: RefundForm, doneTitle: string) => {
     refund.mutate(
       {
         refundAmountCents: form.amountCents,
@@ -58,7 +62,7 @@ function useRefundSubmit(detail: ReturnDetail, currency: string, onClose: () => 
       },
       {
         onSuccess: () => {
-          toast.add({ title: `${money(backCents, currency)} given back`, type: 'success' });
+          toast.add({ title: doneTitle, type: 'success' });
           onClose();
         },
         onError: (error) => {
@@ -110,14 +114,20 @@ function RefundFields({
   form,
   currency,
   coreBackCents,
+  creditLabel,
+  taxNote,
 }: {
   form: RefundForm;
   currency: string;
   coreBackCents: number;
+  creditLabel: string;
+  /** The sales tax inside the amount, said once (sparx persona issue 231). */
+  taxNote: string | null;
 }) {
   return (
     <>
       <MoneyField label="Amount to give back" required text={form.amount} onText={form.setAmount} />
+      {taxNote ? <Text>{taxNote}</Text> : null}
       {coreBackCents > 0 ? (
         <Text>
           Plus {money(coreBackCents, currency)} in core deposits, which go back with the parts: a
@@ -134,57 +144,61 @@ function RefundFields({
             form.setAsCredit(event.target.checked);
           }}
         />
-        <Text as="span">Give as store credit instead of back to their card</Text>
+        <Text as="span">{creditLabel}</Text>
       </label>
     </>
   );
 }
 
-/** Give the customer their money back — the move that settles the return, moves
- *  real money, and cannot be undone. */
-export function RefundReturnModal({
-  detail,
-  currency,
-  suggestedCents,
-  coreBackCents = 0,
-  open,
-  onClose,
-}: {
+export interface RefundReturnModalProps {
   detail: ReturnDetail;
   currency: string;
-  /** A starting amount from the accepted lines; zero when prices are unknown. */
+  /** A starting amount from the accepted lines, sales tax included; zero when
+   *  prices are unknown. */
   suggestedCents: number;
   /** Core deposits that go back with the parts (issue 051). The server adds
    *  them itself; shown so the figure on the button is the one paid. */
   coreBackCents?: number;
   open: boolean;
   onClose: () => void;
-}) {
+}
+
+/** Give the customer their money back: the move that settles the return and
+ *  cannot be undone. */
+export function RefundReturnModal(props: RefundReturnModalProps) {
+  const { detail, currency, suggestedCents, coreBackCents = 0, open, onClose } = props;
   const form = useRefundForm(open, suggestedCents);
-  const { submit, busy } = useRefundSubmit(detail, currency, onClose);
+  const { submit, busy } = useRefundSubmit(detail, onClose);
   const valid = form.amountCents > 0 || coreBackCents > 0;
   const backCents = form.amountCents + coreBackCents;
-  const who = detail.customerName ?? 'the customer';
+  const words = refundWords({
+    who: detail.customerName ?? 'the customer',
+    amount: money(backCents, currency),
+    byHand: detail.refundsByHand,
+    asCredit: form.asCredit,
+  });
 
   return (
     <ActionDialog
       open={open}
       onClose={onClose}
       title="Give the money back"
-      description={
-        form.asCredit
-          ? `${who} gets this as store credit to spend with you later. This settles the return and cannot be undone.`
-          : `${who} gets this back the way they paid. This moves real money and cannot be undone.`
-      }
-      submitLabel={valid ? `Give back ${money(backCents, currency)}` : 'Give the money back'}
+      description={words.description}
+      submitLabel={valid ? words.submitLabel : 'Give the money back'}
       submitColor="danger"
       submitDisabled={!valid}
       busy={busy}
       onSubmit={() => {
-        submit(form, backCents);
+        submit(form, words.doneTitle);
       }}
     >
-      <RefundFields form={form} currency={currency} coreBackCents={coreBackCents} />
+      <RefundFields
+        form={form}
+        currency={currency}
+        coreBackCents={coreBackCents}
+        creditLabel={words.creditLabel}
+        taxNote={paidBackNote(paidTaxOf(detail), currency)}
+      />
     </ActionDialog>
   );
 }

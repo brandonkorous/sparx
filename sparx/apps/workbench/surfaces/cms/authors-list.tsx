@@ -110,7 +110,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A masthead is a bounded set of people, so one generous window covers it and
   // the search runs in the browser. `take: 250` is the API's ceiling.
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAuthorsList({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAuthorsList({
     take: 250,
     skip: 0,
   });
@@ -163,6 +163,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<User className="size-6" aria-hidden />}
         title="Could not load your authors"
         description="This is a problem reaching the server. None of your authors have been lost."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

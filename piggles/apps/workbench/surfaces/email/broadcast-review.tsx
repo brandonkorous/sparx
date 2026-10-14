@@ -17,6 +17,8 @@ import {
 import { faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
+import { useReaderClock } from '../../lib/business-timezone';
+import { clockNote, onClock } from '../../lib/publish-clock';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -32,7 +34,7 @@ import { broadcastErrorMessage, broadcastState, senderDisplay } from './broadcas
 import { useCancelBroadcast } from './broadcasts-mutations';
 import { StatsGrid, SummaryRow } from './broadcast-stats';
 import { BroadcastPreview } from './broadcast-preview';
-import { COLUMN, formatWhen, peopleCount } from './broadcast-draft';
+import { COLUMN, peopleCount } from './broadcast-draft';
 
 export function BroadcastReview({
   ctx,
@@ -59,6 +61,12 @@ export function BroadcastReview({
   const stats = useBroadcastStats(broadcast.id, isSent);
 
   const state = broadcastState(broadcast.status);
+  // Sent and scheduled times are on the business's clock, named, or this
+  // computer's when it has none. They read on this computer's clock unnamed, so
+  // a campaign sent at 9:20 AM in London read "1:20 AM" in California (Piggles
+  // persona issue 984).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   useEffect(() => {
     ctx.setTitle(broadcast.name);
@@ -71,7 +79,7 @@ export function BroadcastReview({
     const ok = await confirm({
       title: 'Cancel this scheduled broadcast?',
       description: `“${broadcast.name}” is set to send ${
-        broadcast.scheduledAt ? `on ${formatWhen(broadcast.scheduledAt)}` : 'later'
+        broadcast.scheduledAt ? `on ${onClock(broadcast.scheduledAt, clock)}` : 'later'
       }. Canceling stops it going out for good. Nobody receives it. You can always start a new broadcast later.`,
       confirmLabel: 'Cancel the send',
       cancelLabel: 'Leave it scheduled',
@@ -136,9 +144,22 @@ export function BroadcastReview({
         <div className={COLUMN}>
           <Text className="text-sm">{broadcast.subject}</Text>
 
-          <StateNotice broadcast={broadcast} />
+          <StateNotice broadcast={broadcast} clock={clock} />
 
-          <FormSection title="Summary">
+          {/* With no business zone the times above fall back to this computer's
+              clock, and say so, with where to set the business's own. */}
+          <FormSection
+            title="Summary"
+            description={
+              reader.zone === null && (broadcast.sentAt ?? broadcast.scheduledAt)
+                ? clockNote(
+                    null,
+                    reader.device,
+                    new Date(broadcast.sentAt ?? broadcast.scheduledAt ?? Date.now())
+                  )
+                : undefined
+            }
+          >
             <dl className="grid gap-x-6 gap-y-3 @md:grid-cols-2">
               <SummaryRow label="Who it went to" value={audienceName ?? 'An audience'} />
               <SummaryRow label="What was sent" value={emailName ?? 'A designed email'} />
@@ -148,9 +169,9 @@ export function BroadcastReview({
                 value={broadcast.recipientCount > 0 ? peopleCount(broadcast.recipientCount) : '—'}
               />
               {broadcast.sentAt ? (
-                <SummaryRow label="Sent" value={formatWhen(broadcast.sentAt)} />
+                <SummaryRow label="Sent" value={onClock(broadcast.sentAt, clock)} />
               ) : broadcast.scheduledAt ? (
-                <SummaryRow label="Scheduled for" value={formatWhen(broadcast.scheduledAt)} />
+                <SummaryRow label="Scheduled for" value={onClock(broadcast.scheduledAt, clock)} />
               ) : null}
             </dl>
           </FormSection>
@@ -158,8 +179,12 @@ export function BroadcastReview({
           {/* The subject above is the raw one an owner typed, merge tags and all.
               This is the email as a customer received it. */}
           <FormSection
-            title="What was sent"
-            description="The email as it arrived, shown for one person out of the audience."
+            title={isSent ? 'What was sent' : 'What will be sent'}
+            description={
+              isSent
+                ? 'The design as it was when this went out, shown for one person it went to.'
+                : 'The email as it will arrive, shown for one person out of the audience.'
+            }
           >
             <BroadcastPreview id={broadcast.id} enabled />
           </FormSection>
@@ -199,15 +224,15 @@ export function BroadcastReview({
 
 /** The one-line story of a broadcast that is not simply sent: waiting, stopped,
  *  or broken. */
-function StateNotice({ broadcast }: { broadcast: Broadcast }) {
+function StateNotice({ broadcast, clock }: { broadcast: Broadcast; clock: string }) {
   if (broadcast.status === 'scheduled' && broadcast.scheduledAt) {
     return (
       <Alert color="warning">
         <AlertContent>
           <AlertTitle>Scheduled to send</AlertTitle>
           <AlertDescription>
-            This goes out on {formatWhen(broadcast.scheduledAt)} to everyone in your audience. You
-            can cancel it any time before then.
+            This goes out on {onClock(broadcast.scheduledAt, clock)} to everyone in your audience.
+            You can cancel it any time before then.
           </AlertDescription>
         </AlertContent>
       </Alert>

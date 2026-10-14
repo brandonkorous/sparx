@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
-import { orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
+import { OrderRow } from '@/components/account/order-row';
 import {
   getB2bOrders,
   getB2bSummary,
@@ -26,18 +26,10 @@ import {
   type B2bOrderEntry,
 } from '@/lib/customer-client';
 import { FillCartButton } from '@/components/account/order-again-button';
-import { formatMoney } from '@/lib/format';
-import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
+import { Alert } from '@wizeworks/silicaui-react';
+import { ListPager } from '@/components/account/list-pager';
 
 const PAGE_SIZE = 20;
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 export default function B2bOrdersPage() {
   const { tenantSlug } = useCustomer();
@@ -98,30 +90,17 @@ export default function B2bOrdersPage() {
         <>
           <div className="flex flex-col gap-2">
             {orders.map((o) => (
-              <div key={o.id} className="card border-base-300 gap-3 border px-4 py-3.5">
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                  <div className="min-w-0">
-                    {/* An order number is one token: it must not break across lines. */}
-                    <Link
-                      href={`/account/b2b/${accountId}/orders/${o.id}`}
-                      className="link link-primary font-semibold whitespace-nowrap"
-                    >
-                      {o.orderNumber}
-                    </Link>
-                    <div className="text-base-content text-sm">
-                      {formatDate(o.createdAt)}
-                      {o.customerName && <span> · Placed by {o.customerName}</span>}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge color={orderStatusTone(o.status)} variant="soft">
-                      {orderStatusLabel(o.status)}
-                    </Badge>
-                    <strong className="whitespace-nowrap">
-                      {formatMoney(o.totalCents, o.currency)}
-                    </strong>
-                  </div>
-                </div>
+              <div key={o.id} className="flex flex-col gap-2">
+                <OrderRow
+                  href={`/account/b2b/${accountId}/orders/${o.id}`}
+                  orderNumber={o.orderNumber}
+                  placedAt={o.createdAt}
+                  placedBy={o.customerName}
+                  status={o.status}
+                  collecting={o.collecting}
+                  totalCents={o.totalCents}
+                  currency={o.currency}
+                />
                 {canOrder && (
                   <FillCartButton
                     label="Order again"
@@ -135,31 +114,7 @@ export default function B2bOrdersPage() {
             ))}
           </div>
 
-          {total > PAGE_SIZE && (
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip === 0}
-                onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
-              >
-                Previous
-              </Button>
-              <span className="text-base-content text-sm">
-                {skip + 1} to {Math.min(skip + PAGE_SIZE, total)} of {total}
-              </span>
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip + PAGE_SIZE >= total}
-                onClick={() => setSkip(skip + PAGE_SIZE)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <ListPager offset={skip} pageSize={PAGE_SIZE} total={total} onMove={setSkip} />
         </>
       )}
     </div>

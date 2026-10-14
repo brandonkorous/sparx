@@ -23,6 +23,8 @@ export interface TokenState {
   role: string;
   /** Display only, and possibly empty — see WorkbenchTokenResponse. */
   userName: string;
+  email: string;
+  emailVerified: boolean;
 }
 
 /** Refresh once 80% of the lifetime has burned, so a request never races expiry. */
@@ -68,6 +70,8 @@ async function fetchToken(): Promise<TokenState> {
     // real state here, so it degrades into the same empty string rather than
     // needing a second branch anywhere downstream.
     userName: body.userName ?? '',
+    email: body.email,
+    emailVerified: body.emailVerified,
   };
 }
 

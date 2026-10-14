@@ -63,6 +63,7 @@ import * as pricingService from './pricing-service';
 import * as shippingService from './shipping-service';
 import * as taxService from './tax-service';
 import { taxRegionCode } from './tax-region';
+import { quotedRateBasisPoints, taxByCartItem } from './order-line-tax';
 import { exemptionIdsForBuyer } from './tax-exemption-holders';
 import { resolveShipFromAddress } from './shipping-request-resolver';
 import type {
@@ -71,6 +72,7 @@ import type {
 } from '@wizeworks/commerce-schemas';
 import { describeRate, isCollection } from './collection-option';
 import { noteWrite } from './checkout-note';
+import { creditPreviewOf } from './checkout-credit-preview';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -355,7 +357,7 @@ export async function get(
     const account = row.companyId
       ? await tx.company.findFirst({
           where: { id: row.companyId },
-          select: { paymentTerms: true },
+          select: { paymentTerms: true, status: true, creditLimit: true, creditUsed: true },
         })
       : null;
 
@@ -381,7 +383,14 @@ export async function get(
           totalCents,
         })
       : null;
-    return approvalPreview ? { ...snapshot, approvalPreview } : snapshot;
+    // The same question `complete` asks of an order billed to the account
+    // (sparx persona issue 187).
+    const creditPreview = account ? creditPreviewOf(account, totalCents, row.currency) : null;
+    return {
+      ...snapshot,
+      ...(approvalPreview ? { approvalPreview } : {}),
+      ...(creditPreview ? { creditPreview } : {}),
+    };
   });
 }
 
@@ -827,7 +836,7 @@ export async function repeatOwner(
   const owner = session.customerId ?? cart?.customerId ?? null;
   if (owner !== null && owner !== signedInCustomerId) {
     throw new CommerceValidationError(
-      'This basket belongs to a different account. Sign in as that account, or start a new basket.',
+      'This cart belongs to a different account. Sign in as that account, or start a new cart.',
       [{ field: 'account', message: 'not_basket_owner' }]
     );
   }
@@ -1040,6 +1049,9 @@ export interface CheckoutApproval {
   accountApprovers: string[];
   /** The spending limit the order went over, when one held it. */
   limitCents: number | null;
+  /** The credit it ran past, when that held it too, so the confirmation can
+   *  say why the business signs it off (sparx persona issue 187). */
+  overCredit: { creditLeftCents: number; orderTotalCents: number; currency: string } | null;
 }
 
 /** Who a spending limit would ask to sign this order off if it were placed now.
@@ -1082,12 +1094,22 @@ async function checkoutApproval(
   order: Parameters<typeof accountOrderGate.loadOrderSignOff>[2]
 ): Promise<CheckoutApproval> {
   const signOff = await accountOrderGate.loadOrderSignOff(tx, tenantId, order);
+  const credit = accountOrderGate
+    .approvalHoldReasons(order.metadata)
+    .find((reason) => reason.kind === 'over_credit_limit');
   return {
     waitingOn: signOff.state.waitingOn,
     accountApprovers: signOff.state.needs.includes('account')
       ? signOff.approvers.map((approver) => approver.name)
       : [],
     limitCents: signOff.rule?.minAmountCents ?? null,
+    overCredit: credit
+      ? {
+          creditLeftCents: Math.round(credit.creditLeft * 100),
+          orderTotalCents: Math.round(credit.orderTotal * 100),
+          currency: credit.currency,
+        }
+      : null,
   };
 }
 
@@ -1295,6 +1317,11 @@ export async function complete(
     // it here is what stops a $42.00 shirt bought for $35.70 being refunded at
     // $42.00 (issue 298).
     const discountByLine = await apportionCartDiscounts(tx, cart);
+    // And what each line was taxed, from the quote this session was priced with.
+    // Without it every taxed order was written with its tax on the order alone,
+    // so its invoice could not list its parts (sparx persona issue 226).
+    const taxByLine = taxByCartItem(session.taxBreakdown, session.taxTotalCents);
+    const taxRateBasisPoints = quotedRateBasisPoints(session.taxBreakdown);
 
     const items = cart.items.map((it) => {
       // The order is the lasting record of a repeat request (issue 739); the
@@ -1310,6 +1337,7 @@ export async function complete(
         quantity: it.quantity,
         unitPrice: it.unitPriceCents / 100,
         discountAmount: (discountByLine.get(it.id) ?? 0) / 100,
+        ...(taxByLine.has(it.id) ? { taxAmount: (taxByLine.get(it.id) ?? 0) / 100 } : {}),
         // The deposit rides on the part's own line, so picking, stock and sales
         // figures never count it as an item (issue 051).
         ...(it.coreChargeCents !== null ? { coreCharge: it.coreChargeCents / 100 } : {}),
@@ -1359,7 +1387,7 @@ export async function complete(
       settled.coreChargeTotalCents !== session.coreChargeTotalCents
     ) {
       throw new CommerceConflictError(
-        'Your basket changed while you were checking out. Open it again to see the current total.'
+        'Your cart changed while you were checking out. Open it again to see the current total.'
       );
     }
 
@@ -1417,7 +1445,7 @@ export async function complete(
     // not be written for the figure only one of them knows (issues 298, 300).
     if (input.expectedTotalCents !== undefined && input.expectedTotalCents !== orderTotalCents) {
       throw new CommerceConflictError(
-        'The total changed while you were checking out. Open your basket to see what it comes to now.'
+        'The total changed while you were checking out. Open your cart to see what it comes to now.'
       );
     }
 
@@ -1489,6 +1517,9 @@ export async function complete(
           // to answer before it can put money back on the right card.
           ...(reservedCard ? { giftCardCode: reservedCard.code } : {}),
           accountCreditAppliedCents: session.accountCreditAppliedCents,
+          // The rate it was taxed at, so its invoice prints 7.25% and not a rate
+          // worked out backwards from cents (sparx persona issue 228).
+          ...(taxRateBasisPoints !== null ? { taxRateBasisPoints } : {}),
         },
       },
       // This caller announces the placement itself, at the bottom of `place`,
@@ -2086,6 +2117,7 @@ export async function quoteTaxForSession(
     const [items, exemptionIds] = await Promise.all([
       tx.cartItem.findMany({
         where: { cartId: input.cartId },
+        orderBy: { id: 'asc' },
         select: {
           id: true,
           quantity: true,
@@ -2110,7 +2142,7 @@ export async function quoteTaxForSession(
 
   const origin = from ?? { country: 'US', region: undefined };
 
-  return taxService.calculate(ctx, {
+  const quoted = await taxService.calculate(ctx, {
     shipFrom: {
       country: origin.country,
       ...(taxRegionCode(origin.country, origin.region ?? undefined)
@@ -2137,6 +2169,16 @@ export async function quoteTaxForSession(
       discountAmountCents: read.discountByLine.get(item.id) ?? 0,
     })),
   });
+  // Each quoted line names the basket line it taxes, so the order can give every
+  // item its own tax when it is placed (`taxByCartItem`, issue 226). `lineRef` is
+  // only a position in this request.
+  return {
+    ...quoted,
+    lines: quoted.lines.map((line) => ({
+      ...line,
+      ...(read.items[line.lineRef] ? { cartItemId: read.items[line.lineRef]?.id } : {}),
+    })),
+  };
 }
 
 async function assertSessionWritable(tx: TxClient, sessionId: string): Promise<CheckoutSession> {

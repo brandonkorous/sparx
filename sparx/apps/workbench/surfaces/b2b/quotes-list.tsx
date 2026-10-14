@@ -9,13 +9,14 @@
 // because a quote IS a billing document under the hood.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { FileText, Plus, X } from 'lucide-react';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   QUOTE_STATES,
@@ -58,7 +59,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
     setTake(pageSize);
   };
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useQuotes({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useQuotes({
     accountId,
     q: search.trim(),
     state: active.state,
@@ -181,10 +182,11 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load your quotes"
             description="This is a problem reaching the server. Your quotes are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -264,7 +266,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(quote, event);
                     }}
                   >
-                    <td className="font-mono text-sm">
+                    <td className="font-mono text-sm whitespace-nowrap">
                       {quote.number ?? 'Draft'}
                       {/* On a phone this table keeps a number and a badge and
                           drops everything else, so the whole list read

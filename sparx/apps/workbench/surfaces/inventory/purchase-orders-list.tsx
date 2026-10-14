@@ -17,18 +17,11 @@
 // report only whichever ACME orders happen to be in hand.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  EmptyState,
-  Card,
-  NativeSelect,
-  SearchInput,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, NativeSelect, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { ClipboardList, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -77,13 +70,15 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const supplierName = supplierList.find((supplier) => supplier.id === supplierId)?.name ?? null;
   const statusLabel = STATUS_OPTIONS.find((option) => option.value === status)?.label ?? null;
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePurchaseOrders({
-    q: search.trim(),
-    ...(status ? { status } : {}),
-    ...(supplierId ? { supplierId } : {}),
-    take,
-    skip,
-  });
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = usePurchaseOrders(
+    {
+      q: search.trim(),
+      ...(status ? { status } : {}),
+      ...(supplierId ? { supplierId } : {}),
+      take,
+      skip,
+    }
+  );
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -111,10 +106,11 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ClipboardList className="size-6" aria-hidden />}
           title="Could not load your purchase orders"
           description="This is a problem reaching the server. Your orders are unaffected: the list just could not be read just now."
+          error={error}
         />
       );
     }

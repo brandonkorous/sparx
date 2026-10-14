@@ -16,11 +16,14 @@ import { stillWaiting } from './published-words';
 
 export function PublishedLine({
   what,
+  plural = false,
   ctx,
   catchingUp,
 }: {
   /** What this pane published, as the start of a sentence: "This page". */
   what: string;
+  /** "The header and footer" are two things: "are published", "shows them". */
+  plural?: boolean;
   ctx: SurfaceContext;
   /** The publish was moments ago, so visitors may not have it yet. */
   catchingUp: boolean;
@@ -30,7 +33,7 @@ export function PublishedLine({
   return (
     <span>
       {catchingUp
-        ? `${what} is published. Your site shows it in a few seconds, a few minutes at most.`
+        ? `${what} ${plural ? 'are' : 'is'} published. Your site shows ${plural ? 'them' : 'it'} in a few seconds, a few minutes at most.`
         : 'Saved and live.'}
       {waiting ? (
         <>

@@ -12,21 +12,13 @@
 // runs a business, not a CRM.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Table, Text } from '@wizeworks/silicaui-react';
 import { Building2, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { accountState, formatCents, useAccounts, type AccountRow } from './accounts-data';
 import { creditStanding } from '../../lib/credit-standing';
@@ -59,7 +51,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const skip = (page - 1) * pageSize;
   const narrowed = search.trim() !== '' || filter !== 'all';
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccounts({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAccounts({
     q: search.trim(),
     status: active.status,
     take,
@@ -147,10 +139,11 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Building2 className="size-6" aria-hidden />}
             title="Could not load your trade accounts"
             description="This is a problem reaching the server. Your accounts are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

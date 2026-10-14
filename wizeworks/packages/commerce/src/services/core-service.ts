@@ -18,11 +18,13 @@
 // account credit when the counter chooses that.
 
 import {
+  coresOutstanding,
   coresOwed,
   KeepCoreDepositsInput,
   ListCoresOwedInput,
   ReceiveCoresInput,
   ReleaseCoreHoldInput,
+  splitCoreDeposit,
   unitsWaitingForCore,
   type CoreOwed,
   type CoreSettlement,
@@ -63,6 +65,9 @@ const LINE_SELECT = {
   coreHoldReleasedAt: true,
   coresReturned: true,
   coresKept: true,
+  // When the part was handed over: a deposit core is owed from then, never from
+  // the order date (sparx persona issue 184).
+  fulfillmentItems: { select: { fulfillment: { select: { shippedAt: true, createdAt: true } } } },
   order: {
     select: {
       id: true,
@@ -105,8 +110,80 @@ async function businessNames(tx: TxClient, lines: CoreLine[]): Promise<Map<strin
   return new Map(companies.map((c) => [c.id, c.companyName]));
 }
 
-function toOwed(line: CoreLine, now: Date, businesses: Map<string, string>): CoreOwed {
-  const owed = coresOwed(line);
+type OpenInvoice = NonNullable<CoreOwed['openInvoice']>;
+
+/**
+ * Each order's open invoice: the newest one still owed. A returned core's deposit
+ * comes off it first. The ONE lookup behind the refund (`receiveCores`), the list
+ * (`listOwed`) and the dialog that says what the refund will do
+ * (`openInvoiceForLine`), so the three can never name different invoices (sparx
+ * persona issue 183).
+ */
+async function openInvoicesByOrder(
+  tx: TxClient,
+  orderIds: string[]
+): Promise<Map<string, OpenInvoice & { id: string }>> {
+  const ids = [...new Set(orderIds)];
+  if (ids.length === 0) return new Map();
+  const documents = await tx.billingDocument.findMany({
+    where: { orderId: { in: ids }, deletedAt: null, ...OWED_DOCUMENT_WHERE },
+    select: { id: true, orderId: true, number: true, balance: true },
+    orderBy: { createdAt: 'desc' },
+  });
+  const byOrder = new Map<string, OpenInvoice & { id: string }>();
+  for (const doc of documents) {
+    if (!doc.orderId || byOrder.has(doc.orderId)) continue;
+    byOrder.set(doc.orderId, {
+      id: doc.id,
+      number: doc.number,
+      balanceCents: toCents(doc.balance),
+    });
+  }
+  return byOrder;
+}
+
+/**
+ * The open invoice a returned core's deposit on this order line would come off.
+ * Read by the "Core came back" dialog, from the order or from the list, before
+ * anybody clicks.
+ */
+export async function openInvoiceForLine(
+  ctx: ServiceContext,
+  orderItemId: string
+): Promise<{ openInvoice: OpenInvoice | null }> {
+  return withTenant(ctx, async (tx) => {
+    const line = await loadLine(tx, orderItemId);
+    const found = (await openInvoicesByOrder(tx, [line.order.id])).get(line.order.id);
+    return {
+      openInvoice: found ? { number: found.number, balanceCents: found.balanceCents } : null,
+    };
+  });
+}
+
+/** When the customer was first given this part: the earliest fulfillment that
+ *  carried it. Null while it is still on the shelf. */
+function handedOverAt(line: CoreLine): Date | null {
+  const dates = line.fulfillmentItems.map(
+    (item) => item.fulfillment.shippedAt ?? item.fulfillment.createdAt
+  );
+  if (dates.length === 0) return null;
+  return new Date(Math.min(...dates.map((d) => d.getTime())));
+}
+
+function openInvoiceOf(found: (OpenInvoice & { id: string }) | undefined): OpenInvoice | null {
+  return found ? { number: found.number, balanceCents: found.balanceCents } : null;
+}
+
+function toOwed(
+  line: CoreLine,
+  now: Date,
+  businesses: Map<string, string>,
+  invoices: Map<string, OpenInvoice & { id: string }>
+): CoreOwed {
+  // What is owed NOW: one core per part handed over (issue 184). A send-first line
+  // owes its old part from the order, before anything goes.
+  const owed = coresOutstanding(line);
+  const since = line.coreFirst ? line.order.placedAt : (handedOverAt(line) ?? line.order.placedAt);
   const core = toCents(line.coreCharge);
   const customer = line.order.customer;
   return {
@@ -129,7 +206,8 @@ function toOwed(line: CoreLine, now: Date, businesses: Map<string, string>): Cor
     coresReturned: line.coresReturned,
     coresKept: line.coresKept,
     owedCents: owed * core,
-    daysOut: Math.max(0, Math.floor((now.getTime() - line.order.placedAt.getTime()) / DAY_MS)),
+    openInvoice: openInvoiceOf(invoices.get(line.order.id)),
+    daysOut: Math.max(0, Math.floor((now.getTime() - since.getTime()) / DAY_MS)),
     currency: line.order.currency,
   };
 }
@@ -140,12 +218,13 @@ function toOwed(line: CoreLine, now: Date, businesses: Map<string, string>): Cor
  * A cancelled order owes nothing: it was never handed over. The rest are read in
  * full and filtered here, because "owed" is a sum of four columns that a database
  * filter would have to repeat, and a second spelling of the rule is how two
- * screens come to disagree.
+ * screens come to disagree. "Older than" is filtered here too: it counts from the
+ * handover, which no single column holds (sparx persona issue 184).
  */
 export async function listOwed(ctx: ServiceContext, rawInput: unknown = {}): Promise<CoreOwed[]> {
   const input = ListCoresOwedInput.parse(rawInput);
   const now = new Date();
-  const { lines, businesses } = await withTenant(ctx, async (tx) => {
+  const { lines, businesses, invoices } = await withTenant(ctx, async (tx) => {
     const found = await tx.orderItem.findMany({
       where: {
         // A deposit held, or an old part the part is waiting for (issue 057).
@@ -155,19 +234,25 @@ export async function listOwed(ctx: ServiceContext, rawInput: unknown = {}): Pro
           ...(input.orderId ? { id: input.orderId } : {}),
           ...(input.customerId ? { customerId: input.customerId } : {}),
           ...(input.companyId ? { customer: { companyId: input.companyId } } : {}),
-          ...(input.olderThanDays !== undefined
-            ? { placedAt: { lte: new Date(now.getTime() - input.olderThanDays * DAY_MS) } }
-            : {}),
         },
       },
       select: LINE_SELECT,
       orderBy: { order: { placedAt: 'asc' } },
     });
-    return { lines: found, businesses: await businessNames(tx, found) };
+    return {
+      lines: found,
+      businesses: await businessNames(tx, found),
+      invoices: await openInvoicesByOrder(
+        tx,
+        found.map((l) => l.order.id)
+      ),
+    };
   });
   return lines
-    .map((line) => toOwed(line, now, businesses))
+    .map((line) => toOwed(line, now, businesses, invoices))
     .filter((row) => row.coresOwed > 0)
+    .filter((row) => input.olderThanDays === undefined || row.daysOut >= input.olderThanDays)
+    .sort((a, b) => b.daysOut - a.daysOut)
     .slice(0, input.limit);
 }
 
@@ -220,17 +305,17 @@ export async function receiveCores(
     }
     const depositCents = input.usable * toCents(line.coreCharge);
 
-    // An invoice still owing on this order takes the deposit first.
+    // An invoice still owing on this order takes the deposit first: the same
+    // invoice, and the same split, the dialog showed before the click (sparx
+    // persona issue 183).
     const invoice =
       depositCents === 0
         ? null
-        : await tx.billingDocument.findFirst({
-            where: { orderId: line.order.id, deletedAt: null, ...OWED_DOCUMENT_WHERE },
-            select: { id: true, balance: true, number: true },
-            orderBy: { createdAt: 'desc' },
-          });
-    const invoiceCreditCents = Math.min(depositCents, invoice ? toCents(invoice.balance) : 0);
-    const restCents = depositCents - invoiceCreditCents;
+        : ((await openInvoicesByOrder(tx, [line.order.id])).get(line.order.id) ?? null);
+    const { offInvoiceCents: invoiceCreditCents, backCents: restCents } = splitCoreDeposit(
+      depositCents,
+      invoice?.balanceCents ?? 0
+    );
 
     const payment =
       restCents > 0 && input.refundTo === 'original_payment'
@@ -306,11 +391,14 @@ export async function receiveCores(
     });
 
     if (invoice && invoiceCreditCents > 0) {
+      // A credit, not a payment: the customer paid nothing, the deposit came off
+      // because the old part came back. Recorded as a payment it printed on the
+      // fleet's statement as "Payment, ref Core returned" (sparx persona issue 185).
       await billingPaymentService.recordPayment(composed, invoice.id, {
-        kind: 'payment',
+        kind: 'credit',
         method: 'other',
         amount: invoiceCreditCents / 100,
-        reference: 'Core returned',
+        reference: 'Returned core',
         note: `${String(input.usable)} × ${line.name} (order ${line.order.orderNumber})`,
       });
     }

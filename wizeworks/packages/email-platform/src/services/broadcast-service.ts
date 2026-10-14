@@ -11,7 +11,7 @@
 
 import { withTenant } from '@wizeworks/db';
 import type { Broadcast, Prisma } from '@wizeworks/db';
-import { renderSilicaEmail } from '@wizeworks/email/silica';
+import { renderSilicaEmail, UNSUBSCRIBE_PLACEHOLDER } from '@wizeworks/email/silica';
 import {
   emailTreeToSilica,
   silicaEmailIsPersonalized,
@@ -28,7 +28,7 @@ import {
   ScheduleBroadcastInput,
   UpdateBroadcastInput,
 } from '../schemas/broadcasts';
-import { audienceScope } from './audience-scope';
+import { audienceScope, sendableRecipients } from './audience-scope';
 import { resolveEmailBrand } from './brand-service';
 import { resolveEmailTracking } from './email-tracking-service';
 import { get as getSettings } from './settings-service';
@@ -244,20 +244,16 @@ export async function update(
   );
 }
 
-/** Estimated audience size (segment members on this site). The actual send additionally
- *  removes suppressed addresses. Scoped by the SAME predicate the send uses — an
- *  estimate that counted the whole tenant would promise an audience the send won't
- *  mail. */
+/** How many people a broadcast to this segment on this site will reach: the send's own
+ *  recipient list, counted. A raw member count promised mail to people the send skips
+ *  (do not contact, the do-not-email list, no address, repeats; piggles issue 967), and
+ *  one that counted the whole tenant would promise an audience on another site. */
 export async function estimateRecipients(
   ctx: ServiceContext,
   segmentId: string | null,
   propertyId: string | null = null
 ): Promise<{ count: number }> {
-  if (!segmentId) return { count: 0 };
-  const count = await withTenant(ctx, (tx) =>
-    tx.segmentMember.count({ where: { segmentId, ...audienceScope(propertyId) } })
-  );
-  return { count };
+  return { count: (await audienceOf(ctx, segmentId, propertyId)).length };
 }
 
 // ── Send / schedule ──────────────────────────────────────────────────────
@@ -284,14 +280,45 @@ export async function previewRecipient(
   return recipients[0] ?? null;
 }
 
-async function expandRecipients(ctx: ServiceContext, broadcast: Broadcast): Promise<Recipient[]> {
-  if (!broadcast.segmentId) return [];
+/**
+ * One person a SENT broadcast actually went to: the first row its send queue marked
+ * sent. A sent broadcast's preview is the record of what went out, so it is shown as
+ * somebody who received it; today's audience can hold people who joined afterwards
+ * and never got it (sparx persona issue 161). Read from the queue, not the delivery
+ * log, because the queue row carries the customer the greeting is rendered for.
+ * Null when nothing is marked sent.
+ */
+export function sentRecipient(
+  ctx: ServiceContext,
+  id: string
+): Promise<{ email: string; customerId: string | null } | null> {
+  return withTenant(ctx, async (tx) => {
+    const first = await tx.scheduledSend.findFirst({
+      where: { broadcastId: id, status: 'sent' },
+      orderBy: { sentAt: 'asc' },
+      select: { recipient: true, customerId: true },
+    });
+    return first ? { email: first.recipient, customerId: first.customerId } : null;
+  });
+}
+
+function expandRecipients(ctx: ServiceContext, broadcast: Broadcast): Promise<Recipient[]> {
+  return audienceOf(ctx, broadcast.segmentId, broadcast.propertyId);
+}
+
+/** Everyone a send to this segment on this site mails (`sendableRecipients`). */
+async function audienceOf(
+  ctx: ServiceContext,
+  segmentId: string | null,
+  propertyId: string | null
+): Promise<Recipient[]> {
+  if (!segmentId) return [];
   return withTenant(ctx, async (tx) => {
     const [members, suppressions] = await Promise.all([
       tx.segmentMember.findMany({
         // Scoped to the broadcast's site — a Segment spans the tenant, its audience
         // must not (see `audienceScope`).
-        where: { segmentId: broadcast.segmentId!, ...audienceScope(broadcast.propertyId) },
+        where: { segmentId, ...audienceScope(propertyId) },
         select: { customerId: true, customer: { select: { email: true, doNotContact: true } } },
       }),
       tx.emailSuppression.findMany({
@@ -299,16 +326,10 @@ async function expandRecipients(ctx: ServiceContext, broadcast: Broadcast): Prom
         select: { email: true },
       }),
     ]);
-    const blocked = new Set(suppressions.map((s) => s.email.toLowerCase()));
-    const seen = new Set<string>();
-    const out: Recipient[] = [];
-    for (const m of members) {
-      const email = m.customer.email?.toLowerCase();
-      if (!email || m.customer.doNotContact || blocked.has(email) || seen.has(email)) continue;
-      seen.add(email);
-      out.push({ email, customerId: m.customerId });
-    }
-    return out;
+    return sendableRecipients(
+      members,
+      suppressions.map((s) => s.email)
+    );
   });
 }
 
@@ -387,8 +408,10 @@ async function enqueueAndMark(
       broadcast.propertyId
     );
     // `marketing: true` injects the legal footer. The unsubscribe URL is per-recipient
-    // and a render-once body has no recipient, so it falls back to `#` — exactly what
-    // the retired `unsubscribe_link` node did on this same path.
+    // and a render-once body has no recipient, so it carries the placeholder, which
+    // the dispatch swaps for each reader's own link and header. It used to fall back
+    // to `#`, so nobody who got a render-once campaign could unsubscribe (piggles
+    // persona issue 985).
     //
     // The postal address is NOT per-recipient and was being dropped here anyway:
     // this branch passed no `compliance` at all, so a render-once broadcast went
@@ -403,7 +426,10 @@ async function enqueueAndMark(
         preheader: broadcast.preheader,
         data,
         marketing: true,
-        compliance: { physicalAddress: settings.physicalAddress ?? '' },
+        compliance: {
+          physicalAddress: settings.physicalAddress ?? '',
+          unsubscribeUrl: UNSUBSCRIBE_PLACEHOLDER,
+        },
         ...(tracking ? { tracking } : {}),
       },
       { brand: brand ?? undefined }

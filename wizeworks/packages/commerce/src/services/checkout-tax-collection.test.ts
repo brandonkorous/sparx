@@ -67,3 +67,22 @@ describe('quoteTaxForSession for a collection', () => {
     expect(request.shipTo).toMatchObject({ city: 'Bluffdale', postalCode: '84065' });
   });
 });
+
+describe('quoteTaxForSession names the basket line each tax line is for', () => {
+  // `lineRef` is a position in one request. The order is written later, from the
+  // basket, and needs the line's own id to give each item its tax (sparx persona
+  // issue 226).
+  it('stamps each quoted line with its basket line', async () => {
+    calculate.mockResolvedValueOnce({
+      totalTaxCents: 3_828,
+      lines: [{ lineRef: 0, taxableAmountCents: 52_800, taxAmountCents: 3_828 }],
+    } as never);
+    const quote = await quoteTaxForSession(
+      { tenantId: 't-1' },
+      { cartId: 'cart-1', customerId: 'cust-1', shippingAmountCents: 0 }
+    );
+    expect(quote?.lines).toEqual([
+      { lineRef: 0, cartItemId: 'line-1', taxableAmountCents: 52_800, taxAmountCents: 3_828 },
+    ]);
+  });
+});

@@ -100,7 +100,10 @@ export async function buildSegmentRuleProjection(
       },
       b2bAccount: account
         ? {
-            // A removed tier prices nothing, so it is no tier here.
+            // A removed tier prices nothing, so it is no tier here. A segment
+            // picks the tier by id, which survives a rename; the name is kept
+            // for a rule saved on it (sparx persona issue 149).
+            pricingTierId: tierInEffect(account.pricingTierFk) ? account.pricingTierId : null,
             pricingTier: tierInEffect(account.pricingTierFk)?.name ?? null,
             creditUtilization: b2bUtilization,
             fleetSize: account.fleetSize,

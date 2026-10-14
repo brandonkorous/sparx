@@ -42,6 +42,7 @@ import {
 import { PlanningShell, targetFor, useHasBeenMeasured } from './planning-shell';
 import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 import { ClassifyDialog } from './classify-dialog';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 export function PlanningClassesSurface({ ctx }: { ctx: SurfaceContext }) {
   // Filter state lives up here so the controls can sit in the pane's ONE
@@ -268,10 +269,11 @@ function ClassesPanel({
       {/* Ahead of every empty state: a failed request is not a finding about
           the catalogue, and all three messages below would read as one. */}
       {classifications.isError ? (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageX className="size-6" aria-hidden />}
           title="Could not rank your stock"
           description="This is a problem reaching the server, not a finding about what you hold. Try again in a moment."
+          error={classifications.error}
         />
       ) : classifications.isLoading ? (
         <p className="p-4 text-base" role="status">

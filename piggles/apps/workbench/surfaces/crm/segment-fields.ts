@@ -25,7 +25,7 @@ export type { PredicateLeaf, SegmentField, SegmentFieldPath, SegmentOperator, Se
 /** How a field's value is entered, which drives the operator set and the value
  *  control. `rep`/`account` are uuid fields backed by a live picker. */
 export type ValueKind =
-  'enum' | 'text' | 'number' | 'date' | 'boolean' | 'tags' | 'rep' | 'account';
+  'enum' | 'text' | 'number' | 'date' | 'boolean' | 'tags' | 'rep' | 'account' | 'tier';
 
 export interface FieldMeta {
   label: string;
@@ -119,7 +119,7 @@ export const OFFERED_FIELDS: SegmentField[] = [
   'customer.doNotContact',
   'customer.b2bAccountId',
   'b2bAccount.status',
-  'b2bAccount.pricingTier',
+  'b2bAccount.pricingTierId',
   'b2bAccount.paymentTerms',
   'b2bAccount.fleetSize',
   'b2bAccount.creditUtilization',

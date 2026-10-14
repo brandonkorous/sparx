@@ -130,6 +130,7 @@ import {
 } from './costing-data';
 import { describeQuantityShort } from './assembly-data';
 import { freightNote } from './freight-words';
+import { expectedDateHelp } from './expected-date-words';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { readFailureMessage } from '../../lib/api/write-failure';
 
@@ -1059,10 +1060,9 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     (location) => location.isActive
   );
   const supplierList = suppliers.data?.items ?? [];
-  const supplierName =
-    detail?.supplierName ??
-    supplierList.find((supplier) => supplier.id === draft.header.supplierId)?.name ??
-    null;
+  const chosenSupplier =
+    supplierList.find((supplier) => supplier.id === draft.header.supplierId) ?? null;
+  const supplierName = detail?.supplierName ?? chosenSupplier?.name ?? null;
   // Built once per fetch so the Combobox's selected value is the SAME object
   // reference it holds in `items` — Base UI matches the highlighted option by
   // identity, and a fresh array each render would also re-key its effect.
@@ -1802,10 +1802,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       setHeader('expectedArrivalAt', pickedDayUtc(date));
                     }}
                   />
-                  <FieldDescription>
-                    When you expect it. Left blank, the supplier&apos;s usual lead time fills it in
-                    when you place the order.
-                  </FieldDescription>
+                  <FieldDescription>{expectedDateHelp(chosenSupplier)}</FieldDescription>
                 </Field>
               ) : (
                 <SettledField

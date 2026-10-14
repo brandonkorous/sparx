@@ -46,6 +46,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { MARKET_CATEGORIES } from '@wizeworks/commerce-schemas';
 import { Globe2, Link2Off, ServerCrash, Store } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -355,24 +356,15 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
           <FollowingNotice scope={scope} />
 
           {listings.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load where this sells"
-              description={productErrorMessage(
-                listings.error,
-                'This is a problem reaching the server. Nothing about your listings has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void listings.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing about your listings has changed."
+              error={listings.error}
+              noun="product"
+              onRetry={() => {
+                void listings.refetch();
+              }}
             />
           ) : (
             <>

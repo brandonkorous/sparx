@@ -28,6 +28,7 @@ import {
 import { LayoutDashboard, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   ModuleScope,
   WORKBENCH_MODULES,
@@ -124,18 +125,16 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={PANE_SHELL}>
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
-          <EmptyState
+          <PaneLoadError
             icon={<ServerCrash className="size-6" aria-hidden />}
             title="Could not load this dashboard"
             description={analyticsErrorMessage(
               dashboard.error,
               'This is a problem reaching the server. Try again in a moment.'
             )}
-            actions={
-              <Button size="sm" color="module" onClick={refetch}>
-                Try again
-              </Button>
-            }
+            error={dashboard.error}
+            noun="dashboard"
+            onRetry={refetch}
           />
         </div>
       </div>

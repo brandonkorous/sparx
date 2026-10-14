@@ -36,6 +36,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { Prisma } from '@wizeworks/db';
 import { withRequestTenant } from '@wizeworks/api-core/db';
+import { indexEntity } from '@wizeworks/events';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
@@ -43,6 +44,20 @@ import { slugify } from '@wizeworks/api-core/slug';
 import { resolveListScope } from '../../../lib/property.js';
 
 const KeyParams = z.object({ key: z.string().min(1).max(63) });
+
+/** Re-read a vocabulary into search, by the key its screen opens on. Its entry is
+ *  the vocabulary alone, so a label write has nothing to re-read. */
+function reindexTaxonomy(
+  auth: { tenantId: string; actorId?: string | null },
+  key: string
+): Promise<void> {
+  return indexEntity({
+    tenantId: auth.tenantId,
+    actorId: auth.actorId ?? null,
+    entityType: 'taxonomy',
+    recordId: key,
+  });
+}
 
 const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
@@ -180,6 +195,7 @@ const taxonomyRoutes: FastifyPluginAsync = (app) => {
         },
       });
     });
+    await reindexTaxonomy(auth, created.key);
     reply.code(201);
     return ok({
       id: created.id,
@@ -191,7 +207,7 @@ const taxonomyRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.patch('/v1/taxonomies/:key', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { key } = KeyParams.parse(request.params);
     const input = UpdateTaxonomy.parse(request.body);
     const updated = await withRequestTenant(request, async (tx) => {
@@ -206,6 +222,7 @@ const taxonomyRoutes: FastifyPluginAsync = (app) => {
         },
       });
     });
+    await reindexTaxonomy(auth, updated.key);
     return ok({
       id: updated.id,
       key: updated.key,
@@ -216,13 +233,14 @@ const taxonomyRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.delete('/v1/taxonomies/:key', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { key } = KeyParams.parse(request.params);
     await withRequestTenant(request, async (tx) => {
       const existing = await tx.taxonomy.findFirst({ where: { key } });
       if (!existing) throw notFound('Taxonomy', key);
       await tx.taxonomy.delete({ where: { id: existing.id } });
     });
+    await reindexTaxonomy(auth, key);
     reply.code(204);
     return;
   });

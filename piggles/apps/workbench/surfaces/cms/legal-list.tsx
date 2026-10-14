@@ -32,15 +32,15 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const checklist = useLegalChecklist();
-  const placements = useLegalPlacements();
-  const cookieBanner = useCookieBanner();
+// The row actions, wired to the one content editor and the add/accept/take mutations.
+function useRowHandlers(
+  ctx: SurfaceContext,
+  banner: ReturnType<typeof useCookieBanner>['data']
+): RowHandlers {
   const add = useAddLegalPage();
   const takeWording = useTakeLegalWording();
   const acknowledge = useAcknowledgeLegal();
-
-  const rows: RowHandlers = {
+  return {
     onAdd: add.run,
     onEdit: (item, event) => {
       if (item.entry)
@@ -49,11 +49,23 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
     onAcknowledge: acknowledge.run,
     onTakeWording: takeWording.run,
     noteFor: (item) =>
-      cookiePolicyNote(item.legalKind, item.entry?.status ?? null, cookieBanner.data),
+      cookiePolicyNote(
+        item.legalKind,
+        item.entry?.status ?? null,
+        banner,
+        item.entry?.promisesCookieChoices
+      ),
     addingKind: add.busy,
     acknowledgingId: acknowledge.busy,
     takingWordingId: takeWording.busy,
   };
+}
+
+export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const checklist = useLegalChecklist();
+  const placements = useLegalPlacements();
+  const cookieBanner = useCookieBanner();
+  const rows = useRowHandlers(ctx, cookieBanner.data);
 
   return (
     <div className={PANE_SHELL}>
@@ -83,6 +95,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
             icon={<Icon glyph={faScaleBalanced} className="size-6" aria-hidden />}
             title="Could not load your legal pages"
             description="This is a problem reaching the server. None of your pages are affected. Nothing has been lost."
+            error={checklist.error}
             onRetry={() => {
               void checklist.refetch();
             }}

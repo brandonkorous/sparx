@@ -30,6 +30,7 @@ import { formatCents, plural } from './data';
 import { ItemName } from './item-name';
 import { bomState, useBoms, type Bom } from './assembly-data';
 import { ActionLabel } from '../../components/action-label';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const PAGE = 50;
 
@@ -55,10 +56,11 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (boms.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<CookingPot className="size-6" aria-hidden />}
           title="Could not load your recipes"
           description="This is a problem reaching the server. Your recipes are unaffected."
+          error={boms.error}
         />
       );
     }

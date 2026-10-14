@@ -83,6 +83,9 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
     title = 'Chat',
     hideLauncher = false,
     onOpenChange,
+    propertySlug,
+    startVia,
+    signedInAs = null,
   } = props;
   const storageKey = `sparx_chat:${tenantSlug}`;
 
@@ -117,7 +120,12 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
   }, [open]);
 
   const base = apiUrl.replace(/\/$/, '');
-  const tenantQuery = `tenant=${encodeURIComponent(tenantSlug)}`;
+  const tenantQuery =
+    `tenant=${encodeURIComponent(tenantSlug)}` +
+    (propertySlug ? `&property=${encodeURIComponent(propertySlug)}` : '');
+  // The first message goes through the relay when there is one, so a signed-in
+  // shopper's chat is tied to their customer record on the server.
+  const startBase = (startVia ?? apiUrl).replace(/\/$/, '');
 
   const addMessage = useCallback((m: ChatMessageDto) => {
     if (seenIds.current.has(m.id)) return;
@@ -225,14 +233,14 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
 
   const startConversation = useCallback(
     async (body: string): Promise<void> => {
-      const res = await fetch(`${base}/v1/public/chat/conversations?${tenantQuery}`, {
+      const res = await fetch(`${startBase}/v1/public/chat/conversations?${tenantQuery}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           message: body,
           source,
-          ...(preName ? { visitorName: preName } : {}),
-          ...(preEmail ? { visitorEmail: preEmail } : {}),
+          ...(!signedInAs && preName ? { visitorName: preName } : {}),
+          ...(!signedInAs && preEmail ? { visitorEmail: preEmail } : {}),
         }),
       });
       if (!res.ok) throw new Error('start failed');
@@ -249,7 +257,7 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
       persist(conv);
       connectSocket(conv);
     },
-    [base, tenantQuery, source, preName, preEmail, persist, connectSocket]
+    [startBase, tenantQuery, source, preName, preEmail, signedInAs, persist, connectSocket]
   );
 
   const send = useCallback(
@@ -328,19 +336,31 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
               }}
             >
               <p className="text-base-content text-sm">{config.greeting}</p>
-              <Input
-                color="primary"
-                placeholder="Your name (optional)"
-                value={preName}
-                onChange={(e) => setPreName(e.target.value)}
-              />
-              <Input
-                color="primary"
-                type="email"
-                placeholder="Email (optional)"
-                value={preEmail}
-                onChange={(e) => setPreEmail(e.target.value)}
-              />
+              {signedInAs ? (
+                <p className="text-base-content text-sm">
+                  Chatting as{' '}
+                  <span className="font-semibold">
+                    {signedInAs.name ?? signedInAs.email ?? 'you'}
+                  </span>
+                  . We will answer here.
+                </p>
+              ) : (
+                <>
+                  <Input
+                    color="primary"
+                    placeholder="Your name (optional)"
+                    value={preName}
+                    onChange={(e) => setPreName(e.target.value)}
+                  />
+                  <Input
+                    color="primary"
+                    type="email"
+                    placeholder="Email (optional)"
+                    value={preEmail}
+                    onChange={(e) => setPreEmail(e.target.value)}
+                  />
+                </>
+              )}
               <Textarea
                 color="primary"
                 rows={3}

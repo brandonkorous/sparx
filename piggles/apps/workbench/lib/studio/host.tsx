@@ -26,6 +26,10 @@ import { renderStudioIcon } from './studio-icons';
 import { useCanvasPreview, type CanvasPreview } from './preview';
 import { EMAIL_CONTENT_BLOCKS, useEmailIdentity, useEmailPreview } from './email-domain';
 import { useEmailChrome } from './email-data';
+import { emailWritingKinds, writingListChoices } from './list-sources';
+import { writingBlocks } from '@wizeworks/builder-schemas';
+import { useActiveProperty, useBindingCatalog } from './site-data';
+import { useActivePropertyId } from '../api/shell-data';
 
 /**
  * The host. Never null — there is nothing left to wait for.
@@ -54,10 +58,13 @@ export function useStudioHostConfig(): StudioHost | null {
   const emailPreview = useEmailPreview(useEmailIdentity());
   const emailChrome = useEmailChrome();
   const pickMedia = useMediaPicker();
+  const catalog = useBindingCatalog().data;
+  // What this site switched off, so its palette offers none of it.
+  const siteOff = useActiveProperty(useActivePropertyId()).data?.moduleScope;
 
   return useMemo(
-    () =>
-      buildHost({
+    () => ({
+      ...buildHost({
         fallbackTheme: BASE_SILICA_THEME,
         preview,
         emailPreview,
@@ -65,7 +72,14 @@ export function useStudioHostConfig(): StudioHost | null {
         emailFrame: emailChrome.data?.frame,
         pickMedia,
       }),
-    [preview, emailPreview, emailChrome.data, pickMedia]
+      catalog: (kind: DocumentKind) => catalogFor(kind, siteOff ?? []),
+      // "What this list shows", from the kinds of writing this business has.
+      listSources: (current: string) => writingListChoices(catalog, current),
+      // The email designer's blocks, plus a "Latest …" block per kind of writing this
+      // business publishes, so an edition is built from its own pieces (P09).
+      emailCatalog: () => [...EMAIL_CONTENT_BLOCKS, ...writingBlocks(emailWritingKinds(catalog))],
+    }),
+    [preview, emailPreview, emailChrome.data, pickMedia, catalog, siteOff]
   );
 }
 
@@ -123,7 +137,6 @@ function buildHost({
     // names THIS one — the theme pane's board is otherwise the only surface in the
     // console that shows somebody else's shop.
     siteName: preview.resolve('site.identity.name'),
-    catalog: catalogFor,
     // The builders' chrome in the console's own icon set, so a bar does not carry
     // two glyph families at once. studio-icons.tsx on what it does and does not
     // cover.

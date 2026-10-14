@@ -120,26 +120,60 @@ export function invoiceLineName(name: string, sku: string | null | undefined): s
   return `${name} (${code})`;
 }
 
+/** An order line, as much of it as its tax rate needs. */
+export interface TaxedLine {
+  lineSubtotal: number;
+  discountAmount?: number;
+  taxAmount: number;
+}
+
 /**
  * The single tax rate that reproduces this order's tax.
  *
  * The order stores tax per line, already computed by the tax service against the
  * place it was sold into. A billing document stores ONE rate and applies it to
- * whichever lines are marked taxable — so the rate is derived from the taxable
- * lines alone, not the whole subtotal, or an order with one exempt line would
- * come out under-taxed.
+ * whichever lines are marked taxable, after their discount — so the rate is
+ * derived from the taxable lines alone, on what they sold for, or an order with
+ * one exempt line would come out under-taxed and a discounted one would not add
+ * up.
  *
- * Exact for the ordinary case, which is one tax place per order. An order that
- * somehow carried two different rates would round to a blended one; the order
- * remains the record of what was actually charged.
+ * A guess: $1.81 on $25.00 is 7.24%, and Utah's 7.25% gives the same cents. Used
+ * only when the order kept no rate of its own (`invoiceTaxRate`).
  */
-export function taxRateFrom(lines: { lineSubtotal: number; taxAmount: number }[]): number {
+export function taxRateFrom(lines: TaxedLine[]): number {
   const taxable = lines.filter((l) => l.taxAmount > 0);
-  const base = taxable.reduce((acc, l) => acc + l.lineSubtotal, 0);
+  const base = taxable.reduce((acc, l) => acc + l.lineSubtotal - (l.discountAmount ?? 0), 0);
   if (base <= 0) return 0;
   const tax = taxable.reduce((acc, l) => acc + l.taxAmount, 0);
   // Decimal(6,4) on the column — four places is the precision it can hold.
   return Math.round((tax / base) * 10_000) / 10_000;
+}
+
+/**
+ * The rate an invoice for this order prints: the one the checkout charged, kept
+ * on the order (`taxRateBasisPoints`, 725 = 7.25%), when it gives every taxed
+ * line its tax to the cent; otherwise the rate worked out from the lines.
+ *
+ * INV-000029 printed "Tax (7.24%)" on an order Utah taxed at 7.25%, because the
+ * order kept no rate and the invoice divided cents by dollars (sparx persona
+ * issue 228).
+ */
+export function invoiceTaxRate(lines: TaxedLine[], orderMetadata: unknown): number {
+  const kept =
+    orderMetadata && typeof orderMetadata === 'object'
+      ? (orderMetadata as { taxRateBasisPoints?: unknown }).taxRateBasisPoints
+      : undefined;
+  if (typeof kept === 'number' && Number.isInteger(kept) && kept > 0 && kept <= 10_000) {
+    const rate = kept / 10_000;
+    const cents = (n: number) => Math.round(n * 100);
+    const fits = lines.every(
+      (l) =>
+        l.taxAmount <= 0 ||
+        cents((l.lineSubtotal - (l.discountAmount ?? 0)) * rate) === cents(l.taxAmount)
+    );
+    if (fits) return rate;
+  }
+  return taxRateFrom(lines);
 }
 
 /** An order item, as much of it as an invoice line copies. */
@@ -157,6 +191,8 @@ export interface OrderItemForInvoice {
 }
 
 export interface OrderForInvoice {
+  /** Where the checkout kept the rate it charged (`taxRateBasisPoints`). */
+  metadata?: unknown;
   shippingTotal: Prisma.Decimal | number;
   surchargeTotal: Prisma.Decimal | number;
   items: OrderItemForInvoice[];
@@ -203,7 +239,7 @@ export function itemizedFromOrder(order: OrderForInvoice, amount: number): Itemi
       metadata: {},
     };
   });
-  const taxRate = taxRateFrom(lines);
+  const taxRate = invoiceTaxRate(lines, order.metadata);
   const shippingTotal = Number(order.shippingTotal);
   const surchargeTotal = Number(order.surchargeTotal);
   const totals = computeBillingTotals(lines, taxRate, shippingTotal, surchargeTotal);

@@ -69,6 +69,7 @@ import {
   type Supplier,
   type SupplierType,
   type Vendor,
+  credentialIsMalformed,
   credentialIsMissing,
   credentialsToSend,
   missingRequiredCredential,
@@ -206,7 +207,11 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
 function ConnectSupplier({ ctx }: { ctx: SurfaceContext }) {
   const { data: vendors, isPending, isError, refetch } = useVendors();
-  const [slug, setSlug] = useState<SupplierType | ''>('');
+  // A product's Dropshipping panel opens this already on the kind it needs
+  // (`type: 'direct'`); anything not in the catalog just leaves it unchosen.
+  const [slug, setSlug] = useState<SupplierType | ''>(
+    typeof ctx.params.type === 'string' ? (ctx.params.type as SupplierType) : ''
+  );
 
   useEffect(() => {
     ctx.setTitle('Connect a supplier');
@@ -373,6 +378,13 @@ function SupplierEditor({
   const credentialFields: VendorCredentialField[] = isNew
     ? (vendor?.credentialFields ?? [])
     : (supplier?.credentialFields ?? []);
+  // A supplier with a product list is synced, browsed and priced from it. The
+  // business's own supplier has none: the products they ship are already the
+  // business's, chosen on each product (sparx persona issue 171), so none of
+  // that is offered for them.
+  const hasCatalog = isNew
+    ? (vendor?.capabilities.catalogSync ?? true)
+    : (supplier?.capabilities.catalogSync ?? true);
 
   const dirty = touched && JSON.stringify(draft) !== JSON.stringify(saved);
   const saving = create.isPending || update.isPending;
@@ -392,14 +404,22 @@ function SupplierEditor({
   // column could be emptied and saved; the sync then threw before it ever
   // reached the network while the pane advised her to go and check the address.
   const missingCredential = missingRequiredCredential(draft.credentials, credentialFields, isNew);
+  const malformedCredential = credentialFields.find((field) =>
+    credentialIsMalformed(draft.credentials, field)
+  );
   const credentialError = missingCredential
     ? `“${missingCredential.label}” is needed to connect.`
-    : null;
+    : malformedCredential
+      ? `“${malformedCredential.label}” is not an email address.`
+      : null;
   const scopeError =
     !draft.allSites && draft.siteScope.length === 0
       ? 'Choose at least one site, or switch back to every site.'
       : null;
-  const { rule: pricingRule, error: pricingError } = buildPricingRule(draft);
+  const built = buildPricingRule(draft);
+  // No product list, nothing priced from it: the rule is neither asked nor kept.
+  const pricingRule = hasCatalog ? built.rule : null;
+  const pricingError = hasCatalog ? built.error : null;
 
   const blocked = nameError ?? typeError ?? credentialError ?? scopeError ?? pricingError;
 
@@ -443,9 +463,11 @@ function SupplierEditor({
                     ? `${created.name} connected`
                     : `${created.name} saved, but we could not reach it`,
                 description:
-                  created.status === 'active'
-                    ? 'Now bring its products in.'
-                    : 'Nothing is lost. The pane says what went wrong and what to change.',
+                  created.status !== 'active'
+                    ? 'Nothing is lost. The pane says what went wrong and what to change.'
+                    : created.capabilities.catalogSync
+                      ? 'Now bring its products in.'
+                      : 'Now open a product they ship, and choose them on its Dropshipping panel.',
                 type: created.status === 'active' ? 'success' : 'warning',
               });
             });
@@ -508,8 +530,9 @@ function SupplierEditor({
     if (!supplier) return;
     const ok = await confirm({
       title: `Disconnect ${supplier.name}?`,
-      description:
-        'This removes the connection. Products you already imported from this supplier stay in your catalog, but they stop updating from it and new orders will no longer be routed to it automatically. You can connect it again later.',
+      description: hasCatalog
+        ? 'This removes the connection. Products you already imported from this supplier stay in your catalog, but they stop updating from it and new orders will no longer be routed to it automatically. You can connect it again later.'
+        : 'This removes the connection. The products they ship stay on sale, but new orders for them are no longer emailed to them: you would ship those yourself. You can connect them again later.',
       confirmLabel: 'Disconnect it',
       cancelLabel: 'Keep it connected',
       color: 'danger',
@@ -584,7 +607,7 @@ function SupplierEditor({
         }
         primary={
           <>
-            {supplier ? (
+            {supplier && hasCatalog ? (
               <>
                 <Button
                   size="sm"
@@ -622,7 +645,7 @@ function SupplierEditor({
             <Button
               color="module"
               size="sm"
-              className={supplier ? 'shrink-0' : 'ml-auto shrink-0'}
+              className={supplier && hasCatalog ? 'shrink-0' : 'ml-auto shrink-0'}
               loading={saving}
               disabled={Boolean(blocked) || (!isNew && !dirty)}
               title={blocked ?? undefined}
@@ -645,8 +668,8 @@ function SupplierEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              Link a business that holds stock and ships it to your customers. Once connected you
-              can import its products and route orders to it automatically.
+              Link a business that holds stock and ships it to your customers. Once connected,
+              orders for the products they ship go to them.
             </Text>
           ) : null}
 
@@ -676,7 +699,11 @@ function SupplierEditor({
                       <Input
                         color={nameError && touched ? 'error' : 'module'}
                         value={draft.name}
-                        placeholder={vendor ? `My ${vendor.label} account` : 'Supplier name'}
+                        placeholder={
+                          vendor?.connectionMethod === 'api'
+                            ? `My ${vendor.label} account`
+                            : 'Their business name'
+                        }
                         onChange={(event) => {
                           set('name', event.target.value);
                         }}
@@ -688,7 +715,7 @@ function SupplierEditor({
                   ) : (
                     <FieldDescription>
                       For you: how you tell this supplier apart from your others.
-                      {!isNew && supplier ? ` This is a ${supplier.vendorLabel} connection.` : ''}
+                      {!isNew && supplier ? ` Kind of supplier: ${supplier.vendorLabel}.` : ''}
                     </FieldDescription>
                   )}
                 </Field>
@@ -716,7 +743,9 @@ function SupplierEditor({
                   {credentialFields.map((field) => {
                     // The same rule the bar at the top reads, so a box she
                     // cleared is marked as well as named.
-                    const invalid = touched && credentialIsMissing(draft.credentials, field, isNew);
+                    const missing = touched && credentialIsMissing(draft.credentials, field, isNew);
+                    const malformed = touched && credentialIsMalformed(draft.credentials, field);
+                    const invalid = missing || malformed;
                     return (
                       <Field key={field.key}>
                         <FieldLabel>{field.label}</FieldLabel>
@@ -724,8 +753,20 @@ function SupplierEditor({
                           render={
                             <Input
                               color={invalid ? 'error' : 'module'}
-                              type={field.type === 'password' ? 'password' : 'text'}
-                              inputMode={field.type === 'url' ? 'url' : undefined}
+                              type={
+                                field.type === 'password'
+                                  ? 'password'
+                                  : field.type === 'email'
+                                    ? 'email'
+                                    : 'text'
+                              }
+                              inputMode={
+                                field.type === 'url'
+                                  ? 'url'
+                                  : field.type === 'email'
+                                    ? 'email'
+                                    : undefined
+                              }
                               autoComplete="off"
                               spellCheck={false}
                               value={draft.credentials[field.key] ?? ''}
@@ -742,8 +783,12 @@ function SupplierEditor({
                             />
                           }
                         />
-                        {invalid ? (
+                        {missing ? (
                           <FieldStatus status="error">This is needed to connect.</FieldStatus>
+                        ) : malformed ? (
+                          <FieldStatus status="error">
+                            That is not an email address, so no order could reach them.
+                          </FieldStatus>
                         ) : field.help ? (
                           <FieldDescription>{field.help}</FieldDescription>
                         ) : null}
@@ -767,92 +812,94 @@ function SupplierEditor({
                 </FormSection>
               ) : null}
 
-              <FormSection
-                title="Your selling price"
-                description="How your price is worked out from what this supplier charges you, when you import their products."
-              >
-                <Field>
-                  <FieldLabel>Pricing rule</FieldLabel>
-                  <Select
-                    color="module"
-                    aria-label="Pricing rule"
-                    value={draft.pricingKind}
-                    items={PRICING_LABELS}
-                    onValueChange={(next) => {
-                      set('pricingKind', next as PricingKind);
-                    }}
-                  />
-                </Field>
+              {hasCatalog ? (
+                <FormSection
+                  title="Your selling price"
+                  description="How your price is worked out from what this supplier charges you, when you import their products."
+                >
+                  <Field>
+                    <FieldLabel>Pricing rule</FieldLabel>
+                    <Select
+                      color="module"
+                      aria-label="Pricing rule"
+                      value={draft.pricingKind}
+                      items={PRICING_LABELS}
+                      onValueChange={(next) => {
+                        set('pricingKind', next as PricingKind);
+                      }}
+                    />
+                  </Field>
 
-                {draft.pricingKind !== 'suggested' ? (
-                  <div className="grid gap-3 @md:grid-cols-2">
-                    <Field>
-                      <FieldLabel>{pricingValueLabel(draft.pricingKind)}</FieldLabel>
-                      <FieldControl
-                        render={
-                          <div className="flex max-w-[12rem] items-center gap-2">
-                            {draft.pricingKind === 'flat_markup' ? (
-                              <Text as="span" className="text-lg">
-                                $
-                              </Text>
-                            ) : null}
-                            <Input
-                              // The wrapper div between this and its FieldControl
-                              // means Base UI never wires the FieldLabel to it, so
-                              // without this the box has no name at all. The label
-                              // above is computed, so the name is computed the same
-                              // way rather than written out twice.
-                              aria-label={pricingValueLabel(draft.pricingKind)}
-                              color={pricingError ? 'error' : 'module'}
-                              type="number"
-                              min={0}
-                              step={draft.pricingKind === 'multiplier' ? '0.1' : '0.01'}
-                              inputMode="decimal"
-                              value={draft.pricingValue}
-                              placeholder={draft.pricingKind === 'multiplier' ? '2' : '50'}
-                              onChange={(event) => {
-                                set('pricingValue', event.target.value);
-                              }}
-                            />
-                            {draft.pricingKind === 'percentage_markup' ||
-                            draft.pricingKind === 'fixed_margin' ? (
-                              <Text as="span" className="text-lg">
-                                %
-                              </Text>
-                            ) : draft.pricingKind === 'multiplier' ? (
-                              <Text as="span" className="text-lg">
-                                ×
-                              </Text>
-                            ) : null}
-                          </div>
-                        }
-                      />
-                      {pricingError ? (
-                        <FieldStatus status="error">{pricingError}</FieldStatus>
-                      ) : null}
-                    </Field>
-                    {showRoundTo ? (
+                  {draft.pricingKind !== 'suggested' ? (
+                    <div className="grid gap-3 @md:grid-cols-2">
                       <Field>
-                        <FieldLabel>Round the price</FieldLabel>
-                        <Select
-                          color="module"
-                          aria-label="Rounding"
-                          value={draft.roundTo}
-                          items={ROUND_LABELS}
-                          onValueChange={(next) => {
-                            set('roundTo', next as Draft['roundTo']);
-                          }}
+                        <FieldLabel>{pricingValueLabel(draft.pricingKind)}</FieldLabel>
+                        <FieldControl
+                          render={
+                            <div className="flex max-w-[12rem] items-center gap-2">
+                              {draft.pricingKind === 'flat_markup' ? (
+                                <Text as="span" className="text-lg">
+                                  $
+                                </Text>
+                              ) : null}
+                              <Input
+                                // The wrapper div between this and its FieldControl
+                                // means Base UI never wires the FieldLabel to it, so
+                                // without this the box has no name at all. The label
+                                // above is computed, so the name is computed the same
+                                // way rather than written out twice.
+                                aria-label={pricingValueLabel(draft.pricingKind)}
+                                color={pricingError ? 'error' : 'module'}
+                                type="number"
+                                min={0}
+                                step={draft.pricingKind === 'multiplier' ? '0.1' : '0.01'}
+                                inputMode="decimal"
+                                value={draft.pricingValue}
+                                placeholder={draft.pricingKind === 'multiplier' ? '2' : '50'}
+                                onChange={(event) => {
+                                  set('pricingValue', event.target.value);
+                                }}
+                              />
+                              {draft.pricingKind === 'percentage_markup' ||
+                              draft.pricingKind === 'fixed_margin' ? (
+                                <Text as="span" className="text-lg">
+                                  %
+                                </Text>
+                              ) : draft.pricingKind === 'multiplier' ? (
+                                <Text as="span" className="text-lg">
+                                  ×
+                                </Text>
+                              ) : null}
+                            </div>
+                          }
                         />
+                        {pricingError ? (
+                          <FieldStatus status="error">{pricingError}</FieldStatus>
+                        ) : null}
                       </Field>
-                    ) : null}
-                  </div>
-                ) : (
-                  <Text className="text-sm">
-                    Each product is priced at whatever the supplier suggests. You can still change
-                    any price by hand after importing.
-                  </Text>
-                )}
-              </FormSection>
+                      {showRoundTo ? (
+                        <Field>
+                          <FieldLabel>Round the price</FieldLabel>
+                          <Select
+                            color="module"
+                            aria-label="Rounding"
+                            value={draft.roundTo}
+                            items={ROUND_LABELS}
+                            onValueChange={(next) => {
+                              set('roundTo', next as Draft['roundTo']);
+                            }}
+                          />
+                        </Field>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <Text className="text-sm">
+                      Each product is priced at whatever the supplier suggests. You can still change
+                      any price by hand after importing.
+                    </Text>
+                  )}
+                </FormSection>
+              ) : null}
 
               <FormSection
                 title="Which sites use this supplier"
@@ -873,7 +920,9 @@ function SupplierEditor({
                   />
                   <FieldDescription>
                     {draft.allSites
-                      ? 'Every site on this account can import from and route orders to this supplier.'
+                      ? hasCatalog
+                        ? 'Every site on this account can import from and route orders to this supplier.'
+                        : 'Every site on this account can sell the products this supplier ships.'
                       : 'Only the sites ticked below can use this supplier.'}
                   </FieldDescription>
                 </Field>
@@ -920,8 +969,9 @@ function SupplierEditor({
               {!isNew && supplier ? (
                 <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
                   <Text className="text-sm">
-                    Disconnecting stops this supplier syncing and receiving new orders. Products you
-                    already imported stay in your catalog.
+                    {hasCatalog
+                      ? 'Disconnecting stops this supplier syncing and receiving new orders. Products you already imported stay in your catalog.'
+                      : 'Disconnecting stops new orders going to this supplier. The products they ship stay on sale.'}
                   </Text>
                   <Button
                     size="sm"

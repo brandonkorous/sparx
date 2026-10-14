@@ -36,6 +36,7 @@ import { useConfirm } from '../../lib/confirm';
 import { Check, EyeOff, MessageSquare, Reply, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, reviewState } from './products-data';
 import {
@@ -468,24 +469,14 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {reviews.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load the reviews queue"
-              description={productErrorMessage(
-                reviews.error,
-                'This is a problem reaching the server. Nothing customers wrote has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void reviews.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing customers wrote has been lost."
+              error={reviews.error}
+              onRetry={() => {
+                void reviews.refetch();
+              }}
             />
           ) : reviews.isLoading ? (
             <p className="text-sm" role="status">

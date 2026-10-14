@@ -34,6 +34,18 @@ const ALIASES: Record<string, string[]> = {
   phone: ['telephone', 'mobile', 'cell', 'contact number', 'phone number'],
   first_name: ['firstname', 'given name', 'forename'],
   last_name: ['lastname', 'surname', 'family name'],
+  // A subscriber list's yes/no column (Piggles persona P09). Left unmatched, a reader
+  // who had unsubscribed was one click from coming back onto the list.
+  accepts_marketing: [
+    'subscribed',
+    'subscriber',
+    'email subscriber',
+    'accepts marketing',
+    'opted in',
+    'opt in',
+    'newsletter',
+    'mailing list',
+  ],
   company: ['company name', 'business', 'organisation', 'organization', 'account'],
   name: ['full name', 'company name', 'contact name'],
   location: ['warehouse', 'store', 'shop', 'site', 'branch', 'depot'],

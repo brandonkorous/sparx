@@ -79,6 +79,33 @@ describe('pickRenewalRate', () => {
     expect(picked).toEqual({ rate: EXPRESS, replaced: false });
   });
 
+  // A repeat order saved before sparx persona issue 217 holds the carrier twice
+  // ("USPS USPS Ground Advantage"). It must still find its option, which now
+  // describes itself once.
+  it('finds an option saved under the carrier-twice name', () => {
+    const live = rate({
+      rateRef: 'shippo:new-ref',
+      providerSlug: 'shippo',
+      carrier: 'USPS',
+      service: 'USPS Ground Advantage',
+      amountCents: 1240,
+    });
+    expect(
+      pickRenewalRate([POST, live], {
+        providerSlug: 'shippo',
+        rateRef: 'shippo:old-ref',
+        description: 'USPS USPS Ground Advantage',
+      })
+    ).toEqual({ rate: live, replaced: false });
+    expect(
+      pickRenewalRate([POST, live], {
+        providerSlug: 'shippo',
+        rateRef: 'shippo:old-ref',
+        description: 'USPS Ground Advantage',
+      })
+    ).toEqual({ rate: live, replaced: false });
+  });
+
   it('finds a live carrier option again by its name, since its ref changes every quote', () => {
     const live = rate({
       rateRef: 'shippo:new-ref',

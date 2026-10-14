@@ -73,7 +73,6 @@ import {
   contentErrorMessage,
   entryStatusState,
   entryTitle,
-  formatDateTime,
   pruneEmpty,
   useAuthors,
   useContentEntry,
@@ -89,6 +88,7 @@ import {
   type ContentEntry,
   type ContentType,
 } from './data';
+import { brokenLinksSentence, fetchLinkedFrom } from './linked-from';
 import { useSiteIsDark } from '../../lib/billing/site-live';
 import { SiteScopeField } from '../../components/site-scope-field';
 import { useReaderClock } from '../../lib/business-timezone';
@@ -98,9 +98,13 @@ import {
   onClock,
   summaryOnClock,
   wallClockToIso,
-} from './publish-clock';
+} from '../../lib/publish-clock';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/** How much of a search description most results print before cutting it off. The
+ *  product editor's search tab uses the same number. */
+const DESCRIPTION_COMFORT = 155;
 
 export function ContentDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
@@ -233,7 +237,10 @@ function EntryFields({
                 />
               }
             />
-            <FieldDescription>The blue clickable line in a search result.</FieldDescription>
+            <FieldDescription>
+              The blue clickable line in a search result. Your site’s name is added on the end, so
+              you do not need to type it.
+            </FieldDescription>
           </Field>
           <Field>
             <FieldLabel>Search description</FieldLabel>
@@ -250,7 +257,16 @@ function EntryFields({
                 />
               }
             />
-            <FieldDescription>The gray summary shown under the link.</FieldDescription>
+            <FieldDescription>
+              The gray summary shown under the link. Usually shown in full up to about{' '}
+              {DESCRIPTION_COMFORT} characters.
+            </FieldDescription>
+            {/* P09 wrote 161 and nothing said the end would not show. */}
+            {seoString('description').trim().length > DESCRIPTION_COMFORT ? (
+              <Badge color="warning" variant="soft" size="sm">
+                Longer than most results show: the end will be cut off
+              </Badge>
+            ) : null}
           </Field>
           <Field>
             <FieldLabel>Preferred web address</FieldLabel>
@@ -716,11 +732,20 @@ function ManageBody({
   };
 
   const onUnpublish = async () => {
+    // Taking a piece down breaks every link to it, so the question names them.
+    const links = isScheduled
+      ? null
+      : brokenLinksSentence(await fetchLinkedFrom(id).catch(() => []), 'take down');
     const ok = await confirm({
       title: isScheduled ? 'Cancel the schedule?' : `Take “${entryTitle(entry)}” off your site?`,
       description: isScheduled
         ? 'This will not go live at the set time any more. It goes back to a private draft you can publish whenever you like.'
-        : 'Visitors will no longer be able to read this. It becomes a private draft again. Nothing is deleted, and you can publish it back at any time.',
+        : [
+            'Visitors will no longer be able to read this. It becomes a private draft again. Nothing is deleted, and you can publish it back at any time.',
+            links,
+          ]
+            .filter(Boolean)
+            .join(' '),
       confirmLabel: isScheduled ? 'Cancel the schedule' : 'Take it down',
       cancelLabel: 'Leave it as it is',
       color: 'warning',
@@ -744,10 +769,15 @@ function ManageBody({
   };
 
   const onDelete = async () => {
+    const links = brokenLinksSentence(await fetchLinkedFrom(id).catch(() => []), 'delete');
     const ok = await confirm({
       title: `Delete “${entryTitle(entry)}”?`,
-      description:
+      description: [
         'This removes it for good. If it is on your site, it comes down. This cannot be undone: if you only want to take it off your site, take it down instead.',
+        links,
+      ]
+        .filter(Boolean)
+        .join(' '),
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -862,7 +892,9 @@ function ManageBody({
                 {isScheduled && entry.scheduled_at
                   ? `Goes live ${onClock(entry.scheduled_at, clock)}.`
                   : isPublished && entry.published_at
-                    ? `Live since ${formatDateTime(entry.published_at)}.`
+                    ? // Her clock, as the scheduled line above says it: a piece out at 06:45 in
+                      // London read "Live since Oct 8, 10:45 PM" on a computer in California.
+                      `Live since ${onClock(entry.published_at, clock)}.`
                     : state.detail}
               </AlertDescription>
             </AlertContent>
@@ -1044,7 +1076,7 @@ function RevisionHistory({
                   {index === 0 ? ' · latest' : ''}
                 </Text>
                 <Text className="text-sm">
-                  {formatDateTime(revision.created_at)}
+                  {onClock(revision.created_at, clock)}
                   {revision.summary ? ` · ${summaryOnClock(revision.summary, clock)}` : ''}
                 </Text>
               </div>

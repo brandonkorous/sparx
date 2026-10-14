@@ -127,6 +127,11 @@ vi.mock('@wizeworks/crm', async () => {
   return {
     ISSUED_BILL_WHERE: actual.ISSUED_BILL_WHERE,
     OWED_DOCUMENT_WHERE: actual.OWED_DOCUMENT_WHERE,
+    // How late a bill is, worked out at read (sparx persona issue 175): the real
+    // day rules, and a business with no zone set.
+    daysPastDue: actual.daysPastDue,
+    startOfBusinessDay: actual.startOfBusinessDay,
+    businessTimeZone: () => Promise.resolve(null),
     b2bArService: {},
     billingPaymentService: { recordPayment },
   };

@@ -190,6 +190,7 @@ describe('the account a customer is found by', () => {
       leadStatus: null,
       tags: [],
       totalSpent: '0',
+      totalOrdered: '0',
       orderCount: 0,
       lastOrderAt: null,
       createdAt: new Date('2026-09-01T00:00:00Z'),
@@ -198,5 +199,38 @@ describe('the account a customer is found by', () => {
     expect(document?.company).toBe(WASATCH.companyName);
     const include = findCustomer.mock.calls.at(-1)?.[0].include ?? {};
     expect(include).not.toHaveProperty('company');
+  });
+});
+
+describe('what a customer is worth, in search', () => {
+  // The AI app answers "how much does Wasatch buy" from this document. It held
+  // money received alone, so a fleet on account read $150 over $11,285.69 of
+  // orders (sparx persona issue 223).
+  it('carries what their orders come to beside what they have paid', async () => {
+    customerRow = {
+      id: 'renee',
+      firstName: 'Renée',
+      lastName: 'Castañeda',
+      email: 'renee@wasatchfront.example',
+      phone: null,
+      companyName: null,
+      companyId: WASATCH.id,
+      company: null,
+      b2bContactRoles: [],
+      propertyId: null,
+      type: 'b2b',
+      lifecycleStage: 'customer',
+      leadStatus: null,
+      tags: [],
+      totalSpent: '150.00',
+      totalOrdered: '11285.69',
+      orderCount: 12,
+      lastOrderAt: new Date('2026-10-11T08:58:28Z'),
+      createdAt: new Date('2026-09-01T00:00:00Z'),
+    };
+    const { document } = await projectCustomer({ tenantId: T }, 'renee');
+    expect(document?.total_spent_cents).toBe(15000);
+    expect(document?.total_ordered_cents).toBe(1128569);
+    expect(document?.order_count).toBe(12);
   });
 });

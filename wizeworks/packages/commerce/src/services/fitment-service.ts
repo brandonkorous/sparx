@@ -28,14 +28,14 @@ import {
   UpdateFitmentNodeInput,
 } from '@wizeworks/commerce-schemas';
 import type { FitmentDimension } from '@wizeworks/commerce-schemas';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import { Prisma } from '@wizeworks/db';
 import type { FitmentNode, ProductFitment } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishCommerceEvent } from '../events';
+import { indexCommerceEntity, publishCommerceEvent } from '../events';
 
 // ─── Public shapes ────────────────────────────────────────────────────
 
@@ -184,6 +184,10 @@ export async function createDomain(
     return created;
   });
 
+  // Queued, not fired: a caller may have composed this into its own open transaction.
+  await afterCommit(`index fitment_domain ${result.id}`, () =>
+    indexCommerceEntity(ctx, 'fitment_domain', result.id)
+  );
   return { id: result.id };
 }
 
@@ -194,7 +198,7 @@ export async function updateDomain(
 ): Promise<{ id: string }> {
   const input = UpdateFitmentDomainInput.parse(rawInput);
 
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const domain = await tx.fitmentDomain.findFirst({
       where: { id: domainId, deletedAt: null },
     });
@@ -247,6 +251,10 @@ export async function updateDomain(
 
     return { id: updated.id };
   });
+  await afterCommit(`index fitment_domain ${domainId}`, () =>
+    indexCommerceEntity(ctx, 'fitment_domain', domainId)
+  );
+  return result;
 }
 
 /**
@@ -259,7 +267,7 @@ export async function deleteDomain(
   ctx: ServiceContext,
   domainId: string
 ): Promise<{ productsAffected: number }> {
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const domain = await tx.fitmentDomain.findFirst({
       where: { id: domainId, deletedAt: null },
       select: { id: true, slug: true, displayName: true },
@@ -288,6 +296,10 @@ export async function deleteDomain(
 
     return { productsAffected: affected.length };
   });
+  await afterCommit(`index fitment_domain ${domainId}`, () =>
+    indexCommerceEntity(ctx, 'fitment_domain', domainId, 'delete')
+  );
+  return result;
 }
 
 // ─── Dictionary library (install a platform fitment dictionary) ───────
@@ -324,7 +336,7 @@ export async function installFitmentDictionary(
   const dict = getFitmentDictionary(slug);
   if (!dict) throw new CommerceNotFoundError('FitmentDictionary', slug);
 
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const collision = await tx.fitmentDomain.findFirst({
       where: { tenantId: ctx.tenantId, slug: dict.slug, deletedAt: null },
       select: { id: true },
@@ -388,6 +400,11 @@ export async function installFitmentDictionary(
 
     return { id: planned.domain.id };
   });
+  // A starter composes this into its own install transaction; afterCommit waits for that one.
+  await afterCommit(`index fitment_domain ${result.id}`, () =>
+    indexCommerceEntity(ctx, 'fitment_domain', result.id)
+  );
+  return result;
 }
 
 // ─── Nodes (the value tree, any depth) ────────────────────────────────

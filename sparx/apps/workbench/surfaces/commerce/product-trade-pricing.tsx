@@ -55,7 +55,6 @@ import { useMemo, useState, type ReactNode } from 'react';
 import {
   Badge,
   Button,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -84,6 +83,7 @@ import { useQuery } from '@wizeworks/query';
 import { Building2, Plus, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { FollowingNotice, ProductScopeFallback, useProductScope } from './product-scope';
@@ -755,7 +755,7 @@ function SetAPrice({
 
       {effectiveWho === 'business' ? (
         <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-3">
             <Field>
               <FieldLabel>Sold in cases of</FieldLabel>
               <FieldControl
@@ -927,7 +927,7 @@ function BuyingRulesEditor({ rule, productId }: { rule: TradeAccountOverride; pr
 
   return (
     <div className="border-base-300 mt-2 flex flex-col gap-3 border-t pt-3">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-3">
         {box('Sold in cases of', caseText, setCaseText)}
         {box('Least at once', minText, setMinText)}
         {box('Most at once', maxText, setMaxText)}
@@ -1296,24 +1296,14 @@ export function ProductTradePricingSurface({ ctx }: { ctx: SurfaceContext }) {
               list that could not be read would let someone set a second price
               on top of one they cannot see. */}
           {pricing.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load trade pricing"
-              description={productErrorMessage(
-                pricing.error,
-                'This is a problem reaching the server. Nothing about your prices has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void pricing.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing about your prices has changed."
+              error={pricing.error}
+              onRetry={() => {
+                void pricing.refetch();
+              }}
             />
           ) : pricing.data ? (
             <TradePricingBody

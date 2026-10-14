@@ -692,7 +692,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Import from a spreadsheet controls"
+        label="Import stock from a spreadsheet controls"
         primary={
           <Button
             color="module"

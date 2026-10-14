@@ -21,7 +21,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   NativeSelect,
@@ -44,7 +43,10 @@ import {
   type ContentEntry,
   type EntryStatus,
 } from './data';
+import { entryHref } from './routable';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 import { useSites } from '../sites/data';
 import { showSiteColumn, siteScopeCell } from './content-sites';
 import { useSiteIsDark } from '../../lib/billing/site-live';
@@ -120,6 +122,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
     for (const type of types ?? []) map.set(type.key, type.name);
     return map;
   }, [types]);
+  const typeByKey = useMemo(() => new Map((types ?? []).map((type) => [type.key, type])), [types]);
 
   const authorName = useMemo(() => {
     const map = new Map<string, string>();
@@ -251,8 +254,10 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. What you see below is what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. What you see below is what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -271,21 +276,14 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the table — "nothing written yet" over a
           // connection failure is a lie about their work, and the worst one to tell.
-          <EmptyState
+          <PaneLoadError
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load your content"
             description="This is a problem reaching the server. Nothing you have written is affected: none of it has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -337,6 +335,9 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
               {rows.map((entry) => {
                 const state = entryStatusState(entry.status, siteIsDark);
                 const kind = typeName.get(entry.type_key) ?? entry.type_key;
+                // Its real address, the one under its Web address box: an article
+                // read "/the-last-mill" here and lives at /articles/the-last-mill.
+                const address = entryHref(entry, typeByKey.get(entry.type_key));
                 const author = entry.author_id ? (authorName.get(entry.author_id) ?? '—') : '—';
                 const scope = siteScopeCell(entry.propertyIds, (id) => siteName.get(id));
                 return (
@@ -358,10 +359,8 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="block max-w-72 truncate font-medium">
                         {entryTitle(entry)}
                       </span>
-                      {entry.slug ? (
-                        <span className="block max-w-72 truncate font-mono text-sm">
-                          /{entry.slug}
-                        </span>
+                      {address ? (
+                        <span className="block max-w-72 truncate font-mono text-sm">{address}</span>
                       ) : null}
                     </td>
                     <td className="hidden max-w-40 truncate @xl:table-cell">{kind}</td>

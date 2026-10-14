@@ -69,21 +69,16 @@
 import type { ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button, EmptyState } from '@wizeworks/silicaui-react';
-import { paneLoadReason } from '../lib/api-error';
+import {
+  LOAD_GONE,
+  LOAD_OUR_FAULT,
+  LOAD_REFUSED,
+  paneLoadReason,
+  type PaneLoadReason,
+} from '../lib/api-error';
 
-/** What a record pane says when the record is not this business's to see. It
- *  never confirms that the thing exists somewhere else. */
-const GONE =
-  'It has been deleted, or the address points at something that is not in this business. Nothing of yours has been lost.';
-
-/** What a pane says when the server ANSWERED and its answer was a failure.
- *
- *  Owned here rather than left to the caller for the same reason GONE is: every
- *  caller's own sentence is written about the unreachable case, so a 5xx wearing
- *  it sends someone to check a connection that is working perfectly. */
-const OUR_FAULT =
-  'Something went wrong at our end, not yours. Nothing you have recorded has changed. Trying again may work, and if it keeps failing the fault is ours to fix.';
-
+// The words for each cause live beside `paneLoadReason`, so an alert or an
+// empty state that reports a failed read says the same thing (issue 260).
 export function PaneLoadError({
   icon,
   title,
@@ -134,7 +129,7 @@ export function PaneLoadError({
    *
    * Pass `error` instead and this is worked out; pass this to overrule it.
    */
-  reason?: 'unreachable' | 'missing' | 'failed';
+  reason?: PaneLoadReason;
   /**
    * The query's error, so the reason above is READ rather than assumed.
    *
@@ -164,10 +159,12 @@ export function PaneLoadError({
   const resolved = reason ?? paneLoadReason(error);
   const missing = resolved === 'missing';
   const failed = resolved === 'failed';
+  const refused = resolved === 'refused';
   // Suppressed HERE rather than trusted to every call site: a retry against a
-  // record that no longer exists fails every single time, and a button that
-  // cannot work is worse than no button.
-  const retry = missing ? undefined : onRetry;
+  // record that no longer exists fails every single time, and so does one
+  // against a door this account may not open. A button that cannot work is
+  // worse than no button.
+  const retry = missing || refused ? undefined : onRetry;
   // The caller's `description` is written about the OTHER case — it says the
   // server could not be reached — so it must not survive into this one. A
   // caller with no `noun` and no override has said nothing about being missing,
@@ -179,10 +176,14 @@ export function PaneLoadError({
   // words are its own. Everything else reached this branch by the error's
   // status, and its `description` was written about the unreachable case.
   const shownDescription = missing
-    ? (missingDescription ?? (noun ? GONE : description))
-    : failed && reason === undefined
-      ? OUR_FAULT
-      : description;
+    ? (missingDescription ?? (noun ? LOAD_GONE : description))
+    : reason !== undefined
+      ? description
+      : failed
+        ? LOAD_OUR_FAULT
+        : refused
+          ? LOAD_REFUSED
+          : description;
 
   return (
     <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">
@@ -203,7 +204,7 @@ export function PaneLoadError({
         // no prop that reaches the chip, and re-skinning silica's chip from out
         // here would be the RULE #1 violation this is avoiding.
         icon={
-          <span className={missing ? 'text-warning' : 'text-error'}>
+          <span className={missing || refused ? 'text-warning' : 'text-error'}>
             {icon ?? <AlertTriangle className="size-6" aria-hidden />}
           </span>
         }

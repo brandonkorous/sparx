@@ -190,6 +190,7 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
           icon={<MessageCircle className="size-6" aria-hidden />}
           title="Could not load your chat report"
           description="This is a problem reaching the server. Your conversations are unaffected."
+          error={summary.error}
           onRetry={() => {
             void summary.refetch();
           }}

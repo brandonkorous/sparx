@@ -54,6 +54,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { AddLanguage } from '../../components/add-language';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -155,18 +156,13 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 description="Open a product from the translations list to write its words in another language."
               />
             ) : failed ? (
-              <EmptyState
+              <PaneLoadError
                 icon={<ServerCrash className="size-6" aria-hidden />}
                 title="Could not load this product"
-                description={translationErrorMessage(
-                  source.error ?? translations.error,
-                  'This is a problem reaching the server. None of your wording has been lost.'
-                )}
-                actions={
-                  <Button size="sm" color="module" onClick={refresh}>
-                    Try again
-                  </Button>
-                }
+                description="This is a problem reaching the server. None of your wording has been lost."
+                error={source.error ?? translations.error}
+                noun="product"
+                onRetry={refresh}
               />
             ) : (
               <p className="text-sm" role="status">

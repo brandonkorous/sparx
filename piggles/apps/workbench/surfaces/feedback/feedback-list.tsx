@@ -1,31 +1,31 @@
 'use client';
 
-// Everything you've told the sparx team, and where it got to.
-//
-// A SURFACE rather than a modal tab, which is the whole point: the reply you're
-// reading is usually about a pane you still have open, and a dialog would cover
-// the very thing under discussion. As a surface it opens beside that pane
-// (⇧-click), tears off to a second monitor, survives in a saved layout, and can
-// be favorited — none of which an overlay can do.
+// Everything you've told the sparx team, and where it got to. A SURFACE, not a
+// modal: the reply is usually about a pane you still have open, and a dialog
+// would cover the very thing under discussion.
 
 import { Button, Card } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { faMessagePlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { describeAgo } from '../../lib/api/activity';
 import { useMyFeedback, type FeedbackSubmission } from '../../lib/api/feedback';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { CATEGORY_ICON, FeedbackStatusBadge, deriveTitle } from '../../components/feedback/format';
 import { useFeedback } from '../../components/feedback/provider';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { FeedbackTable } from './feedback-table';
+
+interface OpenEvent {
+  shiftKey: boolean;
+  altKey: boolean;
+}
+type FeedbackQuery = ReturnType<typeof useMyFeedback>;
 
 /** Same modifier contract as the launcher and every other list. */
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+function targetFor(event: OpenEvent): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
@@ -35,150 +35,105 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
  *  this app's own picture rather than a small grey glyph. */
 const MODULE = 'platform';
 
-export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const feedback = useFeedback();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMyFeedback();
-
-  const open = (submission: FeedbackSubmission, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('platform.feedback.thread', { id: submission.id }, { target: targetFor(event) });
-  };
-
-  if (isError) {
-    return (
-      <Card className="min-h-0 flex-1 items-center justify-center">
-        <PaneLoadError
-          icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
-          title="Could not load what you told us"
-          description="This is a problem reaching the server, not a problem with anything you sent. Nothing was lost."
-          onRetry={() => {
-            void refetch();
+function FeedbackToolbar(props: { query: FeedbackQuery; count: number; onSend: () => void }) {
+  const { query, count } = props;
+  const { data } = query;
+  return (
+    <PaneToolbar
+      label="Controls for what you told us"
+      status={
+        <p className="shrink-0 text-sm whitespace-nowrap">
+          {count === 1 ? '1 message' : `${String(count)} messages`}
+          {data && data.unreadCount > 0 ? ` · ${String(data.unreadCount)} with a new reply` : ''}
+        </p>
+      }
+      statusReady={!query.isPending}
+      statusFailed={query.isError}
+      primary={
+        <Button color="module" size="sm" onClick={props.onSend}>
+          <Icon glyph={faMessagePlus} className="size-4" aria-hidden />
+          Send feedback
+        </Button>
+      }
+      refresh={
+        <RefreshButton
+          isFetching={query.isFetching}
+          updatedAt={data ? query.dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void query.refetch();
           }}
         />
+      }
+    />
+  );
+}
+
+function FeedbackBody(props: {
+  pending: boolean;
+  rows: FeedbackSubmission[];
+  onSend: () => void;
+  onOpen: (submission: FeedbackSubmission, event: OpenEvent) => void;
+}) {
+  if (props.pending) {
+    return (
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneWaiting />
       </Card>
     );
   }
+  if (props.rows.length > 0) return <FeedbackTable rows={props.rows} onOpen={props.onOpen} />;
+  return (
+    <PaneEmpty
+      module={MODULE}
+      icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
+      title="You haven’t sent anything yet"
+      description="Tell us what’s broken, what’s missing, or what you wish worked differently. A real person reads every message, and replies land right here."
+      actions={
+        <Button color="module" size="sm" onClick={props.onSend}>
+          Send your first message
+        </Button>
+      }
+    />
+  );
+}
 
-  const rows = data?.items ?? [];
+function FeedbackLoadFailed({ query }: { query: FeedbackQuery }) {
+  return (
+    <Card className="min-h-0 flex-1 items-center justify-center">
+      <PaneLoadError
+        icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
+        title="Could not load what you told us"
+        description="This is a problem reaching the server, not a problem with anything you sent. Nothing was lost."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    </Card>
+  );
+}
+
+export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const feedback = useFeedback();
+  const query = useMyFeedback();
+
+  const open = (submission: FeedbackSubmission, event: OpenEvent) => {
+    ctx.open('platform.feedback.thread', { id: submission.id }, { target: targetFor(event) });
+  };
+  const onSend = () => {
+    feedback.openSend({ source: 'button' });
+  };
+
+  if (query.isError) return <FeedbackLoadFailed query={query} />;
+
+  const rows = query.data?.items ?? [];
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Controls for what you told us"
-        status={
-          <p className="shrink-0 text-sm whitespace-nowrap">
-            {rows.length === 1 ? '1 message' : `${String(rows.length)} messages`}
-            {data && data.unreadCount > 0 ? ` · ${String(data.unreadCount)} with a new reply` : ''}
-          </p>
-        }
-        statusReady={!isPending}
-        statusFailed={isError}
-        primary={
-          <Button
-            color="module"
-            size="sm"
-            onClick={() => {
-              feedback.openSend({ source: 'button' });
-            }}
-          >
-            <Icon glyph={faMessagePlus} className="size-4" aria-hidden />
-            Send feedback
-          </Button>
-        }
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
-      />
+      <FeedbackToolbar query={query} count={rows.length} onSend={onSend} />
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        {isPending ? (
-          <Card className="min-h-0 flex-1 items-center justify-center">
-            <PaneWaiting />
-          </Card>
-        ) : rows.length === 0 ? (
-          <PaneEmpty
-            module={MODULE}
-            icon={<Icon glyph={faMessagePlus} className="size-6" aria-hidden />}
-            title="You haven’t sent anything yet"
-            description="Tell us what’s broken, what’s missing, or what you wish worked differently. A real person reads every message, and replies land right here."
-            actions={
-              <Button
-                color="module"
-                size="sm"
-                onClick={() => {
-                  feedback.openSend({ source: 'button' });
-                }}
-              >
-                Send your first message
-              </Button>
-            }
-          />
-        ) : (
-          <div className="card bg-base-100 overflow-hidden">
-            <Table size="sm" hover>
-              <thead>
-                <tr>
-                  <th>Message</th>
-                  <th>Sent</th>
-                  <th>Replies</th>
-                  <th className="text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((submission) => {
-                  const glyph = CATEGORY_ICON[submission.category];
-                  const replies = submission.messageCount ?? 0;
-                  return (
-                    <tr
-                      key={submission.id}
-                      className="cursor-pointer"
-                      tabIndex={0}
-                      role="button"
-                      onClick={(event) => {
-                        open(submission, event);
-                      }}
-                      onKeyDown={(event) => {
-                        if (event.key !== 'Enter' && event.key !== ' ') return;
-                        event.preventDefault();
-                        open(submission, event);
-                      }}
-                    >
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <Icon glyph={glyph} className="size-4 shrink-0" aria-hidden />
-                          <span className="min-w-0 truncate font-medium">
-                            {deriveTitle(submission)}
-                          </span>
-                          {/* The only mark on the row, because it is the only
-                              thing here addressed TO the reader. */}
-                          {submission.userUnread ? (
-                            <span
-                              className="bg-primary size-2 shrink-0 rounded-full"
-                              role="img"
-                              aria-label="New reply"
-                            />
-                          ) : null}
-                        </div>
-                      </td>
-                      <td className="text-sm whitespace-nowrap">
-                        {describeAgo(submission.createdAt)}
-                      </td>
-                      <td className="text-sm whitespace-nowrap">{replies === 0 ? '—' : replies}</td>
-                      <td className="text-right">
-                        <FeedbackStatusBadge status={submission.status} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </div>
-        )}
+        <FeedbackBody pending={query.isPending} rows={rows} onSend={onSend} onOpen={open} />
       </div>
 
       {rows.length > 0 ? <RowOpenHint what="a message to read the conversation" /> : null}

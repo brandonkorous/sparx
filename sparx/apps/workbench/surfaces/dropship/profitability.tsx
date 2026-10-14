@@ -36,6 +36,7 @@ import {
 import { BarChart3, LineChart, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from '../inventory/data';
@@ -261,18 +262,15 @@ export function DropshipProfitabilitySurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {analytics.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load profitability"
               description={dropshipErrorMessage(
                 analytics.error,
                 'This is a problem reaching the server. Try again in a moment.'
               )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
+              error={analytics.error}
+              onRetry={refetchAll}
             />
           ) : analytics.isPending || !data ? (
             <p className="text-sm" role="status">

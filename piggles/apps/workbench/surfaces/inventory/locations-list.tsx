@@ -1,29 +1,14 @@
 'use client';
 
-// LOCATIONS — every place you keep stock: a warehouse, a shop floor, a van.
-//
-// ── A table, like every other list ───────────────────────────────────────
-//
-// A location is an identity (a name and the code on its shelf labels) plus two
-// facts — what kind of place it is, and where it is. Laid down a table those
-// facts line up into columns you scan, and the list reads the same as every
-// other list in the app rather than as its own bespoke thing. The columns
-// disclose with @container: docked narrow you see the name, its code and its
-// state; given room the kind and the town come back. The name cell is the one
-// that GIVES (`max-w-0 w-full`), so the state badge is never the column shoved
-// off the right edge.
-//
-// ── Every narrowing is a SERVER filter ───────────────────────────────────
-//
-// Search, the kind of place, "show closed", and the paging all go to the API.
-// Filtering the loaded window in the browser would answer "which of my 3PLs" by
-// sieving the fifty rows that happen to be in hand.
-//
-// ── Three empty states, three different problems ─────────────────────────
-//
-// Nothing matches the search or filters · nothing exists yet · the load failed.
-// Telling someone to set up their first location when they have twelve and
-// mistyped is the worse of the mistakes, so the narrowed case says so instead.
+// LOCATIONS: every place you keep stock, as a table like every other list. The
+// columns disclose with @container; the name cell is the one that GIVES
+// (`max-w-0 w-full`), so the state badge is never shoved off the right edge.
+
+// Every narrowing (search, kind, "show closed", paging) is a SERVER filter; sieving
+// the loaded window would answer "which of my 3PLs" from fifty rows in hand.
+
+// Three empty states: nothing matches, nothing exists yet, the load failed. Telling
+// someone with twelve locations to set up their first is the worse mistake.
 
 import { useState } from 'react';
 import { Card } from '@wizeworks/silicaui-react';
@@ -59,7 +44,8 @@ function emptyAdvice(search: string, typeLabel: string | null, includeClosed: bo
   return parts.join(' ');
 }
 
-export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
+/** Filters, paging and the locations they select. */
+function useLocationsList() {
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
   const [includeClosed, setIncludeClosed] = useState(false);
@@ -70,7 +56,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useLocations({
+  const query = useLocations({
     q: search.trim(),
     ...(type ? { type } : {}),
     includeClosed,
@@ -78,21 +64,130 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     skip,
   });
 
-  const rows = data?.items ?? [];
-  const total = data?.total;
-  const typeLabel = type ? locationTypeLabel(type) : null;
-  // Only an explicit search or kind filter counts as "narrowed". "Show closed"
-  // is OFF by default, so treating that default as a narrowing would show a
-  // brand-new account "Nothing matches that" instead of a first-run create
-  // prompt — the empty-account case must reach the CTA, not the search advice.
+  // Only an explicit search or kind filter counts as "narrowed". "Show closed" is
+  // OFF by default, so a brand-new account must reach the create prompt, not advice.
   const narrowed = search.trim() !== '' || type !== '';
 
-  /** Anything that changes which rows match returns to the first window —
-   *  staying on page 5 of a set that now has two shows nothing. */
+  // Anything that changes which rows match returns to the first window.
   const resetWindow = () => {
     setPage(1);
     setTake(pageSize);
   };
+
+  const filters = { search, setSearch, type, setType, includeClosed, setIncludeClosed };
+  const paging = { pageSize, setPageSize, page, setPage, take, setTake, skip, resetWindow };
+  return {
+    ...filters,
+    ...paging,
+    query,
+    rows: query.data?.items ?? [],
+    total: query.data?.total,
+    typeLabel: type ? locationTypeLabel(type) : null,
+    narrowed,
+  };
+}
+
+type LocationsList = ReturnType<typeof useLocationsList>;
+
+function LocationsListFooter({ list }: { list: LocationsList }) {
+  const { rows, skip, total, page, pageSize, take } = list;
+  return (
+    <div className="shrink-0">
+      <ListPagination
+        shown={rows.length}
+        firstRow={rows.length === 0 ? 0 : skip + 1}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        canLoadMore={take < MAX_TAKE}
+        busy={list.query.isFetching}
+        onLoadMore={() => {
+          list.setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+        }}
+        onPageChange={(next) => {
+          list.setPage(next);
+          list.setTake(pageSize);
+        }}
+        onPageSizeChange={(size) => {
+          list.setPageSize(size);
+          list.setPage(1);
+          list.setTake(size);
+        }}
+      />
+      {rows.length > 0 ? <RowOpenHint /> : null}
+    </div>
+  );
+}
+
+function LocationsListBody({
+  list,
+  onOpen,
+  onNew,
+}: {
+  list: LocationsList;
+  onOpen: (location: Location, event: { shiftKey: boolean; altKey: boolean }) => void;
+  onNew: () => void;
+}) {
+  const { query, rows } = list;
+  if (query.isError || query.isPending || rows.length === 0) {
+    return (
+      <LocationsListEmpty
+        module={MODULE}
+        isError={query.isError}
+        error={query.error}
+        isPending={query.isPending}
+        narrowed={list.narrowed}
+        advice={emptyAdvice(list.search.trim(), list.typeLabel, list.includeClosed)}
+        includeClosed={list.includeClosed}
+        onRetry={() => {
+          void query.refetch();
+        }}
+        onNew={onNew}
+      />
+    );
+  }
+  return <LocationsListTable rows={rows} onOpen={onOpen} />;
+}
+
+function LocationsListBar({
+  list,
+  onNew,
+}: {
+  list: LocationsList;
+  onNew: (event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
+  const { query, resetWindow } = list;
+  // The toolbar does NOT wrap: a second line shoves the grid down. Things give way
+  // instead and the search box absorbs what is left.
+  return (
+    <LocationsListToolbar
+      search={list.search}
+      onSearch={(next) => {
+        list.setSearch(next);
+        resetWindow();
+      }}
+      type={list.type}
+      onType={(next) => {
+        list.setType(next);
+        resetWindow();
+      }}
+      includeClosed={list.includeClosed}
+      onIncludeClosed={(next) => {
+        list.setIncludeClosed(next);
+        resetWindow();
+      }}
+      onNew={onNew}
+      isFetching={query.isFetching}
+      updatedAt={query.data ? query.dataUpdatedAt : undefined}
+      onRefresh={() => {
+        void query.refetch();
+      }}
+    />
+  );
+}
+
+export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const list = useLocationsList();
 
   const openNew = (event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
@@ -102,86 +197,22 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open(DETAIL_KEY, { id: location.id }, { target: targetFor(event) });
   };
 
-  const body = () => {
-    if (isError || isPending || rows.length === 0) {
-      return (
-        <LocationsListEmpty
-          module={MODULE}
-          isError={isError}
-          isPending={isPending}
-          narrowed={narrowed}
-          advice={emptyAdvice(search.trim(), typeLabel, includeClosed)}
-          includeClosed={includeClosed}
-          onRetry={() => {
-            void refetch();
-          }}
+  return (
+    <div className={PANE_SHELL}>
+      <LocationsListBar list={list} onNew={openNew} />
+
+      {/* Full width: the base-100 card lifts the rows off the recessed pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">
+        <LocationsListBody
+          list={list}
+          onOpen={open}
           onNew={() => {
             openNew({ shiftKey: false, altKey: false });
           }}
         />
-      );
-    }
-    return <LocationsListTable rows={rows} onOpen={open} />;
-  };
+      </Card>
 
-  return (
-    <div className={PANE_SHELL}>
-      {/* The toolbar does NOT wrap: a second line shoves the grid down and
-          reflows as you type. Things give way instead — the kind picker shrinks,
-          the "show closed" toggle sheds its label below @2xl — and the search box
-          absorbs whatever is left. The primary action carries `ml-auto`. */}
-      <LocationsListToolbar
-        search={search}
-        onSearch={(next) => {
-          setSearch(next);
-          resetWindow();
-        }}
-        type={type}
-        onType={(next) => {
-          setType(next);
-          resetWindow();
-        }}
-        includeClosed={includeClosed}
-        onIncludeClosed={(next) => {
-          setIncludeClosed(next);
-          resetWindow();
-        }}
-        onNew={openNew}
-        isFetching={isFetching}
-        updatedAt={data ? dataUpdatedAt : undefined}
-        onRefresh={() => {
-          void refetch();
-        }}
-      />
-
-      {/* Full width — the base-100 card lifts the rows off the recessed pane.
-          Matches the house list convention: the table fills the pane. */}
-      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
-
-      <div className="shrink-0">
-        <ListPagination
-          shown={rows.length}
-          firstRow={rows.length === 0 ? 0 : skip + 1}
-          total={total}
-          page={page}
-          pageSize={pageSize}
-          canLoadMore={take < MAX_TAKE}
-          busy={isFetching}
-          onLoadMore={() => {
-            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
-          }}
-          onPageChange={(next) => {
-            setPage(next);
-            setTake(pageSize);
-          }}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-            setTake(size);
-          }}
-        />
-        {rows.length > 0 ? <RowOpenHint /> : null}
-      </div>
+      <LocationsListFooter list={list} />
     </div>
   );
 }

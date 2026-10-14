@@ -19,8 +19,15 @@
 // are doing" on the tenant's behalf, and then offered no way to rename it, make
 // a second one or remove it; the API had supported all of that from the start.
 
+import {
+  OPENS_FIRST_WORDS,
+  SHARED_WORDS,
+  withOpensFirst,
+  withShared,
+} from './dashboard-board-switches';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   Button,
   Dialog,
   DialogContent,
@@ -61,6 +68,8 @@ import {
   useReports,
   useSetWidgets,
   useUpdateDashboard,
+  keptToItsMaker,
+  PRIVATE_ON_SHARED_WARNING,
   type Dashboard,
   type DashboardWidget,
 } from './report-builder-data';
@@ -152,7 +161,9 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   /* ── Widgets ────────────────────────────────────────────────────────────── */
 
-  function placement(list: DashboardWidget[]): Omit<DashboardWidget, 'id' | 'report'>[] {
+  function placement(
+    list: DashboardWidget[]
+  ): Omit<DashboardWidget, 'id' | 'report' | 'privateReport'>[] {
     return list.map((w) => ({
       reportId: w.reportId,
       x: w.x,
@@ -261,44 +272,6 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   /* ── Render ─────────────────────────────────────────────────────────────── */
 
-  /**
-   * THE BAR STAYS, WHATEVER STATE THE PANE IS IN.
-   *
-   * Both of this pane's boardless states returned without one, so the screen a
-   * person meets FIRST had no name on it, no refresh and none of the chrome
-   * every other pane in this console keeps in every state. The board picker and
-   * "Add a report" both need a board, so until there is one the bar carries
-   * what there IS: a way to make the first board, and a refresh.
-   */
-  const boardlessToolbar = (
-    <PaneToolbar
-      label="Dashboard controls"
-      primary={
-        <Button color="module" onClick={startNewBoard}>
-          <Plus className="size-4" aria-hidden /> New dashboard
-        </Button>
-      }
-      controls={
-        <RefreshButton
-          isFetching={isFetching}
-          onRefresh={() => {
-            void landing.refetch();
-            void refetch();
-          }}
-        />
-      }
-    />
-  );
-
-  if (landing.isPending) {
-    return (
-      <div className={PANE_SHELL}>
-        {boardlessToolbar}
-        <div className="skeleton m-6 h-64" />
-      </div>
-    );
-  }
-
   const boardDialog = (
     <PaneScope>
       <Dialog
@@ -356,15 +329,12 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                       aria-label="Open this board first"
                       checked={boardDraft.isDefault}
                       onCheckedChange={(checked) => {
-                        setBoardDraft({ ...boardDraft, isDefault: checked === true });
+                        setBoardDraft(withOpensFirst(boardDraft, checked === true));
                       }}
                     />
                     <div className="flex flex-col gap-1">
                       <FieldLabel>Open this board first</FieldLabel>
-                      <FieldDescription>
-                        The one Dashboards opens on. Turning it on here turns it off wherever it
-                        was.
-                      </FieldDescription>
+                      <FieldDescription>{OPENS_FIRST_WORDS}</FieldDescription>
                     </div>
                   </div>
                 </Field>
@@ -376,14 +346,12 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                       aria-label="Share it with your team"
                       checked={boardDraft.shared}
                       onCheckedChange={(checked) => {
-                        setBoardDraft({ ...boardDraft, shared: checked === true });
+                        setBoardDraft(withShared(boardDraft, checked === true));
                       }}
                     />
                     <div className="flex flex-col gap-1">
                       <FieldLabel>Share it with your team</FieldLabel>
-                      <FieldDescription>
-                        Everyone can open it. Off keeps it to you.
-                      </FieldDescription>
+                      <FieldDescription>{SHARED_WORDS}</FieldDescription>
                     </div>
                   </div>
                 </Field>
@@ -418,6 +386,50 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
     </PaneScope>
   );
 
+  /**
+   * THE BAR STAYS, WHATEVER STATE THE PANE IS IN.
+   *
+   * Both of this pane's boardless states returned without one, so the screen a
+   * person meets FIRST had no name on it, no refresh and none of the chrome
+   * every other pane in this console keeps in every state. The board picker and
+   * "Add a report" both need a board, so until there is one the bar carries
+   * what there IS: a way to make the first board, and a refresh.
+   */
+  const boardlessToolbar = (
+    <>
+      <PaneToolbar
+        label="Dashboard controls"
+        primary={
+          <Button color="module" onClick={startNewBoard}>
+            <Plus className="size-4" aria-hidden /> New dashboard
+          </Button>
+        }
+        controls={
+          <RefreshButton
+            isFetching={isFetching}
+            onRefresh={() => {
+              void landing.refetch();
+              void refetch();
+            }}
+          />
+        }
+      />
+      {/* "New dashboard" is on this bar in every boardless state, so its dialog
+          comes with it. Loading and load-error had the button and no dialog
+          (persona issue 259). */}
+      {boardDialog}
+    </>
+  );
+
+  if (landing.isPending) {
+    return (
+      <div className={PANE_SHELL}>
+        {boardlessToolbar}
+        <div className="skeleton m-6 h-64" />
+      </div>
+    );
+  }
+
   // A failed read left `landing.data` undefined, which the branch below read as
   // "you have no boards" — telling someone their dashboards do not exist because
   // the server could not be reached. Two facts, two answers. The other console
@@ -431,6 +443,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
             icon={<LayoutDashboard className="size-6" aria-hidden />}
             title="Could not load your dashboards"
             description="This is a problem reaching the server. Every board you have built is unaffected."
+            error={landing.error}
             onRetry={() => {
               void landing.refetch();
               void refetch();
@@ -457,13 +470,16 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
             }
           />
         </div>
-        {boardDialog}
       </div>
     );
   }
 
   const renaming = widgetDraft?.mode === 'rename' ? widgetDraft : null;
   const adding = widgetDraft?.mode === 'add' ? widgetDraft : null;
+  // A private report on a shared board is a card teammates see without its name
+  // or numbers (persona issue 264), so the person adding it is told first.
+  const picked = adding ? reports?.items.find((r) => r.id === adding.reportId) : undefined;
+  const privateOnShared = Boolean(board?.shared && picked && keptToItsMaker(picked));
 
   // A board that is not there (removed, or another business's id) says so,
   // rather than drawing an empty board that looks like yours (persona issue 226).
@@ -563,23 +579,21 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
               </DropdownMenuContent>
             </DropdownMenu>
             {board?.description ? (
-              <Text className="hidden min-w-0 truncate md:block">{board.description}</Text>
+              <Text className="hidden min-w-0 truncate @3xl:block">{board.description}</Text>
             ) : null}
           </>
         }
-        refresh={
-          <div className="ml-auto flex items-center gap-2">
-            <Button
-              color="module"
-              onClick={() => {
-                setWidgetDraft({ mode: 'add', reportId: '', title: '' });
-              }}
-            >
-              <Plus className="size-4" aria-hidden /> Add a report
-            </Button>
-            <RefreshButton isFetching={isFetching} onRefresh={() => void refetch()} />
-          </div>
+        primary={
+          <Button
+            color="module"
+            onClick={() => {
+              setWidgetDraft({ mode: 'add', reportId: '', title: '' });
+            }}
+          >
+            <Plus className="size-4" aria-hidden /> Add a report
+          </Button>
         }
+        refresh={<RefreshButton isFetching={isFetching} onRefresh={() => void refetch()} />}
       />
 
       <div className="overflow-auto p-6">
@@ -661,6 +675,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Select
                       color="module"
                       aria-label="Which report"
+                      placeholder="Choose a report"
                       value={adding.reportId}
                       items={Object.fromEntries((reports?.items ?? []).map((r) => [r.id, r.name]))}
                       onValueChange={(next) => {
@@ -669,6 +684,10 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     />
                   )}
                 </Field>
+
+                {privateOnShared ? (
+                  <Alert color="warning">{PRIVATE_ON_SHARED_WARNING}</Alert>
+                ) : null}
 
                 <Field>
                   <FieldLabel>Call it something else here</FieldLabel>

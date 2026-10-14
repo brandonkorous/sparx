@@ -39,6 +39,9 @@ export const TemplateMeta = {
   replyTo: z.string().optional(),
   variables: Variables,
   propertyId: z.string().nullable().optional(),
+  // Go out from the business rather than the platform: this worker fills the
+  // From and Reply-To (see send-as.ts). For a publisher that cannot resolve them.
+  sendAs: z.literal('tenant').optional(),
 };
 
 // Back-compat: `storeName` was renamed to `siteName` (store→site rename).
@@ -489,6 +492,7 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
       summary: z.array(z.object({ label: z.string(), value: z.string() })),
       note: z.string().nullable().optional(),
       canReply: z.boolean().optional(),
+      shipsToCustomer: z.boolean().optional(),
     }),
   }),
   // Tenant -> their trade customer's own approver: a colleague's order is held

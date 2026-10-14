@@ -41,6 +41,9 @@ export interface PurchaseOrderSentEmailProps {
    *  the business's own address; without one a reply would go to a mailbox
    *  nobody reads, so the email does not invite it. */
   canReply?: boolean;
+  /** The supplier ships to the business's CUSTOMER, not to the business (a
+   *  dropship order, sparx persona issue 171). `shipTo` is then the customer. */
+  shipsToCustomer?: boolean;
 }
 
 function formatMoney(amount: number, currency: string): string {
@@ -80,6 +83,14 @@ function formatDate(iso: string): string | null {
 // The supplier deals with the business and has never heard of the platform.
 // `fromName` is the business; the frame is the visitor frame, which carries no
 // platform masthead (sparx persona issue 071).
+//
+// ── WHEN IT GOES TO THEIR CUSTOMER ──────────────────────────────────────────
+//
+// A supplier who ships to the business's customer reads the same order with a
+// stranger's address on it. Said plainly, or "Deliver to" gets the parcel there
+// with the supplier's invoice and prices inside, in front of somebody who paid the
+// business a different price; and the supplier is asked for the tracking number,
+// because the customer is waiting on it (sparx persona issue 171).
 export function PurchaseOrderSentEmail({
   fromName,
   supplierName,
@@ -95,12 +106,13 @@ export function PurchaseOrderSentEmail({
   summary,
   note,
   canReply = false,
+  shipsToCustomer = false,
 }: PurchaseOrderSentEmailProps) {
   const wanted = expectedBy ? formatDate(expectedBy) : null;
   const greeting = contactName?.trim() ? contactName.trim() : supplierName;
   const rows: EmailFieldRow[] = [
     {
-      label: 'Deliver to',
+      label: shipsToCustomer ? 'Ship to our customer' : 'Deliver to',
       value: [shipTo.name, ...shipTo.lines].filter((line) => line.trim() !== '').join(', '),
     },
   ];
@@ -115,10 +127,18 @@ export function PurchaseOrderSentEmail({
       audience="visitor"
     >
       <EmailDisplayHeading>Purchase order from {fromName}</EmailDisplayHeading>
-      <EmailParagraph>
-        Hi {greeting}, please supply the items below on purchase order{' '}
-        <strong>{documentNumber}</strong>. Quote that number on your invoice and delivery note.
-      </EmailParagraph>
+      {shipsToCustomer ? (
+        <EmailParagraph>
+          Hi {greeting}, please ship the items below straight to our customer, on order{' '}
+          <strong>{documentNumber}</strong>. Quote that number on your invoice, and keep your
+          invoice and prices out of the parcel.
+        </EmailParagraph>
+      ) : (
+        <EmailParagraph>
+          Hi {greeting}, please supply the items below on purchase order{' '}
+          <strong>{documentNumber}</strong>. Quote that number on your invoice and delivery note.
+        </EmailParagraph>
+      )}
 
       <EmailFieldPanel rows={rows} />
 
@@ -129,6 +149,13 @@ export function PurchaseOrderSentEmail({
       />
 
       {note ? <EmailParagraph>{note}</EmailParagraph> : null}
+
+      {shipsToCustomer ? (
+        <EmailParagraph>
+          When it ships, please send us the carrier and tracking number so we can let our customer
+          know.
+        </EmailParagraph>
+      ) : null}
 
       {/* Never ends on the business's name: "Gillett Diesel Service Inc." plus
           a full stop printed two of them. */}

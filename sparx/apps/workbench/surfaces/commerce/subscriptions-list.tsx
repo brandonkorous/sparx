@@ -18,20 +18,13 @@
 // could never fill. [[feedback_screen_over_a_function_nobody_calls]]
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
 import { Plus, Repeat2 } from 'lucide-react';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, formatDate, subscriptionState } from './products-data';
 import { useSubscriptions, type SubscriptionSummary } from './subscriptions-data';
@@ -144,10 +137,11 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Repeat2 className="size-6" aria-hidden />}
             title="Could not load repeat orders"
             description="This is a problem reaching the server. Nobody’s repeat order has changed. Nothing has been lost."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

@@ -11,7 +11,7 @@
 //     bodyValidatorFor), 422 on mismatch, exactly like a content entry body.
 
 import type { Prisma, ProductType, TxClient } from '@wizeworks/db';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import { bodyValidatorFor } from '@wizeworks/field-schema';
 import {
   ProductTypeSchema,
@@ -27,6 +27,7 @@ import {
   CommerceValidationError,
   type ServiceContext,
 } from '../errors';
+import { indexCommerceEntity } from '../events';
 
 // ── Wire shape ───────────────────────────────────────────────────────────────
 // Canonical shape every transport (REST, workbench, blueprint) reads. camelCase
@@ -227,6 +228,10 @@ export async function create(
     });
     return created;
   });
+  // Addressed by key, not id. Queued: a caller may have composed this into its own transaction.
+  await afterCommit(`index product_type ${row.key}`, () =>
+    indexCommerceEntity(ctx, 'product_type', row.key)
+  );
   return serializeProductType(row);
 }
 
@@ -272,6 +277,9 @@ export async function update(
     });
     return updated;
   });
+  await afterCommit(`index product_type ${row.key}`, () =>
+    indexCommerceEntity(ctx, 'product_type', row.key)
+  );
   return serializeProductType(row);
 }
 
@@ -352,6 +360,9 @@ export async function replaceSchema(
     });
     return { row: forkedRow, forked: true };
   });
+  await afterCommit(`index product_type ${row.key}`, () =>
+    indexCommerceEntity(ctx, 'product_type', row.key)
+  );
   return { productType: serializeProductType(row), forked };
 }
 
@@ -385,5 +396,9 @@ export async function remove(ctx: ServiceContext, key: string): Promise<WireProd
     });
     return existing;
   });
+  // Re-projected rather than dropped: a deleted fork can uncover the built-in of the same key.
+  await afterCommit(`index product_type ${row.key}`, () =>
+    indexCommerceEntity(ctx, 'product_type', row.key)
+  );
   return serializeProductType(row);
 }

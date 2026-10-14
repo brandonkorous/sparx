@@ -10,7 +10,7 @@
 // "ship without waiting". The Cores owed list offers the same moves from the
 // same words (core-line-words.ts), so the two screens cannot disagree.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ComponentProps } from 'react';
 import {
   Badge,
   Button,
@@ -27,6 +27,7 @@ import { formatMoney, type OrderItem } from './data';
 import {
   coreErrorMessage,
   coreLineOfItem,
+  useCoreOpenInvoice,
   useKeepCoreDeposits,
   useReceiveCores,
   useReleaseCoreHold,
@@ -39,6 +40,7 @@ import {
   coreSummary,
   moveLabel,
   plural,
+  receiveCoreWords,
   type CoreMove,
 } from './core-line-words';
 import { ActionDialog } from './return-actions';
@@ -162,19 +164,28 @@ function count(value: string): number {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+/**
+ * A count of parts. Its own callback is `onValueChange`: `FieldControl` merges
+ * its change-EVENT handler into `onChange`, and handed the typed text that
+ * handler threw on every keystroke (sparx persona issue 148). The field's props
+ * (its id, its label's id, the event) pass through to the input.
+ */
 function CountInput({
   value,
   error,
   label,
+  onValueChange,
   onChange,
-}: {
+  ...rest
+}: Omit<ComponentProps<typeof Input>, 'value'> & {
   value: string;
   error: boolean;
   label: string;
-  onChange: (next: string) => void;
+  onValueChange: (next: string) => void;
 }) {
   return (
     <Input
+      {...rest}
       color={error ? 'error' : 'module'}
       type="number"
       min="0"
@@ -184,7 +195,8 @@ function CountInput({
       value={value}
       aria-label={label}
       onChange={(event) => {
-        onChange(event.target.value);
+        onChange?.(event);
+        onValueChange(event.target.value);
       }}
     />
   );
@@ -203,12 +215,15 @@ function ReceiveCoresModal({
 }) {
   const toast = useToast();
   const receive = useReceiveCores();
+  // The order's open invoice: a returned deposit comes off it first (sparx persona
+  // issue 183). Undefined while it loads, so the dialog promises nothing it has
+  // not checked.
+  const invoice = useCoreOpenInvoice(line.orderItemId, open);
   const [usable, setUsable] = useState('');
   const [unusable, setUnusable] = useState('');
   const [note, setNote] = useState('');
   const [refundTo, setRefundTo] = useState<CoreRefundRoute>('original_payment');
-  const { owed, currency } = line;
-  const deposit = line.depositCents / 100;
+  const { owed } = line;
 
   useEffect(() => {
     if (open) {
@@ -221,10 +236,10 @@ function ReceiveCoresModal({
 
   const good = count(usable);
   const bad = count(unusable);
-  const back = good * deposit;
   const tooMany = good + bad > owed;
   const needsReason = bad > 0 && note.trim() === '';
   const valid = good + bad > 0 && !tooMany && !needsReason;
+  const words = receiveCoreWords(line, { usable: good, unusable: bad, invoice });
 
   const submit = () => {
     receive.mutate(
@@ -233,7 +248,7 @@ function ReceiveCoresModal({
         body: {
           usable: good,
           unusable: bad,
-          refundTo,
+          refundTo: words.asksWhereMoneyGoes ? refundTo : 'original_payment',
           ...(note.trim() ? { note: note.trim() } : {}),
         },
       },
@@ -261,16 +276,10 @@ function ReceiveCoresModal({
       open={open}
       onClose={onClose}
       title="Old part came back"
-      description={`${line.name}: ${plural(owed, 'core is', 'cores are')} still owed by ${line.customerName}. A usable core gets its ${formatMoney(deposit, currency)} deposit back. If this order has an invoice still open, the deposit comes off that invoice first.`}
-      submitLabel={
-        !valid
-          ? 'Record the core'
-          : back > 0
-            ? `Give back ${formatMoney(back, currency)}`
-            : `Keep ${plural(bad, 'deposit', 'deposits')}`
-      }
-      submitColor={back > 0 ? 'danger' : 'module'}
-      submitDisabled={!valid}
+      description={words.description}
+      submitLabel={valid ? words.submitLabel : 'Record the core'}
+      submitColor={words.submitColor}
+      submitDisabled={!valid || !words.ready}
       busy={receive.isPending}
       onSubmit={submit}
     >
@@ -283,7 +292,7 @@ function ReceiveCoresModal({
                 value={usable}
                 error={tooMany}
                 label="Cores that can be rebuilt"
-                onChange={setUsable}
+                onValueChange={setUsable}
               />
             }
           />
@@ -297,7 +306,7 @@ function ReceiveCoresModal({
                 value={unusable}
                 error={tooMany}
                 label="Cores that cannot be used"
-                onChange={setUnusable}
+                onValueChange={setUnusable}
               />
             }
           />
@@ -332,7 +341,7 @@ function ReceiveCoresModal({
         </Field>
       ) : null}
 
-      {good > 0 ? (
+      {words.asksWhereMoneyGoes ? (
         <Field>
           <FieldLabel>Deposit already paid goes</FieldLabel>
           <FieldControl
@@ -437,7 +446,7 @@ function OldPartArrivedModal({
               value={arrived}
               error={tooMany}
               label="Old parts that arrived"
-              onChange={setArrived}
+              onValueChange={setArrived}
             />
           }
         />
@@ -532,7 +541,7 @@ function KeepDepositsModal({
               value={quantity}
               error={n > owed}
               label="Deposits to keep"
-              onChange={setQuantity}
+              onValueChange={setQuantity}
             />
           }
         />

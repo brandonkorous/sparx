@@ -27,3 +27,14 @@ export type CarrierValue = (typeof CARRIER_CODES)[number];
 export const CARRIERS: readonly { value: CarrierValue; label: string }[] = CARRIER_CODES.map(
   (value) => ({ value, label: carrierLabel(value) })
 );
+
+/** The service the shopper chose ("UPS Ground"), kept on the shipment only when
+ *  the carrier that took it is the one it names. A shop that sent it with a local
+ *  courier instead read "Salt Lake Courier · UPS Ground" (sparx persona issue 219). */
+export function serviceFor(chosen: string | null | undefined, carrier: string): string | undefined {
+  const service = chosen?.trim() ?? '';
+  if (service === '') return undefined;
+  const name = carrierLabel(carrier).toLowerCase();
+  if (name === '' || carrier === 'other') return undefined;
+  return service.toLowerCase().split(/\s+/).includes(name) ? service : undefined;
+}

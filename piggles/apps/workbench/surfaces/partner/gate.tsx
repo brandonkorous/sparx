@@ -1,14 +1,8 @@
 'use client';
 
-// Shared framing for the partner surfaces: the loading / error / not-a-partner
-// states every one of them has to handle, in one place so they read identically.
-//
-// Two gates stack in the real product (docs/114 §B.7): the tenant must be a
-// partner at all (the `partners` row — `profile !== null`), and the acting member
-// must hold partner-operator access (owner/admin/partner — enforced server-side,
-// surfaced here as a 403 on the money/ledger reads). The module only appears in
-// the rail for partner tenants, so `not a partner` is a deep-link edge; it is
-// handled rather than assumed away.
+// The loading, error and not-a-partner states every partner surface handles, in one
+// place. Two gates stack (docs/114 §B.7): the tenant is a partner (`profile !== null`),
+// and the member holds partner-operator access (a 403 on the money/ledger reads).
 
 import { Card } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
@@ -71,11 +65,8 @@ export function isForbidden(error: unknown): boolean {
   return error instanceof ApiError && error.status === 403;
 }
 
-/** The shape a list surface renders when its own read fails. Distinguishes a
- *  refusal (403 — not a partner, or the acting member lacks partner access) from a
- *  real fault. On a 403 the server sends the exact reason ("This account is not a
- *  partner.") and that sentence is shown verbatim — it's the most specific true
- *  thing, and only the server can tell the two 403 reasons apart. */
+/** What a list surface renders when its own read fails. A 403 shows the server's
+ *  own reason verbatim: only the server can tell its two refusals apart. */
 export function PartnerLoadError({
   section,
   onRetry,
@@ -105,9 +96,11 @@ export function PartnerLoadError({
     <div className={PANE_SHELL}>
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
+          module={MODULE}
           icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
           title={`Could not load ${section}`}
           description="This is a problem reaching the server. Nothing about your partner account has changed. Try again in a moment."
+          error={error}
           onRetry={onRetry}
         />
       </Card>
@@ -115,10 +108,8 @@ export function PartnerLoadError({
   );
 }
 
-/** Shown when the tenant isn't a partner at all (a deep link into a module its
- *  rail would normally hide). There is no in-app join surface — joining is an
- *  owner/admin application reviewed by sparx staff — so this explains rather than
- *  offering a dead button. */
+/** The tenant isn't a partner at all (a deep link past the rail). Joining is an
+ *  application reviewed by staff, so this explains rather than offering a dead button. */
 export function NotAPartner({ section }: { section: string }) {
   return (
     <PartnerMessage

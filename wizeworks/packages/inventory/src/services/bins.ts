@@ -28,7 +28,7 @@ import {
   InventoryValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishInventoryEvent } from '../events';
+import { indexInventoryEntityOnCommit, publishInventoryEvent } from '../events';
 
 import { applyBinMovement, defaultBinFor } from './bin-ledger';
 
@@ -221,14 +221,18 @@ export async function provisionSystemBins(
 ): Promise<{ binsCreated: number }> {
   let binsCreated = 0;
   for (const bin of SYSTEM_BINS) {
-    const created = await tx.$executeRaw`
+    const created = await tx.$queryRaw<{ id: string }[]>`
       INSERT INTO inventory_bins
         (tenant_id, warehouse_id, code, name, type, is_sellable, is_default, is_system)
       VALUES (${tenantId}::uuid, ${warehouseId}::uuid, ${bin.code}, ${bin.name}, ${bin.type},
               ${bin.isSellable}, ${bin.isDefault}, true)
       ON CONFLICT (warehouse_id, code) DO NOTHING
+      RETURNING id
     `;
-    binsCreated += created;
+    for (const row of created) {
+      await indexInventoryEntityOnCommit({ tenantId }, 'bin', row.id);
+    }
+    binsCreated += created.length;
   }
   return { binsCreated };
 }
@@ -465,6 +469,7 @@ export async function createBin(ctx: ServiceContext, rawInput: unknown): Promise
       entityId: bin.id,
       diff: { before: null, after: { code: input.code, type: input.type } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'bin', bin.id);
 
     return bin.id;
   });
@@ -568,6 +573,7 @@ export async function updateBin(
       entityId: id,
       diff: { before: { code: existing.code, type: existing.type }, after: { ...input } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'bin', id);
   });
 
   return getBin(ctx, id);
@@ -619,6 +625,7 @@ export async function archiveBin(ctx: ServiceContext, id: string): Promise<void>
       entityId: id,
       diff: { before: { code: bin.code, isActive: true }, after: { isActive: false } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'bin', id);
   });
 }
 

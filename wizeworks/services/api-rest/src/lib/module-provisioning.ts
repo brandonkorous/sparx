@@ -45,10 +45,10 @@ import {
 } from '@wizeworks/crm';
 import { prisma } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
-import { bootstrapSchedulingDefaults } from '@wizeworks/scheduling';
 import type { FastifyBaseLogger } from 'fastify';
 
 import { bootstrapDefaultApprovalRule } from './b2b-defaults.js';
+import { bootstrapSchedulingDefaultsIndexed } from './scheduling-search.js';
 import { quickReplyService } from './chat/index.js';
 import { bootstrapSavedViewPresets, SAVED_VIEW_PRESET_MODULES } from './saved-view-presets.js';
 
@@ -130,7 +130,8 @@ async function provisionForModule(tenantId: string, slug: ProvisionedModule): Pr
       break;
     }
     case 'scheduling': {
-      await bootstrapSchedulingDefaults(tenantId);
+      // The seeded policy and place are searchable from the first minute.
+      await bootstrapSchedulingDefaultsIndexed(tenantId);
       break;
     }
   }

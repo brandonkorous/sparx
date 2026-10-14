@@ -10,16 +10,17 @@
 // Nothing offers a "Connect" that goes nowhere — every provider row opens a pane
 // that does the real thing, or says plainly what it needs.
 
-import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Heading, Text } from '@wizeworks/silicaui-react';
 import { CreditCard, ServerCrash, Star } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnlyNotice } from '../../components/managers-only';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   checkoutSummary,
   gatewayState,
-  paymentsErrorMessage,
   type GatewayDescriptor,
   type MaskedGatewayCredential,
   type PaymentConfig,
@@ -135,18 +136,12 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {config.isError || catalog.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load your payment providers"
-              description={paymentsErrorMessage(
-                config.error ?? catalog.error,
-                'This is a problem reaching the server. Your payment setup is unaffected.'
-              )}
-              actions={
-                <Button size="sm" color="module" onClick={refetchAll}>
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Your payment setup is unaffected."
+              error={config.error ?? catalog.error}
+              onRetry={refetchAll}
             />
           ) : config.isPending || catalog.isPending ? (
             <p className="text-sm" role="status">
@@ -170,6 +165,10 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
                     : 'Choose the service that takes your customers’ payments. sparx Pay is the fastest to start; you can also connect your own processor if you already have one.'}
                 </Text>
               </div>
+
+              {/* Each provider opens for anybody to read; only an owner or an
+                  admin may change one (sparx persona issue 168). */}
+              <ManagersOnlyNotice change="choose or set up how you get paid" />
 
               <FormSection
                 title="Choose how you get paid"

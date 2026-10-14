@@ -23,7 +23,7 @@ import {
   type ReactNode,
 } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, ImperativeAlertDialogProvider } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { productName } from '../lib/product';
@@ -227,27 +227,35 @@ export function SurfaceMount({
   if (!definition) return <MissingSurface paneId={paneId} />;
 
   const inner = (
-    // DirtyScope wraps the whole pane body so ANY descendant — the surface, a
-    // modal it opens, a picker inside that modal — can declare unsaved work
-    // without being handed the pane id. See lib/workbench/dirty.tsx.
-    <DirtyScope paneId={paneId}>
-      <PaneConfirmBridge paneId={paneId} />
-      {/* Which module this pane belongs to, for chrome rendered deep inside the
+    // Confirms are per pane, and they wear the pane's module color. The dialog
+    // portals to the window's body, outside the ModuleScope below, so without
+    // `data-module` on it `color: 'module'` resolved against the page: every
+    // module-colored confirm came out in the brand's red, and "Yes, they have
+    // arrived" read like a warning (sparx persona issue 179). Inside the window
+    // boundary, so a torn-off pane's confirm still opens in its own window.
+    <ImperativeAlertDialogProvider popupProps={{ 'data-module': definition.module }}>
+      {/* DirtyScope wraps the whole pane body so ANY descendant — the surface, a
+          modal it opens, a picker inside that modal — can declare unsaved work
+          without being handed the pane id. See lib/workbench/dirty.tsx. */}
+      <DirtyScope paneId={paneId}>
+        <PaneConfirmBridge paneId={paneId} />
+        {/* Which module this pane belongs to, for chrome rendered deep inside the
           surface that would otherwise have to be handed it by every surface in
           turn (the beta notice under PaneToolbar). Renders no DOM. */}
-      <PaneModuleProvider module={definition.module}>
-        {/* And which pane, for chrome that needs to name THIS pane rather than
+        <PaneModuleProvider module={definition.module}>
+          {/* And which pane, for chrome that needs to name THIS pane rather than
             this module — the copy-link control in the toolbar. Same reasoning,
             same shape, no DOM. */}
-        <PaneIdentityProvider paneId={paneId}>
-          <PaneErrorBoundary onReset={onReset} surface={descriptor.surface}>
-            <Suspense fallback={<PaneWaiting />}>
-              <SurfaceBody paneId={paneId} />
-            </Suspense>
-          </PaneErrorBoundary>
-        </PaneIdentityProvider>
-      </PaneModuleProvider>
-    </DirtyScope>
+          <PaneIdentityProvider paneId={paneId}>
+            <PaneErrorBoundary onReset={onReset} surface={descriptor.surface}>
+              <Suspense fallback={<PaneWaiting />}>
+                <SurfaceBody paneId={paneId} />
+              </Suspense>
+            </PaneErrorBoundary>
+          </PaneIdentityProvider>
+        </PaneModuleProvider>
+      </DirtyScope>
+    </ImperativeAlertDialogProvider>
   );
 
   return (

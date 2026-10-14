@@ -114,3 +114,41 @@ describe('describeRule', () => {
     expect(describeRule(null)).toBe(NO_CONDITIONS);
   });
 });
+
+/**
+ * A PICKED VALUE READS AS ITS NAME, NEVER ITS ID (sparx persona issue 149).
+ *
+ * A tier, a wholesale account and a team member are stored by id. The line
+ * printed the id: "Linked wholesale account is 1c0e…".
+ */
+describe('describeRule names what was picked', () => {
+  const FLEET = '6f1d2c4e-8a3b-4c5d-9e7f-0a1b2c3d4e5f';
+  const WASATCH = '1c0e4d2a-5b6c-4d7e-8f9a-0b1c2d3e4f5a';
+  const KENDRA = '9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d';
+  const pred = (field: string, value: unknown) => ({ kind: 'predicate', field, op: 'eq', value });
+  const names = {
+    tier: { [FLEET]: 'Fleet' },
+    account: { [WASATCH]: 'Wasatch Front Utility Contractors, LLC' },
+    rep: { [KENDRA]: 'Kendra Oyelaran' },
+  };
+
+  it('names the tier, the account and the team member', () => {
+    expect(describeRule(pred('b2bAccount.pricingTierId', FLEET), {}, names)).toBe(
+      'Price tier is Fleet'
+    );
+    expect(describeRule(pred('customer.b2bAccountId', WASATCH), {}, names)).toBe(
+      'Linked wholesale account is Wasatch Front Utility Contractors, LLC'
+    );
+    const rep = describeRule(pred('customer.assignedRepId', KENDRA), {}, names);
+    expect(rep).toContain('Kendra Oyelaran');
+    expect(rep).not.toContain(KENDRA);
+  });
+
+  it('never prints an id, before the names load or after one is removed', () => {
+    const before = describeRule(pred('b2bAccount.pricingTierId', FLEET));
+    expect(before).not.toContain(FLEET);
+    expect(before).toBe('Price tier is a chosen tier');
+    const removed = describeRule(pred('b2bAccount.pricingTierId', FLEET), {}, { tier: {} });
+    expect(removed).toBe('Price tier is a removed tier');
+  });
+});

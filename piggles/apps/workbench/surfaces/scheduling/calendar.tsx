@@ -1,25 +1,14 @@
 'use client';
 
-// THE CALENDAR — the operator's diary, everything booked in laid out by time.
-//
-// Two shapes of the same grid. WEEK is seven day-columns on one time axis — the
-// "how does my week look" view. DAY is one day split into a column per resource
-// (a member of staff, a bay, a room), which is how a shop actually runs a day:
-// who is on what, and where the gaps are. A resource can't be double-booked (the
-// database forbids it), so a resource column is a clean single track.
-//
-// Everything that narrows or moves the diary is a real read: the [from, to)
-// window is a server filter, the resource filter is passed to the server too, so
-// the grid never sieves a page in the browser and calls it the answer. Color is
-// status, carried by the blocks themselves (see calendar-timegrid), so a glance
-// tells you what is confirmed, what still needs a nod, and what is under way.
-//
-// Clicking a booking opens a quick-look MODAL over the diary — reschedule, the
-// lifecycle moves, and its change history, without splitting or hiding the grid.
-// Shift-click opens the full booking pane alongside, alt-click in its own window,
-// for anyone who wants the deep editor straight away.
+// THE CALENDAR: the operator's diary, everything booked laid out by time. WEEK is
+// seven day-columns; DAY is a column per resource (staff, bay, room), which is how
+// a shop runs a day. A resource cannot be double-booked, so each column is one track.
 
-import { useMemo, useState } from 'react';
+// Color is status, carried by the blocks (calendar-timegrid). A click opens a
+// quick-look MODAL over the diary; shift-click opens the full booking pane beside
+// it, alt-click in its own window.
+
+import { useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { Card, Text } from '@wizeworks/silicaui-react';
@@ -28,87 +17,95 @@ import { Icon } from '@piggles/ui';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { CalendarToolbar } from './calendar-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { CalendarBookingModal } from './calendar-booking-modal';
+import { type CalendarEvent } from './calendar-data';
+import { TimeGrid, targetFor } from './calendar-timegrid';
+import { emptyLine } from './calendar-columns';
+import { useDiary, type Diary } from './calendar-diary-state';
+import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this pane, so the brand draws Bookings' own picture rather
  *  than the generic one. */
 const MODULE = 'scheduling';
-import { CalendarBookingModal } from './calendar-booking-modal';
-import { useSchedulingResources } from './bookings-data';
-import {
-  addDays,
-  addWeeks,
-  dayLabel,
-  dayWindow,
-  useCalendarRange,
-  weekLabel,
-  weekWindow,
-  type CalendarEvent,
-} from './calendar-data';
-import { windowForEvents } from './calendar-grid';
-import { TimeGrid, targetFor } from './calendar-timegrid';
-import { dayColumns, emptyLine, useShutHours, weekColumns, type View } from './calendar-columns';
-import { RowOpenHint } from '../../components/row-open-hint';
+
+type OpenEvent = (event: CalendarEvent, modifiers: { shiftKey: boolean; altKey: boolean }) => void;
+
+function DiaryBody({ diary, onOpenEvent }: { diary: Diary; onOpenEvent: OpenEvent }) {
+  const { query, events, view, resourceId, anchor, shut } = diary;
+  if (query.isError) {
+    return (
+      <PaneLoadError
+        module={MODULE}
+        icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
+        title="Could not load your diary"
+        description="This is a problem reaching the server. Nothing in your diary has changed: the bookings just could not be read just now."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    );
+  }
+
+  if (query.isLoading && events.length === 0) {
+    return <PaneWaiting module={MODULE} label="Loading your diary…" />;
+  }
+
+  return (
+    <div className="relative h-full">
+      <TimeGrid
+        columns={diary.columns}
+        window={diary.timeWindow}
+        columnMinClass={diary.columnMinClass}
+        revealNonce={diary.revealNonce}
+        onOpenEvent={onOpenEvent}
+      />
+      {events.length === 0 ? (
+        <div className="pointer-events-none absolute inset-0 flex items-start justify-center pt-24">
+          <div className="bg-base-100 border-base-200 max-w-sm rounded-lg border px-4 py-3 text-center">
+            <Text className="font-medium">
+              {view === 'week' ? 'Nothing booked this week' : 'Nothing booked this day'}
+            </Text>
+            <Text className="text-sm">{emptyLine(resourceId, view, anchor, shut)}</Text>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function DiaryToolbar({ diary, ctx }: { diary: Diary; ctx: SurfaceContext }) {
+  const { query } = diary;
+  return (
+    <CalendarToolbar
+      label={diary.label}
+      view={diary.view}
+      resourceId={diary.resourceId}
+      resources={diary.activeResources}
+      isFetching={query.isFetching}
+      updatedAt={query.data ? query.dataUpdatedAt : undefined}
+      onSetView={diary.changeView}
+      onSetAnchor={diary.moveTo}
+      onSetResourceId={diary.setResourceId}
+      onStep={diary.step}
+      onRefresh={() => {
+        void query.refetch();
+      }}
+      onOpenLinkedCalendars={() => {
+        ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
+      }}
+    />
+  );
+}
 
 export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [view, setView] = useState<View>('week');
-  const [anchor, setAnchor] = useState<Date>(() => new Date());
-  const [resourceId, setResourceId] = useState('');
-  // Bumped whenever the diary has moved you in time, so the grid can put today's
-  // column back on screen — see TimeGrid's `revealNonce`. A counter rather than
-  // the anchor, because pressing Today while already inside this week changes no
-  // state at all and still has to bring today back from wherever you scrolled.
-  const [revealNonce, setRevealNonce] = useState(0);
+  const diary = useDiary();
   // The booking shown in the quick-look modal, or null when it is closed.
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
-  const resources = useSchedulingResources();
-  // Memoized because it is a dependency of the working-hours read below, and a
-  // fresh `[]` every render would re-run it every render.
-  const activeResources = useMemo(() => resources.data ?? [], [resources.data]);
-
-  const range = view === 'week' ? weekWindow(anchor) : dayWindow(anchor);
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useCalendarRange({
-    ...range,
-    ...(resourceId ? { resourceId } : {}),
-  });
-
-  const events = useMemo(() => data ?? [], [data]);
-  const timeWindow = useMemo(() => windowForEvents(events), [events]);
-
-  const shut = useShutHours(resourceId, activeResources, timeWindow);
-
-  const columns = useMemo(
-    () =>
-      view === 'week'
-        ? weekColumns(anchor, events, shut)
-        : dayColumns(events, resources.data ?? [], resourceId, anchor, shut),
-    [view, anchor, events, resources.data, resourceId, shut]
-  );
-
-  const label = view === 'week' ? weekLabel(anchor) : dayLabel(anchor);
-  // A day's columns are people, and a two-chair shop has two: at a flat 12rem
-  // they did not fit a phone, so half of the second chair sat off the edge with
-  // its name cut in the middle. The floor drops on a narrow pane and the columns
-  // stretch to fill a wide one, which is what `flex-1` was always for. A week's
-  // seven never fit a phone at any readable width — that one scrolls, and the
-  // grid opens it on today (TimeGrid's `revealNonce`).
-  const columnMinClass = view === 'week' ? 'min-w-[7rem]' : 'min-w-[9rem] @md:min-w-[12rem]';
-
-  const reveal = () => {
-    setRevealNonce((current) => current + 1);
-  };
-
-  const step = (direction: 1 | -1) => {
-    reveal();
-    setAnchor((current) =>
-      view === 'week' ? addWeeks(current, direction) : addDays(current, direction)
-    );
-  };
-
-  const openBooking = (event: CalendarEvent, modifiers: { shiftKey: boolean; altKey: boolean }) => {
-    // The escape hatch: shift/alt jumps straight to the full booking PANE beside
-    // the diary or in its own window. A plain click opens the quick-look modal,
-    // which keeps the calendar in view behind it.
+  const openBooking: OpenEvent = (event, modifiers) => {
+    // Shift/alt jumps straight to the full booking PANE; a plain click opens the
+    // quick-look modal, which keeps the calendar in view behind it.
     if (modifiers.shiftKey || modifiers.altKey) {
       ctx.open('scheduling.bookings.detail', { id: event.id }, { target: targetFor(modifiers) });
       return;
@@ -116,87 +113,19 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
     setSelectedBookingId(event.id);
   };
 
-  const body = () => {
-    if (isError) {
-      return (
-        <PaneLoadError
-          module={MODULE}
-          icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
-          title="Could not load your diary"
-          description="This is a problem reaching the server. Nothing in your diary has changed: the bookings just could not be read just now."
-          onRetry={() => {
-            void refetch();
-          }}
-        />
-      );
-    }
-
-    if (isLoading && events.length === 0) {
-      return <PaneWaiting module={MODULE} label="Loading your diary…" />;
-    }
-
-    return (
-      <div className="relative h-full">
-        <TimeGrid
-          columns={columns}
-          window={timeWindow}
-          columnMinClass={columnMinClass}
-          revealNonce={revealNonce}
-          onOpenEvent={openBooking}
-        />
-        {events.length === 0 ? (
-          <div className="pointer-events-none absolute inset-0 flex items-start justify-center pt-24">
-            <div className="bg-base-100 border-base-200 max-w-sm rounded-lg border px-4 py-3 text-center">
-              <Text className="font-medium">
-                {view === 'week' ? 'Nothing booked this week' : 'Nothing booked this day'}
-              </Text>
-              <Text className="text-sm">{emptyLine(resourceId, view, anchor, shut)}</Text>
-            </div>
-          </div>
-        ) : null}
-      </div>
-    );
-  };
-
   return (
     <div className={PANE_SHELL}>
-      <CalendarToolbar
-        label={label}
-        view={view}
-        resourceId={resourceId}
-        resources={activeResources}
-        isFetching={isFetching}
-        updatedAt={data ? dataUpdatedAt : undefined}
-        onSetView={(next) => {
-          reveal();
-          setView(next);
-        }}
-        onSetAnchor={(date) => {
-          reveal();
-          setAnchor(date);
-        }}
-        onSetResourceId={setResourceId}
-        onStep={step}
-        onRefresh={() => {
-          void refetch();
-        }}
-        onOpenLinkedCalendars={() => {
-          ctx.open('scheduling.calendar.connections', {}, { target: 'beside' });
-        }}
-      />
+      <DiaryToolbar diary={diary} ctx={ctx} />
 
-      {/* One recessed card holding the whole grid. Capped nowhere on purpose: the
-          diary earns the full width it is given — more of the day and more
-          columns, not a paragraph pinned to the left. */}
-      {/* A real Card rather than a hand-rolled base-100 box: same one card around
-          every state, and it picks up the resting elevation Piggles separates
-          surfaces with (DESIGN.md §4) instead of a hairline nobody can see. */}
-      <Card className="min-h-0 flex-1 overflow-hidden">{body()}</Card>
+      {/* One Card around every state, uncapped: the diary earns the full width it is
+          given, and the Card carries Piggles' resting elevation (DESIGN.md §4). */}
+      <Card className="min-h-0 flex-1 overflow-hidden">
+        <DiaryBody diary={diary} onOpenEvent={openBooking} />
+      </Card>
 
-      {events.length > 0 ? <RowOpenHint what="a booking to open it" /> : null}
+      {diary.events.length > 0 ? <RowOpenHint what="a booking to open it" /> : null}
 
-      {/* The quick-look modal floats over the diary — the grid above stays mounted
-          and live behind it, so a booking is opened without losing the week. */}
+      {/* Floats over the diary; the grid stays mounted and live behind it. */}
       <CalendarBookingModal
         bookingId={selectedBookingId}
         open={selectedBookingId !== null}

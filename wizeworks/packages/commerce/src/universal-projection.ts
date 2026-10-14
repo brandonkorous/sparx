@@ -40,6 +40,7 @@ import {
   segmentKindWords,
   taskLineWords,
 } from './search-words';
+import { entryText, kindFields } from './entry-text';
 
 // ─── helpers ─────────────────────────────────────────────────────────
 
@@ -800,6 +801,10 @@ const cmsPageProjector: EntityProjector = {
       if (!p) return null;
       const body = (p.body ?? {}) as Record<string, unknown>;
       const seo = (p.seoJson ?? {}) as Record<string, unknown>;
+      const kind = await tx.contentType.findFirst({
+        where: { key: 'page' },
+        select: { schemaJson: true },
+      });
       // No title COLUMN on a content entry — it lives in the body the type defines.
       const title = pickString(body.title) ?? p.slug ?? 'Untitled page';
       return {
@@ -811,7 +816,11 @@ const cmsPageProjector: EntityProjector = {
         title,
         // Nullable on a content entry, unlike the `Page` column this used to read.
         subtitle: p.slug ?? undefined,
-        body: snippet(pickString(seo.description) ?? pickString(body.excerpt)),
+        // The page's own words, so a reader finds the privacy policy by "cookies";
+        // its search description when the kind gives it none.
+        body:
+          entryText(body, kindFields(kind?.schemaJson), 'title') ??
+          snippet(pickString(seo.description) ?? pickString(body.excerpt)),
         keywords: keywords([p.slug]),
         status: p.status, // draft | published (public search filters published)
         url: `/content/${p.id}`,
@@ -922,6 +931,43 @@ export function pageAddressWords(kind: string, slug: string | null): string {
   return trimmed ? `/${trimmed}` : 'Home page, /';
 }
 
+// ─── builder: email design ─────────────────────────────────────────────────
+// A newsletter is designed once and sent many times, and its design could not be
+// found by name: Ctrl K knew the campaign "Friday edition, 10 October" and not the
+// design "Friday edition: 10 October" it sends (persona P09). The automatic emails
+// (receipts, reminders) are designs too, so "order confirmation" finds the one to
+// reword. Opens the designer on that email (`?emailId=`).
+
+const emailDesignProjector: EntityProjector = {
+  entityType: 'email_design',
+  module: 'builder',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.builderEmail.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const e = await tx.builderEmail.findUnique({ where: { id } });
+      if (!e) return null;
+      return {
+        id: universalId(ctx.tenantId, 'email_design', e.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'email_design',
+        module: 'builder',
+        record_id: e.id,
+        title: e.name,
+        subtitle: e.key ? 'Email design · sent automatically' : 'Email design',
+        body: snippet([e.subject, e.preheader].filter(Boolean).join(' · ')),
+        keywords: keywords([e.key]),
+        status: e.publishedAt ? 'published' : 'draft',
+        url: `/builder/email-designs?emailId=${e.id}`,
+        created_at: epoch(e.createdAt),
+        updated_at: epoch(e.updatedAt),
+      };
+    }),
+};
+
 // ─── cms: content entry (signalled live, paired with cms_page) ─────────────
 // Covers every ContentEntry typeKey EXCEPT `page`, which cmsPageProjector takes
 // (those rows are a tenant's policy and standalone pages). Same table, split on
@@ -945,12 +991,12 @@ const contentEntryProjector: EntityProjector = {
       const e = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
       if (!e || e.typeKey === 'page') return null;
       const body = (e.body ?? {}) as Record<string, unknown>;
-      const title =
-        pickString(body.title) ??
-        pickString(body.name) ??
-        pickString(body.heading) ??
-        e.slug ??
-        `Untitled ${e.typeKey}`;
+      const titleKey = ['title', 'name', 'heading'].find((k) => pickString(body[k]));
+      const title = (titleKey && pickString(body[titleKey])) ?? e.slug ?? `Untitled ${e.typeKey}`;
+      const kind = await tx.contentType.findFirst({
+        where: { key: e.typeKey },
+        select: { schemaJson: true },
+      });
       return {
         id: universalId(ctx.tenantId, 'cms_entry', e.id),
         tenant_id: ctx.tenantId,
@@ -959,12 +1005,48 @@ const contentEntryProjector: EntityProjector = {
         record_id: e.id,
         title,
         subtitle: `${humanizeTypeKey(e.typeKey)} · ${entryStatusWords(e.status)}`,
-        body: snippet(pickString(body.excerpt) ?? pickString(body.summary)),
+        // Every word of the piece, not a summary field most kinds do not have:
+        // a reader searches for a word they remember from the body (P09).
+        body: entryText(body, kindFields(kind?.schemaJson), titleKey),
         keywords: keywords([e.slug, e.typeKey]),
         status: e.status, // draft | published | scheduled | archived
         url: `/cms/${e.id}`,
         created_at: epoch(e.createdAt),
         updated_at: epoch(e.updatedAt),
+      };
+    }),
+};
+
+// ─── cms: author ───────────────────────────────────────────────────────────
+// A byline is the person a publication is made of, and Ctrl K could not find one:
+// "Tobias Frankland" offered a customer called Tobiah instead (persona P09).
+// Signalled by the author create, update and delete routes.
+
+const authorProjector: EntityProjector = {
+  entityType: 'author',
+  module: 'cms',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.author.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const a = await tx.author.findFirst({ where: { id } });
+      if (!a) return null;
+      return {
+        id: universalId(ctx.tenantId, 'author', a.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'author',
+        module: 'cms',
+        record_id: a.id,
+        title: a.displayName,
+        subtitle: 'Author',
+        body: snippet(a.bio),
+        keywords: keywords([a.slug]),
+        url: `/content/authors/${a.id}`,
+        created_at: epoch(a.createdAt),
+        updated_at: epoch(a.updatedAt),
       };
     }),
 };
@@ -1327,7 +1409,9 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   // Site Builder + CMS breadth (docs/39 Ph2 / docs/66)
   siteProjector,
   builderPageProjector,
+  emailDesignProjector,
   contentEntryProjector,
+  authorProjector,
   mediaProjector,
   // Purchasing (issue 508). A warehouse refers to its own paperwork by number,
   // and not one of these numbers used to find anything.

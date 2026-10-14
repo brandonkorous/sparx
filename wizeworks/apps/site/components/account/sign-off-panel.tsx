@@ -33,6 +33,7 @@ import { formatMoney } from '@/lib/format';
 import {
   decisionResultSentence,
   followsLaterSentence,
+  overCreditSentence,
   overLimitSentence,
   signedSentences,
   signOffWaitingSentence,
@@ -66,7 +67,12 @@ export function SignOffPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const overLimit = overLimitSentence(signOff.limitCents, order.currency);
+  const overLimit = [
+    overLimitSentence(signOff.limitCents, order.currency),
+    overCreditSentence(signOff.overCredit),
+  ]
+    .filter(Boolean)
+    .join(' ');
   const signed = signedSentences(signOff, null, viewerId);
   const placedBy = order.placedBy ?? 'the person who placed it';
   const total = formatMoney(order.totals.totalCents, order.currency);

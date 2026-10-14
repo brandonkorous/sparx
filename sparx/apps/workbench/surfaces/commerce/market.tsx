@@ -31,9 +31,11 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { MARKET_CATEGORIES } from '@wizeworks/commerce-schemas';
 import { ServerCrash, ShoppingBag } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { loadFailureWords } from '../../lib/api-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, productErrorMessage } from './products-data';
 import {
@@ -334,10 +336,7 @@ function EnrolledBody({ profile, ctx }: { profile: MarketProfile; ctx: SurfaceCo
             size="sm"
             icon={<ServerCrash className="size-6" aria-hidden />}
             title="Could not load your listed products"
-            description={productErrorMessage(
-              products.error,
-              'This is a problem reaching the server.'
-            )}
+            description={loadFailureWords(products.error, 'This is a problem reaching the server.')}
             actions={
               <Button
                 size="sm"
@@ -519,24 +518,14 @@ export function MarketSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {profileQuery.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load sparx.market"
-              description={productErrorMessage(
-                profileQuery.error,
-                'This is a problem reaching the server. Nothing about your marketplace has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void profileQuery.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing about your marketplace has changed."
+              error={profileQuery.error}
+              onRetry={() => {
+                void profileQuery.refetch();
+              }}
             />
           ) : profile === undefined ? (
             <p className="text-sm" role="status">

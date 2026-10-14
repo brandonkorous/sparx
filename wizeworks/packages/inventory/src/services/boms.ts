@@ -36,6 +36,7 @@ import {
   InventoryValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
+import { indexInventoryEntityOnCommit } from '../events';
 
 import { VARIANT_LABEL_SELECT, variantLabel } from './variant-label';
 
@@ -226,6 +227,7 @@ export async function createBom(ctx: ServiceContext, rawInput: unknown): Promise
       entityId: bom.id,
       diff: { after: { name: input.name, components: input.components.length } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'bom', bom.id);
 
     return loadBomDetail(tx, bom.id);
   });
@@ -281,6 +283,7 @@ export async function updateBom(
       await tx.bomComponent.deleteMany({ where: { bomId: id } });
       await writeComponents(tx, ctx.tenantId, id, input.components);
     }
+    await indexInventoryEntityOnCommit(ctx, 'bom', id);
 
     return loadBomDetail(tx, id);
   });
@@ -320,10 +323,18 @@ export async function setBomStatus(
           [{ field: 'status', message: 'no components' }]
         );
       }
-      await tx.billOfMaterials.updateMany({
+      // Read the stood-down versions first so each one's entry stops saying active.
+      const standingDown = await tx.billOfMaterials.findMany({
         where: { outputVariantId: existing.outputVariantId, status: 'active', id: { not: id } },
+        select: { id: true },
+      });
+      await tx.billOfMaterials.updateMany({
+        where: { id: { in: standingDown.map((b) => b.id) } },
         data: { status: 'archived' },
       });
+      for (const old of standingDown) {
+        await indexInventoryEntityOnCommit(ctx, 'bom', old.id);
+      }
     }
 
     await tx.billOfMaterials.update({ where: { id }, data: { status: input.status } });
@@ -338,6 +349,7 @@ export async function setBomStatus(
       entityId: id,
       diff: { before: { status: existing.status }, after: { status: input.status } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'bom', id);
 
     return loadBomDetail(tx, id);
   });
@@ -359,6 +371,7 @@ export async function deleteBom(ctx: ServiceContext, id: string): Promise<{ id: 
       );
     }
     await tx.billOfMaterials.delete({ where: { id } });
+    await indexInventoryEntityOnCommit(ctx, 'bom', id, 'delete');
     return { id };
   });
 }

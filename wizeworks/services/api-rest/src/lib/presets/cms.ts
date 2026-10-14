@@ -19,7 +19,8 @@ import {
   type FieldDef,
 } from '@wizeworks/cms-schemas';
 import { definePreset, type ModulePreset } from '@wizeworks/auth';
-import type { Prisma, TenantContext } from '@wizeworks/db';
+import { afterCommit, type Prisma, type TenantContext } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 // ContentTypeSchema is a plain JSON-shaped object (Prisma's InputJsonObject
 // permits optional/undefined values), so it's assignable to the Json column type
@@ -151,6 +152,15 @@ function contentTypePreset(def: ContentTypeDefinition): ModulePreset {
         },
         select: { id: true },
       });
+      // Queued: an industry starter installs several presets in one transaction.
+      await afterCommit('index content_type', () =>
+        indexEntity({
+          tenantId: sx.tenantId,
+          actorId: sx.userId ?? null,
+          entityType: 'content_type',
+          recordId: def.key,
+        })
+      );
       return { id: created.id };
     },
   });
@@ -204,6 +214,14 @@ const topicTaxonomyPreset: ModulePreset = definePreset({
         },
       });
     }
+    await afterCommit('index taxonomy', () =>
+      indexEntity({
+        tenantId: sx.tenantId,
+        actorId: sx.userId ?? null,
+        entityType: 'taxonomy',
+        recordId: 'topic',
+      })
+    );
     return { id: taxonomy.id };
   },
 });

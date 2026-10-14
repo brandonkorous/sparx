@@ -17,7 +17,12 @@ import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound, badRequest, conflict } from '@wizeworks/api-core/errors';
 import { slugify, uniqueSlug } from '@wizeworks/api-core/slug';
-import { createPublisher, publishEvent, type PublisherLogger } from '@wizeworks/events';
+import {
+  createPublisher,
+  indexEntity,
+  publishEvent,
+  type PublisherLogger,
+} from '@wizeworks/events';
 import { createAdapter, VENDOR_CATALOG } from '@wizeworks/dropship';
 import type { PricingRule, SupplierAdapter, SupplierType } from '@wizeworks/dropship';
 import { applyPricingRule } from '@wizeworks/dropship';
@@ -100,8 +105,13 @@ const SiteScope = z.array(z.string().uuid()).max(200);
 const SupplierBody = z.object({
   name: z.string().min(1).max(255),
   // Only vendors with a real, self-serve adapter (docs/14 §3). Suppliers without
-  // a usable public API are not offered.
-  type: z.enum(['csv', 'dsers', 'spocket', 'printify', 'printful']),
+  // a usable public API are not offered. Read from the catalog itself, so a kind
+  // added there is accepted here (this enum was a sixth copy of the list, and the
+  // business's own supplier, sparx persona issue 171, was refused by it).
+  type: z.custom<SupplierType>(
+    (value) => typeof value === 'string' && VENDOR_CATALOG.some((v) => v.slug === value),
+    'Choose a supplier type.'
+  ),
   credentials: z.record(z.string(), z.string()),
   pricingRule: PricingRuleSchema.nullable().optional(),
   notes: z.string().max(5000).nullable().optional(),
@@ -123,6 +133,24 @@ const ImportBody = z.object({
 // Vendor catalog keyed by slug — lets the supplier view attach the credential
 // field spec for its type without the dashboard re-fetching or re-deriving it.
 const VENDOR_BY_TYPE = new Map(VENDOR_CATALOG.map((v) => [v.slug, v]));
+
+const NO_CAPABILITIES = {
+  catalogSync: false,
+  orderSubmission: false,
+  trackingSync: false,
+  inventorySync: false,
+};
+
+/** Refuse a catalog job for a supplier that has no product list: the
+ *  business's own supplier ships products the business already sells, chosen
+ *  on each product (sparx persona issue 171). */
+function requireCatalog(type: string): void {
+  if (VENDOR_BY_TYPE.get(type as SupplierType)?.capabilities.catalogSync) return;
+  throw badRequest(
+    'This supplier has no product list to bring in. Choose which of your products they ship on each product’s Dropshipping panel.',
+    'NO_CATALOG'
+  );
+}
 
 // Are this connection's credentials actually on file? Secrets are write-only
 // (never returned to the browser), so the dashboard can't tell on its own
@@ -208,6 +236,10 @@ function toSupplierView(s: {
     // describing nothing that is there.
     credentialValues: nonSecretCredentials(s.type, s.credentials),
     vendorLabel: vendor?.label ?? s.type,
+    // What this kind of supplier can do, so the console offers only that: a
+    // supplier with no product list has nothing to sync, browse or price
+    // (sparx persona issue 171).
+    capabilities: vendor?.capabilities ?? NO_CAPABILITIES,
     // Empty = enabled on every site (the default). A non-empty list restricts
     // the connection to those properties.
     siteScope: s.siteScopes?.map((x) => x.propertyId) ?? [],
@@ -844,6 +876,12 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       { supplierId: supplier.id, type: body.type, connectionOk },
       pubLogger
     );
+    await indexEntity({
+      tenantId,
+      actorId: userId,
+      entityType: 'dropship_supplier',
+      recordId: supplier.id,
+    });
 
     return reply.status(201).send(ok(toSupplierView(supplier)));
   });
@@ -872,7 +910,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/dropship/suppliers/:id', async (request, reply) => {
     await requireDropshipModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toDropshipContext(request);
+    const { tenantId, userId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
     const body = SupplierPatchBody.parse(request.body);
 
@@ -932,6 +970,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         include: { siteScopes: { select: { propertyId: true } } },
       });
     });
+    await indexEntity({ tenantId, actorId: userId, entityType: 'dropship_supplier', recordId: id });
 
     return reply.send(ok(toSupplierView(updated)));
   });
@@ -941,7 +980,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/dropship/suppliers/:id', async (request, reply) => {
     await requireDropshipModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toDropshipContext(request);
+    const { tenantId, userId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
 
     const existing = await withTenant({ tenantId }, async (tx) => {
@@ -954,6 +993,13 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         where: { id },
         data: { deletedAt: new Date(), status: 'disconnected' },
       });
+    });
+    await indexEntity({
+      tenantId,
+      actorId: userId,
+      entityType: 'dropship_supplier',
+      recordId: id,
+      op: 'delete',
     });
 
     return reply.status(204).send();
@@ -974,6 +1020,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       });
     });
     if (!supplier) throw notFound('Supplier not found');
+    requireCatalog(supplier.type);
     if (supplier.status === 'error') {
       throw badRequest('Cannot sync a supplier in error state', 'SUPPLIER_ERROR');
     }
@@ -1122,6 +1169,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     });
 
     if (!supplier) throw notFound('Supplier not found');
+    requireCatalog(supplier.type);
     if (!dropshipProduct) throw notFound('Dropship product not found');
     if (dropshipProduct.links.length > 0) {
       throw conflict('This product is already imported into your catalog', 'ALREADY_IMPORTED');
@@ -1203,6 +1251,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     });
 
     if (!supplier) throw notFound('Supplier not found');
+    requireCatalog(supplier.type);
     if (!dropshipProduct) throw notFound('Dropship product not found');
     const commerceProductId = dropshipProduct.links[0]?.productId;
     if (!commerceProductId) {

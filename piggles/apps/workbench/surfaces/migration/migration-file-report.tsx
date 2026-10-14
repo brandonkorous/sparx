@@ -141,7 +141,8 @@ export function FileReport({
               </AlertTitle>
               <AlertDescription>
                 It {sentenceList(result.detected.reasons)}, and plenty of files do, so we would only
-                be guessing. Say what your own columns are below and every one of them comes across.
+                be guessing. Say what your own columns are below, and each one you match comes
+                across.
               </AlertDescription>
             </AlertContent>
           </Alert>

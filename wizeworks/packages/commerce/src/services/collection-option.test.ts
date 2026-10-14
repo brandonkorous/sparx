@@ -56,4 +56,18 @@ describe('describeRate', () => {
       'Standard'
     );
   });
+
+  // Gillett's rate is "UPS Ground", carried by UPS: the order said "UPS UPS Ground"
+  // (sparx persona issue 217). The console's shipment line already said it once.
+  it('names the carrier once when the service already starts with it', () => {
+    expect(
+      describeRate({ providerSlug: 'sparx-manual', carrier: 'UPS', service: 'UPS Ground' })
+    ).toBe('UPS Ground');
+    expect(
+      describeRate({ providerSlug: 'shippo', carrier: 'USPS', service: 'usps ground advantage' })
+    ).toBe('usps ground advantage');
+    expect(describeRate({ providerSlug: 'shippo', carrier: 'UPS', service: 'UPSide' })).toBe(
+      'UPS UPSide'
+    );
+  });
 });

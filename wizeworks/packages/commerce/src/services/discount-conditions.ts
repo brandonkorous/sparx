@@ -206,12 +206,12 @@ export function refusalReason(conditions: DiscountCondition[], facts: CartFacts)
       case 'min_subtotal_cents': {
         if (facts.subtotalCents >= condition.value) break;
         const short = condition.value - facts.subtotalCents;
-        return `This code needs a basket of at least ${money(condition.value)}. Add ${money(short)} more to use it.`;
+        return `This code needs a cart of at least ${money(condition.value)}. Add ${money(short)} more to use it.`;
       }
       case 'min_item_count': {
         if (facts.itemCount >= condition.value) break;
         const noun = condition.value === 1 ? 'item' : 'items';
-        return `This code needs at least ${condition.value} ${noun} in your basket.`;
+        return `This code needs at least ${condition.value} ${noun} in your cart.`;
       }
       case 'first_order_only': {
         if (!condition.value) break;
@@ -239,7 +239,7 @@ export function refusalReason(conditions: DiscountCondition[], facts: CartFacts)
   // OR, so a basket qualifies when ANY line is covered by ANY of them.
   const allowed = allowedProducts(conditions, facts);
   if (allowed !== null && !facts.lines.some((line) => allowed.has(line.productId))) {
-    return 'This code does not apply to anything in your basket.';
+    return 'This code does not apply to anything in your cart.';
   }
 
   return null;

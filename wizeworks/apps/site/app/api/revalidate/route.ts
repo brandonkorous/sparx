@@ -78,8 +78,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // The storefront also tags every fetch with the shared 'sparx-storefront'
   // tag; include scoped tags so a purge is targeted to this tenant.
   const purged = [`tenant:${tenant}`, ...scopes.map((s) => `${s}:${tenant}`)];
-  // Next 16 requires a cache-life profile; 'max' force-expires matching entries.
-  for (const tag of purged) revalidateTag(tag, 'max');
+  // EXPIRED, not stale. `'max'` marks an entry stale and keeps serving it while a fresh
+  // read happens in the background, and Next stores only a 200: a page the owner
+  // deleted answers 404, so the background read is thrown away and the deleted page is
+  // served on and on. A journal's deleted `/blog` was still up an hour later (persona
+  // issue 947). `{ expire: 0 }` makes the next visitor's read the real one.
+  for (const tag of purged) revalidateTag(tag, { expire: 0 });
 
   return NextResponse.json({ success: true, data: { tenant, purged } });
 }

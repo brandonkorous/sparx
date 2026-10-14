@@ -92,7 +92,15 @@ function AddressRow({
 }
 
 export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: domains, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDomains();
+  const {
+    data: domains,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useDomains();
   const { data: sites } = useSites();
   const currentSiteId = useActivePropertyId();
   const [search, setSearch] = useState('');
@@ -149,6 +157,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<GlobeLock className="size-6" aria-hidden />}
         title="Could not load your web addresses"
         description="This is a problem reaching the server. Your addresses are unaffected and still working."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

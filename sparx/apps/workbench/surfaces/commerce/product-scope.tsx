@@ -107,6 +107,7 @@ import { useWorkbench } from '../../lib/workbench/context';
 import { usePaneId } from '../../lib/workbench/dirty';
 import { useShareAs } from '../../lib/workbench/share-as';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { surfaceTitle } from '../../lib/surfaces/registry';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useProduct, type Product } from './products-data';
@@ -302,6 +303,9 @@ export type ProductScope =
       isFollowing: boolean;
       pin: () => void;
       retry: () => void;
+      /** The read's own error, so a failed load says WHY rather than blaming
+       *  the connection for a 5xx or a 403 (issue 260). */
+      error: unknown;
     }
   | {
       state: 'ready';
@@ -423,6 +427,7 @@ export function useProductScope(ctx: SurfaceContext, options: ProductScopeOption
     isFollowing,
     pin,
     retry,
+    error: query.error,
   };
 }
 
@@ -550,15 +555,13 @@ function ScopeMessage({
   }
 
   return (
-    <EmptyState
+    <PaneLoadError
       icon={<ServerCrash className="size-6" aria-hidden />}
       title={`Could not load ${noun}`}
       description="This is a problem reaching the server. Nothing about the product has changed. It just could not be read just now."
-      actions={
-        <Button size="sm" color="module" onClick={scope.retry}>
-          Try again
-        </Button>
-      }
+      error={scope.state === 'error' ? scope.error : undefined}
+      noun="product"
+      onRetry={scope.retry}
     />
   );
 }

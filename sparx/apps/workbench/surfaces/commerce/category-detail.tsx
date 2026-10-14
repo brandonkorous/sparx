@@ -42,6 +42,8 @@ import { FormSection } from '../../components/form-section';
 import { SiteScopeField } from '../../components/site-scope-field';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaField } from './media-field';
+import { pageAddress } from './page-address';
+import { useSiteHost } from '../domains/site-host';
 import { SaveFailure } from '@/components/save-failure';
 import {
   categoryErrorMessage,
@@ -197,6 +199,7 @@ function CategoryEditor({
 
   // The web address follows the name until someone edits it themselves.
   const effectiveHandle = isNew && !handleTouched ? slugifyHandle(draft.name) : draft.handle;
+  const host = useSiteHost();
 
   const nameError = draft.name.trim() === '' ? 'Give the category a name.' : null;
 
@@ -433,8 +436,8 @@ function CategoryEditor({
                 }
               />
               <FieldDescription>
-                The end of this category&apos;s page address: yoursite.com/c/
-                {effectiveHandle || '…'}.{' '}
+                The end of this category&apos;s page address:{' '}
+                {pageAddress(host, 'commerce.category', effectiveHandle)}.{' '}
                 {isNew ? '' : 'Changing it breaks any link already shared to this page.'}
               </FieldDescription>
             </Field>

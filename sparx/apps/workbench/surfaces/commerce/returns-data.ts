@@ -64,6 +64,11 @@ export interface ReturnLine {
   variantId: string | null;
   quantity: number;
   approvedQuantity: number;
+  /** What the units accepted back were paid: goods after their discount, and
+   *  the sales tax on them (sparx persona issue 231). Absent from an older
+   *  server. */
+  paidGoodsCents?: number;
+  paidTaxCents?: number;
   reasonCode: string;
   customerNote: string | null;
   mediaAssetIds: string[];
@@ -115,6 +120,9 @@ export interface ReturnDetail extends ReturnSummary {
   refundedAmountCents: number | null;
   restockingFeeCents: number | null;
   refundIssuedAs: string | null;
+  /** The money was taken by hand, so a refund records it and a person hands it
+   *  back (sparx persona issue 178). The server's answer, never guessed here. */
+  refundsByHand: boolean;
   approvedAt: string | null;
   receivedAt: string | null;
   refundedAt: string | null;
@@ -409,7 +417,9 @@ export function returnState(
 /** Why the customer is sending it back, in plain words. */
 export const REASON_LABELS: Record<string, string> = {
   wrong_item: 'Wrong item sent',
-  wrong_size: 'Wrong size',
+  // The customer's own words are "It does not fit"; a part has no size
+  // (sparx persona issue 182).
+  wrong_size: 'Does not fit',
   defective: 'Faulty',
   damaged_in_transit: 'Damaged on the way',
   not_as_described: 'Not as described',

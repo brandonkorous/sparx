@@ -20,9 +20,9 @@
 
 import { Button } from '@wizeworks/silicaui-react';
 
-/** The dock that holds every open pane — what the control focuses, and what
- *  `WorkbenchShell` puts on its `<main>`. */
-export const WORKSPACE_ID = 'workspace';
+import { WORKSPACE_ID } from './pane-focus';
+
+export { WORKSPACE_ID } from './pane-focus';
 
 export function SkipToWorkspace() {
   return (

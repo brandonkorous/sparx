@@ -289,6 +289,11 @@ export interface SitePublishState {
   unpublishedPageList: { id: string; name: string; slug: string | null }[];
   /** Whether the site chrome (header/footer) differs from the published frame. */
   frameUnpublished: boolean;
+  /** Whether the site's LOOK (its theme) differs from the one visitors see. A whole-site
+   *  publish puts it live, and nothing said it was waiting: a journal that chose a
+   *  design's look kept the starter's on its live site, and the Publish screen listed
+   *  pages only. Optional on the wire for an older API; absent reads as no change. */
+  themeUnpublished?: boolean;
   /** When the site was last published; null if it never has been. */
   lastPublishedAt: string | null;
   /** True when nothing has EVER been published — visitors see no site at all,
@@ -455,6 +460,13 @@ export interface PublishedSilicaFrameDto {
    * own chrome. Empty on any site that has switched nothing off.
    */
   hiddenPaths?: string[];
+  /**
+   * The platform's own pages the owner deleted, bare (`blog`). The storefront serves
+   * a starter page at an address with no page of hers only while it is not one of
+   * these; deleting the design's `/blog` used to leave it served (persona issue 947).
+   * Absent means none.
+   */
+  removedPages?: string[];
 }
 
 /** A published silica PAGE body + the meta the storefront titles/routes it by.

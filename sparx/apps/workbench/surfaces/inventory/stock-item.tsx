@@ -795,7 +795,7 @@ function BarcodesSection({
           <Text className="min-w-0 text-sm">
             Nothing scans as {sku ?? 'this item'} yet, so it has to be found by name every time.
             sparx can create a real UPC for it: any scanner reads it, and it can never clash with a
-            manufacturer&rsquo;s code.
+            manufacturer’s code.
           </Text>
           <Button
             size="sm"

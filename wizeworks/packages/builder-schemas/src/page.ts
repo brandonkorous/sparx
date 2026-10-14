@@ -84,6 +84,13 @@ export interface BuilderPageSummaryDto {
    * missing (issues 270, 274). Publish state is still `published` — this is reach.
    */
   live: boolean;
+  /**
+   * The module this SITE switched off that takes this page off it (`commerce`,
+   * `scheduling`, `cms`), or null. Set only on the record pages and starter addresses
+   * that exist for that module: a journal with Selling off has no `/shop`, whatever its
+   * account has. `live` is false whenever this is set.
+   */
+  offOnSite?: 'commerce' | 'scheduling' | 'cms' | null;
   publishedAt: string | null;
   position: number;
   /** Whether this collection template is the DEFAULT for its `recordType`

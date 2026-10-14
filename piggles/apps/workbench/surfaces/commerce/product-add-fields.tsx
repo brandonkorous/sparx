@@ -13,6 +13,8 @@ import {
   Switch,
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
+import { useSiteHost } from '../domains/site-host';
+import { pageAddress } from './page-address';
 import { MoneyTextInput } from '../../components/money-input';
 
 export interface NewProductFieldsProps {
@@ -36,6 +38,7 @@ export interface NewProductFieldsProps {
 // needed BEFORE anything is typed; the field messages say what is still missing
 // after. Without it the Add product button simply sat grey (issue 481).
 export function NewProductFields(p: NewProductFieldsProps) {
+  const host = useSiteHost();
   return (
     <>
       <FormSection title="What you are selling">
@@ -73,8 +76,8 @@ export function NewProductFields(p: NewProductFieldsProps) {
             }
           />
           <FieldDescription>
-            The end of this product&apos;s page address on your website: yoursite.com/products/
-            {p.handle || '…'}
+            The end of this product&apos;s page address on your website:{' '}
+            {pageAddress(host, 'commerce.product', p.handle)}
           </FieldDescription>
         </Field>
       </FormSection>

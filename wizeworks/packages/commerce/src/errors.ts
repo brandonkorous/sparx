@@ -53,7 +53,7 @@ export class CommerceCartBoughtError extends Error {
   readonly cartId: string;
   constructor(cartId: string) {
     super(
-      'This basket has already been ordered, so it cannot be changed. Anything you add now starts a new basket.'
+      'This cart has already been ordered, so it cannot be changed. Anything you add now starts a new cart.'
     );
     this.cartId = cartId;
   }

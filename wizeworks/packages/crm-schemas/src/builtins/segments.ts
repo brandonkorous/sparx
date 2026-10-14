@@ -99,7 +99,9 @@ export const NEWSLETTER_SEGMENT_SLUG = 'newsletter-subscribers';
 const NEWSLETTER_SUBSCRIBERS: SegmentTemplate = {
   name: 'Newsletter Subscribers',
   slug: NEWSLETTER_SEGMENT_SLUG,
-  description: 'Everyone who opted into marketing email (storefront signup, checkout opt-in).',
+  // Any business: a journal has no checkout (P09). Existing copies are refreshed by
+  // migration 20270530000033.
+  description: 'Everyone who has said yes to email from you, wherever they signed up.',
   color: '#8B5CF6',
   rules: {
     kind: 'predicate',

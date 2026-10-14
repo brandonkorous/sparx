@@ -187,6 +187,38 @@ export async function get(ctx: ServiceContext, customerId: string): Promise<Cust
   return customer;
 }
 
+/**
+ * The customer who owns this email address on this site, or null. Read only:
+ * a typed address is a strong hint and not proof, so callers show the match
+ * and never write it as a link (sparx persona issue 162; the chat panel's
+ * `customer-context.ts` reasons the same way).
+ *
+ * `customers` is unique on (tenant, site, email) and on (tenant, email) for the
+ * site-less tier, not on (tenant, email): one owner's two businesses may each
+ * know the same person. So the site is asked first and the site-less tier
+ * second, and each read matches at most one row. Fleet contacts made through a
+ * wholesale account live in the site-less tier.
+ */
+export async function findByEmail(
+  ctx: ServiceContext,
+  email: string,
+  propertyId: string | null
+): Promise<Customer | null> {
+  const address = email.trim().toLowerCase();
+  if (!address) return null;
+  return withTenant(ctx, async (tx) => {
+    const onSite = propertyId
+      ? await tx.customer.findFirst({ where: { email: address, propertyId, deletedAt: null } })
+      : null;
+    return (
+      onSite ??
+      (await tx.customer.findFirst({
+        where: { email: address, propertyId: null, deletedAt: null },
+      }))
+    );
+  });
+}
+
 /** Top N customers by total_spent. Used by the dashboard rep dashboard,
  *  the MCP get_top_customers tool, and the segment evaluator's projection
  *  builder. Read-only — no event, no audit log. */

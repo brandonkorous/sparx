@@ -110,18 +110,19 @@ describe('saleTotals', () => {
       line({ quantity: 2, core: DEPOSIT }),
       line({ id: 'l_2', name: 'Fitting', price: '120.00', productId: null, variantId: null }),
     ]);
-    expect(totals).toEqual({ goods: 920, coreDeposits: 300, total: 1220 });
+    expect(totals).toEqual({ goods: 920, coreDeposits: 300, tax: 0, total: 1220 });
   });
 
   it('takes no deposit on a part whose old part comes first', () => {
     const totals = saleTotals([line({ core: DEPOSIT, coreFirst: true })]);
-    expect(totals).toEqual({ goods: 400, coreDeposits: 0, total: 400 });
+    expect(totals).toEqual({ goods: 400, coreDeposits: 0, tax: 0, total: 400 });
   });
 
   it('is the lines alone when nothing takes a core', () => {
     expect(saleTotals([line(), line({ id: 'l_2', price: '19.99', quantity: 3 })])).toEqual({
       goods: 459.97,
       coreDeposits: 0,
+      tax: 0,
       total: 459.97,
     });
   });
@@ -191,7 +192,10 @@ describe('the till', () => {
     readFileSync(join(repoRoot(), 'sparx/apps/workbench/surfaces/commerce', file), 'utf8');
 
   it('posts every line through saleItem', () => {
-    expect(read('sale-data.ts')).toContain('items: input.lines.map(saleItem)');
+    expect(read('sale-data.ts')).toContain("api.post<Order>('/v1/orders', saleOrderBody(input))");
+    expect(read('sale-core.ts')).toContain(
+      'items: input.lines.map((line) => saleItem(line, tax.get(line.id) ?? 0))'
+    );
   });
 
   it('hands over only what is not waiting for its old part', () => {
@@ -200,7 +204,7 @@ describe('the till', () => {
 
   it('asks for the total WITH the deposits', () => {
     const pane = read('sale-detail.tsx');
-    expect(pane).toContain('saleTotals(lines)');
+    expect(pane).toContain('saleTotals(lines, taxQuote?.totalTaxCents ?? 0)');
     expect(pane).toContain('whatToOffer({ total: totals.total, buysOnAccount })');
   });
 

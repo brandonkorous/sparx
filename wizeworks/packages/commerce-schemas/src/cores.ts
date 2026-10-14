@@ -103,7 +103,13 @@ export interface CoreOwed {
   coresKept: number;
   /** coresOwed × coreChargeCents: what goes back if every one comes back. */
   owedCents: number;
-  /** Whole days since the order was placed. */
+  /** The order's open invoice, which a returned core's deposit comes off first.
+   *  Null when nothing on the order is still owed. The screen words a core from
+   *  this, so it never says "give back" about a deposit nobody paid (sparx
+   *  persona issue 183). */
+  openInvoice: { number: string; balanceCents: number } | null;
+  /** Whole days since the part was handed over (since the order was placed, on a
+   *  send-first line, whose old part is due before anything goes). */
   daysOut: number;
   currency: string;
 }
@@ -122,6 +128,19 @@ export interface CoreSettlement {
   summary: string;
 }
 
+/**
+ * Where a returned core's deposit goes: off the order's open invoice first, and
+ * only the rest back to the customer. One rule for the refund that moves the money
+ * and for the screen that says it will (sparx persona issue 183).
+ */
+export function splitCoreDeposit(
+  depositCents: number,
+  invoiceBalanceCents: number
+): { offInvoiceCents: number; backCents: number } {
+  const offInvoiceCents = Math.max(0, Math.min(depositCents, invoiceBalanceCents));
+  return { offInvoiceCents, backCents: depositCents - offInvoiceCents };
+}
+
 /** The cores still owed on one order line. Never below zero. */
 export function coresOwed(line: {
   quantity: number;
@@ -130,4 +149,30 @@ export function coresOwed(line: {
   coresKept: number;
 }): number {
   return Math.max(0, line.quantity - line.quantityRefunded - line.coresReturned - line.coresKept);
+}
+
+/**
+ * The cores a customer owes NOW: one for each part they have been given.
+ *
+ * A deposit is taken when the part is sold, but nobody owes an old part for a new
+ * one still on the shelf. Cores owed listed six injectors for a fleet that had not
+ * been handed one, "6 days out" from the order date (sparx persona issue 184). A
+ * part that came back as itself counts as its own core. A send-first line is the
+ * other way round: the old part is due before the new one goes, so all of it is
+ * owed from the start. A core that arrives early can still be recorded against
+ * `coresOwed`; this is what to chase.
+ */
+export function coresOutstanding(line: {
+  quantity: number;
+  quantityFulfilled: number;
+  quantityRefunded: number;
+  coresReturned: number;
+  coresKept: number;
+  coreFirst: boolean;
+}): number {
+  const owed = coresOwed(line);
+  if (line.coreFirst) return owed;
+  const handedOver = Math.min(line.quantity, line.quantityFulfilled);
+  const settled = line.coresReturned + line.coresKept + Math.min(line.quantityRefunded, handedOver);
+  return Math.min(owed, Math.max(0, handedOver - settled));
 }

@@ -39,6 +39,7 @@ import { writeAuditLog } from '../audit';
 import { toCsv } from '../csv';
 import { InventoryNotFoundError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
+import { indexInventoryEntityOnCommit } from '../events';
 
 import { reportDefinition, runReport, type SummaryLine } from './report-registry';
 
@@ -173,6 +174,7 @@ export async function createReportSchedule(
       cadence: input.cadence,
       recipients: input.recipients.length,
     });
+    await indexInventoryEntityOnCommit(ctx, 'report_schedule', row.id);
     return row.id;
   });
 
@@ -222,6 +224,7 @@ export async function updateReportSchedule(
       },
     });
     await audit(tx, ctx, id, 'updated', { isActive });
+    await indexInventoryEntityOnCommit(ctx, 'report_schedule', id);
   });
 
   const { deliveries: _deliveries, ...schedule } = await getReportSchedule(ctx, id);
@@ -237,6 +240,7 @@ export async function deleteReportSchedule(ctx: ServiceContext, id: string): Pro
     if (!existing) throw new InventoryNotFoundError('InventoryReportSchedule', id);
     await audit(tx, ctx, id, 'deleted', { name: existing.name });
     await tx.inventoryReportSchedule.delete({ where: { id } });
+    await indexInventoryEntityOnCommit(ctx, 'report_schedule', id, 'delete');
   });
 }
 
@@ -510,6 +514,10 @@ async function recordDelivery(
         ...advance,
       },
     });
+    // Only an automatic pause changes what the entry shows; run bookkeeping does not.
+    if (shouldPause) {
+      await indexInventoryEntityOnCommit(ctx, 'report_schedule', schedule.id);
+    }
   });
 
   return {

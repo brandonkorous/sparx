@@ -19,6 +19,7 @@ import { Undo2 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatDate } from './data';
 import {
@@ -118,10 +119,11 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Undo2 className="size-6" aria-hidden />}
             title="Could not load your returns"
             description="This is a problem reaching the server. Your returns are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -167,7 +169,9 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       open(row, event);
                     }}
                   >
-                    <td className="font-mono text-sm">{row.orderNumber ?? '—'}</td>
+                    <td className="font-mono text-sm whitespace-nowrap">
+                      {row.orderNumber ?? '—'}
+                    </td>
                     <td className="hidden max-w-48 truncate @lg:table-cell">
                       {row.customerName ?? 'Unknown customer'}
                     </td>

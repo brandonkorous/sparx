@@ -24,7 +24,7 @@ export function ReorderBody({
   onOpen: (row: ReorderRow, event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const { rows, selection, query, w } = pane;
-  if (query.isError) return <ReorderLoadFailed />;
+  if (query.isError) return <ReorderLoadFailed error={query.error} />;
   if (query.isLoading) return <InlineWaiting label="Working out what needs reordering…" />;
 
   if (rows.length === 0) {

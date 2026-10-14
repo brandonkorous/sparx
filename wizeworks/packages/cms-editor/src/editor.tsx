@@ -43,6 +43,11 @@ import { detectProvider } from './nodes';
 import type { ReferenceSearchFn } from './nodes';
 import type { CalloutVariant } from './nodes';
 import { ALLOWED_CODE_LANGUAGES } from './serialize';
+import { nextToolIndex, toolsIn } from './toolbar-keys';
+import { AskBar, type Ask } from './ask-bar';
+import type { LinkSuggestFn } from './ask';
+
+export type { LinkSuggestFn, LinkSuggestion } from './ask';
 import type { JSONContent } from '@tiptap/react';
 
 export type CmsDoc = Record<string, unknown>;
@@ -76,7 +81,7 @@ export interface ContentBlockEditorProps {
   /**
    * Open a media picker and resolve to an upload result. The dashboard
    * supplies one that opens the asset library overlay; without it the
-   * "Insert image" button falls back to a URL prompt.
+   * "Insert image" button asks for the picture's address instead.
    */
   pickImage?: () => Promise<{
     src: string;
@@ -84,6 +89,11 @@ export interface ContentBlockEditorProps {
     caption?: string;
     assetId?: string;
   } | null>;
+  /**
+   * Find the tenant's own pages by title, for the Link box. Without it the box takes
+   * a typed address only.
+   */
+  suggestLinks?: LinkSuggestFn;
 }
 
 interface ToolButtonProps {
@@ -98,6 +108,7 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
   return (
     <button
       type="button"
+      data-tool=""
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       disabled={disabled}
@@ -192,6 +203,7 @@ export function ContentBlockEditor({
   id,
   referenceSearch,
   pickImage,
+  suggestLinks,
 }: ContentBlockEditorProps) {
   const extensions = React.useMemo(
     () => cmsEditorExtensions({ placeholder, referenceSearch }),
@@ -220,6 +232,38 @@ export function ContentBlockEditor({
   });
 
   const [menuOpen, setMenuOpen] = React.useState(false);
+  // The question a toolbar button is waiting on, and where the writer's cursor was
+  // when she pressed it: answering moves focus into the box, and the answer belongs
+  // where she was.
+  const [ask, setAsk] = React.useState<Ask | null>(null);
+  const askedAt = React.useRef<{ from: number; to: number } | null>(null);
+
+  // One Tab stop for the toolbar (`toolbar-keys.ts`): the tool last used keeps it,
+  // every other tool is reached with the arrows.
+  const toolbarRef = React.useRef<HTMLDivElement>(null);
+  const [toolIndex, setToolIndex] = React.useState(0);
+  React.useLayoutEffect(() => {
+    const tools = toolsIn(toolbarRef.current);
+    const keep = Math.min(toolIndex, tools.length - 1);
+    tools.forEach((tool, i) => {
+      tool.tabIndex = i === keep ? 0 : -1;
+    });
+  });
+  const onToolbarFocus = (event: React.FocusEvent<HTMLDivElement>) => {
+    const at = toolsIn(toolbarRef.current).findIndex(
+      (tool: Element) => tool === (event.target as Element)
+    );
+    if (at >= 0) setToolIndex(at);
+  };
+  const onToolbarKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const tools = toolsIn(toolbarRef.current);
+    const at = tools.findIndex((tool: Element) => tool === (event.target as Element));
+    if (at < 0) return;
+    const next = nextToolIndex(event.key, at, tools.length);
+    if (next === null) return;
+    event.preventDefault();
+    tools[next]?.focus();
+  };
 
   React.useEffect(() => {
     if (!editor || !value) return;
@@ -231,15 +275,44 @@ export function ContentBlockEditor({
 
   if (!editor) return null;
 
-  const setLink = () => {
-    const previous = (editor.getAttributes('link') as { href?: string }).href ?? '';
-    const next = window.prompt('Link URL', previous);
-    if (next === null) return;
-    if (next === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+  const open = (next: Ask) => {
+    askedAt.current = { from: editor.state.selection.from, to: editor.state.selection.to };
+    setMenuOpen(false);
+    setAsk(next);
+  };
+  // Back to the place she was, with the box closed.
+  const answer = () => {
+    setAsk(null);
+    const at = askedAt.current;
+    const chain = editor.chain().focus();
+    return at ? chain.setTextSelection(at) : chain;
+  };
+
+  const setLink = () =>
+    open({
+      kind: 'link',
+      current: (editor.getAttributes('link') as { href?: string }).href ?? '',
+    });
+
+  const onLink = (href: string | null, label?: string) => {
+    const at = askedAt.current;
+    if (href === null) {
+      answer().extendMarkRange('link').unsetLink().run();
       return;
     }
-    editor.chain().focus().extendMarkRange('link').setLink({ href: next }).run();
+    // Nothing selected and not inside a link: put the page's title (or the address)
+    // in as the linked words, rather than a link on nothing.
+    if (at && at.from === at.to && !editor.isActive('link')) {
+      answer()
+        .insertContent({
+          type: 'text',
+          text: label ?? href,
+          marks: [{ type: 'link', attrs: { href } }],
+        })
+        .run();
+      return;
+    }
+    answer().extendMarkRange('link').setLink({ href }).run();
   };
 
   const insertImage = async () => {
@@ -258,27 +331,10 @@ export function ContentBlockEditor({
         .run();
       return;
     }
-    const url = window.prompt('Image URL');
-    if (!url) return;
-    const alt = window.prompt('Alt text (required for accessibility)') ?? '';
-    editor.chain().focus().setSparxImage({ src: url, alt }).run();
+    open({ kind: 'image' });
   };
 
-  const insertEmbed = () => {
-    const url = window.prompt(
-      'Embed URL: a video (YouTube, Vimeo, Loom) or a track, album or podcast (Spotify, ' +
-        'SoundCloud, Apple Music, Apple Podcasts). Pasted as-is; the storefront re-validates ' +
-        'before rendering.'
-    );
-    if (!url) return;
-    // The SAME provider detection the serializer and the storefront use, so the editor
-    // never accepts a link the render path would drop (nor rejects one it would frame).
-    editor
-      .chain()
-      .focus()
-      .setEmbed({ provider: detectProvider(url), url })
-      .run();
-  };
+  const insertEmbed = () => open({ kind: 'embed' });
 
   const insertCallout = (variant: CalloutVariant) => {
     editor.chain().focus().setCallout(variant).run();
@@ -295,18 +351,8 @@ export function ContentBlockEditor({
     setMenuOpen(false);
   };
 
-  const toggleCodeBlock = () => {
-    const lang =
-      window.prompt(
-        `Code language (one of: ${[...ALLOWED_CODE_LANGUAGES].slice(0, 12).join(', ')}…)`
-      ) ?? '';
-    editor
-      .chain()
-      .focus()
-      .toggleCodeBlock(lang ? { language: lang } : undefined)
-      .run();
-    setMenuOpen(false);
-  };
+  const toggleCodeBlock = () =>
+    open({ kind: 'code', languages: [...ALLOWED_CODE_LANGUAGES].sort() });
 
   return (
     <div
@@ -321,8 +367,12 @@ export function ContentBlockEditor({
       style={minHeight ? ({ '--cms-editor-min-h': minHeight } as React.CSSProperties) : undefined}
     >
       <div
+        ref={toolbarRef}
         role="toolbar"
         aria-label="Formatting"
+        aria-orientation="horizontal"
+        onFocus={onToolbarFocus}
+        onKeyDown={onToolbarKeyDown}
         className="border-base-300 flex flex-wrap items-center gap-0.5 border-b p-1"
       >
         <ToolButton
@@ -469,6 +519,29 @@ export function ContentBlockEditor({
           </ToolButton>
         </span>
       </div>
+
+      {ask ? (
+        <AskBar
+          key={ask.kind}
+          ask={ask}
+          suggest={suggestLinks}
+          onLink={onLink}
+          onEmbed={(url) =>
+            // The SAME provider detection the serializer and the site use, so the
+            // editor never accepts a link the render path would drop.
+            answer()
+              .setEmbed({ provider: detectProvider(url), url })
+              .run()
+          }
+          onCode={(language) =>
+            answer()
+              .toggleCodeBlock(language ? { language } : undefined)
+              .run()
+          }
+          onImage={(src, alt) => answer().setSparxImage({ src, alt }).run()}
+          onCancel={() => void answer().run()}
+        />
+      ) : null}
 
       <EditorContent editor={editor} />
     </div>

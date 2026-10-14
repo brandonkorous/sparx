@@ -58,6 +58,20 @@ const NAV: AccountNavItem[] = [
   { label: 'Wholesale account', href: '/account/b2b', offered: (o) => o.b2b },
 ];
 
+/** An email address with a line break offered just after its "@", so a narrow
+ *  column wraps it there before it splits a word. Anything else passes through. */
+function EmailWrap({ text }: { text: string }) {
+  const at = text.indexOf('@');
+  if (at <= 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at + 1)}
+      <wbr />
+      {text.slice(at + 1)}
+    </>
+  );
+}
+
 export default function AuthedAccountLayout({ children }: { children: React.ReactNode }) {
   const { customer, offers, status, logout } = useCustomer();
   const router = useRouter();
@@ -111,16 +125,24 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
         >
           {/* Whose account this is heads the list at either width, so `w-full`:
               in a wrapping row it would otherwise sit in the line as one more chip.
-              `min-w-0` + `break-all` because an email address is ONE unbreakable
+              `min-w-0` + a forced wrap because an email address is ONE unbreakable
               token: at 220px this column fits about 24 characters, and anything
               longer was painted straight out of the sidebar and over the sentence
               in the next column. `marguerite.adeyemi@example.com` overlapped
               "Manage your orders and details here." by 11px (issue 379). Both
-              lines take it — `displayName` falls back to the email too. */}
+              lines take it — `displayName` falls back to the email too.
+              `overflow-wrap:anywhere` rather than `break-all`, with a break offered
+              at the "@": `break-all` split Brynn's address mid-word,
+              "brynn.ohara@kanabmail.te" / "w", when it could wrap at the "@". A part
+              longer than the column still breaks, so issue 379 stays fixed. */}
           <div className="border-base-300 mb-2 flex w-full min-w-0 flex-col gap-[0.15rem] border-b px-3 pt-2 pb-4">
-            <strong className="break-all">{displayName}</strong>
+            <strong className="[overflow-wrap:anywhere]">
+              <EmailWrap text={displayName} />
+            </strong>
             {customer.email ? (
-              <span className="text-base-content break-all">{customer.email}</span>
+              <span className="text-base-content [overflow-wrap:anywhere]">
+                <EmailWrap text={customer.email} />
+              </span>
             ) : null}
           </div>
           {NAV.filter((item) => item.offered?.(offers) ?? true).map((item) => {

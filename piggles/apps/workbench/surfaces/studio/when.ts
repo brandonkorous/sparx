@@ -15,13 +15,60 @@
 // than a fixed width so a locale with a longer pattern grows the cell instead of
 // wrapping inside it.
 
-export const DAY = new Intl.DateTimeFormat(undefined, {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-});
+// WHOSE CLOCK. Both lists read a moment on the BUSINESS's clock, not this computer's
+// (piggles persona issue 987). They used `Intl` with no zone, so a journal in London,
+// opened on a laptop set to Pacific time, read that she published at "2:39 AM" on the
+// Sunday morning she published at 10:39, and a Friday-evening save could sit under
+// Saturday's heading. The day heading moves with the clock, so it is formatted on the
+// same zone as the time.
 
-export const CLOCK = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
+import { clockName } from '../../lib/publish-clock';
+
+const formats = new Map<string, { day: Intl.DateTimeFormat; clock: Intl.DateTimeFormat }>();
+
+/** Built once per zone: `Intl` objects are expensive to construct per row. */
+function formatsFor(zone: string): { day: Intl.DateTimeFormat; clock: Intl.DateTimeFormat } {
+  let found = formats.get(zone);
+  if (!found) {
+    try {
+      found = {
+        day: new Intl.DateTimeFormat(undefined, {
+          timeZone: zone,
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        }),
+        clock: new Intl.DateTimeFormat(undefined, {
+          timeZone: zone,
+          hour: 'numeric',
+          minute: '2-digit',
+        }),
+      };
+    } catch {
+      // A zone this browser does not know: fall back to UTC rather than to this
+      // computer, so the fallback is at least the same for every reader.
+      return formatsFor('UTC');
+    }
+    formats.set(zone, found);
+  }
+  return found;
+}
+
+/** The day heading a version sits under: "Sunday, October 11", on `zone`'s clock. */
+export function versionDay(iso: string, zone: string): string {
+  return formatsFor(zone).day.format(new Date(iso));
+}
+
+/** The time on a version row: "10:39 AM", on `zone`'s clock. */
+export function versionClock(iso: string, zone: string): string {
+  return formatsFor(zone).clock.format(new Date(iso));
+}
+
+/** The line under a version list's heading that says whose clock its times are on. */
+export function versionClockNote(zone: string | null, device: string, at: Date): string {
+  if (zone) return `Times are on your business's clock, ${clockName(zone, at)}.`;
+  return `Times are on this computer's clock, ${clockName(device, at)}, because your business has no time zone yet. You can set one in Business details.`;
+}
 
 /** The time cell in a version row. Read the note above before changing the width. */
 export const TIME_CELL =

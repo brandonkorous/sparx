@@ -48,7 +48,6 @@ import {
   Field,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   Select,
   Table,
@@ -57,6 +56,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { CalendarClock, Copy, Link2, Pencil, Plus } from 'lucide-react';
+import { PaneEmpty } from '../../components/pane-empty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
@@ -384,18 +384,17 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
               </Table>
             </Card>
           ) : (
-            // A bare heading over blank space says nothing. Somebody who has
-            // never made one of these needs to know what they would get.
-            <div className="flex flex-col gap-1">
-              <Heading level={2} className="text-lg">
-                No booking links yet
-              </Heading>
-              <Text>
-                Make one and you get a web address you can put in an email signature, on a quote, or
-                in a reply. Anyone who opens it picks a time from your real availability and the
-                booking lands in your calendar, with the customer already attached.
-              </Text>
-            </div>
+            // Somebody who has never made one of these needs to know what they
+            // would get. The house first-run state, in a card like every other
+            // empty list: a bare heading floating at the top of a blank column
+            // read as unfinished (sparx persona issue 237).
+            <Card className="p-0">
+              <PaneEmpty
+                icon={<CalendarClock className="size-6" aria-hidden />}
+                title="No booking links yet"
+                description="Make one and you get a web address you can put in an email signature, on a quote, or in a reply. Anyone who opens it picks a time from your real availability and the booking lands in your calendar, with the customer already attached."
+              />
+            </Card>
           )}
         </div>
       </div>

@@ -26,7 +26,8 @@
 //      this stage writes it back. See `image-alt.ts`.
 //   7. fillMissingImageSrc — an image with no src left after all of the above gets
 //      the placeholder, so an empty catalog draws grey art rather than the broken-
-//      image glyph. After step 5 on purpose: it must see the final src, and a data:
+//      image glyph; except an image in a list of writing, marked at step 3, which is
+//      left out: a piece with no picture has none. After step 5 on purpose: it must see the final src, and a data:
 //      URI is not something to build a `srcset` from.
 //   8. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
 //      behavior/action nodes are lowered for the client behavior runtime to wire.
@@ -34,7 +35,7 @@
 // Pure + framework-free (silicaui-html only), so it runs on the server (RSC /
 // publish) with no React dependency and stays the single source of render truth.
 
-import { dropEmptyUrlAttrs, fillMissingImageSrc } from './attr-binding';
+import { dropEmptyUrlAttrs, fillMissingImageSrc, markWritingListImages } from './attr-binding';
 import { isRecordAddress } from './record-templates';
 import { fillImageAlt } from './image-alt';
 import { responsiveImages } from './responsive-images';
@@ -94,7 +95,9 @@ function omitEmptyLists(child: Child): Child {
  * below and `wizeworks/apps/site`'s React chrome and functional body.
  */
 export function resolveForVisitors(tree: Node, host: ResolveHost, scope?: DataScope): Node {
-  return resolveTree(omitEmptyLists(tree) as Node, host, scope);
+  // Images in a list of writing are marked first, so `finalizeTree` can leave out the
+  // picture of a piece that has none instead of drawing the placeholder in its place.
+  return resolveTree(markWritingListImages(omitEmptyLists(tree) as Node), host, scope);
 }
 
 /**

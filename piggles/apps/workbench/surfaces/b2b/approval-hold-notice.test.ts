@@ -241,7 +241,7 @@ describe('holdReasonWords', () => {
       currency: 'USD',
     };
     expect(holdReasonWords(reason, money, 'USD')).toBe(
-      'Over the credit limit: it comes to $3,808.00 and the account has $3,807.00 of credit left.'
+      'Over the credit limit: when it was placed, it came to $3,808.00 and the account had $3,807.00 of credit left.'
     );
   });
 
@@ -252,7 +252,7 @@ describe('holdReasonWords', () => {
       creditLeft: 0,
       currency: 'USD',
     };
-    expect(holdReasonWords(reason, money, 'USD')).toContain('has no credit left');
+    expect(holdReasonWords(reason, money, 'USD')).toContain('had no credit left');
   });
 
   it('names the spending limit by its amount, and a zero limit as every order', () => {
@@ -264,6 +264,42 @@ describe('holdReasonWords', () => {
     );
     expect(holdReasonWords({ kind: 'approval_rule', limitCents: null }, money, 'USD')).toBe(
       'Over a spending limit you set.'
+    );
+  });
+});
+
+const QUEUE_FILE = './approvals/queue-row.tsx';
+
+// The figures that held an order are history once the account pays (sparx
+// persona issue 188): Wasatch paid a late invoice and had $3,795.68 left, while
+// the queue still gave $1,676.08 as if it were today's.
+describe('the credit left today', () => {
+  const money = (cents: number, currency: string) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
+  const reason: QueueHoldReason = {
+    kind: 'over_credit_limit',
+    orderTotal: 2026.38,
+    creditLeft: 1676.08,
+    currency: 'USD',
+  };
+
+  it('adds today’s figure when it has changed since', () => {
+    expect(holdReasonWords(reason, money, 'USD', 379_568)).toBe(
+      'Over the credit limit: when it was placed, it came to $2,026.38 and the account had $1,676.08 of credit left. It has $3,795.68 now.'
+    );
+  });
+
+  it('adds nothing when it has not changed, or is not known', () => {
+    expect(holdReasonWords(reason, money, 'USD', 167_608)).not.toContain('now');
+    expect(holdReasonWords(reason, money, 'USD', null)).not.toContain('now');
+  });
+
+  it('the queue passes today’s figure in', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { fileURLToPath } = await import('node:url');
+    const source = readFileSync(fileURLToPath(new URL(QUEUE_FILE, import.meta.url)), 'utf8');
+    expect(source).toMatch(
+      /holdReasonWords\(\s*reason,\s*formatCents,\s*item\.currency,\s*item\.accountCreditLeftCents/
     );
   });
 });

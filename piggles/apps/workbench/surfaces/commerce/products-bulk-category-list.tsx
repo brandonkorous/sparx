@@ -14,6 +14,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { loadFailureWords } from '../../lib/api-error';
 import type { CategoryChoice } from './categories-data';
 
 export const NEW_CATEGORY = '__new__';
@@ -25,13 +26,16 @@ export function filterCategories(all: CategoryChoice[], search: string): Categor
   return all.filter((category) => category.trail.join(' › ').toLowerCase().includes(needle));
 }
 
-function LoadFailure({ onRetry }: { onRetry: () => void }) {
+function LoadFailure({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   return (
     <Alert color="danger" variant="soft">
       <AlertContent>
         <AlertTitle>Could not load your categories</AlertTitle>
         <AlertDescription>
-          This is a problem reaching the server. Nothing has been changed.
+          {loadFailureWords(
+            error,
+            'This is a problem reaching the server. Nothing has been changed.'
+          )}
         </AlertDescription>
       </AlertContent>
       <Button size="sm" color="danger" variant="soft" onClick={onRetry}>
@@ -54,17 +58,7 @@ function Choice({ category }: { category: CategoryChoice }) {
   );
 }
 
-export function CategoryChoices({
-  state,
-  all,
-  matches,
-  typed,
-  canMake,
-  adding,
-  picked,
-  onPick,
-  onRetry,
-}: {
+interface CategoryChoicesProps {
   state: 'error' | 'pending' | 'ready';
   all: CategoryChoice[];
   matches: CategoryChoice[];
@@ -74,8 +68,13 @@ export function CategoryChoices({
   picked: string;
   onPick: (id: string) => void;
   onRetry: () => void;
-}) {
-  if (state === 'error') return <LoadFailure onRetry={onRetry} />;
+  /** The category read's error, so the failure says what actually went wrong. */
+  error: unknown;
+}
+
+export function CategoryChoices(props: CategoryChoicesProps) {
+  const { state, all, matches, typed, canMake, adding, picked, onPick, onRetry, error } = props;
+  if (state === 'error') return <LoadFailure error={error} onRetry={onRetry} />;
   if (state === 'pending') return <InlineWaiting label="Loading your categories…" />;
   if (all.length === 0 && !canMake) {
     return (

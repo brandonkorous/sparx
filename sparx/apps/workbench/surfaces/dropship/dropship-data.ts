@@ -60,7 +60,9 @@ export function formatCentsRounded(cents: number, currency = 'USD'): string {
 
 /* ── Supplier types (vendors) ───────────────────────────────────────────── */
 
-export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'printify' | 'printful';
+/** `direct` is the business's own supplier: a maker or wholesaler who ships when
+ *  sent the order, which goes to them by email (sparx persona issue 171). */
+export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'printify' | 'printful' | 'direct';
 
 /** One credential input a vendor asks for when connecting. Mirrors the api's
  *  `VendorCredentialField` — fetched, never hardcoded, so the form can never
@@ -68,7 +70,7 @@ export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'printify' | 'printful'
 export interface VendorCredentialField {
   key: string;
   label: string;
-  type: 'text' | 'password' | 'url';
+  type: 'text' | 'password' | 'url' | 'email';
   placeholder?: string;
   help?: string;
   required: boolean;
@@ -148,6 +150,9 @@ export interface Supplier {
    *  cannot check the mapping it typed without typing it again. */
   credentialValues: Record<string, string>;
   vendorLabel: string;
+  /** What this kind of supplier can do. One with no product list has nothing to
+   *  sync, browse or price, so the pane does not offer it (sparx persona 171). */
+  capabilities: VendorCapabilities;
   /** Property (site) ids this connection is enabled on. Empty = every site. */
   siteScope: string[];
   /** How many products from this supplier's catalog we hold. Null on the
@@ -181,7 +186,10 @@ export function supplierState(
       return {
         label: 'Connected',
         tone: 'success',
-        detail: 'Working normally. Its catalog can be synced and orders can be routed to it.',
+        detail:
+          type === 'direct'
+            ? 'Working normally. When someone buys a product they ship, we email them the order from your business.'
+            : 'Working normally. Its catalog can be synced and orders can be routed to it.',
       };
     case 'connecting':
       return {
@@ -201,9 +209,11 @@ export function supplierState(
         label: 'Needs attention',
         tone: 'danger',
         detail:
-          type === 'csv'
-            ? 'We could not read this supplier’s file the last time we tried. Usually the address has changed, or the file only opens for people signed in to their system. Check the address below opens for anybody, then try again.'
-            : 'We could not reach this supplier the last time we tried. Usually the key below has been changed or turned off at their end, though their system being down looks the same from here. Get a new key from them if it has changed, then try again.',
+          type === 'direct'
+            ? 'We have no address to send this supplier’s orders to, so orders for the products they ship wait for you. Enter the email address they take orders at below, then save.'
+            : type === 'csv'
+              ? 'We could not read this supplier’s file the last time we tried. Usually the address has changed, or the file only opens for people signed in to their system. Check the address below opens for anybody, then try again.'
+              : 'We could not reach this supplier the last time we tried. Usually the key below has been changed or turned off at their end, though their system being down looks the same from here. Get a new key from them if it has changed, then try again.',
       };
     case 'disconnected':
       return {
@@ -532,7 +542,7 @@ export function orderState(status: DropshipOrderStatus): {
       return {
         label: 'Waiting to be sent',
         tone: 'info',
-        detail: 'The order has reached this supplier but has not been submitted to them yet.',
+        detail: 'This order has not gone to the supplier yet.',
       };
     case 'submitted':
       return {
@@ -623,6 +633,26 @@ export function useRouteOrder() {
       api.post<RouteResult>(`/v1/dropship/orders/route/${commerceOrderId}`),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['dropship', 'orders'] });
+    },
+  });
+}
+
+/** What the owner records on an order they place with a supplier by hand
+ *  (sparx persona issue 170). "Shipped" also moves the customer's order on and
+ *  sends them their tracking. */
+export type RecordDropshipInput =
+  | { action: 'placed'; supplierOrderId?: string }
+  | { action: 'shipped'; carrier?: string; trackingNumber?: string; trackingUrl?: string };
+
+export function useRecordDropshipOrder(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: RecordDropshipInput) =>
+      api.patch<DropshipOrder>(`/v1/dropship/orders/${id}`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['dropship', 'orders'] });
+      // The customer's order moved on too.
+      void queryClient.invalidateQueries({ queryKey: ['commerce'] });
     },
   });
 }
@@ -838,6 +868,24 @@ export function credentialIsMissing(
   if (!field.required) return false;
   if (!isNew && !(field.key in draft)) return false;
   return (draft[field.key] ?? '').trim() === '';
+}
+
+// One `@`, something either side, a dot in the domain: the same test the server
+// makes when the supplier is saved (`directOrderEmail` in the dropship package).
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Whether a box she filled in holds something that cannot be what it asks for:
+ * an order address that is not an email address. Every order to that supplier
+ * would go nowhere, so it is caught on the form, not after the first sale.
+ */
+export function credentialIsMalformed(
+  draft: Record<string, string>,
+  field: VendorCredentialField
+): boolean {
+  const value = (draft[field.key] ?? '').trim();
+  if (value === '' || field.type !== 'email') return false;
+  return !EMAIL.test(value);
 }
 
 /** The first one, for the bar that never scrolls. Same rule, read per field by

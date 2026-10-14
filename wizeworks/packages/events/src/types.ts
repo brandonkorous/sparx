@@ -96,6 +96,10 @@ export type EventType =
   // them for five minutes. A search title changed from the SEO page check reached
   // the live site only when that cache ran out (sparx persona issue 133).
   | 'builder.page.settings.changed'
+  // A page was deleted. If it was live, visitors were being served it out of the same
+  // five-minute cache: deleting "Each article" left the old design on every article
+  // until the cache ran out (persona issue 947).
+  | 'builder.page.deleted'
   // An email template went live. Nothing a visitor reads, so nothing purges on it.
   | 'builder.email.published'
   // A site's own settings changed WITHOUT a publish: its name, social links,
@@ -650,6 +654,10 @@ export interface EmailSendPayload {
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
   from?: string;
   replyTo?: string;
+  /** Go out from the business, not the platform: the email worker fills the From
+   *  and Reply-To. For a publisher that cannot resolve them itself (the dropship
+   *  worker mailing a supplier an order, sparx persona issue 171). */
+  sendAs?: 'tenant';
   /** Optional header bag (X-Tenant-Id, List-Unsubscribe, etc.). */
   headers?: Record<string, string>;
 }
@@ -679,6 +687,9 @@ export interface RawEmailSendPayload {
   variables?: Record<string, string>;
   /** The site this send is on behalf of — stamped for per-site analytics (docs/49 Phase 7). */
   propertyId?: string | null;
+  /** Message headers to send with it: a campaign's List-Unsubscribe pair (piggles
+   *  persona issue 985). The worker's schema carries them through. */
+  headers?: Record<string, string>;
 }
 
 /** Payload for `form.submitted`. Emitted by api-rest after a Builder contact/lead

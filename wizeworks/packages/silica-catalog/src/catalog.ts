@@ -11,6 +11,8 @@
 
 import type { CatalogGroup } from './types';
 import { buyBox, collectionHeader, productCard, productsBlock } from './commerce';
+import { authorsList } from './author-page';
+import { blogPostGrid } from './cms';
 import { SECTION_CATALOG } from './sections';
 import { MEDIA_CATALOG } from './sections/media';
 
@@ -96,8 +98,39 @@ export const SITE_CATALOG: CatalogGroup[] = [];
  * `COMMERCE_CATALOG` would silently ship a builder missing every section, which is
  * exactly the state this slice existed to end.
  */
+/**
+ * The live list of a business's own writing — the only block that puts its articles on a
+ * page. `blogPostGrid` was written for this and never offered: a journal adding a page
+ * for its Field section found "Article body" and nothing that lists anything. It drops in
+ * listing blog posts; "What this list shows" in its settings points it at any kind or
+ * section the business writes.
+ */
+export const WRITING_CATALOG: CatalogGroup[] = [
+  {
+    key: 'writing',
+    label: 'Your writing',
+    items: [
+      {
+        key: 'writing_list',
+        label: 'List of your writing',
+        icon: 'grid',
+        hint: 'Your newest pieces as cards, each linking to its own page. Choose which in its settings, under What this list shows.',
+        make: blogPostGrid,
+      },
+      {
+        key: 'authors_list',
+        label: 'List of your authors',
+        icon: 'users',
+        hint: 'Everyone with something published here, with their picture and a few lines about them, each linking to their own page.',
+        make: authorsList,
+      },
+    ],
+  },
+];
+
 export const SPARX_CATALOG: CatalogGroup[] = [
   ...COMMERCE_CATALOG,
+  ...WRITING_CATALOG,
   ...SECTION_CATALOG,
   ...MEDIA_CATALOG,
 ];

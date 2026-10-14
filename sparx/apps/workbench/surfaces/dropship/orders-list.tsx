@@ -296,7 +296,7 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                           it is another module's record surfaced here. */}
                       <ModuleScope module="commerce">
                         <span className="text-module font-mono font-medium">
-                          {order.orderNumber ? `#${order.orderNumber}` : 'Order'}
+                          {order.orderNumber ?? 'Order'}
                         </span>
                       </ModuleScope>
                       {count > 0 ? (

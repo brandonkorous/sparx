@@ -71,7 +71,7 @@ export default function ReturnsPage() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                   <strong className="text-base-content">
-                    {r.orderNumber ? `Order #${r.orderNumber}` : 'Your return'}
+                    {r.orderNumber ? `Order ${r.orderNumber}` : 'Your return'}
                   </strong>
                   <Badge color={state.tone} variant="soft">
                     {state.label}

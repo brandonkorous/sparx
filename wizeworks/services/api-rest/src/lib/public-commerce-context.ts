@@ -19,6 +19,8 @@ import { isModuleEnabled } from '@wizeworks/auth';
 import { withTenant } from '@wizeworks/db';
 import { forbidden, moduleDisabled, notFound } from '@wizeworks/api-core/errors';
 import { requireTenantIdBySlug } from './tenant-slug.js';
+import { cartUsableBy } from './cart-owner.js';
+import { optionalCustomer } from './customer-session.js';
 
 const TenantQuery = z.object({ tenant: z.string().min(1).max(63) });
 
@@ -66,15 +68,28 @@ export async function assertCartToken(
 ): Promise<void> {
   const token = request.headers['x-cart-token'];
   const cart = await withTenant({ tenantId }, (tx) =>
-    tx.cart.findFirst({ where: { id: cartId }, select: { id: true, guestToken: true } })
+    tx.cart.findFirst({
+      where: { id: cartId },
+      select: { id: true, guestToken: true, customerId: true },
+    })
   );
   if (!cart) throw notFound('Cart', cartId);
   if (!token || typeof token !== 'string' || cart.guestToken !== token) {
     // A shopper reads this: the checkout prints it as it is. It happens when the
     // basket was changed in another tab, so the words say what to do about that.
     throw forbidden(
-      'Your basket was changed in another window. Go back to your basket and check out again.'
+      'Your cart was changed in another window. Go back to your cart and check out again.'
     );
+  }
+  // A cart that belongs to one buyer is not another signed-in buyer's, whatever
+  // token the browser kept: the next person to sign in on a shared computer got
+  // the last one's cart at the last one's trade price (sparx persona issue 192).
+  // "Not found", so the site forgets it and starts a fresh one, and nothing about
+  // it is said to somebody it does not belong to.
+  if (cart.customerId !== null) {
+    const shopper = await optionalCustomer(request, { tenantId });
+    const signedIn = shopper?.scopes === null ? shopper.customerId : null;
+    if (!cartUsableBy(cart.customerId, signedIn)) throw notFound('Cart', cartId);
   }
 }
 

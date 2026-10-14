@@ -224,12 +224,15 @@ function RuleEditor({ ctx, id, rule }: { ctx: SurfaceContext; id: string; rule?:
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* Identity: what this rule IS, in a sentence, above the form that
-              changes it. A new one says what a rule is for. */}
+          {/* What this rule DOES, in a sentence, above the form that changes it.
+              Its name is shown once, in its own box (sparx persona issue 233); a
+              new one gets a title saying what a rule is for. */}
           <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {isNew ? 'Add a markup rule' : (rule?.name ?? 'Markup rule')}
-            </Heading>
+            {isNew ? (
+              <Heading level={1} className="text-2xl font-semibold">
+                Add a markup rule
+              </Heading>
+            ) : null}
             <Text>
               {rule
                 ? describeRule(rule)

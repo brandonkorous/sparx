@@ -298,8 +298,12 @@ const NOTHING_TO_SHOW = 'Nothing in the shop just yet. Check back soon.';
  * `6xl` because it is what the chrome already uses and what most of this file already
  * uses. The buy box's `5xl` stays as it is: it caps a half-width product image at a
  * sane ~500px, which is its own reason and not this one.
+ *
+ * The gutter is part of the name (`px-6`), not the band's: the house measure puts it
+ * inside the box, so shop content starts on the header's left edge on a wide screen
+ * rather than 24px left of it (piggles persona issue 950).
  */
-const CONTENT_WIDTH = 'mx-auto w-full max-w-6xl';
+const CONTENT_WIDTH = 'mx-auto w-full max-w-6xl px-6';
 
 export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
@@ -331,7 +335,7 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   // the grid/rail path below stays the simple thing it was.
   if (layout === 'carousel') {
     return behave(
-      el('section', 'bg-base-100 @container px-6 py-12', {
+      el('section', 'bg-base-100 @container py-12', {
         children: [
           el('div', CONTENT_WIDTH, {
             children: [
@@ -385,7 +389,7 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   if (layout === 'grid' && source === 'commerce.product') {
     children.push(hostCore(HOST_KEYS.sitePagination, 'pt-4'));
   }
-  return el('section', 'bg-base-100 @container px-6 py-12', {
+  return el('section', 'bg-base-100 @container py-12', {
     children: [el('div', CONTENT_WIDTH, { children })],
   });
 }
@@ -1280,9 +1284,9 @@ export function categoryDetailPage(): Node {
  *  carry record binds, which is why this one is plain text the tenant edits in the
  *  studio rather than a bind that can fail to nothing. */
 export function shopHeader(): Node {
-  return el('section', 'bg-base-100 @container px-6 pt-12 pb-4', {
+  return el('section', 'bg-base-100 @container pt-12 pb-4', {
     children: [
-      el('div', 'mx-auto w-full max-w-6xl', {
+      el('div', CONTENT_WIDTH, {
         children: [
           el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
             text: 'Shop',

@@ -10,6 +10,8 @@ import {
   CreateReturnRequestInput,
   DenyReturnInput,
   IssueReturnRefundInput,
+  paidForUnits,
+  paidLine,
   RecordReplacementShipmentInput,
   RecordReturnInspectionInput,
   SettleReturnExchangeInput,
@@ -17,14 +19,9 @@ import {
   type ReturnStatus,
 } from '@wizeworks/commerce-schemas';
 import { orderRefundsService } from '@wizeworks/crm';
-import {
-  GatewayNotFoundError,
-  PaymentConfigError,
-  paymentService,
-  takenByGateway,
-} from '@wizeworks/payments';
+import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@wizeworks/payments';
 import { withTenant } from '@wizeworks/db';
-import type { Prisma, ReturnLineItem, ReturnRequest, TxClient } from '@wizeworks/db';
+import type { ReturnLineItem, ReturnRequest, TxClient } from '@wizeworks/db';
 import { inventoryService } from '@wizeworks/inventory';
 
 import { writeAuditLog } from '../audit';
@@ -33,9 +30,13 @@ import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
+import { returnListWhere } from './return-list-filter';
 import { attemptReturnLabel } from './return-label-purchase';
 import * as discountService from './discount-service';
 import { replacementStockNote } from './return-notes';
+import { gatewayChargeOf, type CapturedPayment } from './refund-source';
+
+export { shopperRefundRoute, type ShopperRefundRoute } from './refund-source';
 import { canRecordInspection, inspectionAdvancesStatus, isSettledReturn } from './return-status';
 
 /** A restockable return line resolved to its variant + (optional) location. */
@@ -66,6 +67,10 @@ export interface ReturnDetail extends ReturnSummary {
   refundedAmountCents: number | null;
   restockingFeeCents: number | null;
   refundIssuedAs: string | null;
+  /** True when a refund "the way they paid" moves nothing: the money was taken
+   *  by hand, so a person hands it back. The screen words its refund from this
+   *  (sparx persona issue 178). */
+  refundsByHand: boolean;
   approvedAt: string | null;
   receivedAt: string | null;
   refundedAt: string | null;
@@ -81,6 +86,11 @@ export interface ReturnDetail extends ReturnSummary {
     variantId: string | null;
     quantity: number;
     approvedQuantity: number;
+    /** What these units were paid, for the units accepted back (or asked for,
+     *  before a decision): their share of the line's goods after its discount,
+     *  and of its sales tax. What a refund starts from (sparx persona issue 231). */
+    paidGoodsCents: number;
+    paidTaxCents: number;
     reasonCode: string;
     customerNote: string | null;
     mediaAssetIds: string[];
@@ -133,6 +143,17 @@ export interface ReturnableLine {
   spokenFor: number;
   returnableQuantity: number;
   unitPriceCents: number;
+  /** What the whole line's goods cost after their discount, and the sales tax on
+   *  them: what a returned unit is worth is its share of both (sparx persona
+   *  issue 231). The unit price alone left the tax with the shop. */
+  goodsPaidCents: number;
+  taxPaidCents: number;
+  /** The core deposit on one unit, null when the part carries none. A rebuilt
+   *  part that comes back is its own core, so its deposit comes back with it
+   *  (issue 051); the return form says so (sparx persona issue 211). */
+  coreDepositCents: number | null;
+  /** How many units still owe their old part, so bring their deposit back. */
+  coresOwed: number;
 }
 
 export interface OrderReturnability {
@@ -141,6 +162,8 @@ export interface OrderReturnability {
   /** Why not, when not — so a screen can SAY it rather than hiding the control
    *  and leaving the shopper to guess (there is no dead end here). */
   reason: 'not_sent_yet' | 'nothing_left' | null;
+  /** The order's currency, for the prices on the lines. */
+  currency: string;
   lines: ReturnableLine[];
 }
 
@@ -165,8 +188,22 @@ export async function returnability(
       select: {
         fulfilledAt: true,
         status: true,
+        currency: true,
         items: {
-          select: { id: true, name: true, sku: true, quantity: true, unitPrice: true },
+          select: {
+            id: true,
+            name: true,
+            sku: true,
+            quantity: true,
+            unitPrice: true,
+            lineSubtotal: true,
+            discountAmount: true,
+            taxAmount: true,
+            quantityRefunded: true,
+            coreCharge: true,
+            coresReturned: true,
+            coresKept: true,
+          },
         },
       },
     });
@@ -192,17 +229,22 @@ export async function returnability(
         spokenFor: taken,
         returnableQuantity: Math.max(0, it.quantity - taken),
         unitPriceCents: Math.round(Number(it.unitPrice) * 100),
+        goodsPaidCents: paidLine(it).goodsCents,
+        taxPaidCents: paidLine(it).taxCents,
+        coreDepositCents: it.coreCharge === null ? null : Math.round(Number(it.coreCharge) * 100),
+        coresOwed: it.coreCharge === null ? 0 : coresOwed(it),
       };
     });
+    const currency = order.currency;
 
     // Nothing can come back before it has gone out. `cancelled` orders never
     // shipped, so they are the same case.
     const sent = order.fulfilledAt !== null || order.status === 'delivered';
-    if (!sent) return { eligible: false, reason: 'not_sent_yet', lines };
+    if (!sent) return { eligible: false, reason: 'not_sent_yet', currency, lines };
     if (!lines.some((l) => l.returnableQuantity > 0)) {
-      return { eligible: false, reason: 'nothing_left', lines };
+      return { eligible: false, reason: 'nothing_left', currency, lines };
     }
-    return { eligible: true, reason: null, lines };
+    return { eligible: true, reason: null, currency, lines };
   });
 }
 
@@ -211,15 +253,22 @@ export async function list(
   filter: {
     status?: ReturnStatus;
     orderId?: string;
+    /** The buyer's own returns: those on her orders (sparx persona issue 196). */
+    customerId?: string;
     take?: number;
     skip?: number;
   } = {}
 ): Promise<{ items: ReturnSummary[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where: Prisma.ReturnRequestWhereInput = {
-      ...(filter.status ? { status: filter.status } : {}),
-      ...(filter.orderId ? { orderId: filter.orderId } : {}),
-    };
+    const customerOrderIds = filter.customerId
+      ? (
+          await tx.order.findMany({
+            where: { customerId: filter.customerId },
+            select: { id: true },
+          })
+        ).map((o) => o.id)
+      : null;
+    const where = returnListWhere(filter, customerOrderIds);
     const [rows, total] = await Promise.all([
       tx.returnRequest.findMany({
         where,
@@ -259,6 +308,16 @@ export async function list(
   });
 }
 
+/** The order's latest captured payment: what a refund "the way they paid" goes
+ *  back to. Read by the detail and by `issueRefund`, so the two agree. */
+async function capturedPayment(tx: TxClient, orderId: string): Promise<CapturedPayment | null> {
+  return tx.orderPayment.findFirst({
+    where: { orderId, status: 'captured' },
+    orderBy: { capturedAt: 'desc' },
+    select: { id: true, processor: true, processorRef: true },
+  });
+}
+
 export async function get(ctx: ServiceContext, returnId: string): Promise<ReturnDetail> {
   const detail = await withTenant(ctx, async (tx) => {
     const row = await tx.returnRequest.findFirst({
@@ -272,10 +331,23 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
         customerId: true,
         orderNumber: true,
         customer: { select: CUSTOMER_NAME_SELECT },
-        items: { select: { id: true, name: true, productId: true, variantId: true } },
+        items: {
+          select: {
+            id: true,
+            name: true,
+            productId: true,
+            variantId: true,
+            quantity: true,
+            lineSubtotal: true,
+            discountAmount: true,
+            taxAmount: true,
+          },
+        },
       },
     });
 
+    // orderItemId → what the line was paid, goods and tax (issue 231).
+    const orderItemPaid = new Map((order?.items ?? []).map((it) => [it.id, paidLine(it)]));
     // orderItemId → display name (sku/title snapshot frozen on the order line).
     const orderItemName = new Map((order?.items ?? []).map((it) => [it.id, it.name]));
     // orderItemId → the catalog rows behind it. Null on a line typed by hand or
@@ -308,17 +380,34 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
       customerName: customerDisplayName(order?.customer ?? null),
       orderNumber: order?.orderNumber ?? null,
     };
-    return { row, meta, orderItemName, orderItemProduct, lineItemName, warehouseName };
+    const payment = await capturedPayment(tx, row.orderId);
+    return {
+      row,
+      meta,
+      orderItemName,
+      orderItemProduct,
+      orderItemPaid,
+      lineItemName,
+      warehouseName,
+      payment,
+    };
   });
   if (!detail) throw new CommerceNotFoundError('ReturnRequest', returnId);
 
-  const { row, meta, orderItemName, orderItemProduct, lineItemName, warehouseName } = detail;
+  const { row, meta, orderItemName, orderItemProduct, lineItemName, warehouseName, payment } =
+    detail;
+  const paidFor = (orderItemId: string, units: number) => {
+    const line = detail.orderItemPaid.get(orderItemId);
+    const paid = line ? paidForUnits(line, units) : { goodsCents: 0, taxCents: 0 };
+    return { paidGoodsCents: paid.goodsCents, paidTaxCents: paid.taxCents };
+  };
   return {
     ...toSummary(row, meta),
     staffNote: row.staffNote,
     refundedAmountCents: row.refundedAmountCents,
     restockingFeeCents: row.restockingFeeCents,
     refundIssuedAs: row.refundIssuedAs,
+    refundsByHand: gatewayChargeOf(payment) === null,
     approvedAt: row.approvedAt?.toISOString() ?? null,
     receivedAt: row.receivedAt?.toISOString() ?? null,
     refundedAt: row.refundedAt?.toISOString() ?? null,
@@ -331,6 +420,7 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
       variantId: orderItemProduct.get(it.orderItemId)?.variantId ?? null,
       quantity: it.quantity,
       approvedQuantity: it.approvedQuantity,
+      ...paidFor(it.orderItemId, it.approvedQuantity > 0 ? it.approvedQuantity : it.quantity),
       reasonCode: it.reasonCode,
       customerNote: it.customerNote,
       mediaAssetIds: Array.isArray(it.mediaAssetIds) ? (it.mediaAssetIds as string[]) : [],
@@ -948,21 +1038,13 @@ export async function issueRefund(
         currency: order?.currency ?? 'USD',
       };
       if (input.asAccountCredit) return { ...base, chargeRef: null, paymentId: null };
-      const payment = await tx.orderPayment.findFirst({
-        where: { orderId: ret.orderId, status: 'captured' },
-        orderBy: { capturedAt: 'desc' },
-        select: { id: true, processor: true, processorRef: true },
-      });
-      // A reference alone is NOT proof there is a charge to reverse. Money taken
-      // by hand — cash, a cheque, a bank transfer — never passed through a
-      // gateway, whatever got written in the reference box, and asking a gateway
-      // to reverse it fails with "no payment gateway is configured" on a shop
-      // that never had one (persona issue 223). The PROCESSOR is what decides.
+      const payment = await capturedPayment(tx, ret.orderId);
+      // Money taken by hand has no charge to reverse (persona issue 223). The
+      // return detail asks the same function, so the screen says what this does.
       return {
         ...base,
         paymentId: payment?.id ?? null,
-        chargeRef:
-          payment && takenByGateway(payment.processor) ? (payment.processorRef ?? null) : null,
+        chargeRef: gatewayChargeOf(payment),
       };
     }
   );
@@ -1172,15 +1254,18 @@ export async function issueRefund(
  *
  * The operator types ONE figure, and `recordRefund` caps each line at what is
  * left un-refunded on it — so the figure has to be apportioned before it can be
- * recorded per line. Shared by unit price, which is what the money actually
- * represents; the remainder lands on the last line so the parts always sum to
- * the whole and never a cent more.
+ * recorded per line. Shared by what each line's units were paid, after their
+ * discount and with their sales tax, which is what the money actually
+ * represents (sparx persona issue 231; it was the unit price, so a taxed line
+ * and an exempt one split a refund as if neither carried tax). The remainder
+ * lands on the last line so the parts always sum to the whole and never a cent
+ * more. Exported for its test.
  *
  * Returns an empty list when nothing can be apportioned (free-text lines, or a
  * refund that is all shipping). `recordRefund` then books it against the order
  * header, which is the honest answer for postage given back.
  */
-async function refundShareByLine(
+export async function refundShareByLine(
   tx: TxClient,
   returnId: string,
   refundAmountCents: number
@@ -1194,9 +1279,17 @@ async function refundShareByLine(
 
   const orderItems = await tx.orderItem.findMany({
     where: { id: { in: lines.map((line) => line.orderItemId) } },
-    select: { id: true, name: true, unitPrice: true, quantity: true, quantityRefunded: true },
+    select: {
+      id: true,
+      name: true,
+      quantity: true,
+      quantityRefunded: true,
+      lineSubtotal: true,
+      discountAmount: true,
+      taxAmount: true,
+    },
   });
-  const priceByItem = new Map(orderItems.map((item) => [item.id, Number(item.unitPrice)]));
+  const paidByItem = new Map(orderItems.map((item) => [item.id, paidLine(item)]));
   const nameByItem = new Map(orderItems.map((item) => [item.id, item.name]));
   const leftByItem = new Map(
     orderItems.map((item) => [item.id, item.quantity - item.quantityRefunded])
@@ -1205,17 +1298,20 @@ async function refundShareByLine(
   const taking = lines
     .map((line) => {
       const asked = line.approvedQuantity > 0 ? line.approvedQuantity : line.quantity;
+      const quantity = Math.min(asked, leftByItem.get(line.orderItemId) ?? 0);
+      const paid = paidByItem.get(line.orderItemId);
+      const cost = paid ? paidForUnits(paid, quantity) : { goodsCents: 0, taxCents: 0 };
       return {
         orderItemId: line.orderItemId,
-        quantity: Math.min(asked, leftByItem.get(line.orderItemId) ?? 0),
-        unit: priceByItem.get(line.orderItemId) ?? 0,
+        quantity,
+        paidCents: cost.goodsCents + cost.taxCents,
         name: nameByItem.get(line.orderItemId) ?? 'Item',
       };
     })
-    .filter((line) => line.quantity > 0 && line.unit > 0);
+    .filter((line) => line.quantity > 0 && line.paidCents > 0);
   if (taking.length === 0) return [];
 
-  const worth = taking.reduce((sum, line) => sum + Math.round(line.unit * 100) * line.quantity, 0);
+  const worth = taking.reduce((sum, line) => sum + line.paidCents, 0);
   if (worth <= 0) return [];
 
   let spent = 0;
@@ -1223,7 +1319,7 @@ async function refundShareByLine(
     const share =
       index === taking.length - 1
         ? refundAmountCents - spent
-        : Math.round((refundAmountCents * (Math.round(line.unit * 100) * line.quantity)) / worth);
+        : Math.round((refundAmountCents * line.paidCents) / worth);
     spent += share;
     return {
       orderItemId: line.orderItemId,

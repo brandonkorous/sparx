@@ -14,8 +14,10 @@ import {
   EVERY_FITMENT_YEAR,
   ORDERS_COLLECTION,
   type OrderSearchDocument,
+  PERSONAL_ENTITY_TYPES,
   PRODUCTS_COLLECTION,
   type ProductSearchDocument,
+  VISIBLE_TO_EVERYONE,
 } from './schemas';
 
 // Typesense's SearchParams is generic over (TDoc, Infix). We don't need
@@ -340,14 +342,35 @@ export interface UniversalSearchInput {
   /** Restrict to these statuses — e.g. ['active','published'] so a public
    *  storefront search never surfaces draft/archived records. */
   statuses?: string[];
+  /** The person searching. A board or report kept to its maker is found only by
+   *  her (persona issue 264); without a person, only what everyone may see. */
+  viewerId?: string | null;
   page?: number;
   perPage?: number;
 }
 
 /** `[`a`,`b`]` — Typesense exact-match list syntax, backtick-quoted so values
  *  with separators don't break the filter grammar. */
-function facetList(values: string[]): string {
+function facetList(values: readonly string[]): string {
   return `[${values.map((v) => `\`${v}\``).join(',')}]`;
+}
+
+/**
+ * The part of a universal search that keeps private boards and reports to their
+ * makers. Exported for its tests.
+ *
+ * Documents of every other kind carry no `visible_to`, so the filter lets any
+ * document through that is not one of `PERSONAL_ENTITY_TYPES`, and those only
+ * when they name this person or everyone. Until the live collection holds the
+ * field (it arrives on the next indexer boot, see ./live-fields.ts) a filter on
+ * it would fail every search, so boards and reports are left out entirely: not
+ * found is the honest answer while the index cannot say who may see them.
+ */
+export function personalFilter(viewerId: string | null | undefined, indexed: boolean): string {
+  const personal = `entity_type:!=${facetList(PERSONAL_ENTITY_TYPES)}`;
+  if (!indexed) return personal;
+  const audience = viewerId ? [VISIBLE_TO_EVERYONE, viewerId] : [VISIBLE_TO_EVERYONE];
+  return `(${personal} || visible_to:=${facetList(audience)})`;
 }
 
 export async function searchAll(
@@ -357,6 +380,9 @@ export async function searchAll(
   if (input.modules?.length) parts.push(`module:=${facetList(input.modules)}`);
   if (input.entityTypes?.length) parts.push(`entity_type:=${facetList(input.entityTypes)}`);
   if (input.statuses?.length) parts.push(`status:=${facetList(input.statuses)}`);
+  parts.push(
+    personalFilter(input.viewerId, await collectionHasField(ENTITIES_COLLECTION, 'visible_to'))
+  );
   const params: AnySearchParams = {
     q: input.q && input.q.length > 0 ? input.q : '*',
     query_by: 'title,keywords,subtitle,body',
@@ -369,7 +395,25 @@ export async function searchAll(
     ...EVERY_PREFIX,
   };
   const result = await getClient().collections(ENTITIES_COLLECTION).documents().search(params);
-  return shape<UniversalSearchDocument>(result, params);
+  const shaped = shape<UniversalSearchDocument>(result, params);
+  // The index holds an article's every word so a reader can find it by one of them;
+  // the answer carries a lead-in, not twenty whole articles.
+  return {
+    ...shaped,
+    hits: shaped.hits.map((hit) => ({ ...hit, document: withShortBody(hit.document) })),
+  };
+}
+
+/** How much of `body` a search answer carries. */
+export const ANSWER_BODY_MAX = 500;
+
+/** A document with its body cut to a lead-in, at a word boundary where there is one. */
+export function withShortBody(doc: UniversalSearchDocument): UniversalSearchDocument {
+  const body = doc.body;
+  if (!body || body.length <= ANSWER_BODY_MAX) return doc;
+  const cut = body.slice(0, ANSWER_BODY_MAX);
+  const space = cut.lastIndexOf(' ');
+  return { ...doc, body: `${space > ANSWER_BODY_MAX / 2 ? cut.slice(0, space) : cut}…` };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────

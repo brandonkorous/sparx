@@ -20,6 +20,13 @@
 // one away and it goes red the other way. Either way the console cannot end up
 // promising an address nothing serves, which is the whole failure.
 //
+// SINCE 2026-10-08 the site also serves any kind at the address its own pattern
+// gives it (`lib/kind-pieces.ts` → `/v1/public/content/entries/by-path`), and each
+// console decides "served" for those with the SAME `kindAddressFromPattern` the site
+// routes with. So this also checks both halves of that are still there: the site's
+// read, and each console's use of the rule. Remove either and the console would go
+// back to promising, or denying, an address it knows nothing about.
+//
 // Pure Node, no deps, like the other structural checks.
 
 import { readFileSync, existsSync } from 'node:fs';
@@ -32,6 +39,7 @@ import { dirname, join, relative } from 'node:path';
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
 const SITE_CONTENT = join(ROOT, 'wizeworks/apps/site/lib/content.ts');
+const SITE_KIND_READ = join(ROOT, 'wizeworks/apps/site/lib/kind-pieces.ts');
 const CONSOLES = [
   join(ROOT, 'piggles/apps/workbench/surfaces/cms/routable.ts'),
   join(ROOT, 'sparx/apps/workbench/surfaces/cms/routable.ts'),
@@ -44,7 +52,7 @@ const fail = (message) => {
 };
 
 // Every scan target must EXIST. A missing file is the failure, never a pass.
-for (const path of [SITE_CONTENT, ...CONSOLES]) {
+for (const path of [SITE_CONTENT, SITE_KIND_READ, ...CONSOLES]) {
   if (!existsSync(path)) {
     fail(`missing file: ${relative(ROOT, path)}`);
   }
@@ -100,7 +108,19 @@ for (const path of CONSOLES) {
   }
 }
 
+// The pattern-served half: the site reads kinds by address, and each console asks the
+// site's own rule.
+if (!readFileSync(SITE_KIND_READ, 'utf8').includes('/v1/public/content/entries/by-path')) {
+  fail(`${relative(ROOT, SITE_KIND_READ)} no longer reads kinds by their address (by-path)`);
+}
+for (const path of CONSOLES) {
+  if (!/kindAddressFromPattern\(/.test(readFileSync(path, 'utf8'))) {
+    fail(`${relative(ROOT, path)} no longer decides a kind's address with kindAddressFromPattern`);
+  }
+}
+
 if (failed) process.exit(1);
 console.log(
-  `✓ cms routes: ${CONSOLES.length} consoles agree the site serves ${siteTypes.join(', ')}`
+  `✓ cms routes: ${CONSOLES.length} consoles agree the site serves ${siteTypes.join(', ')}, ` +
+    `and every kind at its own pattern`
 );

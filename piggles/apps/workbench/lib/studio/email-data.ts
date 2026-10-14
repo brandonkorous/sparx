@@ -10,7 +10,8 @@
 // business always has the provisioned defaults. An empty result means the module
 // is off, never "make your first one".
 
-import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@wizeworks/query';
+import { emailKeys } from '../../surfaces/email/broadcasts-data';
 import type {
   EmailColorDefaults,
   EmailDocument,
@@ -20,6 +21,17 @@ import { api } from '../api/client';
 
 export const EMAILS_KEY = ['studio', 'emails'] as const;
 export const emailKey = (id: string) => ['studio', 'email', id] as const;
+
+/**
+ * Every list of emails a change here must refresh: the designer's own, and the
+ * campaign composer's "Designed email" picker. The composer sits open beside the
+ * designer, so it never remounts to refetch, and an email published in the next pane
+ * went on reading "(draft, not published)" (Piggles persona P09).
+ */
+function refreshEmailLists(queryClient: QueryClient): void {
+  void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+  void queryClient.invalidateQueries({ queryKey: emailKeys.designed });
+}
 
 /** An email in the list — everything the picker shows. */
 export interface EmailSummary {
@@ -86,7 +98,7 @@ export function useSaveEmail() {
     onSuccess: (_result, input) => {
       // The LIST changes — a new subject, a rename, an unpublished marker. The
       // email's own query is not refetched: this pane is the authority on it.
-      void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+      refreshEmailLists(queryClient);
       void queryClient.invalidateQueries({ queryKey: emailKey(input.id), refetchType: 'none' });
     },
   });
@@ -101,7 +113,7 @@ export function usePublishEmail() {
         `/v1/builder/emails/${encodeURIComponent(id)}/silica/publish`
       ),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+      refreshEmailLists(queryClient);
     },
   });
 }
@@ -113,7 +125,7 @@ export function useCreateEmail() {
   return useMutation({
     mutationFn: (input: { name: string }) => api.post<EmailSummary>('/v1/builder/emails', input),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+      refreshEmailLists(queryClient);
     },
   });
 }
@@ -124,7 +136,7 @@ export function useDeleteEmail() {
   return useMutation({
     mutationFn: (id: string) => api.delete(`/v1/builder/emails/${encodeURIComponent(id)}`),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+      refreshEmailLists(queryClient);
     },
   });
 }
@@ -147,7 +159,7 @@ export function useCustomiseForSite() {
         }
       ),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+      refreshEmailLists(queryClient);
     },
   });
 }

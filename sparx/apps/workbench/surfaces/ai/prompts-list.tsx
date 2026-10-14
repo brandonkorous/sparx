@@ -56,6 +56,7 @@ import {
   type PromptTemplateDto,
 } from './data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const EDITOR_SURFACE = 'ai.prompts.edit';
 
@@ -107,7 +108,15 @@ function InstructionRow({
 
 export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = usePromptTemplates();
+  const {
+    data,
+    isPending,
+    isError,
+    error: loadError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = usePromptTemplates();
   const { data: viewer } = useViewer();
   const install = useInstallDefaultPrompts();
 
@@ -187,6 +196,20 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           </div>
         }
+        primary={
+          canEdit ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0"
+              title="Write a new instruction. Hold Shift to open alongside, Alt for a new window"
+              onClick={openNew}
+            >
+              <Plus className="size-4" aria-hidden />
+              New instruction
+            </Button>
+          ) : undefined
+        }
         controls={
           <>
             <div className="w-44 shrink-0">
@@ -204,18 +227,6 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               />
             </div>
-            {canEdit ? (
-              <Button
-                color="module"
-                size="sm"
-                className="ml-auto shrink-0"
-                title="Write a new instruction. Hold Shift to open alongside, Alt for a new window"
-                onClick={openNew}
-              >
-                <Plus className="size-4" aria-hidden />
-                New instruction
-              </Button>
-            ) : null}
           </>
         }
         refresh={
@@ -267,22 +278,14 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {isError ? (
             <Card>
-              <EmptyState
+              <PaneLoadError
                 icon={<Bot className="size-6" aria-hidden />}
                 title="Could not load your instructions"
                 description="This is a problem reaching the server. Your instructions are unaffected. Nothing has been lost."
-                actions={
-                  <Button
-                    size="sm"
-                    color="module"
-                    variant="soft"
-                    onClick={() => {
-                      void refetch();
-                    }}
-                  >
-                    Try again
-                  </Button>
-                }
+                error={loadError}
+                onRetry={() => {
+                  void refetch();
+                }}
               />
             </Card>
           ) : isPending ? (

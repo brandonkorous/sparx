@@ -30,7 +30,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 
-import { utcMidnight } from '@wizeworks/finance';
+import { businessToday, utcMidnight } from '@wizeworks/finance';
 
 import { authorizeCron, forEachTenant } from '../../lib/cron-auth.js';
 import { listTenantsWithModule } from '../../lib/module-tenants.js';
@@ -97,30 +97,30 @@ const financeCronRoutes: FastifyPluginAsync = (app) => {
       authorizeCron(request);
 
       const days = parseDays(request.query.days) ?? DEFAULT_ROLLUP_DAYS;
-      const to = utcMidnight(new Date());
-      const from = daysBefore(to, days - 1);
+      const now = new Date();
 
       const tenants = await listTenantsWithModule('finance');
+      // Each business's own today, not the server's. The sweep runs at 06:45
+      // UTC, the evening before in Denver for half the year, so a window counted
+      // from UTC's today recomputed a day that had not started and skipped the
+      // last hours of the one that had just ended (sparx persona issue 174).
       const summary = await forEachTenant(tenants, async (tenantId) => {
+        const to = await businessToday(tenantId, now);
+        const from = daysBefore(to, days - 1);
         await publishDomainEvent('finance.profit.recompute', tenantId, null, {
           from: from.toISOString(),
           to: to.toISOString(),
         });
-        return { published: 'finance.profit.recompute' };
+        return { published: 'finance.profit.recompute', to: to.toISOString() };
       });
 
       request.log.info(
-        {
-          from: from.toISOString(),
-          to: to.toISOString(),
-          ...summary,
-          outcomes: undefined,
-        },
+        { days, ...summary, outcomes: undefined },
         'finance profit-rollup sweep published'
       );
       return {
         success: true,
-        data: { from: from.toISOString(), to: to.toISOString(), ...summary },
+        data: { days, ...summary },
       };
     }
   );

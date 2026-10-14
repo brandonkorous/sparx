@@ -47,6 +47,7 @@ import { useActivePropertyId } from '../../lib/api/shell-data';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains } from '../domains/data';
+import { siteHostOf } from '../domains/site-host';
 import { useTabSave } from './product-tab-save';
 import {
   useMediaAssets,
@@ -156,12 +157,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
   };
 
   // The address this product actually sits at, on the site being worked in.
-  const propertyId = currentSiteId ?? null;
-  const mine = (domains ?? []).filter(
-    (domain) =>
-      domain.status !== 'removed' && (propertyId ? domain.propertyId === propertyId : true)
-  );
-  const host = (mine.find((domain) => domain.isCanonical) ?? mine[0])?.host ?? 'yoursite.com';
+  const host = siteHostOf(domains, currentSiteId ?? null) ?? 'yoursite.com';
 
   const usedTitle = draft.seoTitle.trim() || product.title;
   const titleIsFallback = draft.seoTitle.trim() === '';

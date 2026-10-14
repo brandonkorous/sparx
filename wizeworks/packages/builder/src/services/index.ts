@@ -37,3 +37,4 @@ export type {
   DocumentVersion,
 } from './document-history-service';
 export type { RecordSamplePaths } from './record-sample-service';
+export { removedStarterPaths } from './removed-starters';

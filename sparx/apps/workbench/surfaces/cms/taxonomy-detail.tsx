@@ -27,7 +27,6 @@ import {
   AlertTitle,
   Badge,
   Button,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -70,6 +69,7 @@ import {
   type TermNode,
 } from './taxonomy-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 
 /** The one column everything in this pane sits in. Centred and capped, because a
  *  pane torn onto a second monitor is otherwise 2000px of dead grey with a
@@ -272,7 +272,7 @@ function serializeSettings(settings: Settings): string {
 }
 
 function ManageTaxonomy({ ctx, taxKey }: { ctx: SurfaceContext; taxKey: string }) {
-  const { data: taxonomy, isPending, isError, isFetching, refetch } = useTaxonomy(taxKey);
+  const { data: taxonomy, isPending, isError, error, isFetching, refetch } = useTaxonomy(taxKey);
 
   const [settings, setSettings] = useState<Settings | null>(null);
   const initialRef = useRef<string>('');
@@ -311,6 +311,8 @@ function ManageTaxonomy({ ctx, taxKey }: { ctx: SurfaceContext; taxKey: string }
       <PaneLoadError
         title="Could not load this label"
         description="This is a problem reaching the server. Your labels are unaffected."
+        error={error}
+        noun="list of tags"
         onRetry={() => {
           void refetch();
         }}
@@ -322,13 +324,14 @@ function ManageTaxonomy({ ctx, taxKey }: { ctx: SurfaceContext; taxKey: string }
   // dead form beside a dead Save is worse than saying so plainly.
   if (!isPending && !taxonomy) {
     return (
-      <div className="flex h-full items-center justify-center p-8">
-        <EmptyState
-          icon={<Tags className="size-6" aria-hidden />}
-          title="This no longer exists"
-          description="The way to file content you opened has been removed. Open another from the list."
-        />
-      </div>
+      // The shared "no longer here" state, as every other pane says it (sparx
+      // persona issue 235).
+      <PaneLoadError
+        reason="missing"
+        icon={<Tags className="size-6" aria-hidden />}
+        noun="list of tags"
+        title="That list of tags is no longer here"
+      />
     );
   }
 
@@ -394,6 +397,7 @@ function ManageBody({
     data: terms,
     isPending: termsPending,
     isError: termsError,
+    error: termsLoadError,
     isFetching: termsFetching,
     dataUpdatedAt: termsUpdatedAt,
     refetch: refetchTerms,
@@ -575,6 +579,7 @@ function ManageBody({
             terms={terms ?? []}
             isPending={termsPending}
             isError={termsError}
+            error={termsLoadError}
             onRetry={() => {
               void refetchTerms();
             }}
@@ -618,6 +623,7 @@ interface TermsSectionProps {
   terms: TaxonomyTerm[];
   isPending: boolean;
   isError: boolean;
+  error: unknown;
   onRetry: () => void;
 }
 
@@ -629,6 +635,7 @@ function TermsSection({
   terms,
   isPending,
   isError,
+  error,
   onRetry,
 }: TermsSectionProps) {
   const lowerSingular = singular.toLowerCase();
@@ -661,7 +668,9 @@ function TermsSection({
         <Alert color="warning">
           <AlertContent>
             <AlertTitle>Could not load the labels</AlertTitle>
-            <AlertDescription>This is a problem reaching the server.</AlertDescription>
+            <AlertDescription>
+              {loadFailureWords(error, 'This is a problem reaching the server.')}
+            </AlertDescription>
           </AlertContent>
           <Button size="sm" color="warning" variant="soft" onClick={onRetry}>
             Try again

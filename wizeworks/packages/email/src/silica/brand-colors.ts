@@ -129,6 +129,13 @@ function repaint(node: EmailNode, roles: EmailColorDefaults): EmailNode {
 }
 
 function walkChild(child: LayoutChild, roles: EmailColorDefaults): LayoutChild {
+  // A clickable group holds content of its own. It was missed, so the title and
+  // summary of every "Latest …" card (a link around them) kept the kit's fixed
+  // gray: invisible on a dark email, and off-brand on a light one (piggles
+  // persona issue 982).
+  if (child.kind === 'link') {
+    return { ...child, children: child.children.map((c) => repaint(c, roles) as typeof c) };
+  }
   if (child.kind === 'columns') {
     return {
       ...child,

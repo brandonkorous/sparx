@@ -44,7 +44,6 @@ import type { ViewParamHandle } from '../../lib/workbench/view-param';
 import {
   Badge,
   Button,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -62,6 +61,7 @@ import { useConfirm } from '../../lib/confirm';
 import { Languages, Save, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { AddLanguage } from '../../components/add-language';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -494,6 +494,20 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label={`${NOUN} actions`}
+        primary={
+          saveState.save ? (
+            <Button
+              size="sm"
+              color="module"
+              disabled={!saveState.dirty}
+              loading={saveState.saving}
+              onClick={saveState.save}
+            >
+              <Save className="size-4" aria-hidden />
+              {saveState.label}
+            </Button>
+          ) : null
+        }
         controls={
           <>
             <Languages className="size-4 shrink-0" aria-hidden />
@@ -504,19 +518,6 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
               <Badge color="info" variant="soft" size="sm">
                 Following
               </Badge>
-            ) : null}
-            {saveState.save ? (
-              <Button
-                size="sm"
-                color="module"
-                className="ml-auto"
-                disabled={!saveState.dirty}
-                loading={saveState.saving}
-                onClick={saveState.save}
-              >
-                <Save className="size-4" aria-hidden />
-                {saveState.label}
-              </Button>
             ) : null}
           </>
         }
@@ -537,24 +538,14 @@ export function ProductTranslationsSurface({ ctx }: { ctx: SurfaceContext }) {
           <FollowingNotice scope={scope} />
 
           {translations.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load the translations"
-              description={productErrorMessage(
-                translations.error,
-                'This is a problem reaching the server. None of your wording has been lost.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void translations.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. None of your wording has been lost."
+              error={translations.error}
+              onRetry={() => {
+                void translations.refetch();
+              }}
             />
           ) : translations.data === undefined ? (
             <p className="text-sm" role="status">

@@ -40,8 +40,10 @@ import {
   type SocialPlatform,
 } from './data';
 import { PlatformMark } from '../../components/platform-mark';
-import { AccountAvatar, useAvatarByTargetId, formatWhen } from './post-visuals';
-import { formatMinuteOfDay, localTimezone, useBestTime, WEEKDAY_NAMES } from './planning-data';
+import { AccountAvatar, useAvatarByTargetId } from './post-visuals';
+import { formatMinuteOfDay, useBestTime, WEEKDAY_NAMES } from './planning-data';
+import { timesNote, whenOn } from './social-clock';
+import { useReaderClock } from '../../lib/business-timezone';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -121,10 +123,13 @@ function AccountRow({
 function TopPostRow({
   post,
   catalogMap,
+  clock,
   onOpen,
 }: {
   post: InsightsTopPost;
   catalogMap: Map<SocialPlatform, CatalogEntry>;
+  /** The business's clock (piggles persona issue 990). */
+  clock: string;
   onOpen: () => void;
 }) {
   return (
@@ -142,7 +147,7 @@ function TopPostRow({
           <span className="min-w-0 text-base font-medium break-words">{post.excerpt}</span>
           <span className="text-sm">
             {post.targetName} · {platformName(post.platform, catalogMap)}
-            {post.publishedAt ? ` · ${formatWhen(post.publishedAt)}` : ''}
+            {post.publishedAt ? ` · ${whenOn(post.publishedAt, clock)}` : ''}
           </span>
         </span>
         <span className="flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -179,8 +184,15 @@ function TopPostRow({
  * one from your own audience — and when there isn't enough history yet, this says so
  * plainly instead of showing a confident-looking table built on three posts.
  */
-function BestTimePanel() {
-  const timezone = useMemo(() => localTimezone(), []);
+function BestTimePanel({
+  reader,
+}: {
+  reader: { zone: string | null | undefined; device: string };
+}) {
+  // The hours a business thinks in are the hours on ITS clock. This asked on this
+  // computer's, so a shop in London opened on a laptop in California was told to post
+  // "Tuesdays around 1:00 AM" (piggles persona issue 990). Held until her zone is known.
+  const timezone = reader.zone === undefined ? undefined : (reader.zone ?? reader.device);
   const report = useBestTime(timezone);
   const data = report.data;
 
@@ -232,8 +244,8 @@ function BestTimePanel() {
             ))}
           </div>
           <Text className="px-4 py-3 text-sm">
-            Worked out from {data.sampleSize} posts over the last six months, in your local time (
-            {data.timezone}).
+            Worked out from {data.sampleSize} posts over the last six months.{' '}
+            {timesNote(reader.zone ?? null, reader.device, new Date())}
           </Text>
         </>
       )}
@@ -247,6 +259,8 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [windowDays, setWindowDays] = useState(30);
   const insights = useSocialInsights(windowDays);
   const overview = useSocialOverview();
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   const avatarByTargetId = useAvatarByTargetId(overview.data?.connections ?? []);
   const catalogMap = useMemo(
@@ -362,7 +376,7 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {/* When to post — before the per-account breakdown, because it is the one
                 thing on this screen that changes what someone DOES next week. */}
-            <BestTimePanel />
+            <BestTimePanel reader={reader} />
 
             {/* Per-account performance. */}
             {data.accounts.length > 0 ? (
@@ -403,6 +417,7 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
                       key={post.postTargetId}
                       post={post}
                       catalogMap={catalogMap}
+                      clock={clock}
                       onOpen={() => {
                         ctx.open('social.composer', { id: post.postId });
                       }}

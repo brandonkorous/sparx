@@ -42,10 +42,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Badge,
   Button,
   Dropzone,
@@ -64,6 +60,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { ChevronLeft, ChevronRight, ImageOff, Star, Trash2, Upload } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTabSave } from './product-tab-save';
 import { SaveFailure } from '@/components/save-failure';
@@ -371,25 +368,15 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
   // would invite someone to re-upload photos that are already there.
   if (media.isError) {
     return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load this product&apos;s photos</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing about the photos has changed. They just
-            could not be read just now.
-          </AlertDescription>
-        </AlertContent>
-        <Button
-          size="sm"
-          color="error"
-          variant="soft"
-          onClick={() => {
-            void media.refetch();
-          }}
-        >
-          Try again
-        </Button>
-      </Alert>
+      <PaneLoadError
+        title="Could not load this product's photos"
+        description="This is a problem reaching the server. Nothing about the photos has changed. They just could not be read just now."
+        error={media.error}
+        noun="product"
+        onRetry={() => {
+          void media.refetch();
+        }}
+      />
     );
   }
 

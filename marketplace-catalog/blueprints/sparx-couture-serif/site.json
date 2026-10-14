@@ -812,12 +812,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-16",
+            "class": "bg-base-100 @container py-16",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "class": "mx-auto flex w-full max-w-6xl px-6 flex-col gap-10",
                 "children": [
                   {
                     "kind": "element",
@@ -1021,12 +1021,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-12",
+            "class": "bg-base-100 @container py-12",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",
@@ -1295,12 +1295,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-12",
+            "class": "bg-base-100 @container py-12",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",
@@ -1501,12 +1501,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-16",
+            "class": "bg-base-100 @container py-16",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "class": "mx-auto flex w-full max-w-6xl px-6 flex-col gap-10",
                 "children": [
                   {
                     "kind": "element",
@@ -2492,12 +2492,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "class": "bg-base-100 @container py-12 @3xl:py-20",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "class": "mx-auto grid w-full max-w-6xl px-6 gap-10 @3xl:grid-cols-2 @3xl:gap-16",
                 "children": [
                   {
                     "kind": "component",
@@ -2965,12 +2965,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-12",
+            "class": "bg-base-100 @container py-12",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",

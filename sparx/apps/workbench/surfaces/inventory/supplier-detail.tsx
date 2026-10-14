@@ -870,14 +870,16 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       min={0}
                       inputMode="numeric"
                       value={form.leadTimeDays}
-                      placeholder="7"
                       onChange={(event) => {
                         set('leadTimeDays', event.target.value);
                       }}
                     />
                   }
                 />
-                <FieldDescription>Sets an order&apos;s expected date.</FieldDescription>
+                <FieldDescription>
+                  Their usual delivery time. It sets each new order&apos;s expected date. Left
+                  blank, orders have no expected date until you give one.
+                </FieldDescription>
               </Field>
               <CurrencyField
                 value={form.currency}

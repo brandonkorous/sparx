@@ -26,7 +26,7 @@ const DATA: BillingRenderData = {
       description: 'Fuel injector',
       quantity: 2,
       unitPrice: 150,
-      lineTotal: 300,
+      amount: 300,
       taxable: true,
     },
   ],

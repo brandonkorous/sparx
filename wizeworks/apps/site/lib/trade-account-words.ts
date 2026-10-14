@@ -9,6 +9,7 @@
 import type { SilicaColor } from '@wizeworks/silicaui-react';
 
 import { termsDays } from './account-terms-words';
+import { formatMoney } from './format';
 import { orderWaitingSentence, type SignOffView } from './sign-off-words';
 
 /** A contact's role on the account, as a word. Roles are documented on
@@ -319,4 +320,46 @@ export function pricedQuote<T extends object, L extends QuoteLineMoney>(quote: {
     });
   }
   return { totalCents, totals, lines };
+}
+
+/** "$1,769.30 of your $10,000.00 credit is left to spend." Credit figures arrive
+ *  in major units from the portal API. Null for an account with no credit line:
+ *  it does not trade on credit, and "$0.00 of $0.00" would read as a limit of
+ *  nothing. Never a negative: past the limit, none is left (sparx persona
+ *  issue 193, where the account overview first said it). */
+export function creditLeftWords(
+  account: { creditLimit: number; creditAvailable: number },
+  currency: string
+): string | null {
+  if (account.creditLimit <= 0) return null;
+  const limit = formatMoney(Math.round(account.creditLimit * 100), currency);
+  if (account.creditAvailable <= 0) return `None of your ${limit} credit is left to spend.`;
+  const left = formatMoney(Math.round(account.creditAvailable * 100), currency);
+  return `${left} of your ${limit} credit is left to spend.`;
+}
+
+function invoiceCount(n: number): string {
+  return n === 1 ? '1 invoice' : `${n} invoices`;
+}
+
+/** What the account owes, overdue first: "1 invoice is overdue: $528.00." and
+ *  "2 invoices are not yet paid: $2,554.38.". Each is null when there is none.
+ *  The wholesale account page and the account overview both say it with these
+ *  words (sparx persona issue 193). */
+export function openInvoiceWords(
+  summary: { unpaidCount: number; unpaidCents: number; overdueCount: number; overdueCents: number },
+  currency: string
+): { overdue: string | null; unpaid: string | null } {
+  const sentence = (count: number, cents: number, state: string) =>
+    `${invoiceCount(count)} ${count === 1 ? 'is' : 'are'} ${state}: ${formatMoney(cents, currency)}.`;
+  return {
+    overdue:
+      summary.overdueCount > 0
+        ? sentence(summary.overdueCount, summary.overdueCents, 'overdue')
+        : null,
+    unpaid:
+      summary.unpaidCount > 0
+        ? sentence(summary.unpaidCount, summary.unpaidCents, 'not yet paid')
+        : null,
+  };
 }

@@ -17,23 +17,32 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
-import { CARRIERS } from './carriers';
+import { CARRIERS, serviceFor } from './carriers';
 import { whatCanShipNow, type ShipNow } from './order-ship-gate';
 
 interface HandoverForm {
   carrier: string;
+  /** The courier's name when "Another courier" is chosen (sparx persona issue 219). */
+  courier: string;
   tracking: string;
   note: string;
   setCarrier: (next: string) => void;
+  setCourier: (next: string) => void;
   setTracking: (next: string) => void;
   setNote: (next: string) => void;
 }
 
 function useHandoverForm(): HandoverForm {
   const [carrier, setCarrier] = useState<string>('usps');
+  const [courier, setCourier] = useState('');
   const [tracking, setTracking] = useState('');
   const [note, setNote] = useState('');
-  return { carrier, tracking, note, setCarrier, setTracking, setNote };
+  return { carrier, courier, tracking, note, setCarrier, setCourier, setTracking, setNote };
+}
+
+/** "Another courier" with no name: the customer would read "Another courier". */
+function unnamedCourier(plan: DeliveryPlan, form: HandoverForm): boolean {
+  return !plan.collected && form.carrier === 'other' && form.courier.trim() === '';
 }
 
 /** The toast says which happened: a tracking number to follow, or none yet. */
@@ -53,13 +62,20 @@ function useHandoverSubmit(order: Order, plan: DeliveryPlan, shipNow: ShipNow, f
   const toast = useToast();
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (shipNow.lines.length === 0) return;
+    if (shipNow.lines.length === 0 || unnamedCourier(plan, form)) return;
     record.mutate(
       {
         status: plan.collected ? 'delivered' : 'shipped',
         lines: shipNow.lines,
         carrier: plan.collected ? 'pickup' : form.carrier,
-        ...(plan.description ? { service: plan.description } : {}),
+        ...(plan.collected ? {} : { carrierOther: form.courier }),
+        ...(plan.collected
+          ? plan.description
+            ? { service: plan.description }
+            : {}
+          : serviceFor(plan.description, form.carrier)
+            ? { service: serviceFor(plan.description, form.carrier) }
+            : {}),
         ...(plan.collected ? {} : { trackingNumber: form.tracking }),
         notes: form.note,
       },
@@ -103,6 +119,18 @@ function PostedFields({ form }: { form: HandoverForm }) {
           ))}
         </NativeSelect>
       </label>
+      {form.carrier === 'other' ? (
+        <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
+          <span className="text-base font-medium">Courier’s name</span>
+          <Input
+            value={form.courier}
+            placeholder="Estes, a local courier…"
+            onChange={(event) => {
+              form.setCourier(event.target.value);
+            }}
+          />
+        </label>
+      ) : null}
       <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
         <span className="text-base font-medium">Tracking number (optional)</span>
         <Input
@@ -157,7 +185,13 @@ export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPl
           }}
         />
       </label>
-      <Button type="submit" color="primary" loading={busy}>
+      <Button
+        type="submit"
+        color="primary"
+        loading={busy}
+        disabled={unnamedCourier(plan, form)}
+        title={unnamedCourier(plan, form) ? 'Say which courier took it' : undefined}
+      >
         {plan.collected ? 'They collected it' : 'Mark it as sent'}
       </Button>
     </form>

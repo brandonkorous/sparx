@@ -7,6 +7,7 @@ import { DsersAdapter } from './dsers.js';
 import { SpocketAdapter } from './spocket.js';
 import { PrintifyAdapter } from './printify.js';
 import { PrintfulAdapter } from './printful.js';
+import { DirectAdapter } from './direct.js';
 
 export { CsvAdapter } from './csv.js';
 export type { CsvCredentials, CsvColumnMapping } from './csv.js';
@@ -23,6 +24,9 @@ export type { PrintifyCredentials } from './printify.js';
 export { PrintfulAdapter } from './printful.js';
 export type { PrintfulCredentials } from './printful.js';
 
+export { DirectAdapter, directOrderEmail } from './direct.js';
+export type { DirectCredentials } from './direct.js';
+
 /** Construct the right adapter for a given supplier type.
  *  Throws if the type has no registered adapter. */
 export function createAdapter(type: string, credentials: Credentials): SupplierAdapter {
@@ -37,6 +41,8 @@ export function createAdapter(type: string, credentials: Credentials): SupplierA
       return new PrintifyAdapter(credentials);
     case 'printful':
       return new PrintfulAdapter(credentials);
+    case 'direct':
+      return new DirectAdapter(credentials);
     default:
       throw new Error(`No adapter registered for supplier type: ${type}`);
   }

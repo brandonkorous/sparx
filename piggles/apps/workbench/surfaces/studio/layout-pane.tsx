@@ -161,5 +161,5 @@ function LayoutStatus({
     return <span>Saved, but never published: visitors still see the starter header.</span>;
   }
   if (unpublished) return <span>Saved. Visitors still see the last published header.</span>;
-  return <PublishedLine what="The header and footer" ctx={ctx} catchingUp={catchingUp} />;
+  return <PublishedLine what="The header and footer" plural ctx={ctx} catchingUp={catchingUp} />;
 }

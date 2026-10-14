@@ -19,10 +19,6 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Badge,
   Button,
   Dialog,
@@ -36,6 +32,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Check, PackagePlus } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { resolveFitmentIcon } from './fitment-icons';
 import {
@@ -113,24 +110,14 @@ export function FitmentDictionaryPicker({
             </div>
 
             {query.isError ? (
-              <Alert color="danger" variant="soft">
-                <AlertContent>
-                  <AlertTitle>Could not load the library</AlertTitle>
-                  <AlertDescription>
-                    This is a problem reaching the server. Nothing has been changed.
-                  </AlertDescription>
-                </AlertContent>
-                <Button
-                  size="sm"
-                  color="danger"
-                  variant="soft"
-                  onClick={() => {
-                    void query.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              </Alert>
+              <PaneLoadError
+                title="Could not load the library"
+                description="This is a problem reaching the server. Nothing has been changed."
+                error={query.error}
+                onRetry={() => {
+                  void query.refetch();
+                }}
+              />
             ) : query.isPending ? (
               <p className="text-sm" role="status">
                 Loading…

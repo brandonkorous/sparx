@@ -25,8 +25,9 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import type { MediaAsset } from '../cms/media';
-import { postStatusMeta, socialErrorMessage, type CatalogEntry, type Post } from './data';
-import { DestinationAvatars, PostCover, excerpt, whenLine } from './post-visuals';
+import { postStatusMeta, type CatalogEntry, type Post } from './data';
+import { DestinationAvatars, PostCover, excerpt } from './post-visuals';
+import { timesNote, whenLine } from './social-clock';
 import { GROUPS, useSocialBoard } from './board';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -57,12 +58,15 @@ function PostTile({
   assetsById,
   avatarByTargetId,
   catalogMap,
+  clock,
   onOpen,
 }: {
   post: Post;
   assetsById: Map<string, MediaAsset>;
   avatarByTargetId: Map<string, string | null>;
   catalogMap: Map<string, CatalogEntry>;
+  /** The business's clock, so "Goes out 9:00 AM" is her 9:00 (piggles persona issue 990). */
+  clock: string;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const meta = postStatusMeta(post.status);
@@ -87,7 +91,7 @@ function PostTile({
             {excerpt(post.body, 120)}
           </span>
 
-          <Text className="text-sm">{whenLine(post)}</Text>
+          <Text className="text-sm">{whenLine(post, clock)}</Text>
 
           {/* `mt-auto` pins this to the bottom edge, so the state of every tile in a
               row lines up however long their words ran. */}
@@ -167,6 +171,8 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
     catalogMap,
     counts,
     nothingConnected,
+    reader,
+    clock,
   } = board;
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string | null>(null);
@@ -196,10 +202,8 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
         <PaneLoadError
           icon={<ServerCrash className="size-6" aria-hidden />}
           title="Could not load your posts"
-          description={socialErrorMessage(
-            posts.error,
-            'This is a problem reaching the server. Nothing about your posts has changed.'
-          )}
+          description="This is a problem reaching the server. Nothing about your posts has changed."
+          error={posts.error}
           onRetry={() => {
             void posts.refetch();
           }}
@@ -223,23 +227,21 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           </div>
         }
-        controls={
-          <>
-            {canWrite ? (
-              <Button
-                color="module"
-                size="sm"
-                className="ml-auto shrink-0 whitespace-nowrap"
-                title="Write a new post: hold Shift to open alongside, Alt for a new window"
-                onClick={(event) => {
-                  board.openNew(event);
-                }}
-              >
-                <Plus className="size-4" aria-hidden />
-                New post
-              </Button>
-            ) : null}
-          </>
+        primary={
+          canWrite ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              title="Write a new post: hold Shift to open alongside, Alt for a new window"
+              onClick={(event) => {
+                board.openNew(event);
+              }}
+            >
+              <Plus className="size-4" aria-hidden />
+              New post
+            </Button>
+          ) : undefined
         }
         refresh={
           <RefreshButton
@@ -306,6 +308,12 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="flex w-full flex-col gap-4 p-4">
             <PipelineStrip counts={counts} activeFilter={filter} onPick={pickFilter} />
 
+            {/* Only when the business has no zone of its own: then the times are this
+                computer's, and the screen has to say so. */}
+            {reader.zone === null ? (
+              <Text className="text-sm">{timesNote(null, reader.device, new Date())}</Text>
+            ) : null}
+
             {matches.length === 0 ? (
               <EmptyState
                 icon={<Send className="size-6" aria-hidden />}
@@ -350,6 +358,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         assetsById={assetsById}
                         avatarByTargetId={avatarByTargetId}
                         catalogMap={catalogMap}
+                        clock={clock}
                         onOpen={(event) => {
                           board.openPost(post, event);
                         }}

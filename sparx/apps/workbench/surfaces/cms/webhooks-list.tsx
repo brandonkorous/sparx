@@ -18,7 +18,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
   Table,
 } from '@wizeworks/silicaui-react';
@@ -35,6 +34,8 @@ import {
   type WebhookSubscription,
 } from './webhooks-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -123,8 +124,10 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. What you see below is what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. What you see below is what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -141,21 +144,14 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
 
         {error && !staleAfterFailure ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Webhook className="size-6" aria-hidden />}
             title="Could not load your webhooks"
             description="This is a problem reaching the server. None of your webhooks have been changed or lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

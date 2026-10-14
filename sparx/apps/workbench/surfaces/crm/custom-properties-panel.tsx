@@ -21,7 +21,6 @@ import { useMemo } from 'react';
 import {
   Button,
   Field,
-  FieldControl,
   FieldDescription,
   FieldLabel,
   Input,
@@ -153,11 +152,7 @@ function PropertyControl({
         {field.label}
         {field.required ? <span className="text-danger"> *</span> : null}
       </FieldLabel>
-      <FieldControl
-        render={
-          <ScalarControl field={field} value={value} onChange={onChange} readOnly={readOnly} />
-        }
-      />
+      <ScalarControl field={field} value={value} onChange={onChange} readOnly={readOnly} />
       {field.helpText ? <FieldDescription>{field.helpText}</FieldDescription> : null}
     </Field>
   );
@@ -169,9 +164,13 @@ function PropertyControl({
  * EVERY BRANCH CARRIES ITS OWN `aria-label`, and that is not redundant with the
  * `<FieldLabel>` above it. Base UI wires a label to a control by cloning the
  * element passed to `FieldControl render=` with the ids it minted — but this is
- * a component, not an element, so those props land on `ScalarControl` and stop
- * there. Every custom property on every contact, deal, company, request and
- * tenant-invented record was therefore announced as an unnamed edit box.
+ * a component, not an element, so those props landed on `ScalarControl` and
+ * stopped there. Every custom property on every contact, deal, company, request
+ * and tenant-invented record was therefore announced as an unnamed edit box.
+ *
+ * It is no longer wrapped in a `FieldControl` at all: the clone also merged
+ * Base UI's change-EVENT handler into `onChange`, which this calls with a value,
+ * so every keystroke threw (sparx persona issue 148).
  *
  * Naming the control directly also survives the composite branches, where there
  * is no single element for a label to point at: money is a currency code beside

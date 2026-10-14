@@ -1,15 +1,11 @@
 'use client';
 
-// PEOPLE & EQUIPMENT — whatever a booking uses up: a member of staff, a room, a
-// bay, a machine. Two bookings can never claim the same one at the same time.
-//
-// The PEOPLE here are the same people as My Team — one roster, one record,
-// two faces (issue 120). Adding somebody in either place adds them in both.
-//
-// A table, like every other list. The list endpoint has no free-text search —
-// resources are few, and you filter by KIND, not by typing — so the toolbar
-// carries a kind picker and an "in use only" toggle, both SERVER filters, and no
-// search box it cannot honour.
+// PEOPLE & EQUIPMENT: whatever a booking uses up (staff, a room, a bay, a machine).
+// Two bookings never claim the same one at once. The PEOPLE are the same records
+// as My Team (issue 120): adding somebody in either place adds them in both.
+
+// No free-text search: resources are few and filtered by KIND, so the toolbar has
+// a kind picker and an "in use only" toggle, both SERVER filters.
 
 import { useState } from 'react';
 
@@ -82,84 +78,122 @@ function InUseOnlyToggle({
   );
 }
 
+interface ToolbarProps {
+  kind: string;
+  setKind: (next: string) => void;
+  activeOnly: boolean;
+  setActiveOnly: (next: boolean) => void;
+  openNew: (event: { shiftKey: boolean; altKey: boolean }) => void;
+  query: ReturnType<typeof useResources>;
+}
+
+function ResourcesToolbar(props: ToolbarProps) {
+  const { kind, setKind, activeOnly, setActiveOnly, query } = props;
+  return (
+    <PaneToolbar
+      label="People and equipment controls"
+      primaryAction={{
+        label: 'Add a person or equipment',
+        icon: faPlus,
+        onClick: props.openNew,
+        title: 'Add a person or equipment: hold Shift to open alongside, Alt for a new window',
+      }}
+      controls={
+        <>
+          <KindFilter kind={kind} setKind={setKind} />
+          <InUseOnlyToggle activeOnly={activeOnly} setActiveOnly={setActiveOnly} />
+        </>
+      }
+      views={{
+        // The surface's REGISTRY KEY as a path, not its URL.
+        target: '/scheduling/resources',
+        params: { kind, active: activeOnly ? '1' : '' },
+        onApply: (next) => {
+          setKind(next.kind ?? '');
+          setActiveOnly(next.active === '1');
+        },
+      }}
+      refresh={
+        <RefreshButton
+          isFetching={query.isFetching}
+          updatedAt={query.data ? query.dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void query.refetch();
+          }}
+        />
+      }
+    />
+  );
+}
+
 export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [kind, setKind] = useState('');
   const [activeOnly, setActiveOnly] = useState(false);
 
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useResources({
+  const query = useResources({
     ...(kind ? { kind: kind as ResourceKind } : {}),
     activeOnly,
   });
 
-  const rows = data?.items ?? [];
-  const reload = () => {
-    void refetch();
-  };
-
+  const rows = query.data?.items ?? [];
   const openNew = (event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
   };
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="People and equipment controls"
-        primaryAction={{
-          label: 'Add a person or equipment',
-          icon: faPlus,
-          onClick: openNew,
-          title: 'Add a person or equipment: hold Shift to open alongside, Alt for a new window',
-        }}
-        controls={
-          <>
-            <KindFilter kind={kind} setKind={setKind} />
-            <InUseOnlyToggle activeOnly={activeOnly} setActiveOnly={setActiveOnly} />
-          </>
-        }
-        views={{
-          // The surface's REGISTRY KEY as a path, not its URL.
-          target: '/scheduling/resources',
-          params: { kind, active: activeOnly ? '1' : '' },
-          onApply: (next) => {
-            setKind(next.kind ?? '');
-            setActiveOnly(next.active === '1');
-          },
-        }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={reload}
-          />
-        }
+      <ResourcesToolbar
+        kind={kind}
+        setKind={setKind}
+        activeOnly={activeOnly}
+        setActiveOnly={setActiveOnly}
+        openNew={openNew}
+        query={query}
       />
 
-      <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">
-        {/* Only where people are actually in view — an equipment-only filter has
-            no roster to be the same as. */}
-        {rows.some((row) => row.kind === 'staff') ? (
-          <RosterNote
-            onOpenTeam={() => {
-              ctx.open('staff.people', {}, { target: 'tab' });
-            }}
-          />
-        ) : null}
-        <ResourcesBody
-          isError={isError}
-          isPending={isPending}
-          rows={rows}
-          kind={kind}
-          onRetry={reload}
-          onAdd={() => {
-            openNew({ shiftKey: false, altKey: false });
-          }}
-          onOpen={(resource, event) => {
-            ctx.open(DETAIL_KEY, { id: resource.id }, { target: targetFor(event) });
-          }}
-        />
-      </Card>
+      <ResourcesCard ctx={ctx} query={query} kind={kind} openNew={openNew} />
 
       {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
+  );
+}
+
+interface CardProps {
+  ctx: SurfaceContext;
+  query: ReturnType<typeof useResources>;
+  kind: string;
+  openNew: (event: { shiftKey: boolean; altKey: boolean }) => void;
+}
+
+function ResourcesCard({ ctx, query, kind, openNew }: CardProps) {
+  const rows = query.data?.items ?? [];
+  return (
+    <Card className="mx-auto min-h-0 w-full max-w-4xl flex-1 overflow-y-auto">
+      {/* Only where people are actually in view: an equipment-only filter has
+          no roster to be the same as. */}
+      {rows.some((row) => row.kind === 'staff') ? (
+        <RosterNote
+          onOpenTeam={() => {
+            ctx.open('staff.people', {}, { target: 'tab' });
+          }}
+        />
+      ) : null}
+      <ResourcesBody
+        isError={query.isError}
+        error={query.error}
+        isPending={query.isPending}
+        rows={rows}
+        kind={kind}
+        onRetry={() => {
+          void query.refetch();
+        }}
+        onAdd={() => {
+          openNew({ shiftKey: false, altKey: false });
+        }}
+        onOpen={(resource, event) => {
+          ctx.open(DETAIL_KEY, { id: resource.id }, { target: targetFor(event) });
+        }}
+      />
+    </Card>
   );
 }

@@ -77,6 +77,8 @@ export {
   profitForRange,
 } from './rollup';
 
+export { businessToday } from './business-clock';
+
 export {
   type JobType,
   type RevenueBasis,

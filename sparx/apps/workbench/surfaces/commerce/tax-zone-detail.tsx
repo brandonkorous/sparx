@@ -47,6 +47,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
+import { loadFailureWords } from '../../lib/api-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { countryName, countryOptions, hasRegions, regionName, regionOptions } from '../../lib/geo';
 import { SaveFailure } from '@/components/save-failure';
@@ -551,7 +552,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
           <AlertContent>
             <AlertTitle>Could not load the rate</AlertTitle>
             <AlertDescription>
-              {taxErrorMessage(rates.error, 'This is a problem reaching the server.')}
+              {loadFailureWords(rates.error, 'This is a problem reaching the server.')}
             </AlertDescription>
           </AlertContent>
         </Alert>

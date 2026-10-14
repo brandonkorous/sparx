@@ -37,6 +37,18 @@ export function amountDue(order: Order): number {
 }
 
 /**
+ * What came in on this order, before anything was given back.
+ *
+ * The order keeps what is paid net of refunds (`amountPaid`, kept in step with
+ * every refund), which is what `amountDue` subtracts. Printed as "Paid", the net
+ * figure made a customer who paid $1,587.00 and was given $793.50 back read as
+ * one who paid $793.50 and got all of it back (sparx persona issue 232).
+ */
+export function paidIn(order: Pick<Order, 'amountPaid' | 'refundTotal'>): number {
+  return Math.round((order.amountPaid + order.refundTotal) * 100) / 100;
+}
+
+/**
  * The Collection card's line once nothing is left to hand over. It used to be
  * "They picked this up." whatever the reason, so a canceled order nobody came
  * for read "They picked this up." above "This order has not been collected

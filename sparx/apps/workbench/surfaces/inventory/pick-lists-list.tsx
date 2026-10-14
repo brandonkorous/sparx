@@ -22,7 +22,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
   Table,
@@ -43,6 +42,7 @@ import {
   type PickListStatus,
 } from './picking-data';
 import { ActionLabel } from '../../components/action-label';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -106,7 +106,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const locations = useStockLocations();
   const activeLocations = (locations.data?.items ?? []).filter((l) => l.isActive);
 
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickLists({
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = usePickLists({
     ...(search.trim() ? { search: search.trim() } : {}),
     ...(status ? { status } : {}),
     ...(locationId ? { warehouseId: locationId } : {}),
@@ -130,10 +130,11 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Route className="size-6" aria-hidden />}
           title="Could not load the walks"
           description="This is a problem reaching the server. Nobody's walk is affected: the list just could not be read just now."
+          error={error}
         />
       );
     }

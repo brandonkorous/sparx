@@ -22,6 +22,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { SPARX_THEMES } from '../../wizeworks/packages/silica-catalog/src/themes';
 import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/upgrade-frame';
+import { siteInsideMeasure } from '../../wizeworks/packages/silica-catalog/src/page-measure';
 import { resolveSparxTheme } from '../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
 import { colorToHex } from '../../wizeworks/packages/site-themes/src/v2/color';
 import type { Theme } from '@wizeworks/silicaui-html';
@@ -45,10 +46,17 @@ import type { Theme } from '@wizeworks/silicaui-html';
  *  it stays behind until the Template property is opened in the studio (which heals its
  *  draft) and re-captured. That is the one bundle the chrome guard excepts, by name. */
 function healedSite(site: Record<string, unknown>): Record<string, unknown> {
-    const frame = site.frame as { root: unknown } | null | undefined;
-    if (!frame?.root) return site;
+    // The page bodies at the house measure too (piggles persona issue 950): the capture's
+    // catalog bands put their gutter outside their 6xl box, so every heading started 24px
+    // left of the header. The frame half of that rides `upgradeFrameChrome` below.
+    const measured = siteInsideMeasure(site as Parameters<typeof siteInsideMeasure>[0]) as Record<
+        string,
+        unknown
+    >;
+    const frame = measured.frame as { root: unknown } | null | undefined;
+    if (!frame?.root) return measured;
     const healed = upgradeFrameChrome(frame.root as Parameters<typeof upgradeFrameChrome>[0]);
-    return healed.changed ? { ...site, frame: { ...frame, root: healed.root } } : site;
+    return healed.changed ? { ...measured, frame: { ...frame, root: healed.root } } : measured;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -193,7 +201,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.5.2',
+  version: '1.5.3',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -243,7 +251,7 @@ function manifestJson(opts: {
         category: 'blueprint',
         slug: opts.key,
         name: opts.name,
-        version: '1.5.2',
+        version: '1.5.3',
         tagline: opts.tagline,
         description: opts.summary,
         payload: 'blueprint.ts',

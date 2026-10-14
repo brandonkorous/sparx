@@ -28,6 +28,7 @@ import {
 } from './return-actions';
 import { needsShipmentRecord } from './return-shipment';
 import { ActionRow } from './return-action-dialog';
+import { refundStepText } from './return-refund-words';
 
 export function ReturnMoves({
   detail,
@@ -196,7 +197,7 @@ export function ReturnMoves({
           {canRefund ? (
             <ActionRow
               title="Give the money back"
-              description="Settle the return by refunding the customer. This moves real money and cannot be undone."
+              description={refundStepText(detail.refundsByHand)}
             >
               <Button
                 size="sm"

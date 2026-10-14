@@ -96,11 +96,31 @@ export type { TableProps, TableSize } from '@wizeworks/silicaui-react';
  * `h-auto` appended to `h-full` would win or lose on stylesheet order.
  */
 export const Table = forwardRef<HTMLTableElement, TableProps>(function Table(
-  { wrapperClassName, ...rest },
+  { wrapperClassName, className, ...rest },
   ref
 ) {
-  return <SilicaTable ref={ref} wrapperClassName={wrapperClassName ?? 'h-full'} {...rest} />;
+  return (
+    <SilicaTable
+      ref={ref}
+      wrapperClassName={wrapperClassName ?? 'h-full'}
+      className={className ? `${CODES_ON_ONE_LINE} ${className}` : CODES_ON_ONE_LINE}
+      {...rest}
+    />
+  );
 });
+
+/**
+ * A code in a table is one thing and stays on one line (sparx persona issue 238).
+ *
+ * A monospace cell holds a code: an order, invoice, document, gift card, unit or
+ * SKU number. The browser breaks a line at a hyphen and a code column gets what
+ * is left after the others take theirs, so on a phone "O-000033" rendered as
+ * "O-" over "000033", in 13 tables. A code that does not fit scrolls the table
+ * instead. A figure (`tabular-nums`) is left alone: it has no hyphen to break at,
+ * and a credit line like "$9,882.08 of $10,000.00" wraps its "of" on purpose.
+ * Here and not per cell, so a table written next week gets it too.
+ */
+const CODES_ON_ONE_LINE = '[&_td.font-mono:not(.tabular-nums)]:whitespace-nowrap';
 
 /**
  * How wide a list's identity column may grow before it pushes the last column

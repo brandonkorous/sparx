@@ -7,7 +7,7 @@
 // of those and they had drifted: this console said "Sent by the supplier" where
 // the shopper's own order page said "Drop-ship", and the customer's email said
 // "usps". One list, so a new carrier is named once.
-import { carrierLabel } from '@wizeworks/commerce-schemas';
+import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
 import { paymentMethodLabels } from '../../lib/payment-methods';
 import type { Order, OrderFulfillment } from './order-types';
@@ -77,7 +77,8 @@ export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {
  */
 export function shipmentHeadline(shipment: OrderFulfillment): string {
   if (shipment.carrier === 'pickup') return shipment.service ?? 'Collected in person';
-  const carrier = carrierLabel(shipment.carrier);
+  // The typed name for a carrier with no code (sparx persona issue 216).
+  const carrier = carrierLabel(shipment.carrier, typedCarrierOf(shipment.metadata));
   const service = shipment.service ?? '';
   // A carrier's own service names usually START with the carrier, so joining
   // both produced "USPS · USPS Ground Advantage Economy". When the service

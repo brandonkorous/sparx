@@ -102,6 +102,7 @@ import {
   type McpConnection,
   type ScopeMeta,
 } from './data';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -120,7 +121,7 @@ const EXPIRY_ITEMS: Record<string, string> = {
 };
 
 function canManageAi(role: string | undefined): boolean {
-  return role === 'admin' || role === 'owner';
+  return canManageBusiness(role);
 }
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {

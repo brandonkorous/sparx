@@ -76,6 +76,18 @@ function nodeText(node: EmailNode): string {
       return childrenText(node.children);
     case 'columns':
       return childrenText(node.children);
+    case 'link': {
+      // A clickable group: its words, then where it goes, as a button reads. It fell
+      // to `default` and wrote nothing, so a newsletter's "Latest …" cards (a link
+      // around a picture, a title and a summary) were missing from the plain-text
+      // copy altogether (piggles persona issue 982).
+      const words = childrenText(node.children);
+      const href = node.href.trim();
+      return href === ''
+        ? words
+        : `${words}
+<${href}>`;
+    }
     case 'text':
       return stripInline(node.html);
     case 'html':

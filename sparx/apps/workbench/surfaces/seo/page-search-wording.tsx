@@ -90,11 +90,10 @@ export function PageSearchWording({
     return (
       <Alert color="info">
         <AlertContent>
-          <AlertTitle>Each {record.each} writes its own</AlertTitle>
+          <AlertTitle>{record.title}</AlertTitle>
           <AlertDescription>
             This one page shows every {record.each} you have, so the words a search result shows
-            come from {record.where}. Leave a {record.each}’s own fields empty and its name and
-            description are used.
+            come from {record.where}. {record.fallback}
           </AlertDescription>
         </AlertContent>
       </Alert>

@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert } from '@wizeworks/silicaui-react';
 
 import { checkoutBlock } from '@/lib/account-buying-rules';
+import { deliveryDefault } from '@/lib/delivery-default';
 import { ordersClosed } from '@/lib/orders-closed';
 import {
   createPaymentIntent,
@@ -85,10 +86,14 @@ export function CheckoutFlow({
   /** The business's own name, so a held order says who approves it (sparx
    *  persona issue 087). */
   shopName = null,
+  /** Where a collected order is picked up: the business's own contact address
+   *  (sparx persona issue 191). Null when it has none. */
+  collectAt = null,
 }: {
   tenantSlug: string;
   paymentMode?: StorefrontPaymentMode;
   shopName?: string | null;
+  collectAt?: string | null;
 }) {
   const cart = useCart();
   const { customer, status } = useCustomer();
@@ -328,7 +333,8 @@ export function CheckoutFlow({
         });
         setQuoted(true);
         setRates(result.rates);
-        setChosenRate(result.rates[0] ?? null);
+        // Sent, not collected: they just chose an address (sparx persona issue 222).
+        setChosenRate(deliveryDefault(result.rates));
         if (result.rates.length === 0) {
           setError(
             'We can’t get an order to that address. Check it over, or try another address, and do get in touch if you think it should work.'
@@ -337,7 +343,7 @@ export function CheckoutFlow({
         return;
       }
 
-      const rate = chosenRate ?? rates[0];
+      const rate = chosenRate ?? deliveryDefault(rates);
       if (!rate) {
         setError('Choose how you’d like to get your order before carrying on.');
         return;
@@ -472,6 +478,7 @@ export function CheckoutFlow({
             currency={session?.currency ?? cart.currency}
             contactName={contact.name.trim()}
             contactPhone={contact.phone.trim()}
+            collectAt={collectAt}
             onBack={() => setStep('contact')}
             onSubmit={handleCollection}
             busy={busy}
@@ -488,6 +495,7 @@ export function CheckoutFlow({
             currency={session?.currency ?? cart.currency}
             contactName={contact.name.trim()}
             contactPhone={contact.phone.trim()}
+            collectAt={collectAt}
             onBack={() => {
               setCollectInstead(false);
               setChosenRate(null);

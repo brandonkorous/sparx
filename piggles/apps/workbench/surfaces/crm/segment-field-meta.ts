@@ -72,11 +72,20 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     group: 'Customer',
     kind: 'account',
   },
-  'b2bAccount.pricingTier': {
+  // Picked from the shop's wholesale groups and stored by id, so renaming a
+  // group keeps its segments (sparx persona issue 149).
+  'b2bAccount.pricingTierId': {
     label: 'Wholesale group',
     group: 'Wholesale customer',
+    kind: 'tier',
+  },
+  // The typed name it replaced. Not offered; kept so a rule saved on it still
+  // reads and can be switched over.
+  'b2bAccount.pricingTier': {
+    label: 'Wholesale group name (typed)',
+    group: 'Wholesale customer',
     kind: 'text',
-    hint: 'The name of the group, as it reads under Wholesale groups.',
+    hint: 'Matches only the exact name, and stops matching if the group is renamed. Choose “Wholesale group” instead to pick it from your groups.',
   },
   'b2bAccount.creditUtilization': {
     label: 'Credit used (share)',

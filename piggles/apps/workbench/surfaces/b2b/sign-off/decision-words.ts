@@ -9,14 +9,26 @@ export interface DecisionFacts {
   total: string;
   companyName: string | null;
   signOff: SignOff;
+  /** It would go past the account's credit as things stand today. */
   overCreditLimit: boolean;
+  /** It was held for the credit when it was placed. */
+  heldForCredit?: boolean;
+  /** What the account has left today, formatted, when known (issue 188). */
+  creditLeftNow?: string | null;
 }
 
 /** The approve dialog's sentence. When the account still has to sign, the
  *  business's yes does not place the order, and the dialog says so. */
 export function approveWords(facts: DecisionFacts): string {
   const order = `${facts.orderNumber} from ${facts.buyer}, for ${facts.total}`;
-  const credit = facts.overCreditLimit ? ' What they owe will go past their credit limit.' : '';
+  // Today's credit, not the figure at placement: an account that has paid since
+  // may now fit (sparx persona issue 188).
+  const left = facts.creditLeftNow ?? null;
+  const credit = facts.overCreditLimit
+    ? ` What they owe will go past their credit limit${left ? `: they have ${left} left` : ''}.`
+    : facts.heldForCredit && left
+      ? ` It was held for their credit limit, and they now have ${left} of credit left, enough for this order.`
+      : '';
   if (facts.signOff.waitingOn.includes('account')) {
     return (
       `Your approval of order ${order} is recorded. It still waits for ` +

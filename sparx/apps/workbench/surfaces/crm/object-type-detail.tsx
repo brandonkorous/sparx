@@ -20,7 +20,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -34,6 +33,7 @@ import {
 import { Boxes, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import { CurrencyField } from '../../components/currency-field';
 import { useConfirm } from '../../lib/confirm';
@@ -130,7 +130,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
 
-  const { data: type, isPending, isError } = useObjectType(objectKey);
+  const { data: type, isPending, isError, error, refetch } = useObjectType(objectKey);
   const create = useCreateObjectType();
   const update = useUpdateObjectType(objectKey);
   const archive = useArchiveObjectType(objectKey);
@@ -166,10 +166,8 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // so — a record type someone spent five minutes describing is exactly the kind
   // of thing the workbench's unsaved-work guard exists for.
   const snapshot = useMemo(() => snapshotOf(draft), [draft]);
-  useDirtySource(
-    loaded && snapshot !== baseline,
-    'This record type has changes you have not saved. Close it anyway?'
-  );
+  const dirty = loaded && snapshot !== baseline;
+  useDirtySource(dirty, 'This record type has changes you have not saved. Close it anyway?');
 
   // The tab says the same words as the row that opened it: the list names each
   // record type by its PLURAL, and so does the open action beside it. Read off
@@ -265,7 +263,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         // draft that has just been written.
         setBaseline(snapshot);
         toast.add({ title: `${created.labelPlural} added`, type: 'success' });
-        ctx.open('crm.object-type.detail', { key: created.key });
+        ctx.open('crm.object-type.detail', { key: created.key }, { target: 'replace' });
       } else {
         await update.mutateAsync(payload);
         setBaseline(snapshot);
@@ -283,13 +281,20 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     }
   }
 
+  // A removed type and an unreachable server are different fixes, so the shared
+  // state tells them apart (persona issue 243, the neighbor of 240).
   if (!isNew && isError) {
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
+        <PaneLoadError
           icon={<Boxes className="size-6" aria-hidden />}
-          title="Could not open that record type"
-          description="This is a problem reaching the server, or the record type has been removed."
+          error={error}
+          noun="record type"
+          title="Could not open this record type"
+          description="This is a problem reaching the server. Your record types are unaffected. Try again in a moment."
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </div>
     );
@@ -314,7 +319,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            disabled={blocked !== null || saving}
+            disabled={blocked !== null || saving || (!isNew && !dirty)}
             title={blocked ?? undefined}
             onClick={() => {
               void save();

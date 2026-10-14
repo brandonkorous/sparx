@@ -14,7 +14,7 @@ export function useAutomationsList() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<{ key: SortKey; dir: Dir }>({ key: 'lastRun', dir: 'desc' });
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAutomations({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAutomations({
     status,
     origin,
   });
@@ -36,7 +36,7 @@ export function useAutomationsList() {
 
   return {
     ...{ clock, status, setStatus, origin, setOrigin, search, setSearch, sort, setSort },
-    ...{ data, isPending, isError, isFetching, dataUpdatedAt, refetch },
+    ...{ data, isPending, isError, error, isFetching, dataUpdatedAt, refetch },
     ...{ rows, toggleSort, filtering },
   };
 }

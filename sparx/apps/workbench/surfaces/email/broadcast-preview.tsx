@@ -17,7 +17,9 @@ import { Alert, AlertContent, AlertDescription, AlertTitle, Text } from '@wizewo
 import { useBroadcastPreview } from './broadcasts-data';
 
 /** Why there is nothing to show yet, in the owner's terms. */
-function notReadyMessage(reason: 'no-email' | 'not-published' | 'no-audience'): string {
+function notReadyMessage(
+  reason: 'no-email' | 'not-published' | 'no-audience' | 'sent-version-not-kept'
+): string {
   switch (reason) {
     case 'no-email':
       return 'Choose which of your designed emails this sends, and the preview appears here.';
@@ -25,6 +27,8 @@ function notReadyMessage(reason: 'no-email' | 'not-published' | 'no-audience'): 
       return 'That design has not been published yet, so there is nothing to send. Open it in the email designer and publish it.';
     case 'no-audience':
       return 'Nobody is in this audience yet, so there is no one to preview it for.';
+    case 'sent-version-not-kept':
+      return 'The design this was sent from has been published again since, and the version that went out was not kept, so it cannot be shown here.';
   }
 }
 

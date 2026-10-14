@@ -54,6 +54,7 @@ import {
   soldOutNotice,
 } from './commerce';
 import { visibleWhen } from './conditional';
+import { measureRepair } from './page-measure';
 
 /**
  * Dead classes the PLATFORM stamped, mapped to what its factory emits now.
@@ -691,6 +692,22 @@ function repairBuyBoxDisclosures(column: Element): Element {
   return healed;
 }
 
+/* ── The page measure: headings 24px left of the header ──────────────────── */
+
+// Every catalog section was stamped with its gutter OUTSIDE its 6xl box (`px-6` on the
+// band, `mx-auto max-w-6xl` inside), while the header, the footer and every list the
+// site draws itself put it inside. Above 1,200px the two are 24px apart, so a page built
+// from the catalog starts its heading left of its own header (piggles persona issue 950).
+//
+// WHY THIS CLEARS THE BAR ABOVE. Broken on published sites, not merely dated: the left
+// edge of every page disagrees with the left edge of the header over it, on every wide
+// screen, on every site that used a catalog section. The platform stamped it (`section()`
+// in `sections/_shell.ts`; no author picks where a gutter sits). The replacement is
+// known: exactly what the factory emits now. The picture bands' `@3xl:px-10` goes with
+// it for the same reason, one step the other way. The rule itself lives in
+// `page-measure.ts`, because the frame heal and the marketplace generators run the same
+// one.
+
 /**
  * Repair one class string, preserving order and every token that is not in the table.
  *
@@ -768,6 +785,15 @@ export function upgradePageBody(root: Node): { root: Node; changed: boolean } {
     const healedClass = node.class ? repairDeadClasses(node.class) : null;
     if (healedClass !== null) {
       next = { ...next, class: healedClass };
+      changed = true;
+    }
+
+    // After the class walk, because that one rewrites `class` from the ORIGINAL node and
+    // would put the band's gutter back. It moves `px-6` onto the band's children, which
+    // the walk below then visits as they now are.
+    const measured = measureRepair(next);
+    if (measured) {
+      next = measured;
       changed = true;
     }
 

@@ -42,6 +42,8 @@ import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnlyNotice } from '../../components/managers-only';
+import { useManageRights } from '../../lib/manage-rights';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
@@ -108,6 +110,7 @@ function RecordBlock({ record }: { record: DnsRecord }) {
 function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const provision = useProvisionSendingDomain();
+  const rights = useManageRights();
 
   const [domain, setDomain] = useState('');
   const [region, setRegion] = useState<SendingRegion>('us');
@@ -157,22 +160,27 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="Add a sending address actions"
         primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto"
-            loading={provision.isPending}
-            disabled={trimmed === '' || !looksValid}
-            onClick={submit}
-          >
-            <Plus className="size-4" aria-hidden />
-            Add address
-          </Button>
+          rights.known && !rights.canManage ? undefined : (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto"
+              loading={provision.isPending}
+              disabled={trimmed === '' || !looksValid}
+              onClick={submit}
+            >
+              <Plus className="size-4" aria-hidden />
+              Add address
+            </Button>
+          )
         }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
+          {/* Sending addresses are an owner's or an admin's to change; the
+              server refuses everybody else (sparx persona issue 168). */}
+          <ManagersOnlyNotice change="add, check or remove sending addresses" />
           <div className="flex flex-col gap-1">
             <Heading level={1} className="text-2xl font-semibold">
               Add a sending address
@@ -266,6 +274,8 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
   const verify = useVerifySendingDomain(id);
   const setDefault = useSetDefaultSendingDomain(id);
   const remove = useDeleteSendingDomain(id);
+  const rights = useManageRights();
+  const locked = rights.known && !rights.canManage;
 
   useEffect(() => {
     if (domain) ctx.setTitle(domain.domain);
@@ -403,13 +413,13 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
               </Badge>
             ) : null}
             <div className="flex-1" />
-            {isVerified ? null : (
+            {isVerified || locked ? null : (
               <Button size="sm" color="module" loading={verify.isPending} onClick={onCheck}>
                 <RefreshCw className="size-4" aria-hidden />
                 Check now
               </Button>
             )}
-            {isVerified && !isDefault ? (
+            {isVerified && !isDefault && !locked ? (
               <Button
                 size="sm"
                 variant="outline"
@@ -427,22 +437,29 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
            bar's overflow popover verbatim, so this was a bare red bin under
            "Check now" and "Use as default".
            scripts/check-toolbar-glyph.mjs holds the line. */
-        actions={[
-          {
-            label: 'Remove',
-            title: 'Remove this address',
-            icon: Trash2,
-            tone: 'danger' as const,
-            loading: remove.isPending,
-            onClick: () => {
-              void onDelete();
-            },
-          },
-        ]}
+        actions={
+          locked
+            ? []
+            : [
+                {
+                  label: 'Remove',
+                  title: 'Remove this address',
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  loading: remove.isPending,
+                  onClick: () => {
+                    void onDelete();
+                  },
+                },
+              ]
+        }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
+          {/* Sending addresses are an owner's or an admin's to change; the
+              server refuses everybody else (sparx persona issue 168). */}
+          <ManagersOnlyNotice change="add, check or remove sending addresses" />
           {/* The address IS the identity of this pane, and it is read-only — so
               it gets a real heading, with the two facts about it on one quiet
               line underneath. */}

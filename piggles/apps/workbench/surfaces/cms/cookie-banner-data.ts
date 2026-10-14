@@ -98,13 +98,18 @@ export function cornerButtonLabel(mode: CookieBannerMode): string {
 }
 
 /** The starter Cookie Policy promises a banner or a cookie button, so a
- *  published one with the banner off is untrue. Silent until the read lands. */
+ *  published one with the banner off is untrue. Silent until the read lands, and
+ *  silent for a policy rewritten to promise nothing of the kind: a journal that
+ *  uses only the cookies it needs was told its policy promised a banner (persona
+ *  issue 947). */
 export function cookiePolicyNote(
   legalKind: string,
   entryStatus: string | null,
-  settings: CookieBannerSettings | undefined
+  settings: CookieBannerSettings | undefined,
+  promisesChoices = true
 ): string | null {
   if (legalKind !== 'cookie-policy' || entryStatus !== 'published') return null;
+  if (!promisesChoices) return null;
   if (settings?.mode !== 'off') return null;
   return 'This page tells visitors about a cookie banner your site does not show yet: turn one on under Cookie banner below.';
 }

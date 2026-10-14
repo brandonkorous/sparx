@@ -1,19 +1,12 @@
 'use client';
 
-// The email-sequences table — the multi-touch journeys that follow up with
-// people for you, one email at a time, on their own clock. A standard list
-// surface: a real <Table> inside a Card scroll container, matching every other
-// list in the app.
-//
-// Filtering by status is server-side; search is local (the whole in-scope set
-// comes back in one call, so there is no page 2 for a local search to be wrong
-// about). Columns disclose progressively with @container, never a viewport query
-// — a narrow pane on a wide monitor must not show six columns in 300px.
+// The email-sequences list: the journeys that follow up with people for you, one
+// email at a time, on their own clock. Status filters server-side; search is
+// local, since the whole in-scope set comes back in one call.
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
-import { IDENTITY_CELL, Table } from '../../components/table';
+import { Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
 import { faPlus, faRoute } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { RefreshButton } from '../../components/refresh-button';
@@ -22,26 +15,140 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
 import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
-import { useSequences, type SequenceRow } from './sequences-data';
-import { sequenceRowState } from './sequence-words';
+import { useSequences } from './sequences-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { SequencesTable } from './sequences-table';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
 const MODULE = 'email';
 
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+interface OpenEvent {
+  shiftKey: boolean;
+  altKey: boolean;
+}
+type Pane = ReturnType<typeof useSequencesPane>;
+
+function targetFor(event: OpenEvent): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
 }
 
-export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
+function StatusSelect(props: { status: string; setStatus: Dispatch<SetStateAction<string>> }) {
+  return (
+    <div className="w-40 shrink-0">
+      <Select
+        size="sm"
+        aria-label="Filter by status"
+        value={props.status}
+        items={{
+          all: 'Any status',
+          active: 'On',
+          draft: 'Draft',
+          archived: 'Stopped',
+        }}
+        onValueChange={(next) => {
+          props.setStatus((next as string) || 'all');
+        }}
+      />
+    </div>
+  );
+}
+
+function SequencesToolbar({ pane }: { pane: Pane }) {
+  const { search, setSearch, status, setStatus, query, createLabel } = pane;
+  return (
+    <PaneToolbar
+      label="Automatic emails controls"
+      search={
+        <div className="max-w-xs min-w-0 flex-1">
+          <SearchInput
+            size="sm"
+            aria-label="Search automatic emails"
+            placeholder="Search automatic emails…"
+            value={search}
+            onValueChange={setSearch}
+          />
+        </div>
+      }
+      primaryAction={{
+        label: createLabel,
+        icon: faPlus,
+        onClick: pane.onCreate,
+        title: `${createLabel}: hold Shift to open alongside, Alt for a new window`,
+      }}
+      controls={<StatusSelect status={status} setStatus={setStatus} />}
+      views={{
+        target: '/email/sequences',
+        params: { q: search.trim(), status },
+        onApply: (next) => {
+          setSearch(next.q ?? '');
+          setStatus(next.status ?? 'all');
+        },
+      }}
+      refresh={
+        <RefreshButton
+          isFetching={query.isFetching}
+          updatedAt={query.data ? query.dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void query.refetch();
+          }}
+        />
+      }
+    />
+  );
+}
+
+function SequencesBody({ pane }: { pane: Pane }) {
+  const { query, rows } = pane;
+  if (query.isError) {
+    return (
+      <PaneLoadError
+        icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
+        title="Could not load your automatic emails"
+        description="Something went wrong reaching the server. Anyone already partway through is unaffected. Try again in a moment."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    );
+  }
+  if (query.isPending) return <PaneWaiting label="Loading your automatic emails…" />;
+  if (rows.length > 0) {
+    return <SequencesTable rows={rows} siteName={pane.siteName} onOpen={pane.open} />;
+  }
+  return (
+    <ListEmptyState
+      module={MODULE}
+      filtered={pane.filtering}
+      noResults={{
+        icon: <Icon glyph={faRoute} className="size-6" aria-hidden />,
+        title: 'Nothing matches those filters',
+        description: 'Try a different search, or switch the status filter back to Any.',
+      }}
+      firstRun={{
+        title: 'No automatic emails yet',
+        description:
+          'A series follows somebody up over time: a welcome today, a nudge in two days, an offer in a week, each one going out on its own. Create your first one and it runs without you.',
+        actions: (
+          <Button size="sm" color="module" onClick={pane.onCreate}>
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            {pane.createLabel}
+          </Button>
+        ),
+      }}
+    />
+  );
+}
+
+function useSequencesPane(ctx: SurfaceContext) {
   const createLabel = createLabelFor('email.sequences.list');
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSequences({ status });
+  const query = useSequences({ status });
   const { data: sites } = useSites();
 
   const siteName = useMemo(() => {
@@ -52,9 +159,8 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [sites]);
 
   const needle = search.trim().toLowerCase();
-
   const rows = useMemo(() => {
-    const all = data ?? [];
+    const all = query.data ?? [];
     const filtered = needle
       ? all.filter(
           (s) =>
@@ -63,177 +169,30 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )
       : all;
     return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-  }, [data, needle]);
+  }, [query.data, needle]);
 
-  const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
+  const open = (id: string, event: OpenEvent) => {
     ctx.open('email.sequences.detail', { id }, { target: targetFor(event) });
   };
-
+  const onCreate = (event: OpenEvent) => {
+    ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
+  };
   const filtering = status !== 'all' || needle !== '';
+  const state = { status, setStatus, search, setSearch };
+  return { ...state, createLabel, query, siteName, rows, open, onCreate, filtering };
+}
 
+export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const pane = useSequencesPane(ctx);
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Automatic emails controls"
-        search={
-          <div className="max-w-xs min-w-0 flex-1">
-            <SearchInput
-              size="sm"
-              aria-label="Search automatic emails"
-              placeholder="Search automatic emails…"
-              value={search}
-              onValueChange={setSearch}
-            />
-          </div>
-        }
-        primaryAction={{
-          label: createLabel,
-          icon: faPlus,
-          onClick: (event) => {
-            ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
-          },
-          title: `${createLabel}: hold Shift to open alongside, Alt for a new window`,
-        }}
-        controls={
-          <div className="w-40 shrink-0">
-            <Select
-              size="sm"
-              aria-label="Filter by status"
-              value={status}
-              items={{
-                all: 'Any status',
-                active: 'On',
-                draft: 'Draft',
-                archived: 'Stopped',
-              }}
-              onValueChange={(next) => {
-                setStatus((next as string) || 'all');
-              }}
-            />
-          </div>
-        }
-        views={{
-          target: '/email/sequences',
-          params: { q: search.trim(), status },
-          onApply: (next) => {
-            setSearch(next.q ?? '');
-            setStatus(next.status ?? 'all');
-          },
-        }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
-      />
+      <SequencesToolbar pane={pane} />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
-        {isError ? (
-          <PaneLoadError
-            icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
-            title="Could not load your automatic emails"
-            description="Something went wrong reaching the server. Anyone already partway through is unaffected. Try again in a moment."
-            onRetry={() => {
-              void refetch();
-            }}
-          />
-        ) : isPending ? (
-          <PaneWaiting label="Loading your automatic emails…" />
-        ) : rows.length === 0 ? (
-          <ListEmptyState
-            module={MODULE}
-            filtered={filtering}
-            noResults={{
-              icon: <Icon glyph={faRoute} className="size-6" aria-hidden />,
-              title: 'Nothing matches those filters',
-              description: 'Try a different search, or switch the status filter back to Any.',
-            }}
-            firstRun={{
-              title: 'No automatic emails yet',
-              description:
-                'A series follows somebody up over time: a welcome today, a nudge in two days, an offer in a week, each one going out on its own. Create your first one and it runs without you.',
-              actions: (
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={(event) => {
-                    ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
-                  }}
-                >
-                  <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  {createLabel}
-                </Button>
-              ),
-            }}
-          />
-        ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th className="hidden text-right @md:table-cell">Emails</th>
-                <th className="hidden text-right @lg:table-cell">In progress</th>
-                <th className="hidden text-right @xl:table-cell">Enrolled</th>
-                <th className="hidden @2xl:table-cell">For</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((sequence: SequenceRow) => {
-                const state = sequenceRowState(sequence.status, sequence.enrollers);
-                return (
-                  <tr
-                    key={sequence.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      open(sequence.id, event);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      open(sequence.id, event);
-                    }}
-                  >
-                    <td className={IDENTITY_CELL}>
-                      <div className="flex min-w-0 flex-col">
-                        <span className="truncate font-medium">{sequence.name}</span>
-                        {sequence.description ? (
-                          <span className="truncate text-sm">{sequence.description}</span>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="hidden text-right tabular-nums @md:table-cell">
-                      {sequence.steps.length}
-                    </td>
-                    <td className="hidden text-right tabular-nums @lg:table-cell">
-                      {sequence.counts.active}
-                    </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
-                      {sequence.counts.total}
-                    </td>
-                    <td className="hidden max-w-40 truncate text-sm @2xl:table-cell">
-                      {siteName(sequence.propertyId)}
-                    </td>
-                    <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
-                        {state.label}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
+        <SequencesBody pane={pane} />
       </Card>
 
-      {rows.length > 0 ? <RowOpenHint what="a series to open it" /> : null}
+      {pane.rows.length > 0 ? <RowOpenHint what="a series to open it" /> : null}
     </div>
   );
 }

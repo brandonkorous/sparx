@@ -1,16 +1,11 @@
 'use client';
 
-// Five kinds of nothing, four of which mean different things.
-//
-// Nothing matches the search or a filter · nothing is running low, which is GOOD
-// news and says so warmly · no reorder rules exist yet, so nothing can ever warn
-// you. The last two both look like an empty list and mean opposite things, which
-// is why the summary read exists to tell them apart.
-//
-// The fifth is not an empty list at all, and is the one that actually reaches
-// people: SOME lines have a level and most do not. The rows that do are shown,
-// the rows that do not are not, and nothing on the screen distinguishes "there
-// is one thing to buy" from "there is one thing being watched".
+// Five kinds of nothing: no match, nothing running low (GOOD news, said warmly),
+// no reorder rules yet (nothing can ever warn you), and a failed load. The summary
+// read tells the two look-alike empty lists apart.
+
+// The fifth is not an empty list: SOME lines have a level and most do not, and
+// nothing else on screen distinguishes "one thing to buy" from "one thing watched".
 
 import {
   Alert,
@@ -28,20 +23,20 @@ import {
   faTruck,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { REORDER_RULES_ADVICE, emptyAdvice } from './reorder-shared';
 import { unsuppliedNote } from './reorder-supplier-words';
 
-/**
- * A failed load REPLACES the table — an empty grid under live filters invites
- * the reading that nothing needs reordering, which is the opposite of unknown.
- */
-export function ReorderLoadFailed() {
+/** A failed load REPLACES the table: an empty grid under live filters reads as
+ *  "nothing needs reordering", which is the opposite of unknown. */
+export function ReorderLoadFailed({ error }: { error: unknown }) {
   return (
-    <EmptyState
+    <PaneLoadError
       icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
       title="Could not work out what needs reordering"
       description="This is a problem reaching the server. Your stock and orders are unaffected: the list just could not be read right now."
+      error={error}
     />
   );
 }
@@ -85,14 +80,9 @@ export function NoReorderRules({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
-/**
- * How much of the catalogue this list is able to see.
- *
- * Shown whenever some lines have a reorder level and some do not — never on the
- * two ends, where an empty state already carries the message. A list that only
- * ever watches what somebody has told it to watch has to say how much that is,
- * or its silence about the rest reads as reassurance about the rest.
- */
+// How much of the catalog this list can see, shown only when some lines have a
+// level and some do not. A list that watches only what it was told to watch must
+// say how much that is, or its silence about the rest reads as reassurance.
 export function PartialCoverNote({
   ctx,
   policyCount,
@@ -133,20 +123,12 @@ export function PartialCoverNote({
   );
 }
 
-/**
- * The lines on this list that cannot leave it.
- *
- * A worklist row with no supplier is running low like any other, but drafting
- * an order needs somebody to send it to — so `useReorderSelection` refuses to
- * choose it. Everything the screen said about that refusal was a tick box that
- * did nothing when clicked. MEASURED across every tenant on 2026-09-18: 71 of
- * the platform's 76 triggered lines, including all 65 of Threadline's and the
- * only one on Juniper Row's, so for most accounts opening this screen the
- * refusal IS the screen.
- *
- * Sits under the reorder-level note, not instead of it: they are two different
- * reasons this list cannot do its job, and an account can have both at once.
- */
+// The lines that cannot leave this list: no supplier means no order can be drafted,
+// so `useReorderSelection` refuses them. Measured 2026-09-18, that was 71 of 76
+// triggered lines platform-wide, so for most accounts the refusal IS the screen.
+
+// Sits under the reorder-level note, not instead of it: two different reasons this
+// list cannot do its job, and an account can have both at once.
 export function NoSupplierNote({
   ctx,
   unsupplied,

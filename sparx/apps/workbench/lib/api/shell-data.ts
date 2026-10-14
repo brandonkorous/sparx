@@ -107,7 +107,12 @@ export function useViewer() {
     queryKey: ['token-state', 'viewer'],
     queryFn: async () => {
       const state = await getTokenState();
-      return { userId: state.userId, role: state.role };
+      return {
+        userId: state.userId,
+        role: state.role,
+        email: state.email,
+        emailVerified: state.emailVerified,
+      };
     },
     staleTime: Infinity,
   });

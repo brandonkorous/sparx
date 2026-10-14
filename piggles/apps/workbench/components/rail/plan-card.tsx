@@ -53,26 +53,30 @@ export function PlanCard({ accountOrigin }: { accountOrigin: string }) {
       </div>
       {/* A real ink, never faded — this is the line that tells somebody their
           business is about to stop working. */}
-      <p className="mt-0.5 text-sm">{life.detail}</p>
-      <Button
-        // NO color on the calm one. Uncolored, a `.btn` resolves to
-        // `base-content` and is right on this card in either theme; `neutral` is
-        // theme-stable now because it paints the rail, so pinning it here would
-        // put #52454f ink on a #1c212c card in dark. Same call close-band.tsx
-        // makes, for the same reason.
-        color={calm ? undefined : life.tone}
-        variant={calm ? 'outline' : 'solid'}
-        size="sm"
-        block
-        className="mt-2.5"
-        onClick={() => {
-          // Out to the account app, which owns every question this card raises
-          // and is the only place allowed to answer them with numbers.
-          window.location.href = `${accountOrigin}/account`;
-        }}
-      >
-        {life.action}
-      </Button>
+      <p className="mt-0.5 text-sm">{life.action ? life.detail : life.sentence}</p>
+      {/* No door for somebody who may not pay; the line above names who can
+          (sparx persona issue 168). */}
+      {life.action ? (
+        <Button
+          // NO color on the calm one. Uncolored, a `.btn` resolves to
+          // `base-content` and is right on this card in either theme; `neutral` is
+          // theme-stable now because it paints the rail, so pinning it here would
+          // put #52454f ink on a #1c212c card in dark. Same call close-band.tsx
+          // makes, for the same reason.
+          color={calm ? undefined : life.tone}
+          variant={calm ? 'outline' : 'solid'}
+          size="sm"
+          block
+          className="mt-2.5"
+          onClick={() => {
+            // Out to the account app, which owns every question this card raises
+            // and is the only place allowed to answer them with numbers.
+            window.location.href = `${accountOrigin}/account`;
+          }}
+        >
+          {life.action}
+        </Button>
+      ) : null}
     </div>
   );
 }

@@ -4,9 +4,11 @@
 // functions so the collision + fork + in-use rules live in one place.
 
 import type { ContentType, Prisma, TxClient } from '@wizeworks/db';
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 import type { ContentTypeSchema as ContentTypeSchemaT } from '@wizeworks/cms-schemas';
-import { conflict, notFound } from '@wizeworks/api-core/errors';
+import { conflict, notFound, validationError } from '@wizeworks/api-core/errors';
+import { samePatternAddress, urlPatternProblem } from './url-pattern.js';
 import { serializeContentType, type WireContentType } from './content-types.js';
 import type { CmsWriteContext, CmsEmittedEvent } from './service-support.js';
 
@@ -51,7 +53,55 @@ function dedupeByKey<T extends { key: string }>(rows: T[]): T[] {
   return out;
 }
 
+/**
+ * Re-read a kind into search once its write commits. Queued rather than sent, because
+ * the `...Tx` functions run inside a caller's transaction that can still roll back.
+ * Addressed by key: the screen opens a kind by key, and a deleted fork hands the key
+ * back to the built-in underneath, which the indexer then shows.
+ */
+function reindexContentType(ctx: CmsWriteContext, key: string): Promise<void> {
+  return afterCommit('index content_type', () =>
+    indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.actorId ?? null,
+      entityType: 'content_type',
+      recordId: key,
+    })
+  );
+}
+
 // ── CREATE / UPDATE ──────────────────────────────────────────────────────────
+
+/**
+ * Refuse a web address pattern the website cannot serve, or one another kind already
+ * uses. Two kinds at `/news/{slug}` would each claim the other's pieces' addresses.
+ * `key` is the kind being saved, so it never clashes with itself; a built-in this tenant
+ * has forked is the same kind under the same key.
+ */
+async function assertUrlPatternUsable(
+  tx: TxClient,
+  key: string,
+  pattern: string | null | undefined
+): Promise<void> {
+  const problem = urlPatternProblem(pattern);
+  if (problem) {
+    throw validationError(problem, [{ field: 'url_pattern', message: problem }]);
+  }
+  if (!pattern || pattern.trim() === '') return;
+  const others = await tx.contentType.findMany({
+    where: { key: { not: key }, urlPattern: { not: null } },
+    select: { key: true, pluralName: true, urlPattern: true },
+  });
+  const clash = others.find((o) => samePatternAddress(o.urlPattern, pattern));
+  if (clash) {
+    const message = `${clash.pluralName} already live at ${pattern.trim()}. Pick another word.`;
+    throw validationError(message, [{ field: 'url_pattern', message }]);
+  }
+}
+
+/** Kind keys the platform's own pages take: the author page renders `cms.author`, the
+ *  record type a kind keyed `author` would also claim. */
+export const RESERVED_KIND_KEYS: readonly string[] = ['author'];
 
 export async function createContentTypeTx(
   tx: TxClient,
@@ -60,8 +110,12 @@ export async function createContentTypeTx(
 ): Promise<ContentTypeWriteResult> {
   // Collide against any row with the same key in the tenant scope OR a built-in
   // (RLS surfaces platform built-ins on read).
+  if (RESERVED_KIND_KEYS.includes(input.key)) {
+    throw conflict(`"${input.key}" is already the name of your Authors. Pick another word.`);
+  }
   const collision = await tx.contentType.findFirst({ where: { key: input.key } });
   if (collision) throw conflict(`A content type with key "${input.key}" already exists.`);
+  await assertUrlPatternUsable(tx, input.key, input.urlPattern);
 
   const row = await tx.contentType.create({
     data: {
@@ -77,6 +131,7 @@ export async function createContentTypeTx(
       schemaJson: input.schema,
     },
   });
+  await reindexContentType(ctx, row.key);
 
   return {
     contentType: row,
@@ -104,6 +159,7 @@ export async function updateContentTypeTx(
   // through the dedicated schema-authoring route, never mutated here.
   const existing = await tx.contentType.findFirst({ where: { key, isBuiltIn: false } });
   if (!existing) throw notFound('Custom content type', key);
+  if (input.urlPattern !== undefined) await assertUrlPatternUsable(tx, key, input.urlPattern);
 
   const row = await tx.contentType.update({
     where: { id: existing.id },
@@ -120,6 +176,7 @@ export async function updateContentTypeTx(
           : (input.schema as unknown as Json),
     },
   });
+  await reindexContentType(ctx, row.key);
 
   return {
     contentType: row,
@@ -168,6 +225,7 @@ export async function replaceSchemaTx(
       where: { id: existing.id },
       data: { schemaJson: schema },
     });
+    await reindexContentType(ctx, row.key);
     return {
       contentType: row,
       forked: false,
@@ -192,6 +250,7 @@ export async function replaceSchemaTx(
       schemaJson: schema,
     },
   });
+  await reindexContentType(ctx, row.key);
   return {
     contentType: row,
     forked: true,
@@ -216,7 +275,7 @@ export async function replaceSchema(
 
 export async function deleteContentTypeTx(
   tx: TxClient,
-  _ctx: CmsWriteContext,
+  ctx: CmsWriteContext,
   key: string
 ): Promise<ContentTypeWriteResult> {
   const existing = await tx.contentType.findFirst({ where: { key, isBuiltIn: false } });
@@ -230,6 +289,7 @@ export async function deleteContentTypeTx(
   }
 
   await tx.contentType.delete({ where: { id: existing.id } });
+  await reindexContentType(ctx, existing.key);
   // The captured (pre-delete) row is returned so the route can audit its identity.
   return { contentType: existing, events: [] };
 }

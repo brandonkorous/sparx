@@ -77,11 +77,11 @@ function repoRoot(): string {
 }
 
 describe('the till', () => {
-  const pane = () =>
-    readFileSync(
-      join(repoRoot(), 'piggles/apps/workbench/surfaces/commerce/sale-detail.tsx'),
-      'utf8'
-    );
+  // What the pane holds lives in use-counter-sale.ts, the box it fills in
+  // use-sale-payment.ts (split out in sparx persona issue 230).
+  const read = (file: string) =>
+    readFileSync(join(repoRoot(), 'piggles/apps/workbench/surfaces/commerce', file), 'utf8');
+  const pane = () => read('use-counter-sale.ts');
 
   it('works out who is buying from the same field that prices them', () => {
     // `companyId`, not the employer somebody typed at checkout (issue 746) and
@@ -98,6 +98,6 @@ describe('the till', () => {
   it('still lets a typed number stand', () => {
     // The older half of the same idea, and the reason issue 737 could be closed
     // without a decision. Losing it would make every prefill an overwrite.
-    expect(pane()).toContain('if (!amountTouched) setPaid(asking);');
+    expect(read('use-sale-payment.ts')).toContain('if (!amountTouched) setPaid(asking);');
   });
 });

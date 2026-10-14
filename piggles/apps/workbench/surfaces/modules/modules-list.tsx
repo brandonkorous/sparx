@@ -53,6 +53,7 @@ import {
   type ModuleRow,
 } from './data';
 import { productCopy, productCopyWith } from '../../lib/product';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-6xl flex-col gap-3 @lg:gap-4';
 
@@ -172,7 +173,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
-  const canManage = viewer?.role === 'owner' || viewer?.role === 'admin';
+  const canManage = canManageBusiness(viewer?.role);
 
   const bySlug = useMemo(() => {
     const map = new Map<string, ModuleRow>();

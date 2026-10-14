@@ -46,9 +46,20 @@ describe('paneLoadReason', () => {
   });
 
   // 403 is the thing being THERE and out of reach, which is neither of the
-  // other two. It stays where it was rather than being called deleted.
-  it('leaves a 403 on unreachable', () => {
-    expect(paneLoadReason(apiError(403))).toBe('unreachable');
+  // other two. It used to stay on unreachable for want of words, and so said
+  // "a problem reaching the server" to someone the server had answered
+  // (persona issue 260).
+  it('calls a 403 refused: the server answered, and the answer was no', () => {
+    expect(paneLoadReason(apiError(403))).toBe('refused');
+  });
+
+  it('calls a 401 refused too', () => {
+    expect(paneLoadReason(apiError(401))).toBe('refused');
+  });
+
+  it('calls any other answered 4xx failed, never unreachable', () => {
+    expect(paneLoadReason(apiError(409))).toBe('failed');
+    expect(paneLoadReason(apiError(429))).toBe('failed');
   });
 
   it('calls a plain network failure unreachable: there is no status to read', () => {
@@ -90,7 +101,7 @@ describe('apiErrorMessage on a refused write', () => {
   });
 
   it('keeps showing a SERVICE message, which explains a real rule', () => {
-    // A service never attaches per-field details, and its sentence is the one
+    // A plain business rule with no field named. Its sentence is the one
     // the operator actually needs.
     const rule = new ApiError(422, {
       success: false,
@@ -104,5 +115,25 @@ describe('apiErrorMessage on a refused write', () => {
     expect(apiErrorMessage(rule, fallback)).toBe(
       'No payment gateway is configured to settle this refund.'
     );
+  });
+
+  it('shows a SERVICE sentence that names a field (persona issue 245)', () => {
+    // Every service mapper passes its own `details` through; a field named by
+    // a rule is not the schema talking about itself.
+    const rule = refused(
+      [{ field: 'lines', message: 'enter what you paid for it' }],
+      'Nothing on record says what this item cost, so the credit to expect cannot be worked out.'
+    );
+    expect(apiErrorMessage(rule, fallback)).toBe(
+      'Nothing on record says what this item cost, so the credit to expect cannot be worked out.'
+    );
+  });
+
+  it("still hides Fastify's own schema report, which carries a `keyword`", () => {
+    const ajv = refused(
+      [{ keyword: 'required', instancePath: '', message: "must have required property 'name'" }],
+      "body must have required property 'name'"
+    );
+    expect(apiErrorMessage(ajv, fallback)).not.toContain('must have required');
   });
 });

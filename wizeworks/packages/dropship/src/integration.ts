@@ -34,14 +34,21 @@ function credentialFields(vendor: DropshipVendor): CredentialField[] {
     placeholder: field.placeholder,
     secret: field.type === 'password',
     required: field.required,
-    type: field.type,
+    // The plane has no address control; an address is typed like any text.
+    type: field.type === 'email' ? 'text' : field.type,
   }));
 }
 
 function capabilityPhrases(vendor: DropshipVendor): string[] {
   const phrases: string[] = [];
   if (vendor.capabilities.catalogSync) phrases.push('Imports their product list');
-  if (vendor.capabilities.orderSubmission) phrases.push('Sends orders automatically');
+  if (vendor.capabilities.orderSubmission) {
+    phrases.push(
+      vendor.connectionMethod === 'manual'
+        ? 'Emails each order to them'
+        : 'Sends orders automatically'
+    );
+  }
   if (vendor.capabilities.trackingSync) phrases.push('Tracking comes back to you');
   if (vendor.capabilities.inventorySync) phrases.push('Keeps stock in step');
   if (vendor.pod) phrases.push('Made to order: no stock to hold');
@@ -53,8 +60,8 @@ export function vendorToIntegrationDescriptor(vendor: DropshipVendor): Integrati
     category: 'dropship',
     slug: vendor.slug,
     name: vendor.label,
-    // The CSV connector is not another company's service — it is a file the tenant
-    // supplies, so it is ours.
+    // The CSV connector and the business's own supplier are not another company's
+    // service: a file the tenant supplies, an address they give us. Ours.
     vendor: vendor.connectionMethod === 'manual' ? 'sparx' : vendor.label,
     blurb: vendor.tagline,
     publisher: 'sparx',
@@ -68,7 +75,8 @@ export function vendorToIntegrationDescriptor(vendor: DropshipVendor): Integrati
     credentialFields: credentialFields(vendor),
     capabilities: capabilityPhrases(vendor),
     docsUrl: vendor.credentialsHelpUrl,
-    // Real API suppliers lead; the hand-managed CSV feed is the fallback.
+    // Real API suppliers lead; the hand-managed ones (a feed, an order address)
+    // follow.
     sortWeight: vendor.connectionMethod === 'api' ? 10 : -10,
   };
 }

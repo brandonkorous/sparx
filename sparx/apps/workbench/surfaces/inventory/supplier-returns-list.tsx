@@ -27,6 +27,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { PackageX, PlusCircle, Undo2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
@@ -72,10 +73,11 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (report.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageX className="size-6" aria-hidden />}
           title="Could not load your returns"
           description="This is a problem reaching the server, not a statement that nothing is owed. Try again in a moment."
+          error={report.error}
         />
       );
     }

@@ -29,26 +29,31 @@
 // since…" over a dead link.
 //
 // ---------------------------------------------------------------------------
-// Why the list lives here, and how it stays true
+// The route, since 2026-10-08
 // ---------------------------------------------------------------------------
 //
-// The honest fix is a route. Until there is one, the console must not promise
-// an address it knows nothing serves, and the only place that knows is the site
-// app — which this app cannot import, and should not.
+// The site now serves any kind at the address its own pattern gives it
+// (`app/[...slug]` → `getKindPiece` → `/v1/public/content/entries/by-path`), when
+// that pattern is one it can serve: `/<words>/{slug}`, whose first word is not one
+// of the site's own routes. `kindAddressFromPattern` is that rule, and the console
+// asks the same function the site does, so the two cannot disagree. Landing pages
+// (`/{slug}`) are still not served, and keep the warning.
 //
-// So the list is copied, and `scripts/check-cms-routes.mjs` reads the real
-// types out of `wizeworks/apps/site/lib/content.ts` and fails the build if the
-// two disagree. Adding a route to the site reddens the check, and the fix is to
-// add the key here; the promise then turns itself back on. A copied list with
-// nothing holding it is the thing that rots, so this one has something holding
-// it.
+// The two hard-coded kinds stay a copied list, held by `scripts/check-cms-routes.mjs`:
+// it reads the real types out of `wizeworks/apps/site/lib/content.ts`, and fails if
+// the site stops reading kinds by their pattern.
 
-/** The `typeKey`s the site has a page for. Kept honest by `check:cms-routes`. */
+import { kindAddressFromPattern } from '@wizeworks/silica-catalog';
+
+/** The `typeKey`s the site has a route of their own for. Kept honest by
+ *  `check:cms-routes`. */
 export const SITE_SERVED_TYPES = ['blog_post', 'page'] as const;
 
-/** Whether a published entry of this kind is reachable on the site at all. */
-export function siteServesType(typeKey: string): boolean {
-  return (SITE_SERVED_TYPES as readonly string[]).includes(typeKey);
+/** Whether a published entry of this kind is reachable on the site at all: one of the
+ *  two with a route of their own, or a kind whose pattern the site serves. */
+export function siteServesType(typeKey: string, urlPattern: string | null = null): boolean {
+  if ((SITE_SERVED_TYPES as readonly string[]).includes(typeKey)) return true;
+  return kindAddressFromPattern(urlPattern) !== null;
 }
 
 /**
@@ -65,7 +70,7 @@ export function addressNote(
   slug: string
 ): { text: string; served: boolean } {
   const address = (urlPattern ?? '/{slug}').replace('{slug}', slug.trim() || '…');
-  if (siteServesType(typeKey)) {
+  if (siteServesType(typeKey, urlPattern)) {
     return {
       served: true,
       text: `This will live at ${address}. Leave it and we'll make one from the title.`,
@@ -73,6 +78,17 @@ export function addressNote(
   }
   return {
     served: false,
-    text: `Your site has no page for this kind yet, so nothing is published at ${address} and a visitor following that address will not find it. What you write is kept here and is yours to use elsewhere. Leave the box and we'll make an address from the title, ready for when there is a page.`,
+    text: `Your site cannot show this kind at ${address}, so a visitor following that address will not find it. What you write is kept here and is yours to use elsewhere. To give it a page, set its web address pattern to something like /articles/{slug} in this kind's settings.`,
   };
+}
+
+/** The address an entry lives at (or will, once published), or null when the site
+ *  shows its kind nowhere. The Link box and the content list both print it. */
+export function entryHref(
+  entry: { type_key: string; slug: string | null },
+  type: { url_pattern: string | null } | undefined
+): string | null {
+  const slug = entry.slug?.trim();
+  if (!slug || !siteServesType(entry.type_key, type?.url_pattern ?? null)) return null;
+  return (type?.url_pattern ?? '/{slug}').replace('{slug}', slug);
 }

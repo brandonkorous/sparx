@@ -25,7 +25,7 @@
 // of those and they had drifted: this console said "Sent by the supplier" where
 // the shopper's own order page said "Drop-ship", and the customer's email said
 // "usps". One list, so a new carrier is named once.
-import { carrierLabel } from '@wizeworks/commerce-schemas';
+import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { HELD_FOR_SIGN_OFF_STATUS } from '@wizeworks/crm-schemas';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
@@ -190,6 +190,8 @@ export interface OrderFulfillment {
   deliveredAt: string | null;
   notes: string | null;
   createdAt: string;
+  /** Holds `carrierOther`: the carrier's name as typed when it has no code. */
+  metadata?: unknown;
 }
 
 export interface OrderRefund {
@@ -472,6 +474,8 @@ export function useRecordFulfillment(id: string) {
       status: 'shipped' | 'delivered';
       lines: { orderItemId: string; quantity: number }[];
       carrier?: string;
+      /** The courier's name when the carrier is `other` (sparx persona issue 219). */
+      carrierOther?: string;
       service?: string;
       trackingNumber?: string;
       notes?: string;
@@ -480,6 +484,9 @@ export function useRecordFulfillment(id: string) {
         status: input.status,
         lines: input.lines,
         ...(input.carrier ? { carrier: input.carrier } : {}),
+        ...(input.carrier === 'other' && input.carrierOther?.trim()
+          ? { carrierOther: input.carrierOther.trim() }
+          : {}),
         ...(input.service ? { service: input.service } : {}),
         ...(input.trackingNumber?.trim() ? { trackingNumber: input.trackingNumber.trim() } : {}),
         ...(input.notes?.trim() ? { notes: input.notes.trim() } : {}),
@@ -895,7 +902,8 @@ export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {
  */
 export function shipmentHeadline(shipment: OrderFulfillment): string {
   if (shipment.carrier === 'pickup') return shipment.service ?? 'Collected in person';
-  const carrier = carrierLabel(shipment.carrier);
+  // The typed name for a carrier with no code (sparx persona issue 216).
+  const carrier = carrierLabel(shipment.carrier, typedCarrierOf(shipment.metadata));
   const service = shipment.service ?? '';
   // A carrier's own service names usually START with the carrier, so joining
   // both produced "USPS · USPS Ground Advantage Economy". When the service
@@ -950,6 +958,18 @@ export function amountDue(order: Order): number {
   if (order.status === HELD_FOR_SIGN_OFF_STATUS) return 0;
   if (order.paymentStatus === 'refunded') return 0;
   return Math.max(0, order.total - order.amountPaid - order.refundTotal);
+}
+
+/**
+ * What came in on this order, before anything was given back.
+ *
+ * The order keeps what is paid net of refunds (`amountPaid`, kept in step with
+ * every refund), which is what `amountDue` subtracts. Printed as "Paid", the net
+ * figure made a customer who paid $1,587.00 and was given $793.50 back read as
+ * one who paid $793.50 and got all of it back (sparx persona issue 232).
+ */
+export function paidIn(order: Pick<Order, 'amountPaid' | 'refundTotal'>): number {
+  return Math.round((order.amountPaid + order.refundTotal) * 100) / 100;
 }
 
 /**

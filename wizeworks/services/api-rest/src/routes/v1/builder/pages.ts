@@ -45,7 +45,13 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     const ctx = await toBuilderContext(request);
     // A first-call seed writes the starter the tenant's OWN modules call for — no
     // Shop page for a business that does not sell, no Book page without Scheduling.
-    const pages = await pageService.listOrSeed(ctx, await siteChromeOptions(ctx.tenantId));
+    // And what THIS site shows: a journal that switched Selling off has no Shop or
+    // product pages here, and the list says so rather than calling them live.
+    const [account, site] = await Promise.all([
+      siteChromeOptions(ctx.tenantId),
+      siteChromeOptions(ctx.tenantId, ctx.propertyId),
+    ]);
+    const pages = await pageService.listOrSeed(ctx, account, site);
     return ok({ pages });
   });
 

@@ -32,6 +32,7 @@ vi.mock('@wizeworks/commerce', () => ({
   projectCustomer: vi.fn(),
   projectOrder: vi.fn(),
   commerceUniversalProjectors: [],
+  ownerNamedUniversalProjectors: [],
 }));
 
 vi.mock('@wizeworks/search', () => ({

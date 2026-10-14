@@ -53,6 +53,7 @@ import { CertificationsSection } from './person-certifications';
 import { DocumentsSection } from './person-documents';
 import { HoursSection } from './person-hours';
 import { CommissionSection } from './person-commission';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -123,7 +124,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
     onSaved: state.rebase,
   });
 
-  const canSeePay = viewer.data?.role === 'admin' || viewer.data?.role === 'owner';
+  const canSeePay = canManageBusiness(viewer.data?.role);
 
   if (!isNew && person.isError) {
     return (

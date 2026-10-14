@@ -46,6 +46,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 /* ── Shared vocabulary ──────────────────────────────────────────────────── */
 
@@ -765,7 +766,7 @@ export function canCompose(role: string | undefined): boolean {
 /** May this viewer approve, publish now, connect accounts, and change the
  *  approval setting? (Server bar: admin.) Deleting a post is also admin-gated. */
 export function canApprove(role: string | undefined): boolean {
-  return (ROLE_RANK[role ?? ''] ?? 0) >= 2;
+  return canManageBusiness(role);
 }
 
 /* ── Presentation helpers (shared, so every surface speaks alike) ─────────── */

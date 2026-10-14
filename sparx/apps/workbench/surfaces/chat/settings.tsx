@@ -25,6 +25,7 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Combobox,
   Field,
   FieldControl,
   FieldDescription,
@@ -40,6 +41,9 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Bot, Save } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
+import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
+import { thisComputersTimezone, useBusinessZone } from '../../lib/business-timezone';
+import { startingHoursZone } from './hours-zone';
 import { afterPaneChange } from '../../lib/defer';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -57,6 +61,7 @@ import {
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { awayMessageNote, chatIsAwayAllWeek, hoursNote, openDayCount } from './availability-words';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -100,14 +105,6 @@ function draftFrom(config: ChatConfig): Draft {
   };
 }
 
-function localTimezone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
-  }
-}
-
 /* ── Operating-hours editor ───────────────────────────────────────────────── */
 
 function HoursEditor({
@@ -119,6 +116,11 @@ function HoursEditor({
   disabled: boolean;
   onChange: (next: OperatingHours) => void;
 }) {
+  const zones = useMemo(() => timezoneOptions(hours.timezone || null), [hours.timezone]);
+  const selectedZone = useMemo(
+    () => zones.find((zone) => zone.value === hours.timezone) ?? null,
+    [zones, hours.timezone]
+  );
   const setDay = (day: string, value: { open: string; close: string } | null) => {
     onChange({ ...hours, days: { ...hours.days, [day]: value } });
   };
@@ -127,22 +129,28 @@ function HoursEditor({
     <div className="flex flex-col gap-3">
       <Field>
         <FieldLabel>Time zone</FieldLabel>
-        <FieldControl
-          render={
-            <Input
-              color="module"
-              value={hours.timezone}
-              disabled={disabled}
-              spellCheck={false}
-              autoComplete="off"
-              onChange={(event) => {
-                onChange({ ...hours, timezone: event.target.value });
-              }}
-            />
-          }
+        {/* A PICKER, NOT A TEXT BOX, the same control as the CRM's promise hours. A
+            typed "London" or "GMT" is not a zone `Intl` can read, and these hours
+            are read on it every time a visitor opens the chat (issue 991). */}
+        <Combobox
+          color="module"
+          items={zones}
+          value={selectedZone}
+          disabled={disabled}
+          onValueChange={(next) => {
+            // A cleared box keeps the zone it had: hours always need one.
+            onChange({
+              ...hours,
+              timezone: next ? (next as TimezoneOption).value : hours.timezone,
+            });
+          }}
+          placeholder="Search for your city…"
+          emptyMessage="No time zone matches that city."
+          aria-label="Time zone"
         />
         <FieldDescription>
-          Your hours are read in this time zone, e.g. America/New_York or Europe/London.
+          Your hours are read on this clock. It starts on your business&apos;s, from Business
+          details.
         </FieldDescription>
       </Field>
 
@@ -211,11 +219,21 @@ function HoursEditor({
 
 export function ChatSettingsSurface() {
   const toast = useToast();
-  const { data: config, isPending, isError, isFetching, dataUpdatedAt, refetch } = useChatConfig();
+  const {
+    data: config,
+    isPending,
+    isError,
+    error: loadError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useChatConfig();
   const { data: viewer } = useViewer();
   const update = useUpdateChatConfig();
+  // New hours start on the business's clock (issue 991).
+  const businessZone = useBusinessZone();
 
-  const canEdit = viewer ? viewer.role === 'owner' || viewer.role === 'admin' : false;
+  const canEdit = viewer ? canManageBusiness(viewer.role) : false;
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const [keyInput, setKeyInput] = useState('');
@@ -249,6 +267,7 @@ export function ChatSettingsSurface() {
       <PaneLoadError
         title="Could not load your chat settings"
         description="This is a problem reaching the server. Your live chat is unaffected."
+        error={loadError}
         onRetry={() => {
           void refetch();
         }}
@@ -460,7 +479,15 @@ export function ChatSettingsSurface() {
                     checked={hoursOn}
                     disabled={!canEdit}
                     onCheckedChange={(next: boolean) => {
-                      set('operatingHours', next ? { timezone: localTimezone(), days: {} } : null);
+                      set(
+                        'operatingHours',
+                        next
+                          ? {
+                              timezone: startingHoursZone(businessZone, thisComputersTimezone()),
+                              days: {},
+                            }
+                          : null
+                      );
                     }}
                   />
                 }

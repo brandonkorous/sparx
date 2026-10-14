@@ -15,34 +15,23 @@ import { useParams } from 'next/navigation';
 import { ApprovalsWaiting } from '@/components/account/approvals-waiting';
 import { ServiceEntryButton } from '@/components/account/service-entry-button';
 import { useCustomer } from '@/components/customer-provider';
-import { orderStatusLabel, orderStatusTone } from '@/components/order-timeline';
+import { OrderRow } from '@/components/account/order-row';
 import { getB2bSummary, ORDERING_ROLES, type B2bPortalSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import {
   accountStatusTone,
   accountStatusWords,
   contactRoleWords,
+  openInvoiceWords,
   paymentTermsWords,
 } from '@/lib/trade-account-words';
 import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 /** Credit amounts are stored in major units; the formatter takes cents. In the
  *  business's own currency, which the summary now carries: every figure here was
  *  printed in dollars whatever the shop traded in (sparx persona issue 085). */
 function major(amount: number, currency: string): string {
   return formatMoney(Math.round(amount * 100), currency);
-}
-
-function invoiceCount(n: number): string {
-  return n === 1 ? '1 invoice' : `${n} invoices`;
 }
 
 export default function B2bAccountPage() {
@@ -73,6 +62,7 @@ export default function B2bAccountPage() {
   const { account, invoiceSummary, recentOrders } = summary;
   const terms = paymentTermsWords(account.paymentTerms);
   const openInvoices = invoiceSummary.unpaidCount + invoiceSummary.overdueCount;
+  const owed = openInvoiceWords(invoiceSummary, account.currency);
   // An account with no credit line does not trade on credit: a row of $0.00
   // cards would read as a limit of nothing rather than as no limit at all.
   const hasCredit = account.creditLimit > 0;
@@ -139,22 +129,12 @@ export default function B2bAccountPage() {
       {openInvoices > 0 && (
         <Alert color={invoiceSummary.overdueCount > 0 ? 'danger' : 'warning'}>
           <span>
-            {invoiceSummary.overdueCount > 0 && (
+            {owed.overdue && (
               <>
-                <strong>
-                  {invoiceCount(invoiceSummary.overdueCount)}{' '}
-                  {invoiceSummary.overdueCount === 1 ? 'is' : 'are'} overdue:{' '}
-                  {formatMoney(invoiceSummary.overdueCents, account.currency)}.
-                </strong>{' '}
+                <strong>{owed.overdue}</strong>{' '}
               </>
             )}
-            {invoiceSummary.unpaidCount > 0 && (
-              <>
-                {invoiceCount(invoiceSummary.unpaidCount)}{' '}
-                {invoiceSummary.unpaidCount === 1 ? 'is' : 'are'} not yet paid:{' '}
-                {formatMoney(invoiceSummary.unpaidCents, account.currency)}.{' '}
-              </>
-            )}
+            {owed.unpaid && <>{owed.unpaid} </>}
             <Link href={`/account/b2b/${accountId}/invoices`} className="link">
               See your invoices
             </Link>
@@ -228,29 +208,16 @@ export default function B2bAccountPage() {
           <h2 className="text-base-content text-xl font-semibold">Recent orders</h2>
           <div className="flex flex-col gap-2">
             {recentOrders.map((o) => (
-              <div
+              <OrderRow
                 key={o.id}
-                className="card border-base-300 flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 border px-4 py-3"
-              >
-                <div className="min-w-0">
-                  {/* An order number is one token: it must not break across lines. */}
-                  <Link
-                    href={`/account/b2b/${accountId}/orders/${o.id}`}
-                    className="link link-primary font-semibold whitespace-nowrap"
-                  >
-                    {o.orderNumber}
-                  </Link>
-                  <div className="text-base-content text-sm">{formatDate(o.createdAt)}</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge color={orderStatusTone(o.status)} variant="soft">
-                    {orderStatusLabel(o.status)}
-                  </Badge>
-                  <strong className="whitespace-nowrap">
-                    {formatMoney(o.totalCents, o.currency)}
-                  </strong>
-                </div>
-              </div>
+                href={`/account/b2b/${accountId}/orders/${o.id}`}
+                orderNumber={o.orderNumber}
+                placedAt={o.createdAt}
+                status={o.status}
+                collecting={o.collecting}
+                totalCents={o.totalCents}
+                currency={o.currency}
+              />
             ))}
           </div>
           <Link href={`/account/b2b/${accountId}/orders`} className="link link-primary">

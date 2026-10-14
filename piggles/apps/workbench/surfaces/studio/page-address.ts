@@ -54,8 +54,13 @@ export function kindOf(page: PageSummary): string {
  */
 export function statusOf(page: PageSummary): {
   label: string;
-  tone: 'success' | 'info' | 'warning';
+  /** Undefined is a colorless badge: a page she switched off is not a problem to fix. */
+  tone: 'success' | 'info' | 'warning' | undefined;
 } {
+  // First, because it overrides everything below: a page on a site that switched its
+  // module off under "What this site shows" answers 404, published or not. The list
+  // called Shop, Cart and Book "Live" on a journal that had switched off both.
+  if (page.offOnSite) return { label: 'Off on this site', tone: undefined };
   if (page.published) return { label: 'Live', tone: 'success' };
   if (page.live) return { label: 'Live · standard design', tone: 'info' };
   return { label: 'Not live yet', tone: 'warning' };

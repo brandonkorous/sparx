@@ -18,6 +18,7 @@ import {
   type ReturnDetail,
 } from './returns-data';
 import { money } from './return-action-dialog';
+import { refundSettledText } from './return-refund-words';
 import { faArrowUpRightFromSquare } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 
@@ -153,7 +154,11 @@ export function ReturnRecord({
             ) : null}
             {detail.refundIssuedAs ? (
               <Text className="text-sm">
-                {REFUND_ISSUED_AS_LABELS[detail.refundIssuedAs] ?? detail.refundIssuedAs}
+                {refundSettledText(
+                  detail.refundIssuedAs,
+                  detail.refundsByHand,
+                  REFUND_ISSUED_AS_LABELS
+                )}
                 {detail.refundedAt ? ` · ${formatDateTime(detail.refundedAt)}` : ''}
               </Text>
             ) : null}

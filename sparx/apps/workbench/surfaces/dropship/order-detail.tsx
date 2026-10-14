@@ -12,7 +12,7 @@
 // to it wears commerce's hue via a nested module scope — the house rule for a
 // cross-module action.
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -21,6 +21,11 @@ import {
   Badge,
   Button,
   Card,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Input,
   Heading,
   Text,
   Timestamp,
@@ -37,6 +42,7 @@ import {
   formatCents,
   orderState,
   useDropshipOrder,
+  useRecordDropshipOrder,
   useRouteOrder,
   useSuppliers,
   type DropshipOrder,
@@ -232,6 +238,12 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertContent>
           </Alert>
 
+          {order.status === 'pending' ||
+          order.status === 'submitted' ||
+          order.status === 'failed' ? (
+            <RecordProgress order={order} supplierName={supplierName} />
+          ) : null}
+
           <FormSection title="What the supplier is shipping">
             <LineItems order={order} />
           </FormSection>
@@ -289,6 +301,178 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
+/**
+ * What the owner records on an order they place with the supplier themselves.
+ *
+ * A supplier with no system of its own (a CSV feed) never hears about an order
+ * from sparx: the owner sends it. Nothing here let them say they had, or that it
+ * shipped, so the order read "failed" for ever and the customer was never told
+ * (sparx persona issue 170). "It shipped" also records the shipment on the
+ * customer's order, which sends them their tracking.
+ */
+function RecordProgress({
+  order,
+  supplierName,
+}: {
+  order: DropshipOrder;
+  supplierName: string | null;
+}) {
+  const record = useRecordDropshipOrder(order.id);
+  const toast = useToast();
+  const [reference, setReference] = useState('');
+  const [carrier, setCarrier] = useState('');
+  const [tracking, setTracking] = useState('');
+  const [trackingUrl, setTrackingUrl] = useState('');
+  const who = supplierName ?? 'the supplier';
+  const notPlacedYet = order.status === 'pending' || order.status === 'failed';
+  const urlOk = trackingUrl.trim() === '' || /^https?:\/\/\S+$/.test(trackingUrl.trim());
+
+  const save = (input: Parameters<typeof record.mutate>[0], done: string) => {
+    record.mutate(input, {
+      onSuccess: () => {
+        toast.add({ title: done, type: 'success' });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not record that',
+          description: dropshipErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  return (
+    <FormSection
+      title="Record what happened"
+      // Says what is true of THIS order. It read "For an order you send to S&B
+      // Filters yourself" over an order sparx had already emailed them (sparx
+      // persona issue 171).
+      description={
+        notPlacedYet
+          ? `This order has not gone to ${who}. Send it to them, then say so here. When you say it shipped, your customer's order is marked shipped and they are sent the tracking.`
+          : `When ${who} tells you it has shipped, record it here. Your customer's order is marked shipped and they are sent the tracking.`
+      }
+    >
+      <div className="flex flex-col gap-4">
+        {notPlacedYet ? (
+          <div className="flex flex-col gap-2">
+            <Field>
+              <FieldLabel>Their order number (optional)</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    value={reference}
+                    placeholder="SB-48213"
+                    onChange={(event) => {
+                      setReference(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <div>
+              <Button
+                color="module"
+                size="sm"
+                loading={record.isPending}
+                onClick={() => {
+                  save(
+                    {
+                      action: 'placed',
+                      ...(reference.trim() ? { supplierOrderId: reference.trim() } : {}),
+                    },
+                    `Recorded as placed with ${who}`
+                  );
+                }}
+              >
+                I placed it with {who}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-2">
+          <div className="grid gap-3 @lg:grid-cols-2">
+            <Field>
+              <FieldLabel>Carrier</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    value={carrier}
+                    placeholder="UPS, FedEx, R+L Carriers"
+                    onChange={(event) => {
+                      setCarrier(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Tracking number</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    value={tracking}
+                    onChange={(event) => {
+                      setTracking(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+          </div>
+          <Field>
+            <FieldLabel>Tracking link (optional)</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color={urlOk ? 'module' : 'error'}
+                  value={trackingUrl}
+                  placeholder="https://"
+                  onChange={(event) => {
+                    setTrackingUrl(event.target.value);
+                  }}
+                />
+              }
+            />
+            <FieldDescription>
+              {urlOk
+                ? 'Your customer gets this link with the tracking number.'
+                : 'Enter a full web address, starting https://'}
+            </FieldDescription>
+          </Field>
+          <div>
+            <Button
+              color="module"
+              size="sm"
+              loading={record.isPending}
+              disabled={!urlOk}
+              onClick={() => {
+                save(
+                  {
+                    action: 'shipped',
+                    ...(carrier.trim() ? { carrier: carrier.trim() } : {}),
+                    ...(tracking.trim() ? { trackingNumber: tracking.trim() } : {}),
+                    ...(trackingUrl.trim() ? { trackingUrl: trackingUrl.trim() } : {}),
+                  },
+                  'Recorded as shipped. We are emailing your customer the tracking.'
+                );
+              }}
+            >
+              <Truck className="size-4" aria-hidden />
+              It shipped
+            </Button>
+          </div>
+        </div>
+      </div>
+    </FormSection>
+  );
+}
+
 function LineItems({ order }: { order: DropshipOrder }) {
   if (order.lineItems.length === 0) {
     return <Text className="text-sm">No item details were recorded for this order.</Text>;
@@ -297,6 +481,9 @@ function LineItems({ order }: { order: DropshipOrder }) {
     <div className="flex flex-col">
       {order.lineItems.map((li, index) => {
         const sku = typeof li.sku === 'string' ? li.sku : `Item ${String(index + 1)}`;
+        // The product's name rides on the line since sparx persona issue 171;
+        // an older line has only the code.
+        const name = typeof li.name === 'string' && li.name.trim() !== '' ? li.name : null;
         const qty = typeof li.quantity === 'number' ? li.quantity : null;
         const unit = typeof li.unitPriceCents === 'number' ? li.unitPriceCents : null;
         return (
@@ -304,7 +491,10 @@ function LineItems({ order }: { order: DropshipOrder }) {
             key={`${sku}:${String(index)}`}
             className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0"
           >
-            <span className="min-w-0 flex-1 truncate font-mono text-sm">{sku}</span>
+            <span className="flex min-w-0 flex-1 flex-col">
+              {name ? <span className="truncate font-medium">{name}</span> : null}
+              <span className="truncate font-mono text-sm">{sku}</span>
+            </span>
             {qty !== null ? (
               <Text as="span" className="shrink-0 text-sm">
                 {qty === 1 ? '1 unit' : `${String(qty)} units`}

@@ -131,6 +131,7 @@ const OVERRIDE: Record<string, string> = {
   'commerce.fitment.dictionary_installed': 'Fitment dictionary installed',
   // Convention yields "Payment payment" — entity and verb are the same word.
   'invoicing.payment.payment': 'Payment recorded',
+  'invoicing.payment.credit': 'Credit taken off an invoice',
 
   // ── 1. abbreviations and run-together words ────────────────────────────────
   //

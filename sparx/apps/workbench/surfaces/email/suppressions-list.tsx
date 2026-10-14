@@ -22,11 +22,6 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Badge,
   Button,
   Card,
@@ -37,9 +32,10 @@ import {
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Plus, ShieldOff, Trash2, TriangleAlert } from 'lucide-react';
+import { Plus, ShieldOff, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -69,7 +65,8 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
     () => ({ q: search, take: pageSize, skip: (page - 1) * pageSize }),
     [search, pageSize, page]
   );
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSuppressions(params);
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useSuppressions(params);
 
   const items = data?.items ?? [];
   const total = data?.total;
@@ -118,30 +115,14 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
   // email a person who opted out on the strength of it.
   if (isError) {
     return (
-      <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <TriangleAlert />
-          <AlertContent>
-            <AlertTitle>Could not load your do-not-email list</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server, not with your list. Everyone on it is still
-              being held back from your emails.
-            </AlertDescription>
-          </AlertContent>
-          <AlertActions>
-            <Button
-              size="sm"
-              color="error"
-              variant="soft"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          </AlertActions>
-        </Alert>
-      </div>
+      <PaneLoadError
+        title="Could not load your do-not-email list"
+        description="This is a problem reaching the server, not with your list. Everyone on it is still being held back from your emails."
+        error={error}
+        onRetry={() => {
+          void refetch();
+        }}
+      />
     );
   }
 

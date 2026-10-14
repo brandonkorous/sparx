@@ -39,10 +39,11 @@
 // because an unlabelled MRR figure on a product page will be read as the product's
 // and quoted at someone.
 
-import { Badge, Button, EmptyState, Heading, Text, Timestamp } from '@wizeworks/silicaui-react';
+import { Badge, EmptyState, Heading, Text, Timestamp } from '@wizeworks/silicaui-react';
 import { CalendarClock, Repeat2, ServerCrash, ShoppingBag } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import { RepeatOfferSection } from './product-repeat-offer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -50,7 +51,6 @@ import { FollowingNotice, ProductScopeFallback, useProductScope } from './produc
 import {
   cadenceWords,
   formatCents,
-  productErrorMessage,
   subscriptionState,
   useProductSubscriptions,
   type Product,
@@ -296,24 +296,14 @@ export function ProductSubscriptionsSurface({ ctx }: { ctx: SurfaceContext }) {
           <FollowingNotice scope={scope} />
 
           {subscriptions.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load repeat orders"
-              description={productErrorMessage(
-                subscriptions.error,
-                'This is a problem reaching the server. Nobody’s repeat order has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void subscriptions.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nobody’s repeat order has changed."
+              error={subscriptions.error}
+              onRetry={() => {
+                void subscriptions.refetch();
+              }}
             />
           ) : data === undefined ? (
             <p className="text-sm" role="status">

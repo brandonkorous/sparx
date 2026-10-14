@@ -40,6 +40,9 @@ import {
   type RepeaterFieldDef,
 } from './data';
 import { AssetField, useMediaPicker } from './media-picker';
+import { useLinkSuggest } from './link-suggest';
+import { AuthorField } from './author-field';
+import { ChipMultiSelect } from './chip-multi-select';
 import { DayInput } from '../../components/day-input';
 
 /* ── Value readers ──────────────────────────────────────────────────────── */
@@ -282,6 +285,16 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
         />
       );
 
+    case 'author':
+      return (
+        <AuthorField
+          multiple={field.multiple ?? false}
+          value={value}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
+
     case 'asset':
       // A real media picker: pick from the library or upload, shown as a
       // thumbnail. Stores the asset id(s) the schema validates.
@@ -319,48 +332,6 @@ function FieldInput({ field, value, onChange, disabled }: SchemaFieldProps) {
   }
 }
 
-/* ── Multi-select as toggle chips ───────────────────────────────────────── */
-
-function ChipMultiSelect({
-  options,
-  selected,
-  onChange,
-  disabled,
-}: {
-  options: { value: string; label: string }[];
-  selected: string[];
-  onChange: (next: string[]) => void;
-  disabled?: boolean;
-}) {
-  const set = new Set(selected);
-  return (
-    <div className="flex flex-wrap gap-2">
-      {options.map((option) => {
-        const on = set.has(option.value);
-        return (
-          <Button
-            key={option.value}
-            type="button"
-            size="sm"
-            variant={on ? 'soft' : 'outline'}
-            color={on ? 'module' : 'neutral'}
-            disabled={disabled}
-            aria-pressed={on}
-            onClick={() => {
-              const next = new Set(set);
-              if (on) next.delete(option.value);
-              else next.add(option.value);
-              onChange([...next]);
-            }}
-          >
-            {option.label}
-          </Button>
-        );
-      })}
-    </div>
-  );
-}
-
 /* ── Rich text ──────────────────────────────────────────────────────────── */
 
 function RichTextField({
@@ -377,6 +348,7 @@ function RichTextField({
   // Isolated so the heavy TipTap editor and the media-picker context read run
   // ONLY for rich-text fields, not every scalar field in the switch.
   const pick = useMediaPicker();
+  const suggestLinks = useLinkSuggest();
   return (
     <ContentBlockEditor
       value={asDoc(value)}
@@ -385,6 +357,7 @@ function RichTextField({
       ariaLabel={field.label}
       minHeight="20rem"
       placeholder="Write here. Use the toolbar for headings, lists, links, and pictures."
+      suggestLinks={suggestLinks}
       pickImage={async () => {
         const asset = await pick();
         // The library's description, or nothing. This used to write the FILENAME

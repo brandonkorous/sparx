@@ -47,7 +47,7 @@ describe('ranking record results against what was typed', () => {
           'The Ash Overshirt'
         ),
         record('Marguerite Adeyemi', 'Customers', 'marguerite.adeyemi@example.com'),
-        record('#O-000014', 'Orders', 'Marguerite Adeyemi · placed'),
+        record('O-000014', 'Orders', 'Marguerite Adeyemi · placed'),
       ],
       'marguerite'
     );
@@ -55,7 +55,7 @@ describe('ranking record results against what was typed', () => {
     expect(ranked[0]?.label).toBe('Marguerite Adeyemi');
     // The order still matches, on its subtitle, so it outranks the review — but
     // it stays below the person, which is who was asked for.
-    expect(ranked[1]?.label).toBe('#O-000014');
+    expect(ranked[1]?.label).toBe('O-000014');
   });
 
   it('keeps rows it cannot score at all, in the order the server sent them', () => {
@@ -75,7 +75,7 @@ describe('ranking record results against what was typed', () => {
 
   it('rates the row’s own name above the line under it', () => {
     const byName = record('Marlow Knit', 'Products', 'marlow-knit');
-    const bySubtitle = record('#O-000014', 'Orders', 'Marlow Knit · placed');
+    const bySubtitle = record('O-000014', 'Orders', 'Marlow Knit · placed');
     expect(recordRank(byName, 'marlow')).toBeGreaterThan(recordRank(bySubtitle, 'marlow'));
   });
 
@@ -83,7 +83,7 @@ describe('ranking record results against what was typed', () => {
     // `score` counts a group match for SURFACES on purpose — typing "customers"
     // should reach the Customers app. On a record it would score every order in
     // the shop equally and say nothing about which one was meant.
-    expect(recordRank(record('#O-000014', 'Orders', 'Marguerite · placed'), 'orders')).toBe(0);
+    expect(recordRank(record('O-000014', 'Orders', 'Marguerite · placed'), 'orders')).toBe(0);
   });
 
   it('needs every meaningful word of a phrase, like the surface ladder does', () => {

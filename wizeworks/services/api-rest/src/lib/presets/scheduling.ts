@@ -14,7 +14,8 @@
 // Data-as-code (line-limit exempt).
 
 import { definePreset, type ModulePreset } from '@wizeworks/auth';
-import type { TenantContext } from '@wizeworks/db';
+import { afterCommit, type TenantContext } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 interface PolicyDef {
   name: string;
@@ -80,8 +81,9 @@ async function buildStudio(sx: TenantContext, spec: StudioSpec): Promise<{ id: s
     select: { id: true },
   });
 
+  const serviceIds: string[] = [];
   for (const service of spec.services) {
-    await sx.tx!.schedulingService.create({
+    const created = await sx.tx!.schedulingService.create({
       data: {
         tenantId: sx.tenantId,
         bookingType: service.bookingType,
@@ -94,10 +96,12 @@ async function buildStudio(sx: TenantContext, spec: StudioSpec): Promise<{ id: s
         policyId: policy.id,
         locationId,
       },
+      select: { id: true },
     });
+    serviceIds.push(created.id);
   }
 
-  await sx.tx!.schedulingResource.create({
+  const resource = await sx.tx!.schedulingResource.create({
     data: {
       tenantId: sx.tenantId,
       kind: spec.resource.kind,
@@ -106,6 +110,18 @@ async function buildStudio(sx: TenantContext, spec: StudioSpec): Promise<{ id: s
       skillTags: [],
       locationId,
     },
+    select: { id: true },
+  });
+
+  // Searchable once the pack's transaction commits, and not before: a pack that
+  // rolls back must not leave entries pointing at rows that never existed.
+  const who = { tenantId: sx.tenantId, actorId: sx.userId ?? null };
+  await afterCommit('index scheduling preset', async () => {
+    await indexEntity({ ...who, entityType: 'booking_policy', recordId: policy.id });
+    for (const id of serviceIds) {
+      await indexEntity({ ...who, entityType: 'scheduling_service', recordId: id });
+    }
+    await indexEntity({ ...who, entityType: 'scheduling_resource', recordId: resource.id });
   });
 
   return { id: policy.id };

@@ -47,6 +47,7 @@ import {
 import { Scale } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
 import { RANGE_PRESETS, rangeForDays } from './reports-data';
@@ -108,10 +109,11 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (report.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Scale className="size-6" aria-hidden />}
           title="Could not work out your costs against plan"
           description="This is a problem reaching the server. Your deliveries and their costs are unaffected: the comparison just could not be worked out."
+          error={report.error}
         />
       );
     }

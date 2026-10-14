@@ -33,7 +33,7 @@
 // pass. Empty is a decision; missing is an oversight, and the test tells them apart.
 
 import { createHash } from 'node:crypto';
-import type { SilicaEmailDocument } from '@wizeworks/builder-schemas';
+import { emailEditSignature, type SilicaEmailDocument } from '@wizeworks/builder-schemas';
 
 /** Strip every `id` (the only per-provision-varying field) and sort object keys, so two
  *  structurally-identical bodies serialise identically regardless of node-id minting. */
@@ -521,4 +521,24 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
 export function isPriorDefaultBody(key: string, doc: SilicaEmailDocument | null): boolean {
   if (!doc) return false;
   return PRIOR_DEFAULT_BODY_FINGERPRINTS[key]?.has(bodyFingerprint(doc)) ?? false;
+}
+
+/**
+ * Is this row still the untouched shipped default, so the refresh may replace it? Both
+ * its draft and its published body must be a prior shipped default, with one allowance:
+ * a draft that differs from the published body only by what the designer fills in on
+ * its own (the brand repaint of brand-following colors, the ordering keys) is no edit,
+ * so it is judged by the published body. Opening the designer and pressing Preview
+ * used to save exactly that, and the row then counted as edited and was never
+ * refreshed again (sparx persona issue 152).
+ */
+export function isUntouchedDefault(
+  key: string,
+  draft: SilicaEmailDocument | null,
+  published: SilicaEmailDocument | null
+): boolean {
+  if (!isPriorDefaultBody(key, published)) return false;
+  if (draft && published && emailEditSignature(draft) === emailEditSignature(published))
+    return true;
+  return isPriorDefaultBody(key, draft);
 }

@@ -103,6 +103,10 @@ export interface CheckoutSession {
     accountApprovers: string[];
     limitCents: number;
   };
+  /** The credit this order would run past if billed to the account: the
+   *  business then signs it off too (sparx persona issue 187). Absent when it
+   *  fits, when the account is not on terms, and from an older api-rest. */
+  creditPreview?: { creditLeftCents: number; orderTotalCents: number; currency: string };
 }
 
 /** What completing checkout says about an order held for sign-off: who has

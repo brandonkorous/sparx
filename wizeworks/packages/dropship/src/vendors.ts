@@ -18,8 +18,9 @@ export interface VendorCredentialField {
   /** Key written into the supplier's `credentials` bag. */
   key: string;
   label: string;
-  /** `password` masks the value; `url` validates as a URL. */
-  type: 'text' | 'password' | 'url';
+  /** `password` masks the value; `url` validates as a URL; `email` is an address
+   *  mail goes to. */
+  type: 'text' | 'password' | 'url' | 'email';
   placeholder?: string;
   /** Inline helper text shown under the field. */
   help?: string;
@@ -43,7 +44,8 @@ export interface DropshipVendor {
   description: string;
   /**
    * `api` = automated REST integration (catalog/order/tracking over HTTP).
-   * `manual` = feed import + hand-fulfilled orders (the CSV connector).
+   * `manual` = no system of theirs to call: a feed the business points us at
+   * (CSV), or orders that go to them by email (`direct`).
    */
   connectionMethod: 'api' | 'manual';
   /** Print-on-demand: made-to-order, no finite stock (inventory is unlimited). */
@@ -178,6 +180,39 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
         placeholder: 'Paste your Spocket API key',
         help: 'Found in your Spocket dashboard under Settings → API.',
         required: true,
+      },
+    ],
+  },
+  {
+    slug: 'direct',
+    label: 'Your own supplier',
+    tagline: 'They ship to your customer when you send them the order',
+    description:
+      'For a maker or wholesaler who ships straight to your customer when you send them an order, and has no system of their own for us to plug into. You choose which of your products they ship. When someone buys one, we email them the order from your business, with your customer’s address to ship to. When they tell you it has shipped, you type in the tracking number and your customer is told.',
+    connectionMethod: 'manual',
+    pod: false,
+    capabilities: {
+      catalogSync: false,
+      orderSubmission: true,
+      trackingSync: false,
+      inventorySync: false,
+    },
+    credentialFields: [
+      {
+        key: 'orderEmail',
+        label: 'Where they take orders',
+        type: 'email',
+        placeholder: 'orders@theirbusiness.com',
+        help: 'Each order goes to this address, from your business.',
+        required: true,
+      },
+      {
+        key: 'contactName',
+        label: 'Who you deal with there',
+        type: 'text',
+        placeholder: 'Optional: their first name',
+        help: 'The order starts “Hi” and this name. Leave it blank to use the business name.',
+        required: false,
       },
     ],
   },

@@ -14,7 +14,8 @@
 // `Prisma` as a VALUE, not a type-only import: `Prisma.DbNull` is a runtime
 // sentinel, and it is the only way to clear a nullable JSON column — writing
 // plain `null` sets the JSON value `null`, which is a different thing.
-import { Prisma, withTenant, type TenantContext, type TxClient } from '@wizeworks/db';
+import { Prisma, afterCommit, withTenant, type TenantContext, type TxClient } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 import {
   ConditionGroup,
   evaluateConditions,
@@ -37,7 +38,8 @@ export * from './schemas.js';
 export { buildLadder, type Ladder, type LadderRung } from './ladder.js';
 export { reconcileFunnelDaily, type ReconcileResult } from './reconcile.js';
 export { findAbandoned, type AbandonedSubject, type SweepResult } from './abandon.js';
-export { FUNNEL_LIBRARY, recipesForModules, type FunnelRecipe } from './library.js';
+import { startingGoal } from './library.js';
+export { FUNNEL_LIBRARY, recipesForModules, startingGoal, type FunnelRecipe } from './library.js';
 export { installFunnelLibrary, type InstallResult } from './install.js';
 export {
   advanceOnEvent,
@@ -75,8 +77,8 @@ export async function createFunnel(
   // later change to the shipped defaults reaches new funnels only.
   const stages = input.stages ?? DEFAULT_STAGES[input.kind];
 
-  return withTenant(ctx, (tx) =>
-    tx.funnel.create({
+  return withTenant(ctx, async (tx) => {
+    const created = await tx.funnel.create({
       data: {
         tenantId: ctx.tenantId,
         propertyId: input.propertyId,
@@ -84,7 +86,9 @@ export async function createFunnel(
         description: input.description ?? null,
         kind: input.kind,
         stages: stages as unknown as Prisma.InputJsonValue,
-        goal: (input.goal ?? undefined) as Prisma.InputJsonValue | undefined,
+        // A new campaign of a kind starts with the goal that kind waits for
+        // (sparx persona issue 158), stamped like its steps.
+        goal: (input.goal ?? startingGoal(input.kind)) as Prisma.InputJsonValue | undefined,
         goalValueCents: input.goalValueCents ?? null,
         automationId: input.automationId ?? null,
         sequenceId: input.sequenceId ?? null,
@@ -98,8 +102,10 @@ export async function createFunnel(
         // as its first visitors.
         status: 'draft',
       },
-    })
-  );
+    });
+    await signalFunnel(ctx, created.id);
+    return created;
+  });
 }
 
 export async function updateFunnel(
@@ -149,7 +155,7 @@ export async function updateFunnel(
       }
     }
 
-    return tx.funnel.update({
+    const updated = await tx.funnel.update({
       where: { id },
       data: {
         ...(input.name !== undefined ? { name: input.name } : {}),
@@ -170,7 +176,29 @@ export async function updateFunnel(
         ...(input.stallAfterHours !== undefined ? { stallAfterHours: input.stallAfterHours } : {}),
       },
     });
+    await signalFunnel(ctx, updated.id);
+    return updated;
   });
+}
+
+/**
+ * Tell search the campaign changed, once the write has committed.
+ *
+ * Queued with `afterCommit` because a caller may compose these writes into its
+ * own transaction; announcing a row that could still roll back would index a
+ * campaign that never existed. The indexer reads the row back, so one upsert
+ * covers create, rename, a status change and delete (a missing row is dropped).
+ * Stage counters never come through here: they change nothing search shows.
+ */
+async function signalFunnel(ctx: TenantContext, id: string): Promise<void> {
+  await afterCommit('index funnel', () =>
+    indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'funnel',
+      recordId: id,
+    })
+  );
 }
 
 /** A goal is present when it exists AND actually says something. An empty
@@ -216,7 +244,10 @@ async function entryPathOf(tx: TxClient, entryPageId: string | null): Promise<st
 }
 
 export async function deleteFunnel(ctx: TenantContext, id: string): Promise<void> {
-  await withTenant(ctx, (tx) => tx.funnel.delete({ where: { id } }));
+  await withTenant(ctx, async (tx) => {
+    await tx.funnel.delete({ where: { id } });
+    await signalFunnel(ctx, id);
+  });
 }
 
 // ─── reads ────────────────────────────────────────────────────────────────────

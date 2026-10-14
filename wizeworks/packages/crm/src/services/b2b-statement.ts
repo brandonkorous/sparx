@@ -17,6 +17,12 @@
 //
 // ── WHAT AN EVENT IS ───────────────────────────────────────────────────────
 //
+// Every "day" here is the BUSINESS's day (sparx persona issue 146). A bill raised
+// at 7:30pm on Oct 31 in Denver is 01:30 on Nov 1 in UTC; read by the UTC day it
+// printed as Nov 1 and moved to November's statement. Each event is placed and
+// printed by its day in the shop; within one day they keep the order they
+// happened in.
+//
 //   An invoice issued         adds its total, on the day it was issued.
 //   A payment or deposit      takes its amount off, on the day it arrived.
 //   A refund                  puts its amount back, on the day it went out.
@@ -31,6 +37,7 @@ import { CrmValidationError } from '../errors';
 import {
   AGING_BUCKETS,
   agingBucketKey,
+  businessDayOf,
   daysPastDue,
   startOfBusinessDay,
   type AgingBucketKey,
@@ -44,7 +51,7 @@ const DAY_MS = 86_400_000;
 
 export interface StatementPaymentInput {
   id: string;
-  /** deposit | payment | refund, as `billing_document_payments.kind` stores it. */
+  /** deposit | payment | refund | credit, as `billing_document_payments.kind` stores it. */
   kind: string;
   /** cash | card | check | ach | wire | account_credit | store_credit | other */
   method: string;
@@ -88,7 +95,9 @@ export type StatementRowKind = 'invoice' | 'payment' | 'refund' | 'write_off';
 
 export interface StatementRow {
   kind: StatementRowKind;
-  /** ISO instant the event happened. */
+  /** The business's day it happened, as noon UTC on that day: the form a due
+   *  date is stored in, so every printer that prints a due date prints this
+   *  the same way. Not the moment (sparx persona issue 146). */
   at: string;
   documentId: string;
   /** The invoice this row belongs to. */
@@ -110,6 +119,7 @@ export interface StatementOpenItem {
   documentId: string;
   number: string | null;
   poNumber: string | null;
+  /** The business's day it was issued, as noon UTC on that day. */
   issuedAt: string;
   dueAt: string | null;
   totalCents: number;
@@ -259,10 +269,13 @@ export function paymentMethodWords(method: string): string | null {
 }
 
 function paymentDescription(payment: StatementPaymentInput): string {
+  const ref = payment.reference?.trim() ?? '';
+  // A credit is not money the account sent, so it never reads as a payment, and
+  // its reference says what it was for (sparx persona issue 185).
+  if (payment.kind === 'credit') return ref !== '' ? `Credit for ${ref.toLowerCase()}` : 'Credit';
   const noun =
     payment.kind === 'refund' ? 'Refund' : payment.kind === 'deposit' ? 'Deposit' : 'Payment';
   const how = paymentMethodWords(payment.method);
-  const ref = payment.reference?.trim() ?? '';
   return [how ? `${noun} by ${how}` : noun, ref !== '' ? `ref ${ref}` : null]
     .filter(Boolean)
     .join(', ');
@@ -287,7 +300,10 @@ export function paymentTermsWords(terms: string | null | undefined): string | nu
 
 interface StatementEvent {
   kind: StatementRowKind;
+  /** The exact moment, for the order within one day. */
   at: Date;
+  /** The business's day, as noon UTC: where it lands and what it prints. */
+  day: Date;
   bill: StatementBillInput;
   /** Signed: positive adds to what is owed, negative takes off. */
   cents: number;
@@ -302,11 +318,16 @@ const KIND_ORDER: Record<StatementRowKind, number> = {
 };
 
 /** Net money received on a bill up to (not including) `before`: payments and
- *  deposits count, refunds give it back. */
-function netPaidBefore(bill: StatementBillInput, before: Date): number {
+ *  deposits count, refunds give it back. `when` says which clock a payment is
+ *  read on: its moment, or its business day. */
+function netPaidBefore(
+  bill: StatementBillInput,
+  before: Date,
+  when: (receivedAt: Date) => Date = (receivedAt) => receivedAt
+): number {
   let cents = 0;
   for (const p of bill.payments) {
-    if (p.receivedAt.getTime() >= before.getTime()) continue;
+    if (when(p.receivedAt).getTime() >= before.getTime()) continue;
     cents += p.kind === 'refund' ? -p.amountCents : p.amountCents;
   }
   return cents;
@@ -322,18 +343,27 @@ function writeOff(bill: StatementBillInput): { at: Date; cents: number } | null 
   return owed > 0 ? { at, cents: owed } : null;
 }
 
-function eventsOf(bill: StatementBillInput): StatementEvent[] {
+function eventsOf(bill: StatementBillInput, timeZone: string | null): StatementEvent[] {
+  const dayOf = (at: Date) => businessDayOf(at, timeZone);
   // The number has its own column on every copy of the statement, so the row
   // says what happened and leaves the number to that column.
   const label = 'Invoice issued';
   const events: StatementEvent[] = [
-    { kind: 'invoice', at: bill.issuedAt, bill, cents: bill.totalCents, description: label },
+    {
+      kind: 'invoice',
+      at: bill.issuedAt,
+      day: dayOf(bill.issuedAt),
+      bill,
+      cents: bill.totalCents,
+      description: label,
+    },
   ];
   for (const p of bill.payments) {
     const refund = p.kind === 'refund';
     events.push({
       kind: refund ? 'refund' : 'payment',
       at: p.receivedAt,
+      day: dayOf(p.receivedAt),
       bill,
       cents: refund ? p.amountCents : -p.amountCents,
       description: paymentDescription(p),
@@ -344,6 +374,7 @@ function eventsOf(bill: StatementBillInput): StatementEvent[] {
     events.push({
       kind: 'write_off',
       at: off.at,
+      day: dayOf(off.at),
       bill,
       cents: -off.cents,
       description: 'Written off',
@@ -353,6 +384,8 @@ function eventsOf(bill: StatementBillInput): StatementEvent[] {
 }
 
 function compareEvents(a: StatementEvent, b: StatementEvent): number {
+  const byDay = a.day.getTime() - b.day.getTime();
+  if (byDay !== 0) return byDay;
   const byTime = a.at.getTime() - b.at.getTime();
   if (byTime !== 0) return byTime;
   const byKind = KIND_ORDER[a.kind] - KIND_ORDER[b.kind];
@@ -366,18 +399,24 @@ function compareEvents(a: StatementEvent, b: StatementEvent): number {
  * Pass ALL of the account's bills issued before the end of the period, not only
  * the ones touched in it: an invoice from March paid in October is a row in
  * October, and its March total is part of October's opening balance.
+ *
+ * `timeZone` is the business's: the period is its calendar days, so every event
+ * is placed by its day there.
  */
 export function computeStatement(
   bills: readonly StatementBillInput[],
-  period: Pick<StatementPeriod, 'start' | 'endExclusive' | 'to'>
+  period: Pick<StatementPeriod, 'start' | 'endExclusive' | 'to'>,
+  timeZone?: string | null
 ): StatementFigures {
+  const zone = timeZone ?? null;
+  const dayOf = (at: Date) => businessDayOf(at, zone);
   const start = period.start.getTime();
   const end = period.endExclusive.getTime();
-  const inScope = bills.filter((b) => b.issuedAt.getTime() < end);
+  const inScope = bills.filter((b) => dayOf(b.issuedAt).getTime() < end);
 
   const events = inScope
-    .flatMap(eventsOf)
-    .filter((e) => e.at.getTime() < end)
+    .flatMap((bill) => eventsOf(bill, zone))
+    .filter((e) => e.day.getTime() < end)
     .sort(compareEvents);
 
   let openingCents = 0;
@@ -386,7 +425,7 @@ export function computeStatement(
   let running = 0;
   const rows: StatementRow[] = [];
   for (const e of events) {
-    if (e.at.getTime() < start) {
+    if (e.day.getTime() < start) {
       openingCents += e.cents;
       running = openingCents;
       continue;
@@ -396,7 +435,7 @@ export function computeStatement(
     else creditsCents += -e.cents;
     rows.push({
       kind: e.kind,
-      at: e.at.toISOString(),
+      at: e.day.toISOString(),
       documentId: e.bill.id,
       documentNumber: e.bill.number,
       poNumber: e.bill.poNumber,
@@ -415,8 +454,9 @@ export function computeStatement(
   const openItems: StatementOpenItem[] = [];
   for (const bill of inScope) {
     const off = writeOff(bill);
-    const writtenOff = off && off.at.getTime() < end ? off.cents : 0;
-    const openCents = bill.totalCents - netPaidBefore(bill, period.endExclusive) - writtenOff;
+    const writtenOff = off && dayOf(off.at).getTime() < end ? off.cents : 0;
+    const openCents =
+      bill.totalCents - netPaidBefore(bill, period.endExclusive, dayOf) - writtenOff;
     if (openCents <= 0) continue;
     // A bill with no due date is due on receipt, so it is due now, and not late.
     const daysLate = daysPastDue(bill.dueAt, asOfDay, null);
@@ -424,7 +464,7 @@ export function computeStatement(
       documentId: bill.id,
       number: bill.number,
       poNumber: bill.poNumber,
-      issuedAt: bill.issuedAt.toISOString(),
+      issuedAt: dayOf(bill.issuedAt).toISOString(),
       dueAt: bill.dueAt ? bill.dueAt.toISOString() : null,
       totalCents: bill.totalCents,
       openCents,

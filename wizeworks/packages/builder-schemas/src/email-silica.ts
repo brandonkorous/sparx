@@ -150,3 +150,32 @@ export function silicaEmailIsPersonalized(doc: SilicaEmailDocument, extra: strin
   }
   return false;
 }
+
+/**
+ * What an email says to the people who get it, as a string two drafts can be compared
+ * by: the document with the values nobody authored taken out (sparx persona issue 152).
+ *
+ * Opening the designer repainted every brand-following color (`<field>Auto: true`)
+ * from the site's brand, and silica backfilled each node's `ord` (its collab ordering
+ * key). Both reach the host's `onChange`, so an email nobody touched read "unsaved
+ * changes", and once Preview or Send test saved it, "Unpublished changes". Neither
+ * is an edit: the send repaints the same Auto fields from the brand again, and
+ * `toEmailHtml` never reads `ord`. So both are dropped here, and keys are sorted so
+ * key order is no difference either. A color an author PICKED clears its Auto flag,
+ * so it stays in the comparison.
+ */
+export function emailEditSignature(doc: unknown): string {
+  const strip = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(strip);
+    if (typeof value !== 'object' || value === null) return value;
+    const rec = value as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+    for (const key of Object.keys(rec).sort()) {
+      if (key === 'ord') continue;
+      if (rec[`${key}Auto`] === true) continue;
+      out[key] = strip(rec[key]);
+    }
+    return out;
+  };
+  return JSON.stringify(strip(doc));
+}

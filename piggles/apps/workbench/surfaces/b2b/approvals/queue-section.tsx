@@ -47,6 +47,7 @@ export function QueueSection({
           icon={<Icon glyph={faCheckCircle} className="size-6" aria-hidden />}
           title="Could not load the queue"
           description="This is a problem reaching the server. Your orders are unaffected: the queue just could not be read just now."
+          error={queue.error}
           onRetry={() => {
             void queue.refetch();
           }}

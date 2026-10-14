@@ -6,7 +6,15 @@
 // neither owns it.
 
 import type { BuilderPage } from '@wizeworks/db';
-import { starterPages, type SiteChromeOptions } from '@wizeworks/silica-catalog';
+import {
+  kindAddressAt,
+  moduleForKey,
+  moduleForPath,
+  recordAddressAt,
+  recordAddressFor,
+  starterPages,
+  type SiteChromeOptions,
+} from '@wizeworks/silica-catalog';
 
 /** A stored slug as the ADDRESS it presents at. Both spellings are in the store — a
  *  blueprint writes `about`, the code starter writes `/about` — and they are the same
@@ -39,4 +47,59 @@ export function isLive(
   if (row.publishedAt != null) return true;
   if (row.kind === 'collection' || row.recordType !== null) return true;
   return starterPages(modules).some((p) => atAddress(p.slug) === atAddress(row.slug));
+}
+
+/** The modules a site can switch off for itself, as `SiteChromeOptions` names them. */
+const SWITCHES = [
+  ['commerce', 'commerceEnabled'],
+  ['scheduling', 'schedulingEnabled'],
+  ['cms', 'cmsEnabled'],
+] as const;
+
+export type SiteSwitch = (typeof SWITCHES)[number][0];
+
+/**
+ * Which module, switched off for THIS site, takes this page off it — or null.
+ *
+ * A journal that switched Selling off under "What this site shows" has no shop: `/shop`,
+ * `/cart` and every product page answer 404 (issue 944). The page list still called
+ * them "Live", because it judged them by what the ACCOUNT has. `account` is that; `site`
+ * is what this site shows. A page the account would serve and the site will not is off
+ * here, and the module is the reason.
+ *
+ * Only pages whose ADDRESS belongs to the module: the record pages, and the addresses the
+ * site's own table gives it. A page the owner made at an address of her own is hers,
+ * whatever is on it.
+ */
+export function offOnSite(
+  row: Pick<BuilderPage, 'kind' | 'slug' | 'recordType'>,
+  account: SiteChromeOptions,
+  site: SiteChromeOptions,
+  // The host cores of the tree the site SERVES at this address (its published tree,
+  // else the starter's). The site refuses a page whose core belongs to a switched-off
+  // module — the page a journal's design called "Shop" is a product grid — so the list
+  // asks the same question (`moduleForKey`).
+  hostKeys: readonly string[] = []
+): SiteSwitch | null {
+  const off = (key: (typeof SWITCHES)[number][1]) =>
+    (account[key] ?? key === 'commerceEnabled') && !(site[key] ?? key === 'commerceEnabled');
+
+  const record = recordAddressAt(row.slug) ?? recordAddressFor(row.recordType ?? '');
+  if (record) {
+    const found = SWITCHES.find(([module]) => module === record.module);
+    return found && off(found[1]) ? found[0] : null;
+  }
+  if (kindAddressAt(row.slug) || row.recordType?.startsWith('cms.')) {
+    return off('cmsEnabled') ? 'cms' : null;
+  }
+  if (row.kind === 'collection') return null;
+
+  // Any other page is off when the site's own table gives its address to a switched-off
+  // module (`moduleForPath`, the table the site's routes enforce). Never from the
+  // starter set: that called a journal's sign-in pages off while the site served them.
+  const owners = [moduleForPath(`/${atAddress(row.slug)}`), ...hostKeys.map(moduleForKey)];
+  for (const [module, key] of SWITCHES) {
+    if (owners.includes(module) && off(key)) return module;
+  }
+  return null;
 }

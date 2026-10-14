@@ -195,7 +195,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       create.mutate(payload, {
         onSuccess: (saved) => {
           setLoaded(false);
-          ctx.open('inventory.bins.detail', { id: saved.id });
+          ctx.open('inventory.bins.detail', { id: saved.id }, { target: 'replace' });
           afterPaneChange(() => {
             toast.add({ title: `${saved.code} added`, type: 'success' });
           });

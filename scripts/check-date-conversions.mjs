@@ -65,10 +65,13 @@
  * a moment, not a date, in a console it does not read. Neither rule ever asked
  * WHOSE CLOCK a typed time is on. These two do:
  *
- *   2. A file that draws a datetime-local box imports `lib/wall-clock` (or the
- *      automations' `wallTimeInZone`/`isoFromWallTime`), which converts on a
- *      zone it is GIVEN and says which. Files that drew one before this rule
- *      existed are pinned in WALL_DEBT, a list that can only shrink.
+ *   2. A file that draws a datetime-local box imports `lib/wall-clock` or
+ *      `lib/publish-clock` (or the automations' `wallTimeInZone`/
+ *      `isoFromWallTime`), which converts on a zone it is GIVEN and says which.
+ *      `lib/publish-clock` is the one a scheduled piece and a scheduled
+ *      campaign share (Piggles persona issues 942 and 984). Files that drew
+ *      one before this rule existed are pinned in WALL_DEBT, a list that can
+ *      only shrink.
  *
  *   3. Where a booking's time is typed or shown (the scheduling surfaces of
  *      both consoles and the site's booking components) the computer's-clock
@@ -127,12 +130,13 @@ function cannotBeInvalid(arg) {
 /** A datetime-local box, as a string literal (attribute or expression). */
 const TIME_BOX = /['"]datetime-local['"]/;
 
-/** What naming the clock looks like: the shared module, or the automations'
- *  own pair (which converts on the business zone it is handed). */
-const NAMES_A_CLOCK = /from '[^']*lib\/wall-clock'|\bwallTimeInZone\b|\bisoFromWallTime\b/;
+/** What naming the clock looks like: one of the two shared modules, or the
+ *  automations' own pair (which converts on the business zone it is handed). */
+const NAMES_A_CLOCK =
+  /from '[^']*lib\/(?:wall|publish)-clock'|\bwallTimeInZone\b|\bisoFromWallTime\b/;
 
 /** Where the clocks live, so they may say "datetime-local" in their prose. */
-const WALL_EXEMPT = new Set(['lib/today.ts', 'lib/wall-clock.ts']);
+const WALL_EXEMPT = new Set(['lib/today.ts', 'lib/wall-clock.ts', 'lib/publish-clock.ts']);
 
 /**
  * Files that drew a datetime-local box on the computer's clock when rule 2 was
@@ -141,24 +145,18 @@ const WALL_EXEMPT = new Set(['lib/today.ts', 'lib/wall-clock.ts']);
  * list may only SHRINK. A file that stops offending must come off it.
  */
 const WALL_DEBT = new Set([
-  'piggles/apps/workbench/surfaces/cms/content-detail.tsx',
   'piggles/apps/workbench/surfaces/cms/schema-form.tsx',
   'piggles/apps/workbench/surfaces/commerce/discount-form-limits.tsx',
   'piggles/apps/workbench/surfaces/commerce/product-attributes.tsx',
   'piggles/apps/workbench/surfaces/crm/custom-properties-panel.tsx',
   'piggles/apps/workbench/surfaces/crm/task-detail.tsx',
-  'piggles/apps/workbench/surfaces/email/broadcast-compose-delivery.tsx',
   'piggles/apps/workbench/surfaces/partner/bootcamp-detail.tsx',
-  'piggles/apps/workbench/surfaces/social/composer.tsx',
-  'sparx/apps/workbench/surfaces/cms/content-detail.tsx',
   'sparx/apps/workbench/surfaces/cms/schema-form.tsx',
   'sparx/apps/workbench/surfaces/commerce/discount-detail.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-attributes.tsx',
   'sparx/apps/workbench/surfaces/crm/custom-properties-panel.tsx',
   'sparx/apps/workbench/surfaces/crm/task-detail.tsx',
-  'sparx/apps/workbench/surfaces/email/broadcast-detail.tsx',
   'sparx/apps/workbench/surfaces/partner/bootcamp-detail.tsx',
-  'sparx/apps/workbench/surfaces/social/composer.tsx',
 ]);
 
 /* ── Rule 3: no computer's clock where a booking's time lives ───────────── */

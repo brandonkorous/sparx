@@ -67,10 +67,20 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
+import { useReaderClock } from '../../lib/business-timezone';
+import {
+  clockNote,
+  futureInstant,
+  isoToWallClock,
+  onClock,
+  wallClockFromNow,
+  wallClockToIso,
+} from '../../lib/publish-clock';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, AssetField } from '../cms/media-picker';
 import { useMediaAssets, type MediaAsset } from '../cms/media';
 import { PostPreview } from './post-preview';
+import { whenOn } from './social-clock';
 import { AccountAvatar } from './post-visuals';
 import {
   canApprove,
@@ -320,31 +330,14 @@ function listNames(names: string[]): string {
   return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
-function fromLocalInput(local: string): string | null {
-  if (!local) return null;
-  const date = new Date(local);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toISOString();
-}
+// Every schedule box here is read and written on the BUSINESS's clock, and every time is
+// shown on it. They were read on this computer's: a business in London, on a laptop set
+// to Pacific time, saw her 09:00 post as "1:00 AM" and a time she typed was stored eight
+// hours out (piggles persona issue 990). The conversions are lib/publish-clock's, the
+// same ones a scheduled article and a scheduled campaign use.
 
-/** An ISO instant → the `YYYY-MM-DDTHH:mm` a `datetime-local` input wants, in the
- *  reader's own zone. The inverse of {@link fromLocalInput}. */
-function toLocalInput(iso: string | null): string {
-  if (!iso) return '';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${String(date.getFullYear())}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    day: 'numeric',
-    month: 'long',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
+/** The earliest a schedule box offers, in minutes from now. */
+const SOONEST_MINUTES = 5;
 
 /** The wording that actually reaches a destination: its per-destination override
  *  when it has one, else the shared body. An EMPTY override falls through to the
@@ -520,16 +513,23 @@ function SavedDestinationTuning({
   target,
   hashtagSets,
   saving,
+  reader,
   onSave,
 }: {
   target: PostTarget;
   hashtagSets: HashtagSet[];
   saving: boolean;
+  /** Whose clock the box is on. The parent keys this row by the clock, so the box opens
+   *  on the business's clock even when its zone arrives after the first paint. */
+  reader: { zone: string | null | undefined; device: string };
   onSave: (next: { textOverride: string; firstComment: string; scheduledAt?: string }) => void;
 }) {
+  const clock = reader.zone ?? reader.device;
   const [textOverride, setTextOverride] = useState(target.textOverride ?? '');
   const [firstComment, setFirstComment] = useState(target.firstComment ?? '');
-  const [ownTime, setOwnTime] = useState(toLocalInput(target.scheduledAt));
+  const [ownTime, setOwnTime] = useState(
+    target.scheduledAt ? isoToWallClock(target.scheduledAt, clock) : ''
+  );
 
   const commit = () => {
     onSave({ textOverride, firstComment, scheduledAt: ownTime });
@@ -590,6 +590,7 @@ function SavedDestinationTuning({
               type="datetime-local"
               className="max-w-xs"
               value={ownTime}
+              min={wallClockFromNow(SOONEST_MINUTES, clock)}
               aria-label={`Own send time for ${target.targetName}`}
               onChange={(event) => {
                 setOwnTime(event.target.value);
@@ -602,6 +603,15 @@ function SavedDestinationTuning({
           Leave this blank and it goes when the rest of the post does. Set it when this audience is
           awake at a different hour.
         </FieldDescription>
+        {reader.zone === undefined ? null : (
+          <FieldDescription>
+            {clockNote(
+              reader.zone,
+              reader.device,
+              new Date(wallClockToIso(ownTime, clock) ?? Date.now())
+            )}
+          </FieldDescription>
+        )}
       </Field>
     </div>
   );
@@ -660,6 +670,8 @@ function PostMetricsSection({
 }) {
   const toast = useToast();
   const refresh = useRefreshPostMetrics();
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   // Asking for numbers only queues the platform round-trip, so the answer lands
   // seconds later on a background worker — not in the button's own response. We
@@ -780,7 +792,7 @@ function PostMetricsSection({
                 </div>
                 <span className="w-full text-sm">
                   {s
-                    ? `Last checked ${formatWhen(s.collectedAt)}`
+                    ? `Last checked ${whenOn(s.collectedAt, clock)}`
                     : 'No numbers yet for this account.'}
                 </span>
               </div>
@@ -835,6 +847,10 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
   // Seeded when the composer is opened from a calendar day (id:'new' + a schedule).
   const seedSchedule = typeof ctx.params.schedule === 'string' ? ctx.params.schedule : '';
   const [scheduleLocal, setScheduleLocal] = useState(seedSchedule);
+  // The calendar seeds the box as a wall time on the business's clock, and it is read
+  // back on the same clock.
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   useEffect(() => {
     ctx.setTitle('New post');
@@ -898,8 +914,10 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
   });
 
   const canSaveDraft = body.trim() !== '' && selected.size > 0 && !compose.isPending;
-  const scheduleIso = fromLocalInput(scheduleLocal);
-  const scheduleValid = scheduleIso !== null && new Date(scheduleIso).getTime() > Date.now();
+  const scheduleIso = wallClockToIso(scheduleLocal, clock);
+  // "Still to come" is asked of the instant, never of the wall time against this
+  // computer's clock.
+  const scheduleValid = futureInstant(scheduleLocal, clock) !== null;
 
   const toggle = (targetId: string) => {
     setSelected((current) => {
@@ -1190,12 +1208,25 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                               type="datetime-local"
                               className="max-w-xs"
                               value={scheduleLocal}
+                              min={wallClockFromNow(SOONEST_MINUTES, clock)}
                               onChange={(event) => {
                                 setScheduleLocal(event.target.value);
                               }}
                             />
                           }
                         />
+                        {scheduleLocal !== '' && !scheduleValid ? (
+                          <FieldDescription>Pick a time in the future.</FieldDescription>
+                        ) : null}
+                        {reader.zone === undefined ? null : (
+                          <FieldDescription>
+                            {clockNote(
+                              reader.zone,
+                              reader.device,
+                              new Date(scheduleIso ?? Date.now())
+                            )}
+                          </FieldDescription>
+                        )}
                       </Field>
                       <Button
                         size="sm"
@@ -1333,6 +1364,8 @@ function ComposeManage({
   const [link, setLink] = useState(post.link ?? '');
   const [mediaIds, setMediaIds] = useState<string[]>(post.mediaAssetIds);
   const [scheduleLocal, setScheduleLocal] = useState('');
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   const isAdmin = canApprove(viewer.data?.role);
   const canWrite = canCompose(viewer.data?.role);
@@ -1400,8 +1433,10 @@ function ComposeManage({
     mediaIds.join(',') !== post.mediaAssetIds.join(',');
   useDirtySource(editable && changed, 'This post has unsaved changes. Close anyway?');
 
-  const scheduleIso = fromLocalInput(scheduleLocal);
-  const scheduleValid = scheduleIso !== null && new Date(scheduleIso).getTime() > Date.now();
+  const scheduleIso = wallClockToIso(scheduleLocal, clock);
+  // "Still to come" is asked of the instant, never of the wall time against this
+  // computer's clock.
+  const scheduleValid = futureInstant(scheduleLocal, clock) !== null;
 
   const actionError = useMemo(() => {
     const failed = [update, submit, schedule, approve, reject, publish, remove].find(
@@ -1448,7 +1483,7 @@ function ComposeManage({
         toast.add({
           title: updated.status === 'scheduled' ? 'Scheduled' : 'Scheduled, awaiting approval',
           description: updated.scheduledAt
-            ? `Goes out ${formatWhen(updated.scheduledAt)}.`
+            ? `Goes out ${onClock(updated.scheduledAt, clock)}.`
             : undefined,
           type: 'success',
         });
@@ -1522,7 +1557,7 @@ function ComposeManage({
           textOverride: next.textOverride.trim() || null,
           firstComment: next.firstComment.trim() || null,
           ...(next.scheduledAt !== undefined
-            ? { scheduledAt: next.scheduledAt ? fromLocalInput(next.scheduledAt) : null }
+            ? { scheduledAt: next.scheduledAt ? wallClockToIso(next.scheduledAt, clock) : null }
             : {}),
         },
       ],
@@ -1812,10 +1847,11 @@ function ComposeManage({
                 <div className="flex flex-col gap-4">
                   {post.targets.map((target) => (
                     <SavedDestinationTuning
-                      key={target.id}
+                      key={`${target.id}:${clock}`}
                       target={target}
                       hashtagSets={hashtagSets.data ?? []}
                       saving={updateTargets.isPending}
+                      reader={reader}
                       onSave={(next) => {
                         saveTuning(target.id, next);
                       }}
@@ -1881,12 +1917,25 @@ function ComposeManage({
                             type="datetime-local"
                             className="max-w-xs"
                             value={scheduleLocal}
+                            min={wallClockFromNow(SOONEST_MINUTES, clock)}
                             onChange={(event) => {
                               setScheduleLocal(event.target.value);
                             }}
                           />
                         }
                       />
+                      {scheduleLocal !== '' && !scheduleValid ? (
+                        <FieldDescription>Pick a time in the future.</FieldDescription>
+                      ) : null}
+                      {reader.zone === undefined ? null : (
+                        <FieldDescription>
+                          {clockNote(
+                            reader.zone,
+                            reader.device,
+                            new Date(scheduleIso ?? Date.now())
+                          )}
+                        </FieldDescription>
+                      )}
                     </Field>
                     <Button
                       size="sm"
@@ -1904,7 +1953,7 @@ function ComposeManage({
                   </div>
                   {post.scheduledAt ? (
                     <Text className="text-sm">
-                      Currently set for {formatWhen(post.scheduledAt)}.
+                      Currently set for {onClock(post.scheduledAt, clock)}.
                     </Text>
                   ) : null}
 

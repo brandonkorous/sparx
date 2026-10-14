@@ -1,17 +1,8 @@
 'use client';
 
-// Wishlists — what people saved for later, as a read-only signal.
-//
-// ── Why this pane invents no Save ────────────────────────────────────────
-//
-// A wishlist belongs to the customer who made it. Staff never edit one — there
-// is nothing here to moderate or publish. What this pane is FOR is the signal:
-// which of your products people keep saving but haven't bought yet, which is
-// exactly the list worth putting on offer or making sure is in stock. So it
-// reports, honestly, and stops there.
-//
-// The numbers come from one combined endpoint (wishlists/analytics): the
-// headline counts and the most-saved products in a single read.
+// Wishlists: what people saved for later, as a read-only signal. A wishlist is
+// the customer's, so there is no Save: the pane reports which products people keep
+// saving but have not bought, from one read of wishlists/analytics.
 
 import { Badge, Card, Text } from '@wizeworks/silicaui-react';
 import { faHeart } from '@fortawesome/pro-solid-svg-icons';
@@ -23,8 +14,11 @@ import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { productErrorMessage } from './products-data';
-import { useWishlistAnalytics, type WishlistTopVariant } from './moderation-data';
+import {
+  useWishlistAnalytics,
+  type WishlistAnalytics,
+  type WishlistTopVariant,
+} from './moderation-data';
 
 /** Registry module for this pane, so the brand draws Sell's own picture rather
  *  than the generic one. */
@@ -79,6 +73,91 @@ function TopRow({ item, ctx }: { item: WishlistTopVariant; ctx: SurfaceContext }
   );
 }
 
+function WishlistsReport({ data, ctx }: { data: WishlistAnalytics; ctx: SurfaceContext }) {
+  return (
+    <>
+      <Text className="text-sm">
+        Products shoppers added to a wishlist but may not have bought. A product saved by lots of
+        people is worth keeping in stock, and a good candidate for an offer.
+      </Text>
+
+      <div className="flex flex-wrap gap-x-8 gap-y-4">
+        <Figure
+          value={String(data.itemCount)}
+          label={data.itemCount === 1 ? 'product saved in total' : 'products saved in total'}
+        />
+        <Figure
+          value={String(data.wishlistCount)}
+          label={
+            data.wishlistCount === 1
+              ? 'wishlist across your customers'
+              : 'wishlists across your customers'
+          }
+        />
+      </div>
+
+      <FormSection title="Most saved">
+        {data.topVariants.length === 0 ? (
+          <Text className="text-sm">
+            Saved products will appear here once the details behind them are available.
+          </Text>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {data.topVariants.map((item) => (
+              <TopRow key={item.variantId} item={item} ctx={ctx} />
+            ))}
+          </div>
+        )}
+      </FormSection>
+    </>
+  );
+}
+
+// All three non-ready states are carded, matching the ready one, which ends in a
+// FormSection. Card one and not the others and the pane jumps as figures arrive.
+function WishlistsBody(props: {
+  analytics: ReturnType<typeof useWishlistAnalytics>;
+  ctx: SurfaceContext;
+}) {
+  const { analytics, ctx } = props;
+  const data = analytics.data;
+  const icon = <Icon glyph={faHeart} className="size-6" aria-hidden />;
+  if (analytics.isError) {
+    return (
+      <Card>
+        <PaneLoadError
+          module={MODULE}
+          icon={icon}
+          title="Could not load wishlists"
+          description="This is a problem reaching the server. Nobody’s saved list has changed."
+          error={analytics.error}
+          onRetry={() => {
+            void analytics.refetch();
+          }}
+        />
+      </Card>
+    );
+  }
+  if (data === undefined) {
+    return (
+      <Card>
+        <PaneWaiting module={MODULE} />
+      </Card>
+    );
+  }
+  if (data.itemCount !== 0) return <WishlistsReport data={data} ctx={ctx} />;
+  return (
+    <Card>
+      <PaneEmpty
+        module={MODULE}
+        icon={icon}
+        title="Nobody has saved anything yet"
+        description="When a shopper saves a product for later, it shows up here. Once a few have, this becomes a good list of what to keep in stock or put on offer: the things people want but haven't bought."
+      />
+    </Card>
+  );
+}
+
 export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
   const analytics = useWishlistAnalytics();
   const data = analytics.data;
@@ -100,76 +179,7 @@ export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-          {/* All three non-ready states are carded, matching the ready one — which
-              ends in a FormSection. Card one and not the others and the pane
-              jumps as the figures arrive. */}
-          {analytics.isError ? (
-            <Card>
-              <PaneLoadError
-                module={MODULE}
-                icon={<Icon glyph={faHeart} className="size-6" aria-hidden />}
-                title="Could not load wishlists"
-                description={productErrorMessage(
-                  analytics.error,
-                  'This is a problem reaching the server. Nobody’s saved list has changed.'
-                )}
-                onRetry={() => {
-                  void analytics.refetch();
-                }}
-              />
-            </Card>
-          ) : data === undefined ? (
-            <Card>
-              <PaneWaiting module={MODULE} />
-            </Card>
-          ) : data.itemCount === 0 ? (
-            <Card>
-              <PaneEmpty
-                module={MODULE}
-                icon={<Icon glyph={faHeart} className="size-6" aria-hidden />}
-                title="Nobody has saved anything yet"
-                description="When a shopper saves a product for later, it shows up here. Once a few have, this becomes a good list of what to keep in stock or put on offer: the things people want but haven't bought."
-              />
-            </Card>
-          ) : (
-            <>
-              <Text className="text-sm">
-                Products shoppers added to a wishlist but may not have bought. A product saved by
-                lots of people is worth keeping in stock, and a good candidate for an offer.
-              </Text>
-
-              <div className="flex flex-wrap gap-x-8 gap-y-4">
-                <Figure
-                  value={String(data.itemCount)}
-                  label={
-                    data.itemCount === 1 ? 'product saved in total' : 'products saved in total'
-                  }
-                />
-                <Figure
-                  value={String(data.wishlistCount)}
-                  label={
-                    data.wishlistCount === 1
-                      ? 'wishlist across your customers'
-                      : 'wishlists across your customers'
-                  }
-                />
-              </div>
-
-              <FormSection title="Most saved">
-                {data.topVariants.length === 0 ? (
-                  <Text className="text-sm">
-                    Saved products will appear here once the details behind them are available.
-                  </Text>
-                ) : (
-                  <div className="flex flex-col gap-3">
-                    {data.topVariants.map((item) => (
-                      <TopRow key={item.variantId} item={item} ctx={ctx} />
-                    ))}
-                  </div>
-                )}
-              </FormSection>
-            </>
-          )}
+          <WishlistsBody analytics={analytics} ctx={ctx} />
         </div>
       </div>
     </div>

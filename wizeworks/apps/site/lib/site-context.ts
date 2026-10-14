@@ -109,6 +109,11 @@ export interface ResolvedSite {
   // `site.identity.phone` / `.email` / `.address`. Each is null when unset — an
   // empty string would blank the authored node instead of leaving it standing.
   contact: { phone: string | null; email: string | null; address: string | null };
+  // The business's own time zone (Business details), or null when none is set. Every
+  // date the site prints is the day on THIS clock: a piece a journal in England
+  // published at 06:00 on October 1 went out on October 1, not on September 30, which
+  // is what a server on Pacific time printed. See `formatPublishedDate`.
+  timezone: string | null;
   // The languages this shop's catalogue is written in, beyond its own words.
   // Derived by api-rest from the translations that actually exist, so a language
   // is here because a real product carries words in it. Empty for almost every
@@ -143,6 +148,9 @@ export interface ResolvedSite {
   // Defaults to [] on an older api-rest that omits it — nothing is ever hidden
   // on missing data, the same rule `billingPhase` follows above.
   disabledModules: string[];
+  // The site's one public origin (`https://host`), the same host its sitemap and feed
+  // name. Null on an older api-rest, and the page then names the host that served it.
+  siteOrigin: string | null;
 }
 
 /** Mirror of @wizeworks/billing's BillingPhase — redeclared locally so the storefront
@@ -371,6 +379,8 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // thing as "the business has not filled these in" — the authored content
       // stands rather than being blanked.
       contact: data.contact ?? { phone: null, email: null, address: null },
+      // Null on an older api-rest, which reads as "no zone set": dates fall to UTC.
+      timezone: typeof data.timezone === 'string' && data.timezone ? data.timezone : null,
       // Defaults null on an older api-rest that doesn't return it — the chrome
       // then renders whatever the node was authored with, rather than blanking.
       tagline: data.tagline ?? null,
@@ -390,6 +400,7 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       disabledModules: Array.isArray(data.disabledModules)
         ? data.disabledModules.filter((slug): slug is string => typeof slug === 'string')
         : [],
+      siteOrigin: typeof data.siteOrigin === 'string' && data.siteOrigin ? data.siteOrigin : null,
     };
   } catch {
     return null;

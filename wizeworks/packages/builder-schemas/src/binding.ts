@@ -69,6 +69,13 @@ export interface DataSource {
    * does not have — see docs/silicaui/01.
    */
   maxItems?: number;
+  /**
+   * Whether the business has anything here: a kind it made, or one it has written in.
+   * Absent means unknown. The editor's "What this list shows" lists only these, so a
+   * journal choosing where its front page draws from is not handed every kind the
+   * platform ships ("Careers in Internship").
+   */
+  used?: boolean;
 }
 
 // The full set of bindable sources (named to avoid clashing with node.ts's
@@ -89,6 +96,28 @@ export interface CmsFieldLike {
   multiple?: boolean;
   accept?: string[];
   fields?: CmsFieldLike[];
+  /** A choice field's options — `{ label: 'Field', value: 'field' }`. */
+  options?: { label: string; value: string }[];
+}
+
+/**
+ * The source key for a kind's pieces filed under one choice: `cmsWhere.article.section.field`
+ * for the Articles whose Section is Field. Its own root rather than under `cms.article`,
+ * because `cms.article` is the list itself and a key beneath a list would be a property of
+ * an array, written or lost depending on which fetch finished last.
+ */
+export function cmsWhereKey(typeKey: string, field: string, value: string): string {
+  return `cmsWhere.${typeKey}.${field}.${value}`;
+}
+
+/** The parts of a `cmsWhere.<kind>.<field>.<value>` key, or null for any other. */
+export function parseCmsWhereKey(
+  key: string
+): { type: string; field: string; value: string } | null {
+  const parts = key.split('.');
+  if (parts.length !== 4 || parts[0] !== 'cmsWhere') return null;
+  const [, type, field, value] = parts as [string, string, string, string];
+  return type && field && value ? { type, field, value } : null;
 }
 
 export interface CmsContentTypeLike {
@@ -97,6 +126,8 @@ export interface CmsContentTypeLike {
   pluralName: string;
   isSingleton?: boolean;
   fields: CmsFieldLike[];
+  /** See `DataSource.used`. */
+  used?: boolean;
 }
 
 function isImageAccept(accept: string[] | undefined): boolean {
@@ -122,6 +153,10 @@ function mapField(f: CmsFieldLike): FieldSchema {
       return { ...base, kind: 'option', cardinality: f.multiple ? 'array' : 'scalar' };
     case 'reference':
       return { ...base, kind: 'reference', cardinality: f.multiple ? 'array' : 'scalar' };
+    // One of the business's authors, credited on the piece: their name. The storefront
+    // puts the address of their page beside it, as `<key>Url`.
+    case 'author':
+      return { ...base, kind: 'text', cardinality: 'scalar' };
     case 'asset': {
       const image = isImageAccept(f.accept);
       if (f.multiple) return { ...base, kind: image ? 'images' : 'file', cardinality: 'array' };
@@ -159,6 +194,7 @@ export function mapCmsContentType(ct: CmsContentTypeLike): DataSource[] {
     cardinality: 'object',
     recordType: ct.key,
     fields,
+    ...(ct.used !== undefined ? { used: ct.used } : {}),
   };
   if (ct.isSingleton) return [record];
   const collection: DataSource = {
@@ -170,8 +206,21 @@ export function mapCmsContentType(ct: CmsContentTypeLike): DataSource[] {
     fields,
     // Paginated like the catalog grid — one page here, the rest behind the pager.
     maxItems: COLLECTION_PAGE_ITEMS,
+    ...(ct.used !== undefined ? { used: ct.used } : {}),
   };
-  return [collection, record];
+  // One list per option of each single-choice field: "Articles in Field", "Articles in
+  // Ledger". A journal's sections are a choice on each piece, and a section page is
+  // the list of the pieces filed under it.
+  const filed: DataSource[] = (ct.fields ?? [])
+    .filter((f) => f.type === 'enum' && !f.multiple)
+    .flatMap((f) =>
+      (f.options ?? []).map((option) => ({
+        ...collection,
+        key: cmsWhereKey(ct.key, f.key, option.value),
+        label: `${ct.pluralName} in ${option.label}`,
+      }))
+    );
+  return [collection, ...filed, record];
 }
 
 // ── Product type → sources (docs/143 §6.10) ─────────────────────────────────────
@@ -515,6 +564,69 @@ export const SCHEDULING_SOURCES: DataSource[] = [
     cardinality: 'object',
     recordType: 'service',
     fields: SERVICE_FIELDS,
+  },
+];
+
+// ── Author sources ────────────────────────────────────────────────────────────
+//
+// The people a site's writing is credited to. `cmsAuthors` is the list an index page
+// ("Contributors") repeats over: everyone with something published on the site. `author`
+// is the one person an author's own page (`/authors/:slug`) is about, carrying the
+// pieces they wrote and the ones they are credited on. Own roots, never `cms.<key>`,
+// which belong to the business's kinds of content.
+
+/** The list of a site's authors — `cmsAuthors`. */
+export const AUTHORS_SOURCE_KEY = 'cmsAuthors';
+
+const AUTHOR_PIECE_FIELDS: FieldSchema[] = [
+  { key: 'title', label: 'Headline', kind: 'text', cardinality: 'scalar' },
+  { key: 'excerpt', label: 'Summary', kind: 'text', cardinality: 'scalar' },
+  { key: 'featuredImage', label: 'Picture', kind: 'image', cardinality: 'scalar' },
+  { key: 'date', label: 'Published date', kind: 'date', cardinality: 'scalar' },
+  { key: 'kindName', label: 'Kind of writing', kind: 'text', cardinality: 'scalar' },
+  { key: 'role', label: 'Credited as', kind: 'text', cardinality: 'scalar' },
+  { key: 'url', label: 'Address', kind: 'text', cardinality: 'scalar' },
+];
+
+const AUTHOR_FIELDS: FieldSchema[] = [
+  { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
+  { key: 'bio', label: 'Biography', kind: 'text', cardinality: 'scalar' },
+  { key: 'portrait', label: 'Portrait', kind: 'image', cardinality: 'scalar' },
+  { key: 'url', label: 'Address of their page', kind: 'text', cardinality: 'scalar' },
+];
+
+export const AUTHOR_SOURCES: DataSource[] = [
+  {
+    key: AUTHORS_SOURCE_KEY,
+    label: 'Authors',
+    module: 'cms',
+    cardinality: 'array',
+    recordType: 'author',
+    fields: AUTHOR_FIELDS,
+  },
+  {
+    key: 'author',
+    label: 'Author',
+    module: 'cms',
+    cardinality: 'object',
+    recordType: 'author',
+    fields: [
+      ...AUTHOR_FIELDS,
+      {
+        key: 'written',
+        label: 'What they wrote',
+        kind: 'list',
+        cardinality: 'array',
+        fields: AUTHOR_PIECE_FIELDS,
+      },
+      {
+        key: 'credited',
+        label: 'Where they are credited',
+        kind: 'list',
+        cardinality: 'array',
+        fields: AUTHOR_PIECE_FIELDS,
+      },
+    ],
   },
 ];
 

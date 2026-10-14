@@ -10,9 +10,10 @@
 // the rail for partner tenants, so `not a partner` is a deep-link edge; it is
 // handled rather than assumed away.
 
-import { Button, EmptyState } from '@wizeworks/silicaui-react';
+import { EmptyState } from '@wizeworks/silicaui-react';
 import { Award, Lock, ServerCrash } from 'lucide-react';
 import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ApiError } from '@wizeworks/api-client';
 
 /** A centred message that fills the pane — for the states where there is no list
@@ -83,16 +84,15 @@ export function PartnerLoadError({
     );
   }
   return (
-    <PartnerMessage
-      icon={<ServerCrash className="size-6" aria-hidden />}
-      title={`Could not load ${section}`}
-      description="This is a problem reaching the server. Nothing about your partner account has changed. Try again in a moment."
-      actions={
-        <Button size="sm" color="module" onClick={onRetry}>
-          Try again
-        </Button>
-      }
-    />
+    <div className={PANE_SHELL}>
+      <PaneLoadError
+        icon={<ServerCrash className="size-6" aria-hidden />}
+        title={`Could not load ${section}`}
+        description="This is a problem reaching the server. Nothing about your partner account has changed. Try again in a moment."
+        error={error}
+        onRetry={onRetry}
+      />
+    </div>
   );
 }
 

@@ -13,7 +13,9 @@ import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
 import { getPublishedSilicaPage, hostKeysIn, treeHasHostNode } from '@/lib/silica';
-import { siteShowsPage } from '@/lib/site-modules';
+import { requireSiteModule, siteShowsPage } from '@/lib/site-modules';
+import { getKindPiece } from '@/lib/kind-pieces';
+import { KindPiecePage, kindPieceMetadata } from '@/components/kind-piece-page';
 import { buildSilicaHost, pageOutOfRange, silicaSiteIdentity } from '@/lib/silica-data';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
@@ -80,7 +82,6 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       clean(silicaPage.ogImage) ??
       ogImageUrl({
         title: clean(silicaPage.seoTitle) ?? silicaPage.name,
-        eyebrow: 'Page',
         brand: site.name,
         accent: site.theme?.colorPrimary,
         platformBrand: site.platformBrand,
@@ -125,7 +126,6 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       clean(builderPage.ogImage) ??
       ogImageUrl({
         title: clean(builderPage.seoTitle) ?? builderPage.name,
-        eyebrow: 'Page',
         brand: site.name,
         accent: site.theme?.colorPrimary,
         platformBrand: site.platformBrand,
@@ -142,6 +142,10 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       robots: builderPage.noindex ? { index: false, follow: false } : { index: true, follow: true },
     };
   }
+
+  // A piece of a content kind, at the address its kind gives it (`/articles/x`).
+  const piece = await getKindPiece(site.slug, slug, previewToken ? { previewToken } : {});
+  if (piece) return kindPieceMetadata(piece, site);
 
   const page = await getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {});
   if (!page) return {};
@@ -167,7 +171,6 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
         {
           url: ogImageUrl({
             title: title ?? site.name,
-            eyebrow: 'Page',
             brand: site.name,
             accent: site.theme?.colorPrimary,
             platformBrand: site.platformBrand,
@@ -276,6 +279,17 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
         <BuilderRenderer tree={builderPage.tree} data={data} />
       </>
     );
+  }
+
+  // A piece of a content kind, at the address its kind gives it — `/articles/x` for a
+  // journal whose Article kind says `/articles/{slug}`. The sitemap, the feed and site
+  // search all link here; before this route they all linked to a 404. After the pages
+  // above, so a page the owner made at that exact address still wins.
+  const piece = await getKindPiece(site.slug, slug, previewToken ? { previewToken } : {});
+  if (piece) {
+    // A site that switched Content off under "What this site shows" has no pieces.
+    requireSiteModule(site, 'cms');
+    return <KindPiecePage site={site} piece={piece} sitePreview={sitePreview} />;
   }
 
   const activePropertySlug = (await resolveActivePropertySlug()) ?? undefined;

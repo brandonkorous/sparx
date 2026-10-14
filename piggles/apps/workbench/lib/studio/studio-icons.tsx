@@ -12,9 +12,12 @@
 // idea, one thing to learn.
 
 import {
+  faArrowDown,
   faArrowRotateLeft,
   faArrowRotateRight,
+  faArrowUp,
   faBars,
+  faCopy,
   faDisplay,
   faFile,
   faMobileScreen,
@@ -23,6 +26,7 @@ import {
   faSliders,
   faSun,
   faTabletScreen,
+  faTrashCan,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon, type IconGlyph } from '@piggles/ui';
 
@@ -41,6 +45,11 @@ const CHROME: Record<string, IconGlyph> = {
   plus: faPlus,
   page: faFile,
   sliders: faSliders,
+  // A selected block's own actions in the Inspector: move, duplicate, delete.
+  'arrow-up': faArrowUp,
+  'arrow-down': faArrowDown,
+  copy: faCopy,
+  trash: faTrashCan,
 };
 
 /** Draw one of the engine's glyphs, or nothing — which tells `StudioIcon` to fall

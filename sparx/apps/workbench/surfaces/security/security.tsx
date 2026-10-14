@@ -102,6 +102,7 @@ export function SecuritySurface() {
             entries={activity.data}
             isPending={activity.isPending}
             isError={activity.isError}
+            error={activity.error}
             isFetching={activity.isFetching}
             limit={activityLimit}
             refetch={() => {

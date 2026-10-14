@@ -35,6 +35,7 @@ import { Rail } from './rail';
 import { StatusBar } from './status-bar';
 import { Toolbar } from './toolbar';
 import { BillingBanner } from './billing/billing-banner';
+import { VerifyEmailBanner } from './verify-email-banner';
 import { Launcher } from './launcher';
 import { ModulePanel } from './module-panel';
 import { RecentsRecorder } from './recents-recorder';
@@ -383,6 +384,14 @@ export function WorkbenchShell({
             whatStopped="Notices about your plan and payments have stopped showing."
           >
             <BillingBanner />
+          </ChromeBoundary>
+
+          {/* Confirm-your-email notice (sparx persona issue 157). */}
+          <ChromeBoundary
+            region="verify-email-banner"
+            whatStopped="The notice about confirming your email address has stopped showing."
+          >
+            <VerifyEmailBanner />
           </ChromeBoundary>
 
           <div className="relative flex min-h-0 flex-1">

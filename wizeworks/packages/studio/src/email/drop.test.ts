@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { appendEmailSlot, resolveEmailDrop } from './drop';
+import { appendEmailSlot, clickedEmailSlot, resolveEmailDrop } from './drop';
 import type { EmailNode } from '@wizeworks/silicaui-builder/email';
 import { emailBody, emailButton, emailSection, emailText } from '../testing/fixtures';
 
@@ -110,5 +110,54 @@ describe('where a block lands with nothing selected', () => {
     // A real answer, and the caller says it out loud rather than doing nothing.
     const empty = { kind: 'body', id: 'body', children: [] } as unknown as EmailNode;
     expect(appendEmailSlot(empty, text())).toBeUndefined();
+  });
+});
+
+// Clicking a row with something selected (piggles persona issue 988). She added a
+// Section, it was selected, and Text was refused with "pick one in your email, then
+// add this to it", which is what she had done.
+describe('where a clicked block lands with something selected', () => {
+  it('adds a text block INTO the selected section', () => {
+    const root = emailBody();
+    root.children.push(emailSection('fresh', []));
+    expect(clickedEmailSlot(root, 'fresh', emailText('new', 'x'))).toEqual({
+      parentId: 'fresh',
+      index: 0,
+    });
+  });
+
+  it('adds it at the end of a section that already has content', () => {
+    expect(clickedEmailSlot(emailBody(), 'intro', emailText('new', 'x'))).toEqual({
+      parentId: 'intro',
+      index: 1,
+    });
+  });
+
+  it('adds it into a selected column', () => {
+    expect(clickedEmailSlot(emailBody(), 'left', emailText('new', 'x'))).toEqual({
+      parentId: 'left',
+      index: 1,
+    });
+  });
+
+  it('puts a section AFTER the selected section, since one cannot hold another', () => {
+    expect(clickedEmailSlot(emailBody(), 'intro', emailSection('band', []))).toEqual({
+      parentId: 'body',
+      index: 1,
+    });
+  });
+
+  it('puts a text block after the selected text block', () => {
+    expect(clickedEmailSlot(emailBody(), 'greeting', emailText('new', 'x'))).toEqual({
+      parentId: 'intro',
+      index: 1,
+    });
+  });
+
+  it('with nothing selected, uses the end of the email', () => {
+    expect(clickedEmailSlot(emailBody(), undefined, emailSection('band', []))).toEqual({
+      parentId: 'body',
+      index: 2,
+    });
   });
 });

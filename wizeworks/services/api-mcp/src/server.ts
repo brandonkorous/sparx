@@ -20,6 +20,7 @@ import { recordToolInvocation } from './audit.js';
 import { relayAgentWrite } from './builder-relay.js';
 import { loadDisabledTools } from './tool-policy.js';
 import { ALL_MCP_TOOLS, isSiteScopableTool, type AnyMcpTool } from './tool-registry.js';
+import { toolsToList } from './tool-listing.js';
 
 const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 
@@ -89,8 +90,25 @@ export async function buildServerForRequest(auth: McpAuthContext): Promise<McpSe
   // honest answer — there is no single site whose overrides could apply.
   const disabledTools = await loadDisabledTools(auth.tenantId, auth.propertyId ?? null);
 
-  for (const tool of ALL_MCP_TOOLS) {
-    if (disabledTools.has(tool.name)) continue;
+  // Only the tools this connection can run are offered: the credential holds the
+  // scope and the module is on (sparx persona issue 212). A read-only key's client
+  // was offered every write tool and refused each one it tried. `dispatch` keeps
+  // both checks as the backstop.
+  const modules = [...new Set(Object.values(MODULE_BY_SCOPE))];
+  const activeModules = new Set(
+    (
+      await Promise.all(
+        modules.map(async (m) => ((await isModuleEnabled(auth.tenantId, m)) ? m : null))
+      )
+    ).filter((m): m is ModuleSlug => m !== null)
+  );
+
+  for (const tool of toolsToList(ALL_MCP_TOOLS, {
+    scopes: auth.scopes,
+    disabled: disabledTools,
+    activeModules,
+    moduleOf: (scope) => MODULE_BY_SCOPE[scope],
+  })) {
     // ZodObject is `AnySchema`-compatible — pass it through so the SDK can
     // derive the JSON-schema for the client without us re-deriving the shape.
     const inputSchema = tool.input as Parameters<typeof server.registerTool>[1]['inputSchema'];

@@ -782,3 +782,52 @@ describe('the buy box that could not offer a repeat order (issue 739)', () => {
     expect(words(after)).toBe(words(before));
   });
 });
+
+describe('upgradePageBody: the page measure (piggles persona issue 950)', () => {
+  /** A Page top exactly as `section()` stamped it before the house measure. */
+  const staleBand = (boxClass = 'mx-auto flex w-full max-w-6xl flex-col gap-10') =>
+    el('section', 'bg-base-100 @container px-6 py-16', {
+      children: [el('div', boxClass, { children: [el('h1', '', { text: 'Archive' })] })],
+    });
+
+  it('moves a stored band’s gutter into its box, wherever on the page it sits', () => {
+    const { root, changed } = upgradePageBody(
+      el('div', 'flex flex-col', { children: [staleBand()] })
+    );
+    expect(changed).toBe(true);
+    const band = (root as Extract<Node, { kind: 'element' }>).children![0] as Extract<
+      Node,
+      { kind: 'element' }
+    >;
+    expect(band.class).toBe('bg-base-100 @container py-16');
+    expect((band.children![0] as { class?: string }).class).toBe(
+      'mx-auto flex w-full max-w-6xl px-6 flex-col gap-10'
+    );
+  });
+
+  it('keeps both repairs when a band also carries a dead class', () => {
+    // The dead-class repair rewrites `class` from the ORIGINAL node; run first, the
+    // measure repair would have its gutter put back.
+    const band = el('section', 'bg-base-100 @container px-6 py-16 gap-1.5', {
+      children: [el('div', 'mx-auto max-w-6xl gap-1.5')],
+    });
+    const { root } = upgradePageBody(band);
+    const healed = root as Extract<Node, { kind: 'element' }>;
+    expect(healed.class).toBe('bg-base-100 @container py-16 gap-2');
+    expect((healed.children![0] as { class?: string }).class).toBe('mx-auto max-w-6xl px-6 gap-2');
+  });
+
+  it('heals once and then stops', () => {
+    const once = upgradePageBody(staleBand());
+    const twice = upgradePageBody(once.root);
+    expect(twice.changed).toBe(false);
+    expect(twice.root).toBe(once.root);
+  });
+
+  it('leaves a band an author padded differently alone', () => {
+    const authored = el('section', 'bg-base-100 px-10 py-16', {
+      children: [el('div', 'mx-auto max-w-6xl')],
+    });
+    expect(upgradePageBody(authored).changed).toBe(false);
+  });
+});

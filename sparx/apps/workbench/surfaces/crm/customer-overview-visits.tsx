@@ -48,6 +48,8 @@ export interface CustomerVisits {
   shown: boolean;
   isPending: boolean;
   isError: boolean;
+  /** Why the read failed, so the message names the real cause (issue 260). */
+  error: unknown;
   next: Booking | null;
   last: Booking | null;
   visitsSoFar: number;
@@ -86,6 +88,7 @@ export function useCustomerVisits(customerId: string): CustomerVisits {
     shown,
     isPending: shown && (aheadQ.isPending || lastQ.isPending),
     isError: shown && (aheadQ.isError || lastQ.isError),
+    error: shown ? (aheadQ.error ?? lastQ.error) : null,
     next: ahead[0] ?? null,
     last: lastQ.data?.items[0] ?? null,
     visitsSoFar: lastQ.data?.total ?? 0,

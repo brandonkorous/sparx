@@ -53,6 +53,7 @@ import { BarChart3, TrendingUp } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { DownloadButton } from '../../components/download-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ItemName } from './item-name';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
@@ -802,10 +803,11 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
     // failure rather than a set of empty cards implying nothing sells.
     if (sellThrough.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<BarChart3 className="size-6" aria-hidden />}
           title="Could not work out your figures"
           description="This is a problem reaching the server. Your stock and its history are unaffected: the figures just could not be worked out just now."
+          error={sellThrough.error}
         />
       );
     }

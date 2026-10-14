@@ -32,7 +32,9 @@ export interface BillingNotice {
   tone: BillingTone;
   title: string;
   body: string;
-  ctaLabel: string;
+  /** The button to the bill, or null for somebody who may not pay it: they
+   *  are told who can instead (sparx persona issue 168). */
+  ctaLabel: string | null;
   /** Only the earliest (heads-up) tier can be dismissed; everything past it is
    *  persistent — you can't dismiss your site going dark. */
   dismissible: boolean;
@@ -60,8 +62,34 @@ export function billingChip(billing: BillingPhaseView): BillingChip | null {
   }
 }
 
-/** The banner for the current phase, or null (quiet chip-only / active / exempt). */
-export function billingNotice(billing: BillingPhaseView): BillingNotice | null {
+/**
+ * The banner for the current phase, or null (quiet chip-only / active / exempt).
+ *
+ * `canPay` is whether the person looking may add a card: an owner or an admin.
+ * Everybody else on the team still hears that the trial is ending, since it is
+ * news about the business, and is told who can act on it, with no button. Alyssa,
+ * an Editor, was offered "Add payment method" and refused on the page it opened
+ * (sparx persona issue 168).
+ */
+export function billingNotice(billing: BillingPhaseView, canPay = true): BillingNotice | null {
+  const notice = ownersNotice(billing);
+  if (!notice || canPay) return notice;
+  return { ...notice, body: TEAM_BODY[notice.level](billing.daysLeft ?? 0), ctaLabel: null };
+}
+
+/** What the rest of the team reads instead of the owner's call to action. */
+const TEAM_BODY: Record<BillingNotice['level'], (days: number) => string> = {
+  'trial-heads-up': () =>
+    'An owner or an admin can add a payment method to keep every feature running when the trial ends.',
+  'trial-ending': () =>
+    'Ask an owner or an admin to add a payment method, so nothing switches off when the trial ends.',
+  grace: (days) =>
+    `Your public site stays live for ${days} more ${dayWord(days)}. An owner or an admin can add a payment method to switch everything back on.`,
+  suspended: () =>
+    'An owner or an admin can add a payment method to bring your site and features back. Nothing has been deleted.',
+};
+
+function ownersNotice(billing: BillingPhaseView): BillingNotice | null {
   const days = billing.daysLeft ?? 0;
 
   switch (billing.phase) {

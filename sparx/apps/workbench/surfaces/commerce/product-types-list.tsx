@@ -20,7 +20,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   Heading,
@@ -32,6 +31,7 @@ import { Plus, Shapes } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { useProductTypeList, type ProductType } from './product-types-data';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -153,21 +153,14 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the list — a false "nothing here" over a
           // connection failure is the worst thing to say about a schema.
           <Card className="flex-1">
-            <EmptyState
+            <PaneLoadError
               icon={<Shapes className="size-6" aria-hidden />}
               title="Could not load your product types"
               description="This is a problem reaching the server. Nothing you have defined is affected."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              error={error}
+              onRetry={() => {
+                void refetch();
+              }}
             />
           </Card>
         ) : isLoading ? (
@@ -322,7 +315,9 @@ function TypeGroup({ title, description, types, emptyHint, onOpen }: TypeGroupPr
                 <td className="hidden text-sm whitespace-nowrap @sm:table-cell">
                   {attributeLabel(type)}
                 </td>
-                <td className="hidden font-mono text-sm @lg:table-cell">{type.key}</td>
+                <td className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell">
+                  {type.key}
+                </td>
               </tr>
             ))}
           </tbody>

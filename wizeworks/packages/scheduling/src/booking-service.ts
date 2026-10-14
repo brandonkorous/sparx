@@ -27,7 +27,7 @@ import {
 import { recognizeBookedCustomers } from './booked-customer';
 import { recordBookingEvent } from './booking-history';
 import { bookingMoneyFor, type BookingMoney } from './booking-money';
-import { blockedError, blockedResources } from './slot-guards';
+import { blockedError, blockedResources, keptSpan, type KeptSpan } from './slot-guards';
 import { findBookingPlaceTx } from './booking-receipt';
 import { lockPooledResources } from './locks';
 import {
@@ -36,7 +36,6 @@ import {
   rescheduleBookingNotifications,
   scheduleBookingNotifications,
 } from './notifications';
-import type { Interval } from './time';
 
 const MINUTE_MS = 60 * 1000;
 const RELEASED = ['cancelled', 'no_show'] as const;
@@ -92,7 +91,7 @@ interface AllocationPick {
 async function pickForRole(
   tx: TxClient,
   req: ResourceRequirement,
-  span: Interval,
+  span: KeptSpan,
   opts: {
     explicitIds: string[];
     locationId?: string;
@@ -202,10 +201,7 @@ export async function createBooking(
 
       const startAt = new Date(input.startAt);
       const endAt = new Date(startAt.getTime() + service.durationMinutes * MINUTE_MS);
-      const span: Interval = {
-        start: startAt.getTime() - service.bufferBeforeMin * MINUTE_MS,
-        end: endAt.getTime() + service.bufferAfterMin * MINUTE_MS,
-      };
+      const span = keptSpan(startAt, service);
 
       const requirements = (service.resourceRequirements as unknown as ResourceRequirement[]) ?? [];
       const roleSpecs: ResourceRequirement[] =
@@ -528,10 +524,7 @@ export async function rescheduleBooking(
 
       const startAt = new Date(input.startAt);
       const endAt = new Date(startAt.getTime() + service.durationMinutes * MINUTE_MS);
-      const span: Interval = {
-        start: startAt.getTime() - service.bufferBeforeMin * MINUTE_MS,
-        end: endAt.getTime() + service.bufferAfterMin * MINUTE_MS,
-      };
+      const span = keptSpan(startAt, service);
 
       const existing = await tx.bookingResource.findMany({ where: { bookingId: input.id } });
       // Keep the same resources unless the caller re-picks; the EXCLUDE guards the move.

@@ -58,6 +58,8 @@ export const EVENTS = [
   // name, address) saved without a publish. Live in the database at once, so the
   // cache has to follow (persona issue 133).
   'builder.page.settings.changed',
+  // A page deleted while live: its cached copy must go with it (persona issue 947).
+  'builder.page.deleted',
   // ── Catalog ─────────────────────────────────────────────────────────────────
   'product.created',
   'product.updated',

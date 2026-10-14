@@ -24,6 +24,9 @@ const PHRASES: [string, string][] = [
   ['import products', 'platform.migrate'],
   ['move my products from shopify', 'platform.migrate'],
   ['import customers', 'platform.migrate'],
+  // A journal's list (Piggles persona P09).
+  ['import subscribers', 'platform.migrate'],
+  ['import my mailing list', 'platform.migrate'],
   ['core deposit', 'commerce.cores.list'],
   ['old part', 'commerce.cores.list'],
   // A core charge the old store faked as a choice (sparx persona issue 057). The

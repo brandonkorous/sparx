@@ -147,6 +147,24 @@ describe('nothing stands in the floating tools corner', () => {
     ).toEqual([]);
   });
 
+  it('makes every reply box pinned to the foot of a pane reserve the corner', () => {
+    // A reply box is the same shape as a footer: pinned to the pane's foot, its
+    // Send button pushed to the right end. Doty opened a customer's chat and Send
+    // was under the tools (sparx persona issue 166); neither footer fix reached it,
+    // because it is not a list.
+    const pinnedForm = new RegExp(String.raw`<form\s+className="[^"]*\bshrink-0\b`);
+    const guilty = surfaceFiles()
+      .filter((f) => pinnedForm.test(f.text))
+      .filter((f) => !f.text.includes('${CANVAS_CORNER_CLEARANCE}'))
+      .map((f) => f.name);
+    expect(
+      guilty,
+      'these surfaces pin a reply box to the foot of the pane with its button in ' +
+        'the corner the workspace tools float in. Reserve the room with ' +
+        'CANVAS_CORNER_CLEARANCE on the row that holds the button'
+    ).toEqual([]);
+  });
+
   it('leaves the count sentence to countLabel', () => {
     const guilty = surfaceFiles()
       .filter((f) => HAND_ROLLED_COUNT.test(f.text))

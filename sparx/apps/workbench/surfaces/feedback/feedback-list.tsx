@@ -29,7 +29,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
   const feedback = useFeedback();
-  const { data, isPending, isError, refetch } = useMyFeedback();
+  const { data, isPending, isError, error, refetch } = useMyFeedback();
 
   const open = (submission: FeedbackSubmission, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('platform.feedback.thread', { id: submission.id }, { target: targetFor(event) });
@@ -41,6 +41,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<MessageSquarePlus className="size-6" aria-hidden />}
         title="Could not load your feedback"
         description="This is a problem reaching the server, not a problem with anything you sent. Nothing was lost."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

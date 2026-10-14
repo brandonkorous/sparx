@@ -281,7 +281,14 @@ function QueueRow({
       {item.holdReasons.length > 0 ? (
         <ul className="flex flex-col gap-1">
           {item.holdReasons.map((reason) => (
-            <li key={reason.kind}>{holdReasonWords(reason, formatCents, item.currency)}</li>
+            <li key={reason.kind}>
+              {holdReasonWords(
+                reason,
+                formatCents,
+                item.currency,
+                item.accountCreditLeftCents ?? null
+              )}
+            </li>
           ))}
         </ul>
       ) : null}
@@ -323,7 +330,7 @@ function decisionFacts(item: QueueItem): DecisionFacts {
     total: formatCents(item.totalCents, item.currency),
     companyName: item.companyName,
     signOff: item.signOff,
-    overCreditLimit: item.holdReasons.some((reason) => reason.kind === 'over_credit_limit'),
+    ...creditFacts(item),
   };
 }
 
@@ -942,4 +949,21 @@ function RuleRow({
       )}
     </li>
   );
+}
+
+/** Whether approving it now runs past the account's credit, from TODAY'S figure,
+ *  not the one it was held on (sparx persona issue 188). Only an order held for
+ *  its credit was billed to the account; a card order is not on credit at all. */
+function creditFacts(item: QueueItem): {
+  overCreditLimit: boolean;
+  heldForCredit: boolean;
+  creditLeftNow: string | null;
+} {
+  const heldForCredit = item.holdReasons.some((reason) => reason.kind === 'over_credit_limit');
+  const leftNow = item.accountCreditLeftCents ?? null;
+  return {
+    heldForCredit,
+    overCreditLimit: heldForCredit && (leftNow === null || item.totalCents > leftNow),
+    creditLeftNow: leftNow === null ? null : formatCents(leftNow, item.currency),
+  };
 }

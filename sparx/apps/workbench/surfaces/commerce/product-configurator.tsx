@@ -79,8 +79,10 @@ import {
   Undo2,
 } from 'lucide-react';
 import { MoneyCentsInput } from '../../components/money-input';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { loadFailureWords, workFailureWords } from '../../lib/api-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { FormSection } from '../../components/form-section';
@@ -745,7 +747,10 @@ function TryItPanel({
             <AlertDescription>
               {productErrorMessage(
                 preview.error,
-                'This is a problem reaching the server. Nothing has been changed.'
+                workFailureWords(
+                  preview.error,
+                  'This is a problem reaching the server. Nothing has been changed.'
+                )
               )}
             </AlertDescription>
           </AlertContent>
@@ -1229,25 +1234,15 @@ function ConfiguratorBody({
   const body = () => {
     if (templates.isError) {
       return (
-        <Alert color="danger" variant="soft">
-          <AlertContent>
-            <AlertTitle>Could not load this product’s builds</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. Nothing about the product has changed. It just
-              could not be read just now.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="danger"
-            variant="soft"
-            onClick={() => {
-              void templates.refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
+        <PaneLoadError
+          title="Could not load this product’s builds"
+          description="This is a problem reaching the server. Nothing about the product has changed. It just could not be read just now."
+          error={templates.error}
+          noun="product"
+          onRetry={() => {
+            void templates.refetch();
+          }}
+        />
       );
     }
 
@@ -1317,7 +1312,10 @@ function ConfiguratorBody({
             <AlertContent>
               <AlertTitle>Could not load this build</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. The build itself is unaffected.
+                {loadFailureWords(
+                  detail.error,
+                  'This is a problem reaching the server. The build itself is unaffected.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button

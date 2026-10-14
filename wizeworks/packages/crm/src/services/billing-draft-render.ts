@@ -26,7 +26,7 @@ import type {
 import { businessDayOf } from './billing-ar';
 import { withCoreRows } from './billing-document-html';
 import { businessTimeZone } from './business-clock';
-import { computeBillingTotals } from './billing-totals';
+import { computeBillingLine, computeBillingTotals } from './billing-totals';
 import { payerTermsOf } from './billing-document-stage-service';
 import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
 
@@ -138,7 +138,7 @@ export async function buildRenderDataFromDraft(
         description: l.description ?? '',
         quantity: num(l.quantity),
         unitPrice: num(l.unitPrice),
-        lineTotal: computeLineTotal(forTotals[i]!, taxRate),
+        lineSubtotal: computeBillingLine(forTotals[i]!, taxRate).lineSubtotal,
         taxable: l.taxable ?? false,
         coreCharge: l.coreCharge ?? null,
       }))
@@ -183,15 +183,6 @@ export async function buildRenderDataFromDraft(
       notes: draft.notes ?? null,
     };
   });
-}
-
-function computeLineTotal(
-  line: { quantity: number; unitPrice: number; discountAmount: number; taxable: boolean },
-  taxRate: number
-): number {
-  const subtotal = round2(line.quantity * line.unitPrice);
-  const base = Math.max(0, subtotal - line.discountAmount);
-  return round2(subtotal - line.discountAmount + (line.taxable ? round2(base * taxRate) : 0));
 }
 
 function round2(n: number): number {

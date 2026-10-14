@@ -64,6 +64,7 @@ import { ChevronDown, ChevronRight, Plus, Undo2, X } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useTabSave } from './product-tab-save';
 import { FormSection } from '../../components/form-section';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { MoneyInput } from '@/components/money-input';
 import {
   gridOf,
@@ -470,26 +471,15 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
     // A failed load REPLACES the grid. An empty table beside a dead Save invites
     // someone to type a price into nothing.
     return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing about the product has changed. Its
-            versions just could not be read just now.
-          </AlertDescription>
-        </AlertContent>
-        <Button
-          size="sm"
-          color="error"
-          variant="soft"
-          onClick={() => {
-            void options.refetch();
-            void variants.refetch();
-          }}
-        >
-          Try again
-        </Button>
-      </Alert>
+      <PaneLoadError
+        title="Could not load this product's prices"
+        description="This is a problem reaching the server. Nothing about the product has changed. Its versions just could not be read just now."
+        error={options.error ?? variants.error}
+        onRetry={() => {
+          void options.refetch();
+          void variants.refetch();
+        }}
+      />
     );
   }
 

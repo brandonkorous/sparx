@@ -1,680 +1,90 @@
 'use client';
 
-// ONE SUPPLIER — set them up, keep their details current, record what you buy
-// from them, and retire them when you stop.
-//
-// ── Create and manage are ONE pane ────────────────────────────────────────
-//
-// Adding a supplier and editing one are the same form, so this is a single
-// surface in two states: `{id:'new'}` is it before the supplier exists, `{id}`
-// is it after. A separate "new supplier" modal would mean writing this form
-// twice forever, and a modal cannot show a dirty dot or survive a reload.
-//
-// ── Not EditorLayout ──────────────────────────────────────────────────────
-//
-// A supplier is a handful of grouped fields with no running summary worth
-// standing beside them, so this is one centred, capped column — not a form
-// chassis with an empty rail floating next to it.
-//
-// ── Explicit save; retire is a plain row at the end ───────────────────────
-//
-// One Save button, last-write-wins, with a leave-guard while there are unsaved
-// edits — like every other editor. The purchasing links save on their own,
-// because each is its own record. Retiring a supplier is rare and hard to
-// reverse, so it sits in a quiet row under a divider after the work, never as a
-// loud card competing with the details someone came in to change.
+// ONE SUPPLIER: set them up, keep their details current, record what you buy from
+// them, and retire them. Create and edit are one pane (`{id:'new'}` before it
+// exists), with one explicit Save and a leave-guard while there are unsaved edits.
 
-import { CountryField } from '../../components/country-field';
-import { useEffect, useMemo, useState } from 'react';
+import { Card } from '@wizeworks/silicaui-react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { supplierInputFrom } from './supplier-input';
-import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Field,
-  FieldControl,
-  FieldDescription,
-  FieldLabel,
-  FieldStatus,
-  Heading,
-  Input,
-  Text,
-  Textarea,
-  useToast,
-} from '@wizeworks/silicaui-react';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
-import { useConfirm } from '../../lib/confirm';
-import { VariantPicker } from '../commerce/variant-picker';
-import type { VariantChoice } from '../commerce/bundles-data';
-import {
-  faBoxArchive,
-  faClipboardList,
-  faFloppyDisk,
-  faPlus,
-  faStar,
-  faTrashCan,
-  faTruck,
-} from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@piggles/ui';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { RefreshButton } from '../../components/refresh-button';
-import { FormSection } from '../../components/form-section';
-import { CurrencyField } from '../../components/currency-field';
-import { useDirtySource } from '../../lib/workbench/dirty';
-import { afterPaneChange } from '../../lib/defer';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents } from './data';
 import { PriceLadders, SupplierScorecardPanel } from './supplier-performance-panels';
+import type { SupplierDetail } from './suppliers-data';
 import {
-  outstandingUnits,
-  purchaseOrderState,
-  usePurchaseOrders,
-  type PurchaseOrder,
-} from './purchase-orders-data';
-import {
-  buyingErrorMessage,
-  supplierState,
-  useArchiveSupplier,
-  useCreateSupplier,
-  useRemoveSupplierVariant,
-  useSupplier,
-  useUpdateSupplier,
-  useUpsertSupplierVariant,
-  type SupplierDetail,
-  type SupplierVariant,
-} from './suppliers-data';
+  SupplierReachSection,
+  SupplierTermsSection,
+  SupplierWhoSection,
+} from './supplier-detail-fields';
+import { SupplierAddressSection, SupplierNotesSection } from './supplier-detail-address';
+import { PurchasingLinks } from './supplier-detail-links';
+import { SupplierPurchaseOrders } from './supplier-detail-orders';
+import { SupplierRetireRow } from './supplier-detail-retire';
+import { SupplierToolbar } from './supplier-detail-toolbar';
+import { useSupplierDetail, type SupplierDetailState } from './use-supplier-detail';
 
+// One centered, capped column: a handful of grouped fields with no running
+// summary worth standing beside them, so not a form chassis with an empty rail.
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
-const CODE_PATTERN = /^[A-Za-z0-9_-]+$/;
-
-interface FormState {
-  name: string;
-  code: string;
-  contactName: string;
-  email: string;
-  phone: string;
-  website: string;
-  line1: string;
-  line2: string;
-  city: string;
-  region: string;
-  postalCode: string;
-  country: string;
-  paymentTerms: string;
-  leadTimeDays: string;
-  currency: string;
-  notes: string;
-}
-
-const EMPTY_FORM: FormState = {
-  name: '',
-  code: '',
-  contactName: '',
-  email: '',
-  phone: '',
-  website: '',
-  line1: '',
-  line2: '',
-  city: '',
-  region: '',
-  postalCode: '',
-  country: '',
-  paymentTerms: '',
-  leadTimeDays: '',
-  currency: 'USD',
-  notes: '',
-};
-
-function formFrom(supplier: SupplierDetail): FormState {
-  return {
-    name: supplier.name,
-    code: supplier.code,
-    contactName: supplier.contactName ?? '',
-    email: supplier.email ?? '',
-    phone: supplier.phone ?? '',
-    website: supplier.website ?? '',
-    line1: supplier.line1 ?? '',
-    line2: supplier.line2 ?? '',
-    city: supplier.city ?? '',
-    region: supplier.region ?? '',
-    postalCode: supplier.postalCode ?? '',
-    country: supplier.country ?? '',
-    paymentTerms: supplier.paymentTerms ?? '',
-    leadTimeDays: supplier.leadTimeDays === null ? '' : String(supplier.leadTimeDays),
-    currency: supplier.currency,
-    notes: supplier.notes ?? '',
-  };
-}
-
-/* ── Money helpers for the purchasing links ─────────────────────────────── */
-
-/** Nothing typed reads as nothing set. Everything else goes through
- *  `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way a person
- *  writes them; `Number.parseFloat` read one spelling and returned NaN for the
- *  rest (issues 086 and 486). */
-function inputToCents(value: string): number | null {
-  return value.trim() === '' ? null : moneyCents(value);
-}
-
-/* ── What you buy from this supplier ────────────────────────────────────── */
-
-function PurchasingLinks({
-  supplierId,
-  variants,
-  currency,
-}: {
-  supplierId: string;
-  variants: SupplierVariant[];
-  currency: string;
-}) {
-  const toast = useToast();
-  const confirm = useConfirm();
-  const upsert = useUpsertSupplierVariant(supplierId);
-  const remove = useRemoveSupplierVariant(supplierId);
-
-  const [adding, setAdding] = useState(false);
-  // Chosen from the catalog by name or code. Typing your own code from memory
-  // was the only way in, and an owner with 693 parts does not carry their codes
-  // in his head (sparx persona issue 071).
-  const [picked, setPicked] = useState<VariantChoice | null>(null);
-  const [cost, setCost] = useState('');
-  const [supplierSku, setSupplierSku] = useState('');
-  const [preferred, setPreferred] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const resetForm = () => {
-    setPicked(null);
-    setCost('');
-    setSupplierSku('');
-    setPreferred(false);
-    setError(null);
-    setAdding(false);
-  };
-
-  const addLink = () => {
-    setError(null);
-    if (!picked) return;
-    const costCents = inputToCents(cost);
-    upsert.mutate(
-      {
-        variantId: picked.id,
-        ...(costCents !== null ? { unitCostCents: costCents } : {}),
-        ...(supplierSku.trim() ? { supplierSku: supplierSku.trim() } : {}),
-        isPreferred: preferred,
-      },
-      {
-        onSuccess: () => {
-          const title = picked.productTitle;
-          resetForm();
-          afterPaneChange(() => {
-            toast.add({ title: `${title} added to what you buy here`, type: 'success' });
-          });
-        },
-        onError: (err) => {
-          setError(buyingErrorMessage(err, 'Could not save that item.'));
-        },
-      }
-    );
-  };
-
-  const removeLink = async (link: SupplierVariant) => {
-    const label = link.productTitle ?? link.variantSku ?? 'this item';
-    const ok = await confirm({
-      title: `Stop buying ${label} from this supplier?`,
-      description:
-        'This only removes the record that you source it here. Your stock, your product and any past orders are untouched. You can add it back at any time.',
-      confirmLabel: 'Remove it',
-      cancelLabel: 'Keep it',
-      color: 'danger',
-    });
-    if (!ok) return;
-    remove.mutate(link.variantId, {
-      onSuccess: () => {
-        afterPaneChange(() => {
-          toast.add({ title: `${label} removed`, type: 'success' });
-        });
-      },
-      onError: (err) => {
-        toast.add({
-          title: 'Could not remove that item',
-          description: buyingErrorMessage(err, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
-
+// A failed load REPLACES the form, never an empty one beside a dead Save.
+function SupplierLoadError({ supplier }: { supplier: SupplierDetailState['supplier'] }) {
   return (
-    <FormSection
-      title="What you buy from this supplier"
-      description="The items you source here, with the code and price this supplier charges. An order to them starts from this list."
-      action={
-        adding ? null : (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              setAdding(true);
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Add an item
-          </Button>
-        )
-      }
-    >
-      {variants.length === 0 && !adding ? (
-        <Text className="text-sm">
-          Nothing recorded yet. Add the items you buy here so their supplier code and price fill in
-          automatically on an order to this supplier.
-        </Text>
-      ) : null}
-
-      {variants.length > 0 ? (
-        <ul className="flex flex-col gap-2">
-          {variants.map((link) => (
-            <li
-              key={link.id}
-              className="border-base-300 flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3"
-            >
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Text className="truncate font-medium">
-                    {link.productTitle ?? link.variantSku ?? 'Item'}
-                  </Text>
-                  {link.isPreferred ? (
-                    <Badge color="module" variant="soft" size="sm">
-                      <Icon glyph={faStar} className="size-3" aria-hidden />
-                      Preferred
-                    </Badge>
-                  ) : null}
-                </div>
-                <Text className="text-sm">
-                  {link.variantSku ? `Your code ${link.variantSku}` : 'No product code'}
-                  {link.supplierSku ? ` · Their code ${link.supplierSku}` : ''}
-                  {link.unitCostCents !== null
-                    ? ` · ${formatCents(link.unitCostCents, currency)} each`
-                    : ''}
-                </Text>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                color="danger"
-                shape="square"
-                aria-label={`Stop buying ${link.productTitle ?? link.variantSku ?? 'this item'} here`}
-                onClick={() => {
-                  void removeLink(link);
-                }}
-              >
-                <Icon glyph={faTrashCan} className="size-4" aria-hidden />
-              </Button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      {adding ? (
-        <div className="border-base-300 bg-base-200 flex flex-col gap-3 rounded-lg border p-3">
-          <Heading level={4} className="text-base font-semibold">
-            Add an item you buy here
-          </Heading>
-          <div className="grid gap-3 @md:grid-cols-2">
-            <Field className="@md:col-span-2">
-              <FieldLabel>The item</FieldLabel>
-              {picked ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  <Text className="font-medium">{picked.productTitle}</Text>
-                  <Text as="span" className="font-mono text-sm">
-                    {picked.sku}
-                  </Text>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setPicked(null);
-                    }}
-                  >
-                    Choose a different one
-                  </Button>
-                </div>
-              ) : (
-                <VariantPicker
-                  onPick={setPicked}
-                  excludeIds={variants.map((link) => link.variantId)}
-                  placeholder="Search your products by name or code…"
-                />
-              )}
-            </Field>
-            <Field>
-              <FieldLabel>Their code (optional)</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    size="sm"
-                    value={supplierSku}
-                    placeholder="What the supplier calls it"
-                    spellCheck={false}
-                    onChange={(event) => {
-                      setSupplierSku(event.target.value);
-                    }}
-                  />
-                }
-              />
-            </Field>
-            <Field>
-              <FieldLabel>What they charge (each)</FieldLabel>
-              <FieldControl
-                render={
-                  <MoneyTextInput
-                    color="module"
-                    size="sm"
-                    aria-label="What they charge for each one"
-                    text={cost}
-                    className="text-right"
-                    onTextChange={setCost}
-                  />
-                }
-              />
-            </Field>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 pb-1">
-                <Checkbox
-                  color="module"
-                  checked={preferred}
-                  aria-label="My go-to supplier for this item"
-                  onChange={(event) => {
-                    setPreferred(event.target.checked);
-                  }}
-                />
-                <Text as="span" className="text-sm">
-                  My go-to supplier for this item
-                </Text>
-              </label>
-            </div>
-          </div>
-
-          {error ? (
-            <Alert color="danger" variant="soft">
-              <AlertContent>
-                <AlertDescription>{error}</AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              color="module"
-              disabled={picked === null}
-              loading={upsert.isPending}
-              onClick={() => {
-                addLink();
-              }}
-            >
-              Add item
-            </Button>
-            <Button size="sm" variant="ghost" onClick={resetForm}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      ) : null}
-    </FormSection>
-  );
-}
-
-/* ── Purchase orders from this supplier ─────────────────────────────────── */
-
-function SupplierPurchaseOrders({ supplierId, ctx }: { supplierId: string; ctx: SurfaceContext }) {
-  const { data, isLoading } = usePurchaseOrders({ supplierId, take: 10, skip: 0 });
-  const rows = data?.items ?? [];
-
-  if (isLoading) return null;
-
-  const openPo = (po: PurchaseOrder, event: { shiftKey: boolean }) => {
-    ctx.open(
-      'inventory.purchase-orders.detail',
-      { id: po.id },
-      { target: event.shiftKey ? 'beside' : 'tab' }
-    );
-  };
-
-  return (
-    <FormSection
-      title="Orders to this supplier"
-      description="Their most recent orders. A new one starts with this supplier chosen and their items ready to add."
-      action={
-        <Button
-          size="sm"
-          color="module"
-          onClick={() => {
-            // The section always promised that an order to them starts here;
-            // until there was a button, it started nowhere (sparx persona
-            // issue 071).
-            ctx.open(
-              'inventory.purchase-orders.detail',
-              { id: 'new', supplier: supplierId },
-              { target: 'tab' }
-            );
+    <div className={PANE_SHELL}>
+      <Card className="min-h-0 flex-1 items-center justify-center">
+        <PaneLoadError
+          error={supplier.error}
+          title="Could not load this supplier"
+          description="This is a problem reaching the server. The supplier record is unaffected."
+          missingTitle="This supplier no longer exists"
+          missingDescription="It may have been removed. Its past orders are unaffected."
+          onRetry={() => {
+            void supplier.refetch();
           }}
-        >
-          New order
-        </Button>
-      }
-    >
-      {rows.length === 0 ? <Text className="text-sm">Nothing ordered from them yet.</Text> : null}
-      <ul className="flex flex-col gap-2">
-        {rows.map((po) => {
-          const state = purchaseOrderState(po);
-          const outstanding = outstandingUnits(po);
-          return (
-            <li key={po.id}>
-              <button
-                type="button"
-                className="border-base-300 hover:border-module flex w-full flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-left transition-colors"
-                onClick={(event) => {
-                  openPo(po, event);
-                }}
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <Icon glyph={faClipboardList} className="size-4 shrink-0" aria-hidden />
-                  <Text className="font-mono font-medium">{po.number}</Text>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {outstanding > 0 ? (
-                    <Text className="text-sm tabular-nums">
-                      {String(outstanding)} still to come
-                    </Text>
-                  ) : null}
-                  <Text className="text-sm tabular-nums">
-                    {formatCents(po.totalCents, po.currency)}
-                  </Text>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
-                  </Badge>
-                </div>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </FormSection>
+        />
+      </Card>
+    </div>
   );
 }
 
-/* ── The pane ───────────────────────────────────────────────────────────── */
+// Everything here needs a saved supplier to hang off. The scorecard sits right
+// under the stated terms, because its point is the gap between the two.
+function SupplierSavedSections({
+  ctx,
+  detail,
+  data,
+}: {
+  ctx: SurfaceContext;
+  detail: SupplierDetailState;
+  data: SupplierDetail;
+}) {
+  const { id } = detail;
+  return (
+    <>
+      <SupplierScorecardPanel supplierId={id} statedLeadTimeDays={data.leadTimeDays} />
+
+      <PurchasingLinks supplierId={id} variants={data.variants} currency={data.currency} />
+
+      <PriceLadders variants={data.variants} currency={data.currency} />
+
+      <SupplierPurchaseOrders supplierId={id} ctx={ctx} />
+
+      <SupplierRetireRow
+        isActive={data.isActive}
+        archiving={detail.archiving}
+        onArchive={detail.onArchive}
+      />
+    </>
+  );
+}
 
 export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
-  const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
-  const isNew = id === 'new';
+  const detail = useSupplierDetail(ctx);
+  const { isNew, supplier, form, set } = detail;
 
-  const toast = useToast();
-  const confirm = useConfirm();
-  const supplier = useSupplier(id);
-  const create = useCreateSupplier();
-  const update = useUpdateSupplier(id);
-  const archive = useArchiveSupplier(id);
+  if (!isNew && supplier.isError) return <SupplierLoadError supplier={supplier} />;
 
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [baseline, setBaseline] = useState<FormState>(EMPTY_FORM);
-  const [loaded, setLoaded] = useState(false);
-
-  // Seed the form once the record lands, and remember that snapshot as the
-  // baseline so "dirty" means "different from what is saved", not "non-empty".
-  useEffect(() => {
-    if (isNew) {
-      setLoaded(true);
-      return;
-    }
-    if (supplier.data && !loaded) {
-      const next = formFrom(supplier.data);
-      setForm(next);
-      setBaseline(next);
-      setLoaded(true);
-    }
-  }, [isNew, supplier.data, loaded]);
-
-  useEffect(() => {
-    ctx.setTitle(isNew ? 'New supplier' : (supplier.data?.name ?? 'Supplier'));
-  }, [ctx, isNew, supplier.data?.name]);
-
-  // Whether she has typed anything yet. A brand-new form is empty because it is
-  // new, not because she got it wrong, and an error under a field nobody has
-  // touched reads as a telling-off before the first keystroke. The Short code
-  // field two rows down already waits ("code is not empty AND invalid"); Name
-  // could not use that shape, because empty IS its error.
-  const [touched, setTouched] = useState(false);
-
-  const set = <K extends keyof FormState>(key: K, value: string) => {
-    setTouched(true);
-    setForm((current) => ({ ...current, [key]: value }));
-  };
-
-  const dirty = useMemo(() => JSON.stringify(form) !== JSON.stringify(baseline), [form, baseline]);
-
-  const nameOk = form.name.trim() !== '';
-  const codeOk = form.code.trim() !== '' && CODE_PATTERN.test(form.code.trim());
-  const canSave = nameOk && codeOk && (isNew || dirty);
-
-  useDirtySource(
-    dirty && loaded,
-    isNew
-      ? 'This supplier has not been saved yet. Close anyway?'
-      : `Changes to ${form.name || 'this supplier'} have not been saved. Close anyway?`
-  );
-
-  const save = () => {
-    if (!canSave) return;
-    const input = supplierInputFrom(form);
-    if (isNew) {
-      create.mutate(input, {
-        onSuccess: (result) => {
-          // Rebased BEFORE the pane swap. `target: 'replace'` changes this
-          // pane's params in place rather than remounting it, so the load
-          // effect never runs again and a baseline left at EMPTY keeps the pane
-          // dirty forever: an unsaved dot on the tab, "Not saved" in the status
-          // bar, and a leave-guard asking whether to discard a record that is
-          // safely written. Same rebase the update path below already does, and
-          // the same one `staff/person-writes.ts` and `crm/object-type-detail`
-          // spell out in their own comments.
-          setBaseline(form);
-          ctx.open('inventory.suppliers.detail', { id: result.id }, { target: 'replace' });
-          afterPaneChange(() => {
-            toast.add({
-              title: `${input.name} added`,
-              description: 'You can now record what you buy from them and raise orders.',
-              type: 'success',
-            });
-          });
-        },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not add that supplier',
-            description: buyingErrorMessage(error, 'Nothing was saved.'),
-            type: 'error',
-          });
-        },
-      });
-      return;
-    }
-    update.mutate(input, {
-      onSuccess: () => {
-        setBaseline(form);
-        afterPaneChange(() => {
-          toast.add({ title: `${input.name} saved`, type: 'success' });
-        });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not save that supplier',
-          description: buyingErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
-
-  const onArchive = async () => {
-    if (!supplier.data) return;
-    const ok = await confirm({
-      title: `Retire ${supplier.data.name}?`,
-      description:
-        'They stop showing in your active suppliers and you can no longer raise new orders to them. Past orders and everything you have received stay exactly as they are. You can still find them by including archived suppliers.',
-      confirmLabel: 'Retire this supplier',
-      cancelLabel: 'Keep them active',
-      color: 'danger',
-    });
-    if (!ok) return;
-    archive.mutate(undefined, {
-      onSuccess: () => {
-        ctx.close();
-        afterPaneChange(() => {
-          toast.add({ title: `${supplier.data?.name ?? 'Supplier'} retired`, type: 'success' });
-        });
-      },
-      onError: (error) => {
-        // The server refuses while an open PO references them, and its sentence
-        // names the exact order — worth showing verbatim.
-        toast.add({
-          title: 'Could not retire that supplier',
-          description: buyingErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
-
-  // A failed load REPLACES the form — never an empty one beside a dead Save.
-  if (!isNew && supplier.isError) {
-    return (
-      <div className={PANE_SHELL}>
-        <Card className="min-h-0 flex-1 items-center justify-center">
-          <PaneLoadError
-            error={supplier.error}
-            title="Could not load this supplier"
-            description="This is a problem reaching the server. The supplier record is unaffected."
-            missingTitle="This supplier no longer exists"
-            missingDescription="It may have been removed. Its past orders are unaffected."
-            onRetry={() => {
-              void supplier.refetch();
-            }}
-          />
-        </Card>
-      </div>
-    );
-  }
-
-  if (!isNew && (supplier.isPending || !loaded)) {
+  if (!isNew && (supplier.isPending || !detail.loaded)) {
     return (
       <div className={PANE_SHELL}>
         <PaneWaiting />
@@ -682,385 +92,25 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  const state = supplier.data ? supplierState(supplier.data) : null;
-  const saving = create.isPending || update.isPending;
-
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Supplier actions"
-        status={
-          state ? (
-            <Badge color={state.tone} variant="soft" size="sm">
-              {state.label}
-            </Badge>
-          ) : (
-            <span className="inline-flex items-center gap-1.5">
-              <Icon glyph={faTruck} className="size-4" aria-hidden />
-              <Text as="span" className="text-sm font-medium">
-                New supplier
-              </Text>
-            </span>
-          )
-        }
-        primary={
-          <Button
-            size="sm"
-            color="module"
-            className="ml-auto shrink-0"
-            disabled={!canSave}
-            loading={saving}
-            onClick={save}
-          >
-            <Icon glyph={faFloppyDisk} className="size-4" aria-hidden />
-            {isNew ? 'Add supplier' : 'Save'}
-          </Button>
-        }
-        refresh={
-          isNew ? null : (
-            <RefreshButton
-              isFetching={supplier.isFetching}
-              updatedAt={supplier.data ? supplier.dataUpdatedAt : undefined}
-              onRefresh={() => {
-                void supplier.refetch();
-              }}
-            />
-          )
-        }
-      />
+      <SupplierToolbar detail={detail} />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <FormSection title="Who they are">
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field>
-                <FieldLabel required>Name</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.name}
-                      placeholder="Acme Wholesale"
-                      onChange={(event) => {
-                        set('name', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                {touched && form.name.trim() === '' ? (
-                  <FieldStatus status="error">A supplier needs a name.</FieldStatus>
-                ) : null}
-              </Field>
-              <Field>
-                <FieldLabel required>Short code</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.code}
-                      placeholder="ACME"
-                      spellCheck={false}
-                      autoComplete="off"
-                      onChange={(event) => {
-                        set('code', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                {form.code.trim() !== '' && !codeOk ? (
-                  <FieldStatus status="error">
-                    Use only letters, numbers, hyphens or underscores.
-                  </FieldStatus>
-                ) : (
-                  <FieldDescription>
-                    A short handle printed on orders, like ACME. Must be unique.
-                  </FieldDescription>
-                )}
-              </Field>
-            </div>
-          </FormSection>
+          <SupplierWhoSection
+            form={form}
+            set={set}
+            touched={detail.touched}
+            codeOk={detail.codeOk}
+          />
+          <SupplierReachSection form={form} set={set} />
+          <SupplierTermsSection form={form} set={set} />
+          <SupplierAddressSection form={form} set={set} />
+          <SupplierNotesSection form={form} set={set} />
 
-          <FormSection title="How to reach them">
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>Contact name</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.contactName}
-                      placeholder="Who you deal with"
-                      onChange={(event) => {
-                        set('contactName', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Email</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="email"
-                      value={form.email}
-                      placeholder="orders@acme.com"
-                      spellCheck={false}
-                      onChange={(event) => {
-                        set('email', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Phone</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.phone}
-                      placeholder="(555) 010-0100"
-                      onChange={(event) => {
-                        set('phone', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Website</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.website}
-                      placeholder="acme.com"
-                      spellCheck={false}
-                      onChange={(event) => {
-                        set('website', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-            </div>
-          </FormSection>
-
-          <FormSection
-            title="Default terms"
-            description="What usually applies when you order from them. You can change any of it on an individual order."
-          >
-            <div className="grid gap-3 @md:grid-cols-3">
-              <Field>
-                <FieldLabel>How you pay</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.paymentTerms}
-                      placeholder="net 30"
-                      onChange={(event) => {
-                        set('paymentTerms', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>e.g. net 30, cash on delivery.</FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel>Days to arrive</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      inputMode="numeric"
-                      value={form.leadTimeDays}
-                      placeholder="7"
-                      onChange={(event) => {
-                        set('leadTimeDays', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>Sets an order&apos;s expected date.</FieldDescription>
-              </Field>
-              <CurrencyField
-                value={form.currency}
-                onChange={(next) => {
-                  set('currency', next);
-                }}
-                description="What this supplier bills you in."
-              />
-            </div>
-          </FormSection>
-
-          <FormSection title="Address">
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field className="@md:col-span-2">
-                <FieldLabel>Street</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.line1}
-                      placeholder="1 Trade Park Way"
-                      onChange={(event) => {
-                        set('line1', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field className="@md:col-span-2">
-                <FieldLabel>Street line 2</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.line2}
-                      placeholder="Unit 4"
-                      onChange={(event) => {
-                        set('line2', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Town or city</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.city}
-                      onChange={(event) => {
-                        set('city', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Region or state</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.region}
-                      onChange={(event) => {
-                        set('region', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Postal code</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={form.postalCode}
-                      onChange={(event) => {
-                        set('postalCode', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              {/* Picked by name. It was a two-character box, which asks somebody to
-                  know that Germany is DE before they can say where a business
-                  is. Issue 721. */}
-              <CountryField
-                value={form.country}
-                onChange={(next) => {
-                  set('country', next);
-                }}
-              />
-            </div>
-          </FormSection>
-
-          <FormSection title="Notes">
-            <Field>
-              <FieldLabel>Anything worth remembering</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    color="module"
-                    rows={4}
-                    value={form.notes}
-                    placeholder="Minimum order, delivery days, who to ask for…"
-                    onChange={(event) => {
-                      set('notes', event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>Only you see this. It never appears on an order.</FieldDescription>
-            </Field>
-          </FormSection>
-
-          {/* Everything below needs a saved supplier to hang off, so it only
-              appears once the record exists. */}
           {isNew || !supplier.data ? null : (
-            <>
-              {/* How they have ACTUALLY behaved (docs/146 Phase 8.1), directly
-                  under the terms somebody typed in when the record was set up —
-                  because the point of the panel is the gap between the two. */}
-              <SupplierScorecardPanel
-                supplierId={id}
-                statedLeadTimeDays={supplier.data.leadTimeDays}
-              />
-
-              <PurchasingLinks
-                supplierId={id}
-                variants={supplier.data.variants}
-                currency={supplier.data.currency}
-              />
-
-              <PriceLadders variants={supplier.data.variants} currency={supplier.data.currency} />
-
-              <SupplierPurchaseOrders supplierId={id} ctx={ctx} />
-
-              {/* Rare and hard to reverse: a quiet row under a divider, never a
-                  card competing with the details above. */}
-              {supplier.data.isActive ? (
-                <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-                  <div className="flex min-w-0 flex-col">
-                    <Text className="font-medium">Retire this supplier</Text>
-                    <Text className="text-sm">
-                      Stop ordering from them without losing any history.
-                    </Text>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    color="danger"
-                    loading={archive.isPending}
-                    onClick={() => {
-                      void onArchive();
-                    }}
-                  >
-                    <Icon glyph={faBoxArchive} className="size-4" aria-hidden />
-                    Retire
-                  </Button>
-                </div>
-              ) : (
-                <Alert color="neutral" variant="soft">
-                  <AlertContent>
-                    <AlertTitle>This supplier is retired</AlertTitle>
-                    <AlertDescription>
-                      You can no longer raise new orders to them. Their details above stay editable,
-                      and all past orders are kept.
-                    </AlertDescription>
-                  </AlertContent>
-                </Alert>
-              )}
-            </>
+            <SupplierSavedSections ctx={ctx} detail={detail} data={supplier.data} />
           )}
         </div>
       </div>

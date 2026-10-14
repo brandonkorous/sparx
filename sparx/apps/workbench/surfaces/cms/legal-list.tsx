@@ -32,7 +32,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Heading,
   NativeSelect,
   Text,
@@ -43,6 +42,8 @@ import { Check, Eye, EyeOff, Link2, Plus, RefreshCw, Scale, SquarePen, Trash2 } 
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { contentErrorMessage, entryStatusState } from './data';
 import {
@@ -90,7 +91,12 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
   const requiredItems = items.filter((item) => item.required);
   const optionalItems = items.filter((item) => !item.required);
   const noteFor = (item: ChecklistItem) =>
-    cookiePolicyNote(item.legalKind, item.entry?.status ?? null, cookieBanner.data);
+    cookiePolicyNote(
+      item.legalKind,
+      item.entry?.status ?? null,
+      cookieBanner.data,
+      item.entry?.promisesCookieChoices
+    );
 
   const allRequiredReady =
     completeness !== undefined &&
@@ -234,21 +240,14 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {checklist.isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Scale className="size-6" aria-hidden />}
             title="Could not load your legal pages"
             description="This is a problem reaching the server. None of your pages are affected. Nothing has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void checklist.refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={checklist.error}
+            onRetry={() => {
+              void checklist.refetch();
+            }}
           />
         ) : checklist.isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -583,7 +582,9 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
         <Alert color="warning">
           <AlertContent>
             <AlertTitle>Could not load your footer links</AlertTitle>
-            <AlertDescription>This is a problem reaching the server.</AlertDescription>
+            <AlertDescription>
+              {loadFailureWords(placements.error, 'This is a problem reaching the server.')}
+            </AlertDescription>
           </AlertContent>
           <Button
             size="sm"

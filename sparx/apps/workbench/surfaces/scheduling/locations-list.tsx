@@ -16,7 +16,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Table,
   ToggleGroup,
   ToggleGroupItem,
@@ -29,6 +28,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatAddress, useLocations, type BusinessLocation } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { useBusinessZone } from '../../lib/business-timezone';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const DETAIL_KEY = 'scheduling.locations.detail';
 
@@ -53,7 +53,8 @@ function filedNote(location: BusinessLocation): string {
 export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const businessZone = useBusinessZone();
   const [activeOnly, setActiveOnly] = useState(false);
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useLocations(activeOnly);
+  const { data, isPending, isFetching, dataUpdatedAt, isError, error, refetch } =
+    useLocations(activeOnly);
 
   const rows = data?.items ?? [];
 
@@ -68,21 +69,14 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<MapPin className="size-6" aria-hidden />}
           title="Could not load your places"
           description="This is a problem reaching the server. Nothing is affected: the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
         />
       );
     }

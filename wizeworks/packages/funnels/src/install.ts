@@ -14,8 +14,9 @@
 // their work on a schedule nobody can see. The recipe is a starting point that
 // is FORKED once; after that the row belongs to the tenant.
 
-import { withTenant } from '@wizeworks/db';
+import { afterCommit, withTenant } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 
 import { recipesForModules, type FunnelRecipe } from './library.js';
 
@@ -83,7 +84,7 @@ const FUNNEL_KEYS = recipesForModules(
  *  people the moment a module was switched on, without anybody choosing it,
  *  would be measuring on a decision nobody made. */
 async function stamp(ctx: InstallCtx, propertyId: string, recipe: FunnelRecipe): Promise<void> {
-  await withTenant(ctx, (tx) =>
+  const created = await withTenant(ctx, (tx) =>
     tx.funnel.create({
       data: {
         tenantId: ctx.tenantId,
@@ -100,5 +101,9 @@ async function stamp(ctx: InstallCtx, propertyId: string, recipe: FunnelRecipe):
       },
       select: { id: true },
     })
+  );
+  // A seeded campaign is one the owner can be looking for by name the same day.
+  await afterCommit('index funnel', () =>
+    indexEntity({ tenantId: ctx.tenantId, entityType: 'funnel', recordId: created.id })
   );
 }

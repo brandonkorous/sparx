@@ -4,9 +4,10 @@
 // rule saying what it does, badged by what it prices: quote lines, the catalog.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { faCalculator, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -157,10 +158,12 @@ function ListBody({
 }) {
   if (query.isError) {
     return (
-      <EmptyState
+      <PaneLoadError
         icon={ICON}
+        module={MODULE}
         title="Could not load your markup rules"
         description="This is a problem reaching the server. Your rules are unaffected. Nothing has been lost."
+        error={query.error}
       />
     );
   }

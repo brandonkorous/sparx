@@ -22,7 +22,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
   Table,
@@ -32,6 +31,7 @@ import {
 import { Cable, FileSpreadsheet, Link2, Plus, Server } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -91,12 +91,13 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
 
   const skip = (page - 1) * pageSize;
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useInventorySources({
-    q: search.trim(),
-    status,
-    take,
-    skip,
-  });
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } =
+    useInventorySources({
+      q: search.trim(),
+      status,
+      take,
+      skip,
+    });
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -120,10 +121,11 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
     // filter invites someone to conclude they have no sources.
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Link2 className="size-6" aria-hidden />}
           title="Could not load your stock sources"
           description="This is a problem reaching the server. Your connections are unaffected. They just could not be listed just now."
+          error={error}
         />
       );
     }

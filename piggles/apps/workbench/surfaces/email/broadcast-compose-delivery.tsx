@@ -17,6 +17,7 @@ import { faEnvelope, faGear } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { productCopy } from '../../lib/product';
+import { clockNote } from '../../lib/publish-clock';
 import { senderDisplay } from './broadcasts-presentation';
 import { BroadcastPreview } from './broadcast-preview';
 import { formatList, soonLocalValue, SETTINGS_KEY, type ComposeBodyProps } from './broadcast-draft';
@@ -70,6 +71,9 @@ export function WhenToSend({
   scheduledAt,
   setScheduledAt,
   scheduleValid,
+  scheduledIso,
+  clock,
+  reader,
   missing,
 }: ComposeBodyProps) {
   return (
@@ -90,7 +94,7 @@ export function WhenToSend({
           onChange={(event) => {
             const next = event.target.value as 'now' | 'schedule';
             setTiming(next);
-            if (next === 'schedule' && scheduledAt === '') setScheduledAt(soonLocalValue());
+            if (next === 'schedule' && scheduledAt === '') setScheduledAt(soonLocalValue(clock));
           }}
         >
           <option value="now">Send as soon as I press Send</option>
@@ -108,7 +112,7 @@ export function WhenToSend({
                 type="datetime-local"
                 className="max-w-xs"
                 value={scheduledAt}
-                min={soonLocalValue()}
+                min={soonLocalValue(clock)}
                 onChange={(event) => {
                   setScheduledAt(event.target.value);
                 }}
@@ -117,8 +121,15 @@ export function WhenToSend({
           />
           {scheduledAt !== '' && !scheduleValid ? (
             <FieldDescription>Pick a time in the future.</FieldDescription>
-          ) : (
-            <FieldDescription>Uses your own time zone.</FieldDescription>
+          ) : null}
+          {/* Names whose clock the box is on, on the day chosen: "Uses your own
+              time zone" meant this computer's, which is not where a business in
+              London sends from (Piggles persona issue 984). Held back while the
+              business's zone is still loading, so it never names the wrong one. */}
+          {reader.zone === undefined ? null : (
+            <FieldDescription>
+              {clockNote(reader.zone, reader.device, new Date(scheduledIso ?? Date.now()))}
+            </FieldDescription>
           )}
         </Field>
       ) : null}

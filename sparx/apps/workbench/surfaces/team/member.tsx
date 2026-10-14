@@ -18,7 +18,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
-  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -36,7 +35,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Activity, Save, TriangleAlert, UserX } from 'lucide-react';
+import { Activity, Save, UserX } from 'lucide-react';
 import { EditorLayout, EDITOR_RAIL_STICKY } from '../../components/editor-layout';
 import { FormSection } from '../../components/form-section';
 import { describeAgo, useActivity } from '../../lib/api/activity';
@@ -51,6 +50,7 @@ import {
 } from '../../components/module-scope';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { signedInLine } from './signed-in-line';
 import {
   ASSIGNABLE_ROLES,
@@ -100,7 +100,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
   const memberId = ctx.params.memberId ?? '';
   const toast = useToast();
 
-  const { member, ready, isError, missing, refetch } = useTeamMember(memberId);
+  const { member, ready, isError, error, missing, refetch } = useTeamMember(memberId);
   const { data: viewer } = useViewer();
   const { data: moduleStates } = useModuleStates();
   const { data: sites } = useSites();
@@ -186,29 +186,14 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (isError) {
     return (
-      <div className="flex h-full flex-col items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <TriangleAlert />
-          <AlertContent>
-            <AlertTitle>Could not load this teammate</AlertTitle>
-            <AlertDescription>
-              Nothing about their access has changed. This is a problem reaching the server.
-            </AlertDescription>
-          </AlertContent>
-          <AlertActions>
-            <Button
-              size="sm"
-              color="error"
-              variant="soft"
-              onClick={() => {
-                refetch();
-              }}
-            >
-              Try again
-            </Button>
-          </AlertActions>
-        </Alert>
-      </div>
+      <PaneLoadError
+        title="Could not load this teammate"
+        description="Nothing about their access has changed. This is a problem reaching the server."
+        error={error}
+        onRetry={() => {
+          refetch();
+        }}
+      />
     );
   }
 

@@ -30,6 +30,7 @@ import {
 import { PackageSearch, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
 import { dayCountLabel } from './purchase-orders-data';
@@ -76,10 +77,11 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (notices.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<PackageSearch className="size-6" aria-hidden />}
           title="Could not load what is on the way"
           description="This is a problem reaching the server, not a statement that nothing has shipped. Try again in a moment."
+          error={notices.error}
         />
       );
     }

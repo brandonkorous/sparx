@@ -13,7 +13,7 @@
 // cms-schemas re-exports it as `ContentTypeSchema`.
 
 import { z } from 'zod';
-import { FieldSchema, type FieldDef } from '@wizeworks/field-schema';
+import { FieldDefSchema, type FieldDef } from '@wizeworks/field-schema';
 
 import { Uuid } from './common';
 
@@ -61,13 +61,28 @@ export const ObjectDefKey = z.string().min(2).max(63);
 // A tenant can only CREATE custom objects. The four built-in rows are seeded by
 // CRM module activation, so there is no shape here that can mint one — which is
 // what keeps `kind` honest without trusting a client to send it.
+/**
+ * The details a record type tracks, which may be NONE.
+ *
+ * The shared `FieldSchema` needs at least one field, which is right for a CMS
+ * content type: a page type with no fields is nothing. A record type is not. It
+ * starts empty ("Nothing extra yet" on the form), the create service defaults to
+ * an empty list, and a record with no details has its own state. Held to the
+ * shared rule, a new record type with no details came back "The problem is with
+ * Fields", and nobody could remove the last extra detail from Customers either
+ * (sparx persona issue 241). Each detail is still checked by the shared rule.
+ */
+const RecordTypeDetails = z.object({
+  fields: z.array(FieldDefSchema),
+});
+
 export const CreateObjectDefInput = z.object({
   key: CustomObjectKey,
   label: z.string().min(1).max(120),
   labelPlural: z.string().min(1).max(120),
   iconKey: z.string().max(63).nullable().optional(),
   description: z.string().max(2000).nullable().optional(),
-  propertySchema: FieldSchema.optional(),
+  propertySchema: RecordTypeDetails.optional(),
   /** Which property titles the record. Must name a field in the schema. */
   primaryFieldKey: z.string().max(63).nullable().optional(),
 });
@@ -81,7 +96,7 @@ export const UpdateObjectDefInput = z.object({
   labelPlural: z.string().min(1).max(120).optional(),
   iconKey: z.string().max(63).nullable().optional(),
   description: z.string().max(2000).nullable().optional(),
-  propertySchema: FieldSchema.optional(),
+  propertySchema: RecordTypeDetails.optional(),
   primaryFieldKey: z.string().max(63).nullable().optional(),
 });
 export type UpdateObjectDefInput = z.infer<typeof UpdateObjectDefInput>;

@@ -1,9 +1,14 @@
-import { readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-import { RECORD_ADDRESSES, ROUTED_RECORD_TYPES } from '@wizeworks/silica-catalog';
+import {
+  RECORD_ADDRESSES,
+  RESERVED_KIND_SEGMENTS,
+  ROUTED_RECORD_TYPES,
+  SITE_OWN_ROUTES,
+} from '@wizeworks/silica-catalog';
 
 import {
   BUILTIN_PATHS,
@@ -170,5 +175,37 @@ describe('relative hrefs', () => {
     expect(resolveRelative('teardown', '/guides/setup')).toBe('/guides/teardown');
     expect(resolveRelative('../pricing', '/guides/setup')).toBe('/pricing');
     expect(resolveRelative('./contact', '/about')).toBe('/contact');
+  });
+});
+
+describe('content kind addresses', () => {
+  /**
+   * A kind may not take a first word the storefront already routes: `app/products/[handle]`
+   * would win over the catch-all, and every piece of a kind at `/products/{slug}` would be
+   * a product page that does not exist. Read off the real `app` directory, so a new
+   * top-level route the list forgot fails here instead of shadowing somebody's kind.
+   */
+  it('reserves every first segment the storefront routes itself', () => {
+    const owned = readdirSync(APP_DIR, { withFileTypes: true })
+      .filter((e) => !e.name.startsWith('[') && !e.name.startsWith('(') && !e.name.startsWith('_'))
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name);
+    expect(owned.length).toBeGreaterThan(0);
+    const missing = owned.filter((name) => !RESERVED_KIND_SEGMENTS.includes(name));
+    expect(missing).toEqual([]);
+  });
+});
+
+describe('SITE_OWN_ROUTES', () => {
+  it('is every top-level route the storefront answers with a page of its own', () => {
+    // A starter page at one of these is not taken down by deleting it, so the console's
+    // delete warning and the removed-pages record both ask this list (issue 947).
+    const own = readdirSync(APP_DIR, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && !/^[[(_]/.test(e.name))
+      .filter((e) => existsSync(join(APP_DIR, e.name, 'page.tsx')))
+      .map((e) => e.name)
+      .sort();
+    expect(own.length).toBeGreaterThan(0);
+    expect([...SITE_OWN_ROUTES].sort()).toEqual(own);
   });
 });

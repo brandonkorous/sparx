@@ -49,7 +49,7 @@ describe('a basket that does not qualify is refused', () => {
     const reason = refusalReason([MIN_100], facts());
 
     // The exact sentence matters: this is what the shopper reads.
-    expect(reason).toBe('This code needs a basket of at least $100.00. Add $58.00 more to use it.');
+    expect(reason).toBe('This code needs a cart of at least $100.00. Add $58.00 more to use it.');
   });
 
   it('allows a basket that reaches the minimum', () => {
@@ -66,7 +66,7 @@ describe('a basket that does not qualify is refused', () => {
     });
 
     expect(refusalReason([CORE_ONLY], onlyDress)).toBe(
-      'This code does not apply to anything in your basket.'
+      'This code does not apply to anything in your cart.'
     );
   });
 
@@ -101,7 +101,7 @@ describe('a basket that does not qualify is refused', () => {
     });
 
     expect(refusalReason([three], twoOfOne)).toBe(
-      'This code needs at least 3 items in your basket.'
+      'This code needs at least 3 items in your cart.'
     );
     const threeOfOne = facts({
       lines: [{ id: 'l-tee', productId: TEE, quantity: 3, subtotalCents: 12600 }],

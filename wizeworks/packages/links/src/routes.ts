@@ -163,15 +163,40 @@ export const ROUTES: readonly AppRoute[] = [
     entityLabel: 'Bundles',
   },
   { path: '/commerce/fitment', surface: 'commerce.fitment.list' },
-  { path: '/commerce/fitment/:id', surface: 'commerce.fitment.domain.detail' },
+  {
+    path: '/commerce/fitment/:id',
+    surface: 'commerce.fitment.domain.detail',
+    entity: 'fitment_domain',
+    entityLabel: 'Compatibility lists',
+  },
   { path: '/commerce/configurator', surface: 'commerce.configurator.list' },
-  { path: '/commerce/configurator/:id', surface: 'commerce.configurator-template.detail' },
+  {
+    path: '/commerce/configurator/:id',
+    surface: 'commerce.configurator-template.detail',
+    entity: 'configurator_template',
+    entityLabel: 'Build templates',
+  },
   { path: '/commerce/product-types', surface: 'commerce.product-types.list' },
-  { path: '/commerce/product-types/:key', surface: 'commerce.product-types.detail' },
+  {
+    path: '/commerce/product-types/:key',
+    surface: 'commerce.product-types.detail',
+    entity: 'product_type',
+    entityLabel: 'Product types',
+  },
   { path: '/commerce/price-lists', surface: 'commerce.pricing.list' },
-  { path: '/commerce/price-lists/:id', surface: 'commerce.pricelist.detail' },
+  {
+    path: '/commerce/price-lists/:id',
+    surface: 'commerce.pricelist.detail',
+    entity: 'price_list',
+    entityLabel: 'Price lists',
+  },
   { path: '/commerce/markup-rules', surface: 'commerce.markup-rules.list' },
-  { path: '/commerce/markup-rules/:id', surface: 'commerce.markup-rule.detail' },
+  {
+    path: '/commerce/markup-rules/:id',
+    surface: 'commerce.markup-rule.detail',
+    entity: 'markup_rule',
+    entityLabel: 'Markup rules',
+  },
   { path: '/commerce/discounts', surface: 'commerce.discounts.list' },
   {
     path: '/commerce/discounts/:id',
@@ -227,8 +252,18 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/commerce/sales-channels', surface: 'commerce.channels.list' },
   { path: '/commerce/market', surface: 'commerce.market' },
   { path: '/commerce/shipping', surface: 'commerce.shipping.list' },
-  { path: '/commerce/shipping/regions/:id', surface: 'commerce.shipping.zone.detail' },
-  { path: '/commerce/shipping/profiles/:id', surface: 'commerce.shipping.profile.detail' },
+  {
+    path: '/commerce/shipping/regions/:id',
+    surface: 'commerce.shipping.zone.detail',
+    entity: 'shipping_zone',
+    entityLabel: 'Delivery regions',
+  },
+  {
+    path: '/commerce/shipping/profiles/:id',
+    surface: 'commerce.shipping.profile.detail',
+    entity: 'shipping_profile',
+    entityLabel: 'Delivery profiles',
+  },
   { path: '/commerce/tax', surface: 'commerce.tax.list' },
   { path: '/commerce/tax/places/:id', surface: 'commerce.tax.zone.detail' },
   { path: '/commerce/reports', surface: 'commerce.reports' },
@@ -309,13 +344,23 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/crm/record-types', surface: 'crm.object-types.list' },
   // `:key` because the record type IS its key — and the matcher hands a path
   // parameter through under its own name, so `:id` here would open a blank pane.
-  { path: '/crm/record-types/:key', surface: 'crm.object-type.detail' },
+  {
+    path: '/crm/record-types/:key',
+    surface: 'crm.object-type.detail',
+    entity: 'crm_object_type',
+    entityLabel: 'Record types',
+  },
   // The ROWS of a tenant-invented object (docs/144 §3.6). `:objectKey` rather
   // than `:key` because the pane takes both — the object it is listing and, on
   // the detail, the row's own id — and two parameters called `key` and `id`
   // would read as though the object had an id of its own.
   { path: '/crm/records/:objectKey', surface: 'crm.records.list' },
-  { path: '/crm/records/:objectKey/:id', surface: 'crm.record.detail' },
+  {
+    path: '/crm/records/:objectKey/:id',
+    surface: 'crm.record.detail',
+    entity: 'crm_record',
+    entityLabel: 'Records',
+  },
   { path: '/crm/settings', surface: 'crm.settings' },
   { path: '/crm/booking-links', surface: 'crm.meeting-links' },
   { path: '/crm/mailboxes', surface: 'crm.mailboxes.list' },
@@ -358,7 +403,12 @@ export const ROUTES: readonly AppRoute[] = [
   },
   { path: '/wholesale/invoices/:id', surface: 'b2b.invoice.detail' },
   { path: '/wholesale/price-tiers', surface: 'b2b.pricing-tiers.list' },
-  { path: '/wholesale/price-tiers/:id', surface: 'b2b.pricing-tier.detail' },
+  {
+    path: '/wholesale/price-tiers/:id',
+    surface: 'b2b.pricing-tier.detail',
+    entity: 'pricing_tier',
+    entityLabel: 'Price tiers',
+  },
   { path: '/wholesale/approvals', surface: 'b2b.approvals' },
 
   /* ── Inventory ────────────────────────────────────────────────────────── */
@@ -382,7 +432,12 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/inventory/integrity', surface: 'inventory.integrity' },
   { path: '/inventory/shelves', surface: 'inventory.bins.list' },
   { path: '/inventory/shelves/labels', surface: 'inventory.bins.labels' },
-  { path: '/inventory/shelves/:id', surface: 'inventory.bins.detail' },
+  {
+    path: '/inventory/shelves/:id',
+    surface: 'inventory.bins.detail',
+    entity: 'bin',
+    entityLabel: 'Shelves',
+  },
   { path: '/inventory/locations', surface: 'inventory.warehouses.list' },
   {
     path: '/inventory/locations/:id',
@@ -471,7 +526,12 @@ export const ROUTES: readonly AppRoute[] = [
   // person doing the work would say it.
   { path: '/inventory/units', surface: 'inventory.units' },
   { path: '/inventory/boms', surface: 'inventory.boms.list' },
-  { path: '/inventory/boms/:id', surface: 'inventory.boms.detail' },
+  {
+    path: '/inventory/boms/:id',
+    surface: 'inventory.boms.detail',
+    entity: 'bom',
+    entityLabel: 'Recipes',
+  },
   { path: '/inventory/assemblies', surface: 'inventory.assemblies.list' },
   { path: '/inventory/assemblies/:id', surface: 'inventory.assemblies.detail' },
   // Planning (docs/146 Phase 7). `explain` takes both halves of a level's
@@ -490,7 +550,12 @@ export const ROUTES: readonly AppRoute[] = [
     surface: 'inventory.planning.explain',
   },
   { path: '/inventory/count-schedules', surface: 'inventory.count-schedules' },
-  { path: '/inventory/count-schedules/:id', surface: 'inventory.count-schedules.detail' },
+  {
+    path: '/inventory/count-schedules/:id',
+    surface: 'inventory.count-schedules.detail',
+    entity: 'count_schedule',
+    entityLabel: 'Counting schedules',
+  },
   { path: '/inventory/reorder', surface: 'inventory.reorder' },
   // Supplier performance + procurement discipline (docs/146 Phase 8). The URLs
   // keep the industry words an integrator would search for — `approvals`,
@@ -505,6 +570,8 @@ export const ROUTES: readonly AppRoute[] = [
   {
     path: '/inventory/purchase-orders/approval-rules/:id',
     surface: 'inventory.purchase-orders.approval-rules.detail',
+    entity: 'po_approval_rule',
+    entityLabel: 'Spending limits',
   },
   { path: '/inventory/advance-ship-notices', surface: 'inventory.advance-ship-notices' },
   {
@@ -537,7 +604,12 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/inventory/consignment/:id', surface: 'inventory.consignment.detail' },
   { path: '/inventory/reports/expiring', surface: 'inventory.expiring' },
   { path: '/inventory/reports/performance', surface: 'inventory.reports.performance' },
-  { path: '/inventory/reports/schedules/:id', surface: 'inventory.reports.schedule' },
+  {
+    path: '/inventory/reports/schedules/:id',
+    surface: 'inventory.reports.schedule',
+    entity: 'report_schedule',
+    entityLabel: 'Scheduled reports',
+  },
   { path: '/inventory/reports/schedules', surface: 'inventory.reports.schedules' },
   { path: '/inventory/reports/reconciliation', surface: 'inventory.reconciliation.books' },
   { path: '/inventory/stock/import', surface: 'inventory.stock.import' },
@@ -546,16 +618,31 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/inventory/custom-fields', surface: 'inventory.custom-fields' },
   { path: '/inventory/reports', surface: 'inventory.reports' },
   { path: '/inventory/sources', surface: 'inventory.sources' },
-  { path: '/inventory/sources/:id', surface: 'inventory.sources.detail' },
+  {
+    path: '/inventory/sources/:id',
+    surface: 'inventory.sources.detail',
+    entity: 'inventory_source',
+    entityLabel: 'Stock sources',
+  },
 
   /* ── Invoicing ────────────────────────────────────────────────────────── */
   { path: '/invoicing/invoices', surface: 'invoicing.invoices.list' },
   { path: '/invoicing/invoices/:id', surface: 'invoicing.invoice.edit' },
   { path: '/invoicing/invoices/:id/preview', surface: 'invoicing.invoice.preview' },
   { path: '/invoicing/workflows', surface: 'invoicing.workflows' },
-  { path: '/invoicing/workflows/:id', surface: 'invoicing.workflow.edit' },
+  {
+    path: '/invoicing/workflows/:id',
+    surface: 'invoicing.workflow.edit',
+    entity: 'document_workflow',
+    entityLabel: 'Workflows',
+  },
   { path: '/invoicing/templates', surface: 'invoicing.templates' },
-  { path: '/invoicing/templates/:id', surface: 'invoicing.template.edit' },
+  {
+    path: '/invoicing/templates/:id',
+    surface: 'invoicing.template.edit',
+    entity: 'billing_template',
+    entityLabel: 'Print templates',
+  },
   { path: '/invoicing/templates/:id/preview', surface: 'invoicing.template.preview' },
 
   /* ── Money ────────────────────────────────────────────────────────────── */
@@ -585,7 +672,12 @@ export const ROUTES: readonly AppRoute[] = [
 
   /* ── Your team (docs/149) ─────────────────────────────────────────────── */
   { path: '/team/people', surface: 'staff.people' },
-  { path: '/team/people/:id', surface: 'staff.person' },
+  {
+    path: '/team/people/:id',
+    surface: 'staff.person',
+    entity: 'staff_member',
+    entityLabel: 'Team members',
+  },
   { path: '/team/timesheets', surface: 'staff.timesheets' },
   { path: '/team/schedule', surface: 'staff.schedule' },
   { path: '/team/time-off', surface: 'staff.timeoff' },
@@ -606,7 +698,14 @@ export const ROUTES: readonly AppRoute[] = [
   },
   { path: '/builder/site', surface: 'builder.site' },
   { path: '/builder/pages', surface: 'builder.pages' },
-  { path: '/builder/email-designs', surface: 'builder.email' },
+  // A design found in search opens the designer on it (`?emailId=`), the way a
+  // site page opens the editor on its page.
+  {
+    path: '/builder/email-designs',
+    surface: 'builder.email',
+    entity: 'email_design',
+    entityLabel: 'Email designs',
+  },
   // The per-document builders. Each edits ONE document, named by a query param the
   // route does not spell (`?pageId=`, `?docKind=&docId=`), so one route serves both
   // the editor and the picker it shows when opened with nothing.
@@ -615,6 +714,12 @@ export const ROUTES: readonly AppRoute[] = [
   // One letter apart and two different screens — safe because these are generated
   // links rather than typed ones, and worth knowing before adding a third.
   { path: '/builder/page', surface: 'builder.page' },
+  // `/builder` is sparx's whole-site editor, which Piggles does not have, and it is
+  // the address a site page found in search carries (`?pageId=`). In Piggles it opens
+  // the page editor on that page rather than nothing (persona P09, issue 940). The
+  // editor's own address stays `/builder/page`: a branded row adds a meaning for its
+  // brand, it does not move the screen.
+  { path: '/builder', surface: 'builder.page', brand: 'piggles' },
   { path: '/builder/header-footer', surface: 'builder.layout' },
   { path: '/builder/look', surface: 'builder.theme' },
   { path: '/builder/piece', surface: 'builder.piece' },
@@ -624,7 +729,12 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/builder/blueprints', surface: 'builder.blueprints' },
   { path: '/builder/blueprints/:key', surface: 'builder.blueprint' },
   { path: '/builder/saved-pieces', surface: 'builder.components' },
-  { path: '/builder/saved-pieces/:key', surface: 'builder.component' },
+  {
+    path: '/builder/saved-pieces/:key',
+    surface: 'builder.component',
+    entity: 'builder_component',
+    entityLabel: 'Saved pieces',
+  },
   { path: '/builder/forms', surface: 'builder.forms' },
   { path: '/builder/forms/:id', surface: 'builder.submission' },
   // Its own path rather than under /builder/forms — `:id` there is a submission,
@@ -648,18 +758,38 @@ export const ROUTES: readonly AppRoute[] = [
     entityLabel: 'Media',
   },
   { path: '/content/authors', surface: 'cms.authors.list' },
-  { path: '/content/authors/:id', surface: 'cms.authors.detail' },
+  {
+    path: '/content/authors/:id',
+    surface: 'cms.authors.detail',
+    entity: 'author',
+    entityLabel: 'Authors',
+  },
   { path: '/content/tags', surface: 'cms.taxonomy.list' },
-  { path: '/content/tags/:key', surface: 'cms.taxonomy.detail' },
+  {
+    path: '/content/tags/:key',
+    surface: 'cms.taxonomy.detail',
+    entity: 'taxonomy',
+    entityLabel: 'Tags & topics',
+  },
   { path: '/content/types', surface: 'cms.types.list' },
-  { path: '/content/types/:key', surface: 'cms.types.detail' },
+  {
+    path: '/content/types/:key',
+    surface: 'cms.types.detail',
+    entity: 'content_type',
+    entityLabel: 'Content types',
+  },
   { path: '/content/redirects', surface: 'cms.redirects.list' },
   { path: '/content/redirects/import', surface: 'cms.redirects.import' },
   { path: '/content/translations', surface: 'cms.translations.list' },
   { path: '/content/translations/:id', surface: 'cms.translations.detail' },
   { path: '/content/legal', surface: 'cms.legal.list' },
   { path: '/content/webhooks', surface: 'cms.webhooks.list' },
-  { path: '/content/webhooks/:id', surface: 'cms.webhooks.detail' },
+  {
+    path: '/content/webhooks/:id',
+    surface: 'cms.webhooks.detail',
+    entity: 'webhook',
+    entityLabel: 'Webhooks',
+  },
 
   /* ── Email ────────────────────────────────────────────────────────────── */
   { path: '/email/broadcasts', surface: 'email.broadcasts.list' },
@@ -702,7 +832,12 @@ export const ROUTES: readonly AppRoute[] = [
   // surface opens for a new campaign too, but as `{ id: 'new' }` — and
   // `/campaigns/new` is a real address, where `/social/composer/` with nothing
   // after it was not.
-  { path: '/campaigns/:id', surface: 'funnels.campaign' },
+  {
+    path: '/campaigns/:id',
+    surface: 'funnels.campaign',
+    entity: 'funnel',
+    entityLabel: 'Tracked campaigns',
+  },
 
   /* ── Scheduling ───────────────────────────────────────────────────────── */
   { path: '/scheduling', surface: 'scheduling.calendar' },
@@ -713,19 +848,44 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/scheduling/repeating/:id', surface: 'scheduling.series.detail' },
   { path: '/scheduling/waiting-list', surface: 'scheduling.waitlist' },
   { path: '/scheduling/services', surface: 'scheduling.services.list' },
-  { path: '/scheduling/services/:id', surface: 'scheduling.services.detail' },
+  {
+    path: '/scheduling/services/:id',
+    surface: 'scheduling.services.detail',
+    entity: 'scheduling_service',
+    entityLabel: 'Services',
+  },
   { path: '/scheduling/people-and-equipment', surface: 'scheduling.resources.list' },
-  { path: '/scheduling/people-and-equipment/:id', surface: 'scheduling.resources.detail' },
+  {
+    path: '/scheduling/people-and-equipment/:id',
+    surface: 'scheduling.resources.detail',
+    entity: 'scheduling_resource',
+    entityLabel: 'People & equipment',
+  },
   { path: '/scheduling/places', surface: 'scheduling.locations.list' },
-  { path: '/scheduling/places/:id', surface: 'scheduling.locations.detail' },
+  {
+    path: '/scheduling/places/:id',
+    surface: 'scheduling.locations.detail',
+    entity: 'scheduling_location',
+    entityLabel: 'Places',
+  },
   { path: '/scheduling/availability', surface: 'scheduling.availability' },
   { path: '/scheduling/booking-rules', surface: 'scheduling.policies' },
-  { path: '/scheduling/booking-rules/:id', surface: 'scheduling.policies.detail' },
+  {
+    path: '/scheduling/booking-rules/:id',
+    surface: 'scheduling.policies.detail',
+    entity: 'booking_policy',
+    entityLabel: 'Booking rules',
+  },
   { path: '/scheduling/reports', surface: 'scheduling.reports' },
 
   /* ── Dropshipping ─────────────────────────────────────────────────────── */
   { path: '/dropshipping/suppliers', surface: 'dropship.suppliers.list' },
-  { path: '/dropshipping/suppliers/:id', surface: 'dropship.supplier.detail' },
+  {
+    path: '/dropshipping/suppliers/:id',
+    surface: 'dropship.supplier.detail',
+    entity: 'dropship_supplier',
+    entityLabel: 'Dropship suppliers',
+  },
   { path: '/dropshipping/products', surface: 'dropship.products.list' },
   { path: '/dropshipping/orders', surface: 'dropship.orders.list' },
   { path: '/dropshipping/orders/:id', surface: 'dropship.order.detail' },
@@ -761,7 +921,12 @@ export const ROUTES: readonly AppRoute[] = [
   /* ── AI ───────────────────────────────────────────────────────────────── */
   { path: '/ai', surface: 'ai.overview' },
   { path: '/ai/instructions', surface: 'ai.prompts' },
-  { path: '/ai/instructions/:id', surface: 'ai.prompts.edit' },
+  {
+    path: '/ai/instructions/:id',
+    surface: 'ai.prompts.edit',
+    entity: 'ai_prompt',
+    entityLabel: 'AI instructions',
+  },
   { path: '/ai/permissions', surface: 'ai.tools' },
 
   /* ── Reporting ────────────────────────────────────────────────────────── */

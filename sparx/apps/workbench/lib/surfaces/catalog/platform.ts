@@ -95,6 +95,11 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
       'move my customers from another shop',
       'move my orders from another shop',
       'bring my products over',
+      // A publisher's list is subscribers, not customers (Piggles persona P09):
+      // "import subscribers" found only a saved group of them, never this.
+      'import subscribers',
+      'import my mailing list',
+      'move my newsletter list',
     ],
     order: 3,
   },

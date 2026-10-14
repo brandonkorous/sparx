@@ -68,6 +68,7 @@ import { PaneScope } from '../../lib/dock/window-boundary';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BookingTimeline } from './booking-timeline';
 import { SaveFailure } from '@/components/save-failure';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { thisComputersTimezone } from '../../lib/business-timezone';
 import { instantFromWall, wallClockHint, wallProblem, wallValue } from '../../lib/wall-clock';
 import {
@@ -178,31 +179,21 @@ function ModalBody({
   ctx: SurfaceContext;
   onClose: () => void;
 }) {
-  const { data: booking, isPending, isError, refetch } = useBooking(bookingId);
+  const { data: booking, isPending, isError, error, refetch } = useBooking(bookingId);
 
   if (isError) {
     return (
       <div className="flex flex-col gap-4">
         <DialogTitle className="text-xl font-semibold">Booking</DialogTitle>
-        <Alert color="error">
-          <AlertContent>
-            <AlertTitle>Could not load this booking</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server, or the booking no longer exists. Your diary is
-              unaffected.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="error"
-            variant="soft"
-            onClick={() => {
-              void refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
+        <PaneLoadError
+          title="Could not load this booking"
+          description="This is a problem reaching the server, or the booking no longer exists. Your diary is unaffected."
+          error={error}
+          noun="booking"
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       </div>
     );
   }

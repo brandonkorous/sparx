@@ -9,8 +9,9 @@
 // prices (quote lines, the catalog, or both) as the badge that tells rows apart.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { Percent, Plus } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -27,7 +28,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function MarkupRulesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMarkupRuleList();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useMarkupRuleList();
 
   const term = search.trim().toLowerCase();
   const rows = (data ?? []).filter((rule) => term === '' || rule.name.toLowerCase().includes(term));
@@ -84,10 +86,11 @@ export function MarkupRulesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto p-2">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
             icon={<Percent className="size-6" aria-hidden />}
             title="Could not load your markup rules"
             description="This is a problem reaching the server. Your rules are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

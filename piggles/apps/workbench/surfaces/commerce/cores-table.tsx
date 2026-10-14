@@ -113,7 +113,7 @@ export function CoresTable({
           <th className="hidden @lg:table-cell">Customer</th>
           <th>Part</th>
           <th className="text-right">Owed</th>
-          <th className="hidden text-right @xl:table-cell">Deposit back</th>
+          <th className="hidden text-right @xl:table-cell">Deposit</th>
           <th>Out for</th>
           <th className="hidden @3xl:table-cell">
             <span className="sr-only">What to do</span>

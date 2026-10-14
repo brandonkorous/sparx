@@ -56,6 +56,7 @@ import {
   type AbcClass,
   type CountCadence,
 } from './planning-data';
+import { suggestedScheduleName } from './count-schedule-name';
 
 interface Draft {
   warehouseId: string;
@@ -72,7 +73,12 @@ interface Draft {
 /** What a brand-new schedule opens as — the setup the trade converges on. */
 const NEW_DRAFT: Draft = {
   warehouseId: '',
-  name: 'Top-value stock, monthly',
+  name: suggestedScheduleName({
+    abcClass: 'A',
+    zoneName: '',
+    cadence: 'monthly',
+    intervalDays: 30,
+  }),
   abcClass: 'A',
   zoneName: '',
   cadence: 'monthly',
@@ -200,8 +206,16 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const dirty = JSON.stringify(draft) !== initialRef.current;
   useDirtySource(dirty, 'This counting schedule has unsaved changes. Close it anyway?');
 
+  // A new schedule's name follows its choices until someone types one, or it
+  // is saved under words that no longer describe it (persona issue 253).
+  const [nameTyped, setNameTyped] = useState(false);
   const patch = (next: Partial<Draft>) => {
-    setDraft((current) => ({ ...current, ...next }));
+    setDraft((current) => {
+      const merged: Draft = { ...current, ...next };
+      return isNew && !nameTyped && next.name === undefined
+        ? { ...merged, name: suggestedScheduleName(merged) }
+        : merged;
+    });
   };
 
   // Asked as the setup is typed, so "this covers nothing" arrives before Set it
@@ -256,7 +270,8 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             description: `${saved.name}: next count ${new Date(saved.nextRunAt).toLocaleDateString()}.`,
             type: 'success',
           });
-          if (isNew) ctx.open('inventory.count-schedules.detail', { id: saved.id });
+          if (isNew)
+            ctx.open('inventory.count-schedules.detail', { id: saved.id }, { target: 'replace' });
         },
         onError: (error) => {
           toast.add({
@@ -362,6 +377,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             value={draft.name}
             placeholder="Top-value stock, monthly"
             onChange={(event) => {
+              setNameTyped(true);
               patch({ name: event.target.value });
             }}
           />

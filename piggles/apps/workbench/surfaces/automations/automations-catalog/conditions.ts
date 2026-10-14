@@ -19,25 +19,4 @@ export function operatorDef(op: string): ConditionOperatorDef | undefined {
   return CONDITION_OPERATORS.find((o) => o.value === op);
 }
 
-/** Curated condition-field suggestions (resolver-exposed paths). Free text. */
-export const COMMON_CONDITION_FIELDS: readonly string[] = [
-  'customer.type',
-  'customer.lifecycleStage',
-  'customer.leadStatus',
-  'customer.email',
-  'customer.totalSpent',
-  'customer.lifetimeOrders',
-  'customer.tags',
-  'deal.stage',
-  'deal.value',
-  'order.total',
-  'order.status',
-  'order.itemCount',
-  'b2bAccount.status',
-  'b2bAccount.hasOverdueInvoices',
-  // Who a held wholesale order is waiting on (sparx persona issue 087).
-  'approval.asksBusiness',
-  'approval.asksAccount',
-  'form.formName',
-  'form.pageSlug',
-];
+// The details a condition can check, in words, live in `../condition-fields.ts`.

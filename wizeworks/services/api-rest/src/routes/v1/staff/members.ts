@@ -47,6 +47,7 @@ import { bookableResourceIds, setBookable } from '@wizeworks/scheduling';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { canSeePay, requirePayAccess, requireStaffModule } from '../../../lib/staff-context.js';
 import { publishStaffEvent } from '../../../lib/staff-events.js';
+import { signalResource, signalStaffMember } from '../../../lib/scheduling-search.js';
 import { resolveListScopeIds } from '../../../lib/property.js';
 import { memberView, type StaffMemberRow } from './views.js';
 
@@ -137,6 +138,7 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireRole(request, 'editor');
     const input = staffMemberCreateSchema.parse(request.body);
     const row = await createMember(auth.tenantId, input);
+    await signalStaffMember(auth, row.id);
     await publishStaffEvent('staff.member.created', auth.tenantId, auth.actorId, {
       staffMemberId: row.id,
       firstName: row.firstName,
@@ -160,6 +162,7 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const input = staffMemberUpdateSchema.parse(request.body);
     const row = await updateMember(auth.tenantId, id, input);
+    await signalStaffMember(auth, id);
     return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth)));
   });
 
@@ -172,6 +175,7 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await getMember(auth.tenantId, id); // 404 rather than a raw Prisma P2025.
     const row = await archiveMember(auth.tenantId, id);
+    await signalStaffMember(auth, id);
     return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth)));
   });
 
@@ -181,6 +185,7 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await getMember(auth.tenantId, id);
     const row = await restoreMember(auth.tenantId, id);
+    await signalStaffMember(auth, id);
     return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth)));
   });
 
@@ -204,6 +209,9 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     if (!(await isModuleEnabled(auth.tenantId, 'scheduling'))) throw moduleDisabled('scheduling');
     await setBookable(auth.tenantId, id, body.bookable);
     const row = await getMember(auth.tenantId, id);
+    // Turning it on can mint the bookable resource, so both records are fresh.
+    await signalStaffMember(auth, id);
+    if (row.resourceId) await signalResource(auth, row.resourceId);
     const bookable = await bookableFor(auth.tenantId, [row]);
     return ok(memberView(row as StaffMemberRow, new Date(), canSeePay(auth), bookable));
   });
@@ -217,6 +225,7 @@ const staffMemberRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     await getMember(auth.tenantId, id);
     await deleteMember(auth.tenantId, id);
+    await signalStaffMember(auth, id);
     return reply.code(204).send();
   });
 

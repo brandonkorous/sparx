@@ -26,7 +26,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, Ban, Download, Mail, Phone, Trash2, Undo2 } from 'lucide-react';
+import { Archive, Ban, Download, Mail, Phone, Trash2, Undo2, UserRound } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import { downloadServerFile, saveBlob } from '../../lib/api/download';
@@ -34,6 +34,8 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useSites } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { EngagementComposer } from '../crm/engagement-composer';
+import { targetFor } from '../commerce/orders-list-filters';
 import {
   formName,
   formatBytes,
@@ -46,10 +48,12 @@ import {
   submissionToCsv,
   submitterLabel,
   useDeleteSubmission,
+  useMarkSubmissionRead,
   useSetSubmissionStatus,
   useSubmission,
   type FormSubmission,
   type SubmissionAttachment,
+  type SubmissionCustomer,
 } from './form-submissions-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { contextRow } from './submission-context-words';
@@ -121,6 +125,7 @@ function SubmissionBody({
   const toast = useToast();
   const confirm = useConfirm();
   const setStatus = useSetSubmissionStatus(id);
+  const markRead = useMarkSubmissionRead(id);
   const del = useDeleteSubmission(id);
 
   const { data: sites } = useSites();
@@ -137,8 +142,8 @@ function SubmissionBody({
     if (autoReadRef.current) return;
     if (submission.status !== 'new') return;
     autoReadRef.current = true;
-    setStatus.mutate('read');
-  }, [submission.status, setStatus]);
+    markRead.mutate();
+  }, [submission.status, markRead]);
 
   const state = submissionState(submission.status);
   const isArchived = submission.status === 'archived';
@@ -299,6 +304,8 @@ function SubmissionBody({
 
           <SubmittedFields submission={submission} />
 
+          {submission.customer ? <AnswerCard ctx={ctx} customer={submission.customer} /> : null}
+
           {submission.attachments.length > 0 ? (
             <Attachments id={id} attachments={submission.attachments} />
           ) : null}
@@ -379,6 +386,51 @@ function IdentityCard({ submission, site }: { submission: FormSubmission; site: 
           ) : null}
         </div>
       ) : null}
+    </Card>
+  );
+}
+
+/* ── Answering them ─────────────────────────────────────────────────────── */
+
+/**
+ * Answer a message from somebody on file, from here, onto their record (sparx persona
+ * issue 162). The address chip above only opened the owner's own mail program, so
+ * the answer left sparx and was kept nowhere, while the customer page already had
+ * an Email that sends from the business and files it on their timeline. This is
+ * that same composer. It wears the CRM color: what it writes lands in the CRM.
+ */
+function AnswerCard({ ctx, customer }: { ctx: SurfaceContext; customer: SubmissionCustomer }) {
+  const because =
+    customer.match === 'record'
+      ? `This came from ${customer.name}, one of your customers.`
+      : `${customer.email ?? 'This address'} belongs to your customer ${customer.name}.`;
+  return (
+    <Card className="p-4" data-module="crm">
+      <Heading level={2} className="text-lg font-semibold">
+        Answer {customer.name}
+      </Heading>
+      <Text className="mt-1">
+        {because} An email you send here goes out from your business and is kept on their record,
+        with everything else they have said to you.
+      </Text>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <EngagementComposer
+          customerId={customer.id}
+          canEmail={Boolean(customer.email)}
+          lead="email"
+        />
+        <Button
+          size="sm"
+          variant="outline"
+          color="module"
+          onClick={(event: React.MouseEvent) => {
+            ctx.open('crm.customer.detail', { id: customer.id }, { target: targetFor(event) });
+          }}
+        >
+          <UserRound className="size-4" aria-hidden />
+          Open {customer.name}
+        </Button>
+      </div>
     </Card>
   );
 }

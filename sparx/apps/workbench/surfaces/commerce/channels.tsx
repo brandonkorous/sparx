@@ -29,6 +29,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { Link2Off, Plug, ServerCrash, Store } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -340,24 +341,14 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {channels.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load your sales channels"
-              description={productErrorMessage(
-                channels.error,
-                'This is a problem reaching the server. Nothing about your connected shops has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void channels.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing about your connected shops has changed."
+              error={channels.error}
+              onRetry={() => {
+                void channels.refetch();
+              }}
             />
           ) : channels.isLoading ? (
             <p className="text-sm" role="status">

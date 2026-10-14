@@ -99,7 +99,16 @@ function RefundRouteField({ form }: { form: ReceiveForm }) {
   );
 }
 
-export function ReceiveCoresFields({ form, owed }: { form: ReceiveForm; owed: number }) {
+export function ReceiveCoresFields({
+  form,
+  owed,
+  asksWhereMoneyGoes,
+}: {
+  form: ReceiveForm;
+  owed: number;
+  /** Only money actually going back needs a "where to" (sparx persona issue 183). */
+  asksWhereMoneyGoes: boolean;
+}) {
   return (
     <>
       <div className="flex flex-col gap-3 @md:flex-row">
@@ -126,7 +135,7 @@ export function ReceiveCoresFields({ form, owed }: { form: ReceiveForm; owed: nu
         </p>
       ) : null}
       {form.bad > 0 ? <ReasonField form={form} /> : null}
-      {form.good > 0 ? <RefundRouteField form={form} /> : null}
+      {asksWhereMoneyGoes ? <RefundRouteField form={form} /> : null}
     </>
   );
 }

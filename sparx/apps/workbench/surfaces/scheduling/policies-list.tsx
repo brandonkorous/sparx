@@ -10,7 +10,7 @@
 // state to badge — a policy is a set of terms, not a thing with a lifecycle.
 
 import { useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { Plus, ShieldCheck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -19,6 +19,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { policySummary, usePolicies, type BookingPolicy } from './setup-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const DETAIL_KEY = 'scheduling.policies.detail';
 
@@ -37,7 +38,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = usePolicies({
+  const { data, isPending, isFetching, dataUpdatedAt, isError, error, refetch } = usePolicies({
     q: search.trim(),
     take,
     skip,
@@ -63,21 +64,14 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ShieldCheck className="size-6" aria-hidden />}
           title="Could not load your booking rules"
           description="This is a problem reaching the server. Your rules are unaffected: the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
         />
       );
     }

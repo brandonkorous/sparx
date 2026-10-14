@@ -29,7 +29,6 @@ function titleSize(len: number): number {
 export function GET(req: Request): ImageResponse {
   const { searchParams } = new URL(req.url);
   const title = (searchParams.get('title') ?? '').slice(0, 120).trim() || 'Untitled';
-  const eyebrow = (searchParams.get('eyebrow') ?? '').slice(0, 40).trim();
   const brand = (searchParams.get('brand') ?? '').slice(0, 60).trim();
   const rawAccent = searchParams.get('accent') ?? '';
   const accent = HEX.test(rawAccent) ? `#${rawAccent}` : DEFAULT_ACCENT;
@@ -59,24 +58,9 @@ export function GET(req: Request): ImageResponse {
         }}
       />
 
-      {/* Eyebrow */}
-      <div style={{ display: 'flex' }}>
-        {eyebrow ? (
-          <span
-            style={{
-              fontSize: 24,
-              fontWeight: 600,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: accent,
-            }}
-          >
-            {eyebrow}
-          </span>
-        ) : (
-          <span style={{ display: 'flex' }} />
-        )}
-      </div>
+      {/* The top third stays empty, so the title sits where it always has. An old
+          link's `eyebrow` parameter is ignored: no label above the title. */}
+      <div style={{ display: 'flex' }} />
 
       {/* Title */}
       <div

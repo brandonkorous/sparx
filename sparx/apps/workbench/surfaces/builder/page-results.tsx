@@ -38,6 +38,8 @@ import {
 import { BarChart3 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatCount,
@@ -131,8 +133,10 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not refresh these figures just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. What you see below is what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. What you see below is what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -149,21 +153,14 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
 
         {error && !staleAfterFailure ? (
-          <EmptyState
+          <PaneLoadError
             icon={<BarChart3 className="size-6" aria-hidden />}
             title="Could not load your page results"
             description="This is a problem reaching the server. Nothing about your site or your figures has changed."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-base" role="status">

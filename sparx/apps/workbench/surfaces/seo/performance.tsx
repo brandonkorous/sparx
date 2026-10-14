@@ -217,6 +217,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
           icon={<Gauge className="size-6" aria-hidden />}
           title="Could not load your search performance"
           description="This is a problem reaching the server. Your site and its scores are unaffected."
+          error={audits.error}
           onRetry={() => {
             void audits.refetch();
           }}

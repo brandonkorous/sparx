@@ -38,7 +38,8 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import type { MediaAsset } from '../cms/media';
 import { postStatusMeta, socialErrorMessage, type CatalogEntry, type Post } from './data';
-import { DestinationAvatars, PostCover, excerpt, whenLine } from './post-visuals';
+import { DestinationAvatars, PostCover, excerpt } from './post-visuals';
+import { timesNote, whenLine } from './social-clock';
 import { GROUPS, useSocialBoard } from './board';
 import { RowOpenHint } from '../../components/row-open-hint';
 
@@ -72,12 +73,15 @@ function PostTile({
   assetsById,
   avatarByTargetId,
   catalogMap,
+  clock,
   onOpen,
 }: {
   post: Post;
   assetsById: Map<string, MediaAsset>;
   avatarByTargetId: Map<string, string | null>;
   catalogMap: Map<string, CatalogEntry>;
+  /** The business's clock, so "Goes out 9:00 AM" is her 9:00 (piggles persona issue 990). */
+  clock: string;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const meta = postStatusMeta(post.status);
@@ -102,7 +106,7 @@ function PostTile({
             {excerpt(post.body, 120)}
           </span>
 
-          <Text className="text-sm">{whenLine(post)}</Text>
+          <Text className="text-sm">{whenLine(post, clock)}</Text>
 
           {/* `mt-auto` pins this to the bottom edge, so the state of every tile in a
               row lines up however long their words ran. */}
@@ -182,6 +186,8 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
     catalogMap,
     counts,
     nothingConnected,
+    reader,
+    clock,
   } = board;
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string | null>(null);
@@ -321,6 +327,12 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="flex w-full flex-col gap-4 p-4">
             <PipelineStrip counts={counts} activeFilter={filter} onPick={pickFilter} />
 
+            {/* Only when the business has no zone of its own: then the times are this
+                computer's, and the screen has to say so. */}
+            {reader.zone === null ? (
+              <Text className="text-sm">{timesNote(null, reader.device, new Date())}</Text>
+            ) : null}
+
             {matches.length === 0 ? (
               <EmptyState
                 icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
@@ -365,6 +377,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         assetsById={assetsById}
                         avatarByTargetId={avatarByTargetId}
                         catalogMap={catalogMap}
+                        clock={clock}
                         onOpen={(event) => {
                           board.openPost(post, event);
                         }}

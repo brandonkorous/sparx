@@ -70,6 +70,25 @@ describe('templates', () => {
     expect(rendered.text).toContain('invitee@example.test');
     expect(rendered.text).toMatch(/7 days/);
     expect(rendered.templateId).toBe('team-invitation');
+    // "as a editor" went to every editor ever invited (piggles persona issue 989).
+    expect(rendered.text).toContain('as an editor');
+    expect(rendered.text).not.toContain('workspace');
+  });
+
+  it('writes "a" before a role that starts with a consonant', async () => {
+    const rendered = await _renderTemplateForTest({
+      template: 'team-invitation',
+      to: 'invitee@example.test',
+      props: {
+        inviteeEmail: 'invitee@example.test',
+        orgName: 'Northwind Traders',
+        inviterName: 'Brandon',
+        role: 'member',
+        acceptUrl: 'https://app.sparx.works/accept-invite?invitation=inv_124',
+        expiresInDays: 7,
+      },
+    });
+    expect(rendered.text).toContain('as a member');
   });
 });
 

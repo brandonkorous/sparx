@@ -32,6 +32,8 @@ import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { useReaderClock } from '../../lib/business-timezone';
+import { onClock } from '../../lib/publish-clock';
 import {
   broadcastState,
   useBroadcasts,
@@ -78,6 +80,11 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
 
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBroadcasts();
+  // "2 days ago" carries the exact time on hover, and that was this computer's
+  // clock with no name. It is the business's, named, like the broadcast itself
+  // (Piggles persona issue 984).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   const needle = search.trim().toLowerCase();
 
@@ -247,9 +254,17 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </td>
                     <td className="hidden text-sm @lg:table-cell">
                       {broadcast.sentAt ? (
-                        <Timestamp value={broadcast.sentAt} format="relative" />
+                        <Timestamp
+                          value={broadcast.sentAt}
+                          format="relative"
+                          title={onClock(broadcast.sentAt, clock)}
+                        />
                       ) : broadcast.scheduledAt ? (
-                        <Timestamp value={broadcast.scheduledAt} format="relative" />
+                        <Timestamp
+                          value={broadcast.scheduledAt}
+                          format="relative"
+                          title={onClock(broadcast.scheduledAt, clock)}
+                        />
                       ) : (
                         'Not sent yet'
                       )}

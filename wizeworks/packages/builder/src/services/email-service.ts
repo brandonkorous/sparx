@@ -18,6 +18,7 @@ import {
   SyncSilicaEmailInput,
   UpdateEmailInput,
   blankEmailTree,
+  emailEditSignature,
   emailTreeToSilica,
   getDefaultEmailTemplate,
   normalizeEmailTree,
@@ -33,9 +34,8 @@ import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { BuilderNotFoundError } from '../errors';
-import { isPriorDefaultBody } from './email-default-refresh';
+import { isUntouchedDefault } from './email-default-refresh';
 import { captureEmailVersionTx } from './email-version-service';
-import { canonicalJson } from './artifact-service';
 
 function toDto(row: BuilderEmail): BuilderEmailDto {
   return {
@@ -111,7 +111,9 @@ function silicaPublished(row: BuilderEmail): SilicaEmailDocument {
 function hasUnpublishedChanges(row: BuilderEmail): boolean {
   const isPublished = row.publishedTree != null || row.silicaPublishedDocument != null;
   if (!isPublished) return false;
-  return canonicalJson(silicaDraft(row)) !== canonicalJson(silicaPublished(row));
+  // By what the email SAYS (sparx persona issue 152): a draft that differs only by
+  // the designer's brand repaint or its ordering keys sends exactly the same email.
+  return emailEditSignature(silicaDraft(row)) !== emailEditSignature(silicaPublished(row));
 }
 
 /** The send/preview projection (PublishedEmailDto) of a row, or null when it has
@@ -520,6 +522,56 @@ export function getPublishedById(
 }
 
 /**
+ * The published email a send made at `at` used (sparx persona issue 161).
+ *
+ * A sent broadcast's "What was sent" read `getPublishedById`, the design as it is
+ * published TODAY: publish the design again (to reuse it next month) and the October
+ * broadcast showed the November email under a heading saying it went out in October.
+ * Every publish is kept (`builder_email_versions`, append-only), so the version that
+ * was live at `at` is on record:
+ *
+ * - nothing published since `at` → the current published document IS what went out
+ *   (this also covers an email published before versions were kept);
+ * - published again since → the newest version at or before `at`;
+ * - published again since, with no version on record from before → null. Showing the
+ *   current one instead would be the same false claim this exists to stop.
+ */
+export function publishedAsOf(
+  row: BuilderEmail,
+  versionAtSend: { document: unknown; createdAt: Date } | null,
+  at: Date
+): PublishedEmailDto | null {
+  const current = toPublished(row);
+  if (!current) return null;
+  if (row.publishedAt && row.publishedAt <= at) return current;
+  if (!versionAtSend) return null;
+  return {
+    ...current,
+    silicaDoc: versionAtSend.document as SilicaEmailDocument,
+    publishedAt: versionAtSend.createdAt.toISOString(),
+  };
+}
+
+/** `publishedAsOf` read from the database: the email and its newest version at or
+ *  before `at`. Null when the email is gone or the version that went out is not kept. */
+export function getPublishedAsOf(
+  ctx: ServiceContext,
+  id: string,
+  at: Date
+): Promise<PublishedEmailDto | null> {
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.builderEmail.findUnique({ where: { id } });
+    if (!row) return null;
+    const version = await tx.builderEmailVersion.findFirst({
+      where: { emailId: id, createdAt: { lte: at } },
+      orderBy: { createdAt: 'desc' },
+      select: { document: true, createdAt: true },
+    });
+    return publishedAsOf(row, version, at);
+  });
+}
+
+/**
  * Resolve a built-in email by KEY for a send (docs/91 §6). The override join:
  * a PUBLISHED per-site row `(tenant, property, key)` wins; else the PUBLISHED
  * tenant-wide default `(tenant, null, key)`; else null. An unpublished site fork
@@ -614,7 +666,7 @@ async function refreshRedesignedDefaults(tx: Prisma.TransactionClient): Promise<
     const draftDoc = row.silicaDraftDocument as SilicaEmailDocument | null;
     const publishedDoc = row.silicaPublishedDocument as SilicaEmailDocument | null;
     // Replace ONLY when both sides are still an untouched shipped default.
-    if (!isPriorDefaultBody(key, draftDoc) || !isPriorDefaultBody(key, publishedDoc)) continue;
+    if (!isUntouchedDefault(key, draftDoc, publishedDoc)) continue;
     await tx.builderEmail.update({
       where: { id: row.id },
       data: {

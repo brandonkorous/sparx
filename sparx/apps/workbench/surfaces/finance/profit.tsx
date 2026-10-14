@@ -90,6 +90,12 @@ function Movement({
   risingIsGood: boolean;
   period: PeriodKey;
 }) {
+  // Nothing last period is not "about the same": no rate can be worked out from
+  // zero, and Gillett's first month of sales read "About the same as last month"
+  // (sparx persona issue 172).
+  if (previous === 0 && current !== 0) {
+    return <Text className="text-sm">Nothing in {previousLabel(period)} to compare with</Text>;
+  }
   const change = movement(current, previous, risingIsGood);
   if (!change) {
     return <Text className="text-sm">About the same as {previousLabel(period)}</Text>;
@@ -294,7 +300,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<TrendingUp className="size-6" aria-hidden />}
               title="Nothing to measure in this period"
-              description="No money came in and no costs were recorded, so there is no profit figure to give you, which is not the same as breaking even. Record some spending, or pick a wider period."
+              description="Nothing was sold and no costs were recorded, so there is no profit figure to give you, which is not the same as breaking even. Record some spending, or pick a wider period."
               actions={
                 <Button
                   size="sm"
@@ -388,7 +394,7 @@ function ProfitBody({
           {margin !== null ? (
             <Badge color={lost ? 'danger' : 'success'} variant="soft" size="sm">
               {/* The size of the share. "You lost" above already said which way. */}
-              {formatRate(Math.abs(margin))} of everything that came in
+              {formatRate(Math.abs(margin))} of everything you sold
             </Badge>
           ) : null}
         </div>
@@ -416,15 +422,16 @@ function ProfitBody({
       <Card className="flex flex-col gap-5 p-5">
         <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <Text className="font-semibold">Money in</Text>
+            <Text className="font-semibold">Sales</Text>
             <Text className="text-lg font-semibold tabular-nums">
               {formatCents(revenue, currency)}
             </Text>
           </div>
-          <Progress color="success" value={100} max={100} aria-label="Money in" />
+          <Progress color="success" value={100} max={100} aria-label="Sales" />
           <div className="flex flex-wrap items-center gap-3">
             <Text className="text-sm">
-              Read straight from your orders and paid invoices, never typed in twice.
+              What your orders sold, paid or still owed, and what was paid on your other invoices.
+              Sales tax and core deposits are not yours, so they are left out.
             </Text>
             <Movement
               current={revenue}
@@ -476,7 +483,7 @@ function ProfitBody({
             </Text>
           </div>
           <Text className="text-sm">
-            Money in, less the {formatCents(directCents, currency)} it took to deliver it. Before
+            Sales, less the {formatCents(directCents, currency)} it took to deliver them. Before
             wages and the cost of being open.
           </Text>
         </div>

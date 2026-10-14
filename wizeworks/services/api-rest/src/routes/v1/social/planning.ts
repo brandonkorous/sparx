@@ -20,6 +20,7 @@ import {
   deleteHashtagSet,
   deletePostingSlot,
   getBestTimeToPost,
+  importTimeZone,
   listHashtagSets,
   listPostingSlots,
   parseSocialCsv,
@@ -56,7 +57,14 @@ const SeedQuery = z.object({
   id: z.string().uuid(),
 });
 
-const ImportPreviewBody = z.object({ csv: z.string().min(1).max(2_000_000) });
+const ImportPreviewBody = z.object({
+  csv: z.string().min(1).max(2_000_000),
+  /** The zone of the computer the file was sent from. A time in the file that names no
+   *  zone is read on the BUSINESS's clock; this is used only when the business has not
+   *  set one, which is what the import screen tells the person (piggles persona
+   *  issue 990). */
+  timezone: z.string().min(1).max(64).optional(),
+});
 const ImportBody = ImportPreviewBody.extend({
   /** Used for any row that names no accounts of its own — what the import screen
    *  pre-selects. */
@@ -174,8 +182,8 @@ const socialPlanningRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/social/import/preview', async (request, reply) => {
     await requireSocialModule(request);
     requireRole(request, 'editor');
-    const { csv } = ImportPreviewBody.parse(request.body);
-    const parsed = parseSocialCsv(csv);
+    const { csv, timezone } = ImportPreviewBody.parse(request.body);
+    const parsed = parseSocialCsv(csv, await importTimeZone(toSocialContext(request), timezone));
     return reply.send(
       ok({
         rows: parsed.rows.map((r) => ({
@@ -191,8 +199,9 @@ const socialPlanningRoutes: FastifyPluginAsync = async (app) => {
     await requireSocialModule(request);
     requireRole(request, 'editor');
     const body = ImportBody.parse(request.body);
-    const parsed = parseSocialCsv(body.csv);
-    const result = await createSocialPostsBulk(toSocialContext(request), parsed.rows, {
+    const ctx = toSocialContext(request);
+    const parsed = parseSocialCsv(body.csv, await importTimeZone(ctx, body.timezone));
+    const result = await createSocialPostsBulk(ctx, parsed.rows, {
       propertyId: await resolveSocialProperty(request),
       defaultTargetIds: body.defaultTargetIds,
     });

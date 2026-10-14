@@ -56,6 +56,7 @@ import {
   type ProductDropship,
   type ProductDropshipVariant,
 } from './products-data';
+import { HandLinkedActions, ShipFromSupplierSection } from './product-dropship-link';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 
@@ -157,7 +158,11 @@ function SupplierCard({
   return (
     <FormSection
       title={link.supplier.name}
-      description={`They hold the stock and post it to your customer. Their code for this product is ${link.supplierSku}.`}
+      description={
+        link.supplier.catalogSync
+          ? `They hold the stock and post it to your customer. Their code for this product is ${link.supplierSku}.`
+          : `They ship it to your customer when we email them the order${link.supplier.ordersTo ? `, at ${link.supplier.ordersTo}` : ''}. Their code for this product is ${link.supplierSku}.`
+      }
       action={
         <Badge color={state.tone} variant="soft">
           {state.label}
@@ -188,7 +193,9 @@ function SupplierCard({
           </div>
         ) : null}
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <Text className="text-sm">Their details last changed</Text>
+          <Text className="text-sm">
+            {link.supplier.catalogSync ? 'Their details last changed' : 'You last changed this'}
+          </Text>
           <Text as="span" className="font-medium">
             <Timestamp value={link.source.updatedAt} format="relative" />
           </Text>
@@ -264,23 +271,27 @@ function SupplierCard({
         </div>
       ) : null}
 
-      <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-        <Text className="text-sm">
-          Pull their current details and cost over the top of what is here now. Anything you have
-          rewritten yourself is replaced.
-        </Text>
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          disabled={link.supplier.disconnected}
-          loading={busyId === link.id && reimport.isPending}
-          onClick={onReimport}
-        >
-          <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
-          Pull it again
-        </Button>
-      </div>
+      {link.supplier.catalogSync ? (
+        <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+          <Text className="text-sm">
+            Pull their current details and cost over the top of what is here now. Anything you have
+            rewritten yourself is replaced.
+          </Text>
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            disabled={link.supplier.disconnected}
+            loading={busyId === link.id && reimport.isPending}
+            onClick={onReimport}
+          >
+            <Icon glyph={faArrowsRotate} className="size-4" aria-hidden />
+            Pull it again
+          </Button>
+        </div>
+      ) : (
+        <HandLinkedActions link={link} product={product} data={data} />
+      )}
     </FormSection>
   );
 }
@@ -372,11 +383,10 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
                       not reach them.
                     </Text>
                   ) : null}
+                  <ShipFromSupplierSection ctx={ctx} product={product} data={data} />
                   <Text className="text-sm">
-                    To have someone else ship it for you, add that supplier and bring the product in
-                    from their own list. That is the only way a product becomes theirs to ship:
-                    there is no switch for it here, because the link carries their price, their
-                    stock and where the order has to go.
+                    A supplier with a product list of their own (an online service, or a product
+                    feed) ships the products you bring in from that list, from your suppliers.
                   </Text>
                   <div className="flex justify-start">
                     <Button

@@ -50,6 +50,7 @@ import {
   type ModuleRow,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { canManageBusiness } from '../../lib/manage-rights';
 
 const COLUMN = 'mx-auto flex w-full max-w-6xl flex-col gap-3 @lg:gap-4';
 
@@ -162,14 +163,22 @@ function ModuleCard({
 export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data: rows, isPending, isError, isFetching, dataUpdatedAt, refetch } = useModules();
+  const {
+    data: rows,
+    isPending,
+    isError,
+    error: loadError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useModules();
   const { data: billing } = useBilling();
   const { data: viewer } = useViewer();
   const toggle = useToggleModule();
   const [search, setSearch] = useState('');
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
-  const canManage = viewer?.role === 'owner' || viewer?.role === 'admin';
+  const canManage = canManageBusiness(viewer?.role);
 
   const bySlug = useMemo(() => {
     const map = new Map<string, ModuleRow>();
@@ -265,6 +274,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         icon={<Layers className="size-6" aria-hidden />}
         title="Could not load your modules"
         description="This is a problem reaching the server. Whatever you have switched on is unaffected and still working."
+        error={loadError}
         onRetry={() => {
           void refetch();
         }}

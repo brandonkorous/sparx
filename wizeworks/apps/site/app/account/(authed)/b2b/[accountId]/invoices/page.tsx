@@ -15,7 +15,8 @@ import { useCustomer } from '@/components/customer-provider';
 import { getB2bInvoices, type B2bInvoiceEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import { invoiceStatusTone, invoiceStatusWords } from '@/lib/trade-account-words';
-import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
+import { Alert, Badge } from '@wizeworks/silicaui-react';
+import { ListPager } from '@/components/account/list-pager';
 
 const PAGE_SIZE = 20;
 
@@ -137,31 +138,7 @@ export default function B2bInvoicesPage() {
             })}
           </div>
 
-          {total > PAGE_SIZE && (
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip === 0}
-                onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
-              >
-                Previous
-              </Button>
-              <span className="text-base-content text-sm">
-                {skip + 1} to {Math.min(skip + PAGE_SIZE, total)} of {total}
-              </span>
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip + PAGE_SIZE >= total}
-                onClick={() => setSkip(skip + PAGE_SIZE)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <ListPager offset={skip} pageSize={PAGE_SIZE} total={total} onMove={setSkip} />
         </>
       )}
     </div>

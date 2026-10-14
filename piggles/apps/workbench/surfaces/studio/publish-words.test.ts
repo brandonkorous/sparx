@@ -130,3 +130,16 @@ describe('the property all three share', () => {
     expect(/visitor/i.test(restoreConfirmDetail('Saturday', true))).toBe(false);
   });
 });
+
+describe('a look waiting to go live', () => {
+  it('says so, alone or with pages', () => {
+    expect(waitingLine(state({ hasUnpublished: true, themeUnpublished: true }))).toBe(
+      'The look of your site has changes that visitors are not seeing yet.'
+    );
+    expect(
+      waitingLine(state({ hasUnpublished: true, unpublishedPages: 2, themeUnpublished: true }))
+    ).toBe(
+      '2 pages have changes, and the look of your site has changes that visitors are not seeing yet.'
+    );
+  });
+});

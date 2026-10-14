@@ -379,7 +379,7 @@ function PlanTable({
               <Fragment key={`error-${row.line}`}>
                 <tr>
                   <td className="tabular-nums">{row.line}</td>
-                  <td className="font-mono text-sm">{row.sku ?? '—'}</td>
+                  <td className="font-mono text-sm whitespace-nowrap">{row.sku ?? '—'}</td>
                   <td>
                     <Text className="text-danger text-sm">{row.error}</Text>
                     {row.name ? <Text className="text-sm">{row.name}</Text> : null}
@@ -490,7 +490,7 @@ function PlanTable({
             {changes.slice(0, 200).map((row) => (
               <tr key={`change-${row.line}`}>
                 <td className="tabular-nums">{row.line}</td>
-                <td className="font-mono text-sm">{row.sku ?? '—'}</td>
+                <td className="font-mono text-sm whitespace-nowrap">{row.sku ?? '—'}</td>
                 <td className="text-right tabular-nums">{row.currentOnHand ?? '—'}</td>
                 <td className="text-right font-medium tabular-nums">{row.newOnHand ?? '—'}</td>
                 <td className="text-right">
@@ -686,7 +686,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Import from a spreadsheet controls"
+        label="Import stock from a spreadsheet controls"
         primary={
           <Button
             color="module"

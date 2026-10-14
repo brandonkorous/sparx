@@ -49,6 +49,7 @@ import { Calculator, Save, SlidersHorizontal } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterCommit } from '../../lib/defer';
 import { plural, stockErrorMessage } from './data';
@@ -194,14 +195,11 @@ export function PlanningSettingsSurface() {
   const body = () => {
     if (policy.isError) {
       return (
-        <Alert color="danger" variant="soft" className="m-4">
-          <AlertContent>
-            <AlertTitle>Could not load these settings</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. Your settings are unaffected.
-            </AlertDescription>
-          </AlertContent>
-        </Alert>
+        <PaneLoadError
+          title="Could not load these settings"
+          description="This is a problem reaching the server. Your settings are unaffected."
+          error={policy.error}
+        />
       );
     }
     if (!form) {

@@ -48,6 +48,7 @@ import {
 import { CalendarClock, CalendarPlus, CirclePlus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import { useConfirm } from '../../lib/confirm';
@@ -119,10 +120,11 @@ export function PreordersSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (list.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<CalendarClock className="size-6" aria-hidden />}
           title="Could not load your preorders"
           description="This is a problem reaching the server. Try again in a moment."
+          error={list.error}
         />
       );
     }

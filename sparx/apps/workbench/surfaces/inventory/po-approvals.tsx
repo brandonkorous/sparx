@@ -40,6 +40,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Check, ShieldCheck, SlidersVertical, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -146,10 +147,11 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   const body = () => {
     if (queue.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<ShieldCheck className="size-6" aria-hidden />}
           title="Could not load the approvals"
           description="This is a problem reaching the server, not a statement about what is waiting. Try again in a moment."
+          error={queue.error}
         />
       );
     }

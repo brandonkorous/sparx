@@ -12,10 +12,20 @@
 
 import { Prisma, withTenant, type TxClient } from '@wizeworks/db';
 import { coresOwed } from '@wizeworks/commerce-schemas';
+import { businessTimeZone } from '@wizeworks/crm';
 import { ORDER_CHANNEL_BUCKETS, channelKeyLabel, deriveChannelKey } from '@wizeworks/crm-schemas';
+import {
+  businessDateKey,
+  businessDayKeyer,
+  businessDayStart,
+  calendarZone,
+  dateOfKey,
+  rangeDayKey,
+} from '@wizeworks/time';
 
 import type { ServiceContext } from '../errors';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
+import { coreDeposits, NOT_A_SALE, orderSales, type OrderSales } from './order-sales';
 
 const DEFAULT_CURRENCY = 'USD';
 
@@ -75,6 +85,57 @@ export async function heldCoreDepositsCents(
   return lines.reduce((sum, line) => sum + coresOwed(line) * decimalToCents(line.coreCharge), 0);
 }
 
+/** The order columns `soldOf` reads: its money and its core lines. */
+const SALE_FIELDS = {
+  subtotal: true,
+  discountTotal: true,
+  shippingTotal: true,
+  surchargeTotal: true,
+  taxTotal: true,
+  refundTotal: true,
+  items: {
+    select: {
+      coreCharge: true,
+      quantityRefunded: true,
+      coresReturned: true,
+      coresKept: true,
+      coreFirst: true,
+    },
+  },
+} satisfies Prisma.OrderSelect;
+
+type SaleFields = Prisma.OrderGetPayload<{ select: typeof SALE_FIELDS }>;
+
+/** The statuses that are a sale: not cancelled, not still awaiting approval. */
+const SALE_STATUS = { notIn: [...NOT_A_SALE] };
+
+/**
+ * What one order SOLD (`order-sales.ts`). Every revenue figure in this file adds
+ * these up, so a revenue chart, a channel split and the profit headline can
+ * never count different things. They summed `total`, which carries sales tax
+ * and core deposits, over orders still awaiting approval (sparx persona issue
+ * 172).
+ */
+function soldOf(order: SaleFields): OrderSales {
+  return orderSales({
+    subtotal: Number(order.subtotal),
+    discountTotal: Number(order.discountTotal),
+    shippingTotal: Number(order.shippingTotal),
+    surchargeTotal: Number(order.surchargeTotal),
+    taxTotal: Number(order.taxTotal),
+    refundTotal: Number(order.refundTotal),
+    ...coreDeposits(
+      order.items.map((line) => ({
+        coreCharge: line.coreCharge === null ? null : Number(line.coreCharge),
+        quantityRefunded: line.quantityRefunded,
+        coresReturned: line.coresReturned,
+        coresKept: line.coresKept,
+        coreFirst: line.coreFirst,
+      }))
+    ),
+  });
+}
+
 /** Revenue for one site (docs/131 §6); undefined is every site. */
 export async function revenueSummary(
   ctx: ServiceContext,
@@ -86,19 +147,19 @@ export async function revenueSummary(
   return withTenant(ctx, async (tx) => {
     const where: Prisma.OrderWhereInput = {
       placedAt: { gte: from, lte: to },
-      status: { not: 'cancelled' },
+      status: SALE_STATUS,
       ...(propertyId ? { propertyId } : {}),
     };
-    const agg = await tx.order.aggregate({
-      where,
-      _count: { _all: true },
-      _sum: { total: true, refundTotal: true },
-    });
+    const orders = await tx.order.findMany({ where, select: SALE_FIELDS });
+    const sales = orders.map(soldOf);
 
-    const gross = decimalToCents(agg._sum.total);
-    const refunded = decimalToCents(agg._sum.refundTotal);
+    // Gross is what the orders sold before goods were given back; net is after.
+    // Neither carries tax or a deposit: those were never the shop's.
+    const net = sales.reduce((sum, sale) => sum + sale.soldCents, 0);
+    const refunded = sales.reduce((sum, sale) => sum + sale.refundedCents, 0);
+    const gross = net + refunded;
     const held = await heldCoreDepositsCents(tx, where);
-    const ordersCount = agg._count._all;
+    const ordersCount = orders.length;
 
     return {
       rangeLabel: rangeLabel(range),
@@ -106,7 +167,7 @@ export async function revenueSummary(
       grossRevenueCents: gross,
       refundedCents: refunded,
       coreDepositsHeldCents: held,
-      netRevenueCents: gross - refunded - held,
+      netRevenueCents: net,
       averageOrderValueCents: ordersCount > 0 ? Math.round(gross / ordersCount) : 0,
       currency: DEFAULT_CURRENCY,
     };
@@ -139,11 +200,15 @@ async function topProductsForOrders(
       order: {
         ...orderWhere,
         placedAt: { gte: range.from, lte: range.to },
-        status: { not: 'cancelled' },
+        status: SALE_STATUS,
       },
     },
-    _sum: { quantity: true, lineTotal: true },
-    orderBy: { _sum: { lineTotal: 'desc' } },
+    // What the lines sold for: before tax, after their discount. `lineTotal`
+    // carries the line's sales tax, which is not the business's to count
+    // (sparx persona issue 226). Ranked by the price before discount, the one
+    // sum the database can order by; the figure shown is net of it.
+    _sum: { quantity: true, lineSubtotal: true, discountAmount: true },
+    orderBy: { _sum: { lineSubtotal: 'desc' } },
     take: limit,
   });
 
@@ -160,7 +225,8 @@ async function topProductsForOrders(
     productId: g.productId ?? '',
     productTitle: g.productId ? (titleById.get(g.productId) ?? '—') : '—',
     unitsSold: g._sum?.quantity ?? 0,
-    revenueCents: decimalToCents(g._sum?.lineTotal ?? null),
+    revenueCents:
+      decimalToCents(g._sum?.lineSubtotal ?? null) - decimalToCents(g._sum?.discountAmount ?? null),
   }));
 }
 
@@ -195,7 +261,8 @@ export async function topCustomers(
       by: ['customerId'],
       where: {
         placedAt: { gte: from, lte: to },
-        status: { not: 'cancelled' },
+        // Not an order still awaiting approval: nobody has spent it yet.
+        status: SALE_STATUS,
         ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       },
       _count: { _all: true },
@@ -850,13 +917,21 @@ export async function inventoryValuation(ctx: ServiceContext): Promise<Inventory
 // `rollup_commerce_daily_revenue` table (pre-aggregated nightly by the
 // reconcile below) for closed days, and recomputes the most recent open day(s)
 // live so "today" is always fresh — no event-increment worker needed. Buckets
-// are by `placed_at`'s UTC date; `net_cents` matches revenueSummary's net so
-// the chart and the headline KPI never disagree.
+// are the BUSINESS's calendar day `placed_at` fell on; `net_cents` matches
+// revenueSummary's net so the chart and the headline KPI never disagree.
+//
+// The business's day, not UTC's (sparx persona issue 174). Filed by UTC date, a
+// shop in Denver had every sale from 6pm to midnight on the next day's bar, and
+// the last evening of a month in the next month, while Finance and its invoices
+// read the same evening as the day it was. Every day below (a bucket, a range
+// end, "today") is a calendar DATE carried as midnight UTC; a source read turns
+// it into the business's midnight-to-midnight moments with `businessDayStart`.
+// A business that has not said where it is keeps UTC.
 
 export type RollupGrain = 'day' | 'week' | 'month';
 
 export interface RevenueTimeseriesPoint {
-  /** Start of the bucket, UTC date `YYYY-MM-DD`. */
+  /** Start of the bucket, the business's calendar date `YYYY-MM-DD`. */
   bucket: string;
   ordersCount: number;
   grossCents: number;
@@ -912,10 +987,37 @@ interface DayMeasures {
 }
 
 interface DayRow extends DayMeasures {
-  /** UTC date key `YYYY-MM-DD`. */
+  /** The business's calendar date `YYYY-MM-DD`. */
   key: string;
-  /** UTC-midnight Date for the bucket (used as the rollup PK value). */
+  /** That date as the midnight-UTC Date a `DATE` column takes (the rollup PK value). */
   date: Date;
+}
+
+/**
+ * The moments `[from, toExclusive)` of a run of the business's calendar days,
+ * given as midnight-UTC dates. Every source read below goes through here, so a
+ * window is never cut on a UTC midnight that is the middle of the shop's
+ * evening (sparx persona issue 174).
+ */
+function businessMoments(
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date
+): { from: Date; toExclusive: Date } {
+  return {
+    from: businessDayStart(fromDay, zone),
+    toExclusive: businessDayStart(toDayExclusive, zone),
+  };
+}
+
+/** The business's today, as a midnight-UTC date. */
+function businessToday(zone: string): Date {
+  return dateOfKey(businessDateKey(new Date(), zone));
+}
+
+/** The business's zone for a report, or UTC (see `calendarZone`). */
+async function reportZone(tx: TxClient, tenantId: string): Promise<string> {
+  return calendarZone(await businessTimeZone(tx, tenantId));
 }
 
 function startOfUtcDay(d: Date): Date {
@@ -937,107 +1039,102 @@ function eachUtcDay(from: Date, to: Date): Date[] {
   return out;
 }
 
-// Handles the several shapes a Decimal SUM can take back from $queryRaw
-// (Prisma.Decimal | string | number) → integer cents.
-function rawToCents(v: unknown): number {
-  if (v == null) return 0;
-  if (typeof v === 'number') return Math.round(v * 100);
-  if (typeof v === 'bigint') return Number(v) * 100;
-  if (typeof v === 'string') {
-    const n = Number.parseFloat(v);
-    return Number.isFinite(n) ? Math.round(n * 100) : 0;
+// Every order that counts as a sale in [from, toExclusive), with the money
+// columns `orderSales` needs and its core lines folded to two figures. One read,
+// shared by the live overlay, the cold start and the nightly reconcile, so the
+// three can never add up different things. RLS scopes it to the tenant;
+// `propertyId` narrows it to one site (an orphaned order, whose site was deleted,
+// belongs to the all-sites total only). `from`/`toExclusive` are moments, cut on
+// the business's midnights by `businessMoments`.
+//
+// It summed `total` in SQL, and a total carries sales tax, core deposits and,
+// on an order awaiting approval, a sale that has not happened (sparx persona
+// issue 172). What an order sold is decided once, in `order-sales.ts`.
+async function salesInWindow(tx: TxClient, from: Date, toExclusive: Date, propertyId?: string) {
+  return tx.order.findMany({
+    where: {
+      status: SALE_STATUS,
+      placedAt: { gte: from, lt: toExclusive },
+      ...(propertyId ? { propertyId } : {}),
+    },
+    select: { propertyId: true, placedAt: true, ...SALE_FIELDS },
+  });
+}
+
+type SaleRow = Awaited<ReturnType<typeof salesInWindow>>[number];
+
+/** Fold sale rows into one DayRow per key, `keyOf` deciding the grain. Each
+ *  sale is filed on the business's calendar day it was placed on (`dayOf`). */
+function foldSales<K>(
+  rows: SaleRow[],
+  dayOf: (at: Date) => string,
+  keyOf: (row: SaleRow, dateKey: string) => K
+): Map<K, DayRow & { propertyId: string | null }> {
+  const out = new Map<K, DayRow & { propertyId: string | null }>();
+  for (const row of rows) {
+    if (!row.placedAt) continue;
+    const dateKey = dayOf(row.placedAt);
+    const date = dateOfKey(dateKey);
+    const sale = soldOf(row);
+    const key = keyOf(row, dateKey);
+    const day = out.get(key) ?? {
+      key: dateKey,
+      date,
+      propertyId: row.propertyId,
+      ordersCount: 0,
+      grossCents: 0,
+      discountCents: 0,
+      refundedCents: 0,
+      netCents: 0,
+    };
+    day.ordersCount += 1;
+    day.grossCents += sale.grossCents;
+    day.discountCents += sale.discountCents;
+    day.refundedCents += sale.refundedCents;
+    day.netCents += sale.soldCents;
+    out.set(key, day);
   }
-  if (typeof v === 'object' && 'toNumber' in v && typeof v.toNumber === 'function') {
-    return Math.round((v as { toNumber(): number }).toNumber() * 100);
-  }
-  return 0;
+  return out;
 }
 
-interface RawDayRow {
-  bucket: Date;
-  orders_count: number;
-  gross: unknown;
-  discount: unknown;
-  refunded: unknown;
-  collected: unknown;
-}
-
-function mapRevenueRow(r: RawDayRow): DayRow {
-  const date = startOfUtcDay(new Date(r.bucket));
-  const refundedCents = rawToCents(r.refunded);
-  return {
-    key: utcDateKey(date),
-    date,
-    ordersCount: Number(r.orders_count ?? 0),
-    grossCents: rawToCents(r.gross),
-    discountCents: rawToCents(r.discount),
-    refundedCents,
-    netCents: rawToCents(r.collected) - refundedCents,
-  };
-}
-
-// One GROUP-BY-day pass over non-cancelled orders in [from, toExclusive),
-// SCOPED for a read (docs/131 §6). `propertyId` undefined = every site (the
-// all-sites total, which includes orders whose site was deleted — the
-// unattributed bucket); a value = only that site's orders (orphaned-null orders
-// are correctly excluded from a single business's figures). Bucketed by
-// placed_at's UTC date; RLS scopes to the tenant. Shared by the live overlay /
-// cold-start in revenueTimeseries.
+// One pass per day over the sales on the business's days [fromDay,
+// toDayExclusive), SCOPED for a read (docs/131 §6). `propertyId` undefined =
+// every site.
 async function aggregateRevenueByDay(
   tx: TxClient,
-  from: Date,
-  toExclusive: Date,
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date,
   propertyId?: string
 ): Promise<DayRow[]> {
-  const rows = await tx.$queryRaw<RawDayRow[]>`
-    SELECT
-      (placed_at AT TIME ZONE 'UTC')::date AS bucket,
-      COUNT(*)::int                        AS orders_count,
-      COALESCE(SUM(subtotal), 0)           AS gross,
-      COALESCE(SUM(discount_total), 0)     AS discount,
-      COALESCE(SUM(refund_total), 0)       AS refunded,
-      COALESCE(SUM(total), 0)              AS collected
-    FROM orders
-    WHERE status <> 'cancelled'
-      AND placed_at >= ${from}
-      AND placed_at < ${toExclusive}
-      ${propertyId ? Prisma.sql`AND property_id = ${propertyId}::uuid` : Prisma.empty}
-    GROUP BY 1
-    ORDER BY 1
-  `;
-  return rows.map(mapRevenueRow);
-}
-
-interface RawDayPropRow extends RawDayRow {
-  property_id: string | null;
+  const { from, toExclusive } = businessMoments(zone, fromDay, toDayExclusive);
+  const rows = await salesInWindow(tx, from, toExclusive, propertyId);
+  return [...foldSales(rows, businessDayKeyer(zone), (_row, dateKey) => dateKey).values()].sort(
+    (a, b) => (a.key < b.key ? -1 : 1)
+  );
 }
 
 // The per-PROPERTY pass the nightly reconcile writes (docs/131 §6): one row per
 // (property, day), null property_id = the unattributed bucket (an order that
-// outlived its site). GROUP BY property_id so every site's daily figures are
-// stored separately and a per-site read is an indexed lookup, not a re-scan.
+// outlived its site).
 async function aggregateRevenueByDayPerProperty(
   tx: TxClient,
-  from: Date,
-  toExclusive: Date
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date
 ): Promise<(DayRow & { propertyId: string | null })[]> {
-  const rows = await tx.$queryRaw<RawDayPropRow[]>`
-    SELECT
-      property_id,
-      (placed_at AT TIME ZONE 'UTC')::date AS bucket,
-      COUNT(*)::int                        AS orders_count,
-      COALESCE(SUM(subtotal), 0)           AS gross,
-      COALESCE(SUM(discount_total), 0)     AS discount,
-      COALESCE(SUM(refund_total), 0)       AS refunded,
-      COALESCE(SUM(total), 0)              AS collected
-    FROM orders
-    WHERE status <> 'cancelled'
-      AND placed_at >= ${from}
-      AND placed_at < ${toExclusive}
-    GROUP BY property_id, 2
-    ORDER BY 2
-  `;
-  return rows.map((r) => ({ ...mapRevenueRow(r), propertyId: r.property_id }));
+  const { from, toExclusive } = businessMoments(zone, fromDay, toDayExclusive);
+  const rows = await salesInWindow(tx, from, toExclusive);
+  return [
+    ...foldSales(
+      rows,
+      businessDayKeyer(zone),
+      // `propertyId`, the Prisma field. `property_id` was the raw-SQL column
+      // name, undefined on this row, so every site's sales for a day folded
+      // into one row filed under whichever site sold first.
+      (row, dateKey) => `${row.propertyId ?? ''}\u0000${dateKey}`
+    ).values(),
+  ].sort((a, b) => (a.key < b.key ? -1 : 1));
 }
 
 function bucketStartFor(dateKey: string, grain: 'week' | 'month'): string {
@@ -1098,13 +1195,16 @@ export async function revenueTimeseries(
 ): Promise<RevenueTimeseries> {
   const grain = input.grain ?? 'day';
   const propertyId = input.propertyId;
-  const from = startOfUtcDay(new Date(input.range.from));
-  const to = startOfUtcDay(new Date(input.range.to));
-  // First day served live (recomputed on every read). Everything before it is a
-  // closed day read from the rollup.
-  const overlayStart = addUtcDays(startOfUtcDay(new Date()), -OVERLAY_DAYS);
 
   return withTenant(ctx, async (tx) => {
+    // The range ends and "today" are the business's calendar days: a range
+    // ending now ends today in the shop, not tomorrow in UTC.
+    const zone = await reportZone(tx, ctx.tenantId);
+    const from = dateOfKey(rangeDayKey(input.range.from, zone));
+    const to = dateOfKey(rangeDayKey(input.range.to, zone));
+    // First day served live (recomputed on every read). Everything before it is a
+    // closed day read from the rollup.
+    const overlayStart = addUtcDays(businessToday(zone), -OVERLAY_DAYS);
     const toExclusive = addUtcDays(to, 1);
     const closedToExclusive = new Date(Math.min(toExclusive.getTime(), overlayStart.getTime()));
     const byKey = new Map<string, DayMeasures>();
@@ -1133,7 +1233,13 @@ export async function revenueTimeseries(
           });
         }
       } else {
-        for (const d of await aggregateRevenueByDay(tx, from, closedToExclusive, propertyId)) {
+        for (const d of await aggregateRevenueByDay(
+          tx,
+          zone,
+          from,
+          closedToExclusive,
+          propertyId
+        )) {
           addDayMeasures(byKey, d.key, d);
         }
       }
@@ -1142,7 +1248,7 @@ export async function revenueTimeseries(
     // 2) Open days (today + yesterday) always recomputed live so they're fresh.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateRevenueByDay(tx, overlayFrom, toExclusive, propertyId)) {
+      for (const d of await aggregateRevenueByDay(tx, zone, overlayFrom, toExclusive, propertyId)) {
         addDayMeasures(byKey, d.key, d);
       }
     }
@@ -1179,21 +1285,28 @@ export async function revenueTimeseries(
 // cancellations against older days self-heal in one pass. Run once over full
 // history, this is also the backfill. Invoked per active tenant by
 // `/internal/commerce/revenue-rollup`.
+//
+// The window starts on the business's midnight, not UTC's. It deletes every
+// bucket from its first day and rewrites them, so a start cut at UTC midnight
+// would rewrite its first business day from only the hours after it, and leave
+// that day half full (sparx persona issue 174).
 export async function reconcileRevenueRollup(
   ctx: ServiceContext,
   opts?: { sinceDays?: number }
 ): Promise<RevenueRollupReconcileResult> {
   const sinceDays = Math.max(0, opts?.sinceDays ?? DEFAULT_RECONCILE_DAYS);
-  const today = startOfUtcDay(new Date());
-  const windowStart = addUtcDays(today, -sinceDays);
-  const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant(ctx, async (tx) => {
+    const zone = await reportZone(tx, ctx.tenantId);
+    const today = businessToday(zone);
+    const windowStart = addUtcDays(today, -sinceDays);
+    const toExclusive = addUtcDays(today, 1); // include today
+
     // Per (property, day) rows (docs/131 §6). Delete-then-insert the whole window
     // for the tenant regardless of property — every site's rows are rewritten in
     // one pass, so a late refund on any site self-heals and a site with no orders
     // that day simply has no row.
-    const rows = await aggregateRevenueByDayPerProperty(tx, windowStart, toExclusive);
+    const rows = await aggregateRevenueByDayPerProperty(tx, zone, windowStart, toExclusive);
 
     await tx.rollupCommerceDailyRevenue.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
@@ -1223,18 +1336,18 @@ export async function reconcileRevenueRollup(
 //
 // The Dropship overview's "order volume" chart reads daily buckets from the
 // `rollup_dropship_daily_orders` table for closed days and recomputes the most
-// recent open day(s) live. Buckets dropship orders by `created_at`'s UTC date
-// over the fulfilled-ish set (submitted | shipped | delivered) — the same
+// recent open day(s) live. Buckets dropship orders by the business's calendar
+// day of `created_at` (sparx persona issue 174) over the fulfilled-ish set (submitted | shipped | delivered) — the same
 // statuses `dropshipMarginReport` counts, so the chart and the margin headline
 // agree. Per day: routed order count, supplier cost (Σ over each order's
 // `line_items` JSON of quantity × unitPriceCents) and the storefront revenue
 // attributed to those orders (order_items whose variant's dropship_source_id is
 // the order's supplier). Profit/margin are derived (revenue − cost). Reuses the
-// UTC-day/grain helpers and the OVERLAY/RECONCILE constants from the revenue
-// rollup above.
+// business-day/grain helpers and the OVERLAY/RECONCILE constants from the
+// revenue rollup above.
 
 export interface DropshipOrdersTimeseriesPoint {
-  /** Start of the bucket, UTC date `YYYY-MM-DD`. */
+  /** Start of the bucket, the business's calendar date `YYYY-MM-DD`. */
   bucket: string;
   ordersCount: number;
   revenueCents: number;
@@ -1276,15 +1389,15 @@ const DROPSHIP_ZERO: DropshipDayMeasures = {
 };
 
 interface DropshipDayRow extends DropshipDayMeasures {
-  /** UTC date key `YYYY-MM-DD`. */
+  /** The business's calendar date `YYYY-MM-DD`. */
   key: string;
-  /** UTC-midnight Date for the bucket (used as the rollup PK value). */
+  /** That date as the midnight-UTC Date a `DATE` column takes (the rollup PK value). */
   date: Date;
 }
 
-// Unlike `rawToCents` (which scales Decimal *dollar* SUMs by 100), the dropship
-// SUMs already come back in integer cents — line_items.unitPriceCents and
-// quantity × ROUND(unit_price × 100) are both cents — so this must NOT re-scale.
+// The dropship SUMs already come back in integer cents (line_items.unitPriceCents
+// and quantity × ROUND(unit_price × 100) are both cents), so this must NOT scale
+// them by 100 the way a SUM of dollar columns would be.
 function rawCents(v: unknown): number {
   if (v == null) return 0;
   if (typeof v === 'number') return Math.round(v);
@@ -1317,8 +1430,10 @@ function mapDropshipRow(r: RawDropshipDayRow): DropshipDayRow {
   };
 }
 
-// One GROUP-BY-day pass over routed dropship orders in [from, toExclusive),
-// bucketed by created_at's UTC date. Cost expands each order's `line_items`
+// One GROUP-BY-day pass over routed dropship orders on the business's days
+// [fromDay, toDayExclusive), bucketed by the business's calendar day of
+// created_at: `AT TIME ZONE` the business's zone, which `calendarZone` has
+// already checked, so the database reads the same zone the window was cut in. Cost expands each order's `line_items`
 // JSON; revenue joins the order's storefront items to the variant whose
 // dropship_source_id matches the order's supplier — the same attribution
 // `dropshipMarginReport` does, aggregated per day in SQL. The revenue CTE is
@@ -1331,16 +1446,18 @@ function mapDropshipRow(r: RawDropshipDayRow): DropshipDayRow {
 // only that site.
 async function aggregateDropshipByDay(
   tx: TxClient,
-  from: Date,
-  toExclusive: Date,
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date,
   propertyId?: string
 ): Promise<DropshipDayRow[]> {
+  const { from, toExclusive } = businessMoments(zone, fromDay, toDayExclusive);
   const rows = await tx.$queryRaw<RawDropshipDayRow[]>`
     WITH ds AS (
       SELECT
         o.order_id    AS order_id,
         o.supplier_id AS supplier_id,
-        (o.created_at AT TIME ZONE 'UTC')::date AS bucket,
+        (o.created_at AT TIME ZONE ${zone})::date AS bucket,
         COALESCE((
           SELECT SUM(
             COALESCE((li ->> 'quantity')::numeric, 0)
@@ -1392,16 +1509,18 @@ interface RawDropshipDayPropRow extends RawDropshipDayRow {
 // bucket (a routed order whose site was deleted).
 async function aggregateDropshipByDayPerProperty(
   tx: TxClient,
-  from: Date,
-  toExclusive: Date
+  zone: string,
+  fromDay: Date,
+  toDayExclusive: Date
 ): Promise<(DropshipDayRow & { propertyId: string | null })[]> {
+  const { from, toExclusive } = businessMoments(zone, fromDay, toDayExclusive);
   const rows = await tx.$queryRaw<RawDropshipDayPropRow[]>`
     WITH ds AS (
       SELECT
         o.order_id       AS order_id,
         o.supplier_id    AS supplier_id,
         ord.property_id  AS property_id,
-        (o.created_at AT TIME ZONE 'UTC')::date AS bucket,
+        (o.created_at AT TIME ZONE ${zone})::date AS bucket,
         COALESCE((
           SELECT SUM(
             COALESCE((li ->> 'quantity')::numeric, 0)
@@ -1501,11 +1620,13 @@ export async function dropshipOrdersTimeseries(
 ): Promise<DropshipOrdersTimeseries> {
   const grain = input.grain ?? 'day';
   const propertyId = input.propertyId;
-  const from = startOfUtcDay(new Date(input.range.from));
-  const to = startOfUtcDay(new Date(input.range.to));
-  const overlayStart = addUtcDays(startOfUtcDay(new Date()), -OVERLAY_DAYS);
 
   return withTenant(ctx, async (tx) => {
+    // The business's calendar days, as on the revenue chart.
+    const zone = await reportZone(tx, ctx.tenantId);
+    const from = dateOfKey(rangeDayKey(input.range.from, zone));
+    const to = dateOfKey(rangeDayKey(input.range.to, zone));
+    const overlayStart = addUtcDays(businessToday(zone), -OVERLAY_DAYS);
     const toExclusive = addUtcDays(to, 1);
     const closedToExclusive = new Date(Math.min(toExclusive.getTime(), overlayStart.getTime()));
     const byKey = new Map<string, DropshipDayMeasures>();
@@ -1530,7 +1651,13 @@ export async function dropshipOrdersTimeseries(
           });
         }
       } else {
-        for (const d of await aggregateDropshipByDay(tx, from, closedToExclusive, propertyId)) {
+        for (const d of await aggregateDropshipByDay(
+          tx,
+          zone,
+          from,
+          closedToExclusive,
+          propertyId
+        )) {
           addDropshipMeasures(byKey, d.key, d);
         }
       }
@@ -1539,7 +1666,13 @@ export async function dropshipOrdersTimeseries(
     // 2) Open days (today + yesterday) always recomputed live so they're fresh.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateDropshipByDay(tx, overlayFrom, toExclusive, propertyId)) {
+      for (const d of await aggregateDropshipByDay(
+        tx,
+        zone,
+        overlayFrom,
+        toExclusive,
+        propertyId
+      )) {
         addDropshipMeasures(byKey, d.key, d);
       }
     }
@@ -1581,18 +1714,20 @@ export async function dropshipOrdersTimeseries(
 // Delete-then-insert the window so status changes (a pending order becoming
 // shipped) and late edits self-heal in one pass. Run once over full history,
 // this is also the backfill. Invoked per active tenant by
-// `/internal/dropship/orders-rollup`.
+// `/internal/dropship/orders-rollup`. The window starts on the business's
+// midnight, for the reason `reconcileRevenueRollup` gives.
 export async function reconcileDropshipOrdersRollup(
   ctx: ServiceContext,
   opts?: { sinceDays?: number }
 ): Promise<DropshipOrdersRollupReconcileResult> {
   const sinceDays = Math.max(0, opts?.sinceDays ?? DEFAULT_RECONCILE_DAYS);
-  const today = startOfUtcDay(new Date());
-  const windowStart = addUtcDays(today, -sinceDays);
-  const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant(ctx, async (tx) => {
-    const rows = await aggregateDropshipByDayPerProperty(tx, windowStart, toExclusive);
+    const zone = await reportZone(tx, ctx.tenantId);
+    const today = businessToday(zone);
+    const windowStart = addUtcDays(today, -sinceDays);
+    const toExclusive = addUtcDays(today, 1); // include today
+    const rows = await aggregateDropshipByDayPerProperty(tx, zone, windowStart, toExclusive);
 
     await tx.rollupDropshipDailyOrders.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
@@ -1774,22 +1909,23 @@ export async function channelBreakdown(
   const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
 
   return withTenant(ctx, async (tx) => {
-    const groups = await tx.order.groupBy({
-      by: ['channel'],
+    const orders = await tx.order.findMany({
       where: {
         placedAt: { gte: from, lte: to },
-        status: { not: 'cancelled' },
+        status: SALE_STATUS,
         ...(propertyId ? { propertyId } : {}),
       },
-      _count: { _all: true },
-      _sum: { total: true },
+      select: { channel: true, ...SALE_FIELDS },
     });
-
-    const rows = groups.map((g) => ({
-      channel: g.channel ?? 'unknown',
-      orders: g._count._all,
-      revenueCents: decimalToCents(g._sum.total),
-    }));
+    const byKey = new Map<string, { orders: number; revenueCents: number }>();
+    for (const order of orders) {
+      const channel = order.channel ?? 'unknown';
+      const cur = byKey.get(channel) ?? { orders: 0, revenueCents: 0 };
+      cur.orders += 1;
+      cur.revenueCents += soldOf(order).soldCents;
+      byKey.set(channel, cur);
+    }
+    const rows = [...byKey.entries()].map(([channel, r]) => ({ channel, ...r }));
     const totalRevenueCents = rows.reduce((s, r) => s + r.revenueCents, 0);
     const totalOrders = rows.reduce((s, r) => s + r.orders, 0);
 
@@ -1856,30 +1992,25 @@ export async function attributionBreakdown(
   return withTenant(ctx, async (tx) => {
     const baseWhere = {
       placedAt: { gte: from, lte: to },
-      status: { not: 'cancelled' },
+      status: SALE_STATUS,
       ...(propertyId ? { propertyId } : {}),
     };
 
-    const groups = await tx.order.groupBy({
-      by: ['attributionSource'],
+    const orders = await tx.order.findMany({
       where: baseWhere,
-      _count: { _all: true },
-      _sum: { total: true },
+      select: { attributionSource: true, ...SALE_FIELDS },
     });
 
-    // Collapse the null-source group into the explicit `unattributed` key. groupBy
-    // yields at most one null group, so a plain map suffices, but reduce-merge is
-    // defensive against a stray empty-string source ever appearing.
     const merged = new Map<string, { orders: number; revenueCents: number }>();
-    for (const g of groups) {
+    for (const order of orders) {
       const key =
-        g.attributionSource && g.attributionSource.length > 0
-          ? g.attributionSource
+        order.attributionSource && order.attributionSource.length > 0
+          ? order.attributionSource
           : 'unattributed';
       const prev = merged.get(key) ?? { orders: 0, revenueCents: 0 };
       merged.set(key, {
-        orders: prev.orders + g._count._all,
-        revenueCents: prev.revenueCents + decimalToCents(g._sum.total),
+        orders: prev.orders + 1,
+        revenueCents: prev.revenueCents + soldOf(order).soldCents,
       });
     }
 
@@ -1944,24 +2075,25 @@ export async function emailCampaignRevenue(
   const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
 
   return withTenant(ctx, async (tx) => {
-    const groups = await tx.order.groupBy({
-      by: ['attributionCampaign'],
+    const orders = await tx.order.findMany({
       where: {
         placedAt: { gte: from, lte: to },
-        status: { not: 'cancelled' },
+        status: SALE_STATUS,
         attributionSource: 'email',
         attributionCampaign: { not: null },
         ...(propertyId ? { propertyId } : {}),
       },
-      _count: { _all: true },
-      _sum: { total: true },
+      select: { attributionCampaign: true, ...SALE_FIELDS },
     });
-
-    const rows = groups.map((g) => ({
-      campaign: g.attributionCampaign ?? 'Email',
-      orders: g._count._all,
-      revenueCents: decimalToCents(g._sum.total),
-    }));
+    const byCampaign0 = new Map<string, { orders: number; revenueCents: number }>();
+    for (const order of orders) {
+      const campaign = order.attributionCampaign ?? 'Email';
+      const cur = byCampaign0.get(campaign) ?? { orders: 0, revenueCents: 0 };
+      cur.orders += 1;
+      cur.revenueCents += soldOf(order).soldCents;
+      byCampaign0.set(campaign, cur);
+    }
+    const rows = [...byCampaign0.entries()].map(([campaign, r]) => ({ campaign, ...r }));
     const totalRevenueCents = rows.reduce((s, r) => s + r.revenueCents, 0);
     const totalOrders = rows.reduce((s, r) => s + r.orders, 0);
 
@@ -2064,27 +2196,27 @@ export async function channelComparison(
   const { from, to, label } = defaultedBounds(range);
 
   return withTenant(ctx, async (tx) => {
-    const groups = await tx.order.groupBy({
-      by: ['channel', 'source'],
+    const orders = await tx.order.findMany({
       where: {
         placedAt: { gte: from, lte: to },
-        status: { not: 'cancelled' },
+        status: SALE_STATUS,
         ...(propertyId ? { propertyId } : {}),
       },
-      _count: { _all: true },
-      _sum: { total: true, refundTotal: true, channelFeeCents: true },
+      select: { channel: true, source: true, channelFeeCents: true, ...SALE_FIELDS },
     });
 
-    // Fold the (channel, source) groups onto the derived key so every marketplace
-    // source is its own line and the native buckets stay whole.
+    // Fold the orders onto the derived key so every marketplace source is its
+    // own line and the native buckets stay whole.
     const acc = new Map<string, ChannelTotals>();
-    for (const g of groups) {
-      const key = deriveChannelKey(g.channel, g.source);
+    for (const order of orders) {
+      const key = deriveChannelKey(order.channel, order.source);
       const cur = acc.get(key) ?? emptyChannelTotals();
-      cur.orders += g._count._all;
-      cur.grossCents += decimalToCents(g._sum.total);
-      cur.refundedCents += decimalToCents(g._sum.refundTotal);
-      cur.feeCents += g._sum.channelFeeCents ?? 0;
+      const sale = soldOf(order);
+      cur.orders += 1;
+      // Gross before goods given back, so gross − refunded is what was sold.
+      cur.grossCents += sale.soldCents + sale.refundedCents;
+      cur.refundedCents += sale.refundedCents;
+      cur.feeCents += order.channelFeeCents ?? 0;
       acc.set(key, cur);
     }
 
@@ -2143,21 +2275,21 @@ export async function channelRevenue(
   const { from, to, label } = defaultedBounds(input.range);
 
   return withTenant(ctx, async (tx) => {
-    const agg = await tx.order.aggregate({
+    const rows = await tx.order.findMany({
       where: {
         ...channelKeyWhere(input.channel),
         placedAt: { gte: from, lte: to },
-        status: { not: 'cancelled' },
+        status: SALE_STATUS,
         ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       },
-      _count: { _all: true },
-      _sum: { total: true, refundTotal: true, channelFeeCents: true },
+      select: { channelFeeCents: true, ...SALE_FIELDS },
     });
 
-    const gross = decimalToCents(agg._sum.total);
-    const refunded = decimalToCents(agg._sum.refundTotal);
-    const fee = agg._sum.channelFeeCents ?? 0;
-    const orders = agg._count._all;
+    const sales = rows.map(soldOf);
+    const refunded = sales.reduce((sum, sale) => sum + sale.refundedCents, 0);
+    const gross = sales.reduce((sum, sale) => sum + sale.soldCents, 0) + refunded;
+    const fee = rows.reduce((sum, row) => sum + (row.channelFeeCents ?? 0), 0);
+    const orders = rows.length;
 
     return {
       channel: input.channel,

@@ -11,6 +11,7 @@ import {
   followsLaterSentence,
   heldOrderSentence,
   orderWaitingSentence,
+  overCreditSentence,
   overLimitSentence,
   peopleWords,
   signedSentences,
@@ -61,13 +62,13 @@ describe('before the order is placed', () => {
         accountApprovers: ['Teodora Vukić-Hale'],
       })
     ).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so Teodora Vukić-Hale approves it before it goes ahead. Nothing is sent until then.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so Teodora Vukić-Hale approves it before it goes ahead. Nothing is sent until then.'
     );
   });
 
   it('names the business when it signs', () => {
     expect(approvalPreviewSentence({ ...base, waitingOn: ['business'] })).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so Gillett Diesel Service approves it before it goes ahead. Nothing is sent until then.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so Gillett Diesel Service approves it before it goes ahead. Nothing is sent until then.'
     );
   });
 
@@ -79,7 +80,7 @@ describe('before the order is placed', () => {
         accountApprovers: ['Teodora Vukić-Hale', 'Ana Ruiz'],
       })
     ).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so it needs two approvals before it goes ahead: one from Teodora Vukić-Hale or Ana Ruiz, and one from Gillett Diesel Service. Nothing is sent until then.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so it needs two approvals before it goes ahead: one from Teodora Vukić-Hale or Ana Ruiz, and one from Gillett Diesel Service. Nothing is sent until then.'
     );
   });
 
@@ -87,7 +88,7 @@ describe('before the order is placed', () => {
     expect(
       approvalPreviewSentence({ ...base, waitingOn: ['business'], accountName: null, shopName: '' })
     ).toBe(
-      'This order is over your account’s $1,000.00 limit, so we approve it before it goes ahead. Nothing is sent until then.'
+      'This order is over your account’s $1,000.00 limit for one order, so we approve it before it goes ahead. Nothing is sent until then.'
     );
   });
 
@@ -106,13 +107,61 @@ describe('before the order is placed', () => {
         card: 'held',
       })
     ).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so Teodora Vukić-Hale approves it before it goes ahead. Your card is not charged unless it is approved, and nothing is sent until then.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so Teodora Vukić-Hale approves it before it goes ahead. Your card is not charged unless it is approved, and nothing is sent until then.'
     );
   });
 
   it('where the card cannot be held, says it is charged now and refunded if turned down', () => {
     expect(approvalPreviewSentence({ ...base, waitingOn: ['business'], card: 'charged' })).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so Gillett Diesel Service approves it before it goes ahead. Your card is charged now, and refunded in full if the order is turned down. Nothing is sent until it is approved.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so Gillett Diesel Service approves it before it goes ahead. Your card is charged now, and refunded in full if the order is turned down. Nothing is sent until it is approved.'
+    );
+  });
+});
+
+describe('an order billed past the credit left (sparx persona issue 187)', () => {
+  const base = {
+    accountApprovers: [] as string[],
+    limitCents: null,
+    currency: 'USD',
+    accountName: 'Wasatch Front Utility Contractors, LLC',
+    shopName: 'Gillett Diesel Service',
+  };
+  const overCredit = { creditLeftCents: 167_608, orderTotalCents: 202_638 };
+
+  it('says the account is out of credit, and that the business approves it', () => {
+    expect(approvalPreviewSentence({ ...base, waitingOn: [], overCredit })).toBe(
+      'This order comes to $2,026.38, and Wasatch Front Utility Contractors, LLC has $1,676.08 of credit left, so Gillett Diesel Service approves it before it goes ahead. Nothing is sent until then.'
+    );
+  });
+
+  it('gives both reasons, and both approvals, when both hold it', () => {
+    expect(
+      approvalPreviewSentence({
+        ...base,
+        limitCents: 100_000,
+        waitingOn: ['account'],
+        accountApprovers: ['Teodora Vukić-Hale'],
+        overCredit,
+      })
+    ).toBe(
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, and it comes to $2,026.38 with $1,676.08 of credit left, so it needs two approvals before it goes ahead: one from Teodora Vukić-Hale, and one from Gillett Diesel Service. Nothing is sent until then.'
+    );
+  });
+
+  it('says why on the confirmation too', () => {
+    expect(
+      heldOrderSentence({
+        approval: {
+          waitingOn: ['account', 'business'],
+          accountApprovers: ['Teodora Vukić-Hale'],
+          limitCents: 100_000,
+          overCredit: { ...overCredit, currency: 'USD' },
+        },
+        shopName: 'Gillett Diesel Service',
+        card: 'none',
+      })
+    ).toBe(
+      'needs two approvals: one from Teodora Vukić-Hale, and one from Gillett Diesel Service. It comes to $2,026.38, and your account has $1,676.08 of credit left. Nothing is charged or sent until then, and we will email you as soon as it is approved.'
     );
   });
 });
@@ -235,9 +284,31 @@ describe('an order page', () => {
 
   it('says which limit it went over, and nothing when no limit held it', () => {
     expect(overLimitSentence(100_000, 'USD')).toBe(
-      'This order is over your account’s $1,000.00 limit.'
+      'This order is over your account’s $1,000.00 limit for one order.'
     );
     expect(overLimitSentence(null, 'USD')).toBeNull();
+  });
+
+  // Sparx persona issue 187: the order page gave the spending limit as the only
+  // reason, on an order also held because the account was out of credit.
+  it('says the account was out of credit, when that held it too', () => {
+    expect(
+      overCreditSentence({ creditLeftCents: 167_608, orderTotalCents: 202_638, currency: 'USD' })
+    ).toBe(
+      'When it was placed, it came to $2,026.38 and your account had $1,676.08 of credit left.'
+    );
+    expect(overCreditSentence(null)).toBeNull();
+    expect(overCreditSentence(undefined)).toBeNull();
+  });
+
+  it('the order page says both reasons', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { fileURLToPath } = await import('node:url');
+    const panel = readFileSync(
+      fileURLToPath(new URL('../components/account/sign-off-panel.tsx', import.meta.url)),
+      'utf8'
+    );
+    expect(panel).toContain('overCreditSentence(signOff.overCredit)');
   });
 
   it('says who has already approved, and when', () => {
@@ -427,7 +498,7 @@ describe('an order waiting for an approver', () => {
   it('says who placed it, when, the limit it went over, the PO number and the items', () => {
     expect(approvalItemFacts(item)).toEqual([
       'Placed by Renée Castañeda on October 1, 2026',
-      'Over your account’s $1,000.00 limit',
+      'Over your account’s $1,000.00 limit for one order',
       'Your PO number WFU-PO-24-0917',
       '3 items',
     ]);
@@ -481,7 +552,7 @@ describe('the one note on a payment screen', () => {
         HOSTED_PAYMENT_NOTE
       )
     ).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so Teodora Vukić-Hale approves it before it goes ahead. Your card is not charged unless it is approved, and nothing is sent until then. You’ll finish paying securely on your payment provider’s page, then return here.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so Teodora Vukić-Hale approves it before it goes ahead. Your card is not charged unless it is approved, and nothing is sent until then. You’ll finish paying securely on your payment provider’s page, then return here.'
     );
   });
 
@@ -493,7 +564,7 @@ describe('the one note on a payment screen', () => {
         HOSTED_PAYMENT_NOTE
       )
     ).toBe(
-      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit, so Teodora Vukić-Hale approves it before it goes ahead. Your card is charged now, and refunded in full if the order is turned down. Nothing is sent until it is approved. You’ll finish paying securely on your payment provider’s page, then return here.'
+      'This order is over Wasatch Front Utility Contractors, LLC’s $1,000.00 limit for one order, so Teodora Vukić-Hale approves it before it goes ahead. Your card is charged now, and refunded in full if the order is turned down. Nothing is sent until it is approved. You’ll finish paying securely on your payment provider’s page, then return here.'
     );
   });
 

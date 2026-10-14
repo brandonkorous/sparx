@@ -67,6 +67,7 @@ import {
 // and a null is left OUT of the comparison rather than guessed — a guess here
 // moves a reply between her businesses without her asking.
 import { useActivePropertyId } from '../../lib/api/shell-data';
+import { loadFailureWords } from '../../lib/api-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -159,7 +160,15 @@ function QuickReplyRow({
 export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useQuickReplies();
+  const {
+    data,
+    isPending,
+    isError,
+    error: loadError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useQuickReplies();
   const create = useCreateQuickReply();
   const update = useUpdateQuickReply();
   const remove = useDeleteQuickReply();
@@ -528,8 +537,11 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
             {isError ? (
               <div className="p-4">
                 <Text className="text-sm">
-                  Could not load your saved replies. This is a problem reaching the server. Try
-                  refreshing.
+                  Could not load your saved replies.{' '}
+                  {loadFailureWords(
+                    loadError,
+                    'This is a problem reaching the server. Try refreshing.'
+                  )}
                 </Text>
               </div>
             ) : isPending ? (

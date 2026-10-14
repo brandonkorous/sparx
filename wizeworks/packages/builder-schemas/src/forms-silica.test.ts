@@ -68,6 +68,19 @@ describe('isSilicaFormNode', () => {
     expect(isSilicaFormNode(node)).toBe(false);
   });
 
+  // P09: 196 catalog designs author their Contact page form as `submit`. Refused here,
+  // every message sent from one was dropped after the visitor read a thank-you.
+  it('accepts the designs’ own contact form, named `submit`', () => {
+    const node = {
+      id: 'acc6709d',
+      kind: 'element',
+      tag: 'form',
+      behavior: { type: 'form' },
+      data: { kind: 'action', ref: 'submit' },
+    } as unknown as SilicaNode;
+    expect(isSilicaFormNode(node)).toBe(true);
+  });
+
   it('REJECTS a form wired to some OTHER action (a newsletter signup is not this)', () => {
     const node = {
       id: 'f1',

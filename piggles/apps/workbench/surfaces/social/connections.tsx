@@ -48,6 +48,8 @@ import { AccountAvatar } from './post-visuals';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
+import { useReaderClock } from '../../lib/business-timezone';
+import { onClock } from '../../lib/publish-clock';
 import {
   canApprove,
   catalogByPlatform,
@@ -184,6 +186,10 @@ function ConnectionCard({
 }) {
   const state = connectionStatusMeta(connection.status);
   const enabledCount = connection.targets.filter((t) => t.enabled).length;
+  // "3 days ago" belongs to no clock, but its hover names the moment, and that is on the
+  // business's clock, not this computer's (piggles persona issue 990).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   return (
     <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
@@ -209,7 +215,12 @@ function ConnectionCard({
             </Badge>
           </div>
           <Text className="text-sm">
-            {name} · connected <Timestamp value={connection.connectedAt} format="relative" />
+            {name} · connected{' '}
+            <Timestamp
+              value={connection.connectedAt}
+              format="relative"
+              title={onClock(connection.connectedAt, clock)}
+            />
           </Text>
         </div>
         {canManage ? (

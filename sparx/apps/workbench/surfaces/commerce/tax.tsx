@@ -31,12 +31,12 @@ import { Banknote, Building2, Plus, ServerCrash, Users } from 'lucide-react';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { countryName, regionName } from '../../lib/geo';
 import {
   nexusLabel,
-  taxErrorMessage,
   useAutomaticTaxProvider,
   useTaxZones,
   zoneIsCollecting,
@@ -172,24 +172,14 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {zones.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load your tax settings"
-              description={taxErrorMessage(
-                zones.error,
-                'This is a problem reaching the server. Your tax settings are unaffected.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void zones.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Your tax settings are unaffected."
+              error={zones.error}
+              onRetry={() => {
+                void zones.refetch();
+              }}
             />
           ) : (
             <>

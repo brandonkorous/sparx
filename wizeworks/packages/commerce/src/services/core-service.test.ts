@@ -29,6 +29,9 @@ interface Line {
 }
 
 let line: Line;
+/** When the part was handed over: the fulfillment that carried it. Null while it
+ *  is still on the shelf. */
+let handedOverAt: Date | null;
 let invoice: { id: string; balance: number; number: string } | null;
 let payment: { id: string; processor: string; processorRef: string; currency: string } | null;
 let amountPaid: number;
@@ -50,6 +53,9 @@ function row() {
     coreFirst: false,
     coreHoldReleasedAt: null,
     ...line,
+    fulfillmentItems: handedOverAt
+      ? [{ fulfillment: { shippedAt: handedOverAt, createdAt: handedOverAt } }]
+      : [],
     order: {
       id: ORDER,
       orderNumber: 'O-000041',
@@ -94,7 +100,10 @@ const tx = {
       }
     ),
   },
-  billingDocument: { findFirst: vi.fn(() => Promise.resolve(invoice)) },
+  billingDocument: {
+    findFirst: vi.fn(() => Promise.resolve(invoice)),
+    findMany: vi.fn(() => Promise.resolve(invoice ? [{ ...invoice, orderId: ORDER }] : [])),
+  },
   orderPayment: { findFirst: vi.fn(() => Promise.resolve(payment)) },
   order: { findUnique: vi.fn(() => Promise.resolve({ amountPaid })) },
   company: {
@@ -126,10 +135,20 @@ vi.mock('@wizeworks/payments', () => {
 vi.mock('./discount-service', () => ({ grantAccountCredit }));
 vi.mock('../audit', () => ({ writeAuditLog: vi.fn().mockResolvedValue(undefined) }));
 
-const { listOwed, receiveCores, keepDeposits, releaseHold } = await import('./core-service');
+const { listOwed, receiveCores, keepDeposits, releaseHold, openInvoiceForLine } =
+  await import('./core-service');
 
 beforeEach(() => {
-  line = { quantity: 2, quantityRefunded: 0, coresReturned: 0, coresKept: 0, coreCharge: 150 };
+  // Handed over: a deposit core is owed once the customer has the part (issue 184).
+  line = {
+    quantity: 2,
+    quantityRefunded: 0,
+    quantityFulfilled: 2,
+    coresReturned: 0,
+    coresKept: 0,
+    coreCharge: 150,
+  };
+  handedOverAt = new Date(Date.now() - 5 * 86_400_000);
   invoice = null;
   payment = { id: 'pay-1', processor: 'stripe', processorRef: 'pi_123', currency: 'USD' };
   amountPaid = 1460.3;
@@ -168,6 +187,72 @@ describe('listOwed', () => {
     line.quantityRefunded = 2;
     expect(await listOwed(CTX)).toEqual([]);
   });
+
+  it('names the open invoice a returned deposit comes off (sparx persona issue 183)', async () => {
+    invoice = { id: 'doc-1', balance: 678, number: 'INV-000001' };
+    const [owed] = await listOwed(CTX);
+    expect(owed?.openInvoice).toEqual({ number: 'INV-000001', balanceCents: 67_800 });
+  });
+
+  it('leaves out a deposit line nothing was handed over on (sparx persona issue 184)', async () => {
+    line.quantityFulfilled = 0;
+    handedOverAt = null;
+    expect(await listOwed(CTX)).toEqual([]);
+  });
+
+  it('owes a core only for each part handed over', async () => {
+    line.quantity = 6;
+    line.quantityFulfilled = 2;
+    const [owed] = await listOwed(CTX);
+    expect(owed).toMatchObject({ coresOwed: 2, owedCents: 30_000 });
+  });
+
+  it('counts the days out from the handover, not from the order', async () => {
+    const [owed] = await listOwed(CTX);
+    expect(owed?.daysOut).toBe(5);
+  });
+
+  it('leaves a part handed over this week out of "over 30 days", whenever it was ordered', async () => {
+    expect(await listOwed(CTX, { olderThanDays: 30 })).toEqual([]);
+    handedOverAt = new Date(Date.now() - 31 * 86_400_000);
+    expect(await listOwed(CTX, { olderThanDays: 30 })).toHaveLength(1);
+  });
+
+  it('names no invoice when nothing on the order is still owed', async () => {
+    const [owed] = await listOwed(CTX);
+    expect(owed?.openInvoice).toBeNull();
+  });
+});
+
+describe('openInvoiceForLine (sparx persona issue 183)', () => {
+  it('names the invoice a returned deposit would come off, before the click', async () => {
+    invoice = { id: 'doc-1', balance: 4075.6, number: 'INV-000003' };
+    expect(await openInvoiceForLine(CTX, ITEM)).toEqual({
+      openInvoice: { number: 'INV-000003', balanceCents: 407_560 },
+    });
+  });
+
+  it('names it even for a part not handed over yet, which the list leaves out', async () => {
+    line.quantityFulfilled = 0;
+    handedOverAt = null;
+    invoice = { id: 'doc-1', balance: 4075.6, number: 'INV-000003' };
+    expect((await openInvoiceForLine(CTX, ITEM)).openInvoice?.number).toBe('INV-000003');
+  });
+
+  it('and the refund takes the deposit off that same invoice', async () => {
+    invoice = { id: 'doc-1', balance: 4075.6, number: 'INV-000003' };
+    await receiveCores(CTX, { orderItemId: ITEM, usable: 2 });
+    expect(recordPayment).toHaveBeenCalledWith(
+      expect.anything(),
+      'doc-1',
+      expect.objectContaining({ amount: 300 })
+    );
+    expect(refund).not.toHaveBeenCalled();
+  });
+
+  it('names none when nothing on the order is still owed', async () => {
+    expect(await openInvoiceForLine(CTX, ITEM)).toEqual({ openInvoice: null });
+  });
 });
 
 describe('receiveCores', () => {
@@ -202,7 +287,8 @@ describe('receiveCores', () => {
     expect(recordPayment).toHaveBeenCalledWith(
       expect.objectContaining({ tx }),
       'doc-1',
-      expect.objectContaining({ amount: 300, reference: 'Core returned' })
+      // A credit: the fleet paid nothing (sparx persona issue 185).
+      expect.objectContaining({ kind: 'credit', amount: 300, reference: 'Returned core' })
     );
     expect(result.summary).toBe('$300.00 taken off invoice INV-1001.');
   });

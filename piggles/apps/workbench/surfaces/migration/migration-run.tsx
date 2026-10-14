@@ -11,7 +11,7 @@
 // connector returns the same canonical rows the parser does and there is only one
 // validator.
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, useToast } from '@wizeworks/silicaui-react';
 import { faPlay, faRotate, faUpload } from '@fortawesome/pro-solid-svg-icons';
 
@@ -49,6 +49,20 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
   const [connecting, setConnecting] = useState(false);
   const [readError, setReadError] = useState<string | null>(null);
   const [runId, setRunId] = useState<string | null>(runParam);
+  // Whether the run on screen was the practice one, so the real one is a click away.
+  // After a practice run the only button was "Move something else", which threw away
+  // the file and every column choice (Piggles persona P09).
+  const [practised, setPractised] = useState(false);
+  // A pane opened with no run on screen is the file drop, whatever the saved layout
+  // last called it. After a reload the tab still read "Practice run" over an empty box.
+  // Once, on opening: `ctx` is a new object on every render, so an effect keyed on it
+  // ran again after a practice run and named that tab "Move in" too.
+  const named = useRef(false);
+  useEffect(() => {
+    if (named.current) return;
+    named.current = true;
+    if (runParam === null) ctx.setTitle('Move in');
+  }, [ctx, runParam]);
   const [reading, setReading] = useState(false);
 
   const start = useStartMigration();
@@ -130,6 +144,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
           })),
         });
         setRunId(result.runId);
+        setPractised(dryRun);
         ctx.setTitle(dryRun ? 'Practice run' : 'Moving in');
         if (result.skipped.length > 0) {
           toast.add({
@@ -160,6 +175,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
     setLive(null);
     setConnecting(false);
     setRunId(null);
+    setPractised(false);
     setReadError(null);
     // Otherwise an empty file-drop keeps the last run's title — "Practice run" — and
     // the saved layout brings it back next visit. The file input clears itself.
@@ -179,6 +195,17 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               <Button variant="ghost" size="sm" onClick={reset}>
                 <Icon glyph={faRotate} className="size-4" aria-hidden />
                 Move something else
+              </Button>
+            ) : null}
+            {runId !== null && practised && staged ? (
+              <Button
+                color="primary"
+                size="sm"
+                disabled={importable.length === 0 || start.isPending}
+                onClick={() => void begin(false)}
+              >
+                <Icon glyph={faUpload} className="size-4" aria-hidden />
+                {bringInLabel(importable)}
               </Button>
             ) : null}
             {staged && runId === null ? (

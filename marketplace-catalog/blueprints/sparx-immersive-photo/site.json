@@ -968,12 +968,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-200 @container px-6 py-16",
+            "class": "bg-base-200 @container py-16",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "class": "mx-auto flex w-full max-w-6xl px-6 flex-col gap-8",
                 "children": [
                   {
                     "kind": "element",
@@ -1228,12 +1228,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 py-12",
+            "class": "bg-base-100 @container py-12",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",
@@ -1450,12 +1450,12 @@
           {
             "kind": "element",
             "tag": "section",
-            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "class": "bg-base-100 @container pt-12 pb-4",
             "children": [
               {
                 "kind": "element",
                 "tag": "div",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "kind": "element",

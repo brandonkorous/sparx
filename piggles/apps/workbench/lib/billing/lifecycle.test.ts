@@ -91,6 +91,54 @@ describe('suspended states the situation and the way out', () => {
   });
 });
 
+describe('somebody who may not pay is told who can, with no button', () => {
+  // An Editor was offered "Set up payment" and refused at the account app it
+  // opened (sparx persona issue 168). The news still reaches her: it is about
+  // the business. The action goes to the people who can take it.
+  const phases: BillingPhaseView[] = [
+    view({ daysLeft: 12 }),
+    view({ daysLeft: 2 }),
+    view({ daysLeft: null }),
+    view({ phase: 'grace', daysLeft: 5 }),
+    view({ phase: 'grace', daysLeft: null }),
+    view({ phase: 'suspended', daysLeft: null }),
+  ];
+
+  it('still offers the owner the way to pay', () => {
+    expect(lifecycleNotice(view({ daysLeft: 12 }))?.action).toBe('Set up payment');
+    expect(lifecycleNotice(view({ daysLeft: 12 }), true)?.action).toBe('Set up payment');
+  });
+
+  it('names who can act, at every rung, and offers no button', () => {
+    for (const billing of phases) {
+      const life = lifecycleNotice(billing, false);
+      expect(life?.action).toBeNull();
+      expect(life?.sentence).toMatch(/an owner or an admin/i);
+    }
+  });
+
+  it('keeps the same tone and countdown the owner sees', () => {
+    for (const billing of phases) {
+      const owner = lifecycleNotice(billing);
+      const team = lifecycleNotice(billing, false);
+      expect(team?.tone).toBe(owner?.tone);
+      expect(team?.detail).toBe(owner?.detail);
+    }
+    expect(lifecycleNotice(view({ daysLeft: 12 }), false)?.sentence).toContain('12 days');
+  });
+
+  it('still never names a cause in grace, or invents a number', () => {
+    expect(lifecycleNotice(view({ phase: 'grace', daysLeft: 5 }), false)?.sentence).not.toMatch(
+      /trial/i
+    );
+    expect(lifecycleNotice(view({ daysLeft: null }), false)?.sentence).not.toMatch(/\d/);
+  });
+
+  it('says nothing to a healthy account either', () => {
+    expect(lifecycleNotice(view({ phase: 'active', daysLeft: null }), false)).toBeNull();
+  });
+});
+
 describe('a countdown nobody measured is never printed as a number', () => {
   it('drops the number rather than saying "0 days left"', () => {
     // `?? 0` here would print a measurement nobody took, on the screen that

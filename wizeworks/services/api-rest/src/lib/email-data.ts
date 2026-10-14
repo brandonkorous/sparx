@@ -21,9 +21,10 @@
 // address on the site the email is about (`lib/site-origin.ts`): a bare path
 // opens nothing from an inbox, and every link here was one until issue 064.
 
-import { withTenant } from '@wizeworks/db';
+import { contentSiteVisibilityWhere, withTenant } from '@wizeworks/db';
 import { COLLECTION_RATE_REF, discountService, productService } from '@wizeworks/commerce';
-import { carrierLabel } from '@wizeworks/commerce-schemas';
+import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
+import { dueOnCollectionCents } from './collection-balance.js';
 import { billingDocumentMail, businessTimeZone, daysPastDue } from '@wizeworks/crm';
 import { EMAIL_FRAME_TOKENS } from '@wizeworks/email/silica';
 import { ALL_MODULES, listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
@@ -42,6 +43,8 @@ import { loadSenderIdentity } from './tenant-email.js';
 import { bookingIcsUrl } from './scheduling-ical.js';
 import { bookingManagePath } from './scheduling-token.js';
 import { resolveSiteOrigin, siteUrl } from './site-origin.js';
+import { entryPublicPath } from './content-paths.js';
+import { contentCard, kindFieldsOf } from './email-content-card.js';
 
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
  *  `entityRefs`, or just `{ customerId }` for a customer-addressed broadcast.
@@ -75,6 +78,8 @@ const API_BASE =
   'http://localhost:3100';
 function mediaUrl(mediaId: string | null | undefined, slug: string): string {
   if (!mediaId) return '';
+  // A picture stored as a full address already is one.
+  if (/^https?:\/\//i.test(mediaId)) return mediaId;
   return `${API_BASE}/v1/public/media/${encodeURIComponent(mediaId)}?tenant=${encodeURIComponent(slug)}`;
 }
 
@@ -265,6 +270,13 @@ function money(amount: unknown): string {
  *  receipt, and an empty string makes the cost-summary row self-drop (same
  *  `hideWhenEmpty` mechanism as any optional row) — so free shipping and a
  *  tax-exempt order simply show no line rather than a `$0.00` one. */
+/** The account terms an order is billed on ("net30"), or null when the buyer pays. */
+function accountTermsOf(metadata: unknown): string | null {
+  if (typeof metadata !== 'object' || metadata === null) return null;
+  const terms = (metadata as { paymentTermsRequested?: unknown }).paymentTermsRequested;
+  return typeof terms === 'string' && terms !== '' ? terms : null;
+}
+
 function moneyPositive(amount: unknown): string {
   const n = Number(amount);
   return Number.isFinite(n) && n > 0 ? money(amount) : '';
@@ -595,7 +607,16 @@ async function resolveOrder(
     // balance of nothing. The balance is what is genuinely left to pay, so a
     // fully-paid order shows no row even when it had a deposit.
     readyOn: calendarDayLabel(order.readyOn),
-    balanceDue: moneyPositive(Number(order.total) - Number(order.amountPaid)),
+    // Only what is owed AT A HANDOVER: not on a shipped order, not on one billed
+    // to an account (sparx persona issue 220).
+    balanceDue: moneyPositive(
+      dueOnCollectionCents({
+        pickup,
+        terms: accountTermsOf(order.metadata),
+        totalCents: Math.round(Number(order.total) * 100),
+        paidCents: Math.round(Number(order.amountPaid) * 100),
+      }) / 100
+    ),
     deliveredAt: order.deliveredAt ? dateLabel(order.deliveredAt) : '',
     cancelReason: order.cancelledReason ?? '',
     placedAt: dateLabel(order.placedAt),
@@ -679,6 +700,7 @@ async function resolveShipping(
         trackingNumber: true,
         trackingUrl: true,
         shippedAt: true,
+        metadata: true,
       },
     })
   );
@@ -688,7 +710,7 @@ async function resolveShipping(
     // The stored code is lowercase (`usps`, `dropship`). Bound raw, the email
     // told a customer their parcel went by "usps" — the one place this fact
     // reaches somebody outside the business was the only one not translating it.
-    carrier: carrierLabel(f.carrier),
+    carrier: carrierLabel(f.carrier, typedCarrierOf(f.metadata)),
     service: f.service ?? '',
     trackingNumber: f.trackingNumber ?? '',
     // The carrier's tracking page when known; else the customer's order detail so
@@ -1243,26 +1265,49 @@ async function resolveModules(ctx: ServiceContext): Promise<Record<string, strin
 async function resolveCmsCollection(
   ctx: ServiceContext,
   site: EmailSite,
-  typeKey: string
+  typeKey: string,
+  propertyId: string | null | undefined
 ): Promise<Record<string, unknown>[]> {
-  const rows = await withTenant(ctx, (tx) =>
-    tx.contentEntry.findMany({
-      where: { typeKey, status: 'published', deletedAt: null },
-      orderBy: { publishedAt: 'desc' },
-      take: 6,
-      select: { slug: true, body: true, publishedAt: true },
-    })
+  // The pieces THIS site shows, and their kind's own field names and address. A
+  // newsletter from one site never lists another site's writing.
+  const siteId = propertyId ?? (await resolvePrimaryPropertyId(ctx.tenantId));
+  const [kind, rows] = await withTenant(ctx, (tx) =>
+    Promise.all([
+      tx.contentType.findFirst({
+        where: { key: typeKey },
+        select: { schemaJson: true, urlPattern: true },
+      }),
+      tx.contentEntry.findMany({
+        where: {
+          typeKey,
+          status: 'published',
+          deletedAt: null,
+          ...contentSiteVisibilityWhere(siteId),
+        },
+        orderBy: { publishedAt: 'desc' },
+        // The newest three. Six made a phone-length scroll of a week's email, and the
+        // designer has no setting to shorten a list (P09: her edition is three pieces).
+        take: 3,
+        select: { slug: true, body: true, publishedAt: true },
+      }),
+    ])
   );
-  return rows.map((r) => {
-    const body = (r.body ?? {}) as Record<string, unknown>;
-    const featured = typeof body.featuredImage === 'string' ? body.featuredImage : undefined;
-    return {
-      ...body,
-      slug: r.slug ?? '',
-      url: site.link(`/${typeKey === 'blog_post' ? 'blog' : typeKey}/${r.slug ?? ''}`),
-      imageUrl: featured ? mediaUrl(featured, site.slug) : '',
-      dateLabel: dateLabel(r.publishedAt),
-    };
+  const fields = kindFieldsOf(kind?.schemaJson);
+  return rows.flatMap((r) => {
+    // The address the site serves this piece at (`/articles/<slug>`), the one its
+    // sitemap and feed name. A kind the site cannot serve has no link to give.
+    const path = entryPublicPath(typeKey, kind?.urlPattern, r.slug);
+    if (!path) return [];
+    const { imageId, ...card } = contentCard((r.body ?? {}) as Record<string, unknown>, fields);
+    return [
+      {
+        ...card,
+        slug: r.slug ?? '',
+        url: site.link(path),
+        imageUrl: imageId ? mediaUrl(imageId, site.slug) : '',
+        dateLabel: dateLabel(r.publishedAt),
+      },
+    ];
   });
 }
 
@@ -1411,7 +1456,7 @@ async function loadEmailSources(
     const typeKey = key.slice('cms.'.length);
     tasks.push(
       site()
-        .then((s) => resolveCmsCollection(ctx, s, typeKey))
+        .then((s) => resolveCmsCollection(ctx, s, typeKey, propertyId))
         .then((v) => {
           const cms = (out.cms as Record<string, unknown>) ?? {};
           cms[typeKey] = v;

@@ -10,7 +10,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Supplier } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
-import { indexInventoryEntity } from '../events';
+import { indexInventoryEntity, indexInventoryEntityOnCommit } from '../events';
 import { InventoryConflictError, InventoryNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
 
@@ -135,6 +135,15 @@ export async function updateSupplier(
       where: { id: supplierId },
       data: patchData(input),
     });
+
+    // A spending limit scoped to this supplier names it in its search entry.
+    if (updated.name !== before.name) {
+      const rules = await tx.purchaseOrderApprovalRule.findMany({
+        where: { supplierId },
+        select: { id: true },
+      });
+      for (const r of rules) await indexInventoryEntityOnCommit(ctx, 'po_approval_rule', r.id);
+    }
 
     await writeAuditLog({
       tx,

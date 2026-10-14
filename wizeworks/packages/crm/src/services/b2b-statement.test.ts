@@ -256,6 +256,85 @@ describe('aging at the end of the period', () => {
   });
 });
 
+describe('the business calendar (sparx persona issue 146)', () => {
+  // Gillett is in Denver. 7:30pm on Oct 31 there is 01:30 on Nov 1 in UTC, and
+  // a statement that read the UTC day put an October bill on November's page.
+  const DENVER = 'America/Denver';
+  const lateOnTheLastDay = bill({
+    id: 'late',
+    number: 'INV-000021',
+    issuedAt: at('2026-11-01T01:30:00Z'),
+    dueAt: at('2026-11-30T12:00:00Z'),
+    totalCents: 138065,
+    payments: [
+      {
+        id: 'p-evening',
+        kind: 'payment',
+        method: 'check',
+        reference: '10511',
+        amountCents: 50000,
+        // 8pm on Oct 31 in Denver.
+        receivedAt: at('2026-11-01T02:00:00Z'),
+      },
+    ],
+  });
+  const NOVEMBER = statementPeriod(
+    { from: '2026-11-01', to: '2026-11-30' },
+    at('2026-12-15T12:00:00Z'),
+    DENVER
+  );
+
+  it("puts a bill raised on the evening of Oct 31 on October's statement", () => {
+    const s = computeStatement([lateOnTheLastDay], OCTOBER, DENVER);
+    expect(s.rows.map((r) => r.kind)).toEqual(['invoice', 'payment']);
+    expect(s.closingCents).toBe(88065);
+  });
+
+  it("and so in November's opening balance, not among its rows", () => {
+    const s = computeStatement([lateOnTheLastDay], NOVEMBER, DENVER);
+    expect(s.rows).toEqual([]);
+    expect(s.openingCents).toBe(88065);
+  });
+
+  it('prints each row on the day it happened in the shop', () => {
+    const s = computeStatement([lateOnTheLastDay], OCTOBER, DENVER);
+    expect(s.rows.map((r) => r.at.slice(0, 10))).toEqual(['2026-10-31', '2026-10-31']);
+    expect(s.openItems[0]?.issuedAt.slice(0, 10)).toBe('2026-10-31');
+  });
+
+  it('keeps the order things happened in, within one day', () => {
+    // Paid at 9am, invoiced again at 7pm: both Oct 7 in Denver.
+    const morningPayment = bill({
+      id: 'earlier',
+      number: 'INV-000019',
+      issuedAt: at('2026-10-01T16:00:00Z'),
+      totalCents: 20000,
+      payments: [
+        {
+          id: 'p-morning',
+          kind: 'payment',
+          method: 'cash',
+          reference: null,
+          amountCents: 20000,
+          receivedAt: at('2026-10-07T15:00:00Z'),
+        },
+      ],
+    });
+    const eveningBill = bill({
+      id: 'evening',
+      number: 'INV-000020',
+      issuedAt: at('2026-10-08T01:00:00Z'),
+      totalCents: 30000,
+    });
+    const s = computeStatement([eveningBill, morningPayment], OCTOBER, DENVER);
+    expect(s.rows.map((r) => [r.documentNumber, r.kind, r.balanceCents])).toEqual([
+      ['INV-000019', 'invoice', 20000],
+      ['INV-000019', 'payment', 0],
+      ['INV-000020', 'invoice', 30000],
+    ]);
+  });
+});
+
 describe('the period', () => {
   it('is the month so far, on the business calendar, when nothing is chosen', () => {
     // 9pm on Oct 31 in Denver is already Nov 1 in UTC.
@@ -296,5 +375,39 @@ describe('payment terms in words', () => {
     expect(paymentTermsWords('prepay')).toBe('Pay before it ships');
     expect(paymentTermsWords(null)).toBeNull();
     expect(paymentTermsWords('whenever')).toBeNull();
+  });
+});
+
+describe('a returned core on the statement (sparx persona issue 185)', () => {
+  // Renée's old injector came back on O-000007, and its $150.00 deposit came off
+  // INV-000001. Wasatch paid nothing for that line.
+  const invoice = bill({
+    id: 'core',
+    number: 'INV-000001',
+    issuedAt: at('2026-10-02T19:12:54Z'),
+    totalCents: 847392,
+    payments: [
+      {
+        id: 'c1',
+        kind: 'credit',
+        method: 'other',
+        reference: 'Returned core',
+        amountCents: 15000,
+        receivedAt: at('2026-10-09T17:00:00Z'),
+      },
+    ],
+  });
+
+  it('reads as a credit, never as a payment the account made', () => {
+    const s = computeStatement([invoice], OCTOBER);
+    const credit = s.rows.find((r) => r.documentNumber === 'INV-000001' && r.kind !== 'invoice');
+    expect(credit?.description).toBe('Credit for returned core');
+    expect(credit?.description).not.toMatch(/payment/i);
+  });
+
+  it('still takes the deposit off what is owed', () => {
+    const s = computeStatement([invoice], OCTOBER);
+    expect(s.creditsCents).toBe(15000);
+    expect(s.closingCents).toBe(832392);
   });
 });

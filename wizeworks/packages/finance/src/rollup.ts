@@ -11,6 +11,8 @@
 // is written to be re-run for any day whose sources moved.
 
 import { withTenant, type TxClient } from '@wizeworks/db';
+import { businessDayRange } from '@wizeworks/time';
+import { businessZone } from './business-clock';
 import { ORDER_MOVEMENT_REFERENCE } from './stock-movements';
 
 /* ── The arithmetic (pure, so it is tested without a database) ─────────────── */
@@ -60,7 +62,10 @@ export function computeProfit(inputs: ProfitInputs): ProfitFigures {
   return { ...inputs, grossProfitCents, netProfitCents };
 }
 
-/** The UTC day containing `date`, as the half-open range every query below uses. */
+/** The UTC day containing `date`, as a half-open range. The range for an
+ *  expense's day, which is a DATE stored at midnight UTC; a moment (a sale, a
+ *  payment, stock leaving) is read over the BUSINESS's day instead, with
+ *  `businessDayRange` (sparx persona issue 174). */
 export function utcDayRange(date: Date): { start: Date; end: Date } {
   const start = new Date(
     Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0)
@@ -89,9 +94,13 @@ export function utcMidnight(date: Date): Date {
  * accounting export carried the same bound, so the last day of every period she
  * sent her accountant was silently short.
  *
- * Filter timestamp columns `gte: from, lt: endOfDayExclusive(to)`. A DAY column
- * (`bucket`) is a different case and is correctly `lte: utcMidnight(to)`, because
- * the stored values ARE midnights.
+ * Filter date-only timestamp columns (`incurredAt`, a day stored at midnight
+ * UTC) `gte: from, lt: endOfDayExclusive(to)`. A column holding a MOMENT (an
+ * order's `placedAt`, a booking's `startAt`) is cut on the business's day edges
+ * instead, with `businessDayStart` / `businessDayRange` from `@wizeworks/time`,
+ * or an evening in Denver lands in the next day (sparx persona issue 174). A DAY
+ * column (`bucket`) is a different case and is correctly `lte: utcMidnight(to)`,
+ * because the stored values ARE midnights.
  */
 export function endOfDayExclusive(date: Date): Date {
   return utcDayRange(date).end;
@@ -132,7 +141,41 @@ export interface RecomputedDay extends ProfitFigures {
 }
 
 /**
- * Recompute every site's profit row for one UTC day, and write them.
+ * What a payment on an invoice sold, in cents (sparx persona issue 172).
+ *
+ * The invoice's total carries sales tax (the state's) and core deposits (the
+ * customer's until the old part comes back), so a payment counts only its
+ * sales share of them: `amount × (total − tax − deposits) ÷ total`. A refund
+ * takes its share off. An invoice with no total to share by counts in full.
+ */
+export function paymentSalesCents(payment: {
+  amount: number;
+  kind: string;
+  documentTotal: number;
+  documentTax: number;
+  documentCores: number;
+}): number {
+  const signed = payment.kind === 'refund' ? -payment.amount : payment.amount;
+  if (payment.documentTotal <= 0) return Math.round(signed * 100);
+  const share = Math.min(
+    Math.max(
+      (payment.documentTotal - payment.documentTax - payment.documentCores) / payment.documentTotal,
+      0
+    ),
+    1
+  );
+  return Math.round(signed * 100 * share);
+}
+
+/**
+ * Recompute every site's profit row for one day, and write them.
+ *
+ * `day` is a calendar DATE (midnight UTC, as every caller passes it), and the
+ * row it writes is that day on the BUSINESS's calendar. Sales, payments and
+ * stock movements are moments, read over the business's midnight to midnight;
+ * expenses are dates, read as written. All of it was read over the UTC day, so a
+ * shop in Denver had every evening's takings filed under the next day, and the
+ * last evening of a month under the next month (sparx persona issue 174).
  *
  * Recomputes ALL sites in one pass rather than taking a `propertyId`, because
  * the expensive inputs (the movement ledger, the order scan) are read per-day
@@ -146,9 +189,14 @@ export async function recomputeDay(
   tx?: TxClient
 ): Promise<RecomputedDay[]> {
   const bucket = utcMidnight(day);
-  const { start, end } = utcDayRange(day);
+  // An expense's day is the date written on it. Shifting it through the zone
+  // would file every expense in Denver on the day before.
+  const expenseDay = utcDayRange(day);
 
   const run = async (client: TxClient): Promise<RecomputedDay[]> => {
+    // Every moment below is read over the business's day.
+    const { start, end } = businessDayRange(bucket, await businessZone(client, tenantId));
+
     const revenue = new Map<string, number>();
     const cogs = new Map<string, number>();
     const fees = new Map<string, number>();
@@ -158,14 +206,48 @@ export async function recomputeDay(
     const expenseTotal = new Map<string, number>();
     const allocated = new Map<string, number>();
 
-    /* Revenue — read from the rollups that already own it, so Finance and the
-     * commerce/invoicing surfaces can never disagree about what came in. */
-    const [commerceRows, invoicingRows] = await Promise.all([
+    /* Revenue. Orders from the commerce rollup, which owns what an order SOLD
+     * (`order-sales.ts`: no tax, no deposits held, no order awaiting approval),
+     * so Finance and the commerce charts can never disagree about it.
+     *
+     * Invoices only when they did NOT come from an order, and only as they are
+     * paid. An order's sale is counted the day it is placed; its invoice's
+     * payment used to be added on top from the invoicing rollup, which counts
+     * every payment, so a fleet order paid on account was counted twice. And a
+     * payment carries the invoice's tax and deposits in proportion, so only its
+     * sales share counts (sparx persona issue 172). */
+    const [commerceRows, invoicePayments] = await Promise.all([
       client.rollupCommerceDailyRevenue.findMany({ where: { bucket } }),
-      client.rollupInvoicingDailyCollected.findMany({ where: { bucket } }),
+      client.billingDocumentPayment.findMany({
+        // A credit sold nothing: it took money off a bill (sparx persona issue 185).
+        where: {
+          receivedAt: { gte: start, lt: end },
+          kind: { not: 'credit' },
+          document: { orderId: null },
+        },
+        select: {
+          amount: true,
+          kind: true,
+          document: {
+            select: { propertyId: true, total: true, taxTotal: true, coreChargeTotal: true },
+          },
+        },
+      }),
     ]);
     for (const row of commerceRows) addTo(revenue, row.propertyId, Number(row.netCents));
-    for (const row of invoicingRows) addTo(revenue, row.propertyId, Number(row.collectedCents));
+    for (const payment of invoicePayments) {
+      addTo(
+        revenue,
+        payment.document.propertyId,
+        paymentSalesCents({
+          amount: Number(payment.amount),
+          kind: payment.kind,
+          documentTotal: Number(payment.document.total),
+          documentTax: Number(payment.document.taxTotal),
+          documentCores: Number(payment.document.coreChargeTotal),
+        })
+      );
+    }
 
     /* Cost of goods — the signed `cost_consumed_cents` on outbound movements.
      * Summing it over a period IS period COGS: a reversal carries a negative
@@ -225,7 +307,7 @@ export async function recomputeDay(
 
     const grouped = await client.financeExpense.groupBy({
       by: ['propertyId', 'categoryId'],
-      where: { incurredAt: { gte: start, lt: end }, deletedAt: null },
+      where: { incurredAt: { gte: expenseDay.start, lt: expenseDay.end }, deletedAt: null },
       _sum: { amountCents: true },
     });
     for (const row of grouped) {
@@ -245,7 +327,9 @@ export async function recomputeDay(
 
     /* What of that spend was pinned to a job. The remainder is overhead. */
     const allocations = await client.financeExpenseAllocation.findMany({
-      where: { expense: { incurredAt: { gte: start, lt: end }, deletedAt: null } },
+      where: {
+        expense: { incurredAt: { gte: expenseDay.start, lt: expenseDay.end }, deletedAt: null },
+      },
       select: { amountCents: true, expense: { select: { propertyId: true } } },
     });
     for (const a of allocations) addTo(allocated, a.expense.propertyId, a.amountCents);
@@ -258,6 +342,20 @@ export async function recomputeDay(
       ...fees.keys(),
       ...expenseTotal.keys(),
     ]);
+    // And every site ALREADY stored for this day, so a site whose day dropped to
+    // nothing is rewritten to zero, as this function's own description promises.
+    // It was not: only sites in today's inputs were written, so an order that
+    // left the day (cancelled, or now awaiting approval) kept its old figure in
+    // Gillett's profit beside the new zero (sparx persona issue 172).
+    const stored = await client.rollupFinanceDailyProfit.findMany({
+      where: { bucket },
+      select: { propertyId: true },
+    });
+    for (const row of stored) keys.add(bucketKey(row.propertyId));
+    // A day with nothing in it still gets one zero row. Without it a quiet day
+    // was indistinguishable from a day never worked out, and the profit screen
+    // read "never worked out" as "no money came in" (sparx persona issue 172).
+    if (keys.size === 0) keys.add(UNATTRIBUTED);
 
     const rows: RecomputedDay[] = [];
     for (const key of keys) {

@@ -1,210 +1,142 @@
 'use client';
 
-// Record types — what kinds of things this business keeps track of.
-//
-// The four sparx ships (customers, companies, deals, requests) and anything the
-// business invented. Opening one is how you add the extra details you track:
-// "warranty expires" on a customer, "competitor" on a deal.
-//
-// Deliberately NOT called "objects" or "schemas" anywhere a person can see. The
-// business owner adding a field to their customers is not modelling data, they
-// are writing down something they already keep on a sticky note.
+// Record types: the four sparx ships (customers, companies, deals, requests) and
+// anything the business invented. Never called "objects" or "schemas" on screen:
+// adding a field to customers is writing down what she already keeps on a note.
 
-import { useState } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
-import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { Button, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { faBoxes, faPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
+import { createLabelFor, type SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { isModuleDisabled, useObjectTypes, type CrmObjectType } from './object-types-data';
-import { productCopy } from '../../lib/product';
 import { ListFooter } from '../../components/list-footer';
+import { ObjectTypesTable, targetFor } from './object-types-table';
 
-function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
-  if (event.altKey) return 'window';
-  if (event.shiftKey) return 'beside';
-  return 'tab';
+function NewTypeButton({ ctx }: { ctx: SurfaceContext }) {
+  const createLabel = createLabelFor('crm.object-types.list');
+  return (
+    <Button
+      color="module"
+      size="sm"
+      className="ml-auto shrink-0"
+      title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
+      onClick={(event) => {
+        ctx.open('crm.object-type.detail', { key: 'new' }, { target: targetFor(event) });
+      }}
+    >
+      <Icon glyph={faPlus} className="size-4" aria-hidden />
+      {createLabel}
+    </Button>
+  );
+}
+
+function ObjectTypesToolbar(props: {
+  ctx: SurfaceContext;
+  showArchived: boolean;
+  setShowArchived: Dispatch<SetStateAction<boolean>>;
+  query: ReturnType<typeof useObjectTypes>;
+}) {
+  const { ctx, showArchived, setShowArchived, query } = props;
+  return (
+    <PaneToolbar
+      label="Things you track controls"
+      primary={<NewTypeButton ctx={ctx} />}
+      controls={
+        <Button
+          size="sm"
+          color="neutral"
+          variant={showArchived ? 'solid' : 'outline'}
+          onClick={() => {
+            setShowArchived((v) => !v);
+          }}
+        >
+          {showArchived ? 'Hiding nothing' : 'Show put-away types'}
+        </Button>
+      }
+      views={{
+        target: '/crm/object-types',
+        params: { archived: showArchived ? '1' : '' },
+        onApply: (next) => {
+          setShowArchived(next.archived === '1');
+        },
+      }}
+      refresh={
+        <RefreshButton
+          isFetching={query.isFetching}
+          updatedAt={query.data ? query.dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void query.refetch();
+          }}
+        />
+      }
+    />
+  );
+}
+
+function ObjectTypesBody(props: {
+  ctx: SurfaceContext;
+  rows: CrmObjectType[];
+  query: ReturnType<typeof useObjectTypes>;
+}) {
+  const { ctx, rows, query } = props;
+  if (isModuleDisabled(query.error)) {
+    return (
+      <EmptyState
+        icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
+        title="Turn on Customers to see the things you track"
+        description="Things you track appear once the Customers app is switched on. They are the kinds of things you keep track of (customers, companies, deals) and the extra details you record on each."
+      />
+    );
+  }
+  if (query.isError) {
+    return (
+      <PaneLoadError
+        icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
+        title="Could not load the things you track"
+        description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
+        error={query.error}
+        onRetry={() => {
+          void query.refetch();
+        }}
+      />
+    );
+  }
+  if (query.isPending) return <PaneWaiting />;
+  if (rows.length === 0) {
+    // With `list` self-healing the built-ins, an empty list means the
+    // "put away" filter hid everything, never "you have nothing."
+    return (
+      <EmptyState
+        icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
+        title="Nothing to show with this filter"
+        description="Every thing you track is put away. Switch the filter above to see them."
+      />
+    );
+  }
+  return <ObjectTypesTable rows={rows} ctx={ctx} />;
 }
 
 export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const createLabel = createLabelFor('crm.object-types.list');
   const [showArchived, setShowArchived] = useState(false);
-  const { data, error, isPending, isError, isFetching, dataUpdatedAt, refetch } = useObjectTypes({
-    includeArchived: showArchived,
-  });
-
-  const rows = data?.items ?? [];
-  const moduleOff = isModuleDisabled(error);
-
-  const open = (type: CrmObjectType, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('crm.object-type.detail', { key: type.key }, { target: targetFor(event) });
-  };
+  const query = useObjectTypes({ includeArchived: showArchived });
+  const rows = query.data?.items ?? [];
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Things you track controls"
-        primary={
-          <Button
-            color="module"
-            size="sm"
-            className="ml-auto shrink-0"
-            title={`${createLabel}: hold Shift to open alongside, Alt for a new window`}
-            onClick={(event) => {
-              ctx.open('crm.object-type.detail', { key: 'new' }, { target: targetFor(event) });
-            }}
-          >
-            <Icon glyph={faPlus} className="size-4" aria-hidden />
-            {createLabel}
-          </Button>
-        }
-        controls={
-          <Button
-            size="sm"
-            color="neutral"
-            variant={showArchived ? 'solid' : 'outline'}
-            onClick={() => {
-              setShowArchived((v) => !v);
-            }}
-          >
-            {showArchived ? 'Hiding nothing' : 'Show put-away types'}
-          </Button>
-        }
-        views={{
-          target: '/crm/object-types',
-          params: { archived: showArchived ? '1' : '' },
-          onApply: (next) => {
-            setShowArchived(next.archived === '1');
-          },
-        }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+      <ObjectTypesToolbar
+        ctx={ctx}
+        showArchived={showArchived}
+        setShowArchived={setShowArchived}
+        query={query}
       />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
-        {moduleOff ? (
-          <EmptyState
-            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-            title="Turn on Customers to see the things you track"
-            description="Things you track appear once the Customers app is switched on. They are the kinds of things you keep track of (customers, companies, deals) and the extra details you record on each."
-          />
-        ) : isError ? (
-          <PaneLoadError
-            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-            title="Could not load the things you track"
-            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            onRetry={() => {
-              void refetch();
-            }}
-          />
-        ) : isPending ? (
-          <PaneWaiting />
-        ) : rows.length === 0 ? (
-          // With `list` self-healing the built-ins, an empty list means the
-          // "put away" filter hid everything — never "you have nothing."
-          <EmptyState
-            icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
-            title="Nothing to show with this filter"
-            description="Every thing you track is put away. Switch the filter above to see them."
-          />
-        ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                <th>Thing you track</th>
-                <th>Kind</th>
-                <th className="text-right">Extra details</th>
-                <th className="hidden @lg:table-cell">What it is</th>
-                <th className="text-right">
-                  <span className="sr-only">Open its records</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => {
-                const count = row.propertySchema?.fields?.length ?? 0;
-                return (
-                  <tr
-                    key={row.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      open(row, event);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      open(row, event);
-                    }}
-                  >
-                    <td className="font-medium">
-                      {row.labelPlural}
-                      {row.archivedAt ? (
-                        <Badge color="neutral" variant="soft" size="sm" className="ml-2">
-                          Put away
-                        </Badge>
-                      ) : null}
-                    </td>
-                    <td>
-                      {/* Built-in vs yours is a real distinction — one can be
-                          extended, the other can also be put away — so it wears
-                          a real color rather than a grey chip. */}
-                      <Badge
-                        color={row.kind === 'builtin' ? 'info' : 'module'}
-                        variant="soft"
-                        size="sm"
-                      >
-                        {row.kind === 'builtin'
-                          ? productCopy('crm.objectTypes.builtInBadge', 'Comes with sparx')
-                          : 'Yours'}
-                      </Badge>
-                    </td>
-                    <td className="text-right font-mono text-sm tabular-nums">
-                      {count === 0 ? '—' : count}
-                    </td>
-                    <td className="hidden text-sm @lg:table-cell">{row.description ?? '—'}</td>
-                    <td className="text-right">
-                      {row.kind === 'custom' && !row.archivedAt ? (
-                        <Button
-                          color="module"
-                          variant="soft"
-                          size="sm"
-                          aria-label={`Open the ${row.labelPlural.toLowerCase()}`}
-                          title="Open these records"
-                          onClick={(event) => {
-                            // Stop the row's own click — this opens the ROWS, the
-                            // row opens the TYPE, and landing on the wrong one is
-                            // the sort of thing somebody stops trusting a table for.
-                            event.stopPropagation();
-                            ctx.open(
-                              'crm.records.list',
-                              { objectKey: row.key },
-                              { target: targetFor(event) }
-                            );
-                          }}
-                        >
-                          Open
-                        </Button>
-                      ) : null}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
+        <ObjectTypesBody ctx={ctx} rows={rows} query={query} />
       </Card>
 
       <ListFooter shown={rows.length} count={null} hint="one to add the extra details you track" />

@@ -73,6 +73,11 @@ export interface WorkbenchTokenResponse {
    * caller's job to fall back rather than to render "undefined".
    */
   userName: string;
+  /** The signed-in address, and whether it is confirmed. Read by the
+   *  confirm-your-email band (sparx persona issue 157). Not a control either:
+   *  api-rest acts on the signed claim. */
+  email: string;
+  emailVerified: boolean;
 }
 
 export async function GET(): Promise<NextResponse> {
@@ -117,6 +122,8 @@ export async function GET(): Promise<NextResponse> {
     userId: session.user.id,
     role: session.user.role,
     userName: session.user.name ?? '',
+    email: session.user.email,
+    emailVerified: session.user.emailVerified,
   };
 
   // Never cache a bearer token — not in the browser, not at Cloudflare.

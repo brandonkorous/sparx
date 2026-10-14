@@ -44,6 +44,9 @@ import {
   DropdownMenuTrigger,
   Input,
   SearchInput,
+  Tabs,
+  TabsList,
+  TabsTab,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -409,8 +412,8 @@ function MediaPickerDialog({
             <DialogTitle>{multiple ? 'Choose pictures' : 'Choose a picture'}</DialogTitle>
             <DialogDescription>
               {multiple
-                ? 'Tap as many as you want. They are added in the order you tap them. Upload a new one, or pick from your library. Nothing is saved until you save the whole page.'
-                : 'Pick one from your library, or upload a new one. Your choice is not saved until you save the whole page.'}
+                ? 'Tap as many as you want. They are added in the order you tap them. Upload a new one, or pick from your library. Nothing is saved until you save your changes.'
+                : 'Pick one from your library, or upload a new one. Your choice is not saved until you save your changes.'}
             </DialogDescription>
           </div>
 
@@ -456,52 +459,33 @@ function MediaPickerDialog({
 
           {/* Groups: automatic (source, docs/49) + manual collections + a make-new.
               A source group and a collection are mutually exclusive selections. */}
-          <div
-            className="flex flex-wrap items-center gap-1"
-            role="tablist"
-            aria-label="Picture groups"
-          >
-            {MEDIA_GROUPS.map((g) => {
-              const active = !collectionId && group === g.filter;
-              return (
-                <Button
-                  key={g.label}
-                  size="sm"
-                  role="tab"
-                  aria-selected={active}
-                  variant={active ? 'soft' : 'ghost'}
-                  color={active ? 'module' : 'neutral'}
-                  onClick={() => {
-                    showSource(g.filter);
-                  }}
-                >
-                  {g.label}
-                </Button>
-              );
-            })}
-
-            {collectionList.length > 0 ? (
-              <span className="bg-base-300 mx-1 h-5 w-px" aria-hidden />
-            ) : null}
-            {collectionList.map((c) => {
-              const active = collectionId === c.id;
-              return (
-                <Button
-                  key={c.id}
-                  size="sm"
-                  role="tab"
-                  aria-selected={active}
-                  variant={active ? 'soft' : 'ghost'}
-                  color={active ? 'module' : 'neutral'}
-                  onClick={() => {
-                    showCollection(c.id);
-                  }}
-                >
-                  {c.name}
-                  <span className="opacity-60">{c.itemCount}</span>
-                </Button>
-              );
-            })}
+          {/* Groups: automatic (source, docs/49) and the owner's own albums, one tab
+              strip, so the arrows move along it and Tab leaves it in one press. It was a
+              row of buttons that each took a Tab stop (P09, issue 953). */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Tabs
+              variant="pills"
+              color="module"
+              value={collectionId ? `album:${collectionId}` : `group:${group ?? ''}`}
+              onValueChange={(value) => {
+                const picked = String(value);
+                if (picked.startsWith('album:')) showCollection(picked.slice('album:'.length));
+                else showSource(picked.slice('group:'.length) || undefined);
+              }}
+            >
+              <TabsList scrollable={false} aria-label="Picture groups">
+                {MEDIA_GROUPS.map((g) => (
+                  <TabsTab key={g.label} value={`group:${g.filter ?? ''}`}>
+                    {g.label}
+                  </TabsTab>
+                ))}
+                {collectionList.map((c) => (
+                  <TabsTab key={c.id} value={`album:${c.id}`}>
+                    {c.name} ({c.itemCount})
+                  </TabsTab>
+                ))}
+              </TabsList>
+            </Tabs>
 
             {creatingCollection ? (
               <Input
@@ -528,8 +512,6 @@ function MediaPickerDialog({
             ) : (
               <Button
                 size="sm"
-                variant="ghost"
-                color="neutral"
                 onClick={() => {
                   setCreatingCollection(true);
                 }}

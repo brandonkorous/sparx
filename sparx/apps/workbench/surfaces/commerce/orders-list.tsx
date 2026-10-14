@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, Banknote, ShoppingBag } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -178,10 +179,11 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<ShoppingBag className="size-6" aria-hidden />}
             title="Could not load your orders"
             description="This is a problem reaching the server. Your orders are unaffected. Nothing has been lost."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

@@ -64,6 +64,7 @@ import {
   type SerialRow,
 } from './lots-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 type Mode = 'lots' | 'serials';
 
@@ -147,7 +148,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
   });
 
   const active = mode === 'lots' ? lotsQuery : serialsQuery;
-  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = active;
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, error, refetch } = active;
   const rows = data?.items ?? [];
   const total = data?.total;
 
@@ -178,10 +179,11 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
     // that invites "I must have none of these".
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Layers className="size-6" aria-hidden />}
           title={mode === 'lots' ? 'Could not load your batches' : 'Could not load your serials'}
           description="This is a problem reaching the server. Your records are unaffected. They just could not be read just now."
+          error={error}
         />
       );
     }

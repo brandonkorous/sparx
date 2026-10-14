@@ -199,11 +199,11 @@ describe('the places a file is used, by name (issue 932)', () => {
       surface: 'commerce.product.detail',
       params: { id: 'x1' },
     });
-    expect(placeTarget(page)).toEqual({ surface: 'builder.page', params: { pageId: 'p1' } });
+    expect(placeTarget(page)).toEqual({ surface: 'builder.studio', params: { pageId: 'p1' } });
   });
 
   it('opens a header and footer in the site editor', () => {
-    expect(placeTarget(layout)).toEqual({ surface: 'builder.layout', params: {} });
+    expect(placeTarget(layout)).toEqual({ surface: 'builder.studio', params: { mode: 'layout' } });
     expect(placeLabel(layout)).toBe('Header and footer “Main” on Lookbook');
   });
 });

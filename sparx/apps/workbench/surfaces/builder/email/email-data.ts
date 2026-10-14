@@ -19,6 +19,7 @@ import { apiErrorMessage } from '../../../lib/api-error';
 import type { EmailColorDefaults, EmailFrame } from '@wizeworks/silicaui-builder/email';
 import type { PresentationOverlayV2, TenantBrandColumns } from '@wizeworks/site-themes';
 import { api } from '../../../lib/api/client';
+import { emailKeys } from '../../email/broadcasts-data';
 
 /** One email design, exactly as `/v1/builder/emails` returns it. `silicaDoc` is the
  *  DRAFT document the composer edits; it is opaque here (the composer types it as a
@@ -106,6 +107,10 @@ function useInvalidate() {
   const queryClient = useQueryClient();
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: EMAILS_KEY });
+    // The campaign composer's "Designed email" picker too: it sits open beside the
+    // designer and never remounts, so an email published here went on reading
+    // "(draft, not published)" there (Piggles persona P09).
+    void queryClient.invalidateQueries({ queryKey: emailKeys.designed });
     if (id) void queryClient.invalidateQueries({ queryKey: ['builder', 'emails', id] });
   };
 }
@@ -122,11 +127,14 @@ export function useCreateEmail() {
   });
 }
 
-export function useRenameEmail(id: string) {
+/** Rename an email, named by id at the moment of the rename: never bound to
+ *  whichever email the designer shows (sparx persona issue 153). */
+export function useRenameEmail() {
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (name: string) => api.patch<EmailDesign>(`/v1/builder/emails/${id}`, { name }),
-    onSuccess: () => {
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      api.patch<EmailDesign>(`/v1/builder/emails/${id}`, { name }),
+    onSuccess: (_email, { id }) => {
       invalidate(id);
     },
   });
@@ -187,6 +195,9 @@ export function usePublishEmail(id: string) {
 export function usePreviewEmail(id: string) {
   return useMutation({
     mutationFn: () => api.get<EmailPreview>(`/v1/builder/emails/${id}/preview`),
+    // Builds a preview; saves nothing. Without this the status bar's "Saved just now"
+    // moved on every Preview, an untouched email included (sparx persona issue 152).
+    meta: { running: 'build the preview' },
   });
 }
 
@@ -305,6 +316,7 @@ export function useSendEmailTest(id: string) {
   return useMutation({
     mutationFn: (to: string) =>
       api.post<{ queued: boolean; to: string }>(`/v1/builder/emails/${id}/test-send`, { to }),
+    meta: { running: 'send the test email' },
   });
 }
 

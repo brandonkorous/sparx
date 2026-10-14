@@ -1,41 +1,12 @@
 'use client';
 
-// ONE BOOKING, opened from the diary — a quick-look MODAL over the calendar.
-//
-// ── Why a modal, not a pane ───────────────────────────────────────────────
-//
-// Clicking a block on the calendar is the operator running the day, not editing
-// a record. A pane would split or (on compact) fully take over the grid — the
-// fifth "don't break their context" test rules a pane OUT here, because the whole
-// point is to glance at a booking WITHOUT losing sight of the week around it. The
-// modal floats over the diary, which stays live behind it.
-//
-// It holds NO server-uncommitted draft: every move — reschedule, confirm, check
-// in, complete, cancel, no-show — is a direct mutation or a named confirm, so the
-// app's unsaved-work safety net isn't bypassed (there is nothing to lose on
-// abandon). The one thing that IS a durable place you return to — the full,
-// editable booking with its notes and parts — stays a pane, reached from the
-// "Open full booking" button here.
-//
-// ── Structure ─────────────────────────────────────────────────────────────
-//
-// Deliberately the SAME shape as the full booking pane (bookings-detail.tsx), so
-// the two never read as different features: a header that states identity + when +
-// who + status; then grouped sections for the substantive parts (Move it, Change
-// history). Actions fall into four consistent roles, each in one place — the
-// primary lifecycle step (module, solid), Move (module, outline, exactly as the
-// pane), the two destructive moves (ghost, semantic — kept apart at the bottom),
-// and the footer's dismiss + hand-off. No ad-hoc dividers, no button zoo.
-//
-// This file owns the SHAPE. What a booking looks like is calendar-booking-parts,
-// what can be done to it is calendar-booking-actions;
-// what the modal knows and does is calendar-booking-state; the wording of the two
-// confirms is booking-endings-copy, shared with the full pane so a fix to either
-// question can never again land on only one of them (issue 142).
-//
-// Every move refreshes the diary the moment it lands (the calendar mutations
-// invalidate the range), so the block on the grid behind the modal is never
-// stale, and the modal's own read re-reflects the new time.
+// ONE BOOKING, opened from the diary: a quick-look MODAL, not a pane, because the
+// point is to glance at a booking WITHOUT losing sight of the week behind it. It
+// holds no draft: every move is a direct mutation or a named confirm.
+
+// Same shape as the full booking pane (bookings-detail.tsx): header, grouped
+// sections, then actions in four fixed roles. Parts, actions, state and the confirm
+// wording (booking-endings-copy, issue 142) each live in their own sibling file.
 
 import {
   Alert,
@@ -59,9 +30,10 @@ import { useCalendarBooking } from './calendar-booking-state';
 import { EndingsRow, LifecycleRow, MoveSection } from './calendar-booking-actions';
 import { ModalHeader, Section } from './calendar-booking-parts';
 import { SaveFailure } from '@/components/save-failure';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 interface CalendarBookingModalProps {
-  /** The booking to show, or null when nothing is selected (modal closed). */
+  // The booking to show, or null when nothing is selected (modal closed).
   bookingId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -103,31 +75,21 @@ function ModalBody({
   ctx: SurfaceContext;
   onClose: () => void;
 }) {
-  const { data: booking, isPending, isError, refetch } = useBooking(bookingId);
+  const { data: booking, isPending, isError, error, refetch } = useBooking(bookingId);
 
   if (isError) {
     return (
       <div className="flex flex-col gap-4">
         <DialogTitle className="text-xl font-semibold">Booking</DialogTitle>
-        <Alert color="error">
-          <AlertContent>
-            <AlertTitle>Could not load this booking</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server, or the booking no longer exists. Your diary is
-              unaffected.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="error"
-            variant="soft"
-            onClick={() => {
-              void refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
+        <PaneLoadError
+          title="Could not load this booking"
+          description="This is a problem reaching the server, or the booking no longer exists. Your diary is unaffected."
+          error={error}
+          noun="booking"
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       </div>
     );
   }
@@ -155,11 +117,8 @@ function LoadedModal({
   ctx: SurfaceContext;
   onClose: () => void;
 }) {
-  const state = useCalendarBooking(booking);
-
   const openFullBooking = () => {
-    // The deep, durable place — notes, parts, everything. Close the quick-look and
-    // hand off to its own pane.
+    // The deep, durable place: close the quick-look and hand off to its own pane.
     onClose();
     ctx.open('scheduling.bookings.detail', { id: booking.id });
   };
@@ -167,54 +126,10 @@ function LoadedModal({
   return (
     <>
       <ModalHeader booking={booking} />
-
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
-        <SaveFailure title="That did not go through" message={state.actionError} />
-
-        {booking.status === 'cancelled' && booking.cancellationReason ? (
-          <Alert color="error">
-            <AlertContent>
-              <AlertTitle>Canceled</AlertTitle>
-              <AlertDescription>{booking.cancellationReason}</AlertDescription>
-            </AlertContent>
-          </Alert>
-        ) : null}
-
-        <LifecycleRow
-          moves={state.moves}
-          busy={state.busy}
-          anyPending={state.anyPending}
-          act={state.act}
-        />
-
-        {state.moves.reschedule ? (
-          <MoveSection
-            when={state.when}
-            clock={state.whenClock}
-            setWhen={state.setWhen}
-            canMove={state.canMove}
-            busy={state.busy.reschedule}
-            onMove={state.act.move}
-          />
-        ) : null}
-
-        {/* Change history — the old versions the booking row no longer keeps. */}
-        <Section title="Change history">
-          <BookingTimeline bookingId={booking.id} timezone={booking.timezone} />
-        </Section>
-
-        <EndingsRow
-          moves={state.moves}
-          busy={state.busy}
-          anyPending={state.anyPending}
-          act={state.act}
-        />
-      </div>
-
+      <LoadedModalSections booking={booking} />
       <DialogFooter>
-        {/* The dismiss half of the pair, COLORLESS: a bare `.btn` resolves to
-            `base-content` and is theme-correct without naming `neutral`, which is
-            not mine to choose (root RULE #4). */}
+        {/* The dismiss half, COLORLESS: a bare `.btn` is theme-correct without naming
+            `neutral`, which is not mine to choose (root RULE #4). */}
         <Button size="sm" onClick={onClose}>
           Close
         </Button>
@@ -224,6 +139,54 @@ function LoadedModal({
         </Button>
       </DialogFooter>
     </>
+  );
+}
+
+function LoadedModalSections({ booking }: { booking: Booking }) {
+  const state = useCalendarBooking(booking);
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2 [&>*]:shrink-0">
+      <SaveFailure title="That did not go through" message={state.actionError} />
+
+      {booking.status === 'cancelled' && booking.cancellationReason ? (
+        <Alert color="error">
+          <AlertContent>
+            <AlertTitle>Canceled</AlertTitle>
+            <AlertDescription>{booking.cancellationReason}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
+      <LifecycleRow
+        moves={state.moves}
+        busy={state.busy}
+        anyPending={state.anyPending}
+        act={state.act}
+      />
+
+      {state.moves.reschedule ? (
+        <MoveSection
+          when={state.when}
+          clock={state.whenClock}
+          setWhen={state.setWhen}
+          canMove={state.canMove}
+          busy={state.busy.reschedule}
+          onMove={state.act.move}
+        />
+      ) : null}
+
+      {/* Change history: the old versions the booking row no longer keeps. */}
+      <Section title="Change history">
+        <BookingTimeline bookingId={booking.id} timezone={booking.timezone} />
+      </Section>
+
+      <EndingsRow
+        moves={state.moves}
+        busy={state.busy}
+        anyPending={state.anyPending}
+        act={state.act}
+      />
+    </div>
   );
 }
 

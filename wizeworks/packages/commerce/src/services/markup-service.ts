@@ -25,13 +25,13 @@ import {
   type MarkupRuleSpec,
   type RoundingSpec,
 } from '@wizeworks/commerce-schemas';
-import { Prisma, withTenant } from '@wizeworks/db';
+import { afterCommit, Prisma, withTenant } from '@wizeworks/db';
 import type { MarkupRule } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishCommerceEvent } from '../events';
+import { indexCommerceEntity, publishCommerceEvent } from '../events';
 
 // Hard cap on how many variants a single apply/preview touches in one pass.
 // Larger catalogs route through the Phase 4 recompute worker.
@@ -148,6 +148,10 @@ export async function createRule(ctx: ServiceContext, rawInput: unknown): Promis
     return created;
   });
 
+  // Queued, not fired: a caller may have composed this into its own open transaction.
+  await afterCommit(`index markup_rule ${row.id}`, () =>
+    indexCommerceEntity(ctx, 'markup_rule', row.id)
+  );
   return serializeRule(row);
 }
 
@@ -180,6 +184,7 @@ export async function updateRule(
     return updated;
   });
 
+  await afterCommit(`index markup_rule ${id}`, () => indexCommerceEntity(ctx, 'markup_rule', id));
   return serializeRule(row);
 }
 
@@ -201,6 +206,9 @@ export async function deleteRule(ctx: ServiceContext, id: string): Promise<void>
       diff: { before: { name: before.name } },
     });
   });
+  await afterCommit(`index markup_rule ${id}`, () =>
+    indexCommerceEntity(ctx, 'markup_rule', id, 'delete')
+  );
 }
 
 // ─── Single-variant bind / unbind (the variant editor "Price by rule") ──
@@ -253,7 +261,11 @@ export async function bindVariant(
       },
     });
 
-    return { productId: variant.productId, result: priced.result };
+    return {
+      productId: variant.productId,
+      result: priced.result,
+      previousRuleId: variant.markupRuleId,
+    };
   });
 
   await publishCommerceEvent({
@@ -262,6 +274,16 @@ export async function bindVariant(
     topic: 'variant.updated',
     data: { variantId, productId: out.productId, change: 'price' },
   });
+  // A rule's entry can show what it prices, so both ends of a rebind are re-read.
+  await afterCommit(`index markup_rule ${ruleId}`, () =>
+    indexCommerceEntity(ctx, 'markup_rule', ruleId)
+  );
+  const previousRuleId = out.previousRuleId;
+  if (previousRuleId && previousRuleId !== ruleId) {
+    await afterCommit(`index markup_rule ${previousRuleId}`, () =>
+      indexCommerceEntity(ctx, 'markup_rule', previousRuleId)
+    );
+  }
 
   return { variantId, priceCents: out.result.priceCents, result: out.result };
 }
@@ -272,7 +294,9 @@ export async function unbindVariant(ctx: ServiceContext, variantId: string): Pro
       where: { id: variantId, deletedAt: null },
     });
     if (!variant) throw new CommerceNotFoundError('Variant', variantId);
-    if (variant.markupRuleId == null) return { productId: variant.productId };
+    if (variant.markupRuleId == null) {
+      return { productId: variant.productId, previousRuleId: null as string | null };
+    }
 
     await tx.productVariant.update({
       where: { id: variantId },
@@ -288,7 +312,7 @@ export async function unbindVariant(ctx: ServiceContext, variantId: string): Pro
       entityId: variantId,
       diff: { before: { markupRuleId: variant.markupRuleId }, after: { markupRuleId: null } },
     });
-    return { productId: variant.productId };
+    return { productId: variant.productId, previousRuleId: variant.markupRuleId };
   });
 
   await publishCommerceEvent({
@@ -297,6 +321,12 @@ export async function unbindVariant(ctx: ServiceContext, variantId: string): Pro
     topic: 'variant.updated',
     data: { variantId, productId: out.productId, change: 'pricing_detached' },
   });
+  const previousRuleId = out.previousRuleId;
+  if (previousRuleId) {
+    await afterCommit(`index markup_rule ${previousRuleId}`, () =>
+      indexCommerceEntity(ctx, 'markup_rule', previousRuleId)
+    );
+  }
 }
 
 // ─── Single-variant margin (read) ──────────────────────────────────────
@@ -456,6 +486,7 @@ export async function applyRule(
     let applied = 0;
     let skipped = 0;
     const touchedProducts = new Set<string>();
+    const displacedRules = new Set<string>();
 
     for (const v of variants) {
       const priced = priceVariant(v, rule, supplier);
@@ -473,6 +504,7 @@ export async function applyRule(
       });
       applied += 1;
       touchedProducts.add(v.productId);
+      if (v.markupRuleId && v.markupRuleId !== rule.id) displacedRules.add(v.markupRuleId);
     }
 
     for (const productId of touchedProducts) {
@@ -490,9 +522,22 @@ export async function applyRule(
       diff: { after: { applied, skipped, scope } },
     });
 
-    return { applied, skipped, capped, touchedProducts: [...touchedProducts] };
+    return {
+      applied,
+      skipped,
+      capped,
+      touchedProducts: [...touchedProducts],
+      displacedRules: [...displacedRules],
+    };
   });
 
+  // The applied rule and every rule it took variants from are re-read.
+  await afterCommit(`index markup_rule ${id}`, () => indexCommerceEntity(ctx, 'markup_rule', id));
+  for (const displacedId of out.displacedRules) {
+    await afterCommit(`index markup_rule ${displacedId}`, () =>
+      indexCommerceEntity(ctx, 'markup_rule', displacedId)
+    );
+  }
   // Reindex each touched product (carries the price range) off the bus.
   for (const productId of out.touchedProducts) {
     await publishCommerceEvent({

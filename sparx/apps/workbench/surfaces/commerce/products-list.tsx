@@ -28,7 +28,6 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
   Table,
 } from '@wizeworks/silicaui-react';
@@ -39,6 +38,8 @@ import { useListSelection } from '../../lib/workbench/selection';
 import { ProductsBulkActions } from './products-bulk-actions';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { loadFailureWords } from '../../lib/api-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -334,8 +335,10 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not check for changes just now</AlertTitle>
               <AlertDescription>
-                This is a problem reaching the server. The products below are what loaded last, and
-                may be out of date.
+                {loadFailureWords(
+                  error,
+                  'This is a problem reaching the server. The products below are what loaded last, and may be out of date.'
+                )}
               </AlertDescription>
             </AlertContent>
             <Button
@@ -389,21 +392,14 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           // A failed load REPLACES the table rather than rendering an empty one:
           // "No products yet" over a connection failure is a lie about the
           // catalog, and the worst possible one to tell someone.
-          <EmptyState
+          <PaneLoadError
             icon={<Package className="size-6" aria-hidden />}
             title="Could not load your products"
             description="This is a problem reaching the server. Your catalog is unaffected. Nothing has been lost."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            error={error}
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

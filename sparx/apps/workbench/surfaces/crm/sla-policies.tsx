@@ -134,7 +134,7 @@ function WorkingTime({ raw }: { raw: string }) {
 /* ── Surface ────────────────────────────────────────────────────────────── */
 
 export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data, isPending, isError, refetch } = useSlaPolicies();
+  const { data, isPending, isError, error, refetch } = useSlaPolicies();
   // Memoised because the `?? []` would otherwise mint a new array every render,
   // which is enough to re-run the lookup below on every keystroke elsewhere in
   // the pane.
@@ -174,6 +174,7 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneLoadError
         title="Could not load your response times"
         description="Something went wrong reaching the server. Nothing has been changed."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

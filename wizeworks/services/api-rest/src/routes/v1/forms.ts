@@ -4,7 +4,7 @@
 //   GET    /v1/forms/definitions/:id    → one form's settings
 //   PUT    /v1/forms/definitions/:id    → save one form's settings
 //   GET    /v1/forms/submissions        → list (THIS SITE, newest first) + counts
-//   GET    /v1/forms/submissions/:id    → one submission
+//   GET    /v1/forms/submissions/:id    → one submission, with the customer it is from
 //   GET    /v1/forms/submissions/:id/attachments/:index → download an attachment
 //   PATCH  /v1/forms/submissions/:id    → set status (read | spam | archived | new)
 //   DELETE /v1/forms/submissions/:id    → remove
@@ -23,11 +23,56 @@ import { z } from 'zod';
 import { formDefinitionService, formService } from '@wizeworks/builder';
 import { ok } from '@wizeworks/api-core/envelope';
 import { badRequest, notFound } from '@wizeworks/api-core/errors';
-import { requireRole } from '@wizeworks/api-core/auth';
+import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
+import { isModuleEnabled } from '@wizeworks/auth';
+import { customerService } from '@wizeworks/crm';
 import { requireBuilderModule, toBuilderContext } from '../../lib/builder-context.js';
 import { getStorage } from '../../lib/storage.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
+
+/**
+ * Who a submission is from, when that is somebody on file (sparx persona issue 162).
+ * `record`: the submission is linked to them. `email`: nothing links it, but the
+ * address it carries is a customer's on its site (a strong hint, not proof, so it
+ * is shown and never written). Null without CRM, or when nobody matches. It is what
+ * lets a contact-form message be answered from sparx, on that customer's record,
+ * instead of only from the owner's own mail program.
+ */
+export interface SubmissionCustomer {
+  id: string;
+  name: string;
+  email: string | null;
+  match: 'record' | 'email';
+}
+
+async function submissionCustomer(
+  request: Parameters<typeof requireAuth>[0],
+  submission: { customerId: string | null; email: string | null; propertyId: string | null }
+): Promise<SubmissionCustomer | null> {
+  const auth = requireAuth(request);
+  if (!(await isModuleEnabled(auth.tenantId, 'crm'))) return null;
+  const ctx = { tenantId: auth.tenantId, userId: auth.actorId };
+  const linked = submission.customerId
+    ? await customerService.get(ctx, submission.customerId).catch(() => null)
+    : null;
+  const customer =
+    linked ??
+    (submission.email
+      ? await customerService.findByEmail(ctx, submission.email, submission.propertyId)
+      : null);
+  if (!customer) return null;
+  const fullName = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+  return {
+    id: customer.id,
+    name:
+      [fullName, customer.companyName, customer.email].find(
+        (part): part is string => typeof part === 'string' && part.trim() !== ''
+      ) ?? 'Customer',
+    email: customer.email,
+    match: linked ? 'record' : 'email',
+  };
+}
 const AttachmentParams = z.object({
   id: z.string().uuid(),
   index: z.coerce.number().int().min(0).max(99),
@@ -132,7 +177,8 @@ const formsRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const submission = await formService.getSubmission(await toBuilderContext(request), id);
-    return ok(stripAttachmentKeys(submission));
+    const customer = await submissionCustomer(request, submission);
+    return ok({ ...stripAttachmentKeys(submission), customer });
   });
 
   app.get('/v1/forms/submissions/:id/attachments/:index', async (request, reply) => {

@@ -1,32 +1,16 @@
 'use client';
 
-// REPORTS — what your stock is worth, what is sitting still, and how fast it moves.
-//
-// ── A reporting surface, not a list ──────────────────────────────────────
-//
-// There is nothing to create, open or narrow to a row here. It answers three
-// questions an owner actually asks about the money tied up in stock, each with
-// the headline figure large and the detail underneath: what it is worth, what
-// is gathering dust, and how fast it turns over. So it is stat cards over a
-// couple of quiet tables in one capped, centred column — never a grid of rows.
-//
-// ── Every figure is worked out on the SERVER ─────────────────────────────
-//
-// Valuation, turnover and ageing are sums over the whole of your stock and the
-// movement ledger. The selling period and the location are server params, so
-// the answer is always about ALL of your stock — not the rows that happened to
-// load. Filtering a report in the browser would answer a question about a
-// handful of items and present it as the whole picture.
-//
-// ── No charting library ──────────────────────────────────────────────────
-//
-// The one visual — a share bar beside each ageing band and each location — is
-// built from a fixed set of Tailwind width classes, not an inline width and not
-// a chart dependency. One series, no axes: pulling in a library to draw a few
-// rectangles would be the tail wagging the dog.
-//
-// This file owns the filters and the routing. The cards are the sibling
-// reports-* files; the column that assembles them is reports-column.
+// REPORTS: what your stock is worth, what is sitting still, and how fast it moves.
+// A reporting surface, not a list: stat cards over a couple of quiet tables in one
+// capped, centered column. There is nothing to create, open or narrow to a row.
+
+// Every figure is worked out on the SERVER over ALL of your stock and the movement
+// ledger; period and location are server params. Filtering in the browser would
+// present a handful of items as the whole picture.
+
+// No charting library: the share bars are a fixed set of Tailwind width classes.
+// This file owns the filters and the routing; the cards are the reports-* siblings,
+// assembled by reports-column.
 
 import { useMemo, useState } from 'react';
 import { PANE_SHELL } from '../../components/pane-toolbar';
@@ -52,7 +36,7 @@ function ReportsBody({
   locationId: string;
   locationName: string | null;
 }) {
-  if (q.summary.isError) return <ReportsLoadFailed />;
+  if (q.summary.isError) return <ReportsLoadFailed error={q.summary.error} />;
   if (q.summary.isPending) return <InlineWaiting label="Working out your figures…" />;
 
   // `isPending` is a boolean, not the query's discriminant, so TypeScript does

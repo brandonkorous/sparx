@@ -36,8 +36,11 @@ import { PlatformMark } from '../../components/platform-mark';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { AccountAvatar } from './post-visuals';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
+import { useReaderClock } from '../../lib/business-timezone';
+import { onClock } from '../../lib/publish-clock';
 import { SaveFailure } from '@/components/save-failure';
 import {
   canApprove,
@@ -169,6 +172,10 @@ function ConnectionCard({
 }) {
   const state = connectionStatusMeta(connection.status);
   const enabledCount = connection.targets.filter((t) => t.enabled).length;
+  // "3 days ago" belongs to no clock, but its hover names the moment, and that is on the
+  // business's clock, not this computer's (piggles persona issue 990).
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   return (
     <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
@@ -194,7 +201,12 @@ function ConnectionCard({
             </Badge>
           </div>
           <Text className="text-sm">
-            {name} · connected <Timestamp value={connection.connectedAt} format="relative" />
+            {name} · connected{' '}
+            <Timestamp
+              value={connection.connectedAt}
+              format="relative"
+              title={onClock(connection.connectedAt, clock)}
+            />
           </Text>
         </div>
         {canManage ? (
@@ -616,24 +628,14 @@ export function SocialConnectionsSurface() {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           {overview.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<Share2 className="size-6" aria-hidden />}
               title="Could not load your connections"
-              description={socialErrorMessage(
-                overview.error,
-                'This is a problem reaching the server. Your connected accounts are unaffected.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void overview.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Your connected accounts are unaffected."
+              error={overview.error}
+              onRetry={() => {
+                void overview.refetch();
+              }}
             />
           ) : overview.isPending || !data ? (
             <p className="text-sm" role="status">

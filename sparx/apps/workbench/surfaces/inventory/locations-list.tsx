@@ -26,11 +26,12 @@
 // mistyped is the worse of the mistakes, so the narrowed case says so instead.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { Plus, Warehouse } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -75,7 +76,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isFetching, dataUpdatedAt, isError, refetch } = useLocations({
+  const { data, isPending, isFetching, dataUpdatedAt, isError, error, refetch } = useLocations({
     q: search.trim(),
     ...(type ? { type } : {}),
     includeClosed,
@@ -112,21 +113,14 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     // which invites someone to conclude they have no locations.
     if (isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Warehouse className="size-6" aria-hidden />}
           title="Could not load your locations"
           description="This is a problem reaching the server. Your locations are unaffected: the list just could not be read just now."
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                void refetch();
-              }}
-            >
-              Try again
-            </Button>
-          }
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
         />
       );
     }

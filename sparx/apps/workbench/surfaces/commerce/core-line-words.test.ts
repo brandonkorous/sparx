@@ -17,6 +17,7 @@ import {
   coresSummary,
   depositBackText,
   moveLabel,
+  receiveCoreWords,
 } from './core-line-words';
 import type { OrderItem } from './data';
 
@@ -30,6 +31,7 @@ function core(over: Partial<CoreLine>): CoreLine {
     depositCents: 15000,
     coreFirst: false,
     owed: 1,
+    outstanding: 1,
     waiting: 0,
     released: false,
     ...over,
@@ -57,6 +59,7 @@ function owedRow(over: Partial<CoreOwed>): CoreOwed {
     coresReturned: 0,
     coresKept: 0,
     owedCents: 15000,
+    openInvoice: null,
     daysOut: 3,
     currency: 'USD',
     ...over,
@@ -121,6 +124,88 @@ describe('the Cores owed list', () => {
   });
 });
 
+describe('cores on parts not handed over yet (sparx persona issue 184)', () => {
+  it('does not say a core is owed for a part still on the shelf', () => {
+    expect(coreBadges(core({ owed: 6, outstanding: 0 }))).toEqual([
+      { label: '6 cores due once handed over', tone: 'info' },
+    ]);
+  });
+
+  it('splits a part-sent line into owed now and due later', () => {
+    expect(coreBadges(core({ owed: 6, outstanding: 2 }))).toEqual([
+      { label: '2 cores still owed', tone: 'warning' },
+      { label: '4 cores due once handed over', tone: 'info' },
+    ]);
+  });
+
+  it('still says owed once every part is handed over', () => {
+    expect(coreBadges(core({ owed: 2, outstanding: 2 }))).toEqual([
+      { label: '2 cores still owed', tone: 'warning' },
+    ]);
+  });
+});
+
+describe('a deposit that sits on an unpaid invoice (sparx persona issue 183)', () => {
+  const inv = { number: 'INV-000001', balanceCents: 67_800 };
+
+  it('names the invoice in the list instead of an amount to give back', () => {
+    expect(depositBackText(owedRow({ openInvoice: inv }))).toBe('$150.00 off INV-000001');
+  });
+
+  it('splits the list total into invoice credit and money given back', () => {
+    const rows = [
+      owedRow({ openInvoice: inv }),
+      owedRow({ orderItemId: 'line-2', orderId: 'order-2' }),
+    ];
+    expect(coresSummary(rows, 200)).toBe(
+      '2 cores owed on 2 order lines. If every deposit came back, $150.00 would come off open invoices and you would give back $150.00.'
+    );
+  });
+
+  it('lets two lines on one order share what its invoice still owes', () => {
+    const shared = { number: 'INV-000020', balanceCents: 20_000 };
+    const rows = [
+      owedRow({ openInvoice: shared }),
+      owedRow({ orderItemId: 'line-2', openInvoice: shared }),
+    ];
+    expect(coresSummary(rows, 200)).toBe(
+      '2 cores owed on 2 order lines. If every deposit came back, $200.00 would come off open invoices and you would give back $100.00.'
+    );
+  });
+
+  it('takes the deposit off the invoice, and says so before the click', () => {
+    const w = receiveCoreWords(core({}), { usable: 1, unusable: 0, invoice: inv });
+    expect(w.description).toContain('off invoice INV-000001');
+    expect(w.description).not.toContain('If this order');
+    expect(w.submitLabel).toBe('Take $150.00 off INV-000001');
+    expect(w.submitColor).toBe('module');
+    expect(w.asksWhereMoneyGoes).toBe(false);
+  });
+
+  it('gives back only what the invoice cannot take', () => {
+    const w = receiveCoreWords(core({ owed: 6 }), {
+      usable: 6,
+      unusable: 0,
+      invoice: { number: 'INV-000003', balanceCents: 30_000 },
+    });
+    expect(w.submitLabel).toBe('Take $300.00 off INV-000003, give back $600.00');
+    expect(w.submitColor).toBe('danger');
+    expect(w.asksWhereMoneyGoes).toBe(true);
+  });
+
+  it('gives the deposit back when no invoice is open', () => {
+    const w = receiveCoreWords(core({}), { usable: 1, unusable: 0, invoice: null });
+    expect(w.submitLabel).toBe('Give back $150.00');
+    expect(w.asksWhereMoneyGoes).toBe(true);
+  });
+
+  it('claims nothing until it knows whether an invoice is open', () => {
+    const w = receiveCoreWords(core({}), { usable: 1, unusable: 0, invoice: undefined });
+    expect(w.ready).toBe(false);
+    expect(w.submitLabel).not.toContain('Give back');
+  });
+});
+
 describe('the line under a send-first part', () => {
   const item = (over: Partial<OrderItem>): OrderItem =>
     ({
@@ -143,5 +228,18 @@ describe('the line under a send-first part', () => {
     expect(coreSummary(item({ coreHoldReleasedAt: '2026-10-01T21:30:00Z' }), 'USD')).toBe(
       'Old part first, no deposit. You chose not to wait for it.'
     );
+  });
+});
+
+describe('the core dialog uses the invoice words (sparx persona issue 183)', () => {
+  it('words itself from receiveCoreWords, never the old hedge', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { fileURLToPath } = await import('node:url');
+    const source = readFileSync(
+      fileURLToPath(new URL('./order-cores.tsx', import.meta.url)),
+      'utf8'
+    );
+    expect(source).toContain('receiveCoreWords(line, { usable: good, unusable: bad, invoice })');
+    expect(source).not.toContain('If this order has an invoice still open');
   });
 });

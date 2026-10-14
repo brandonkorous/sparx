@@ -46,7 +46,40 @@ interface ColumnDef {
   kind: ColumnKind;
   /** What a person calls it. */
   label: string;
+  /** For an id: where the thing it points at keeps its name. */
+  names?: NameSource;
 }
+
+/**
+ * Where the NAME of an id lives (persona issue 247).
+ *
+ * The compiler reads one table and plans no joins, so a breakdown by stage or
+ * owner came back as raw ids, and a report sparx ships drew bars labeled
+ * `d516b43-95d3-…`. A grouped id is named AFTER the rows are in, by a second
+ * lookup over the ids that came back. Table and expression are static, like the
+ * column map: nothing here comes from a definition.
+ */
+export interface NameSource {
+  table: string;
+  /** SQL naming the row, written here and never from input. */
+  name: string;
+}
+
+const NAMES = {
+  stage: { table: 'pipeline_stages', name: '"name"' },
+  pipeline: { table: 'pipelines', name: '"name"' },
+  person: { table: 'users', name: `COALESCE(NULLIF(TRIM("name"), ''), "email")` },
+  company: { table: 'companies', name: '"company_name"' },
+  priceLevel: { table: 'b2b_pricing_tiers', name: '"name"' },
+  customer: {
+    table: 'customers',
+    name: `COALESCE(NULLIF(TRIM(CONCAT_WS(' ', "first_name", "last_name")), ''), "email")`,
+  },
+  deal: { table: 'deals', name: '"title"' },
+  request: { table: 'crm_tickets', name: '"subject"' },
+  task: { table: 'tasks', name: '"title"' },
+  record: { table: 'crm_records', name: '"title"' },
+} satisfies Record<string, NameSource>;
 
 interface ObjectSource {
   table: string;
@@ -97,7 +130,7 @@ const SOURCES: Record<string, ObjectSource> = {
     label: 'Customer',
     labelPlural: 'Customers',
     columns: {
-      id: { column: 'id', kind: 'uuid', label: 'Customer' },
+      id: { column: 'id', kind: 'uuid', label: 'Customer', names: NAMES.customer },
       type: { column: 'type', kind: 'text', label: 'Kind of customer' },
       lifecycleStage: { column: 'lifecycle_stage', kind: 'text', label: 'Stage' },
       leadStatus: { column: 'lead_status', kind: 'text', label: 'Lead status' },
@@ -112,8 +145,18 @@ const SOURCES: Record<string, ObjectSource> = {
       // rows. [[feedback_one_outcome_two_causes]]
       company: { column: 'company_name', kind: 'text', label: 'Company name' },
       jobTitle: { column: 'job_title', kind: 'text', label: 'Job title' },
-      assignedRepId: { column: 'assigned_rep_id', kind: 'uuid', label: 'Owner' },
-      companyId: { column: 'company_id', kind: 'uuid', label: 'Linked company' },
+      assignedRepId: {
+        column: 'assigned_rep_id',
+        kind: 'uuid',
+        label: 'Owner',
+        names: NAMES.person,
+      },
+      companyId: {
+        column: 'company_id',
+        kind: 'uuid',
+        label: 'Linked company',
+        names: NAMES.company,
+      },
       doNotContact: { column: 'do_not_contact', kind: 'boolean', label: 'Do not contact' },
       totalSpent: { column: 'total_spent', kind: 'currency', label: 'Lifetime spend' },
       orderCount: { column: 'order_count', kind: 'number', label: 'Orders' },
@@ -132,12 +175,22 @@ const SOURCES: Record<string, ObjectSource> = {
     label: 'Company',
     labelPlural: 'Companies',
     columns: {
-      id: { column: 'id', kind: 'uuid', label: 'Company' },
+      id: { column: 'id', kind: 'uuid', label: 'Company', names: NAMES.company },
       companyName: { column: 'company_name', kind: 'text', label: 'Name' },
       status: { column: 'status', kind: 'text', label: 'Standing' },
       website: { column: 'website', kind: 'text', label: 'Website' },
-      assignedRepId: { column: 'assigned_rep_id', kind: 'uuid', label: 'Owner' },
-      pricingTierId: { column: 'pricing_tier_id', kind: 'uuid', label: 'Price level' },
+      assignedRepId: {
+        column: 'assigned_rep_id',
+        kind: 'uuid',
+        label: 'Owner',
+        names: NAMES.person,
+      },
+      pricingTierId: {
+        column: 'pricing_tier_id',
+        kind: 'uuid',
+        label: 'Price level',
+        names: NAMES.priceLevel,
+      },
       paymentTerms: { column: 'payment_terms', kind: 'text', label: 'Payment terms' },
       creditLimit: { column: 'credit_limit', kind: 'currency', label: 'Credit limit' },
       creditUsed: { column: 'credit_used', kind: 'currency', label: 'Credit used' },
@@ -156,16 +209,21 @@ const SOURCES: Record<string, ObjectSource> = {
     label: 'Deal',
     labelPlural: 'Deals',
     columns: {
-      id: { column: 'id', kind: 'uuid', label: 'Deal' },
+      id: { column: 'id', kind: 'uuid', label: 'Deal', names: NAMES.deal },
       title: { column: 'title', kind: 'text', label: 'Name' },
       value: { column: 'value', kind: 'currency', label: 'Value' },
       currency: { column: 'currency', kind: 'text', label: 'Currency' },
       source: { column: 'source', kind: 'text', label: 'Source' },
       probability: { column: 'probability', kind: 'number', label: 'Probability' },
       closedReason: { column: 'closed_reason', kind: 'text', label: 'Why it closed' },
-      stageId: { column: 'stage_id', kind: 'uuid', label: 'Stage' },
-      pipelineId: { column: 'pipeline_id', kind: 'uuid', label: 'Pipeline' },
-      assignedRepId: { column: 'assigned_rep_id', kind: 'uuid', label: 'Owner' },
+      stageId: { column: 'stage_id', kind: 'uuid', label: 'Stage', names: NAMES.stage },
+      pipelineId: { column: 'pipeline_id', kind: 'uuid', label: 'Pipeline', names: NAMES.pipeline },
+      assignedRepId: {
+        column: 'assigned_rep_id',
+        kind: 'uuid',
+        label: 'Owner',
+        names: NAMES.person,
+      },
       createdAt: { column: 'created_at', kind: 'date', label: 'Opened' },
       closedAt: { column: 'closed_at', kind: 'date', label: 'Closed' },
       expectedCloseDate: {
@@ -184,12 +242,17 @@ const SOURCES: Record<string, ObjectSource> = {
     label: 'Request',
     labelPlural: 'Requests',
     columns: {
-      id: { column: 'id', kind: 'uuid', label: 'Request' },
+      id: { column: 'id', kind: 'uuid', label: 'Request', names: NAMES.request },
       subject: { column: 'subject', kind: 'text', label: 'Subject' },
       priority: { column: 'priority', kind: 'text', label: 'Urgency' },
       source: { column: 'source', kind: 'text', label: 'Came in by' },
-      stageId: { column: 'stage_id', kind: 'uuid', label: 'Stage' },
-      assignedToUserId: { column: 'assigned_to_user_id', kind: 'uuid', label: 'Owner' },
+      stageId: { column: 'stage_id', kind: 'uuid', label: 'Stage', names: NAMES.stage },
+      assignedToUserId: {
+        column: 'assigned_to_user_id',
+        kind: 'uuid',
+        label: 'Owner',
+        names: NAMES.person,
+      },
       createdAt: { column: 'created_at', kind: 'date', label: 'Opened' },
       resolvedAt: { column: 'resolved_at', kind: 'date', label: 'Sorted' },
       firstRespondedAt: { column: 'first_responded_at', kind: 'date', label: 'First reply' },
@@ -202,10 +265,15 @@ const SOURCES: Record<string, ObjectSource> = {
     label: 'Task',
     labelPlural: 'Tasks',
     columns: {
-      id: { column: 'id', kind: 'uuid', label: 'Task' },
+      id: { column: 'id', kind: 'uuid', label: 'Task', names: NAMES.task },
       status: { column: 'status', kind: 'text', label: 'Status' },
       priority: { column: 'priority', kind: 'text', label: 'Priority' },
-      assignedToUserId: { column: 'assigned_to_user_id', kind: 'uuid', label: 'Owner' },
+      assignedToUserId: {
+        column: 'assigned_to_user_id',
+        kind: 'uuid',
+        label: 'Owner',
+        names: NAMES.person,
+      },
       createdAt: { column: 'created_at', kind: 'date', label: 'Created' },
       dueAt: { column: 'due_at', kind: 'date', label: 'Due' },
       completedAt: { column: 'completed_at', kind: 'date', label: 'Completed' },
@@ -283,9 +351,9 @@ function sourceFor(definition: ReportDefinition): ObjectSource | undefined {
 
 /** The five things every custom record has regardless of what it is. */
 const CUSTOM_SPINE: Record<string, ColumnDef> = {
-  id: { column: 'id', kind: 'uuid', label: 'Record' },
+  id: { column: 'id', kind: 'uuid', label: 'Record', names: NAMES.record },
   title: { column: 'title', kind: 'text', label: 'Name' },
-  ownerId: { column: 'owner_id', kind: 'uuid', label: 'Owner' },
+  ownerId: { column: 'owner_id', kind: 'uuid', label: 'Owner', names: NAMES.person },
   createdAt: { column: 'created_at', kind: 'date', label: 'Added' },
   updatedAt: { column: 'updated_at', kind: 'date', label: 'Last changed' },
 };
@@ -408,6 +476,7 @@ interface ResolvedField {
   sql: string;
   kind: ColumnKind;
   label: string;
+  names?: NameSource;
 }
 
 /**
@@ -467,7 +536,7 @@ function resolveField(source: ObjectSource, path: string): ResolvedField {
       { field: 'field', message: `unknown property ${path}` },
     ]);
   }
-  return { sql: `"${def.column}"`, kind: def.kind, label: def.label };
+  return { sql: `"${def.column}"`, kind: def.kind, label: def.label, names: def.names };
 }
 
 /* ── Filters ────────────────────────────────────────────────────────────── */
@@ -606,6 +675,13 @@ function compileMeasure(source: ObjectSource, measure: Measure, index: number): 
   return `${fn[measure.fn]}(${field.sql})::float8 AS "${alias}"`;
 }
 
+/** Money when a sum, average, least or most is taken over a money field. A
+ *  count is a number however many dollars the counted rows hold. */
+function measureKind(source: ObjectSource, measure: Measure): 'number' | 'currency' {
+  if (measure.fn === 'count') return 'number';
+  return resolveField(source, measure.field ?? '').kind === 'currency' ? 'currency' : 'number';
+}
+
 /** The words a column header uses when the author did not name it. */
 export function measureLabel(
   objectKey: string,
@@ -649,12 +725,27 @@ export interface ReportDefinition {
   properties?: ReportProperties;
 }
 
+/** One column of a result. `kind` lets a screen print money as money (issue
+ *  251); a breakdown's own column carries none. */
+export interface ReportColumn {
+  key: string;
+  label: string;
+  kind?: 'number' | 'currency';
+}
+
 export interface CompiledReport {
   sql: string;
   params: unknown[];
   /** Column headers, in the order the rows carry them. */
-  columns: { key: string; label: string }[];
+  columns: ReportColumn[];
   grouped: boolean;
+  /** Set when the report is grouped by an id: where each group's name lives. */
+  groupNames?: NameSource;
+}
+
+/** The lookup that names a grouped id. The ids travel as one bound array. */
+export function groupNamesSql(names: NameSource): string {
+  return `SELECT "id"::text AS "id", ${names.name} AS "name" FROM "${names.table}" WHERE "id" = ANY($1::uuid[])`;
 }
 
 export function compileReport(definition: ReportDefinition, limit: number): CompiledReport {
@@ -692,13 +783,15 @@ export function compileReport(definition: ReportDefinition, limit: number): Comp
   where.push(compileGroup(source, definition.filters, params));
 
   const selects = definition.measures.map((m, i) => compileMeasure(source, m, i));
-  const columns = definition.measures.map((m, i) => ({
+  const columns: ReportColumn[] = definition.measures.map((m, i) => ({
     key: `m${String(i)}`,
     label: measureLabel(definition.objectKey, m, definition.properties),
+    kind: measureKind(source, m),
   }));
 
   let groupSql = '';
   let orderSql = '';
+  let groupNames: NameSource | undefined;
   if (definition.groupBy) {
     const field = resolveField(source, definition.groupBy.field);
     const bucket = definition.groupBy.bucket;
@@ -716,6 +809,7 @@ export function compileReport(definition: ReportDefinition, limit: number): Comp
       ? `DATE_TRUNC('${BUCKET_SQL[effectiveBucket]}', ${field.sql})`
       : field.sql;
 
+    groupNames = effectiveBucket ? undefined : field.names;
     selects.unshift(`${expr} AS "g0"`);
     columns.unshift({ key: 'g0', label: field.label });
     groupSql = ' GROUP BY 1';
@@ -732,19 +826,36 @@ export function compileReport(definition: ReportDefinition, limit: number): Comp
     orderSql +
     ` LIMIT $${String(params.length)}`;
 
-  return { sql, params, columns, grouped: Boolean(definition.groupBy) };
+  return {
+    sql,
+    params,
+    columns,
+    grouped: Boolean(definition.groupBy),
+    ...(groupNames ? { groupNames } : {}),
+  };
 }
 
 /* ── Running it ─────────────────────────────────────────────────────────── */
 
 export interface ReportResult {
-  columns: { key: string; label: string }[];
+  columns: ReportColumn[];
   rows: Record<string, unknown>[];
   grouped: boolean;
   /** True when the row cap was reached — the surface says so rather than
    *  presenting a truncated total as if it were the whole answer. */
   truncated: boolean;
+  /** For a breakdown by an id: each id's name, keyed by the id in `g0`. An id
+   *  whose row is gone is named as such rather than shown raw. */
+  groupLabels?: Record<string, string>;
+  /** The business's currency, set when a column holds money (issue 251). */
+  currency?: string;
 }
+
+/** What a group is called when the thing its id pointed at is gone. */
+export const GONE_GROUP_LABEL = 'No longer here';
+
+/** What a group is called when the thing is there but was never given a name. */
+export const UNNAMED_GROUP_LABEL = 'Not named';
 
 /**
  * Run a compiled report inside the tenant's RLS session.
@@ -765,10 +876,56 @@ export async function runReport(
       ...compiled.params
     )
   );
+  const groupLabels = compiled.groupNames
+    ? await nameGroups(ctx, compiled.groupNames, rows)
+    : undefined;
+  const currency = compiled.columns.some((c) => c.kind === 'currency')
+    ? await businessCurrency(ctx)
+    : undefined;
   return {
     columns: compiled.columns,
     rows,
     grouped: compiled.grouped,
     truncated: rows.length >= limit,
+    ...(groupLabels ? { groupLabels } : {}),
+    ...(currency ? { currency } : {}),
   };
+}
+
+/** The currency the business works in, as its other money screens assume. */
+async function businessCurrency(ctx: ServiceContext): Promise<string> {
+  const rows = await withTenant(ctx, (tx) =>
+    (tx as unknown as typeof prisma).$queryRawUnsafe<{ currency: string | null }[]>(
+      'SELECT "default_currency" AS "currency" FROM "tenant_businesses" WHERE "tenant_id" = $1::uuid LIMIT 1',
+      ctx.tenantId
+    )
+  );
+  const code = rows[0]?.currency?.trim();
+  return code === undefined || code === '' ? 'USD' : code;
+}
+
+/** Names the ids a grouped run came back with, inside the tenant's session. */
+async function nameGroups(
+  ctx: ServiceContext,
+  names: NameSource,
+  rows: Record<string, unknown>[]
+): Promise<Record<string, string>> {
+  const ids = [
+    ...new Set(rows.map((row) => row.g0).filter((v): v is string => typeof v === 'string')),
+  ];
+  if (ids.length === 0) return {};
+  const found = await withTenant(ctx, (tx) =>
+    (tx as unknown as typeof prisma).$queryRawUnsafe<{ id: string; name: string | null }[]>(
+      groupNamesSql(names),
+      ids
+    )
+  );
+  const byId = new Map(found.map((row) => [row.id, row.name]));
+  return Object.fromEntries(
+    ids.map((id) => {
+      if (!byId.has(id)) return [id, GONE_GROUP_LABEL];
+      const name = byId.get(id)?.trim();
+      return [id, name === undefined || name === '' ? UNNAMED_GROUP_LABEL : name];
+    })
+  );
 }

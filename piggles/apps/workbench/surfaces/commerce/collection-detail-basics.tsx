@@ -13,6 +13,8 @@ import {
   Textarea,
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
+import { useSiteHost } from '../domains/site-host';
+import { pageAddress } from './page-address';
 import { slugifyTyping } from '../../lib/slugify';
 import type { Draft } from './collection-draft';
 
@@ -31,6 +33,7 @@ export function CollectionBasics({
   nameError: string | null;
   touched: boolean;
 }) {
+  const host = useSiteHost();
   return (
     <FormSection title="Name">
       <Field>
@@ -73,8 +76,8 @@ export function CollectionBasics({
           }
         />
         <FieldDescription>
-          The end of this group&apos;s page address: yoursite.com/collections/
-          {effectiveHandle || '…'}.
+          The end of this group&apos;s page address:{' '}
+          {pageAddress(host, 'commerce.collection', effectiveHandle)}.
         </FieldDescription>
       </Field>
 

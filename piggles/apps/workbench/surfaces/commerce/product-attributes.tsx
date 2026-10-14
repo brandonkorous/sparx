@@ -41,6 +41,7 @@ import { ContentBlockEditor } from '@wizeworks/cms-editor/editor';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, AssetField, useMediaPicker } from '../cms/media-picker';
+import { useLinkSuggest } from '../cms/link-suggest';
 import { useTabSave } from './product-tab-save';
 import { useUpdateProduct, type Product, type ProductPatch } from './products-data';
 import { useShippingProfiles } from './shipping-data';
@@ -646,6 +647,7 @@ function RichTextField({
   disabled?: boolean;
 }) {
   const pick = useMediaPicker();
+  const suggestLinks = useLinkSuggest();
   return (
     <ContentBlockEditor
       value={asDoc(value)}
@@ -654,6 +656,7 @@ function RichTextField({
       ariaLabel={field.label}
       minHeight="16rem"
       placeholder="Write here. Use the toolbar for headings, lists, links, and pictures."
+      suggestLinks={suggestLinks}
       pickImage={async () => {
         const asset = await pick();
         return asset?.url ? { src: asset.url, assetId: asset.id, alt: asset.filename } : null;

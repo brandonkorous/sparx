@@ -22,6 +22,7 @@ import {
 } from '../lib/surfaces/use-visible-nav';
 import { moduleLabel } from '../lib/surfaces/nav';
 import { useWorkbench } from '../lib/workbench/context';
+import { useManageRights } from '../lib/manage-rights';
 import { useFeedback } from './feedback/provider';
 import { groupLabel, targetFor, type Entry } from './launcher-match';
 import { createActions } from './launcher-create';
@@ -34,6 +35,7 @@ export function useNavEntries(): Entry[] {
   const { data: favorites } = useFavorites();
   const reachable = useReachableModules();
   const known = useKnownModules();
+  const rights = useManageRights();
 
   return useMemo<Entry[]>(() => {
     const favoriteKeys = new Set((favorites ?? []).map((f) => f.actionId));
@@ -69,7 +71,8 @@ export function useNavEntries(): Entry[] {
     const creates: Entry[] = createActions(
       surfaces,
       (s) => s.createLabel,
-      (s) => resolveTitle(s, {})
+      (s) => resolveTitle(s, {}),
+      { canManage: rights.canManage }
     ).map((action) => ({
       id: action.id,
       group: groupLabel(action.surface.module),
@@ -89,7 +92,7 @@ export function useNavEntries(): Entry[] {
       ...creates,
       sendFeedback,
     ];
-  }, [controller, favorites, reachable, known, feedback]);
+  }, [controller, favorites, reachable, known, feedback, rights.canManage]);
 }
 
 /**

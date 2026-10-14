@@ -14,6 +14,7 @@
 // numbers.
 
 import { useBill, type BillingPhaseView } from '../../surfaces/finance/bill-data';
+import { useManageRights } from '../manage-rights';
 
 /** How loud to be. `calm` is a countdown that is still comfortable; `danger` is
  *  a site that is already offline. */
@@ -27,8 +28,9 @@ export interface Lifecycle {
   /** The band's one sentence. Says the same thing in full, because the band has
    *  the width for it and is often the only thing a person will see. */
   sentence: string;
-  /** The one action, always a door out. */
-  action: string;
+  /** The one action, always a door out. Null for somebody who may not pay:
+   *  the sentence names who can (sparx persona issue 168). */
+  action: string | null;
 }
 
 /** Below this, a countdown stops being background information. */
@@ -45,10 +47,40 @@ const more = (n: number) => `${String(n)} more day${n === 1 ? '' : 's'}`;
  * furniture in its workspace. Null too when the answer has not arrived yet: a
  * card that says "Free trial" before it knows is a value nobody measured being
  * rendered as one, and this is the sentence that has to be right.
+ *
+ * `canPay` is whether the person looking may set up payment: an owner or an
+ * admin. Everybody else still hears the news, and is told who can act on it.
  */
-export function lifecycleNotice(billing: BillingPhaseView | undefined): Lifecycle | null {
+export function lifecycleNotice(
+  billing: BillingPhaseView | undefined,
+  canPay = true
+): Lifecycle | null {
   if (!billing) return null;
+  const notice = ownersNotice(billing);
+  if (!notice || canPay) return notice;
+  return { ...notice, sentence: teamSentence(billing), action: null };
+}
 
+/** The band's sentence for the rest of the team, with the same facts in it. */
+function teamSentence(billing: BillingPhaseView): string {
+  const left = billing.daysLeft;
+  if (billing.phase === 'suspended') {
+    return 'Your site is offline. An owner or an admin can set up payment to bring it back.';
+  }
+  if (billing.phase === 'grace') {
+    return left === null
+      ? 'Your site goes offline soon, until an owner or an admin sets up payment.'
+      : `Your site stays online for ${more(left)}. After that it goes offline until an owner or an admin sets up payment.`;
+  }
+  if (left === null) {
+    return 'Your free trial is ending. Ask an owner or an admin to set up payment to keep your site online.';
+  }
+  return left <= URGENT_DAYS
+    ? `Your free trial ends in ${days(left)}. Ask an owner or an admin to set up payment to keep your site online.`
+    : `Your free trial has ${days(left)} left. An owner or an admin can set up payment, and nothing changes when it ends.`;
+}
+
+function ownersNotice(billing: BillingPhaseView): Lifecycle | null {
   // NULL IS NOT ZERO. `daysLeft` is null when nothing is counting down, and
   // reaching a counting phase with a null means the server could not work it
   // out. `?? 0` would print "0 days left" — a number nobody measured, rendered
@@ -108,9 +140,12 @@ export function lifecycleNotice(billing: BillingPhaseView | undefined): Lifecycl
 /** The same, read from the account the console is signed in to. */
 export function useLifecycle(): Lifecycle | null {
   const { data: bill } = useBill();
+  const rights = useManageRights();
   // ONLY the phase view is read. `Bill` also carries `planTotalCents`,
   // `planModules` and a card's last four digits, and none of it may be touched
   // here — the console never knows a price. Destructuring `billing` rather than
   // passing `bill` is what keeps that true by construction.
-  return lifecycleNotice(bill?.billing);
+  // Nothing until the session is read, so an owner never sees the team's words.
+  if (!rights.known) return null;
+  return lifecycleNotice(bill?.billing, rights.canManage);
 }

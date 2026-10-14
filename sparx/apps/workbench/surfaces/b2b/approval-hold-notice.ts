@@ -187,17 +187,25 @@ export type QueueHoldReason =
 export function holdReasonWords(
   reason: QueueHoldReason,
   money: (cents: number, currency: string) => string,
-  currency: string
+  currency: string,
+  /** What the account has left today, when known (sparx persona issue 188). */
+  creditLeftNowCents: number | null = null
 ): string {
   if (reason.kind === 'over_credit_limit') {
     const left =
       reason.creditLeft > 0
-        ? `has ${money(Math.round(reason.creditLeft * 100), reason.currency)} of credit left`
-        : 'has no credit left';
-    return `Over the credit limit: it comes to ${money(
+        ? `had ${money(Math.round(reason.creditLeft * 100), reason.currency)} of credit left`
+        : 'had no credit left';
+    // Past tense: these are the figures that held it, not today's. A payment can
+    // free the credit before anyone signs (sparx persona issue 188).
+    return `Over the credit limit: when it was placed, it came to ${money(
       Math.round(reason.orderTotal * 100),
       reason.currency
-    )} and the account ${left}.`;
+    )} and the account ${left}.${
+      creditLeftNowCents !== null && creditLeftNowCents !== Math.round(reason.creditLeft * 100)
+        ? ` It has ${money(creditLeftNowCents, reason.currency)} now.`
+        : ''
+    }`;
   }
   if (reason.limitCents === null) return 'Over a spending limit you set.';
   if (reason.limitCents <= 0) return 'You hold every order from them for sign-off.';

@@ -7,7 +7,7 @@
 //
 //   components/pane-toolbar-overflow.tsx
 //     "A menu has no position to read and no hover on a touch screen, so an
-//      unlabelled glyph is a button with no meaning."
+//      unlabeled glyph is a button with no meaning."
 //
 //   surfaces/scheduling/calendar-toolbar.tsx
 //     "a popover row holding one bare chain glyph and no words is a button with

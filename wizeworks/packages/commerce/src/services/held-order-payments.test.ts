@@ -117,7 +117,7 @@ describe('approved: the held card is charged', () => {
       },
     ]);
     expect(notes[0]!.description).toContain(
-      'Order #O-000014 was approved, but the $1,208.00 held on the card could not be charged'
+      'Order O-000014 was approved, but the $1,208.00 held on the card could not be charged'
     );
     expect(createTask).toHaveBeenCalledTimes(1);
     const [taskCtx, task] = createTask.mock.calls[0]! as [

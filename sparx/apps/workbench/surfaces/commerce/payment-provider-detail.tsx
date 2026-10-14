@@ -37,6 +37,7 @@ import { useConfirm } from '../../lib/confirm';
 import { CheckCircle2, ExternalLink, Trash2 } from 'lucide-react';
 import { CopyValue } from '../../components/copy-value';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ManagersOnly, ManagersOnlyNotice } from '../../components/managers-only';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -82,10 +83,8 @@ export function PaymentProviderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             wording would tell the wrong story. */}
         <PaneLoadError
           title="Could not load this provider"
-          description={paymentsErrorMessage(
-            config.error ?? catalog.error,
-            'This is a problem reaching the server. Nothing has been changed.'
-          )}
+          description="This is a problem reaching the server. Nothing has been changed."
+          error={config.error ?? catalog.error}
           onRetry={() => {
             void config.refetch();
             void catalog.refetch();
@@ -175,18 +174,24 @@ function ProviderEditor({
             </Alert>
           ) : null}
 
-          {descriptor.onboarding === 'manual' ? (
-            <ManualBody descriptor={descriptor} isActive={isActive} />
-          ) : descriptor.onboarding === 'sparx_hosted' ? (
-            <SparxPayBody descriptor={descriptor} config={config} isActive={isActive} />
-          ) : (
-            <ApiKeysBody
-              descriptor={descriptor}
-              credential={credential}
-              isSelected={isSelected}
-              webhookUrl={config?.webhookUrls?.[descriptor.id]}
-            />
-          )}
+          {/* How the business is paid is an owner's or an admin's to change; the
+              server refuses everybody else (sparx persona issue 168). */}
+          <ManagersOnlyNotice change="choose or set up how you get paid" />
+
+          <ManagersOnly>
+            {descriptor.onboarding === 'manual' ? (
+              <ManualBody descriptor={descriptor} isActive={isActive} />
+            ) : descriptor.onboarding === 'sparx_hosted' ? (
+              <SparxPayBody descriptor={descriptor} config={config} isActive={isActive} />
+            ) : (
+              <ApiKeysBody
+                descriptor={descriptor}
+                credential={credential}
+                isSelected={isSelected}
+                webhookUrl={config?.webhookUrls?.[descriptor.id]}
+              />
+            )}
+          </ManagersOnly>
         </div>
       </div>
     </div>

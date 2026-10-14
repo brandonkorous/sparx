@@ -110,6 +110,7 @@ export const EMAIL_SURFACES: SurfaceDefinition[] = [
     component: SendingDomainsListSurface,
     createSurface: 'email.domains.detail',
     createLabel: 'Add a sending address',
+    createManagersOnly: true,
   },
   {
     // {id:'new'} provisions, then lands on {id} showing the DNS records to add.

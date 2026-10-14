@@ -23,6 +23,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -257,7 +258,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
               type: 'success',
             });
           });
-          ctx.open('inventory.supplier-returns.detail', { id: saved.id });
+          ctx.open('inventory.supplier-returns.detail', { id: saved.id }, { target: 'replace' });
         },
         onError: (error) => {
           afterCommit(() => {
@@ -304,6 +305,28 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
               }
             />
           </Field>
+          {/* An empty picker read like one still loading (persona issue 252). */}
+          {suppliers.isSuccess && (suppliers.data?.items ?? []).length === 0 ? (
+            <Alert color="info">
+              <AlertContent>
+                <AlertTitle>No suppliers yet</AlertTitle>
+                <AlertDescription>
+                  A return goes back to a supplier, so add the supplier first. It takes a name and a
+                  short code.
+                </AlertDescription>
+                <AlertActions>
+                  <Button
+                    color="module"
+                    onClick={() => {
+                      ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
+                    }}
+                  >
+                    Add a supplier
+                  </Button>
+                </AlertActions>
+              </AlertContent>
+            </Alert>
+          ) : null}
           <Field>
             <FieldLabel>Leaving from</FieldLabel>
             <FieldControl

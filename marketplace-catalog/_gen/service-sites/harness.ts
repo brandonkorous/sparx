@@ -42,6 +42,7 @@ import type {
     SiteChromeOptions,
 } from '../../../wizeworks/packages/silica-catalog/src/site-chrome';
 import { HOST_KEYS, hostCore } from '../../../wizeworks/packages/silica-catalog/src/host-nodes';
+import { insideMeasure } from '../../../wizeworks/packages/silica-catalog/src/page-measure';
 import { resolveSparxTheme } from '../../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
 import { colorToHex } from '../../../wizeworks/packages/site-themes/src/v2/color';
 import { blueprintEmailDoc } from '../shared/blueprint-email';
@@ -165,7 +166,10 @@ function singleton(
         kind: 'singleton',
         ...(slug ? { slug } : {}),
         ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-        root: stampTree(root),
+        // The house measure (piggles persona issue 950): a band this generator, or the spec,
+        // authored with its gutter outside its 6xl box ships with it inside, so every page
+        // starts on the header's left edge however its sections were written.
+        root: stampTree(insideMeasure(root).root),
     };
 }
 

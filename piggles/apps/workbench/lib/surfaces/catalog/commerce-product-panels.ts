@@ -137,7 +137,18 @@ export const PRODUCT_PANEL_SURFACES: SurfaceDefinition[] = [
     icon: faTruck,
     section: 'Product panels',
     order: 21,
-    keywords: ['supplier', 'source', 'fulfillment', 'fulfilment', 'vendor'],
+    // "who ships this" is the pane's own heading, and the words an owner uses for
+    // the job it does (sparx persona issue 171).
+    keywords: [
+      'supplier',
+      'source',
+      'fulfillment',
+      'fulfilment',
+      'vendor',
+      'who ships this',
+      'supplier ships this',
+      'ship from supplier',
+    ],
     besideWidth: 0.4,
     component: ProductDropshipSurface,
   },

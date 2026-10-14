@@ -214,7 +214,7 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
               with the presentation rather than at some unrelated breakpoint. A
               grid item stretches by default, so `block` is the container's job
               and no Button has to name a width. */}
-          <div className="mt-4 grid grid-cols-1 gap-3 lg:flex lg:flex-wrap">
+          <div className="mt-4 grid grid-cols-1 gap-3 @5xl:flex @5xl:flex-wrap">
             {actions.map((action) => (
               <ModuleScope key={action.label} module={action.module as never}>
                 <Button
@@ -227,7 +227,7 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
                   // inline-flex at half the column. Released back to its own width
                   // at the line the compact shell switches at.
                   block
-                  className="lg:w-auto"
+                  className="@5xl:w-auto"
                   onClick={() => {
                     ctx.open(action.surface, action.params);
                   }}

@@ -11,8 +11,9 @@
 // The order pane and the Cores owed list both read this module, so the same line
 // offers the same buttons in the same words from either screen.
 
+import { splitCoreDeposit } from '@wizeworks/commerce-schemas';
 import { formatMoney, type OrderItem } from './data';
-import type { CoreLine, CoreOwed } from './cores-data';
+import type { CoreLine, CoreOwed, OpenInvoice } from './cores-data';
 
 export type CoreMove = 'receive' | 'keep' | 'release';
 export type CoreTone = 'success' | 'warning' | 'info';
@@ -44,9 +45,23 @@ export function moveLabel(line: CoreLine, move: CoreMove): string {
 /** Where this line's core stands, as state badges. */
 export function coreBadges(line: CoreLine): { label: string; tone: CoreTone }[] {
   if (!line.coreFirst) {
-    return line.owed > 0
-      ? [{ label: `${plural(line.owed, 'core', 'cores')} still owed`, tone: 'warning' }]
-      : [{ label: 'Cores settled', tone: 'success' }];
+    if (line.owed === 0) return [{ label: 'Cores settled', tone: 'success' }];
+    // Nobody owes an old part for a new one still on the shelf (issue 184).
+    const later = line.owed - line.outstanding;
+    const badges: { label: string; tone: CoreTone }[] = [];
+    if (line.outstanding > 0) {
+      badges.push({
+        label: `${plural(line.outstanding, 'core', 'cores')} still owed`,
+        tone: 'warning',
+      });
+    }
+    if (later > 0) {
+      badges.push({
+        label: `${plural(later, 'core', 'cores')} due once handed over`,
+        tone: 'info',
+      });
+    }
+    return badges;
   }
   if (line.owed === 0) {
     return [{ label: line.quantity === 1 ? 'Old part in' : 'Old parts in', tone: 'success' }];
@@ -92,10 +107,44 @@ export function coreSummary(item: OrderItem, currency: string): string {
   return settled.length > 0 ? `${head} · ${settled.join(' · ')}` : head;
 }
 
-/** The "Deposit back" cell on the Cores owed list. A send-first line holds no
- *  deposit, and "$0.00" would read as a deposit of nothing that is owed back. */
+/** The "Deposit" cell on the Cores owed list. A send-first line holds no
+ *  deposit, and "$0.00" would read as a deposit of nothing that is owed back. A
+ *  deposit on an order whose invoice is still open comes off that invoice, and
+ *  says which (sparx persona issue 183). */
 export function depositBackText(row: CoreOwed): string {
-  return row.coreFirst ? 'No deposit' : formatMoney(row.owedCents / 100, row.currency);
+  if (row.coreFirst) return 'No deposit';
+  const amount = formatMoney(row.owedCents / 100, row.currency);
+  return row.openInvoice && row.openInvoice.balanceCents > 0
+    ? `${amount} off ${row.openInvoice.number}`
+    : amount;
+}
+
+/**
+ * Where every deposit on the list would go, per currency: off open invoices or
+ * back to the customer. Lines on one order share what its invoice still owes, the
+ * way the refund takes them one after another.
+ */
+function depositOutlook(rows: CoreOwed[]): Map<string, { offCents: number; backCents: number }> {
+  const byOrder = new Map<string, { currency: string; deposits: number; balance: number }>();
+  for (const row of rows) {
+    if (row.coreFirst) continue;
+    const entry = byOrder.get(row.orderId) ?? {
+      currency: row.currency,
+      deposits: 0,
+      balance: row.openInvoice?.balanceCents ?? 0,
+    };
+    entry.deposits += row.owedCents;
+    byOrder.set(row.orderId, entry);
+  }
+  const byCurrency = new Map<string, { offCents: number; backCents: number }>();
+  for (const { currency, deposits, balance } of byOrder.values()) {
+    const split = splitCoreDeposit(deposits, balance);
+    const sum = byCurrency.get(currency) ?? { offCents: 0, backCents: 0 };
+    sum.offCents += split.offInvoiceCents;
+    sum.backCents += split.backCents;
+    byCurrency.set(currency, sum);
+  }
+  return byCurrency;
 }
 
 /** The sentence above the Cores owed list. */
@@ -104,17 +153,25 @@ export function coresSummary(rows: CoreOwed[], limit: number): string {
   const parts = [
     `${plural(cores, 'core', 'cores')} owed on ${plural(rows.length, 'order line', 'order lines')}.`,
   ];
-  // Summed per currency so a second one can never be added into the first.
-  const owedByCurrency = new Map<string, number>();
-  for (const row of rows) {
-    if (row.coreFirst) continue;
-    owedByCurrency.set(row.currency, (owedByCurrency.get(row.currency) ?? 0) + row.owedCents);
-  }
-  const money = [...owedByCurrency.entries()]
-    .filter(([, cents]) => cents > 0)
-    .map(([currency, cents]) => formatMoney(cents / 100, currency));
-  if (money.length > 0) {
-    parts.push(`If every deposit came back, you would give back ${money.join(' and ')}.`);
+  // Summed per currency so a second one can never be added into the first. A
+  // deposit an account never paid comes off its invoice, never out of the till
+  // (sparx persona issue 183).
+  const outlook = [...depositOutlook(rows).entries()];
+  const sums = (pick: 'offCents' | 'backCents') =>
+    outlook
+      .filter(([, sum]) => sum[pick] > 0)
+      .map(([currency, sum]) => formatMoney(sum[pick] / 100, currency))
+      .join(' and ');
+  const off = sums('offCents');
+  const back = sums('backCents');
+  if (off && back) {
+    parts.push(
+      `If every deposit came back, ${off} would come off open invoices and you would give back ${back}.`
+    );
+  } else if (off) {
+    parts.push(`If every deposit came back, ${off} would come off open invoices.`);
+  } else if (back) {
+    parts.push(`If every deposit came back, you would give back ${back}.`);
   }
   const waiting = rows.reduce((sum, row) => sum + row.waitingToShip, 0);
   if (waiting > 0) {
@@ -124,4 +181,67 @@ export function coresSummary(rows: CoreOwed[], limit: number): string {
   }
   if (rows.length >= limit) parts.push(`Showing the oldest ${String(limit)}.`);
   return parts.join(' ');
+}
+
+export interface ReceiveCoreWords {
+  description: string;
+  submitLabel: string;
+  submitColor: 'danger' | 'module';
+  /** Only money actually going back needs a "where to". */
+  asksWhereMoneyGoes: boolean;
+  /** False until the order's open invoice is known: a dialog that guessed would
+   *  promise money back and then take it off the invoice. */
+  ready: boolean;
+}
+
+/**
+ * What "Core came back" says and does, from the same split the refund makes. It
+ * said "Give back $150.00" over an order whose $150.00 deposit sat on an unpaid
+ * invoice, and the click took it off the invoice instead (sparx persona issue 183).
+ * `invoice` is undefined while it is still being read.
+ */
+export function receiveCoreWords(
+  line: CoreLine,
+  counts: { usable: number; unusable: number; invoice: OpenInvoice | null | undefined }
+): ReceiveCoreWords {
+  const { usable, unusable, invoice } = counts;
+  const money = (cents: number) => formatMoney(cents / 100, line.currency);
+  // "Still to come back", not "still owed": a core that comes in before the part
+  // goes out is recorded here too (sparx persona issue 184).
+  const head = `${line.name}: ${plural(line.owed, 'core is', 'cores are')} still to come back from ${line.customerName}.`;
+  const keepLabel = `Keep ${plural(unusable, 'deposit', 'deposits')}`;
+  if (invoice === undefined) {
+    return {
+      description: `${head} Checking whether this order still has an invoice to pay.`,
+      submitLabel: usable > 0 ? 'Record the core' : keepLabel,
+      submitColor: 'module',
+      asksWhereMoneyGoes: false,
+      ready: usable === 0,
+    };
+  }
+  const { offInvoiceCents, backCents } = splitCoreDeposit(
+    usable * line.depositCents,
+    invoice?.balanceCents ?? 0
+  );
+  const each = money(line.depositCents);
+  let description = `${head} A usable core gets its ${each} deposit back.`;
+  let submitLabel = usable > 0 ? `Give back ${money(backCents)}` : keepLabel;
+  if (invoice && offInvoiceCents > 0) {
+    const left = money(invoice.balanceCents);
+    description =
+      backCents > 0
+        ? `${head} Invoice ${invoice.number} still has ${left} to pay, so ${money(offInvoiceCents)} comes off it and ${money(backCents)} goes back.`
+        : `${head} A usable core takes its ${each} deposit off invoice ${invoice.number}, which still has ${left} to pay. No money goes back.`;
+    submitLabel =
+      backCents > 0
+        ? `Take ${money(offInvoiceCents)} off ${invoice.number}, give back ${money(backCents)}`
+        : `Take ${money(offInvoiceCents)} off ${invoice.number}`;
+  }
+  return {
+    description,
+    submitLabel,
+    submitColor: backCents > 0 ? 'danger' : 'module',
+    asksWhereMoneyGoes: backCents > 0,
+    ready: true,
+  };
 }

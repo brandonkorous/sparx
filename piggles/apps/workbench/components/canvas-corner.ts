@@ -23,3 +23,16 @@
 /** Padding that keeps a footer's right-hand end clear of the floating tools.
  *  Put it on whatever a footer pushes to its right edge. */
 export const CANVAS_CORNER_CLEARANCE = '[[data-canvas-tools]_&]:pe-36';
+
+/**
+ * Room at the END of every pane's full-height scrolling list, so its last row can be
+ * scrolled up out from under the tools. A footer moves sideways; a list's last row
+ * cannot, and its right-hand end is where a row keeps its actions. Rosalind could not
+ * reach "Delete" on the last page in her page list: the size glass sat on it, and the
+ * list could not scroll any further (persona issue 947). 80px clears the pill (56px)
+ * and its 16px offset.
+ *
+ * Put on the canvas once, matching the pane list's own shape (`flex-1` + scroll),
+ * rather than on the 300-odd lists that share it.
+ */
+export const CANVAS_LIST_END_CLEARANCE = '[&_.flex-1.overflow-y-auto]:pb-20';

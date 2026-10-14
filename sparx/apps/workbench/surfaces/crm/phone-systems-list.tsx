@@ -224,11 +224,15 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </Card>
       </div>
 
-      <p className="shrink-0 px-1 text-xs">
-        <Phone className="mr-1 inline size-3" aria-hidden />
-        To change the token on a connected number, disconnect it and connect it again: sparx never
-        shows a token back, so there is nothing to edit in place.
-      </p>
+      {/* Only beside a row: with none listed it explained a connected number
+          that was not there (sparx persona issue 239). */}
+      {rows.length > 0 ? (
+        <p className="shrink-0 px-1 text-xs">
+          <Phone className="mr-1 inline size-3" aria-hidden />
+          To change the token on a connected number, disconnect it and connect it again: sparx never
+          shows a token back, so there is nothing to edit in place.
+        </p>
+      ) : null}
     </div>
   );
 }

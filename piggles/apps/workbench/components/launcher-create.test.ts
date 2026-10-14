@@ -31,6 +31,21 @@ describe('createActions', () => {
     });
   });
 
+  it('offers a + only an owner or an admin can use to nobody else', () => {
+    // sparx persona issue 168: Alyssa, an Editor, was offered "Add a sending
+    // address", which the server refuses her.
+    const row: Row = {
+      key: 'email.domains',
+      module: 'email',
+      title: 'Sending addresses',
+      createSurface: 'email.domains.detail',
+      createLabel: 'Add a sending address',
+      createManagersOnly: true,
+    };
+    expect(createActions([row], label, title, { canManage: false })).toEqual([]);
+    expect(createActions([row], label, title, { canManage: true })).toHaveLength(1);
+  });
+
   it("answers to the screen's own search words too", () => {
     // sparx persona issue 036: "new social post" put Posts above "New post",
     // because only the list carried the word "social".

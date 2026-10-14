@@ -137,7 +137,8 @@ function StarterCard({
 export function IndustrySurface() {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useIndustryStarters();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useIndustryStarters();
   const apply = useApplyIndustry();
 
   const [selected, setSelected] = useState<string | null>(null);
@@ -164,6 +165,7 @@ export function IndustrySurface() {
       <PaneLoadError
         title="Could not load the industry list"
         description="This is a problem reaching the server. Your current industry is unaffected."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

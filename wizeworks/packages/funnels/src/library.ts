@@ -121,6 +121,25 @@ const QUOTE_ACCEPTED: Goal = {
   conditions: [{ field: 'quote.stageName', operator: 'eq', value: 'Accepted' }],
 };
 
+/**
+ * The goal a NEW campaign of each kind starts with, stamped in like its starter
+ * steps and then the owner's to change. Without it, "Filling the calendar" came
+ * with no goal and could not be turned on, and its last step, "Booked it in",
+ * waited on an empty rule (sparx persona issue 158). A custom campaign measures
+ * something nobody can guess, so it starts with none.
+ */
+const STARTING_GOAL: Partial<Record<FunnelKind, Goal>> = {
+  lead: BECAME_CUSTOMER,
+  recovery: PAID,
+  purchase: PAID,
+  booking: BOOKED,
+  winback: ORDERED_AGAIN,
+};
+
+export function startingGoal(kind: FunnelKind): Goal | undefined {
+  return STARTING_GOAL[kind];
+}
+
 // ── EACH STEP SAYS WHAT PUTS SOMEBODY ON IT ─────────────────────────────────
 //
 // `match` is checked against every event's facts (advance.ts). A step nothing can

@@ -14,6 +14,7 @@ export {
   type EmailCompliance,
   type ComposeOptions,
   type FooterLink,
+  UNSUBSCRIBE_PLACEHOLDER,
 } from './frame';
 // Re-exported so the frame's consumers (the email studio's canvas via the server, the
 // send path) type the chrome without a direct @wizeworks/silicaui-builder dependency.

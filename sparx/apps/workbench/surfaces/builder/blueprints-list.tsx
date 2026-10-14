@@ -254,6 +254,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
             icon={<LayoutTemplate className="size-6" aria-hidden />}
             title="Could not load the designs"
             description="This is a problem reaching the server. Your site and anything you have already added are unaffected."
+            error={error}
             onRetry={() => {
               void refetch();
             }}

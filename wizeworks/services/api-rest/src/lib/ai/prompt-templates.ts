@@ -6,8 +6,9 @@
 // prompt. Every write runs inside withTenant (RLS) and audit-logs.
 
 import type { Prisma } from '@wizeworks/db';
-import { withTenant, type AiPromptTemplate, type TenantContext } from '@wizeworks/db';
+import { afterCommit, withTenant, type AiPromptTemplate, type TenantContext } from '@wizeworks/db';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
+import { indexEntity } from '@wizeworks/events';
 
 import { DEFAULT_PROMPT_TEMPLATES } from './default-prompts.js';
 import {
@@ -134,6 +135,7 @@ export async function createPromptTemplate(
       },
     });
     await writeAiAudit(tx, ctx, 'ai.prompt_template.created', row.id, { key: row.key });
+    await signalPromptTemplate(ctx, row.id);
     return toPromptTemplateDto(row);
   });
 }
@@ -163,6 +165,7 @@ export async function updatePromptTemplate(
       },
     });
     await writeAiAudit(tx, ctx, 'ai.prompt_template.updated', row.id, { key: row.key });
+    await signalPromptTemplate(ctx, row.id);
     return toPromptTemplateDto(row);
   });
 }
@@ -176,6 +179,7 @@ export async function deletePromptTemplate(ctx: TenantContext, id: string): Prom
     if (current?.tenantId !== ctx.tenantId) throw notFound('AiPromptTemplate', id);
     await tx.aiPromptTemplate.delete({ where: { id } });
     await writeAiAudit(tx, ctx, 'ai.prompt_template.deleted', id, { key: current.key });
+    await signalPromptTemplate(ctx, id);
   });
 }
 
@@ -199,7 +203,7 @@ export async function ensureDefaultPromptTemplates(sx: TenantContext): Promise<n
   let added = 0;
   for (const seed of DEFAULT_PROMPT_TEMPLATES) {
     if (have.has(seed.key)) continue;
-    await tx.aiPromptTemplate.create({
+    const created = await tx.aiPromptTemplate.create({
       data: {
         tenantId: sx.tenantId,
         key: seed.key,
@@ -211,7 +215,9 @@ export async function ensureDefaultPromptTemplates(sx: TenantContext): Promise<n
         model: seed.model ?? null,
         createdByUserId: sx.userId ?? null,
       },
+      select: { id: true },
     });
+    await signalPromptTemplate(sx, created.id);
     added += 1;
   }
   return added;
@@ -253,6 +259,24 @@ export async function getActivePersona(
     const row = rows.find((r) => r.propertyId === propertyId) ?? rows.find((r) => !r.propertyId);
     return row ? { body: row.body, model: row.model } : null;
   });
+}
+
+/**
+ * Tell search a prompt changed, once its transaction commits.
+ *
+ * Queued, not sent: every write here runs inside a transaction a preset or
+ * starter install may still roll back. The indexer reads the row back, so the
+ * same upsert covers a create, a rename and a delete (a missing row is dropped).
+ */
+async function signalPromptTemplate(ctx: TenantContext, id: string): Promise<void> {
+  await afterCommit('index ai_prompt', () =>
+    indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'ai_prompt',
+      recordId: id,
+    })
+  );
 }
 
 async function writeAiAudit(

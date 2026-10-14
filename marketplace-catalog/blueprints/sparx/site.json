@@ -11,61 +11,181 @@
           "attrs": {
             "aria-label": "Primary"
           },
-          "class": "@container flex items-center justify-between gap-6 border-b border-base-300 bg-base-100 px-6 py-4",
+          "class": "@container border-b border-base-300 bg-base-100",
           "children": [
             {
-              "kind": "host",
-              "class": "wordmark inline-flex items-center gap-2",
-              "props": {
-                "show": "logo"
-              },
-              "component": "site.brand"
-            },
-            {
-              "tag": "div",
               "kind": "element",
-              "class": "flex items-center gap-3 @sm:gap-6",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4",
               "children": [
+                {
+                  "kind": "host",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "logo"
+                  },
+                  "component": "site.brand"
+                },
                 {
                   "tag": "div",
                   "kind": "element",
-                  "class": "hidden items-center gap-6 @sm:flex",
+                  "class": "flex items-center gap-3 @sm:gap-6",
                   "children": [
                     {
-                      "tag": "a",
+                      "tag": "div",
                       "kind": "element",
-                      "attrs": {
-                        "href": "/shop"
-                      },
-                      "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
-                      "children": ["Shop"]
+                      "class": "hidden items-center gap-6 @sm:flex",
+                      "children": [
+                        {
+                          "tag": "a",
+                          "kind": "element",
+                          "attrs": {
+                            "href": "/shop"
+                          },
+                          "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
+                          "children": ["Shop"]
+                        },
+                        {
+                          "tag": "a",
+                          "kind": "element",
+                          "attrs": {
+                            "href": "/book"
+                          },
+                          "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
+                          "children": ["Book"]
+                        },
+                        {
+                          "tag": "a",
+                          "kind": "element",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
+                          "children": ["About"]
+                        },
+                        {
+                          "tag": "a",
+                          "kind": "element",
+                          "attrs": {
+                            "href": "/blog"
+                          },
+                          "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
+                          "children": ["Journal"]
+                        },
+                        {
+                          "tag": "a",
+                          "kind": "element",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
+                          "children": ["Contact"]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "details",
+                      "kind": "element",
+                      "class": "relative @sm:hidden",
+                      "children": [
+                        {
+                          "tag": "summary",
+                          "kind": "element",
+                          "class": "cursor-pointer list-none rounded-btn px-3 py-2 text-sm font-medium text-base-content",
+                          "children": ["Menu"]
+                        },
+                        {
+                          "tag": "div",
+                          "kind": "element",
+                          "class": "absolute right-0 z-30 mt-2 w-48 rounded-box border border-base-300 bg-base-100 p-2",
+                          "children": [
+                            {
+                              "tag": "div",
+                              "kind": "element",
+                              "class": "flex flex-col gap-1",
+                              "children": [
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["Shop"]
+                                },
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["Book"]
+                                },
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["About"]
+                                },
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/blog"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["Journal"]
+                                },
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["Contact"]
+                                },
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/wholesale"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["Wholesale"]
+                                },
+                                {
+                                  "tag": "a",
+                                  "kind": "element",
+                                  "attrs": {
+                                    "href": "/account/login"
+                                  },
+                                  "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
+                                  "children": ["Sign in"]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "host",
+                      "class": "inline-flex items-center",
+                      "component": "site.theme-toggle"
                     },
                     {
                       "tag": "a",
                       "kind": "element",
                       "attrs": {
-                        "href": "/book"
+                        "href": "/account/login"
                       },
-                      "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
-                      "children": ["Book"]
-                    },
-                    {
-                      "tag": "a",
-                      "kind": "element",
-                      "attrs": {
-                        "href": "/about"
-                      },
-                      "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
-                      "children": ["About"]
-                    },
-                    {
-                      "tag": "a",
-                      "kind": "element",
-                      "attrs": {
-                        "href": "/blog"
-                      },
-                      "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
-                      "children": ["Journal"]
+                      "class": "btn btn-ghost btn-sm",
+                      "children": ["Sign in"]
                     },
                     {
                       "tag": "a",
@@ -73,123 +193,10 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "class": "text-sm font-medium text-base-content transition-colors hover:text-primary",
-                      "children": ["Contact"]
+                      "class": "btn btn-primary btn-sm",
+                      "children": ["Get in touch"]
                     }
                   ]
-                },
-                {
-                  "tag": "details",
-                  "kind": "element",
-                  "class": "relative @sm:hidden",
-                  "children": [
-                    {
-                      "tag": "summary",
-                      "kind": "element",
-                      "class": "cursor-pointer list-none rounded-btn px-3 py-2 text-sm font-medium text-base-content",
-                      "children": ["Menu"]
-                    },
-                    {
-                      "tag": "div",
-                      "kind": "element",
-                      "class": "absolute right-0 z-30 mt-2 w-48 rounded-box border border-base-300 bg-base-100 p-2",
-                      "children": [
-                        {
-                          "tag": "div",
-                          "kind": "element",
-                          "class": "flex flex-col gap-1",
-                          "children": [
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/shop"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Shop"]
-                            },
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/book"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Book"]
-                            },
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/about"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["About"]
-                            },
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/blog"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Journal"]
-                            },
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/contact"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Contact"]
-                            },
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/wholesale"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Wholesale"]
-                            },
-                            {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/account/login"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Sign in"]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "kind": "host",
-                  "class": "inline-flex items-center",
-                  "component": "site.theme-toggle"
-                },
-                {
-                  "tag": "a",
-                  "kind": "element",
-                  "attrs": {
-                    "href": "/account/login"
-                  },
-                  "class": "btn btn-ghost btn-sm",
-                  "children": ["Sign in"]
-                },
-                {
-                  "tag": "a",
-                  "kind": "element",
-                  "attrs": {
-                    "href": "/contact"
-                  },
-                  "class": "btn btn-primary btn-sm",
-                  "children": ["Get in touch"]
                 }
               ]
             }
@@ -208,12 +215,12 @@
         {
           "tag": "footer",
           "kind": "element",
-          "class": "@container border-t border-base-300 bg-base-200 px-6 py-12",
+          "class": "@container border-t border-base-300 bg-base-200 py-12",
           "children": [
             {
               "tag": "div",
               "kind": "element",
-              "class": "mx-auto grid max-w-6xl gap-10 @sm:grid-cols-2 @lg:grid-cols-4",
+              "class": "mx-auto grid max-w-6xl px-6 gap-10 @sm:grid-cols-2 @lg:grid-cols-4",
               "children": [
                 {
                   "tag": "div",
@@ -371,7 +378,7 @@
             {
               "tag": "div",
               "kind": "element",
-              "class": "mx-auto mt-10 max-w-6xl border-t border-base-300 pt-6",
+              "class": "mx-auto mt-10 max-w-6xl px-6 border-t border-base-300 pt-6",
               "children": [
                 {
                   "tag": "p",
@@ -1208,14 +1215,14 @@
             "ord": "a0",
             "tag": "section",
             "kind": "element",
-            "class": "@container bg-base-100 px-6 pt-12 pb-2",
+            "class": "@container bg-base-100 pt-12 pb-2",
             "children": [
               {
                 "id": "e1a110c9-4583-4324-bd08-be785e7706c7",
                 "ord": "a0",
                 "tag": "div",
                 "kind": "element",
-                "class": "mx-auto w-full max-w-6xl",
+                "class": "mx-auto w-full max-w-6xl px-6",
                 "children": [
                   {
                     "id": "cea6a797-e9c8-4656-ba33-3272d24c08e1",

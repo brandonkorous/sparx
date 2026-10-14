@@ -1,8 +1,8 @@
 # P01 — Doty Brown · Gillett Diesel Service
 
-**Version:** 1.5
+**Version:** 1.14
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-13
 
 **Status:** in progress
 **Run:** 2026-10-01 —
@@ -19,7 +19,7 @@ inventory, chat, ai, scheduling, social, finance, staff, funnels)
 | Slug           | `gillettdiesel` (was generated `eager-harvest-4010`) |
 | Workbench      | http://localhost:3011                                |
 | Published site | http://localhost:3004/?tenant=gillettdiesel          |
-| MCP key name   | —                                                    |
+| MCP key name   | Claude on Doty's laptop (see the team table below)   |
 
 Site shopper accounts (Gillett's own site, http://localhost:3004/account/login?tenant=gillettdiesel):
 
@@ -29,6 +29,7 @@ Site shopper accounts (Gillett's own site, http://localhost:3004/account/login?t
 | Marcus Oyelaran-Pike, Wasatch Front (accounts payable, view only)                             | `marcus.oyelaran-pike@wasatchutility.test` | `Wasatch-AP-2026!`       |
 | Teodora Vukić-Hale, Wasatch Front (fleet manager, "Can approve orders"; +1 (801) 555-0163)    | `teodora.vukic-hale@wasatchutility.test`   | `Wasatch-Approver-2026!` |
 | Dana Whitcomb-Nguyen, Salt Lake County Public Works (buyer; signed up on the site 2026-10-06) | `dana.whitcomb-nguyen@slcopw.test`         | `SLCo-Buyer-2026!`       |
+| Brynn O'Hara-Løvdal, retail (counter customer; signed up on the site 2026-10-09)              | `brynn.ohara@kanabmail.test`               | `Kanab-Retail-2026!`     |
 
 Gillett team (workbench, http://localhost:3011):
 
@@ -37,6 +38,11 @@ Gillett team (workbench, http://localhost:3011):
 | Mike Van Der Berg, service manager (Editor; joined 2026-10-06)   | `mike.vanderberg@gillettdiesel.test` | `Sparx-Persona-2026!` |
 | Kendra Ruiz, parts counter (Editor; joined 2026-10-06)           | `kendra.ruiz@gillettdiesel.test`     | `Sparx-Persona-2026!` |
 | Alyssa Thompson, accounts receivable (Editor; joined 2026-10-06) | `alyssa.thompson@gillettdiesel.test` | `Sparx-Persona-2026!` |
+
+Doty's API key for an AI app (made 2026-10-09 in AI connections › API keys, "Claude on
+Doty's laptop"; Read CRM, commerce, invoicing and B2B, and Search; never expires; local
+docker only): `sk_live_2hgth6jt_tny4ki67evchnfdhqhtiqo2zucv5hf6e`. The AI app address is
+`http://localhost:3000/mcp`.
 
 Each sign-up also made a home workspace of its own ("Mike's workspace" `305ad459-…`,
 "Kendra's workspace" `d0ef9750-…`, "Alyssa's workspace" `222e8f26-…`). Every account
@@ -231,10 +237,275 @@ opens 4459, which Renée opened on the site. That page printed "Issued Oct 7" fo
 bill raised on Oct 6 ([145], fixed); the statement has the same shape ([146], open,
 act 11). Paying an invoice online from an email does not exist: listed for Brandon in
 [144]. Starting the broadcast: "send an email to customers" found no way to write one
-([147], fixed in both consoles, the `+` now says "Write an email"; not yet seen on
-screen, the browser kept losing its tabs). Still to do in act 10: the broadcast to the
-fleets, a drafted post, a campaign, a customer message answered. Machine timezone:
-America/Los_Angeles (PDT).
+([147], fixed in both consoles, the `+` now says "Write an email"; seen on screen
+2026-10-08).
+
+2026-10-08, the broadcast. No audience held the fleets, and the email screen had no
+way to make one ([151], fixed: "Make an audience", and a new segment shows in the
+dropdown at once). Building "Fleet customers" found typing a rule value threw on every
+keystroke, a mistake shared by 48 boxes across both consoles ([148], fixed), the price
+tier typed by hand and matched exactly ([149], fixed: a list of tiers, by id), and a
+new condition filling in its own value ("31 of 38" before anything was chosen; [150],
+fixed). "Fleet customers" = Price tier is Fleet or Contract: Renée, Teodora and Marcus
+(Wasatch Front), Seamus O'Malley, Dana Whitcomb-Nguyen, Marisa Delacroix-Ward. Doty
+also made "Dealer shops" (Lars Høgberg). Writing the email: naming a new email renamed
+the automatic Welcome email ([153], critical, fixed; Welcome's name put back),
+`{{site.url}}/book` sent two slashes ([154], fixed), Publish said customers "receive it
+from now on" over a newsletter ([156], fixed), a left button is sent centered ([155],
+fixed in silicaui 0.59.0 and confirmed on the send render; of all 45 of Gillett's
+designs, only three left-set buttons moved), and the designer claimed unsaved changes
+nobody made ([152], fixed: opening it repainted brand colors and Preview saved that as
+an edit, which also lit "Unpublished changes" and stopped platform refreshes). Sending needed Gillett's mailing address
+(the screen said so) and then a confirmed email address, which Doty never had and had
+nowhere to get: no notice, no resend, and the link landed on "That link doesn't open
+anything" ([157], fixed in both consoles). **"Fleet winter readiness, November 2026"
+went to Fleet customers, 6 people, all 6 sent**, with the mailing address and a
+single-slash /book link. Reply-to is now contact@gillettdiesel.com.
+
+The campaign: "Winter fleet readiness, 2026" (Filling the calendar) could not be turned
+on, because a new campaign had no goal and the picker had no booking field and spoke
+in code names ([158], fixed in both consoles: a new campaign starts with its kind's goal,
+and the picker names each detail in words, "Booking · Status", with its values to pick).
+Re-made, it holds "booked" as its goal, /book as its first step, and can be turned on.
+Searching the picker by a value word works on screen: "paid" finds "Order · Payment",
+"booked" finds "Booking · Status" ([158], silicaui 0.59.0's Combobox `filter`). The
+empty picker's hint was cut off mid-word ([159], fixed).
+
+After the send: the sent broadcast's "What was sent" drew today's design, not the one
+that went out, and for today's audience, not a recipient ([161], fixed; now the
+version live at the send, shown for Seamus, who got it). In dark mode every email was
+half dark, light page under dark blocks ([160], fixed in silicaui PR #111; reaches
+sparx with its release).
+
+Customer messages (2026-10-08): Messages said "No conversations yet" while four
+contact-form messages from his own customers sat unread in Form submissions, and the
+only way to answer one was his own mail program ([162], fixed in both consoles).
+Messages now says "3 messages from your contact form are waiting", and Lars Høgberg's
+message has "Answer Lars Høgberg": Doty emailed him from sparx and the email is on
+Lars's record. Renée, signed in on the site, was asked her name and email by the chat
+box and reached Doty as a "Possible customer" ([164], fixed): the box now says
+"Chatting as Renée Castañeda. We will answer here.", and her chat arrives as his
+customer, "5 orders · $7,357.45 ordered · $0.00 paid, $7,357.45 still to come" (it said
+"$0.00 spent", [163], fixed). Opening her chat said "Saved just now" ([165], fixed),
+Send was under the corner buttons ([166], fixed) and the full-screen chat ran off the
+bottom of the screen ([167], fixed). Doty answered her twice from Messages, by Enter
+and by clicking Send, and she saw the first answer in the chat box. **Act 10's
+"a customer message answered" holds.**
+
+Not checked: the social post (drafting needs a connected Facebook, Instagram or Google
+account, which this run does not use); the Piggles screens for [162] to [166].
+Machine timezone: America/Los_Angeles (PDT).
+
+**Act 11 (2026-10-08 to 09, in progress):** The account statement now prints each
+bill on Gillett's own day: INV-000014 reads Oct 3 and 4459 Oct 6, as they were raised
+in Denver ([146], fixed). **Team.** Alyssa (accounts receivable, Editor) signed in and
+sees all 19 invoices ($14.4K outstanding, $3,818.80 late). Business details was an
+open form that refused her on Save with "Check the fields and try again", and the
+trial banner offered her "Add payment method", which ended in "Requires admin role or
+higher" ([168], fixed in both consoles: every owner-or-admin screen says so up front
+and locks; the refusal is in plain words; the rule is one helper). The bill named a
+line "staff" ([169], fixed: "Your team"). **Alyssa's done-when holds.** **Finance.**
+Profit said "No money came in" over a month of paid orders, then "You kept
+$14,740.25" against $11,459.60 sold: core deposits, sales tax and an order awaiting
+approval were counted as money kept ([172], blocker, fixed: one definition of what an
+order sold, used by Profit and every revenue report). Profit and Selling › Reports
+now both read $11,459.60, the hand count, with $1,900.00 of deposits held listed
+apart. "$1,900.00in core deposits" lost its space in the build ([173], fixed with a
+guard). Money is still filed by the UTC day ([174], open, scope). **The month's
+numbers match the orders.** **Dropshipping (2026-10-11): done-when holds.** Brandon
+chose option 1 for [171]: "Your own supplier", a maker or wholesaler who ships when sent
+the order. Doty connected S&B Filters (orders@sbfilters.test, contact Marco; a mistyped
+address refused on the form), and on the S&B 68 gallon tank's Dropshipping panel chose
+S&B, their code 10-1008, $1,100.00: "you make $349.00 on each". Renée ordered the tank on
+account (fleet $1,275.12, O-000023); it waited for Teodora and nothing went to S&B until she
+approved; then S&B was emailed the order from Gillett, to Renée's company, at $1,100.00.
+Doty recorded S&B's freight shipment (R+L Carriers, 41187735) and Renée's order went "On
+its way" with the shipping email ([170], fixed). With the dev outbox (another session's
+work) the third order's email to S&B was read as sent: "please ship the items below
+straight to our customer… keep your invoice and prices out of the parcel", her delivery
+note included. A mixed cart sent only S&B's part to S&B. "Stop them shipping it" put the
+cleaning kit back on Gillett's shelf. Found on the way, all fixed and re-proved: 44
+long-named products had a page nobody could open ([213], blocker); the supplier's ship-to
+had no name, for every supplier ([214]); checkout offered collection of a part S&B ships
+([215]); "R+L Carriers" read "Another courier" on the site and in the email ([216]); "UPS
+UPS Ground" ([217]); a half-shipped order showed no tracking ([218]); the order page could
+not name a courier ([219]); a fleet's shipped, on-account order said "Due on collection"
+in its confirmation ([220]); every email signed off with the business name twice and the
+address run together ([221]); checkout pre-chose collection for a buyer who had asked to
+have it sent ([222]); and the "#O-…" left in the supplier orders list, workbench search and
+the approval notes ([195]). Seen once, not reproduced: during an API restart the checkout
+told signed-in Renée "Orders can't be placed here yet"; with the API up it was right.
+Not checked: Piggles on screen for these; a product with several versions at different
+costs from one supplier.
+
+**Act 12 (2026-10-09): done-when holds.** Doty made a key in AI connections › API keys
+("Claude on Doty's laptop": read CRM, commerce, invoicing, B2B, and Search; the screen
+showed it once, then "Last used October 9, 2026"). An MCP client with that key asked
+for overdue fleet invoices (`list_b2b_invoices`, overdue) and got O'Malley Ranch & Hay
+Co. 4471 $1,286.40, Høgberg Diesel & Performance 4466 $412.80, Wasatch Front 4459
+$2,119.60: $3,818.80, the Invoices screen's total. Its days late were a day behind
+the screen until midnight-to-6pm reads were worked out at read time ([175], fixed:
+43, 23, 10). **Other businesses:** another tenant's trade account and product by id
+answered "not found"; a write with the read-only key was refused ("requires scope
+write:b2b"). Search over MCP failed with a server setting message in local dev
+([176], fixed; 2026-10-11 after the restart "fuel tank" found 40, Titan and S&B tanks
+first). What search then said about Renée was two days old: 6 orders and $150.00 against
+her record's 12 and $11,285.69, because an order never re-read its buyer into search and
+the copy held only money received ([223], major, fixed: after her O-000028 it read 13
+orders, $11,314.10 ordered, $150.00 paid, last order that minute). Seen, not reproduced:
+while the API restarted, her checkout's "Place order" waited 30 seconds and said "We
+couldn't reach the shop just now" (nothing placed, which was right), and her browser
+then held no cart; the cart was still in the database. With the API up, both worked. Seen, not filed: the server
+lists all 634 tools to a read-only key, and refuses the ones it may not use when
+called. Not checked: connecting an AI app by signing in (needs an outside app).
+
+**Act 13 (2026-10-09): done-when holds, both sides.** **The shopper.** Brynn
+O'Hara-Løvdal made an account and found her counter sales, now reading "Collected"
+([177], fixed). **The reorder.** Renée reordered O-000014 as O-000021 ($377.52, on
+account, collected; INV-000020 due Nov 8). **The return.** Brynn sent back the
+injector from O-000004 ("It does not fit"). Doty approved, received, checked ("As new",
+back on sale: on hand 1 → 2) and settled it: $600.00 for the part and the $150.00 core
+deposit, $750.00, as worked out by hand. The refund dialog had said it "moves real money"
+on a payment taken at the counter, where nothing moves and Doty hands it back ([178],
+major, fixed: "you hand the money over yourself", button "Mark $750.00 as given back";
+her page now says "We gave your money back to you", not "Sent back"). Also fixed on the
+way: module-colored confirms came out brand red in every app ([179]); the goods table
+printed "like new" and cut the item name ([180], [181]); "Wrong size" for a part that
+does not fit ([182]). **A core comes back.** Renée's old injector for O-000007 came back:
+$150.00 came off INV-000001 ($678.00 → $528.00) and nothing was paid out, which was
+right; the dialog had said "Give back $150.00" ([183], major, fixed: "Take $900.00 off
+INV-000003"). Cores owed chased six injectors Wasatch had not been handed yet ([184],
+fixed: owed from the handover). Its statement line reads "Payment, ref Core returned"
+([185], open, scope: needs a credit kind on invoice payments). **Over the limit.**
+Invoice 4459 was 10 days late, so Doty cut Wasatch's limit to $10,000.00 ($1,676.08
+left). Renée's five fuel rails, $2,026.38, were held for Teodora and for Gillett, but she
+was told only Teodora before the click and no reason after ([187], major, fixed: both
+reasons and both approvers, before and after). The page said "basket" under a header
+saying "Cart" ([186], fixed, with a guard). Wasatch paid 4459 by check 20871 (credit used
+$8,323.92 → $6,204.32); the queue and the approve dialog still gave the old $1,676.08 as
+today's figure and warned it "will go past their credit limit" ([188], fixed: "It has
+$3,795.68 now", "enough for this order"). Doty approved, Teodora approved on the site,
+O-000022 was placed, INV-000021 $2,026.38, credit used $8,230.70, every figure matching
+the hand count on both sides. Also found and fixed: a signed-in buyer was shown the
+sign-in form ([189]); the return form assumed clothing and a card ([190]); "Collect in
+person" never said where ([191], fixed: "Collect it from 14812 Heritagecrest Way,
+Bluffdale, UT 84065", with the line break of the stored address made a comma); the next
+buyer on a computer got the last buyer's cart at her fleet price ([192], major, fixed:
+on one browser, Renée signed out and Brynn's new cart held 1 flexplate at the retail
+$459.95; Renée's old cart, put back by hand, got a 404 and was dropped). Renée's cart was
+set back to her own 5 flexplates on screen. **Her account, as she lands on it.** The
+overview said "Manage your orders and details here" over two fixed links, to a buyer
+with 8 orders and an account at $1,769.30 of $10,000.00 credit left ([193], major,
+fixed: Wasatch's credit and its 6 unpaid invoices, $8,230.70, then her last 3 orders and
+"See all 8 orders"; Brynn sees her orders and no wholesale card). Found on the way: the
+Orders page stopped at 10 with no way on ([194], major, fixed with one pager for all
+seven account lists); one order was "#O-000022" on some pages and "O-000022" on others,
+and a return gave no way to its order ([195], fixed); a buyer's returns were picked from
+the shop's latest 200 ([196], major, fixed: found from her own orders). Brynn was signed out once
+between two page loads; the cause was a second agent signing Renée in on the same
+browser (one cookie jar), not the site. **Sending something back.** The return form and
+a return's page linked "returns policy" to `/returns-policy`, a 404; Gillett's is
+`/refund-policy` ([210], major, fixed: the link is the shop's own published policy).
+The form never said what the chosen goods came to ([211], fixed: "At the price you paid,
+this comes to $4.32", with any core deposit that comes back named). **His AI app.** With
+a read-only key it was offered all 634 tools, 423 of them writes ([212], major, fixed:
+85 tools, none a write). Issue numbers 197 to 209 belong to a second agent on this
+persona. **Not done:** a fleet buyer paying an invoice online (does
+not exist; listed for Brandon under [144]). Not checked: a gateway-paid return (no
+business here takes card payments through a gateway), the Piggles screens for [178] to
+[188] (their tests pass). Machine timezone: America/Los_Angeles (PDT).
+
+**Standing checks (2026-10-11 and 12), first half.** **Wrong moves.** Importing the
+customer file twice was done in act 7 ([106]). Deleting "Injectors" with 42 products
+in it: the confirm named the 42 and said they stay; Doty kept it. Double-clicking
+"Place order" as Renée made one order, O-000029, and one invoice, INV-000028. The sent
+INV-000021 opened locked with Save off. The refunded O-000004 offered no second
+refund. **Reload and deep link.** F5 on the open Wasatch account came back on the same
+record. A product address that no longer exists says "That product is no longer
+here". The category's address hint read "yoursite.com/c/injectors", a made-up site and
+a path the site has never served ([225], fixed both consoles: it reads
+`gillettdiesel.sparx.zone/category/injectors`, which opens; `/c/injectors` is a Not
+Found). INV-000028's emailed link, opened signed out, went to sign-in and then
+straight to the invoice. That invoice was one line, "Order O-000029 · non-taxable ·
+$28.41", the part, UPS Ground $15.00 and Utah's $0.91 folded together: every taxed
+fleet order since act 9, nine invoices ([226], major, fixed: each order line keeps the
+tax the checkout quoted for it). Proving it found two more on the same invoice: the
+row printed "2 · $12.50 · $26.81", its tax added in ([227], major, fixed at the one
+renderer all copies use), and the rate read 7.24%, worked backwards from cents, where
+Utah charged 7.25% ([228], major, fixed: the order keeps the checkout's rate). Proved
+on the site as Renée: O-000030 (2 additives, PO WUC-PO-4471) and O-000031 (1, PO
+WUC-PO-4472); INV-000030 reads the additive at "1 · $12.50 · $12.50", Subtotal
+$12.50, Tax (7.25%) $0.91, Shipping $15.00, Total $28.41. INV-000029, issued before
+[228], keeps 7.24%; its row now reads $25.00. **Somebody else's data.** "Marlow Knit"
+(a Juniper Row product) in the workbench search found only Gillett's own photos, by a
+loose match on "kit"; its product id by address was "not found". **Also proved:**
+search found "fuel tank" ([176]), Profit for October 1 read $1,503 ([174]), the Profit
+chart's key matches its green bars in the dark theme ([224]), and Wasatch's statement
+reads "Credit for returned core · INV-000001 · -$150.00" ([185]).
+
+**Standing checks (2026-10-13), second half.** **Dates.** No screen lets Doty date an
+invoice; it is dated the day it is sent, so "the 31st on Net 30" can only happen on a
+real 31st. The due-date code, run for those days in Denver: Oct 31 at 11:30 PM (already
+Nov 1 in UTC) → Nov 30; Aug 31 → Sep 30; Jan 31 → Mar 2. Wholesale invoices reads 4471
+"Late by 47 days" and 4466 "Late by 27 days", matching the count on Denver's calendar
+(no invoice is exactly 40 days late; 47 is in the same 31 to 60 group). Take a booking
+says its times are Mountain while this computer runs Pacific. A Diesel oil change at
+6:30 PM Wednesday was refused, rightly, "No one is working at 6:30 PM". At 4:30 PM it
+was refused with the same sentence while everyone works until 5:30 PM: the job and its
+15 minutes of clean-up ran to 5:45 PM ([229], major, fixed: "At 4:30 PM … it would run
+until 5:45 PM, counting the 15 minutes kept free after it, and the working day ends at
+5:30 PM. The latest it can start is 4:15 PM."). Booked at 4:15 PM for Seamus O'Malley
+(Bay 1, Kirk Halvorsen), stored 22:15 UTC, 4:15 PM America/Denver. **Money at the
+edges.** FPPF Total Power Fuel Treatment (list $22.99): Renée (Fleet, 12% off) sees
+$20.23 and the case $242.77; Dana (Contract, 15% off) sees the county's contract price,
+$19.25, not the tier's $19.54, and the case $234.50; her cart holds $19.25. All match
+the hand count. Tax on a discounted retail line: the website cannot take a card yet
+(Stripe is Brandon's), so Doty sold at the counter, and the counter charged no sales
+tax at all, on any sale ([230], blocker, fixed both consoles). Brynn's camera now reads
+Subtotal $299.95, "Sales tax (7.25%) $21.75", Total $321.70; typed down 15% to $254.96
+the tax is $18.48 (by hand $18.4846); written down as O-000032, $273.44, the tax on the
+line and the rate on the order. O'Malley at the counter: his wholesale $263.96, "Sales
+tax (none: their tax certificate is on file) $0.00". A core refund on a partial
+return: Brynn bought two injectors at the counter (O-000033: $1,200.00, tax $87.00 not
+on the $300.00 of deposits, $1,587.00) and sent one back. Her form said $600.00 and
+Doty's refund offered $750.00, keeping the $43.50 of tax she paid on it ([231], major,
+fixed both consoles and the site). Settled as $793.50, $643.50 for the part and
+$150.00 for its deposit; 1 core still owed. **Without a mouse.** Ctrl+K, "new trade
+account", Enter opened Add a trade account. Tab order: the panel's link button, Company
+name, Tax number, Website, Price tier, Credit limit, Extra discount, Payment terms,
+Account standing, Private note. Every list opens on Enter, moves on the arrows, chooses
+on Enter and gives focus back to its box. Typed "Høgberg Diesel & Performance", Dealer
+20%, $7,500.00, 30 days to pay; "Add account" is reached with Shift+Tab from the name,
+enabled, with a focus ring. Not saved (Høgberg's account exists since act 5). Closing
+the unsaved form asked "This account has not been created yet. Close anyway?" with focus
+on "Keep working"; Tab, Enter closed it. Seen, not filed: nothing has focus when the
+form opens, so the first Tab goes to the toolbar. (The browser tool drops the first
+key after a page loads and sends a repeated Shift+Tab without Shift; both checked one
+press at a time.) **A second site.** Gillett has one site; the site menu lists it,
+ticked, and says "Each site keeps its own pane layout". Nothing to switch to: not
+applicable. Dana paying an invoice online does not exist ([144]). **Standing checks
+done.**
+
+**Confirming and rating (2026-10-13).** Reports, record types, stock and the pane bar,
+found while confirming earlier fixes and rating panes, in both consoles (Piggles as its
+own personas, never Gillett): a new record type with no details was refused ([241]);
+five create forms opened the new record in a second tab ([242]); a record type that
+would not load had no way back ([243]); "New" hid in the menu on a phone ([244]); the
+schema's own sentence reached the screen ([245]); report cards could not be opened from
+the keyboard ([246]); reports grouped by an id showed the id ([247]-[249], [251]); three
+ready-made reports counted what their words left out ([250], open: its migration
+`20270530000035` waits to be applied); nothing-to-pick dead ends on the supplier invoice
+and return ([252]); a schedule name that stopped describing it ([253]); the ≡ menu stayed
+over its own question ([254]); an empty report advised a filter it did not have
+([255]); a single order offered "Refresh this list" ([256]); an order promised a lead
+time the supplier did not have ([257]); the board report picker opened blank ([258]);
+"New dashboard" did nothing while boards loaded or failed ([259]); every failed load
+blamed the connection ([260]: sparx swept, 196 sites, with a new guard; Piggles' shared
+part and small files, the owner's choice, with 174 large files listed as debt); "Search
+everything" could not find a board by its name ([261]); a board card on a phone lost
+its remove button ([262]). [032] has its cause: a closing dialog's backdrop took the
+next click for 150 ms; fixed in silicaui (PR #112, with the Select placeholder fix,
+PR #113, both waiting on release). Confirmed on screen unless the issue says otherwise.
 
 **Act 3 status (2026-10-01 evening):** [057] proved on screen end to end:
 all 84 faked core choices converted (one part each, a real deposit, send-first on);
@@ -271,7 +542,7 @@ reports), not yet proved on screen. silicaui 0.58 released and installed ([042],
 his reman parts, the hand-check SKUs and the L5P / 6.7L searches; prove [042],
 [045], [049], [050], [051] on screen.
 
-**Open:** [032] first click on Search everything (real-mouse check). [019] and
+**Open:** [032] cause found and fixed in silicaui #112; waits on its release. [019] and
 [021] confirmations pending. [042] and the false "CSS plugin is not loaded" warning:
 released in silicaui 0.58.1 / 0.58.2; sparx still pins 0.58.0 until the install.
 [069] "Try again" not yet seen on screen (needs a failed search). [078] not seen on

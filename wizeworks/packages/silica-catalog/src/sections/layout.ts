@@ -158,9 +158,9 @@ export function featureList(): Node {
 /** A site-wide notice — holiday hours, a delivery delay, a phone line down. The block
  *  a business needs at exactly the moment it has no time to build one. */
 export function noticeBanner(): Node {
-  return el('section', 'bg-info/10 border-y border-info @container px-6 py-5', {
+  return el('section', 'bg-info/10 border-y border-info @container py-5', {
     children: [
-      el('div', 'mx-auto flex w-full max-w-6xl flex-col gap-2', {
+      el('div', 'mx-auto flex w-full max-w-6xl px-6 flex-col gap-2', {
         children: [
           el('p', 'text-base font-semibold text-info', { text: 'Christmas opening' }),
           el('p', 'text-base text-base-content', {

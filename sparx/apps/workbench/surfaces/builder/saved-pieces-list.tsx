@@ -76,7 +76,15 @@ function PieceRow({
 }
 
 export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: pieces, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSavedPieces();
+  const {
+    data: pieces,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useSavedPieces();
   const [search, setSearch] = useState('');
   // The library is tenant-wide while every other screen in this app is per-site,
   // so an owner running more than one gets told. `?? 1` while the sites read is
@@ -128,6 +136,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
         icon={<Component className="size-6" aria-hidden />}
         title="Could not load your saved pieces"
         description="This is a problem reaching the server. None of your pieces are affected. Nothing has been lost."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

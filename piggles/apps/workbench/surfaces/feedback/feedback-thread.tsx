@@ -27,6 +27,7 @@ import { CATEGORY_ICON, FeedbackStatusBadge, deriveTitle } from '../../component
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { productCopyWith } from '../../lib/product';
+import { CANVAS_CORNER_CLEARANCE } from '../../components/canvas-corner';
 
 /**
  * Read-only, deliberately: there is no `{id:'new'}` state here.
@@ -182,7 +183,9 @@ export function FeedbackThreadSurface({ ctx }: { ctx: SurfaceContext }) {
             setReply(event.target.value);
           }}
         />
-        <div className="flex justify-end">
+        {/* Clear of the workspace tools' corner, like the chat's Send (sparx
+            persona issue 166). */}
+        <div className={`flex justify-end ${CANVAS_CORNER_CLEARANCE}`}>
           <Button type="submit" color="module" size="sm" disabled={!reply.trim() || send.isPending}>
             {send.isPending ? 'Sending…' : 'Send reply'}
           </Button>

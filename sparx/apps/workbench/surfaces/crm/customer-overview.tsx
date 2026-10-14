@@ -48,6 +48,7 @@ import { ScorePanel } from './score-panel';
 import { Kpi } from './customer-kpi';
 import { hasVisits, useCustomerVisits, VisitKpis } from './customer-overview-visits';
 import { useModuleStates } from '../../lib/api/shell-data';
+import { loadFailureWords } from '../../lib/api-error';
 import {
   formatDate as formatOrderDate,
   shippingState,
@@ -482,6 +483,8 @@ export function CustomerOverviewTab({
     visits.isPending;
   const anyError =
     dealsQ.isError || tasksQ.isError || ordersQ.isError || activityQ.isError || visits.isError;
+  const loadError =
+    dealsQ.error ?? tasksQ.error ?? ordersQ.error ?? activityQ.error ?? visits.error;
   // A booking is something on the record. "Nothing here yet" under a client
   // booked for Friday was the sentence issue 113 opened with.
   const hasContent =
@@ -536,7 +539,10 @@ export function CustomerOverviewTab({
           <EmptyState
             icon={<AlertTriangle className="size-6" aria-hidden />}
             title="Some of this couldn't load"
-            description={`There was a problem reaching the server, so this customer's ${visits.shown ? 'bookings, ' : ''}deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer. Try again in a moment.`}
+            description={loadFailureWords(
+              loadError,
+              `There was a problem reaching the server, so this customer's ${visits.shown ? 'bookings, ' : ''}deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer. Try again in a moment.`
+            )}
           />
         </Card>
       ) : (

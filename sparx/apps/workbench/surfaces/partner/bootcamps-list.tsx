@@ -100,23 +100,19 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
         }
         statusReady={!isPending}
         statusFailed={isError}
-        controls={
-          <>
-            {canHost ? (
-              <Button
-                color="module"
-                size="sm"
-                className="ml-auto shrink-0 whitespace-nowrap"
-                title="New bootcamp: hold Shift to open alongside, Alt for a new window"
-                onClick={openNew}
-              >
-                <Plus className="size-4" aria-hidden />
-                New bootcamp
-              </Button>
-            ) : (
-              <span className="ml-auto" />
-            )}
-          </>
+        primary={
+          canHost ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              title="New bootcamp: hold Shift to open alongside, Alt for a new window"
+              onClick={openNew}
+            >
+              <Plus className="size-4" aria-hidden />
+              New bootcamp
+            </Button>
+          ) : undefined
         }
         refresh={
           <RefreshButton

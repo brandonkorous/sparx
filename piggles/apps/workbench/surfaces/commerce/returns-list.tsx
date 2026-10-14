@@ -1,36 +1,21 @@
 'use client';
 
-// Returns — everything a customer has asked to send back, and what it still
-// needs from you.
-//
-// The list is opened to answer one question above all: what needs a decision
-// right now? So the filter chips are phrased as the work — "Needs a decision",
-// "Coming back", "To settle" — not as the nine raw statuses the server stores.
-// Each chip maps to ONE server status so what is on screen is always exactly one
-// server answer, never a client-side guess across a paged window.
-//
-// There is no search box: the returns endpoint has nothing to search on (a
-// return keys on its order, which the row already shows), and a box that filters
-// only the loaded page would lie on a list that pages.
+// Returns: what customers asked to send back. Each chip is phrased as the work and
+// pinned to ONE server status, so the list is always one server answer. No search
+// box: the endpoint has nothing to search on, and a page-only filter would lie.
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { PaneLoadError } from '../../components/pane-load-error';
+import { Card, EmptyState } from '@wizeworks/silicaui-react';
 import { faRotateLeft } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { formatDate } from './data';
-import {
-  outcomeLabel,
-  returnState,
-  useReturns,
-  type ReturnStatus,
-  type ReturnSummary,
-} from './returns-data';
+import { useReturns, type ReturnStatus, type ReturnSummary } from './returns-data';
+import { ReturnsTable } from './returns-list-rows';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** The chips are stages of the work, each pinned to ONE server status. "All"
@@ -55,29 +40,129 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
-  const [filter, setFilter] = useState<FilterValue>('all');
+function useReturnsWindow() {
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState<number>(50);
-
-  const active = FILTERS.find((entry) => entry.value === filter) ?? FILTERS[0];
-  const skip = (page - 1) * pageSize;
-  const filtered = filter !== 'all';
-
-  const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useReturns({
-    status: active.status,
+  return {
+    pageSize,
+    page,
     take,
-    skip,
-  });
-
-  const rows = data?.items ?? [];
-  const total = data?.total;
-
-  const resetWindow = () => {
-    setPage(1);
-    setTake(pageSize);
+    skip: (page - 1) * pageSize,
+    reset: () => {
+      setPage(1);
+      setTake(pageSize);
+    },
+    loadMore: () => {
+      setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+    },
+    toPage: (next: number) => {
+      setPage(next);
+      setTake(pageSize);
+    },
+    resize: (size: PageSize) => {
+      setPageSize(size);
+      setPage(1);
+      setTake(size);
+    },
   };
+}
+
+type ReturnsWindow = ReturnType<typeof useReturnsWindow>;
+
+function ReturnsPager(props: {
+  win: ReturnsWindow;
+  rowCount: number;
+  total: number | undefined;
+  busy: boolean;
+}) {
+  const { win, rowCount, total, busy } = props;
+  return (
+    <div className="shrink-0">
+      <ListPagination
+        shown={rowCount}
+        firstRow={rowCount === 0 ? 0 : win.skip + 1}
+        total={total}
+        page={win.page}
+        pageSize={win.pageSize}
+        canLoadMore={win.take < MAX_TAKE}
+        busy={busy}
+        onLoadMore={win.loadMore}
+        onPageChange={win.toPage}
+        onPageSizeChange={win.resize}
+      />
+      {rowCount > 0 ? <RowOpenHint /> : null}
+    </div>
+  );
+}
+
+function ReturnsBody(props: {
+  query: ReturnType<typeof useReturns>;
+  rows: ReturnSummary[];
+  label: string | null;
+  onOpen: (row: ReturnSummary, event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
+  const { query, rows, label, onOpen } = props;
+  const icon = <Icon glyph={faRotateLeft} className="size-6" aria-hidden />;
+  if (query.error) {
+    return (
+      <PaneLoadError
+        icon={icon}
+        title="Could not load your returns"
+        description="This is a problem reaching the server. Your returns are unaffected. Nothing has been lost."
+        error={query.error}
+      />
+    );
+  }
+  if (query.isLoading) return <PaneWaiting label="Loading returns…" />;
+  if (rows.length > 0) return <ReturnsTable rows={rows} onOpen={onOpen} />;
+  return (
+    <EmptyState
+      icon={icon}
+      title={label !== null ? 'Nothing at this stage' : 'No returns yet'}
+      description={
+        label !== null
+          ? `No returns are marked “${label}” right now. Switch back to All to see the rest.`
+          : 'When a customer asks to send something back, it shows up here for you to approve and settle.'
+      }
+    />
+  );
+}
+
+function ReturnsToolbar(props: {
+  filter: FilterValue;
+  onFilter: (next: FilterValue) => void;
+  refresh: ReactNode;
+}) {
+  return (
+    <PaneToolbar
+      label="Returns controls"
+      filters={[
+        {
+          label: 'Show',
+          // Each chip IS one stored status, so that is the name it persists under.
+          key: 'status',
+          value: props.filter,
+          onValueChange: (next) => {
+            props.onFilter((next as FilterValue | null) ?? 'all');
+          },
+          options: FILTERS,
+        },
+      ]}
+      // The stage is the only thing narrowing this list, and the bar holds it.
+      views={{ target: '/commerce/returns' }}
+      refresh={props.refresh}
+    />
+  );
+}
+
+export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const [filter, setFilter] = useState<FilterValue>('all');
+  const win = useReturnsWindow();
+  const active = FILTERS.find((entry) => entry.value === filter) ?? FILTERS[0];
+  const query = useReturns({ status: active.status, take: win.take, skip: win.skip });
+  const { data, isFetching, dataUpdatedAt, refetch } = query;
+  const rows = data?.items ?? [];
 
   const open = (row: ReturnSummary, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.return.detail', { id: row.id }, { target: targetFor(event) });
@@ -85,23 +170,12 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Returns controls"
-        filters={[
-          {
-            label: 'Show',
-            // Each chip IS one stored status, so that is the name it persists under.
-            key: 'status',
-            value: filter,
-            onValueChange: (next) => {
-              setFilter((next as FilterValue | null) ?? 'all');
-              resetWindow();
-            },
-            options: FILTERS,
-          },
-        ]}
-        // The stage is the only thing narrowing this list, and the bar holds it.
-        views={{ target: '/commerce/returns' }}
+      <ReturnsToolbar
+        filter={filter}
+        onFilter={(next) => {
+          setFilter(next);
+          win.reset();
+        }}
         refresh={
           <RefreshButton
             isFetching={isFetching}
@@ -112,114 +186,15 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         }
       />
-
       <Card className="min-h-0 flex-1 overflow-y-auto">
-        {error ? (
-          <EmptyState
-            icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
-            title="Could not load your returns"
-            description="This is a problem reaching the server. Your returns are unaffected. Nothing has been lost."
-          />
-        ) : isLoading ? (
-          <PaneWaiting label="Loading returns…" />
-        ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
-            title={filtered ? 'Nothing at this stage' : 'No returns yet'}
-            description={
-              filtered
-                ? `No returns are marked “${active.label}” right now. Switch back to All to see the rest.`
-                : 'When a customer asks to send something back, it shows up here for you to approve and settle.'
-            }
-          />
-        ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                <th>Order</th>
-                <th className="hidden @lg:table-cell">Customer</th>
-                <th className="hidden @2xl:table-cell">Asked</th>
-                <th className="hidden @xl:table-cell">Wants</th>
-                <th className="text-right @lg:text-left">Items</th>
-                <th>Stage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => {
-                const state = returnState(row.status, row.preferredOutcome);
-                return (
-                  <tr
-                    key={row.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      open(row, event);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      open(row, event);
-                    }}
-                  >
-                    <td className="font-mono text-sm">{row.orderNumber ?? '—'}</td>
-                    <td className="hidden max-w-48 truncate @lg:table-cell">
-                      {/* A null order number means the SALE is gone, and then
-                          "Unknown customer" is a guess dressed as a fact — the
-                          customer is not unknown, there is nobody to know
-                          (issue 225). */}
-                      {row.orderNumber === null
-                        ? 'The sale is gone'
-                        : (row.customerName ?? 'Unknown customer')}
-                    </td>
-                    <td className="hidden text-sm @2xl:table-cell">
-                      {formatDate(row.requestedAt)}
-                    </td>
-                    <td className="hidden @xl:table-cell">{outcomeLabel(row.preferredOutcome)}</td>
-                    <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
-                    <td>
-                      {row.orderNumber === null ? (
-                        <Badge color="warning" variant="soft" size="sm">
-                          Nothing to do
-                        </Badge>
-                      ) : (
-                        <Badge color={state.tone} variant="soft" size="sm">
-                          {state.label}
-                        </Badge>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
-      </Card>
-
-      <div className="shrink-0">
-        <ListPagination
-          shown={rows.length}
-          firstRow={rows.length === 0 ? 0 : skip + 1}
-          total={total}
-          page={page}
-          pageSize={pageSize}
-          canLoadMore={take < MAX_TAKE}
-          busy={isFetching}
-          onLoadMore={() => {
-            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
-          }}
-          onPageChange={(next) => {
-            setPage(next);
-            setTake(pageSize);
-          }}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-            setTake(size);
-          }}
+        <ReturnsBody
+          query={query}
+          rows={rows}
+          label={filter !== 'all' ? active.label : null}
+          onOpen={open}
         />
-        {rows.length > 0 ? <RowOpenHint /> : null}
-      </div>
+      </Card>
+      <ReturnsPager win={win} rowCount={rows.length} total={data?.total} busy={isFetching} />
     </div>
   );
 }

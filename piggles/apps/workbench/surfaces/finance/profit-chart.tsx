@@ -16,21 +16,12 @@
 // two IS the cost of doing the work.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
+import { Chart } from '@wizeworks/silicaui-charts';
 
-export interface ProfitPoint {
-  bucket: string;
-  revenueCents: number;
-  netProfitCents: number;
-}
+import { profitChartOption, type ProfitPoint } from './profit-chart-option';
 
 /** Revenue, profit-positive, profit-negative. */
 const SERIES_TOKENS = ['--color-info', '--color-success', '--color-error'] as const;
-
-function dayLabel(bucket: string): string {
-  const date = new Date(bucket);
-  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' });
-}
 
 export function ProfitChart({ points, currency }: { points: ProfitPoint[]; currency: string }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -52,58 +43,9 @@ export function ProfitChart({ points, currency }: { points: ProfitPoint[]; curre
     return () => observer.disconnect();
   }, []);
 
-  const option = useMemo<EChartsOption>(() => {
-    const [revenueColor, profitColor, lossColor] = colors;
-    const money = (cents: number) =>
-      new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency,
-        maximumFractionDigits: 0,
-      }).format(cents / 100);
-
-    return {
-      grid: { left: 6, right: 12, top: 34, bottom: 2, containLabel: true },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
-        valueFormatter: (value) => money(Number(value)),
-      },
-      legend: { top: 2, right: 2, icon: 'roundRect', itemWidth: 11, itemHeight: 11, itemGap: 16 },
-      xAxis: {
-        type: 'category',
-        data: points.map((point) => dayLabel(point.bucket)),
-        axisTick: { show: false },
-        axisLabel: { hideOverlap: true },
-      },
-      yAxis: {
-        type: 'value',
-        splitNumber: 4,
-        axisLabel: { formatter: (value: number) => money(value) },
-      },
-      series: [
-        {
-          name: 'What you kept',
-          type: 'bar',
-          data: points.map((point) => ({
-            value: point.netProfitCents,
-            // Per-point, so the sign carries the color. This is the whole
-            // reason profit is a bar rather than a second line.
-            itemStyle: {
-              color: point.netProfitCents < 0 ? lossColor : profitColor,
-            },
-          })),
-        },
-        {
-          name: 'Money in',
-          type: 'line',
-          smooth: true,
-          showSymbol: false,
-          ...(revenueColor ? { itemStyle: { color: revenueColor } } : {}),
-          lineStyle: { width: 2 },
-          data: points.map((point) => point.revenueCents),
-        },
-      ],
-    };
+  const option = useMemo(() => {
+    const [revenue, profit, loss] = colors;
+    return profitChartOption(points, { revenue, profit, loss }, currency);
   }, [points, colors, currency]);
 
   return (
@@ -111,7 +53,7 @@ export function ProfitChart({ points, currency }: { points: ProfitPoint[]; curre
       <Chart
         option={option}
         className="h-64! w-full"
-        aria-label="Money in and what you kept, per day"
+        aria-label="Sales and what you kept, per day"
       />
     </div>
   );

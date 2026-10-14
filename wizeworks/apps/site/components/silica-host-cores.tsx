@@ -31,6 +31,7 @@ import { ProductQuestionsCore } from '@/components/products/product-questions-co
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { AccountLink } from '@/components/account/account-link';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
+import { Archive } from '@/components/cms/archive';
 import { ArticleBody } from '@/components/cms/article-body';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LegalFooterLinks, toLegalHeading } from '@/components/legal-footer-links';
@@ -213,6 +214,11 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
         // inside a max-w-3xl, py-10 doubled). The brand core forwards it because it renders
         // an inline mark whose own sizing classes matter; a prose block just fills its shell.
         return <ArticleBody doc={ctx.articleDoc} />;
+      case HOST_KEYS.cmsArchive:
+        // Reads its year from the page's address, and links each year back to it.
+        return (
+          <Archive site={ctx.site} searchParams={ctx.searchParams} basePath={ctx.basePath ?? '/'} />
+        );
       case HOST_KEYS.siteThemeToggle:
         // The light/dark switch — mounted only when the site actually offers both themes
         // (appearance policy `toggle`). Any single-theme or device-follow policy renders

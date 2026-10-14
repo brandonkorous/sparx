@@ -121,6 +121,8 @@ import paymentWebhookRoutes from './routes/v1/webhooks/payments.js';
 import sitemapRoutes from './routes/v1/sitemap.js';
 import rssRoutes from './routes/v1/rss.js';
 import publicContentRoutes from './routes/v1/public/content.js';
+import publicAuthorsRoutes from './routes/v1/public/authors.js';
+import publicArchiveRoutes from './routes/v1/public/archive.js';
 import publicCommerceRoutes from './routes/v1/public/commerce.js';
 import publicMarketRoutes from './routes/v1/public/market.js';
 import publicSearchRoutes from './routes/v1/public/search.js';
@@ -245,6 +247,7 @@ import automationRoutes from './routes/v1/automations/index.js';
 import platformRoutes from './routes/v1/platform/index.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
 import pretty from 'pino-pretty';
+import { ROUTER_OPTIONS } from './router-options.js';
 
 function loggerOptions(): FastifyServerOptions['logger'] {
   if (env.NODE_ENV === 'test') return false;
@@ -872,6 +875,9 @@ export async function createApp(): Promise<FastifyInstance> {
     trustProxy: true,
     disableRequestLogging: false,
     bodyLimit: 5 * 1024 * 1024, // 5 MiB — rich-text bodies, not media (those upload direct-to-GCS).
+    // A product's address can be longer than the router takes by default
+    // (sparx persona issue 213): see router-options.ts.
+    routerOptions: ROUTER_OPTIONS,
   });
 
   // Raw-bytes parser for local-mode media uploads. In prod (GCS) the
@@ -1018,6 +1024,8 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(sitemapRoutes);
   await app.register(rssRoutes);
   await app.register(publicContentRoutes);
+  await app.register(publicAuthorsRoutes);
+  await app.register(publicArchiveRoutes);
   await app.register(publicCommerceRoutes);
   await app.register(publicSearchRoutes);
   await app.register(publicCartRoutes);

@@ -37,5 +37,5 @@ export function stockRefusalOf(body: unknown): StockRefusal | null {
 export function stockRefusalSentence(refusal: StockRefusal | null): string {
   if (!refusal || refusal.available <= 0) return 'Sorry, this item just sold out.';
   const n = refusal.available;
-  return `Sorry, only ${String(n)} ${n === 1 ? 'is' : 'are'} left to buy, counting any already in your basket. Lower the quantity and try again.`;
+  return `Sorry, only ${String(n)} ${n === 1 ? 'is' : 'are'} left to buy, counting any already in your cart. Lower the quantity and try again.`;
 }

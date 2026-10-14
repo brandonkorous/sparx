@@ -41,6 +41,7 @@ import { CalendarOff, Clock, Plus, Trash2, Users, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
   WEEK_DAYS,
@@ -867,9 +868,11 @@ export function AvailabilitySurface({ ctx }: { ctx?: SurfaceContext }) {
 
           <Body
             resources={resources.isError}
+            resourcesLoadError={resources.error}
             resourcesPending={resources.isPending}
             noResources={noResources}
             windowsError={windowsQuery.isError}
+            windowsLoadError={windowsQuery.error}
             windowsPending={resourceId !== null && windowsQuery.isPending}
             onRetry={refreshAll}
           >
@@ -933,17 +936,21 @@ export function AvailabilitySurface({ ctx }: { ctx?: SurfaceContext }) {
  *  rather than rendering an empty week beside a dead Save. */
 function Body({
   resources,
+  resourcesLoadError,
   resourcesPending,
   noResources,
   windowsError,
+  windowsLoadError,
   windowsPending,
   onRetry,
   children,
 }: {
   resources: boolean;
+  resourcesLoadError: unknown;
   resourcesPending: boolean;
   noResources: boolean;
   windowsError: boolean;
+  windowsLoadError: unknown;
   windowsPending: boolean;
   onRetry: () => void;
   children: React.ReactNode;
@@ -958,17 +965,12 @@ function Body({
 
   if (resources) {
     return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load your people & equipment</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Your hours are unaffected.
-          </AlertDescription>
-        </AlertContent>
-        <Button size="sm" color="error" variant="soft" onClick={onRetry}>
-          Try again
-        </Button>
-      </Alert>
+      <PaneLoadError
+        title="Could not load your people & equipment"
+        description="This is a problem reaching the server. Your hours are unaffected."
+        error={resourcesLoadError}
+        onRetry={onRetry}
+      />
     );
   }
 
@@ -991,17 +993,12 @@ function Body({
 
   if (windowsError) {
     return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load these hours</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing about the hours has changed.
-          </AlertDescription>
-        </AlertContent>
-        <Button size="sm" color="error" variant="soft" onClick={onRetry}>
-          Try again
-        </Button>
-      </Alert>
+      <PaneLoadError
+        title="Could not load these hours"
+        description="This is a problem reaching the server. Nothing about the hours has changed."
+        error={windowsLoadError}
+        onRetry={onRetry}
+      />
     );
   }
 

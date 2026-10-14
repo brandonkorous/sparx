@@ -240,6 +240,20 @@ stdout, not the app's:
 Set `SPARX_EMAIL_LOG_HTML=1` for HTML. If you did not go and read it, write "not
 checked". Never report an email as sent because a screen said so.
 
+**Every email is also a file (Piggles issue [980](../../../piggles/docs/personas/issues/980-dev-email-could-only-be-read-in-a-terminal.md)).**
+The console provider writes each send, from whichever process sent it, to
+`.dev-outbox/` at the repo root: a `.json` (to, subject, text, html, and its
+`links`) and an `.html` to open in a browser. Read it with:
+
+```
+pnpm dev:mail                  # the 10 newest, with their links
+pnpm dev:mail rosalind         # only those to an address containing "rosalind"
+pnpm dev:mail rosalind --last  # just the newest one's first link, to open
+```
+
+So a confirm link, an invite, a reset or a newsletter is opened by its link,
+not copied out of a terminal you cannot see. Nothing in production writes it.
+
 ### Where things run
 
 | Surface              | Port                        | What you use it for                   |

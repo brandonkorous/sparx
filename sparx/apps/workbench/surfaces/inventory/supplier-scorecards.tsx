@@ -39,6 +39,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Calculator, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -125,10 +126,11 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
     // suppliers, and both messages below would read as one.
     if (report.isError) {
       return (
-        <EmptyState
+        <PaneLoadError
           icon={<Truck className="size-6" aria-hidden />}
           title="Could not load your suppliers’ figures"
           description="This is a problem reaching the server, not a finding about anybody you buy from. Try again in a moment."
+          error={report.error}
         />
       );
     }

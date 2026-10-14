@@ -23,6 +23,11 @@
 // shared shell caps everything at `max-w-6xl`. So the section here is its own outer
 // element (still `@container`, still the house rhythm), and only the CONTENT is capped —
 // the picture is allowed the whole width, which is the entire point of the shape.
+//
+// THE CAP IS THE HOUSE MEASURE, `mx-auto max-w-6xl px-6`, at every width. The panel's
+// box used to widen its gutter to `@3xl:px-10`, which put the panel 16px right of the
+// header's name on every desktop while the rest of the page sat on it (piggles persona
+// issue 950). Stored bands are moved by `measureRepair` (`page-measure.ts`).
 
 import { el, type Node } from '@wizeworks/silicaui-html';
 
@@ -59,7 +64,7 @@ function overlayBand(opts: {
       backdrop(opts.alt),
       el(
         'div',
-        `relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-20${
+        `relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:py-20${
           opts.tall ? ' min-h-96' : ''
         }`,
         {
@@ -133,9 +138,9 @@ export function lookbookTiles(): Node {
         ],
       }
     );
-  return el('section', 'bg-base-100 @container px-6 py-16', {
+  return el('section', 'bg-base-100 @container py-16', {
     children: [
-      el('div', 'mx-auto flex w-full max-w-6xl flex-col gap-10', {
+      el('div', 'mx-auto flex w-full max-w-6xl px-6 flex-col gap-10', {
         children: [
           el('h2', 'text-3xl font-semibold text-base-content @3xl:text-4xl', {
             text: 'Explore the range',

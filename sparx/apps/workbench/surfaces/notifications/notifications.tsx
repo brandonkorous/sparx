@@ -102,7 +102,7 @@ function CategoryRow({
 
 export function NotificationsSurface() {
   const toast = useToast();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } =
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
     useNotificationPreferences();
   const save = useSaveNotificationPreferences();
 
@@ -125,6 +125,7 @@ export function NotificationsSurface() {
       <PaneLoadError
         title="Could not load your notification choices"
         description="Nothing has changed. This is a problem reaching the server, not with your saved choices."
+        error={error}
         onRetry={() => {
           void refetch();
         }}

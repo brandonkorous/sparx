@@ -187,7 +187,7 @@ export type { BillingTemplateDto } from './billing-template-service';
 // this package answer that question and each had grown its own arithmetic. One
 // rule, so a screen, an aging report and the dunning ladder can never disagree
 // about whether the same invoice is late.
-export { daysPastDue, dueDayAfter } from './billing-ar';
+export { daysPastDue, dueDayAfter, startOfBusinessDay } from './billing-ar';
 export { businessTimeZone } from './business-clock';
 // The default renderer + the shared print section builders the builder-authored
 // template renderer (api-rest's renderInvoiceTree) composes (docs/87 §10).
@@ -220,6 +220,9 @@ export * as reportingService from './reporting-service';
 // from `reportingService` above, which is the seven sparx wrote by hand.
 export * as reportService from './report-service';
 export * as dashboardService from './dashboard-service';
+// Who may see a board, report or saved paragraph its maker chose whether to
+// share (persona issue 264). Search reads it too, to say who may find one.
+export * as ownerVisibility from './owner-visibility';
 // Lead + deal scoring (docs/144 §10). `scoringFields` is exported alongside the
 // service because the rule editor needs the field catalog to offer choices, and
 // api-rest serves it from the same allowlist the evaluator reads — so a person
@@ -230,7 +233,7 @@ export * as scoringFields from './scoring-fields';
 export * as reportCompiler from './report-compiler';
 export { seedBuiltinReports, BUILTIN_REPORTS } from './report-builtins';
 export type { ReportDefinition, ReportResult } from './report-compiler';
-export type { DashboardWithWidgets } from './dashboard-service';
+export type { BoardWidget, DashboardWithWidgets } from './dashboard-service';
 
 // Invoicing reporting (docs/87 §8, docs/97 §5) — collected/billed timeseries
 // from the `rollup_invoicing_daily_collected` rollup, with the same nightly

@@ -11,43 +11,58 @@ import { mediaUrl } from '@/lib/media';
 
 interface ArticleJsonLdProps {
   post: ApiEntry<BlogPostBody>;
-  site: { slug: string; name: string };
+  site: { slug: string; name: string; siteOrigin?: string | null };
+  /** Where the piece lives. A blog post's is `/blog/<slug>`; a piece of another kind
+   *  passes its own (`/articles/<slug>`), along with the fields its kind names
+   *  differently from a post's `title` / `excerpt` / `featuredImage`. */
+  path?: string;
+  headline?: string;
+  description?: string;
+  image?: string | null;
+  /** `Article` for a kind that is not the blog. */
+  schemaType?: 'BlogPosting' | 'Article';
 }
 
 const str = (v: unknown): string | undefined => (typeof v === 'string' && v ? v : undefined);
 
-export async function ArticleJsonLd({ post, site }: ArticleJsonLdProps) {
+export async function ArticleJsonLd(props: ArticleJsonLdProps) {
+  const { post, site } = props;
   const body = post.body ?? {};
   const seo = post.seo ?? {};
 
-  const headline = str(seo.title) ?? str(body.title) ?? site.name;
-  const description = str(seo.description) ?? str(body.excerpt);
+  const headline = str(seo.title) ?? str(props.headline) ?? str(body.title) ?? site.name;
+  const description = str(seo.description) ?? str(props.description) ?? str(body.excerpt);
   // The featured image is the best article image; it's a media-asset id (or an
   // absolute URL) — mediaUrl resolves both to an absolute, CDN-served URL.
-  const image = mediaUrl(
-    typeof body.featuredImage === 'string' ? body.featuredImage : null,
-    site.slug
-  );
+  const image =
+    props.image !== undefined
+      ? props.image
+      : mediaUrl(typeof body.featuredImage === 'string' ? body.featuredImage : null, site.slug);
+  const path = props.path ?? (post.slug ? `/blog/${post.slug}` : undefined);
 
-  // Absolute canonical for mainEntityOfPage. The tenant origin is whatever host
-  // served this request (slug.sparx.zone or a custom domain), so read it off the
-  // forwarded host like the root layout's metadataBase does.
+  // Absolute address for mainEntityOfPage: the site's own origin, the host its
+  // canonical link and sitemap name. It read the host that served the request with
+  // `https://` in front, so on a plain-http host it named an address that does not
+  // answer, and on a second host it named a second address for one piece.
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host');
-  const url = host && post.slug ? `https://${host}/blog/${post.slug}` : undefined;
+  const origin = site.siteOrigin ?? (host ? `https://${host}` : undefined);
+  const url = origin && path ? `${origin}${path}` : undefined;
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': props.schemaType ?? 'BlogPosting',
     headline,
     ...(description ? { description } : {}),
     ...(image ? { image: [image] } : {}),
     ...(post.published_at ? { datePublished: post.published_at } : {}),
     dateModified: post.updated_at,
     ...(url ? { mainEntityOfPage: { '@type': 'WebPage', '@id': url } } : {}),
-    // No first-class author field on a blog_post yet — attribute to the tenant
-    // as the publishing organization. Swap to a Person once authors are modeled.
-    author: { '@type': 'Organization', name: site.name },
+    // The writer the piece names, once it names one (the CMS author picker). Without
+    // one, the business itself is who published it.
+    author: post.author?.display_name
+      ? { '@type': 'Person', name: post.author.display_name }
+      : { '@type': 'Organization', name: site.name },
     publisher: { '@type': 'Organization', name: site.name },
   };
 

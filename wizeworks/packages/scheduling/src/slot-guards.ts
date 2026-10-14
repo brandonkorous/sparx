@@ -47,6 +47,30 @@ interface Candidate {
   timezone: string;
 }
 
+const MINUTE_MS = 60 * 1000;
+
+/**
+ * The time a booking needs: the job itself (`booked`), widened by the minutes its
+ * service keeps free before and after it. Every check runs on the widened span;
+ * a refusal names the time that was asked for (sparx persona issue 229).
+ */
+export interface KeptSpan extends Interval {
+  booked?: Interval;
+}
+
+export function keptSpan(
+  startAt: Date,
+  service: { durationMinutes: number; bufferBeforeMin: number; bufferAfterMin: number }
+): KeptSpan {
+  const start = startAt.getTime();
+  const end = start + service.durationMinutes * MINUTE_MS;
+  return {
+    start: start - service.bufferBeforeMin * MINUTE_MS,
+    end: end + service.bufferAfterMin * MINUTE_MS,
+    booked: { start, end },
+  };
+}
+
 /** The local day `at` falls on, as a UTC interval. */
 function localDayOf(at: number, timezone: string): Interval {
   const [day] = eachLocalDay(at, at + 1, timezone);
@@ -215,6 +239,59 @@ function closedText(reason: Extract<BlockReason, { kind: 'closed' }>, timezone: 
   return `Nothing can be booked then: ${named} runs from ${from} to ${to}.`;
 }
 
+function minutesText(ms: number): string {
+  const n = Math.round(ms / MINUTE_MS);
+  return `${n} minute${n === 1 ? '' : 's'}`;
+}
+
+/**
+ * The sentence for a job that starts inside the working day and does not fit in
+ * it: it runs past closing, or the time kept free before it falls before opening.
+ * Null when nobody works at the time asked for, which is the plain "not working".
+ *
+ * "No one is working at 4:30 PM" was said of a 4:30 PM oil change at a shop open
+ * until 5:30 PM: everyone was working; the job and its 15 minutes of clean-up ran to
+ * 5:45 PM (sparx persona issue 229).
+ */
+function overrunText(
+  hours: Extract<BlockReason, { kind: 'hours' }>[],
+  span: KeptSpan
+): string | null {
+  const asked = span.booked ?? span;
+  const tz = hours[0]?.timezone ?? 'UTC';
+  const around = hours
+    .flatMap((h) => h.open)
+    .filter((iv) => iv.start <= asked.start && asked.start < iv.end);
+  if (around.length === 0) return null;
+  const clock = (at: number) => clockText(at, tz);
+  const who = hours.length === 1 ? hours[0]?.resourceName : undefined;
+  const lead = `At ${clock(asked.start)} on ${dayText(asked.start, tz)}`;
+  const before = asked.start - span.start;
+  const close = Math.max(...around.map((iv) => iv.end));
+  if (span.end > close) {
+    const after = span.end - asked.end;
+    const kept = after > 0 ? `, counting the ${minutesText(after)} kept free after it` : '';
+    const stops = who
+      ? `${who} stops working at ${clock(close)}`
+      : `the working day ends at ${clock(close)}`;
+    const latest = close - (span.end - asked.start);
+    const fits = around.some((iv) => iv.end === close && latest - before >= iv.start);
+    const hint = fits ? ` The latest it can start is ${clock(latest)}.` : '';
+    return `${lead} it would run until ${clock(span.end)}${kept}, and ${stops}.${hint}`;
+  }
+  const open = Math.min(...around.map((iv) => iv.start));
+  if (span.start >= open) return null;
+  const starts = who
+    ? `${who} starts work at ${clock(open)}`
+    : `the working day starts at ${clock(open)}`;
+  const earliest = open + before;
+  const fits = around.some(
+    (iv) => iv.start === open && earliest + (span.end - asked.start) <= iv.end
+  );
+  const hint = fits ? ` The earliest it can start is ${clock(earliest)}.` : '';
+  return `${lead} it needs the ${minutesText(before)} before it kept free, from ${clock(span.start)}, and ${starts}.${hint}`;
+}
+
 /**
  * The sentence for a request nobody could take.
  *
@@ -225,7 +302,7 @@ function closedText(reason: Extract<BlockReason, { kind: 'closed' }>, timezone: 
  */
 export function blockedError(
   reasons: BlockReason[],
-  span: Interval,
+  span: KeptSpan,
   fallbackTimezone: string
 ): SchedulingError {
   const closed = reasons.find((r) => r.kind === 'closed');
@@ -235,8 +312,13 @@ export function blockedError(
   const first = hours[0];
   if (!first || hours.length !== reasons.length) return new SlotUnavailableError();
 
-  const when = dayText(span.start, first.timezone);
-  const clock = clockText(span.start, first.timezone);
+  const overrun = overrunText(hours, span);
+  if (overrun) return new OutsideWorkingHoursError(overrun);
+
+  // The time that was asked for, not the start of the time kept free before it.
+  const asked = span.booked ?? span;
+  const when = dayText(asked.start, first.timezone);
+  const clock = clockText(asked.start, first.timezone);
 
   // More than one candidate was ruled out, so nobody was singled out either: an
   // operator who pinned nobody did not ask about Dara, and naming her reads as an

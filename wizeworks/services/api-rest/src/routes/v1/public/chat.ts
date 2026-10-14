@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { ok } from '@wizeworks/api-core/envelope';
 
 import { publicChatContext, readChatToken } from '../../../lib/chat-context.js';
+import { optionalCustomer } from '../../../lib/customer-session.js';
 import {
   conversationService,
   getChatConfig,
@@ -57,8 +58,15 @@ const publicChatRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/public/chat/conversations', async (request, reply) => {
     const { ctx, propertyId } = await publicChatContext(request);
     const input = StartInput.parse(request.body);
+    // A shopper signed in on this site is somebody, not a typed address (sparx
+    // persona issue 164): the chat is tied to their customer record, which the
+    // inbox shows as the customer rather than a "Possible customer". Only the
+    // site's same-origin relay carries the sign-in cookie, so a chat started
+    // straight at this origin stays anonymous, exactly as before.
+    const shopper = await optionalCustomer(request, { tenantId: ctx.tenantId });
     const visitorToken = conversationService.generateVisitorToken();
     const { conversation } = await conversationService.create(ctx, {
+      ...(shopper ? { customerId: shopper.customerId } : {}),
       // The site the widget is embedded on (docs/131 §3.7) — routes the thread to
       // that business's inbox and gives the AI responder a voice to answer in.
       propertyId,

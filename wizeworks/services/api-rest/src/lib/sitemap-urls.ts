@@ -4,7 +4,14 @@
 // database, this decides what the readings mean. It is also the half that has been
 // wrong twice, both times silently, because a sitemap has no reader who complains.
 
-import { isRecordAddress, isUtilityPage, starterPages } from '@wizeworks/silica-catalog';
+import {
+  hostKeysIn,
+  isRecordAddress,
+  isUtilityPage,
+  moduleForKey,
+  moduleForPath,
+  starterPages,
+} from '@wizeworks/silica-catalog';
 import type { SiteChromeOptions } from '@wizeworks/builder';
 
 /**
@@ -99,4 +106,37 @@ function isEmptyIndex(path: string, content: SiteContent): boolean {
     default:
       return false;
   }
+}
+
+/**
+ * Every module this site does not show: the ones its "What this site shows" card
+ * switched off, and the ones the account does not have.
+ *
+ * The sitemap used to ask this only of the starter pass. A page a blueprint PUBLISHED
+ * was listed whatever the switches said, so a journal with Selling and Bookings off
+ * still told search engines about `/shop`, `/products`, `/collections`, `/category`,
+ * `/book` and two collections. The site answers every one of those with a 404 (P09).
+ */
+export function modulesOff(
+  modules: SiteChromeOptions,
+  siteOff: readonly string[]
+): ReadonlySet<string> {
+  const off = new Set<string>(siteOff);
+  if (!modules.commerceEnabled) off.add('commerce');
+  if (!modules.schedulingEnabled) off.add('scheduling');
+  if (!modules.cmsEnabled) off.add('cms');
+  return off;
+}
+
+/**
+ * Whether a published page is one this site still shows.
+ *
+ * The same two questions the site's own gate asks: does a switched-off module own
+ * the ADDRESS (`/products`, `/book`), and does the page carry a switched-off
+ * module's live block (a page called "Shop" is a product grid with a heading).
+ * A page that only links to the shop is kept.
+ */
+export function pageShownOnSite(path: string, tree: unknown, off: ReadonlySet<string>): boolean {
+  const owners = [moduleForPath(path), ...hostKeysIn(tree).map(moduleForKey)];
+  return owners.every((owner) => owner === null || !off.has(owner));
 }

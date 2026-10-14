@@ -37,10 +37,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
   Badge,
   Button,
   EmptyState,
@@ -57,6 +53,7 @@ import {
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Tags, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { MoneyInput } from '@/components/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTabSave } from './product-tab-save';
@@ -321,25 +318,15 @@ export function ProductPricingTab({ ctx, product }: { ctx: SurfaceContext; produ
   // beside a Save that would write zeroes over real prices.
   if (variantsQuery.isError) {
     return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server. Nothing about your prices has changed. They just
-            could not be read just now.
-          </AlertDescription>
-        </AlertContent>
-        <Button
-          size="sm"
-          color="error"
-          variant="soft"
-          onClick={() => {
-            void variantsQuery.refetch();
-          }}
-        >
-          Try again
-        </Button>
-      </Alert>
+      <PaneLoadError
+        title="Could not load this product's prices"
+        description="This is a problem reaching the server. Nothing about your prices has changed. They just could not be read just now."
+        error={variantsQuery.error}
+        noun="product"
+        onRetry={() => {
+          void variantsQuery.refetch();
+        }}
+      />
     );
   }
 

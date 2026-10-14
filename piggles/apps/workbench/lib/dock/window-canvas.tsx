@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import type { WindowMode } from '../window-mode';
 import { zoomPercent, type ZoomLevel } from '../window-zoom';
 import type { WindowCanvasHandle } from './use-window-canvas';
+import { CANVAS_LIST_END_CLEARANCE } from '@/components/canvas-corner';
 
 export { useWindowCanvas, type WindowCanvasHandle } from './use-window-canvas';
 
@@ -34,7 +35,10 @@ export function WindowCanvas({
     // keeps clear by answering this attribute (see ListPagination), so the
     // knowledge stays with the thing that mounts them rather than being a second
     // viewport media query guessing at the same fact.
-    <div className="relative h-full" data-canvas-tools={tools ? '' : undefined}>
+    <div
+      className={tools ? `relative h-full ${CANVAS_LIST_END_CLEARANCE}` : 'relative h-full'}
+      data-canvas-tools={tools ? '' : undefined}
+    >
       <div ref={handle.frameRef} className="h-full overflow-auto">
         <div ref={handle.clipRef} className="relative h-full w-full overflow-clip">
           <div

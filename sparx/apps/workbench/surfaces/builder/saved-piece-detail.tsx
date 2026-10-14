@@ -44,6 +44,7 @@ import { FormSection } from '../../components/form-section';
 import { useActivePropertyId } from '../../lib/api/shell-data';
 import { namesSites } from './saved-piece-usage-words';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   countBlocks,
@@ -67,6 +68,7 @@ export function SavedPieceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     data: piece,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -93,26 +95,15 @@ export function SavedPieceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (isError) {
     return (
-      <div className="flex h-full items-center justify-center p-8">
-        <Alert color="error" className="max-w-md">
-          <AlertContent>
-            <AlertTitle>Could not load this piece</AlertTitle>
-            <AlertDescription>
-              This is a problem reaching the server. The piece itself is unaffected.
-            </AlertDescription>
-          </AlertContent>
-          <Button
-            size="sm"
-            color="error"
-            variant="soft"
-            onClick={() => {
-              void refetch();
-            }}
-          >
-            Try again
-          </Button>
-        </Alert>
-      </div>
+      <PaneLoadError
+        title="Could not load this piece"
+        description="This is a problem reaching the server. The piece itself is unaffected."
+        error={error}
+        noun="piece"
+        onRetry={() => {
+          void refetch();
+        }}
+      />
     );
   }
 

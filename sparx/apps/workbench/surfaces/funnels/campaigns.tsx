@@ -112,7 +112,7 @@ function FirstCampaign({ canEdit, onNew }: { canEdit: boolean; onNew: () => void
     <EmptyState
       icon={<Target className="size-6" aria-hidden />}
       title="No campaigns yet"
-      description="A campaign is a named path to an outcome: somebody finds your page, leaves their details, and eventually buys something or books you in. Set one up and you will be able to see how many people made it to each step, and where they stopped."
+      description="A campaign is a named path to an outcome: somebody finds your page, leaves their details, and in the end does what you were hoping for: signs up, books in or buys. Set one up and you will be able to see how many people made it to each step, and where they stopped."
       actions={
         canEdit ? (
           <Button color="module" size="sm" onClick={onNew}>
@@ -160,6 +160,7 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
             funnels.error,
             'This is a problem reaching the server. Nothing about your campaigns has changed.'
           )}
+          error={funnels.error}
           onRetry={() => {
             void funnels.refetch();
           }}
@@ -183,6 +184,22 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           </div>
         }
+        primary={
+          canEdit ? (
+            <Button
+              color="module"
+              size="sm"
+              className="ml-auto shrink-0 whitespace-nowrap"
+              title="Start a new campaign. Hold Shift to open alongside, Alt for a new window"
+              onClick={(event) => {
+                openCampaign('new', event);
+              }}
+            >
+              <Plus className="size-4" aria-hidden />
+              New campaign
+            </Button>
+          ) : undefined
+        }
         controls={
           <>
             <Select
@@ -200,20 +217,6 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
                 { value: 'archived', label: 'Archived' },
               ]}
             />
-            {canEdit ? (
-              <Button
-                color="module"
-                size="sm"
-                className="ml-auto shrink-0 whitespace-nowrap"
-                title="Start a new campaign. Hold Shift to open alongside, Alt for a new window"
-                onClick={(event) => {
-                  openCampaign('new', event);
-                }}
-              >
-                <Plus className="size-4" aria-hidden />
-                New campaign
-              </Button>
-            ) : null}
           </>
         }
         refresh={

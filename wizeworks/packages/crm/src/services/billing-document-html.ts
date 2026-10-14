@@ -72,9 +72,21 @@ export interface BillingRenderLine {
   description: string;
   quantity: number;
   unitPrice: number;
-  lineTotal: number;
+  /**
+   * What the row is worth before tax: quantity times unit price, the figure the
+   * Subtotal adds up and the editor shows. Tax is printed once, in the totals.
+   * The row printed the line's total with its tax added in, "2 · $12.50 ·
+   * $26.81", which no accounts clerk can make add up (sparx persona issue 227).
+   */
+  amount: number;
   taxable: boolean;
 }
+
+/** A saved or drafted line, as the three render paths hold it. */
+export type BillingSourceLine = Omit<BillingRenderLine, 'amount'> & {
+  lineSubtotal: number;
+  coreCharge?: number | null;
+};
 
 export interface BillingRenderTotals {
   subtotal: number;
@@ -93,15 +105,15 @@ export interface BillingRenderTotals {
 }
 
 /**
- * The render lines with a rebuilt part's core deposit as its own row under the
- * part (sparx issue 051). One place, so the live document, a frozen snapshot and
- * an unsaved draft all print it the same way.
+ * The printed rows: each line at its amount before tax (sparx persona issue
+ * 227), with a rebuilt part's core deposit as its own row under the part (sparx
+ * issue 051). One place, so the live document, a frozen snapshot and an unsaved
+ * draft all print it the same way.
  */
-export function withCoreRows(
-  lines: readonly (BillingRenderLine & { coreCharge?: number | null })[]
-): BillingRenderLine[] {
-  return lines.flatMap(({ coreCharge, ...line }) =>
-    coreCharge == null
+export function withCoreRows(lines: readonly BillingSourceLine[]): BillingRenderLine[] {
+  return lines.flatMap(({ coreCharge, lineSubtotal, ...rest }) => {
+    const line: BillingRenderLine = { ...rest, amount: lineSubtotal };
+    return coreCharge == null
       ? [line]
       : [
           line,
@@ -110,11 +122,11 @@ export function withCoreRows(
             description: `Refundable core deposit: ${line.description}. Paid back when the old part is returned.`,
             quantity: line.quantity,
             unitPrice: coreCharge,
-            lineTotal: Math.round(coreCharge * line.quantity * 100) / 100,
+            amount: Math.round(coreCharge * line.quantity * 100) / 100,
             taxable: false,
           },
-        ]
-  );
+        ];
+  });
 }
 
 export interface BillingRenderPaymentRow {
@@ -318,7 +330,7 @@ export function lineTableHtml(data: BillingRenderData): string {
               </td>
               <td class="num">${qty(l.quantity)}</td>
               <td class="num">${formatMoney(l.unitPrice, currency)}</td>
-              <td class="num">${formatMoney(l.lineTotal, currency)}</td>
+              <td class="num">${formatMoney(l.amount, currency)}</td>
             </tr>`;
           })
           .join('');

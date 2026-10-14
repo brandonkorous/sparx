@@ -121,3 +121,6 @@ apps-workbench-reverted-*.patch
 # build output: `npm run marks && npm run build && npm run render:all` rebuilds
 # the whole set from @piggles/brand geometry in about two minutes.
 videos/
+
+# Dev email: every console-provider send, as files (scripts/dev-mail.mjs)
+.dev-outbox/

@@ -412,4 +412,14 @@
     border-radius: var(--radius-box, 16px);
     overflow: hidden;
   }
+
+  /* An email address is one word with no place to break, and it is the text most
+     often put in a narrow column: a footer's "Write to us", a contact card. At 390px
+     `editors@marrowreview.co.uk` ran past its grid track and off the screen, cut at
+     `.co.u` (P09). Breaking anywhere also lets the column it sits in shrink to fit,
+     which a plain `break-word` does not. An author's own `wrap-*` utility still wins
+     (this layer sits below utilities). */
+  a[href^='mailto:'] {
+    overflow-wrap: anywhere;
+  }
 } /* end @layer bx-legacy */

@@ -106,7 +106,10 @@ describe('the statement read', () => {
     // quotes and estimates out, the stage clause keeps drafts and voids out.
     expect(where.workflow).toEqual(ISSUED_BILL_WHERE.workflow);
     expect(where.stage).toEqual(ISSUED_BILL_WHERE.stage);
-    expect(where.createdAt).toEqual({ lt: new Date('2026-10-03T00:00:00.000Z') });
+    // A day past the period's last day: the cut is made on the business's day in
+    // computeStatement, and a bill raised on the evening of Oct 2 in Denver was
+    // made after midnight UTC (sparx persona issue 146).
+    expect(where.createdAt).toEqual({ lt: new Date('2026-10-04T00:00:00.000Z') });
   });
 
   it("carries the buyer's PO number from each bill onto its rows", async () => {

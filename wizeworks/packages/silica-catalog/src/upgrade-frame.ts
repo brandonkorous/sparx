@@ -34,6 +34,7 @@
 import { bind, type Node } from '@wizeworks/silicaui-html';
 
 import { HOST_KEYS, hostCore } from './host-nodes';
+import { headerToInsideMeasure, insideMeasure, isCapturedHeader } from './page-measure';
 
 /** silica's legacy brand primitive — a text-only `Wordmark` component node. */
 const LEGACY_BRAND_COMPONENT = 'Wordmark';
@@ -532,7 +533,15 @@ export function bindFooterBlurb(footer: Node): Node {
  *      (issue 326). Measured against all 191 shipped designs rather than argued: the first
  *      handle read "the empty row beside the brand core" and reached 122 of them.
  *   5. **Footer blurb** — the line the platform wrote under the business name becomes
- *      the owner's tagline, bound, with a plain fallback (sparx persona issue 046). */
+ *      the owner's tagline, bound, with a plain fallback (sparx persona issue 046).
+ *   6. **Page measure**: the header and footer start their content on the same left
+ *      edge as every band between them (piggles persona issue 950). The captured golden
+ *      header was a full-width bar with no measure, and the captured golden footer put
+ *      its gutter outside its 6xl box, so on a wide screen the 22 designs built from
+ *      that capture drew a name at the far left, a page 24px in from the house edge and
+ *      a footer 24px out from it. Both move into `mx-auto max-w-6xl px-6`, the measure
+ *      silica's own navbar and footer already use. Runs LAST: the brand repair above
+ *      reads the header's direct children, and this one moves them into a box. */
 export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean } {
   if (!isElement(root)) return { root, changed: false };
 
@@ -593,6 +602,16 @@ export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean }
     upgradeFooterAccountColumn(footer, !hasLinkTo(footer, '/account/returns'))
   );
   healRegion('footer', upgradeFooterBlurb);
+
+  // The header first: the captured bar is the frame's first `<nav>`. Any band in the
+  // frame drawn the outside way follows, the footer among them, through the same rule
+  // the page heal and the marketplace generators run.
+  healRegion('nav', (nav) => (isCapturedHeader(nav) ? headerToInsideMeasure(nav) : null));
+  const measured = insideMeasure(next);
+  if (measured.changed && isElement(measured.root)) {
+    next = measured.root;
+    changed = true;
+  }
 
   return { root: next, changed };
 }

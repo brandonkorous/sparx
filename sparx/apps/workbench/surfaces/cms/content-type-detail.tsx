@@ -22,7 +22,7 @@
 // EditorLayout — the field builder IS the work and wants the full width of one
 // centred, capped column, not a bento with a near-empty rail.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
 import {
   Alert,
   AlertContent,
@@ -34,6 +34,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  FieldStatus,
   Heading,
   Input,
   NativeSelect,
@@ -50,6 +51,7 @@ import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { contentErrorMessage } from './data';
+import { patternNote } from './pattern-words';
 // The three sentences that reckon with how much content uses a type. Kept in a
 // leaf module so the "a map that has not arrived is not a zero" rule is stated
 // once and tested.
@@ -111,6 +113,10 @@ const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
     hint: 'Points at another entry: a post to its author, a recipe to a chef.',
   },
   asset: { label: 'Image or file', hint: 'Pick from your media library, or upload something.' },
+  author: {
+    label: 'One of your authors',
+    hint: 'Credits a person from your Authors list: a photographer, an illustrator. Their page lists it.',
+  },
   object: { label: 'Group', hint: 'A set of related fields bundled under one heading.' },
   repeater: {
     label: 'Repeating group',
@@ -202,6 +208,8 @@ function createPayload(draft: TypeDraft): CreateTypeInput {
 function metaProblem(draft: TypeDraft, forCreate: boolean): string | null {
   if (draft.name.trim() === '') return 'Give this type a name.';
   if (draft.pluralName.trim() === '') return 'Fill in the plural name.';
+  const address = patternNote(draft.urlPattern, draft.name);
+  if (address && !address.ok) return address.text;
   if (forCreate) {
     const key = draft.key.trim();
     if (key === '') return 'Give this type a short id.';
@@ -655,6 +663,8 @@ function MetaForm({
   const set = <K extends keyof TypeDraft>(key: K, value: TypeDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
+  // Where each one will live, said while she types the pattern (`pattern-words.ts`).
+  const addressNote = patternNote(draft.urlPattern, draft.name);
 
   return (
     <FormSection title="About this type" description="What you call it and where it lives.">
@@ -777,6 +787,13 @@ function MetaForm({
           Where these appear on your site. Use {'{slug}'} for the part that changes per entry: e.g.
           /recipes/{'{slug}'}. Leave it empty if this content does not get its own page.
         </FieldDescription>
+        {addressNote ? (
+          addressNote.ok ? (
+            <FieldDescription>{addressNote.text}</FieldDescription>
+          ) : (
+            <FieldStatus status="warning">{addressNote.text}</FieldStatus>
+          )
+        ) : null}
       </Field>
 
       <div className="flex items-start gap-2">
@@ -1240,33 +1257,37 @@ function FieldConfig({ field, depth, siblingKeys, typeOptions, onChange }: Field
 
 /* ── Per-type extras ────────────────────────────────────────────────────── */
 
+/**
+ * A whole-number box. Its own callback is `onValueChange`: `FieldControl`
+ * merges its change-EVENT handler into `onChange`, and handed a number that
+ * handler threw on every keystroke (sparx persona issue 148). The field's props
+ * (its id, its label's id, the event) pass through to the input.
+ */
 function NumInput({
   value,
+  onValueChange,
   onChange,
-  placeholder,
-  min,
-}: {
+  ...rest
+}: Omit<ComponentProps<typeof Input>, 'value'> & {
   value: number | undefined;
-  onChange: (next: number | undefined) => void;
-  placeholder?: string;
-  min?: number;
+  onValueChange: (next: number | undefined) => void;
 }) {
   return (
     <Input
       color="module"
       type="number"
       inputMode="numeric"
+      {...rest}
       value={value === undefined ? '' : String(value)}
-      placeholder={placeholder}
-      min={min}
       onChange={(event) => {
+        onChange?.(event);
         const raw = event.target.value;
         if (raw.trim() === '') {
-          onChange(undefined);
+          onValueChange(undefined);
           return;
         }
         const parsed = Number(raw);
-        onChange(Number.isFinite(parsed) ? parsed : undefined);
+        onValueChange(Number.isFinite(parsed) ? parsed : undefined);
       }}
     />
   );
@@ -1326,7 +1347,7 @@ function TypeSpecificConfig({
                   value={field.rows}
                   min={1}
                   placeholder="4"
-                  onChange={(rows) => {
+                  onValueChange={(rows) => {
                     patch({ rows });
                   }}
                 />
@@ -1378,7 +1399,7 @@ function TypeSpecificConfig({
                 <NumInput
                   value={field.max}
                   min={1}
-                  onChange={(max) => {
+                  onValueChange={(max) => {
                     patch({ max });
                   }}
                 />
@@ -1398,7 +1419,7 @@ function TypeSpecificConfig({
                 render={
                   <NumInput
                     value={field.min}
-                    onChange={(min) => {
+                    onValueChange={(min) => {
                       patch({ min });
                     }}
                   />
@@ -1411,7 +1432,7 @@ function TypeSpecificConfig({
                 render={
                   <NumInput
                     value={field.max}
-                    onChange={(max) => {
+                    onValueChange={(max) => {
                       patch({ max });
                     }}
                   />
@@ -1493,7 +1514,7 @@ function TypeSpecificConfig({
                     <NumInput
                       value={field.min}
                       min={0}
-                      onChange={(min) => {
+                      onValueChange={(min) => {
                         patch({ min });
                       }}
                     />
@@ -1507,7 +1528,7 @@ function TypeSpecificConfig({
                     <NumInput
                       value={field.max}
                       min={1}
-                      onChange={(max) => {
+                      onValueChange={(max) => {
                         patch({ max });
                       }}
                     />
@@ -1563,6 +1584,21 @@ function TypeSpecificConfig({
         </>
       );
 
+    case 'author':
+      return (
+        <div className="flex items-center gap-2">
+          <Switch
+            color="module"
+            checked={field.multiple === true}
+            aria-label="Allow several people"
+            onCheckedChange={(next) => {
+              patch({ multiple: next });
+            }}
+          />
+          <Text as="span">Allow choosing more than one person</Text>
+        </div>
+      );
+
     case 'object':
       return (
         <div className="flex flex-col gap-3">
@@ -1608,7 +1644,7 @@ function TypeSpecificConfig({
                   <NumInput
                     value={field.min}
                     min={0}
-                    onChange={(min) => {
+                    onValueChange={(min) => {
                       patch({ min });
                     }}
                   />
@@ -1622,7 +1658,7 @@ function TypeSpecificConfig({
                   <NumInput
                     value={field.max}
                     min={1}
-                    onChange={(max) => {
+                    onValueChange={(max) => {
                       patch({ max });
                     }}
                   />
@@ -1670,11 +1706,11 @@ function LengthLimits({
     <div className="grid gap-4 @lg:grid-cols-2">
       <Field>
         <FieldLabel>Shortest (characters)</FieldLabel>
-        <FieldControl render={<NumInput value={min} min={0} onChange={onMin} />} />
+        <FieldControl render={<NumInput value={min} min={0} onValueChange={onMin} />} />
       </Field>
       <Field>
         <FieldLabel>Longest (characters)</FieldLabel>
-        <FieldControl render={<NumInput value={max} min={1} onChange={onMax} />} />
+        <FieldControl render={<NumInput value={max} min={1} onValueChange={onMax} />} />
       </Field>
     </div>
   );

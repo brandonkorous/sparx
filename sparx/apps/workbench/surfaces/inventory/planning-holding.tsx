@@ -37,6 +37,7 @@ import { PlanningShell } from './planning-shell';
 import { coverNote } from './cover-note';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 export function PlanningHoldingSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useHoldingCost('');
@@ -64,10 +65,11 @@ function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
   // the warehouse based on not having reached the server.
   if (report.isError) {
     return (
-      <EmptyState
+      <PaneLoadError
         icon={<PackageX className="size-6" aria-hidden />}
         title="Could not work out what your stock costs to keep"
         description="This is a problem reaching the server, not a finding about your stock. Try again in a moment."
+        error={report.error}
       />
     );
   }

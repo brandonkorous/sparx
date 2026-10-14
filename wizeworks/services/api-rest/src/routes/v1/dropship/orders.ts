@@ -4,6 +4,7 @@
 //   GET  /v1/dropship/orders               → list (filter by status, orderId)
 //   GET  /v1/dropship/orders/:id           → get one
 //   POST /v1/dropship/orders/route/:orderId → trigger order routing for an order
+//   PATCH /v1/dropship/orders/:id          → the owner records it placed or shipped
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -11,9 +12,11 @@ import type { Prisma } from '@prisma/client';
 import { withTenant } from '@wizeworks/db';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
-import { notFound } from '@wizeworks/api-core/errors';
+import { notFound, validationError } from '@wizeworks/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@wizeworks/events';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
+import { nextDropshipStatus, recordDropshipShipment } from '../../../lib/dropship-shipment.js';
+import { publishDomainEvent } from '../../../lib/staff-events.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -24,6 +27,24 @@ const publisher = createPublisher({ logger: pubLogger });
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathOrderId = z.object({ orderId: z.string().uuid() });
+
+/**
+ * What the owner records on a supplier order they place by hand (sparx persona
+ * issue 170): that they placed it, with the supplier's own order number if they
+ * gave one, and that it shipped, with the carrier and tracking.
+ */
+const RecordBody = z.discriminatedUnion('action', [
+  z.object({
+    action: z.literal('placed'),
+    supplierOrderId: z.string().trim().max(255).optional(),
+  }),
+  z.object({
+    action: z.literal('shipped'),
+    carrier: z.string().trim().max(63).optional(),
+    trackingNumber: z.string().trim().max(127).optional(),
+    trackingUrl: z.string().trim().url().max(2048).optional(),
+  }),
+]);
 
 // Sortable columns are a server-side whitelist — the enum rejects anything off
 // the list rather than interpolating a client string into the orderBy. Sort is
@@ -134,6 +155,83 @@ const dropshipOrderRoutes: FastifyPluginAsync = async (app) => {
     if (!order) throw notFound('Dropship order not found');
 
     return reply.send(ok(toOrderView(order)));
+  });
+
+  // The owner records what happened to an order they place with a supplier by
+  // hand. "Shipped" also records the shipment on the customer's order, which is
+  // what moves it on and sends the customer their tracking (sparx persona issue
+  // 170).
+  app.patch('/v1/dropship/orders/:id', async (request, reply) => {
+    await requireDropshipModule(request);
+    requireRole(request, 'editor');
+    const { tenantId, userId } = toDropshipContext(request);
+    const { id } = PathId.parse(request.params);
+    const body = RecordBody.parse(request.body);
+
+    const current = await withTenant({ tenantId }, (tx) =>
+      tx.dropshipOrder.findFirst({ where: { id, tenantId } })
+    );
+    if (!current) throw notFound('Dropship order not found');
+    const next = nextDropshipStatus(current.status, body.action);
+    if (!next) {
+      throw validationError(
+        body.action === 'placed'
+          ? 'This order has already been placed with the supplier.'
+          : 'This order has already shipped.'
+      );
+    }
+
+    const now = new Date();
+    const updated = await withTenant({ tenantId }, (tx) =>
+      tx.dropshipOrder.update({
+        where: { id },
+        data:
+          body.action === 'placed'
+            ? {
+                status: next,
+                submittedAt: now,
+                errorMessage: null,
+                ...(body.supplierOrderId ? { supplierOrderId: body.supplierOrderId } : {}),
+              }
+            : {
+                status: next,
+                shippedAt: now,
+                errorMessage: null,
+                ...(current.submittedAt ? {} : { submittedAt: now }),
+                trackingNumber: body.trackingNumber ?? null,
+                trackingUrl: body.trackingUrl ?? null,
+              },
+        include: { order: { select: { orderNumber: true } } },
+      })
+    );
+
+    if (body.action === 'shipped') {
+      await recordDropshipShipment(tenantId, userId, {
+        dropshipOrderId: id,
+        carrier: body.carrier ?? null,
+        trackingNumber: body.trackingNumber ?? null,
+        trackingUrl: body.trackingUrl ?? null,
+      });
+    }
+    await publishDomainEvent(
+      body.action === 'placed' ? 'dropship.order.submitted' : 'dropship.order.shipped',
+      tenantId,
+      userId,
+      {
+        dropshipOrderId: id,
+        orderId: current.orderId,
+        supplierId: current.supplierId,
+        ...(body.action === 'placed'
+          ? { supplierOrderId: updated.supplierOrderId }
+          : {
+              trackingNumber: body.trackingNumber ?? null,
+              trackingUrl: body.trackingUrl ?? null,
+              carrier: body.carrier ?? null,
+            }),
+      }
+    );
+
+    return reply.send(ok(toOrderView(updated)));
   });
 
   // Manual trigger — routes a commerce order through dropship suppliers.

@@ -77,6 +77,9 @@ function shopperView(detail: Awaited<ReturnType<typeof returnService.get>>) {
     cancelledAt: detail.cancelledAt,
     refundedAmountCents: detail.refundedAmountCents,
     restockingFeeCents: detail.restockingFeeCents,
+    // How it reached her, so her page never says "sent back" about cash she was
+    // handed or credit on her account (sparx persona issue 178).
+    refundedAs: returnService.shopperRefundRoute(detail.refundIssuedAs, detail.refundsByHand),
     declinedReason: detail.status === 'denied' ? detail.staffNote : null,
     items: detail.items.map((it) => ({
       id: it.id,
@@ -136,16 +139,11 @@ const returnsAccountRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/account/returns', async (request) => {
     const ctx = await context(request);
     const customerId = await requireCustomerId(request, ctx, 'orders:read');
-    // `returnService.list` is tenant-scoped, not customer-scoped — it is the
-    // console's read. Narrowing to her own orders is this route's job.
-    const mine = await orderService.list(ctx, { customerId, take: 200 });
-    const orderIds = new Set(mine.items.map((o) => o.id));
-    if (orderIds.size === 0) return ok({ returns: [] });
-
-    const all = await returnService.list(ctx, { take: 200 });
-    return ok({
-      returns: all.items.filter((r) => orderIds.has(r.orderId)).map(shopperSummary),
-    });
+    // Her returns, found from her own orders. It read the shop's latest 200
+    // returns and kept hers, so in a busier shop her older ones were missing
+    // (sparx persona issue 196).
+    const mine = await returnService.list(ctx, { customerId, take: 200 });
+    return ok({ returns: mine.items.map(shopperSummary) });
   });
 
   app.get('/v1/public/commerce/account/returns/:returnId', async (request) => {

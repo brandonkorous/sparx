@@ -196,14 +196,16 @@ export async function buildAccountStatement(
         ...ISSUED_BILL_WHERE,
         // Issued before the period ends. `finalizedAt` is never earlier than
         // `createdAt`, so this bounds the read and the exact cut is made on the
-        // issue date in `computeStatement`.
-        createdAt: { lt: period.endExclusive },
+        // issue DAY in `computeStatement`. A day of slack: the period's days are
+        // the business's, and a bill raised on the evening of its last day in
+        // Denver was made after midnight UTC (sparx persona issue 146).
+        createdAt: { lt: new Date(period.endExclusive.getTime() + 86_400_000) },
       },
       select: BILL_SELECT,
       orderBy: { createdAt: 'asc' },
     });
 
-    const figures = computeStatement(rows.map(toBillInput), period);
+    const figures = computeStatement(rows.map(toBillInput), period, timeZone);
     const billingAddress = await billingAddressOf(tx, account.id, rows);
     const newest = [...rows].sort((a, b) => issuedAtOf(b).getTime() - issuedAtOf(a).getTime())[0];
 

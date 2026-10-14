@@ -31,6 +31,7 @@ import {
 import { Check, LineChart, Link2, Plug, RefreshCw, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { surfaceTitle, type SurfaceContext } from '../../lib/surfaces/registry';
@@ -356,16 +357,11 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
             Checking the connection…
           </p>
         ) : status.isError ? (
-          <div className="flex h-full items-center justify-center p-8">
-            <Alert color="error" className="max-w-md">
-              <AlertContent>
-                <AlertTitle>Could not check the connection</AlertTitle>
-                <AlertDescription>
-                  This is a problem reaching the server. Any existing connection is unaffected.
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          </div>
+          <PaneLoadError
+            title="Could not check the connection"
+            description="This is a problem reaching the server. Any existing connection is unaffected."
+            error={status.error}
+          />
         ) : (
           <div className={COLUMN}>
             <div className="flex flex-col gap-1">

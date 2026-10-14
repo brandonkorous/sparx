@@ -46,8 +46,9 @@ import {
   withTenant,
 } from '@wizeworks/db';
 import { searchAll } from '@wizeworks/search';
-import { resolvePublicPropertyId } from '../../../lib/property.js';
+import { resolvePublicPropertyId, siteDisabledModules } from '../../../lib/property.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
+import { entryPublicPath } from '../../../lib/content-paths.js';
 
 // Only entity types with a public storefront page. Categories are an admin
 // organizational concept (no storefront route) and stay out.
@@ -56,8 +57,29 @@ import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 // type except `page`. Without it, searching a site for anything its owner wrote
 // returned nothing and offered "Browse all products", on sites whose own footer
 // links a Return Policy and a Journal (issue 378). Whether a given entry has a
-// public address at all is decided per row below, from its type's `urlPattern`.
+// public address at all is decided per row below, by `entryPublicPath`.
 export const PUBLIC_ENTITY_TYPES = ['product', 'collection', 'cms_page', 'cms_entry'];
+/** The module each public type belongs to, for the site's own switches. */
+const ENTITY_MODULE: Readonly<Record<string, string>> = {
+  product: 'commerce',
+  collection: 'commerce',
+  cms_page: 'cms',
+  cms_entry: 'cms',
+};
+
+/**
+ * The public types THIS site shows.
+ *
+ * A site that switched its shop off under "What this site shows" has no product or
+ * collection pages, so a hit on one links to a page that is not there. Rosalind's
+ * journal searched "leat" and was offered "Featured · Collection", a shop
+ * collection on a site with no shop (P09). Anything unreadable reads as nothing
+ * switched off, the same as every other reader of the switch.
+ */
+export function publicEntityTypesFor(siteOff: readonly string[]): string[] {
+  return PUBLIC_ENTITY_TYPES.filter((type) => !siteOff.includes(ENTITY_MODULE[type] ?? ''));
+}
+
 // Products are 'active', CMS pages are 'published', collections are 'active'.
 const PUBLIC_STATUSES = ['active', 'published'];
 
@@ -87,12 +109,6 @@ interface Hit {
 interface Resolved {
   url: string;
   kind?: string;
-}
-
-/** `/blog/{slug}` + `caring-for-knitwear` → `/blog/caring-for-knitwear`. A pattern
- *  with no placeholder is left alone rather than silently losing the slug. */
-export function pathFrom(urlPattern: string, slug: string): string {
-  return urlPattern.includes('{slug}') ? urlPattern.replace('{slug}', slug) : urlPattern;
 }
 
 // Build the storefront-facing path for each hit by hydrating handle/slug from
@@ -168,12 +184,13 @@ async function publicUrlsFor(
       const typeOf = new Map(types.map((t) => [t.key, t]));
       for (const r of rows) {
         const type = typeOf.get(r.typeKey);
-        if (!type?.urlPattern || !r.slug) continue;
+        const url = entryPublicPath(r.typeKey, type?.urlPattern, r.slug);
+        if (!type || !url) continue;
         const key = r.typeKey === 'page' ? 'cms_page' : 'cms_entry';
         // The TYPE's own name — "Blog post", "Event", "Job posting" — because one
         // `cms_entry` hit can be any of ten kinds, and a caller that only knows the
         // entity type can label them all nothing better than "Result".
-        urls.set(`${key}:${r.id}`, { url: pathFrom(type.urlPattern, r.slug), kind: type.name });
+        urls.set(`${key}:${r.id}`, { url, kind: type.name });
       }
     }
   });
@@ -186,11 +203,15 @@ const publicSearchRoutes: FastifyPluginAsync = (app) => {
     const q = SearchQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const entityTypes = publicEntityTypesFor(await siteDisabledModules(tenantId, propertyId));
+    // An empty list is NOT "no filter": `searchAll` would then search every type,
+    // orders and customers included. Nothing public is left, so nothing is found.
+    if (entityTypes.length === 0) return ok({ results: [], total: 0 });
 
     const result = await searchAll({
       tenantId,
       q: q.q,
-      entityTypes: PUBLIC_ENTITY_TYPES,
+      entityTypes,
       statuses: PUBLIC_STATUSES,
       page: q.page,
       perPage: q.perPage,

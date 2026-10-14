@@ -8,149 +8,25 @@
 //
 // Each line also says what this customer pays and why (issue 737). The sentence
 // itself is `sale-price-note.ts`, beside this file, because it is pure copy and
-// pure copy is the part worth pinning with a test.
+// pure copy is the part worth pinning with a test. The picker, the old-part
+// choice and the totals rows are files of their own (sparx persona issue 230).
 
-import { useState } from 'react';
-import {
-  Alert,
-  AlertActions,
-  AlertContent,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Button,
-  Input,
-  RadioGroup,
-  RadioOption,
-  SearchInput,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Input, Text } from '@wizeworks/silicaui-react';
 import { faPlus, faTrash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
-import { PaneWaiting } from '../../components/pane-waiting';
-import { formatCents } from './products-data';
 import { formatMoney } from './data';
 import { priceNote } from './sale-price-note';
-import { matchingSellables } from './sale-sellable-search';
-import {
-  CORE_CHOICE_LEGEND,
-  CORE_DEPOSITS_ROW,
-  CORE_FIRST_HINT,
-  CORE_FIRST_LABEL,
-  CORE_PAY_HINT,
-  bringsOldPartFirst,
-  coreDepositOnly,
-  corePayLabel,
-  saleTotals,
-  type SaleTotals,
-} from './sale-core';
-import { useSellables, type SaleLine, type Sellable } from './sale-data';
+import { lineGoods, type SaleTotals } from './sale-core';
+import type { SaleLine, Sellable } from './sale-data';
+import { OldPartChoice } from './sale-old-part-choice';
+import { SellablePicker } from './sale-sellable-picker';
+import { SaleTotalsRows } from './sale-totals-rows';
 
-function lineTotal(line: SaleLine): number {
-  const price = Number(line.price);
-  return Number.isFinite(price) ? price * line.quantity : 0;
-}
-
-/** What the sale comes to, refundable core deposits included (sparx issue 061),
- *  which is what the till asks for. The deposits also get a row of their own. */
-export function salesTotal(lines: SaleLine[]): number {
-  return saleTotals(lines).total;
-}
-
-/** "Their old part": the core deposit now, or the old part first (sparx issue
- *  061). Nothing at all on a line that takes no core. */
-function OldPartChoice({
-  line,
-  currency,
-  onChange,
-}: {
-  line: SaleLine;
-  currency: string;
-  onChange: (next: SaleLine) => void;
-}) {
-  const core = line.core;
-  if (!core) return null;
-
-  // One way to buy it is not a choice, so it is a sentence rather than a lone
-  // radio button nobody can press away from.
-  if (!core.firstOffered) {
-    return (
-      <Text className="w-full text-sm">
-        {coreDepositOnly(core.depositCents, line.quantity, currency)}
-      </Text>
-    );
-  }
-
-  const legendId = `${line.id}-old-part`;
+/** The three boxes a line is typed into. */
+function LineFields({ line, onChange }: { line: SaleLine; onChange: (next: SaleLine) => void }) {
   return (
-    <div className="flex w-full flex-col gap-1">
-      <Text id={legendId} className="font-medium">
-        {CORE_CHOICE_LEGEND}
-      </Text>
-      <RadioGroup
-        color="module"
-        aria-labelledby={legendId}
-        value={bringsOldPartFirst(line) ? 'first' : 'pay'}
-        onValueChange={(value) => {
-          onChange({ ...line, coreFirst: value === 'first' });
-        }}
-      >
-        <RadioOption value="pay" className="items-start py-1">
-          <span className="flex flex-col gap-0.5">
-            <span className="text-base font-medium">
-              {corePayLabel(core.depositCents, line.quantity, currency)}
-            </span>
-            <span className="text-sm">{CORE_PAY_HINT}</span>
-          </span>
-        </RadioOption>
-        <RadioOption value="first" className="items-start py-1">
-          <span className="flex flex-col gap-0.5">
-            <span className="text-base font-medium">{CORE_FIRST_LABEL}</span>
-            <span className="text-sm">{CORE_FIRST_HINT}</span>
-          </span>
-        </RadioOption>
-      </RadioGroup>
-    </div>
-  );
-}
-
-/** The sum with the deposits on a row of their own, in the website checkout
- *  summary's words. Drawn only when a deposit is on the sale. */
-function DepositTotals({ totals, currency }: { totals: SaleTotals; currency: string }) {
-  if (totals.coreDeposits <= 0) return null;
-  return (
-    <dl className="border-base-300 flex flex-col gap-1 border-t pt-3">
-      <div className="flex justify-between gap-3">
-        <dt>Subtotal</dt>
-        <dd className="tabular-nums">{formatMoney(totals.goods, currency)}</dd>
-      </div>
-      <div className="flex justify-between gap-3">
-        <dt>{CORE_DEPOSITS_ROW}</dt>
-        <dd className="tabular-nums">{formatMoney(totals.coreDeposits, currency)}</dd>
-      </div>
-      <div className="flex justify-between gap-3 font-semibold">
-        <dt>Total</dt>
-        <dd className="tabular-nums">{formatMoney(totals.total, currency)}</dd>
-      </div>
-    </dl>
-  );
-}
-
-function ChosenLine({
-  line,
-  currency,
-  onChange,
-  onRemove,
-}: {
-  line: SaleLine;
-  currency: string;
-  onChange: (next: SaleLine) => void;
-  onRemove: () => void;
-}) {
-  const note = priceNote(line);
-  return (
-    <div className="border-base-300 flex flex-wrap items-end gap-3 border-b pb-3 last:border-b-0 last:pb-0">
+    <>
       <label className="min-w-[10rem] flex-1">
         <span className="mb-1.5 block text-base font-medium">What it was</span>
         <Input
@@ -192,8 +68,44 @@ function ChosenLine({
           }}
         />
       </label>
+    </>
+  );
+}
+
+/** What this customer pays for the line and why, when that is worth saying. Its
+ *  own full-width line, so it reads as a sentence about the row rather than a
+ *  fourth squeezed column at 360px. */
+function PriceNoteRow({ line }: { line: SaleLine }) {
+  const note = priceNote(line);
+  if (!note) return null;
+  return (
+    <div className="flex w-full items-start gap-2">
+      {note.typedOver ? (
+        <Badge color="warning" variant="soft" size="sm">
+          Not their price
+        </Badge>
+      ) : null}
+      <Text className="text-sm">{note.text}</Text>
+    </div>
+  );
+}
+
+function ChosenLine({
+  line,
+  currency,
+  onChange,
+  onRemove,
+}: {
+  line: SaleLine;
+  currency: string;
+  onChange: (next: SaleLine) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="border-base-300 flex flex-wrap items-end gap-3 border-b pb-3 last:border-b-0 last:pb-0">
+      <LineFields line={line} onChange={onChange} />
       <span className="w-24 pb-2 text-right text-base font-medium tabular-nums">
-        {formatMoney(lineTotal(line), currency)}
+        {formatMoney(lineGoods(line), currency)}
       </span>
       <Button
         size="sm"
@@ -205,133 +117,31 @@ function ChosenLine({
       >
         <Icon glyph={faTrash} className="size-4" aria-hidden />
       </Button>
-      {note ? (
-        // Its own full-width line, so it reads as a sentence about the row
-        // rather than a fourth squeezed column at 360px.
-        <div className="flex w-full items-start gap-2">
-          {note.typedOver ? (
-            <Badge color="warning" variant="soft" size="sm">
-              Not their price
-            </Badge>
-          ) : null}
-          <Text className="text-sm">{note.text}</Text>
-        </div>
-      ) : null}
+      <PriceNoteRow line={line} />
       <OldPartChoice line={line} currency={currency} onChange={onChange} />
     </div>
   );
 }
 
-function SellablePicker({ onPick }: { onPick: (s: Sellable) => void }) {
-  const [search, setSearch] = useState('');
-  const term = search.trim();
-  // The server searches what is typed, however big the catalog (sparx issue 069).
-  const { items, isPending, isError, searching, retry } = useSellables(search);
-  // Name, version AND code, word by word: see sale-sellable-search.ts. Most of
-  // what a maker sells shares a product name, so searching the name alone made
-  // "Marlow Knit XL" find nothing while eight Marlow Knits sat on the screen.
-  // Run on the rows in hand too, so the list narrows on the keystroke rather
-  // than waiting for the server's answer to the previous one.
-  const results = matchingSellables(items, term);
-
-  if (isError) {
-    return (
-      <Alert color="error">
-        <AlertContent>
-          <AlertTitle>Could not load what you sell</AlertTitle>
-          <AlertDescription>
-            This is a problem reaching the server, not a problem with this sale. You can still write
-            what they had in by hand below, or try again.
-          </AlertDescription>
-        </AlertContent>
-        <AlertActions>
-          <Button size="sm" variant="outline" onClick={retry}>
-            Try again
-          </Button>
-        </AlertActions>
-      </Alert>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="max-w-sm min-w-0">
-        <SearchInput
-          size="sm"
-          aria-label="Search what you sell"
-          placeholder="Search what you sell…"
-          value={search}
-          onValueChange={setSearch}
-        />
-      </div>
-      {isPending ? (
-        // Never "nothing set up to sell" while the list is still on its way: an
-        // empty answer that is really an unanswered question sends somebody off
-        // to write in by hand something they already sell.
-        <PaneWaiting label="Loading what you sell…" />
-      ) : results.length === 0 && searching ? (
-        // The same rule for a search still on its way: it may simply be past
-        // the rows already in hand.
-        <PaneWaiting label="Looking through what you sell…" />
-      ) : results.length === 0 ? (
-        <Text className="text-sm">
-          {term
-            ? `Nothing you sell matches “${term}”. Try fewer words, or the code off the box. If it really is a one-off, write it in below.`
-            : 'Nothing set up to sell yet. Add what they had by hand below.'}
-        </Text>
-      ) : (
-        <div className="border-base-300 max-h-64 overflow-y-auto rounded border p-1">
-          {results.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              className="hover:bg-base-200 flex w-full items-center gap-3 rounded px-2 py-2 text-left"
-              onClick={() => {
-                onPick(item);
-              }}
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block font-medium">{item.name}</span>
-                {item.detail ? (
-                  <Text as="span" className="block text-sm">
-                    {item.detail}
-                  </Text>
-                ) : null}
-              </span>
-              {item.kind === 'service' ? (
-                <Badge color="module-scheduling" variant="soft" size="sm">
-                  Appointment
-                </Badge>
-              ) : null}
-              {item.core ? (
-                <Badge color="info" variant="soft" size="sm">
-                  Core deposit {formatCents(item.core.depositCents, item.currency)}
-                </Badge>
-              ) : null}
-              <Text as="span" className="shrink-0 text-sm tabular-nums">
-                {formatCents(item.priceCents, item.currency)}
-              </Text>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+export interface SaleLinesProps {
+  lines: SaleLine[];
+  currency: string;
+  totals: SaleTotals;
+  taxLabel: string;
+  taxKnown: boolean;
+  onAdd: (sellable: Sellable | null) => void;
+  onChange: (id: string, next: SaleLine) => void;
+  onRemove: (id: string) => void;
 }
 
 export function SaleLines({
   lines,
   currency,
-  onAdd,
-  onChange,
-  onRemove,
-}: {
-  lines: SaleLine[];
-  currency: string;
-  onAdd: (sellable: Sellable | null) => void;
-  onChange: (id: string, next: SaleLine) => void;
-  onRemove: (id: string) => void;
-}) {
+  totals,
+  taxLabel,
+  taxKnown,
+  ...edit
+}: SaleLinesProps) {
   return (
     <FormSection
       title="What they had"
@@ -345,33 +155,41 @@ export function SaleLines({
               line={line}
               currency={currency}
               onChange={(next) => {
-                onChange(line.id, next);
+                edit.onChange(line.id, next);
               }}
               onRemove={() => {
-                onRemove(line.id);
+                edit.onRemove(line.id);
               }}
             />
           ))}
+          <SaleTotalsRows
+            totals={totals}
+            currency={currency}
+            taxLabel={taxLabel}
+            taxKnown={taxKnown}
+          />
         </div>
       ) : null}
-
-      <DepositTotals totals={saleTotals(lines)} currency={currency} />
-
-      <SellablePicker onPick={onAdd} />
-
-      <div>
-        <Button
-          size="sm"
-          variant="outline"
-          color="module"
-          onClick={() => {
-            onAdd(null);
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Write something in
-        </Button>
-      </div>
+      <SellablePicker onPick={edit.onAdd} />
+      <WriteSomethingIn onAdd={edit.onAdd} />
     </FormSection>
+  );
+}
+
+function WriteSomethingIn({ onAdd }: { onAdd: (sellable: Sellable | null) => void }) {
+  return (
+    <div>
+      <Button
+        size="sm"
+        variant="outline"
+        color="module"
+        onClick={() => {
+          onAdd(null);
+        }}
+      >
+        <Icon glyph={faPlus} className="size-4" aria-hidden />
+        Write something in
+      </Button>
+    </div>
   );
 }

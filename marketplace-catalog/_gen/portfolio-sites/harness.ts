@@ -45,6 +45,7 @@ import {
 import { starterFrame } from '../../../wizeworks/packages/silica-catalog/src/site';
 import type { FooterVariant, NavbarVariant } from '../../../wizeworks/packages/silica-catalog/src/site-chrome';
 import { blogPostGrid } from '../../../wizeworks/packages/silica-catalog/src/cms';
+import { insideMeasure } from '../../../wizeworks/packages/silica-catalog/src/page-measure';
 import { resolveSparxTheme } from '../../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
 import { PORTFOLIO_THEME_BY_SLUG } from '../../../wizeworks/packages/silica-catalog/src/portfolio-themes';
 import { colorToHex } from '../../../wizeworks/packages/site-themes/src/v2/color';
@@ -143,7 +144,10 @@ function singleton(
         kind: 'singleton',
         ...(slug ? { slug } : {}),
         ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-        root: stampTree(root),
+        // The house measure (piggles persona issue 950): a band this generator, or the spec,
+        // authored with its gutter outside its 6xl box ships with it inside, so every page
+        // starts on the header's left edge however its sections were written.
+        root: stampTree(insideMeasure(root).root),
     };
 }
 
@@ -161,7 +165,8 @@ function collectionPage(
         recordType,
         isDefault: true,
         ...(seo ? { seoTitle: seo.title, seoDescription: seo.description } : {}),
-        root: stampTree(root),
+        // The house measure, as `singleton` above.
+        root: stampTree(insideMeasure(root).root),
     };
 }
 

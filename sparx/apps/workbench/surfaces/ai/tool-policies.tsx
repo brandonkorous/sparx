@@ -44,6 +44,7 @@ import { useConfirm } from '../../lib/confirm';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { moduleIcon, moduleLabel } from '../../lib/surfaces/nav';
 import {
   ModuleScope,
@@ -199,7 +200,15 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useToolPolicies();
+  const {
+    data,
+    isPending,
+    isError,
+    error: loadError,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useToolPolicies();
   const { data: viewer } = useViewer();
   const canManage = canAdminAi(viewer?.role);
 
@@ -408,22 +417,14 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {isError ? (
             <Card>
-              <EmptyState
+              <PaneLoadError
                 icon={<Wrench className="size-6" aria-hidden />}
                 title="Could not load your tool settings"
                 description="This is a problem reaching the server. Your current settings are unaffected."
-                actions={
-                  <Button
-                    size="sm"
-                    color="module"
-                    variant="soft"
-                    onClick={() => {
-                      void refetch();
-                    }}
-                  >
-                    Try again
-                  </Button>
-                }
+                error={loadError}
+                onRetry={() => {
+                  void refetch();
+                }}
               />
             </Card>
           ) : isPending ? (

@@ -20,6 +20,7 @@ import {
 } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import { Alert, Badge, Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
+import { ListPager } from '@/components/account/list-pager';
 
 const PAGE_SIZE = 20;
 const ACTIONABLE_STAGE = 'Priced';
@@ -341,34 +342,7 @@ export default function EstimatesPage() {
             })}
           </div>
 
-          {total > PAGE_SIZE && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip === 0}
-                onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
-              >
-                Previous
-              </Button>
-              <span
-                className="text-base-content"
-                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
-              >
-                {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
-              </span>
-              <Button
-                type="button"
-                color="primary"
-                variant="outline"
-                disabled={skip + PAGE_SIZE >= total}
-                onClick={() => setSkip(skip + PAGE_SIZE)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          <ListPager offset={skip} pageSize={PAGE_SIZE} total={total} onMove={setSkip} />
         </>
       )}
     </div>

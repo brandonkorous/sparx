@@ -45,6 +45,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/upgrade-frame';
+import { siteInsideMeasure } from '../../wizeworks/packages/silica-catalog/src/page-measure';
 
 /** The golden bundle's frame, run through the platform's own upgrade-on-read before it is
  *  cloned.
@@ -65,10 +66,17 @@ import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/
  *  it stays behind until the Template property is opened in the studio (which heals its
  *  draft) and re-captured. That is the one bundle the chrome guard excepts, by name. */
 function healedSite(site: Record<string, unknown>): Record<string, unknown> {
-    const frame = site.frame as { root: unknown } | null | undefined;
-    if (!frame?.root) return site;
+    // The page bodies at the house measure too (piggles persona issue 950): the capture's
+    // catalog bands put their gutter outside their 6xl box, so every heading started 24px
+    // left of the header. The frame half of that rides `upgradeFrameChrome` below.
+    const measured = siteInsideMeasure(site as Parameters<typeof siteInsideMeasure>[0]) as Record<
+        string,
+        unknown
+    >;
+    const frame = measured.frame as { root: unknown } | null | undefined;
+    if (!frame?.root) return measured;
     const healed = upgradeFrameChrome(frame.root as Parameters<typeof upgradeFrameChrome>[0]);
-    return healed.changed ? { ...site, frame: { ...frame, root: healed.root } } : site;
+    return healed.changed ? { ...measured, frame: { ...frame, root: healed.root } } : measured;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -329,7 +337,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(KEY)},
-  version: '1.3.2',
+  version: '1.3.3',
   name: ${JSON.stringify(name)},
   summary: ${JSON.stringify(summary)},
   vertical: 'retail',
@@ -366,7 +374,7 @@ export default blueprint;
             category: 'blueprint',
             slug: KEY,
             name,
-            version: '1.3.2',
+            version: '1.3.3',
             tagline: 'A complete multi-module starter. Shop, journal, bookings, and wholesale.',
             description: summary,
             payload: 'blueprint.ts',

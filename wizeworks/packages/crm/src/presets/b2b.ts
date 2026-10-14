@@ -16,7 +16,8 @@
 //
 // Data-as-code (line-limit exempt).
 
-import type { TenantContext } from '@wizeworks/db';
+import { afterCommit, type TenantContext } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 import { definePreset, type ModulePreset } from '@wizeworks/modules';
 
 // ─── Pricing tiers ────────────────────────────────────────────────────
@@ -92,6 +93,15 @@ const wholesaleTiersPreset: ModulePreset = definePreset({
         },
         select: { id: true },
       });
+      // Queued on the install transaction, so a rolled-back install announces nothing.
+      await afterCommit(`index pricing_tier ${created.id}`, () =>
+        indexEntity({
+          tenantId: sx.tenantId,
+          actorId: sx.userId ?? null,
+          entityType: 'pricing_tier',
+          recordId: created.id,
+        })
+      );
       firstId ??= created.id;
     }
     // Non-null: WHOLESALE_TIERS is a non-empty constant, so the loop always runs.

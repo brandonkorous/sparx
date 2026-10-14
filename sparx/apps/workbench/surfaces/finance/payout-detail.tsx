@@ -139,7 +139,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           openOrder(sale, event);
                         }}
                       >
-                        <td className="font-mono text-sm">{sale.orderNumber}</td>
+                        <td className="font-mono text-sm whitespace-nowrap">{sale.orderNumber}</td>
                         <td>{sale.customerName ?? 'Guest'}</td>
                         <td className="hidden whitespace-nowrap @lg:table-cell">
                           {channelLabel(sale.channel, sale.source)}

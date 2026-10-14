@@ -12,6 +12,7 @@
 // formatting is host territory, never baked into the tree.
 
 import {
+  AUTHORS_SOURCE_KEY,
   COLLECTION_PAGE_ITEMS,
   PINS_ROOT,
   RAIL_MAX_ITEMS,
@@ -47,6 +48,14 @@ import { CORE_FIRST_SENTENCE, CORE_FIRST_SOME_VERSIONS, corePaySentence } from '
 import { backInStockLine, formatMoney, preorderShipsLine } from './format';
 import { madeToOrderCopy, type StorefrontPaymentMode } from './made-to-order-copy';
 import { mediaUrl } from './media';
+import { formatPublishedDate } from './builder-data';
+import { authorCard, listPublicAuthors } from './authors';
+import { fieldValue, getPublicKind, pieceTitle, pieceUrl, withPostWords } from './kind-pieces';
+
+type KindRow = Awaited<ReturnType<typeof getPublicKind>>;
+
+/** The field types a kind stores in a form a reader cannot use as it is. */
+const SHOWN_DIFFERENTLY = new Set(['asset', 'enum', 'date', 'datetime', 'boolean']);
 import { fleetFitRecordFields } from './fleet-fit-tree';
 import { REPEAT_NOTE } from './repeat-copy';
 
@@ -567,14 +576,11 @@ export function collectionToSilicaRecord(
   };
 }
 
-// The route a CMS collection card links to. Only `blog_post` has a per-record
-// detail route (`wizeworks/apps/site/app/blog/[slug]`); other content types render inline and
-// carry no destination, so their card `url` resolves to `''` and `dropEmptyUrlAttrs`
-// leaves the anchor un-clickable rather than pointing it at a 404.
-function entryUrl(type: string, slug: string | null | undefined): string {
-  if (!slug) return '';
-  return type === 'blog_post' ? `/blog/${slug}` : '';
-}
+// The route a CMS collection card links to: `/blog/<slug>` for a post, and for any other
+// kind the address its own web address pattern gives it (`/articles/<slug>`), which the
+// catch-all now serves. A kind with no servable pattern carries no destination, so its
+// card `url` is `''` and `dropEmptyUrlAttrs` leaves the anchor un-clickable rather than
+// pointing it at a 404. See `pieceUrl`.
 
 // A CMS entry's `body` IS its field map; resolve the conventional `featuredImage`
 // media-id to a `{ url, alt }` so an image ref renders (mirrors builder-data's
@@ -584,11 +590,31 @@ function entryUrl(type: string, slug: string | null | undefined): string {
 // journal index points at the same static href (the bug that made every post link to
 // the index). Mirrors the commerce card's `url: /products/${handle}` projection.
 function toSilicaEntry(
-  entry: Pick<ApiEntry, 'body' | 'slug' | 'published_at'>,
+  entry: Pick<ApiEntry, 'id' | 'body' | 'slug' | 'published_at'>,
   tenantSlug: string,
-  type: string
+  type: string,
+  kind: KindRow | null = null,
+  timeZone: string | null = null,
+  locale = 'en-US'
 ): Record<string, unknown> {
-  const b = { ...(entry.body ?? {}) };
+  const b: Record<string, unknown> = { ...(entry.body ?? {}) };
+  // A kind's pictures, choices and dates read on its cards the way they read on its page
+  // (`fieldValue`): a picture as an image, `ledger` as "Ledger". The blog post keeps its
+  // own projection below, which its shipped cards are written against.
+  if (kind && type !== 'blog_post') {
+    const fields = kind.schemaJson?.fields ?? [];
+    const alt = pieceTitle(fields, b);
+    for (const field of fields) {
+      if (!SHOWN_DIFFERENTLY.has(field.type)) continue;
+      const value = fieldValue(field, b[field.key], tenantSlug, alt, timeZone, locale);
+      // The card's own placeholder tile for a missing picture, as `featuredImage` does.
+      b[field.key] =
+        value === null && field.type === 'asset' && !field.multiple ? { url: '', alt } : value;
+    }
+    // The words a blog-post card reads, so a design's post list pointed at this kind
+    // shows each piece's headline, summary and picture (`withPostWords`).
+    withPostWords(b, fields);
+  }
   if (typeof b.featuredImage === 'string') {
     const url = mediaUrl(b.featuredImage, tenantSlug);
     // Empty-url object, never null — the host `format` maps it to the placeholder tile
@@ -597,25 +623,17 @@ function toSilicaEntry(
     // authored placeholder via the unknown-ref path.
     b.featuredImage = { url: url ?? '', alt: typeof b.title === 'string' ? b.title : '' };
   }
+  b.id = entry.id;
   b.slug = entry.slug ?? '';
-  b.url = entryUrl(type, entry.slug);
+  b.url = pieceUrl(type, kind?.urlPattern, entry.slug);
   // The publish date lives on the ROW, not in the body, so a card that wants to date
   // itself has nothing to bind without this. `date` (pre-formatted for display) is the
   // field the silica CMS composites bind — matching the single-record projection
   // (`postToBuilderRecord`), so the SAME `date` ref resolves on both a blog index card
   // and the post's detail masthead. `publishedAt` keeps the raw ISO for any datetime use.
   b.publishedAt = entry.published_at ?? '';
-  b.date = entry.published_at ? formatEntryDate(entry.published_at) : '';
+  b.date = entry.published_at ? formatPublishedDate(entry.published_at, timeZone, locale) : '';
   return b;
-}
-
-/** `2026-07-18T…` → `18 July 2026`. Locale-fixed on purpose: the storefront renders
- *  on the server, so a locale-derived format would vary by deploy region rather than
- *  by reader. */
-function formatEntryDate(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 /** One page of a CMS type, with the total the numbered walk reports (slice 23 added
@@ -624,11 +642,19 @@ function formatEntryDate(iso: string): string {
 async function listEntries(
   tenantSlug: string,
   type: string,
-  page: number
+  page: number,
+  // Only the pieces filed under one choice — a journal's Field section.
+  where?: { field: string; value: string }
 ): Promise<{ items: ApiEntry[]; total: number }> {
   const { data, meta } = await publicGetPaged<ApiEntry[]>(
     '/v1/public/content/entries',
-    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE, page },
+    {
+      tenant: tenantSlug,
+      type,
+      limit: COLLECTION_PAGE_SIZE,
+      page,
+      ...(where ? { where_field: where.field, where_value: where.value } : {}),
+    },
     { tag: `entries:${tenantSlug}:${type}` }
   );
   return { items: data, total: meta.total ?? data.length };
@@ -711,6 +737,8 @@ export interface SilicaSiteData {
    *  every starter site's Contact page. Each field null when the business has
    *  not filled it in. */
   contact?: { phone?: string | null; email?: string | null; address?: string | null };
+  /** The business's time zone, which every printed date is a day on. Null → UTC. */
+  timezone?: string | null;
 }
 
 /** A phone number as a dialable `tel:` URI — `+` and digits only, since that is
@@ -736,6 +764,7 @@ export function silicaSiteIdentity(site: {
   socials: { platform: string; url: string }[];
   contact: { phone: string | null; email: string | null; address: string | null };
   theme: { logoMediaId?: string | null; logoDarkMediaId?: string | null } | null;
+  timezone?: string | null;
 }): SilicaSiteData {
   return {
     name: site.name,
@@ -744,6 +773,7 @@ export function silicaSiteIdentity(site: {
     logoDarkUrl: mediaUrl(site.theme?.logoDarkMediaId ?? null, site.slug),
     socials: site.socials,
     contact: site.contact,
+    timezone: site.timezone ?? null,
   };
 }
 
@@ -844,6 +874,7 @@ export async function buildSilicaHost(
   const pagedSources = [
     ...(p.catalog && !isLimited('commerce.product') ? ['commerce.product'] : []),
     ...needs.cmsTypes.map((t) => `cms.${t}`).filter((key) => !isLimited(key)),
+    ...needs.cmsWhere.map((w) => w.key).filter((key) => !isLimited(key)),
   ];
   const alone = pagedSources.length === 1;
   const paging: ListPaging[] = [];
@@ -1030,20 +1061,37 @@ export async function buildSilicaHost(
     );
   }
 
-  for (const type of needs.cmsTypes) {
-    const key = `cms.${type}`;
+  // The piece this page is showing, when it is a piece of a kind: a "More articles" list
+  // on an article's own page leaves the one being read out, as the product page's
+  // related rail leaves out the product.
+  const currentEntryId =
+    record && needs.cmsTypes.includes(record.key)
+      ? (record.value as { id?: string } | undefined)?.id
+      : undefined;
+
+  // One list of writing: a whole kind (`cms.<type>`), or its pieces filed under one
+  // choice (`cmsWhere.<type>.<field>.<value>`, a journal's section).
+  const loadWriting = (key: string, type: string, where?: { field: string; value: string }) => {
     // A limited content list is a curation ("our three latest posts"), so like a limited
     // product grid it reads page one and records no paging.
     const limited = isLimited(key);
     const requested = limited ? null : requestedPage(key);
     tasks.push(
-      listEntries(tenantSlug, type, requested?.page ?? 1)
-        .then(({ items, total }) => {
-          const shown = items.slice(0, loadCount(key, items.length));
+      Promise.all([
+        listEntries(tenantSlug, type, requested?.page ?? 1, where),
+        getPublicKind(tenantSlug, type),
+      ])
+        .then(([{ items, total }, kind]) => {
+          const others = items.filter(
+            (e) => !(record?.key === type && currentEntryId && e.id === currentEntryId)
+          );
+          const shown = others.slice(0, loadCount(key, others.length));
           setAtPath(
             root,
             key,
-            shown.map((e) => toSilicaEntry(e, tenantSlug, type))
+            shown.map((e) =>
+              toSilicaEntry(e, tenantSlug, type, kind, site?.timezone ?? null, locale)
+            )
           );
           if (!requested) return;
           const totalPages = totalPagesFor(total, COLLECTION_PAGE_SIZE) ?? 1;
@@ -1061,6 +1109,25 @@ export async function buildSilicaHost(
         })
         .catch(emptyOnlyIfGone(root, key))
     );
+  };
+  for (const type of needs.cmsTypes) loadWriting(`cms.${type}`, type);
+  for (const w of needs.cmsWhere) loadWriting(w.key, w.type, { field: w.field, value: w.value });
+
+  // The site's authors, for a contributors list.
+  if (needs.authors) {
+    tasks.push(
+      listPublicAuthors(tenantSlug)
+        .then((authors) =>
+          setAtPath(
+            root,
+            AUTHORS_SOURCE_KEY,
+            authors
+              .slice(0, loadCount(AUTHORS_SOURCE_KEY, authors.length))
+              .map((a) => authorCard(a, tenantSlug))
+          )
+        )
+        .catch(emptyOnlyIfGone(root, AUTHORS_SOURCE_KEY))
+    );
   }
 
   // ONE request for every CMS pin (docs/127 §7) — this was a fetch per pin, while the
@@ -1068,12 +1135,26 @@ export async function buildSilicaHost(
   if (needs.cmsPins.length > 0) {
     tasks.push(
       getEntriesByIds(tenantSlug, needs.cmsPins)
-        .then((entries) => {
+        .then(async (entries) => {
           const pins = (root[PINS_ROOT] as Record<string, unknown> | undefined) ?? {};
+          // Each pinned piece's kind, once per kind, so a pin links where its kind lives.
+          const typeKeys = [...new Set([...entries.values()].map((e) => e.type_key))];
+          const kinds = new Map(
+            await Promise.all(
+              typeKeys.map(async (t) => [t, await getPublicKind(tenantSlug, t)] as const)
+            )
+          );
           for (const id of needs.cmsPins) {
             const entry = entries.get(id);
             if (entry)
-              pins[entityPinKey('cms', id)] = toSilicaEntry(entry, tenantSlug, entry.type_key);
+              pins[entityPinKey('cms', id)] = toSilicaEntry(
+                entry,
+                tenantSlug,
+                entry.type_key,
+                kinds.get(entry.type_key) ?? null,
+                site?.timezone ?? null,
+                locale
+              );
           }
           root[PINS_ROOT] = pins;
         })

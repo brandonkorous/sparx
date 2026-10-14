@@ -37,6 +37,7 @@ import { useViewer } from '@/lib/api/shell-data';
 import { AppScope } from './app-scope';
 import { useAllApps, type ConsoleApp } from '@/lib/console/apps';
 import { useRailPreference, useSetRailApps } from '@/lib/console/rail';
+import { canManageBusiness } from '../lib/manage-rights';
 
 export function AllAppsDialog({
   open,
@@ -106,7 +107,7 @@ function AppCard({ entry, baseline }: { entry: ConsoleApp; baseline: string[] })
   // What the rail carries is a decision about the BUSINESS, so it is the
   // owner's or an admin's — mirroring the API, which is the real enforcement. A
   // teammate simply sees what exists and who to ask.
-  const mayChange = viewer?.role === 'owner' || viewer?.role === 'admin';
+  const mayChange = canManageBusiness(viewer?.role);
 
   // Home is pinned: it is where the checklist and the way back live.
   const pinned = entry.app.id === 'home';

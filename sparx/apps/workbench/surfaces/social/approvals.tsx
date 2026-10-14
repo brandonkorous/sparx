@@ -26,7 +26,9 @@ import { CheckCheck, Inbox, PencilLine, ServerCrash, X } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useViewer } from '../../lib/api/shell-data';
+import { useReaderClock } from '../../lib/business-timezone';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import type { MediaAsset } from '../cms/media';
 import {
@@ -46,6 +48,7 @@ import {
   useAvatarByTargetId,
   usePostThumbnails,
 } from './post-visuals';
+import { timesNote, whenOn } from './social-clock';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -58,15 +61,6 @@ function excerpt(body: string): string {
   return first.length > 160 ? `${first.slice(0, 157)}…` : first || 'Untitled post';
 }
 
-function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
 /* ── One post awaiting review ─────────────────────────────────────────────── */
 
 function ApprovalCard({
@@ -75,6 +69,7 @@ function ApprovalCard({
   avatarByTargetId,
   catalogMap,
   canDecide,
+  clock,
   onOpen,
 }: {
   post: Post;
@@ -82,6 +77,9 @@ function ApprovalCard({
   avatarByTargetId: Map<string, string | null>;
   catalogMap: Map<string, CatalogEntry>;
   canDecide: boolean;
+  /** The business's clock: "Scheduled for 9:00 AM" is her 9:00, not this computer's
+   *  (piggles persona issue 990). */
+  clock: string;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const toast = useToast();
@@ -100,7 +98,7 @@ function ApprovalCard({
           title: updated.status === 'scheduled' ? 'Approved and scheduled' : 'Approved: going out',
           description:
             updated.status === 'scheduled' && updated.scheduledAt
-              ? `It will post ${formatWhen(updated.scheduledAt)}.`
+              ? `It will post ${whenOn(updated.scheduledAt, clock)}.`
               : 'It is being sent to your accounts now.',
           type: 'success',
         });
@@ -162,7 +160,7 @@ function ApprovalCard({
           <Text className="text-base font-medium break-words">{excerpt(post.body)}</Text>
           <Text className="text-sm">
             {post.scheduledAt
-              ? `Scheduled for ${formatWhen(post.scheduledAt)}`
+              ? `Scheduled for ${whenOn(post.scheduledAt, clock)}`
               : 'No time set: approving posts it now'}
             {post.source !== 'manual' ? ` · drafted automatically` : ''}
           </Text>
@@ -268,6 +266,8 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const canDecide = canApprove(viewer.data?.role);
   const pending = useMemo(() => posts.data ?? [], [posts.data]);
+  const reader = useReaderClock();
+  const clock = reader.zone ?? reader.device;
 
   // The lead pictures and account faces, resolved in one request for the whole inbox.
   const assetsById = usePostThumbnails(pending);
@@ -313,24 +313,14 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           {posts.isError ? (
-            <EmptyState
+            <PaneLoadError
               icon={<ServerCrash className="size-6" aria-hidden />}
               title="Could not load the approvals inbox"
-              description={socialErrorMessage(
-                posts.error,
-                'This is a problem reaching the server. Nothing about your posts has changed.'
-              )}
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void posts.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              description="This is a problem reaching the server. Nothing about your posts has changed."
+              error={posts.error}
+              onRetry={() => {
+                void posts.refetch();
+              }}
             />
           ) : posts.isPending ? (
             <p className="text-sm" role="status">
@@ -355,6 +345,11 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </AlertContent>
                 </Alert>
               ) : null}
+              {/* Only when the business has no zone of its own: then the times are this
+                  computer's, and the screen has to say so. */}
+              {reader.zone === null ? (
+                <Text className="text-sm">{timesNote(null, reader.device, new Date())}</Text>
+              ) : null}
               <section className="flex flex-col gap-3">
                 {pending.map((post) => (
                   <ApprovalCard
@@ -364,6 +359,7 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                     avatarByTargetId={avatarByTargetId}
                     catalogMap={catalogMap}
                     canDecide={canDecide}
+                    clock={clock}
                     onOpen={(event) => {
                       openPost(post, event);
                     }}

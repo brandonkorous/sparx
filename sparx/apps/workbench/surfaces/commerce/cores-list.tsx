@@ -27,6 +27,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { RotateCcw } from 'lucide-react';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -104,10 +105,11 @@ export function CoresListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
             icon={<RotateCcw className="size-6" aria-hidden />}
             title="Could not load the cores owed"
             description="This is a problem reaching the server. Nothing has changed on any order."
+            error={error}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -123,7 +125,7 @@ export function CoresListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th className="hidden @lg:table-cell">Customer</th>
                 <th>Part</th>
                 <th className="text-right">Owed</th>
-                <th className="hidden text-right @xl:table-cell">Deposit back</th>
+                <th className="hidden text-right @xl:table-cell">Deposit</th>
                 <th>Out for</th>
                 <th className="hidden @3xl:table-cell">
                   <span className="sr-only">What to do</span>
@@ -192,7 +194,7 @@ function CoreRow({
         onOpen(event);
       }}
     >
-      <td className="font-mono text-sm">
+      <td className="font-mono text-sm whitespace-nowrap">
         {row.orderNumber}
         <span className="block font-sans text-sm @lg:hidden">{row.customerName}</span>
       </td>
