@@ -106,8 +106,9 @@ export interface CoreOwed {
   /** The order's open invoice, which a returned core's deposit comes off first.
    *  Null when nothing on the order is still owed. The screen words a core from
    *  this, so it never says "give back" about a deposit nobody paid (sparx
-   *  persona issue 183). */
-  openInvoice: { number: string; balanceCents: number } | null;
+   *  persona issue 183). `number` is null while the invoice has not been
+   *  numbered yet: it is still owed, so it still takes the deposit. */
+  openInvoice: { number: string | null; balanceCents: number } | null;
   /** Whole days since the part was handed over (since the order was placed, on a
    *  send-first line, whose old part is due before anything goes). */
   daysOut: number;

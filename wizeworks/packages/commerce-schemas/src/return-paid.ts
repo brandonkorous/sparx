@@ -15,14 +15,18 @@ export interface PaidLine {
   taxCents: number;
 }
 
+/** A money column as it arrives: a number, a string off the wire, or a database
+ *  Decimal, which prints its exact value. */
+type Amount = number | string | { toString(): string };
+
 /** An order line, in the currency units the order keeps (dollars). */
 export function paidLine(item: {
   quantity: number | string;
-  lineSubtotal: number | string;
-  discountAmount: number | string;
-  taxAmount: number | string;
+  lineSubtotal: Amount;
+  discountAmount: Amount;
+  taxAmount: Amount;
 }): PaidLine {
-  const cents = (amount: number | string) => Math.round(Number(amount) * 100);
+  const cents = (amount: Amount) => Math.round(Number(amount.toString()) * 100);
   return {
     quantity: Number(item.quantity),
     goodsCents: cents(item.lineSubtotal) - cents(item.discountAmount),

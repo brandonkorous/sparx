@@ -199,6 +199,23 @@ describe('a deposit that sits on an unpaid invoice (sparx persona issue 183)', (
     expect(w.asksWhereMoneyGoes).toBe(true);
   });
 
+  it('names an invoice that has no number yet without one', () => {
+    const unnumbered = { number: null, balanceCents: 30_000 };
+    const off = receiveCoreWords(core({}), { usable: 1, unusable: 0, invoice: unnumbered });
+    expect(off.description).toContain('off the open invoice, which still has $300.00 to pay');
+    expect(off.submitLabel).toBe('Take $150.00 off the invoice');
+    const split = receiveCoreWords(core({ owed: 6 }), {
+      usable: 6,
+      unusable: 0,
+      invoice: unnumbered,
+    });
+    expect(split.description).toContain('The open invoice still has $300.00 to pay');
+    expect(split.description).not.toContain('null');
+    expect(depositBackText(owedRow({ openInvoice: unnumbered }))).toBe(
+      '$150.00 off its open invoice'
+    );
+  });
+
   it('claims nothing until it knows whether an invoice is open', () => {
     const w = receiveCoreWords(core({}), { usable: 1, unusable: 0, invoice: undefined });
     expect(w.ready).toBe(false);

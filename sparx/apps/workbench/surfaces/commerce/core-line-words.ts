@@ -115,7 +115,7 @@ export function depositBackText(row: CoreOwed): string {
   if (row.coreFirst) return 'No deposit';
   const amount = formatMoney(row.owedCents / 100, row.currency);
   return row.openInvoice && row.openInvoice.balanceCents > 0
-    ? `${amount} off ${row.openInvoice.number}`
+    ? `${amount} off ${row.openInvoice.number ?? 'its open invoice'}`
     : amount;
 }
 
@@ -228,14 +228,17 @@ export function receiveCoreWords(
   let submitLabel = usable > 0 ? `Give back ${money(backCents)}` : keepLabel;
   if (invoice && offInvoiceCents > 0) {
     const left = money(invoice.balanceCents);
+    // An invoice not numbered yet is still owed, so it is named without one.
+    const named = invoice.number ? `invoice ${invoice.number}` : 'the open invoice';
+    const short = invoice.number ?? 'the invoice';
     description =
       backCents > 0
-        ? `${head} Invoice ${invoice.number} still has ${left} to pay, so ${money(offInvoiceCents)} comes off it and ${money(backCents)} goes back.`
-        : `${head} A usable core takes its ${each} deposit off invoice ${invoice.number}, which still has ${left} to pay. No money goes back.`;
+        ? `${head} ${named.charAt(0).toUpperCase()}${named.slice(1)} still has ${left} to pay, so ${money(offInvoiceCents)} comes off it and ${money(backCents)} goes back.`
+        : `${head} A usable core takes its ${each} deposit off ${named}, which still has ${left} to pay. No money goes back.`;
     submitLabel =
       backCents > 0
-        ? `Take ${money(offInvoiceCents)} off ${invoice.number}, give back ${money(backCents)}`
-        : `Take ${money(offInvoiceCents)} off ${invoice.number}`;
+        ? `Take ${money(offInvoiceCents)} off ${short}, give back ${money(backCents)}`
+        : `Take ${money(offInvoiceCents)} off ${short}`;
   }
   return {
     description,

@@ -45,7 +45,8 @@ export interface CoreOwed {
 }
 
 export interface OpenInvoice {
-  number: string;
+  /** Null while the invoice has not been numbered yet; it is still owed. */
+  number: string | null;
   balanceCents: number;
 }
 
