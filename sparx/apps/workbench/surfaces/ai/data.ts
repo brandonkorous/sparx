@@ -97,6 +97,8 @@ export interface PromptTemplateUpdate {
  *  `write` ⇒ the tool can change data, not just read it. */
 export interface ToolPolicyDto {
   name: string;
+  /** What the owner reads, in their own words (sparx persona issue 297). */
+  title: string;
   description: string;
   scope: string;
   /** The business area a tool maps to, or null for platform-wide capabilities. */
@@ -437,10 +439,10 @@ export function formatPercent(fraction: number | null): string {
 
 /**
  * A raw tool identifier turned into something a person can read when we have no
- * catalog description to hand — `orders.search_by_email` → "Orders search by
- * email". The tool-policy list carries the real plain-language descriptions, so
- * callers prefer those and fall back to this only for a tool no longer in the
- * catalog.
+ * catalog title to hand — `orders.search_by_email` → "Orders search by
+ * email". The tool-policy list carries each tool's owner-word title (issue 297),
+ * so callers prefer that and fall back to this only for a tool no longer in the
+ * catalog. Its descriptions are written for the AI, not for a person.
  */
 export function humanizeTool(tool: string): string {
   const words = tool

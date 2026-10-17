@@ -34,13 +34,13 @@ import {
   Button,
   EmptyState,
   SearchInput,
-  Table,
   Text,
   Timestamp,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Barcode, CircleAlert, Printer, Search, Sparkles } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -244,12 +244,12 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <span className="truncate font-mono text-sm">{row.sku ?? ''}</span>
                   </span>
                 </td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">
+                <td data-label="Format" className="hidden whitespace-nowrap @lg:table-cell">
                   <Badge color="neutral" variant="outline" size="sm">
                     {row.symbologyLabel}
                   </Badge>
                 </td>
-                <td className="text-right whitespace-nowrap tabular-nums">
+                <td data-label="Per scan" className="text-right whitespace-nowrap tabular-nums">
                   {/* The field with consequences: a case code that says 1 makes
                       every delivery quietly short. Colored so it is impossible
                       to scan past. */}
@@ -261,7 +261,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Text className="text-sm">1</Text>
                   )}
                 </td>
-                <td className="hidden @xl:table-cell">
+                <td data-label="Where from" className="hidden @xl:table-cell">
                   <Badge color={source.color} variant="soft" size="sm">
                     {source.label}
                   </Badge>
@@ -269,7 +269,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Text className="truncate text-sm">{row.supplierName}</Text>
                   ) : null}
                 </td>
-                <td className="hidden whitespace-nowrap @2xl:table-cell">
+                <td data-label="Last scanned" className="hidden whitespace-nowrap @2xl:table-cell">
                   {row.lastScannedAt ? (
                     <span className="flex flex-col">
                       <Timestamp value={row.lastScannedAt} format="relative" />

@@ -1,13 +1,13 @@
 # 042 — Changing a link means typing its address by heart
 
-**Status:** fixed (reaches the editor with the silicaui release below)
+**Status:** fixed
 **Severity:** major
 **Found by:** P01 · Gillett Diesel Service · act 2
 **Surface:** workbench › Editor › any link › Settings › LINK › "URL"
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** sparx side: the editor calls `GET /v1/builder/site/link-choices` on load (200, read on screen with Doty's sign-in); API test 3/3, proved red. The suggestions in the link box: **not checked on screen** until sparx runs the new silicaui
-**Blocked on:** pipeline: release `@wizeworks/silicaui-builder` from `G:/code/@wizeworks/silicaui` (changeset `link-targets-and-fresh-alt.md`, minor), then raise the `@wizeworks/silicaui*` catalog pins in `pnpm-workspace.yaml` and run `pnpm install`
+**Confirmed by:** sparx as Doty, 2026-10-17, read from the page (silicaui 0.60.2 installed)
+**Blocked on:** — (the silicaui release it waited on shipped; 0.60.2 is installed)
 
 ## What happened
 
@@ -51,6 +51,10 @@ name, and still free typing for an outside address.
   compiles and runs on 0.56 and is used from 0.58.
 
 Checks: silicaui-builder tsc 0; api-rest tsc 0; workbench tsc 0.
+
+## Confirmed by
+
+sparx as Doty, 2026-10-17, silicaui 0.60.2 installed. Editor › Home › the "Contact us" link › Settings › LINK › "Links to" (`/contact`): the box is wired to a suggestion list of 700 places, starting "/ Home", "/shop Shop", "/contact Contact", then his policy pages ("/refund-policy Refund Policy", "/shipping-policy Shipping Policy", "/terms-of-service Terms of Service"), his posts, collections and categories. Read from the page: the browser's own drop-down list does not show in a screenshot, so it was not seen open.
 
 ## Rating effect
 

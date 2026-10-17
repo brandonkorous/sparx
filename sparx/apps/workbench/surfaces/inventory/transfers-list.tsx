@@ -31,10 +31,10 @@ import {
   Card,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowLeftRight, ArrowRight, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -221,14 +221,17 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <span className="truncate">{to}</span>
                   </span>
                 </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
+                <td
+                  className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell"
+                  data-label={transfer.lineCount === 0 ? 'Items' : undefined}
+                >
                   {transfer.lineCount === 0
                     ? 'None yet'
                     : `${plural(transfer.lineCount, 'item', 'items')} · ${String(
                         transfer.totalQuantity
                       )}`}
                 </td>
-                <td className="hidden whitespace-nowrap @2xl:table-cell">
+                <td className="hidden whitespace-nowrap @2xl:table-cell" data-label="Started">
                   <Text className="text-sm">
                     <Timestamp value={transfer.createdAt} format="relative" />
                   </Text>

@@ -42,11 +42,11 @@ import {
   FieldLabel,
   Input,
   Switch,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Pencil, Plus, TextQuote, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -322,7 +322,7 @@ export function SnippetsListSurface() {
                           <Text className="line-clamp-2 text-sm">{snippet.body}</Text>
                         </div>
                       </td>
-                      <td className="hidden @lg:table-cell">
+                      <td data-label="Used" className="hidden @lg:table-cell">
                         <Text as="span">
                           {snippet.useCount === 0 ? 'Never' : `${String(snippet.useCount)}×`}
                         </Text>

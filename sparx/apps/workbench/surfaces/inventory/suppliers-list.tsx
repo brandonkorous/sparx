@@ -24,10 +24,10 @@ import {
   Card,
   EmptyState,
   SearchInput,
-  Table,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Archive, Plus, Truck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -188,7 +188,10 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     {terms ? <span className="truncate text-sm @3xl:hidden">{terms}</span> : null}
                   </span>
                 </td>
-                <td className="hidden max-w-56 @xl:table-cell">
+                <td
+                  className="hidden max-w-56 @xl:table-cell"
+                  data-label={contactSummary ? 'Contact' : undefined}
+                >
                   <span className="flex min-w-0 flex-col">
                     {contactName ? <span className="truncate">{contactName}</span> : null}
                     {contactVia ? (
@@ -198,7 +201,12 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     )}
                   </span>
                 </td>
-                <td className="hidden max-w-56 truncate @3xl:table-cell">{terms ?? '—'}</td>
+                <td
+                  className="hidden max-w-56 truncate @3xl:table-cell"
+                  data-label={terms ? 'Terms' : undefined}
+                >
+                  {terms ?? '—'}
+                </td>
                 <td>
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}

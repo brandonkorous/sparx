@@ -25,11 +25,11 @@ import {
   Button,
   EmptyState,
   Input,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PackageCheck, ShieldAlert, Trash2, Wrench } from 'lucide-react';
 import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
@@ -156,8 +156,12 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
                       ) : null}
                     </span>
                   </td>
-                  <td className="text-right tabular-nums">{row.quantity}</td>
-                  <td className="text-sm whitespace-nowrap">{conditionLabel(row.condition)}</td>
+                  <td data-label="Qty" className="text-right tabular-nums">
+                    {row.quantity}
+                  </td>
+                  <td data-label="Condition" className="text-sm whitespace-nowrap">
+                    {conditionLabel(row.condition)}
+                  </td>
                   <td>
                     {row.disposition ? (
                       <span className="flex flex-col gap-0.5">

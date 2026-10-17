@@ -35,10 +35,10 @@ import {
   Card,
   EmptyState,
   Heading,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CheckCircle2, ExternalLink, Info, TriangleAlert } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -343,7 +343,7 @@ function RecentChanges({ data }: { data: StockProvenance }) {
                 <Text className="font-medium">{movementReason(movement.reason)}</Text>
                 {movement.note ? <Text className="text-sm">{movement.note}</Text> : null}
               </td>
-              <td className="text-right">
+              <td data-label="Change" className="text-right">
                 {/* Direction is the meaning here, so it carries the color — a
                     grey column of signed integers makes the reader do the work
                     the color could do instantly. */}
@@ -352,10 +352,10 @@ function RecentChanges({ data }: { data: StockProvenance }) {
                   {NUMBER.format(movement.delta)}
                 </Badge>
               </td>
-              <td className="text-right tabular-nums">
+              <td data-label="Left" className="text-right tabular-nums">
                 {movement.balanceAfter === null ? '—' : NUMBER.format(movement.balanceAfter)}
               </td>
-              <td className="hidden @lg:table-cell">
+              <td data-label="Who" className="hidden @lg:table-cell">
                 <Text className="text-sm">{actorLabel(movement)}</Text>
               </td>
               <td className="hidden whitespace-nowrap @lg:table-cell">

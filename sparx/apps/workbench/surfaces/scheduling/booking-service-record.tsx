@@ -147,7 +147,7 @@ function VehicleRow({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end gap-3">
-        <Field className="min-w-0 flex-1">
+        <Field className="min-w-0 flex-1 basis-48">
           <FieldLabel>Trade account</FieldLabel>
           <FieldControl
             render={
@@ -402,7 +402,7 @@ function PartsPicker({
                           setTicks((prev) => ({ ...prev, [line.id]: on ? 0 : 1 }));
                         }}
                       />
-                      <span className="min-w-0 flex-1 text-base">
+                      <span className="min-w-0 flex-1 basis-48 text-base">
                         {partName(line.name, line.sku)}
                       </span>
                       <span className="text-sm whitespace-nowrap">{line.quantity} ordered</span>

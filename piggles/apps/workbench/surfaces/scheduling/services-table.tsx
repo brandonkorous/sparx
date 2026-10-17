@@ -112,10 +112,16 @@ export function ServicesTable({
               <td className="hidden whitespace-nowrap @lg:table-cell">
                 {bookingTypeLabel(service.bookingType)}
               </td>
-              <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
+              <td
+                className="hidden whitespace-nowrap tabular-nums @xl:table-cell"
+                data-label="Length"
+              >
                 {formatDuration(service.durationMinutes)}
               </td>
-              <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
+              <td
+                className="hidden whitespace-nowrap tabular-nums @xl:table-cell"
+                data-label="Price"
+              >
                 {servicePriceLabel(service)}
               </td>
               <td>

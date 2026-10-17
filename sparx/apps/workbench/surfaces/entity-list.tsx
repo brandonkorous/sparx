@@ -9,12 +9,14 @@
 
 import { useState, type ReactNode } from 'react';
 import { useQuery } from '@wizeworks/query';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../components/table';
 import { Plus, type LucideIcon } from 'lucide-react';
 import { api } from '../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../lib/surfaces/registry';
 import { RefreshButton } from '../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
+import { PaneLoadError } from '../components/pane-load-error';
 import { ListEmptyState } from '../components/list-empty-state';
 import { RowOpenHint } from '../components/row-open-hint';
 
@@ -121,9 +123,13 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
 
         <Card className="min-h-0 flex-1 overflow-y-auto">
           {error ? (
-            <EmptyState
+            <PaneLoadError
+              error={error}
               title="Could not load this list"
               description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isLoading ? (
             // Full ink, not `/60`. This is text a person is meant to READ, and
@@ -184,9 +190,11 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
                           : undefined
                       }
                     >
-                      {config.columns.map((column) => (
+                      {config.columns.map((column, index) => (
                         <td
                           key={column.key}
+                          // A figure needs its column's name once the row stacks.
+                          data-label={column.numeric && index > 0 ? column.header : undefined}
                           className={[
                             column.align === 'right' ? 'text-right' : '',
                             column.numeric ? 'font-mono text-sm tabular-nums' : '',

@@ -23,9 +23,9 @@ import {
   EmptyState,
   Filter,
   FilterItem,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { RotateCcw } from 'lucide-react';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -198,7 +198,7 @@ function CoreRow({
         {row.orderNumber}
         <span className="block font-sans text-sm @lg:hidden">{row.customerName}</span>
       </td>
-      <td className="hidden max-w-48 truncate @lg:table-cell">
+      <td data-label="Customer" className="hidden max-w-48 truncate @lg:table-cell">
         {row.customerName}
         {row.companyName ? <span className="block text-sm">{row.companyName}</span> : null}
       </td>
@@ -211,11 +211,13 @@ function CoreRow({
           </span>
         ) : null}
       </td>
-      <td className="text-right tabular-nums">
+      <td data-label="Owed" className="text-right tabular-nums">
         {row.coresOwed} of {row.quantity}
       </td>
-      <td className="hidden text-right tabular-nums @xl:table-cell">{depositBackText(row)}</td>
-      <td>
+      <td data-label="Deposit" className="hidden text-right tabular-nums @xl:table-cell">
+        {depositBackText(row)}
+      </td>
+      <td data-label="Out for">
         <Badge
           color={row.daysOut > 60 ? 'error' : row.daysOut > 30 ? 'warning' : 'info'}
           variant="soft"

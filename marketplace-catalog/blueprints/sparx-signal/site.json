@@ -20,7 +20,7 @@
               "children": [
                 {
                   "kind": "host",
-                  "class": "wordmark inline-flex items-center gap-2",
+                  "class": "wordmark inline-flex items-center gap-2 shrink-0",
                   "props": {
                     "show": "logo"
                   },
@@ -29,12 +29,12 @@
                 {
                   "tag": "div",
                   "kind": "element",
-                  "class": "flex items-center gap-3 @sm:gap-6",
+                  "class": "flex items-center gap-3 @5xl:gap-6",
                   "children": [
                     {
                       "tag": "div",
                       "kind": "element",
-                      "class": "hidden items-center gap-6 @sm:flex",
+                      "class": "hidden items-center gap-6 @5xl:flex",
                       "children": [
                         {
                           "tag": "a",
@@ -86,7 +86,7 @@
                     {
                       "tag": "details",
                       "kind": "element",
-                      "class": "relative @sm:hidden",
+                      "class": "relative @5xl:hidden",
                       "children": [
                         {
                           "tag": "summary",
@@ -162,6 +162,20 @@
                                   "kind": "host",
                                   "component": "site.account-link",
                                   "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200"
+                                },
+                                {
+                                  "kind": "host",
+                                  "component": "site.theme-toggle",
+                                  "class": "inline-flex items-center"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "class": "btn btn-primary btn-sm btn-block mt-1",
+                                  "children": ["Get in touch"]
                                 }
                               ]
                             }
@@ -171,7 +185,7 @@
                     },
                     {
                       "kind": "host",
-                      "class": "inline-flex items-center",
+                      "class": "items-center hidden @5xl:inline-flex",
                       "component": "site.theme-toggle"
                     },
                     {
@@ -185,7 +199,7 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "class": "btn btn-primary btn-sm",
+                      "class": "btn btn-primary btn-sm hidden @5xl:inline-flex",
                       "children": ["Get in touch"]
                     }
                   ]

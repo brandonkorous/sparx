@@ -19,9 +19,9 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CookingPot, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -137,7 +137,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     />
                   </span>
                 </td>
-                <td className="hidden max-w-48 @lg:table-cell">
+                <td data-label="Recipe" className="hidden max-w-48 @lg:table-cell">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{bom.name}</span>
                     {/* Version matters: it is how a recall gets scoped to the
@@ -145,8 +145,10 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <span className="truncate text-sm">Version {bom.version}</span>
                   </span>
                 </td>
-                <td className="text-right tabular-nums">{bom.outputQuantity}</td>
-                <td className="hidden text-right tabular-nums @md:table-cell">
+                <td data-label="Per run" className="text-right tabular-nums">
+                  {bom.outputQuantity}
+                </td>
+                <td data-label="Parts" className="hidden text-right tabular-nums @md:table-cell">
                   {bom.componentCount}
                 </td>
                 {/* The SAME figure the detail card shows, not `laborCostCents`.
@@ -156,7 +158,10 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     free part: a recipe nobody has costed says so rather than
                     claiming $0.00.
                     [[feedback_never_present_absence_as_measurement]] */}
-                <td className="hidden text-right tabular-nums @xl:table-cell">
+                <td
+                  data-label="Costs about"
+                  className="hidden text-right tabular-nums @xl:table-cell"
+                >
                   {bom.uncostedComponentCount > 0 && bom.estimatedUnitCostCents === 0
                     ? 'Not known'
                     : formatCents(bom.estimatedUnitCostCents)}

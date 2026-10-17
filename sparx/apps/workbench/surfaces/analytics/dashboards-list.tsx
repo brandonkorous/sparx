@@ -66,7 +66,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const dashboards = useDashboards();
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('analytics.dashboard.view', { id }, { target: targetFor(event) });
+    ctx.open('analytics.dashboard.view', { key: id }, { target: targetFor(event) });
   };
 
   return (

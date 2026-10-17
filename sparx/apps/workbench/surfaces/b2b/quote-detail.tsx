@@ -17,9 +17,9 @@ import {
   Badge,
   Button,
   Heading,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Building2, ExternalLink } from 'lucide-react';
 import { ModuleScope } from '../../components/module-scope';
 import { FormSection } from '../../components/form-section';
@@ -188,11 +188,16 @@ function QuoteView({ ctx, quote }: { ctx: SurfaceContext; quote: QuoteRow }) {
                   {quote.lines.map((line) => (
                     <tr key={line.id}>
                       <td>{line.description}</td>
-                      <td className="text-right tabular-nums">{line.quantity}</td>
-                      <td className="hidden text-right tabular-nums @lg:table-cell">
+                      <td className="text-right tabular-nums" data-label="Qty">
+                        {line.quantity}
+                      </td>
+                      <td
+                        className="hidden text-right tabular-nums @lg:table-cell"
+                        data-label="Each"
+                      >
                         {formatMoney(line.unitPrice, quote.currency)}
                       </td>
-                      <td className="text-right font-medium tabular-nums">
+                      <td className="text-right font-medium tabular-nums" data-label="Amount">
                         {formatMoney(line.lineTotal, quote.currency)}
                       </td>
                     </tr>

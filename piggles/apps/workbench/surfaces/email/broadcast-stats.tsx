@@ -1,9 +1,7 @@
 'use client';
 
-// How a broadcast did, once it has gone out.
-//
-// The rules that decide what each tile SAYS live next door in
-// `broadcast-stats-words`, where they can be tested. This file is the drawing.
+// How a broadcast did, once it has gone out. The rules that decide what each tile SAYS live next door
+// in `broadcast-stats-words`, where they can be tested. This file is the drawing.
 
 import { Text } from '@wizeworks/silicaui-react';
 import type { BroadcastStats } from './broadcasts-data';
@@ -40,7 +38,7 @@ export function StatsGrid({
   return (
     <div className="grid gap-3 @sm:grid-cols-2 @xl:grid-cols-3">
       <StatBlock
-        label="Delivered"
+        label={delivered.label}
         value={delivered.value.toLocaleString()}
         hint={delivered.hint}
         tone={delivered.tone}
@@ -57,6 +55,15 @@ export function StatsGrid({
         hint={`${pct(stats.clicked)} ${shareOf}`}
         tone={achievedTone(stats.clicked)}
       />
+      <TroubleBlocks stats={stats} />
+    </div>
+  );
+}
+
+/** The counts that only ever mean something went wrong. */
+function TroubleBlocks({ stats }: { stats: BroadcastStats }) {
+  return (
+    <>
       <StatBlock
         label="Bounced"
         value={stats.bounced.toLocaleString()}
@@ -75,7 +82,7 @@ export function StatsGrid({
         hint="Marked as spam"
         tone={stats.complained > 0 ? 'error' : 'plain'}
       />
-    </div>
+    </>
   );
 }
 

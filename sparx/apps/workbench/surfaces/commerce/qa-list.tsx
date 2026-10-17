@@ -22,14 +22,15 @@ import {
   Filter,
   FilterItem,
   SearchInput,
-  Table,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Check, EyeOff, HelpCircle, ListChecks } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, questionState } from './products-data';
@@ -375,21 +376,14 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<HelpCircle className="size-6" aria-hidden />}
             title="Could not load the questions"
             description="Something went wrong reaching the server. Nothing customers asked has been lost. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -486,10 +480,13 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                         wide beside a badge and two buttons. MEASURED at a 360px
                         pane: 706px before, 343px after, no sideways scroll. */}
                     <td className="w-full max-w-0 truncate">{preview(row.body)}</td>
-                    <td className="hidden max-w-40 truncate text-sm @lg:table-cell">
+                    <td
+                      data-label="Product"
+                      className="hidden max-w-40 truncate text-sm @lg:table-cell"
+                    >
                       {row.productTitle ?? '—'}
                     </td>
-                    <td className="hidden max-w-40 text-sm @xl:table-cell">
+                    <td data-label="Asked by" className="hidden max-w-40 text-sm @xl:table-cell">
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate">
                           {customerLabel(row.customer, row.displayName)}
@@ -520,7 +517,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {state.label}
                       </Badge>
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">
+                    <td data-label="Asked" className="hidden text-sm @2xl:table-cell">
                       <Timestamp value={row.createdAt} format="relative" />
                     </td>
                     <td

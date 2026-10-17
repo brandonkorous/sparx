@@ -270,7 +270,7 @@ function QueueRow({
         >
           {item.orderNumber}
         </button>
-        <span className="min-w-0 flex-1 font-medium">{queueBuyer(item)}</span>
+        <span className="min-w-0 flex-1 basis-48 font-medium">{queueBuyer(item)}</span>
         <Text as="span" className="font-semibold tabular-nums">
           {formatCents(item.totalCents, item.currency)}
         </Text>

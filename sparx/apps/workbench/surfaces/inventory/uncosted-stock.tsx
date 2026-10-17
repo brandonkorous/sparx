@@ -23,7 +23,8 @@
 // because this writes to every margin figure in the business.
 
 import { useState } from 'react';
-import { Button, Card, EmptyState, Table, Text, useToast } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, Text, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { RefreshButton } from '../../components/refresh-button';

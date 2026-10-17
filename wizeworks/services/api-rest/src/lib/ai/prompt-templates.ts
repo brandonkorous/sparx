@@ -117,7 +117,11 @@ export async function createPromptTemplate(
       where: { propertyId: input.propertyId ?? null, key: input.key },
       select: { id: true },
     });
-    if (existing) throw conflict(`A prompt with key "${input.key}" already exists`);
+    if (existing) {
+      throw conflict(
+        `An instruction with the reference name "${input.key}" already exists. Give this one a different name.`
+      );
+    }
 
     const row = await tx.aiPromptTemplate.create({
       data: {

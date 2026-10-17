@@ -40,7 +40,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -401,16 +400,14 @@ function LocationEditor({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {/* On an existing location the pane opens by saying WHAT it is — its
-              name, the code on its shelf labels, and where it is. A new one is
-              introduced by the form section below instead. */}
+          {/* On an existing location the pane opens by saying WHAT it is: the
+              code on its shelf labels and where it is. Its name is the box below
+              and the tab, not a heading over the box too (issue 282). A new one
+              is introduced by the form section below instead. */}
           {existing ? (
             <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Warehouse className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <Warehouse className="size-4 shrink-0" aria-hidden />
                 <span className="font-mono text-sm">{existing.code}</span>
                 {/* Says where the place came FROM. Removing the sample data
                     deliberately leaves locations alone (a tenant may have

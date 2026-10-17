@@ -78,7 +78,7 @@ function ZoneRow({
         onOpen(zone.id, event);
       }}
     >
-      <span className="flex min-w-0 flex-1 flex-col">
+      <span className="flex min-w-0 flex-1 basis-48 flex-col">
         <span className="font-semibold">{place.title}</span>
         <Text as="span" className="text-sm">
           {/* Why she collects here is only worth saying once she DOES. On a place

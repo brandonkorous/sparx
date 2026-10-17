@@ -26,10 +26,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Coins, PackageX } from 'lucide-react';
 import { formatCents } from './data';
 import { abcLabel, abcTone, useHoldingCost } from './planning-data';
@@ -172,8 +172,12 @@ function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
                     {abcLabel(c.abcClass === 'unclassified' ? null : c.abcClass)}
                   </Badge>
                 </td>
-                <td className="text-right tabular-nums">{formatCents(c.valueCents)}</td>
-                <td className="text-right tabular-nums">{formatCents(c.annualHoldingCostCents)}</td>
+                <td data-label="Worth" className="text-right tabular-nums">
+                  {formatCents(c.valueCents)}
+                </td>
+                <td data-label="Costs a year" className="text-right tabular-nums">
+                  {formatCents(c.annualHoldingCostCents)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -219,8 +223,10 @@ function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
                       </span>
                     </span>
                   </td>
-                  <td className="text-right tabular-nums">{item.onHand}</td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="In stock" className="text-right tabular-nums">
+                    {item.onHand}
+                  </td>
+                  <td data-label="Worth" className="text-right tabular-nums">
                     {item.costKnown ? (
                       formatCents(item.valueCents)
                     ) : (
@@ -229,10 +235,10 @@ function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
                       </Tooltip>
                     )}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Cover" className="text-right tabular-nums">
                     {item.daysOfCover === null ? '—' : `${Math.round(item.daysOfCover)} days`}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Costs a year" className="text-right tabular-nums">
                     {item.costKnown ? formatCents(item.annualHoldingCostCents) : '—'}
                   </td>
                 </tr>

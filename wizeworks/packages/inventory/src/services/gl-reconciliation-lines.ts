@@ -104,7 +104,7 @@ export interface ReconciliationWords {
  * them used to hard-code the plural.
  */
 export function count(n: number, one: string, many: string): string {
-  return `${String(n)} ${n === 1 ? one : many}`;
+  return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 }
 
 export function reconciliationWords(m: ReconciliationMeasurement): ReconciliationWords {
@@ -123,7 +123,7 @@ export function reconciliationWords(m: ReconciliationMeasurement): Reconciliatio
       // already read the total. [[feedback_never_present_absence_as_measurement]]
       reference:
         m.uncostedUnits > 0
-          ? `${String(m.totalUnits - m.uncostedUnits)} of ${count(m.totalUnits, 'unit', 'units')} on hand`
+          ? `${(m.totalUnits - m.uncostedUnits).toLocaleString('en-US')} of ${count(m.totalUnits, 'unit', 'units')} on hand`
           : `${count(m.totalUnits, 'unit', 'units')} on hand`,
     },
     {

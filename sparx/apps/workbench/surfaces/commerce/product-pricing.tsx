@@ -556,7 +556,7 @@ function TradePriceLists({
                       key={entry.id}
                       className="border-base-300 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b pb-2 last:border-b-0 last:pb-0"
                     >
-                      <Text as="span" className="min-w-0 flex-1 text-sm">
+                      <Text as="span" className="min-w-0 flex-1 basis-48 text-sm">
                         {name}
                         {condition ? ` · ${condition}` : ''}
                       </Text>
@@ -843,7 +843,9 @@ function BulkTiers({
 
   const [variantId, setVariantId] = useState(() => variants[0]?.id ?? '');
   const [quantity, setQuantity] = useState(10);
-  const [unitPrice, setUnitPrice] = useState(0);
+  // Empty until somebody types a price. It started at 0.00, which read as a
+  // price of nothing on a part nobody had priced yet (sparx persona issue 290).
+  const [unitPrice, setUnitPrice] = useState<number | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
   const byVariant = useMemo(() => {
@@ -859,13 +861,13 @@ function BulkTiers({
   const target = variants.find((variant) => variant.id === variantId) ?? variants[0] ?? null;
 
   const onAdd = () => {
-    if (!target || quantity < 2 || unitPrice <= 0) return;
+    if (!target || quantity < 2 || unitPrice === null || unitPrice <= 0) return;
     setFailure(null);
     create.mutate(
       { variantId: target.id, minQuantity: quantity, unitPriceCents: cents(unitPrice) },
       {
         onSuccess: () => {
-          setUnitPrice(0);
+          setUnitPrice(null);
           toast.add({ title: 'Quantity discount added', type: 'success' });
         },
         onError: (error) => {
@@ -936,7 +938,7 @@ function BulkTiers({
                       key={tier.id}
                       className="border-base-300 flex flex-wrap items-center gap-2 border-b pb-2 last:border-b-0"
                     >
-                      <Text as="span" className="min-w-0 flex-1 text-sm">
+                      <Text as="span" className="min-w-0 flex-1 basis-48 text-sm">
                         Buy {tier.minQuantity} or more:{' '}
                         <span className="font-semibold tabular-nums">
                           {formatCents(tier.unitPriceCents, variant.currency)}
@@ -1021,6 +1023,7 @@ function BulkTiers({
               render={
                 <MoneyInput
                   color="module"
+                  optional
                   value={unitPrice}
                   aria-label="Price per item at this quantity"
                   onValueChange={setUnitPrice}
@@ -1035,7 +1038,7 @@ function BulkTiers({
               ? 'Add a version first.'
               : quantity < 2
                 ? 'A quantity discount starts at two or more.'
-                : unitPrice <= 0
+                : unitPrice === null || unitPrice <= 0
                   ? 'Set what each one costs at that quantity.'
                   : cents(unitPrice) >= target.priceCents
                     ? `That is not cheaper than the normal price of ${formatCents(target.priceCents, target.currency)}: shoppers would be better off buying fewer.`
@@ -1046,7 +1049,7 @@ function BulkTiers({
             color="module"
             variant="outline"
             loading={create.isPending}
-            disabled={!target || quantity < 2 || unitPrice <= 0}
+            disabled={!target || quantity < 2 || unitPrice === null || unitPrice <= 0}
             onClick={onAdd}
           >
             <Plus className="size-4" aria-hidden />

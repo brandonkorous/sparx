@@ -135,7 +135,9 @@ function BookingRow({ ctx, booking }: { ctx: SurfaceContext; booking: Booking })
         <div className="text-sm">{formatClock(booking.startAt, booking.timezone)}</div>
       </td>
       <td className="align-top">{booking.service.name}</td>
-      <td className="hidden align-top text-sm @lg:table-cell">{bookingResourceLabel(booking)}</td>
+      <td data-label="With" className="hidden align-top text-sm @lg:table-cell">
+        {bookingResourceLabel(booking)}
+      </td>
       <td className="text-right align-top">
         <Badge color={meta.tone} variant="soft" size="sm">
           {meta.label}

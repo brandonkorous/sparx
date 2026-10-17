@@ -26,18 +26,18 @@
 
 import { useState } from 'react';
 import {
-  Button,
   Card,
   EmptyState,
   Filter,
   FilterItem,
   Heading,
   Progress,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Store } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useChannels, type ChannelRow } from './channels-data';
@@ -58,7 +58,7 @@ function sharePct(value: number, total: number): string {
 export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
   const [range, setRange] = useState('90');
   const days = Number(range);
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useChannels(days);
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useChannels(days);
 
   const currency = data?.currency ?? 'USD';
   const rows: ChannelRow[] = data?.channels ?? [];
@@ -105,22 +105,17 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Store className="size-6" aria-hidden />}
-            title="Could not load your channels"
-            description="Something went wrong reaching the server. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              error={error}
+              icon={<Store className="size-6" aria-hidden />}
+              title="Could not load your channels"
+              description="Something went wrong reaching the server. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
             Loading…
@@ -195,38 +190,66 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
                   {rows.map((r) => (
                     <tr key={r.key}>
                       <td className="font-medium">{channelLabel(r.channel, r.source)}</td>
-                      <td className="text-right tabular-nums">{r.orders}</td>
-                      <td className="hidden text-right tabular-nums @lg:table-cell">
+                      <td className="text-right tabular-nums" data-label="Orders">
+                        {r.orders}
+                      </td>
+                      <td
+                        className="hidden text-right tabular-nums @lg:table-cell"
+                        data-label="Sales"
+                      >
                         {formatMoney(r.gross, currency)}
                       </td>
-                      <td className="hidden text-right tabular-nums @xl:table-cell">
+                      <td
+                        className="hidden text-right tabular-nums @xl:table-cell"
+                        data-label="Still owed"
+                      >
                         {r.owed > 0 ? formatMoney(r.owed, currency) : '—'}
                       </td>
-                      <td className="hidden text-right tabular-nums @2xl:table-cell">
+                      <td
+                        className="hidden text-right tabular-nums @2xl:table-cell"
+                        data-label="Refunds"
+                      >
                         {r.refunds > 0 ? `−${formatMoney(r.refunds, currency)}` : '—'}
                       </td>
-                      <td className="text-right font-medium tabular-nums">
+                      <td className="text-right font-medium tabular-nums" data-label="Received">
                         {formatMoney(r.net, currency)}
                       </td>
-                      <td className="text-right tabular-nums">{sharePct(r.net, totals.net)}</td>
+                      <td className="text-right tabular-nums" data-label="Share">
+                        {sharePct(r.net, totals.net)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr className="border-base-300 border-t font-medium">
                     <td>All places</td>
-                    <td className="text-right tabular-nums">{totals.orders}</td>
-                    <td className="hidden text-right tabular-nums @lg:table-cell">
+                    <td className="text-right tabular-nums" data-label="Orders">
+                      {totals.orders}
+                    </td>
+                    <td
+                      className="hidden text-right tabular-nums @lg:table-cell"
+                      data-label="Sales"
+                    >
                       {formatMoney(totals.gross, currency)}
                     </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @xl:table-cell"
+                      data-label="Still owed"
+                    >
                       {totals.owed > 0 ? formatMoney(totals.owed, currency) : '—'}
                     </td>
-                    <td className="hidden text-right tabular-nums @2xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @2xl:table-cell"
+                      data-label="Refunds"
+                    >
                       {totals.refunds > 0 ? `−${formatMoney(totals.refunds, currency)}` : '—'}
                     </td>
-                    <td className="text-right tabular-nums">{formatMoney(totals.net, currency)}</td>
-                    <td className="text-right tabular-nums">100%</td>
+                    <td className="text-right tabular-nums" data-label="Received">
+                      {formatMoney(totals.net, currency)}
+                    </td>
+                    <td className="text-right tabular-nums" data-label="Share">
+                      100%
+                    </td>
                   </tr>
                 </tfoot>
               </Table>

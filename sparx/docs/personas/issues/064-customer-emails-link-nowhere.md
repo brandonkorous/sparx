@@ -6,7 +6,7 @@
 **Surface:** customer emails: order confirmed, order delivered, and every other transactional email that links to the site
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** On the dev broker, 2026-10-01, after a new counter sale O-000005 (an O-ring, collected at the counter):
+**Confirmed by:** the dev outbox, real sends, 2026-10-13; the broker, 2026-10-01
 
 - "Your order O-000005 is confirmed": "We'll let you know when it's ready to pick up." and "Pick up from 14812 Heritagecrest Way, Bluffdale, UT 84065"; no "Shipping to" line; 0 bare links.
 - "Your order O-000005 is in your hands": "You picked up order O-000005 … ✓ Picked up".
@@ -69,3 +69,7 @@ The resolver moved to `@wizeworks/db/site-origin` (the zone list, `mintZoneHost`
 ## Follow-up the same evening: a counter sale already handed over
 
 The first fix still told a buyer who walked out with the part "We'll let you know when it's ready to pick up", with "You picked up order …" a minute later. Split `pickup` into `pickupLater` and `pickedUp` (a pickup order whose `deliveredAt` is set when the receipt is built); the receipt now says "Order … is yours. Thanks for coming in." and gives no pickup address. The refresh learned the first split's fingerprint (`a29816b8…`), which the dev refresh had put on rows. Proved on the broker with O-000006: "Order O-000006 is yours. Thanks for coming in." Tests: email 226, api-rest 313 (the already-collected case reddens 1 when the split is removed).
+
+## Confirmed by
+
+In the dev outbox, 2026-10-17, real sends (not rebuilt): Brynn's counter sale O-000032 (2026-10-13) — the confirmation reads "Order O-000032 is yours. Thanks for coming in." with "View your order" linking to her account, and the next email is "You picked up order O-000032 … ✓ Picked up Oct 13, 2026" with "Leave a review". No tracking promise and no "[object Object]" in any of Gillett's 39 emails there. Every link points at gillettdiesel.sparx.zone.

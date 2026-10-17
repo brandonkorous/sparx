@@ -10,7 +10,8 @@
 // state to badge — a policy is a set of terms, not a thing with a lifecycle.
 
 import { useState } from 'react';
-import { Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, ShieldCheck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';

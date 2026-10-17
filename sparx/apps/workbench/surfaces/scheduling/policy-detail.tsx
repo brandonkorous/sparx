@@ -18,7 +18,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -26,7 +25,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Save, ShieldCheck, Trash2 } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -372,14 +371,7 @@ function PolicyEditor({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {existing ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <ShieldCheck className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
-            </div>
-          ) : null}
+          {/* No name heading: the name is its own box below and the tab (issue 282). */}
 
           <SaveFailure title="Could not save this rule set" message={saveError} />
 

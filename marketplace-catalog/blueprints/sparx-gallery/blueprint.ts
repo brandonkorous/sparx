@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-gallery',
-  version: '1.5.3',
+  version: '1.5.4',
   name: 'Gallery',
   summary:
     'A complete starter in the Gallery look, tuned for artists, makers, and portfolios: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',

@@ -12,7 +12,8 @@
 // runs a business, not a CRM.
 
 import { useState } from 'react';
-import { Badge, Button, Card, SearchInput, Select, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Building2, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -264,8 +265,15 @@ function AccountTableRow({
           {row.pricingTierName ?? 'No tier'}
         </Text>
       </td>
-      <td className="hidden @lg:table-cell">{row.pricingTierName ?? '—'}</td>
-      <td className="hidden text-right text-sm tabular-nums @xl:table-cell">{creditLine(row)}</td>
+      <td className="hidden @lg:table-cell" data-label="Price tier">
+        {row.pricingTierName ?? '—'}
+      </td>
+      <td
+        className="hidden text-right text-sm tabular-nums @xl:table-cell"
+        data-label="Credit used"
+      >
+        {creditLine(row)}
+      </td>
       <td className="text-right">
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}

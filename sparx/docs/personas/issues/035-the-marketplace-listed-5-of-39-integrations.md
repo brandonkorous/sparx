@@ -6,7 +6,7 @@
 **Surface:** marketplace shelf (`marketplace_integrations`), `pnpm --filter @wizeworks/api-rest marketplace:self-register`
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** re-ran the command: "integrations published 39"; the table holds ai 2, dropship 5, payments 8, sales_channels 10, shipping 3, social 9, tax 2, with names filled ("sparx Pay", "sparx Shipping")
+**Confirmed by:** sparx as Doty, 2026-10-17 (Your business › Integrations); the command, earlier
 **Blocked on:** —
 
 ## What happened
@@ -32,6 +32,10 @@ Two defects, found together.
 - Test `api-rest/test/unit/first-party-integrations.test.ts`: every category listed, no unfilled token. Proved red by restoring the old filter (1 fails) and by removing the fill (1 fails).
 
 Checks: api-rest tsc 0, eslint 0, prettier clean, 2/2 tests.
+
+## Confirmed by
+
+sparx as Doty, 2026-10-17: Integrations lists Card payments (8), Shipping & delivery (3), Places you sell (10), Social accounts (9), Dropship suppliers (6), Sales tax (2) and AI accounts (2), 40 in all, matching the 40 rows in `marketplace_integrations` today, each with its name ("sparx Pay", "by sparx").
 
 ## Rating effect
 

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-hearth",
   "name": "Hearth",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "tagline": "A complete multi-module starter in the Hearth look, for home services, interiors, and furnishings.",
   "description": "A complete starter in the Hearth look, tuned for home services, interiors, and furnishings: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

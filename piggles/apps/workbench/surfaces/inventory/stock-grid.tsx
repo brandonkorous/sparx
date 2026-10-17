@@ -424,7 +424,8 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
             }}
           />
         ) : (
-          <Table size="sm" hover>
+          // An editable grid: a paste fills down one column, so the columns must line up; it scrolls sideways instead.
+          <Table size="sm" hover stack={false}>
             <thead>
               <tr>
                 <th className="w-8">

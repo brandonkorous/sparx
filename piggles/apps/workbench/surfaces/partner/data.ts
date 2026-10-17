@@ -369,3 +369,39 @@ export function partnerErrorMessage(error: unknown, fallback: string): string {
 export function isNotFound(error: unknown): boolean {
   return error instanceof ApiError && error.status === 404;
 }
+
+/* ── Joining the program ──────────────────────────────────────────────────── */
+
+/** This business's latest application to the partner program, or null. Read by
+ *  the not-a-partner page, which sent owners to "your account settings" to apply
+ *  when no screen in the console could (sparx persona issue 307). Owners and
+ *  admins only: anyone else gets a 403, which the page reads as "ask them". */
+export interface PartnerApplication {
+  status: string;
+  requestedTier: string;
+  createdAt: string;
+}
+
+const APPLICATION_KEY = ['partner', 'application'] as const;
+
+export function usePartnerApplication() {
+  return useQuery({
+    queryKey: APPLICATION_KEY,
+    queryFn: () =>
+      api
+        .get<{ application: PartnerApplication | null }>('/v1/partner/application')
+        .then((res) => res.application),
+    retry: false,
+  });
+}
+
+export function useApplyToPartnerProgram() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { displayName: string; kind: string }) =>
+      api.post<{ status: 'pending' }>('/v1/partner/apply', input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: APPLICATION_KEY });
+    },
+  });
+}

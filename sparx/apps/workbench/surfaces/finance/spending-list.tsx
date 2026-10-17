@@ -36,10 +36,10 @@ import {
   Input,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Receipt, Wallet } from 'lucide-react';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -307,7 +307,7 @@ function ExpenseRow({
           {item.source === 'manual' ? null : sourceLabel(item.source)}
         </td>
       ) : null}
-      <td className="text-right font-medium tabular-nums">
+      <td className="text-right font-medium tabular-nums" data-label="Amount">
         {formatCents(item.amountCents, item.currency)}
       </td>
     </tr>

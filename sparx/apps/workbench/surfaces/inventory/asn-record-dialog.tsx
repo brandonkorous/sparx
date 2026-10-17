@@ -42,11 +42,11 @@ import {
   FieldDescription,
   FieldLabel,
   Input,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
@@ -248,8 +248,10 @@ export function RecordShipmentDialog({
                           ) : null}
                         </span>
                       </td>
-                      <td className="text-right tabular-nums">{line.outstanding}</td>
-                      <td className="w-28 text-right">
+                      <td data-label="Still owed" className="text-right tabular-nums">
+                        {line.outstanding}
+                      </td>
+                      <td data-label="They sent" className="w-28 text-right">
                         <Input
                           color="module"
                           className="text-right"

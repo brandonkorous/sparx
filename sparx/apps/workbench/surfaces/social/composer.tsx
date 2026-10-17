@@ -455,7 +455,9 @@ function TargetResults({
               src={avatarByTargetId.get(target.socialTargetId)}
               size="sm"
             />
-            <span className="min-w-0 flex-1 truncate font-medium">{target.targetName}</span>
+            <span className="min-w-0 flex-1 basis-48 truncate font-medium">
+              {target.targetName}
+            </span>
             <Badge color={meta.tone} variant="soft" size="sm">
               {meta.label}
             </Badge>
@@ -765,7 +767,7 @@ function PostMetricsSection({
                 >
                   {target.targetName.replace(/^@/, '').charAt(0).toUpperCase()}
                 </Avatar>
-                <div className="flex min-w-0 flex-1 flex-col">
+                <div className="flex min-w-0 flex-1 basis-48 flex-col">
                   <span className="truncate font-medium">{target.targetName}</span>
                   <span className="text-sm">{platformName(target.platform, catalogMap)}</span>
                 </div>
@@ -1958,7 +1960,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             {canWrite && (post.status === 'published' || post.status === 'partially_published') ? (
               <FormSection title="Keep this one around">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex min-w-0 flex-1 items-start gap-2">
+                  <div className="flex min-w-0 flex-1 basis-48 items-start gap-2">
                     <Repeat className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       Add this to the posts you&rsquo;re happy to run again. When a posting time on

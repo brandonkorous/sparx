@@ -46,7 +46,7 @@ export const CHARGE_KINDS: { value: ChargeKind; label: string; hint: string }[] 
   { value: 'duty', label: 'Import duty', hint: 'Paid at the border, usually on value' },
   { value: 'insurance', label: 'Insurance', hint: 'Cover on the shipment itself' },
   { value: 'broker', label: 'Customs broker', hint: 'The fee for clearing it through customs' },
-  { value: 'handling', label: 'Handling', hint: 'Unloading, palletising, storage on the way' },
+  { value: 'handling', label: 'Handling', hint: 'Unloading, palletizing, storage on the way' },
   { value: 'other', label: 'Something else', hint: 'Anything the list above does not cover' },
 ];
 

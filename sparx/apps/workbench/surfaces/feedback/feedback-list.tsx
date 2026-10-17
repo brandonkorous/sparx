@@ -8,7 +8,8 @@
 // (⇧-click), tears off to a second monitor, survives in a saved layout, and can
 // be starred — none of which an overlay can do.
 
-import { Button, Table } from '@wizeworks/silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { MessageSquarePlus } from 'lucide-react';
 import { describeAgo } from '../../lib/api/activity';
 import { useMyFeedback, type FeedbackSubmission } from '../../lib/api/feedback';
@@ -100,7 +101,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
                   feedback.openSend({ source: 'button' });
                 }}
               >
-                Send your first message
+                Send feedback
               </Button>
             }
           />
@@ -151,10 +152,12 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
                           ) : null}
                         </div>
                       </td>
-                      <td className="text-sm whitespace-nowrap">
+                      <td className="text-sm whitespace-nowrap" data-label="Sent">
                         {describeAgo(submission.createdAt)}
                       </td>
-                      <td className="text-sm whitespace-nowrap">{replies === 0 ? '—' : replies}</td>
+                      <td className="text-sm whitespace-nowrap" data-label="Replies">
+                        {replies === 0 ? '—' : replies}
+                      </td>
                       <td className="text-right">
                         <FeedbackStatusBadge status={submission.status} />
                       </td>

@@ -30,8 +30,13 @@ function TaxonomyRow({ taxonomy, onOpen }: { taxonomy: Taxonomy; onOpen: OpenTax
       <td>
         <span className="block max-w-72 truncate font-medium">{taxonomy.plural_name}</span>
       </td>
-      <td className="hidden max-w-56 truncate font-mono text-sm @xl:table-cell">{taxonomy.key}</td>
-      <td className="hidden @2xl:table-cell">
+      <td
+        className="hidden max-w-56 truncate font-mono text-sm @xl:table-cell"
+        data-label={REFERENCE_LABEL}
+      >
+        {taxonomy.key}
+      </td>
+      <td className="hidden @2xl:table-cell" data-label="Nesting">
         {/* A badge only for the notable case; "Plain list" is the ordinary one and
             reads better as words than as a second pill (RULE #4). */}
         {kind ? (
@@ -42,7 +47,9 @@ function TaxonomyRow({ taxonomy, onOpen }: { taxonomy: Taxonomy; onOpen: OpenTax
           <span className="text-sm">Plain list</span>
         )}
       </td>
-      <td className="text-right tabular-nums">{taxonomy.term_count.toLocaleString()}</td>
+      <td className="text-right tabular-nums" data-label="Labels">
+        {taxonomy.term_count.toLocaleString()}
+      </td>
     </tr>
   );
 }

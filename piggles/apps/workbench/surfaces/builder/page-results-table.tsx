@@ -32,7 +32,7 @@ function subtitleOf(row: PageResultRow): string {
 
 function SearchCell({ row }: { row: PageResultRow }) {
   return (
-    <td className="hidden @3xl:table-cell">
+    <td className="hidden @3xl:table-cell" data-label="Found by search">
       {row.noindex ? (
         <Badge color="neutral" variant="soft" size="sm">
           Hidden on purpose
@@ -49,13 +49,13 @@ function SearchCell({ row }: { row: PageResultRow }) {
 function SalesCells({ row, untraced }: { row: PageResultRow; untraced: boolean }) {
   return (
     <>
-      <td className="hidden text-right @xl:table-cell">
+      <td className="hidden text-right @xl:table-cell" data-label="Bought">
         {/* Orders beside the rate: "20%" of five people is one sale. */}
         {untraced || row.conversionPct == null
           ? '—'
           : `${formatCount(row.orders)} (${String(row.conversionPct)}%)`}
       </td>
-      <td className="text-right">
+      <td className="text-right" data-label="Sales">
         {!untraced && row.revenueCents > 0 ? formatMoney(row.revenueCents) : '—'}
       </td>
     </>
@@ -91,10 +91,14 @@ function ResultRow({
         <span className="block max-w-64 truncate font-semibold">{row.name}</span>
         <span className="block max-w-64 truncate">{subtitleOf(row)}</span>
       </td>
-      <td className="text-right">{formatCount(row.visitors)}</td>
-      <td className="hidden text-right @lg:table-cell">{formatCount(row.views)}</td>
+      <td className="text-right" data-label="People">
+        {formatCount(row.visitors)}
+      </td>
+      <td className="hidden text-right @lg:table-cell" data-label="Times opened">
+        {formatCount(row.views)}
+      </td>
       {commerce ? <SalesCells row={row} untraced={untraced} /> : null}
-      <td className="hidden @2xl:table-cell">
+      <td className="hidden @2xl:table-cell" data-label="Time to appear">
         <Badge color={loadTone(row.loadMs)} variant="soft" size="sm">
           {formatLoad(row.loadMs)}
         </Badge>

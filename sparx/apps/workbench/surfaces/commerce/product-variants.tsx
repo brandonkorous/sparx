@@ -610,7 +610,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
 
       {axes.length > 0 && empty.length > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Text className="min-w-0 flex-1">
+          <Text className="min-w-0 flex-1 basis-48">
             {empty.length === 1
               ? '1 combination has no price, so nobody can buy it.'
               : `${String(empty.length)} combinations have no price, so nobody can buy them.`}
@@ -952,7 +952,7 @@ function ClaimedSlotRow({
   return (
     <div className="border-base-300 flex flex-col gap-2 border-b pb-2 last:border-b-0">
       <div className="flex flex-wrap items-center gap-2">
-        <Text className="min-w-0 flex-1">{slotLabel(slot)}</Text>
+        <Text className="min-w-0 flex-1 basis-48">{slotLabel(slot)}</Text>
         <Badge color="warning" variant="soft" size="sm">
           Nothing on sale
         </Badge>
@@ -1158,7 +1158,7 @@ function VariantRow({
         ) : (
           <ChevronRight className="size-4 shrink-0" aria-hidden />
         )}
-        <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
+        <span className="min-w-0 flex-1 basis-48 truncate font-medium">{label}</span>
         <span className="tabular-nums">{formatCents(cents(draft.price), variant.currency)}</span>
         {draft.core !== null && draft.core > 0 ? (
           <span className="tabular-nums">

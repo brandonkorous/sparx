@@ -11,7 +11,8 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, User, UserPlus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -100,7 +101,12 @@ function AuthorRow({
           </span>
         </span>
       </td>
-      <td className="hidden max-w-72 truncate font-mono text-sm @xl:table-cell">/{author.slug}</td>
+      <td
+        className="hidden max-w-72 truncate font-mono text-sm @xl:table-cell"
+        data-label="Web address"
+      >
+        /{author.slug}
+      </td>
     </tr>
   );
 }

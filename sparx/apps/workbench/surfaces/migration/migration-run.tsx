@@ -212,7 +212,8 @@ function RunProgress({ runId }: { runId: string }) {
   // What the run is CALLED, and how much of it was new, lives in run-outcome,
   // the same rule the Piggles console uses (sparx persona issue 106).
   const landed = landedTotals(run.entities);
-  const headline = runHeadline(run, landed);
+  const people = run.entities.every((e) => e.entity === 'customers');
+  const headline = runHeadline(run, landed, people);
 
   return (
     <div className="flex flex-col gap-4">
@@ -281,8 +282,10 @@ function RunProgress({ runId }: { runId: string }) {
             <Text className="text-sm">
               {`of ${entity.rowCount.toLocaleString()} rows ${run.dryRun ? 'would come over' : 'brought over'}${entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}`}
             </Text>
-            {landedBreakdown(entity, run.dryRun) === null ? null : (
-              <Text className="text-sm">{landedBreakdown(entity, run.dryRun)}</Text>
+            {landedBreakdown(entity, run.dryRun, entity.entity === 'customers') === null ? null : (
+              <Text className="text-sm">
+                {landedBreakdown(entity, run.dryRun, entity.entity === 'customers')}
+              </Text>
             )}
           </div>
         ))}

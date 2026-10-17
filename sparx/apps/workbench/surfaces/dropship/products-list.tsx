@@ -24,15 +24,16 @@ import {
   EmptyState,
   SearchInput,
   Select,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { ArrowDown, ArrowUp, Package, PackagePlus, RefreshCcw } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import {
   dropshipErrorMessage,
@@ -163,7 +164,8 @@ function ProductRow({
       {showSupplier ? (
         <td className="hidden max-w-40 truncate @lg:table-cell">{product.supplierName}</td>
       ) : null}
-      <td className="hidden text-right tabular-nums @xl:table-cell">
+      {/* At every width: what the supplier charges is why this list is opened. */}
+      <td className="text-right tabular-nums" data-label="Cost">
         {formatCents(product.costPriceCents)}
       </td>
       <td>
@@ -354,10 +356,14 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Package className="size-6" aria-hidden />}
             title="Could not load supplier products"
             description="Something went wrong reaching the server. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : noSuppliers ? (
           <EmptyState
@@ -395,7 +401,7 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </th>
                 {header('title', 'Product')}
                 {showSupplierColumn ? <th className="hidden @lg:table-cell">Supplier</th> : null}
-                {header('costPriceCents', 'Cost', 'hidden text-right @xl:table-cell')}
+                {header('costPriceCents', 'Cost', 'text-right')}
                 <th>State</th>
                 <th className="text-right">
                   <span className="sr-only">Actions</span>

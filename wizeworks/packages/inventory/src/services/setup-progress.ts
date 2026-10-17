@@ -48,6 +48,8 @@ export interface SetupReadiness {
   openingCounts: number;
   /** Levels with a reorder point set — the alert step's real outcome. */
   levelsWithAlerts: number;
+  /** Every stock line (item at a place), the same count Reorder states. */
+  stockLines: number;
   /** Import batches applied. */
   importsApplied: number;
 }
@@ -112,7 +114,7 @@ export async function getSetupProgress(ctx: ServiceContext): Promise<SetupProgre
   });
 }
 
-function buildView(row: ProgressRow | null, readiness: SetupReadiness): SetupProgressView {
+export function buildView(row: ProgressRow | null, readiness: SetupReadiness): SetupProgressView {
   const steps = parseSteps(row?.steps ?? {});
   const progress = summarizeSetup({
     startedAt: row?.startedAt ?? null,
@@ -127,7 +129,12 @@ function buildView(row: ProgressRow | null, readiness: SetupReadiness): SetupPro
     // person who typed their stock in by hand mapped nothing and is not behind.
     mapping: null,
     opening_balance: readiness.openingCounts > 0,
-    alerts: readiness.levelsWithAlerts > 0,
+    // Every stock line, not one: 3 of 685 is a start, not "already done"
+    // (issue 281). With no lines yet, any level counts.
+    alerts:
+      readiness.stockLines > 0
+        ? readiness.levelsWithAlerts >= readiness.stockLines
+        : readiness.levelsWithAlerts > 0,
   };
 
   const stepViews: SetupStepView[] = SETUP_STEPS.map((definition) => {
@@ -139,6 +146,13 @@ function buildView(row: ProgressRow | null, readiness: SetupReadiness): SetupPro
       discrepancy = 'This was marked done, but nothing in your account shows it.';
     } else if (!marked && !state?.skippedAt && satisfied === true) {
       discrepancy = 'You have already done this somewhere else: tick it off.';
+    } else if (
+      definition.key === 'alerts' &&
+      !marked &&
+      satisfied === false &&
+      readiness.levelsWithAlerts > 0
+    ) {
+      discrepancy = `${readiness.levelsWithAlerts.toLocaleString('en-US')} of your ${readiness.stockLines.toLocaleString('en-US')} stock lines have a level so far.`;
     }
     return {
       key: definition.key,
@@ -166,16 +180,32 @@ function buildView(row: ProgressRow | null, readiness: SetupReadiness): SetupPro
 }
 
 async function readWorld(tx: TxClient, tenantId: string): Promise<SetupReadiness> {
-  const [locations, items, stockedPositions, openingCounts, levelsWithAlerts, importsApplied] =
-    await Promise.all([
-      tx.warehouse.count({ where: { tenantId, deletedAt: null, isSystem: false } }),
-      tx.productVariant.count({ where: { tenantId, deletedAt: null } }),
-      tx.inventoryLevel.count({ where: { tenantId, onHand: { not: 0 } } }),
-      tx.inventoryCount.count({ where: { tenantId, type: 'opening', status: 'posted' } }),
-      tx.inventoryLevel.count({ where: { tenantId, reorderPoint: { not: null } } }),
-      tx.inventoryImportBatch.count({ where: { tenantId, status: 'applied' } }),
-    ]);
-  return { locations, items, stockedPositions, openingCounts, levelsWithAlerts, importsApplied };
+  const [
+    locations,
+    items,
+    stockedPositions,
+    openingCounts,
+    levelsWithAlerts,
+    importsApplied,
+    stockLines,
+  ] = await Promise.all([
+    tx.warehouse.count({ where: { tenantId, deletedAt: null, isSystem: false } }),
+    tx.productVariant.count({ where: { tenantId, deletedAt: null } }),
+    tx.inventoryLevel.count({ where: { tenantId, onHand: { not: 0 } } }),
+    tx.inventoryCount.count({ where: { tenantId, type: 'opening', status: 'posted' } }),
+    tx.inventoryLevel.count({ where: { tenantId, reorderPoint: { not: null } } }),
+    tx.inventoryImportBatch.count({ where: { tenantId, status: 'applied' } }),
+    tx.inventoryLevel.count({ where: { tenantId } }),
+  ]);
+  return {
+    locations,
+    items,
+    stockedPositions,
+    openingCounts,
+    levelsWithAlerts,
+    importsApplied,
+    stockLines,
+  };
 }
 
 /**

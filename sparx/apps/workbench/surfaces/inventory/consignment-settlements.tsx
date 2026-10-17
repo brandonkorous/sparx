@@ -29,10 +29,10 @@ import {
   Badge,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Handshake, ReceiptText } from 'lucide-react';
 import { useState } from 'react';
 import { FormSection } from '../../components/form-section';
@@ -182,7 +182,10 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                           ) : null}
                         </span>
                       </td>
-                      <td className="hidden whitespace-nowrap @lg:table-cell">
+                      <td
+                        data-label="Settled through"
+                        className="hidden whitespace-nowrap @lg:table-cell"
+                      >
                         {/* Null is its own sentence: a brand-new arrangement has
                             never been settled, which is different from being up
                             to date. */}
@@ -194,13 +197,18 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                           </Badge>
                         )}
                       </td>
-                      <td className="text-right whitespace-nowrap tabular-nums">
+                      <td
+                        data-label="Units sold"
+                        className="text-right whitespace-nowrap tabular-nums"
+                      >
                         {owner.unitsSold}
                         {owner.unpricedUnits > 0 ? (
                           <span className="text-sm"> · {owner.unpricedUnits} unpriced</span>
                         ) : null}
                       </td>
-                      <td className="text-right tabular-nums">{formatCents(owner.amountCents)}</td>
+                      <td data-label="Owed" className="text-right tabular-nums">
+                        {formatCents(owner.amountCents)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -258,11 +266,13 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                           </span>
                         </span>
                       </td>
-                      <td className="max-w-[12rem] truncate">
+                      <td data-label="Owner" className="max-w-[12rem] truncate">
                         {row.supplierName ?? row.customerName ?? 'Unnamed owner'}
                       </td>
-                      <td className="text-right tabular-nums">{row.unitsSold}</td>
-                      <td className="text-right tabular-nums">
+                      <td data-label="Units" className="text-right tabular-nums">
+                        {row.unitsSold}
+                      </td>
+                      <td data-label="Amount" className="text-right tabular-nums">
                         {formatCents(row.totalCents, row.currency)}
                       </td>
                       <td className="whitespace-nowrap">

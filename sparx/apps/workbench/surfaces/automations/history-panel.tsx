@@ -39,7 +39,7 @@ function VersionRow({
           Live
         </Badge>
       ) : null}
-      <Text as="span" className="min-w-0 flex-1 text-sm">
+      <Text as="span" className="min-w-0 flex-1 basis-48 text-sm">
         {version.note ?? 'No note'}
       </Text>
       <Text as="span" className="shrink-0 text-sm">

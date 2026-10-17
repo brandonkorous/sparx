@@ -13,18 +13,12 @@
 // @container so the same table reads in a narrow docked pane or a full window.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Plus, Settings2 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -59,16 +53,15 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
   const skip = (page - 1) * pageSize;
 
-  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useConfiguratorTemplates(
-    {
+  const { data, isLoading, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useConfiguratorTemplates({
       q: search,
       ...(status !== 'all' ? { status } : {}),
       sortBy: sort.key,
       order: sort.dir,
       take,
       skip,
-    }
-  );
+    });
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -195,9 +188,13 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             title="Could not load your builds"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -247,7 +244,10 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td className="max-w-56 truncate font-medium">{row.name}</td>
-                    <td className="hidden max-w-48 truncate text-sm @lg:table-cell">
+                    <td
+                      data-label="For product"
+                      className="hidden max-w-48 truncate text-sm @lg:table-cell"
+                    >
                       {row.productTitle}
                     </td>
                     <td className="hidden text-right tabular-nums @xl:table-cell">

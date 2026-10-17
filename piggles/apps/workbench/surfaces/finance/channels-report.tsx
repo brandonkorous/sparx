@@ -68,14 +68,16 @@ function ChannelFigures({
 }) {
   return (
     <>
-      <td className="text-right tabular-nums">{r.orders}</td>
-      <td className="hidden text-right tabular-nums @lg:table-cell">
+      <td className="text-right tabular-nums" data-label="Orders">
+        {r.orders}
+      </td>
+      <td className="hidden text-right tabular-nums @lg:table-cell" data-label="Sales">
         {formatMoney(r.gross, currency)}
       </td>
-      <td className="hidden text-right tabular-nums @xl:table-cell">
+      <td className="hidden text-right tabular-nums @xl:table-cell" data-label="Still owed">
         {r.owed > 0 ? formatMoney(r.owed, currency) : '—'}
       </td>
-      <td className="hidden text-right tabular-nums @2xl:table-cell">
+      <td className="hidden text-right tabular-nums @2xl:table-cell" data-label="Refunds">
         {r.refunds > 0 ? `−${formatMoney(r.refunds, currency)}` : '—'}
       </td>
     </>
@@ -104,8 +106,12 @@ function NumbersTable(props: { rows: ChannelRow[]; totals: Totals; currency: str
           <tr key={r.key}>
             <td className="font-medium">{channelLabel(r.channel, r.source)}</td>
             <ChannelFigures r={r} currency={currency} />
-            <td className="text-right font-medium tabular-nums">{formatMoney(r.net, currency)}</td>
-            <td className="text-right tabular-nums">{sharePct(r.net, totals.net)}</td>
+            <td className="text-right font-medium tabular-nums" data-label="Received">
+              {formatMoney(r.net, currency)}
+            </td>
+            <td className="text-right tabular-nums" data-label="Share">
+              {sharePct(r.net, totals.net)}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -113,8 +119,12 @@ function NumbersTable(props: { rows: ChannelRow[]; totals: Totals; currency: str
         <tr className="border-base-300 border-t font-medium">
           <td>All places</td>
           <ChannelFigures r={totals} currency={currency} />
-          <td className="text-right tabular-nums">{formatMoney(totals.net, currency)}</td>
-          <td className="text-right tabular-nums">100%</td>
+          <td className="text-right tabular-nums" data-label="Received">
+            {formatMoney(totals.net, currency)}
+          </td>
+          <td className="text-right tabular-nums" data-label="Share">
+            100%
+          </td>
         </tr>
       </tfoot>
     </Table>

@@ -47,10 +47,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   CheckCircle2,
   RefreshCw,
@@ -306,12 +306,16 @@ function DriftsCard({
                   />
                 </span>
               </td>
-              <td className="hidden max-w-40 truncate @lg:table-cell">
+              <td data-label="Where" className="hidden max-w-40 truncate @lg:table-cell">
                 {drift.warehouseName ?? drift.warehouseCode}
               </td>
-              <td className="text-right tabular-nums">{NUMBER.format(drift.recordedOnHand)}</td>
-              <td className="text-right tabular-nums">{NUMBER.format(drift.derivedOnHand)}</td>
-              <td className="text-right">
+              <td data-label="On record" className="text-right tabular-nums">
+                {NUMBER.format(drift.recordedOnHand)}
+              </td>
+              <td data-label="From its history" className="text-right tabular-nums">
+                {NUMBER.format(drift.derivedOnHand)}
+              </td>
+              <td data-label="Difference" className="text-right">
                 {/* The SIGN carries the meaning, so it gets the color: a record
                     claiming more than its history can explain is the direction
                     that oversells, and it is the one worth flinching at. */}
@@ -320,7 +324,7 @@ function DriftsCard({
                   {NUMBER.format(drift.delta)}
                 </Badge>
               </td>
-              <td className="hidden text-right tabular-nums @xl:table-cell">
+              <td data-label="Worth" className="hidden text-right tabular-nums @xl:table-cell">
                 {formatCents(drift.valueCents)}
               </td>
             </tr>
@@ -443,13 +447,13 @@ function OversellCard({
                         {kind.label}
                       </Badge>
                     </td>
-                    <td className="hidden @lg:table-cell">
+                    <td data-label="Setting" className="hidden @lg:table-cell">
                       <Text className="text-sm">{policyLabel(incident.policy)}</Text>
                     </td>
-                    <td className="text-right tabular-nums">
+                    <td data-label="Wanted" className="text-right tabular-nums">
                       {NUMBER.format(incident.requestedQuantity)}
                     </td>
-                    <td className="text-right">
+                    <td data-label="Had" className="text-right">
                       <span className="block tabular-nums">
                         {NUMBER.format(incident.availableQuantity)}
                       </span>
@@ -458,7 +462,7 @@ function OversellCard({
                           no reason given. See `heldBackAtDecision`. */}
                       {held ? <span className="block text-sm">{held}</span> : null}
                     </td>
-                    <td className="hidden @xl:table-cell">
+                    <td data-label="Number was" className="hidden @xl:table-cell">
                       {/* The age of the number at the moment of the decision. A
                           cluster of these next to a four-hour-old figure IS the
                           diagnosis, and it is invisible anywhere else. */}
@@ -470,7 +474,7 @@ function OversellCard({
                         </Text>
                       )}
                     </td>
-                    <td className="hidden whitespace-nowrap @xl:table-cell">
+                    <td data-label="When" className="hidden whitespace-nowrap @xl:table-cell">
                       <Timestamp value={incident.occurredAt} format="relative" />
                     </td>
                   </tr>

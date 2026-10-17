@@ -15,7 +15,8 @@
 // would override a decision they already made.
 
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Card, EmptyState, Input, Table, Text } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, Input, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { Plus, Table2 } from 'lucide-react';
@@ -266,7 +267,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Plus className="size-4" aria-hidden />
-                  Add the first {label.toLowerCase()}
+                  Add {label.toLowerCase()}
                 </Button>
               ),
             }}
@@ -305,7 +306,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </Text>
                   </td>
                   {columns.rest.map((field) => (
-                    <td key={field.key} className="hidden @md:table-cell">
+                    <td data-label={field.label} key={field.key} className="hidden @md:table-cell">
                       {cellText(record.values[field.key], field)}
                     </td>
                   ))}

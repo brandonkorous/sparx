@@ -16,15 +16,8 @@
 // state of the page.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, NativeSelect, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PackageX, PlusCircle, Undo2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -172,7 +165,14 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   {returnStatusLabel(row.status)}
                 </Badge>
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td
+                className="hidden whitespace-nowrap @lg:table-cell"
+                data-label={
+                  returnIsSettled(row.status) || row.awaitingCreditDays === null
+                    ? undefined
+                    : 'Waiting'
+                }
+              >
                 {/* Branch on the STATE. `awaitingCreditDays` goes null for three
                     different returns and only one of them has never been sent;
                     reading the null alone printed the day the goods left, under
@@ -191,7 +191,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </Badge>
                 )}
               </td>
-              <td className="text-right whitespace-nowrap">
+              <td className="text-right whitespace-nowrap" data-label="Asked for">
                 <span className="flex flex-col items-end">
                   <span className="tabular-nums">
                     {formatCents(row.creditExpectedCents, row.currency)}

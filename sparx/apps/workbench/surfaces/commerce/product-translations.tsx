@@ -289,9 +289,6 @@ function TranslationEditor({
   return (
     <>
       <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          {product.title}
-        </Heading>
         <Text className="text-sm">
           {locales.length === 0
             ? 'Written in one language. Add another and shoppers reading your site in it will see your words, not a machine translation.'

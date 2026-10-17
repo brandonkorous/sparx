@@ -128,7 +128,7 @@ function SupplierProfitRow({ row }: { row: AnalyticsSupplierRow }) {
   const tone = marginTone(row.marginPct, row.profitCents);
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0">
-      <span className="min-w-0 flex-1 font-medium">{row.supplierName}</span>
+      <span className="min-w-0 flex-1 basis-48 font-medium">{row.supplierName}</span>
       <Text as="span" className="shrink-0 text-sm">
         {row.orders === 1 ? '1 order' : `${NUMBER.format(row.orders)} orders`}
       </Text>
@@ -167,7 +167,7 @@ function SlaRowView({ row }: { row: SlaRow }) {
   const fulfil = Math.round(row.fulfillmentRate * 100);
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0">
-      <span className="min-w-0 flex-1 font-medium">{row.supplierName}</span>
+      <span className="min-w-0 flex-1 basis-48 font-medium">{row.supplierName}</span>
       <Text as="span" className="shrink-0 text-sm">
         {row.routedOrders === 1 ? '1 order' : `${NUMBER.format(row.routedOrders)} orders`}
       </Text>

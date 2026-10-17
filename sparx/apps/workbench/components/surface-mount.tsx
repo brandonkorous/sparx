@@ -38,6 +38,9 @@ import {
   useReachableModules,
 } from '../lib/surfaces/use-visible-nav';
 import { SurfaceModuleOff } from './surface-module-off';
+import { SurfaceModulePaused } from './surface-module-paused';
+import { moduleIsPaused } from '../lib/billing/paused';
+import { useBill } from '../surfaces/finance/bill-data';
 import { useSurfaceContext, useWorkbench } from '../lib/workbench/context';
 import { DirtyScope } from '../lib/workbench/dirty';
 import { PaneIdentityProvider } from '../lib/workbench/pane-identity';
@@ -179,6 +182,7 @@ export function SurfaceBody({ paneId }: { paneId: string }) {
   // this costs a mounted pane nothing.
   const reachable = useReachableModules();
   const known = useKnownModules();
+  const { data: bill } = useBill();
 
   if (!descriptor) return <MissingSurface paneId={paneId} />;
   const definition = getSurface(descriptor.surface);
@@ -196,6 +200,15 @@ export function SurfaceBody({ paneId }: { paneId: string }) {
   // rather than accusing somebody of having switched it off.
   if (!surfaceIsVisible(definition, reachable, known)) {
     return <SurfaceModuleOff definition={definition} ctx={ctx} />;
+  }
+
+  // The bill gate, asked at the same place for the same reason. When the trial
+  // ends with no card, the paid modules pause until one is added (docs/17 §6).
+  // The banner said so for months while every pane went on working (sparx
+  // persona issue 289). `bill` is undefined until it loads, and that is never
+  // read as paused.
+  if (bill && moduleIsPaused(bill, definition.module, descriptor.surface)) {
+    return <SurfaceModulePaused definition={definition} bill={bill} ctx={ctx} />;
   }
 
   const Surface = definition.component;

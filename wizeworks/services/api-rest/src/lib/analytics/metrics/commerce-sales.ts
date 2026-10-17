@@ -12,43 +12,22 @@
 // across the whole business, labelled as such, until per-site revenue lands.
 
 import { reportingService } from '@wizeworks/commerce';
+import { channelKeyLabel } from '@wizeworks/crm-schemas';
 import type { TxClient } from '@wizeworks/db';
 import type { MetricContext, MetricData, MetricDefinition } from '../types.js';
 
 const ALL_GRAINS = ['day', 'week', 'month'] as const;
 
-// A sales channel's plain-language name — an owner does not know "b2b_portal".
+// A sales channel's plain-language name: an owner does not know "b2b_portal".
 //
-// THIS IS THE FIFTH COPY OF THIS TABLE, and it had drifted in both the ways a
-// second copy always drifts. Each console keeps its own in `lib/console/
-// channels.ts`, written after one order read four different ways on four screens
-// (issue 260); this one is the API's, and the dashboards draw it straight.
-//
-//   • `pos` was MISSING, so a till sale drew the raw key "pos" on the chart.
-//     Exactly the failure mode the console's own table was consolidated to stop,
-//     and exactly how the lead-source table lost `marketplace` in act 281.
-//   • `admin` said "Added by your team", which tells a sole trader about a team
-//     she does not have. The console's table says "Added by hand" and carries a
-//     paragraph on why.
-//
-// A console with its own vocabulary should map these off the row's KEY rather
-// than read the label — piggles does, in `surfaces/analytics/data.ts`. These
-// words are the fallback for a caller that has no table of its own.
-const CHANNEL_LABEL: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Wholesale portal',
-  admin: 'Added by hand',
-  pos: 'At the till',
-  subscription: 'Subscriptions',
-  mcp: 'AI assistant',
-  import: 'Imported',
-  sparx_market: 'sparx.market',
-  marketplace: 'Marketplaces',
-  unknown: 'Other',
-};
-
+// This was the fifth copy of the channel table, and it had drifted twice
+// (`pos` missing, so a till sale drew the raw key; `admin` saying "Added by your
+// team" to a sole trader). Meanwhile the shared table in `@wizeworks/crm-schemas`
+// still said "Storefront" and "Admin". Since sparx persona issue 265 that shared
+// table carries the owners' words, so this reads it rather than keeping a copy.
+// A console with its own vocabulary still maps off the row's KEY.
 function channelLabel(channel: string): string {
-  return CHANNEL_LABEL[channel] ?? channel;
+  return channelKeyLabel(channel);
 }
 
 /** The service range from the resolved window — commerce's `DateRange` is ISO

@@ -41,9 +41,9 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Scale } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -299,18 +299,24 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                       </span>
                     </span>
                   </td>
-                  <td className="hidden max-w-40 truncate @xl:table-cell">
+                  <td data-label="Supplier" className="hidden max-w-40 truncate @xl:table-cell">
                     {row.supplierName ?? 'No supplier'}
                   </td>
-                  <td className="hidden text-right tabular-nums @lg:table-cell">
+                  <td
+                    data-label="Planned each"
+                    className="hidden text-right tabular-nums @lg:table-cell"
+                  >
                     {row.standardUnitCostCents === null
                       ? '—'
                       : formatCents(row.standardUnitCostCents, currency)}
                   </td>
-                  <td className="text-right font-medium tabular-nums">
+                  <td
+                    data-label="Actually cost, each"
+                    className="text-right font-medium tabular-nums"
+                  >
                     {formatCents(row.actualUnitCostCents, currency)}
                   </td>
-                  <td className="text-right whitespace-nowrap">
+                  <td data-label="Difference" className="text-right whitespace-nowrap">
                     {row.standardUnitCostCents === null ? (
                       <Button
                         size="sm"

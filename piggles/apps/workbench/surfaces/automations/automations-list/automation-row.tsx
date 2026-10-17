@@ -36,7 +36,7 @@ function NameCell({ automation }: { automation: Automation }) {
 
 function RunsCell({ automation }: { automation: Automation }) {
   return (
-    <td className="hidden text-right tabular-nums @md:table-cell">
+    <td className="hidden text-right tabular-nums @md:table-cell" data-label="Runs">
       <div className="inline-flex items-center justify-end gap-1.5">
         {automation.errorCount > 0 ? (
           <span
@@ -55,7 +55,7 @@ function RunsCell({ automation }: { automation: Automation }) {
 
 function LastRunCell({ attempt }: { attempt: ReturnType<typeof lastAttempt> }) {
   return (
-    <td className="hidden text-sm @xl:table-cell">
+    <td className="hidden text-sm @xl:table-cell" data-label="Last run">
       {/* A failed run does not write `lastRunAt`, so reading only
           that said "Not run yet" over a red failure count. It
           ran. It did not work. See `lastAttempt`. */}

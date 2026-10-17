@@ -677,7 +677,7 @@ function OverrideRow({
 
   return (
     <li className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-1 border-b pb-2 last:border-b-0 last:pb-0">
-      <span className="min-w-0 flex-1 font-medium">{name}</span>
+      <span className="min-w-0 flex-1 basis-48 font-medium">{name}</span>
       <Text as="span" className="text-sm tabular-nums">
         {value}
       </Text>

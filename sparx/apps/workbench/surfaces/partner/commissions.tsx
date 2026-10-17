@@ -18,10 +18,10 @@ import {
   Badge,
   Button,
   Heading,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Banknote, Coins } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -143,7 +143,7 @@ function CommissionRow({ commission }: { commission: PartnerCommission }) {
           {state.label}
         </Badge>
       </td>
-      <td className="text-right align-top font-medium tabular-nums">
+      <td className="text-right align-top font-medium tabular-nums" data-label="Amount">
         {formatCents(commission.amountCents, commission.currency)}
       </td>
     </tr>
@@ -167,7 +167,7 @@ function PayoutRow({ payout }: { payout: PartnerPayoutRun }) {
           {state.label}
         </Badge>
       </td>
-      <td className="text-right align-top font-medium tabular-nums">
+      <td className="text-right align-top font-medium tabular-nums" data-label="Amount">
         {formatCents(payout.amountCents, payout.currency)}
       </td>
     </tr>

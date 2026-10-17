@@ -8,7 +8,8 @@
 // switching between them. A site is a workspace, not a record.
 
 import { useMemo, useState } from 'react';
-import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Globe, Plus } from 'lucide-react';
 import { ListPagination, type PageSize } from '../../components/list-pagination';

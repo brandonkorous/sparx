@@ -14,7 +14,8 @@
 // empty state leads with the ready-made library rather than a blank form.
 
 import { useMemo, useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Table, useToast } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Puzzle, Sparkles } from 'lucide-react';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';

@@ -17,7 +17,8 @@
 // books a new delivery.
 
 import { useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PackageCheck, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -172,14 +173,16 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 </span>
               </td>
-              <td className="hidden font-mono whitespace-nowrap @lg:table-cell">
+              <td data-label="Order" className="hidden font-mono whitespace-nowrap @lg:table-cell">
                 {receipt.purchaseOrderNumber ?? '—'}
               </td>
-              <td className="hidden max-w-40 truncate @xl:table-cell">
+              <td data-label="Into" className="hidden max-w-40 truncate @xl:table-cell">
                 {receipt.warehouseName ?? '—'}
               </td>
-              <td className="text-right font-medium tabular-nums">{receipt.quantityReceived}</td>
-              <td className="hidden whitespace-nowrap @2xl:table-cell">
+              <td data-label="Units" className="text-right font-medium tabular-nums">
+                {receipt.quantityReceived}
+              </td>
+              <td data-label="When" className="hidden whitespace-nowrap @2xl:table-cell">
                 {formatMoment(receipt.receivedAt)}
               </td>
             </tr>

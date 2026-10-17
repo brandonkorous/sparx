@@ -95,10 +95,10 @@ function DraftLineRow({ line, index, setLines }: LineProps) {
           <span className="truncate font-mono text-sm">{line.sku}</span>
         </span>
       </td>
-      <td>
+      <td data-label="Going back">
         <QuantityInput line={line} index={index} setLines={setLines} />
       </td>
-      <td>
+      <td data-label="Paid each">
         <MoneyTextInput
           size="sm"
           color="module"

@@ -25,11 +25,11 @@ import {
   Card,
   Combobox,
   Heading,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { UserMinus, UserPlus } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { customerName, useCustomers } from './customers-data';
@@ -154,7 +154,7 @@ function Members({ segmentId, segmentName }: { segmentId: string; segmentName: s
               {(memberPage?.items ?? []).map((m) => (
                 <tr key={m.customerId}>
                   <td className="font-medium">{customerName(m.customer)}</td>
-                  <td className="hidden text-sm @lg:table-cell">
+                  <td data-label="Added" className="hidden text-sm @lg:table-cell">
                     <Timestamp value={m.enteredAt} format="relative" />
                   </td>
                   <td className="text-right">

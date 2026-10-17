@@ -80,12 +80,14 @@ import {
   runState,
   useAssemblyOrder,
   useBoms,
+  useBuildable,
   useCancelRun,
   useCompleteRun,
   usePlanRun,
   useReleaseRun,
   type AssemblyKind,
 } from './assembly-data';
+import { planRunNote } from './plan-run-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -105,6 +107,14 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
   const [quantity, setQuantity] = useState('1');
   const [plannedFor, setPlannedFor] = useState<Date | null>(null);
   const [notes, setNotes] = useState('');
+
+  // What the shelf can build here, said before the run is planned rather than
+  // after, on "Hold the parts". Taking a thing apart needs the finished one, not
+  // the parts, so only a build asks (issue 317).
+  const buildable = useBuildable(kind === 'assemble' ? bomId : '', warehouseId);
+  const placeName = activeLocationName(locations.data?.items, warehouseId);
+  const partsNote =
+    kind === 'assemble' ? planRunNote(buildable.data, Number(quantity), placeName) : null;
 
   // Somewhere the making actually happens, and the components come off a
   // shelf there. Not a bucket for things on a van.
@@ -356,6 +366,16 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
                 />
               </Field>
             </div>
+
+            {partsNote?.short ? (
+              <Alert color="warning" variant="soft">
+                <AlertContent>
+                  <AlertDescription>{partsNote.text}</AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : partsNote ? (
+              <Text className="text-sm">{partsNote.text}</Text>
+            ) : null}
 
             <Field>
               <FieldLabel>Notes</FieldLabel>
@@ -798,4 +818,12 @@ export function AssemblyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   if (id === 'new' || id === '') return <PlanRun ctx={ctx} />;
   return <ViewRun ctx={ctx} id={id} />;
+}
+
+/** The name of the chosen location, for a sentence about it. */
+function activeLocationName(
+  locations: ReadonlyArray<{ id: string; name: string }> | undefined,
+  id: string
+): string {
+  return locations?.find((l) => l.id === id)?.name ?? 'this location';
 }

@@ -15,7 +15,8 @@
 import { randomBytes } from 'node:crypto';
 
 import { withSystem, withTenant, type TxClient } from '@wizeworks/db';
-import { badRequest, conflict, forbidden, notFound } from '@wizeworks/api-core/errors';
+import { badRequest, conflict, notFound } from '@wizeworks/api-core/errors';
+import { notAPartner } from './not-a-partner.js';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import type { FastifyRequest } from 'fastify';
 import {
@@ -186,7 +187,7 @@ export const partnerService = {
         where: { tenantId: ctx.tenantId },
         select: { id: true },
       });
-      if (!existing) throw forbidden('This account is not a partner.');
+      if (!existing) throw notAPartner();
       return tx.partner.update({ where: { tenantId: ctx.tenantId }, data: input });
     });
   },
@@ -196,7 +197,7 @@ export const partnerService = {
     const input = ApplyTierInput.parse(raw);
     if (input.requestedTier === 'informal') throw badRequest('Informal needs no application.');
     const partner = await this.get(ctx);
-    if (!partner) throw forbidden('This account is not a partner.');
+    if (!partner) throw notAPartner();
     await this.createApplication({
       name: partner.displayName,
       email: '',

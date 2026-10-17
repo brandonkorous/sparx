@@ -66,7 +66,7 @@ export function MeetingLinksTable({
                   /meet/{link.slug}
                 </Text>
               </td>
-              <td className="hidden @lg:table-cell">
+              <td data-label="Booked" className="hidden @lg:table-cell">
                 <Text as="span">{link.bookingCount}</Text>
               </td>
               <td>

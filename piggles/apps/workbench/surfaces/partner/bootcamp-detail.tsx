@@ -71,7 +71,7 @@ import {
   type RegistrationMode,
 } from './data';
 import { bootcampState, BOOTCAMP_FORMATS } from './format';
-import { PartnerLoading } from './gate';
+import { NotAPartner, PartnerLoading } from './gate';
 import { productCopy } from '../../lib/product';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -367,6 +367,10 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   // A failed load REPLACES the form — never an empty one beside a dead Save.
+  // Outside the program the bootcamp is not "gone"; the business is not a
+  // partner, which is its own page with a way to apply (sparx persona issue 307).
+  if (profile.isSuccess && profile.data === null) return <NotAPartner section="Bootcamps" />;
+
   if (!isNew && bootcamp.isError) {
     return (
       <div className={PANE_SHELL}>

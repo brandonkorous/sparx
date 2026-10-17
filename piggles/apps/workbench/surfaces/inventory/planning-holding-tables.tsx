@@ -33,8 +33,12 @@ export function HoldingByClassCard({ data }: { data: HoldingCostReport }) {
                   {abcLabel(c.abcClass === 'unclassified' ? null : c.abcClass)}
                 </Badge>
               </td>
-              <td className="text-right tabular-nums">{formatCents(c.valueCents)}</td>
-              <td className="text-right tabular-nums">{formatCents(c.annualHoldingCostCents)}</td>
+              <td data-label="Worth" className="text-right tabular-nums">
+                {formatCents(c.valueCents)}
+              </td>
+              <td data-label="Costs a year" className="text-right tabular-nums">
+                {formatCents(c.annualHoldingCostCents)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -56,8 +60,10 @@ function TopItemRow({ item, multiLocation }: { item: TopItem; multiLocation: boo
           </span>
         </span>
       </td>
-      <td className="text-right tabular-nums">{item.onHand}</td>
-      <td className="text-right tabular-nums">
+      <td data-label="In stock" className="text-right tabular-nums">
+        {item.onHand}
+      </td>
+      <td data-label="Worth" className="text-right tabular-nums">
         {item.costKnown ? (
           formatCents(item.valueCents)
         ) : (
@@ -66,10 +72,10 @@ function TopItemRow({ item, multiLocation }: { item: TopItem; multiLocation: boo
           </Tooltip>
         )}
       </td>
-      <td className="text-right tabular-nums">
+      <td data-label="Cover" className="text-right tabular-nums">
         {item.daysOfCover === null ? '—' : `${Math.round(item.daysOfCover)} days`}
       </td>
-      <td className="text-right tabular-nums">
+      <td data-label="Costs a year" className="text-right tabular-nums">
         {item.costKnown ? formatCents(item.annualHoldingCostCents) : '—'}
       </td>
     </tr>

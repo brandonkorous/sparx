@@ -24,9 +24,9 @@ import {
   Card,
   NativeSelect,
   SearchInput,
-  Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ClipboardList, Route, TriangleAlert } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -230,10 +230,16 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                   </span>
                 </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
+                <td
+                  data-label="Picked"
+                  className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell"
+                >
                   {walk.unitsPicked}/{walk.unitsRequested}
                 </td>
-                <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+                <td
+                  data-label="Short"
+                  className="hidden text-right whitespace-nowrap @xl:table-cell"
+                >
                   {walk.shortCount > 0 ? (
                     <Badge color="danger" variant="soft" size="sm">
                       <TriangleAlert className="size-3" aria-hidden />
@@ -243,7 +249,10 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <span className="tabular-nums">—</span>
                   )}
                 </td>
-                <td className="hidden whitespace-nowrap @3xl:table-cell">
+                <td
+                  data-label={walk.startedAt ? 'Started' : undefined}
+                  className="hidden whitespace-nowrap @3xl:table-cell"
+                >
                   {walk.startedAt ? (
                     <Timestamp value={walk.startedAt} format="relative" />
                   ) : (

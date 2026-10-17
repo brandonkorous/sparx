@@ -58,7 +58,9 @@ function PipelineRow({ row, onOpen }: { row: Pipeline; onOpen: (event: OpenEvent
       <td>
         <MovesBadge row={row} />
       </td>
-      <td className="hidden text-right text-sm tabular-nums @md:table-cell">{row.stages.length}</td>
+      <td data-label="Steps" className="hidden text-right text-sm tabular-nums @md:table-cell">
+        {row.stages.length}
+      </td>
       <td>
         <StateBadge row={row} />
       </td>

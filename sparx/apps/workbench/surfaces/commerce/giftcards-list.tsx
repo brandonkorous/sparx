@@ -12,11 +12,13 @@
 // figures line up as you scan down them.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Plus, Ticket } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { formatCents } from './products-data';
@@ -176,10 +178,14 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Ticket className="size-6" aria-hidden />}
             title="Could not load your gift cards"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -234,10 +240,13 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td className="font-mono font-semibold whitespace-nowrap">{row.code}</td>
-                    <td className="hidden max-w-48 truncate text-sm @lg:table-cell">
+                    <td
+                      data-label="For"
+                      className="hidden max-w-48 truncate text-sm @lg:table-cell"
+                    >
                       {who ?? '—'}
                     </td>
-                    <td className="text-right font-semibold tabular-nums">
+                    <td data-label="Balance" className="text-right font-semibold tabular-nums">
                       {formatCents(row.balanceCents, row.currency)}
                     </td>
                     <td>
@@ -245,8 +254,10 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {state.label}
                       </Badge>
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">{expiryLabel(row.expiresAt)}</td>
-                    <td className="hidden text-right text-sm @3xl:table-cell">
+                    <td data-label="Expires" className="hidden text-sm @2xl:table-cell">
+                      {expiryLabel(row.expiresAt)}
+                    </td>
+                    <td data-label="Issued" className="hidden text-right text-sm @3xl:table-cell">
                       {issuedLabel(row.createdAt)}
                     </td>
                   </tr>

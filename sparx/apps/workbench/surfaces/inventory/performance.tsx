@@ -46,9 +46,9 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { BarChart3, TrendingUp } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -239,14 +239,21 @@ function SellThroughCard({
                       variantName={row.variantName}
                       code={row.sku}
                     />
+                    {/* Below @lg the Where column is gone; without this a part kept in two
+                        places read as the same row twice (sparx persona issue 305). */}
+                    <span className="truncate text-sm @lg:hidden">{row.warehouseCode}</span>
                   </span>
                 </td>
-                <td className="hidden max-w-32 truncate @lg:table-cell">{row.warehouseCode}</td>
-                <td className="text-right tabular-nums">{formatCount(row.unitsSold)}</td>
-                <td className="hidden text-right tabular-nums @md:table-cell">
+                <td data-label="Where" className="hidden max-w-32 truncate @lg:table-cell">
+                  {row.warehouseCode}
+                </td>
+                <td data-label="Sold" className="text-right tabular-nums">
+                  {formatCount(row.unitsSold)}
+                </td>
+                <td data-label="Left" className="hidden text-right tabular-nums @md:table-cell">
                   {formatCount(row.unitsOnHandAtEnd)}
                 </td>
-                <td className="text-right whitespace-nowrap">
+                <td data-label="Sold through" className="text-right whitespace-nowrap">
                   <Badge color={sellThroughTone(row.sellThroughPct)} variant="soft" size="sm">
                     {formatPercent(row.sellThroughPct)}
                   </Badge>
@@ -362,16 +369,16 @@ function GmroiCard({
                     />
                   </span>
                 </td>
-                <td className="hidden text-right tabular-nums @md:table-cell">
+                <td data-label="Sold" className="hidden text-right tabular-nums @md:table-cell">
                   {formatCount(row.unitsSold)}
                 </td>
-                <td className="text-right whitespace-nowrap tabular-nums">
+                <td data-label="Profit" className="text-right whitespace-nowrap tabular-nums">
                   {formatCents(row.grossMarginCents, report.currency)}
                 </td>
-                <td className="hidden text-right tabular-nums @lg:table-cell">
+                <td data-label="Margin" className="hidden text-right tabular-nums @lg:table-cell">
                   {formatPercent(row.grossMarginPct)}
                 </td>
-                <td className="text-right">
+                <td data-label="Earned per $1" className="text-right">
                   <Badge color={gmroiTone(row.gmroi)} variant="soft" size="sm">
                     {formatRatio(row.gmroi)}
                   </Badge>
@@ -512,11 +519,16 @@ function FillRateCard({
                       <span className="truncate font-mono text-sm">{row.sku}</span>
                     </span>
                   </td>
-                  <td className="text-right tabular-nums">{formatCount(row.linesShort)}</td>
-                  <td className="hidden text-right tabular-nums @md:table-cell">
+                  <td data-label="Times short" className="text-right tabular-nums">
+                    {formatCount(row.linesShort)}
+                  </td>
+                  <td
+                    data-label="Units short"
+                    className="hidden text-right tabular-nums @md:table-cell"
+                  >
                     {formatCount(row.unitsShort)}
                   </td>
-                  <td className="text-right">
+                  <td data-label="Filled" className="text-right">
                     <Badge color={fillRateTone(row.lineFillRatePct)} variant="soft" size="sm">
                       {formatPercent(row.lineFillRatePct)}
                     </Badge>

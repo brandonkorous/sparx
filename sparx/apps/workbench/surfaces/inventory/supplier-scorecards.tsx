@@ -31,12 +31,12 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Calculator, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -53,6 +53,7 @@ import {
   onTimeTone,
   priceVarianceTone,
   rateOrUnknown,
+  useLatePurchaseOrders,
   useRecomputeScorecards,
   useSupplierScorecards,
 } from './supplier-performance-data';
@@ -88,6 +89,14 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   const rows = report.data?.items ?? [];
+  // What is late RIGHT NOW. The grade counts deliveries only, so a supplier whose
+  // orders are overdue and still missing read "A · 100" beside them (sparx
+  // persona issue 306). The grade stays as measured; the row says what it leaves out.
+  const late = useLatePurchaseOrders();
+  const lateBySupplier = new Map<string, number>();
+  for (const order of late.data?.items ?? []) {
+    lateBySupplier.set(order.supplierId, (lateBySupplier.get(order.supplierId) ?? 0) + 1);
+  }
   const measuredAt = report.data?.measuredAt ?? null;
   const unscored = report.data?.unscored ?? 0;
 
@@ -200,7 +209,15 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
             >
               <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate">{row.supplierName ?? 'Unnamed supplier'}</span>
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="truncate">{row.supplierName ?? 'Unnamed supplier'}</span>
+                    {lateBySupplier.get(row.supplierId) ? (
+                      <Badge color="warning" variant="soft" size="sm" className="shrink-0">
+                        {plural(lateBySupplier.get(row.supplierId) ?? 0, 'order', 'orders')} late
+                        now
+                      </Badge>
+                    ) : null}
+                  </span>
                   <span className="truncate text-sm">
                     <span className="font-mono">{row.supplierCode ?? '—'}</span>
                     {' · '}
@@ -210,7 +227,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">
+              <td className="whitespace-nowrap" data-label="Overall">
                 <Badge color={gradeTone(row.grade)} variant="soft" size="sm">
                   {row.grade ? `${row.grade} · ${row.score}` : gradeLabel(null)}
                 </Badge>
@@ -219,7 +236,10 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     and the person acting on it has to be able to see which. */}
                 <span className="block text-sm">{componentsLabel(row.scoredComponents)}</span>
               </td>
-              <td className="hidden text-right whitespace-nowrap @lg:table-cell">
+              <td
+                className="hidden text-right whitespace-nowrap @lg:table-cell"
+                data-label="On time"
+              >
                 <Badge color={onTimeTone(row.onTimeRate)} variant="soft" size="sm">
                   {rateOrUnknown(row.onTimeRate)}
                 </Badge>
@@ -234,7 +254,10 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 )}
               </td>
-              <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+              <td
+                className="hidden text-right whitespace-nowrap @xl:table-cell"
+                data-label="In full"
+              >
                 <Badge color={fillRateTone(row.fillRate)} variant="soft" size="sm">
                   {rateOrUnknown(row.fillRate)}
                 </Badge>
@@ -244,7 +267,10 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     : `${row.shortLines} short of ${row.fillRateSample}`}
                 </span>
               </td>
-              <td className="hidden text-right whitespace-nowrap @2xl:table-cell">
+              <td
+                className="hidden text-right whitespace-nowrap @2xl:table-cell"
+                data-label="Price"
+              >
                 <Badge color={priceVarianceTone(row.priceVariancePct)} variant="soft" size="sm">
                   {row.priceVariancePct === null
                     ? 'Not measured'
@@ -256,7 +282,10 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     : formatCents(row.priceVarianceCents)}
                 </span>
               </td>
-              <td className="hidden text-right whitespace-nowrap @2xl:table-cell">
+              <td
+                className="hidden text-right whitespace-nowrap @2xl:table-cell"
+                data-label="Damaged"
+              >
                 <Badge color={damageTone(row.damageRate)} variant="soft" size="sm">
                   {rateOrUnknown(row.damageRate)}
                 </Badge>
@@ -264,7 +293,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                   {row.damagedUnits === 0 ? '—' : `${row.damagedUnits} units`}
                 </span>
               </td>
-              <td className="hidden text-right tabular-nums @3xl:table-cell">
+              <td className="hidden text-right tabular-nums @3xl:table-cell" data-label="Spend">
                 {formatCents(row.spendCents)}
               </td>
             </tr>

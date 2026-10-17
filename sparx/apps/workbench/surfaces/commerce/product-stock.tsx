@@ -102,6 +102,7 @@ import {
 } from '../inventory/count-location';
 import { countingMatters } from '../inventory/data';
 import { PackSizesForm } from './product-pack-sizes';
+import { soldOutBody } from '../inventory/sold-out-words';
 
 /**
  * This pane's subject as a lowercase noun phrase, for the middle of a sentence.
@@ -988,7 +989,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
               outOfStock.length === levels.length
                 ? 'Nothing left to sell'
                 : `${plural(outOfStock.length, 'place has', 'places have')} nothing left`,
-            body: 'Your website shows it as sold out and will not take an order for it. It comes back on sale by itself the moment you count some in.',
+            body: soldOutBody(outOfStock),
           }
         : low.length > 0
           ? {

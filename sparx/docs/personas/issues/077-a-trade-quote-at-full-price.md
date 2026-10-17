@@ -6,7 +6,7 @@
 **Surface:** workbench › Invoices › "Price up a quote" (the invoice editor and its line editor), both consoles; api-rest `/v1/b2b/resolve-price`; the MCP tool `resolve_b2b_price`; the printed quote and invoice; the invoice email
 **Filed:** 2026-10-02
 **Fixed:** 2026-10-02
-**Confirmed by:** not yet confirmed on screen
+**Confirmed by:** sparx as Doty, 2026-10-17 (Q-000002); act 5's quote to order, 2026-10-02
 **Blocked on:** —
 
 ## What happened
@@ -87,7 +87,7 @@ Sibling screens checked: the till and the bundle picker already search the serve
 
 ## Confirmed by
 
-Not yet confirmed on screen. The API needs a restart to serve the new `/v1/b2b/resolve-price`, and the workbench to load the new editor.
+sparx as Doty, 2026-10-17, quote Q-000002 (Accepted): Billing name "Wasatch Front Utility Contractors, LLC", billing address "Accounts Payable / 2275 S 900 W / Suite 200 / Salt Lake City, UT 84119 / US", "Their PO number" WFUC-24-0817; the injector line at 528.00 with "Fleet price: 12% off $600.00", the O-ring at 3.80 with "Fleet price: 12% off $4.32"; refundable core deposits $900.00, total $4,075.60. The order and invoice made from it (O-000008, INV-000003) carry WFUC-24-0817 (act 5, 2026-10-02). Not checked on screen: the product picker past 100 versions.
 
 ## Rating effect
 

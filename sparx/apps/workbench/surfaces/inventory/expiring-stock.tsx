@@ -44,12 +44,12 @@ import {
   FieldLabel,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarX2, Percent, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -183,7 +183,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
                   </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">
+              <td data-label="When" className="whitespace-nowrap">
                 <Badge color={bucketTone(lot.bucket)} variant="soft" size="sm">
                   {lot.expiresAt ? (
                     lot.daysRemaining !== null && lot.daysRemaining < 0 ? (
@@ -196,8 +196,10 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
                   )}
                 </Badge>
               </td>
-              <td className="text-right tabular-nums">{lot.quantity}</td>
-              <td className="hidden text-right tabular-nums @lg:table-cell">
+              <td data-label="Units" className="text-right tabular-nums">
+                {lot.quantity}
+              </td>
+              <td data-label="Value" className="hidden text-right tabular-nums @lg:table-cell">
                 {/* Blank, never zero — see the file header. */}
                 {lot.valueCents === null ? (
                   <Text className="text-sm">not costed</Text>

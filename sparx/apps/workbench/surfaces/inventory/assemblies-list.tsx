@@ -18,10 +18,10 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Hammer, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -153,16 +153,22 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                   </span>
                 </td>
-                <td className="hidden max-w-32 truncate @xl:table-cell">
+                <td data-label="Where" className="hidden max-w-32 truncate @xl:table-cell">
                   {run.warehouseName ?? '—'}
                 </td>
-                <td className="text-right tabular-nums">
+                <td data-label="How many" className="text-right tabular-nums">
                   {run.status === 'completed' ? run.quantityCompleted : run.quantityPlanned}
                 </td>
-                <td className="hidden text-right tabular-nums @lg:table-cell">
+                <td
+                  data-label="Cost each"
+                  className="hidden text-right tabular-nums @lg:table-cell"
+                >
                   {run.outputUnitCostCents === null ? '—' : formatCents(run.outputUnitCostCents)}
                 </td>
-                <td className="hidden text-right whitespace-nowrap @md:table-cell">
+                <td
+                  data-label="When"
+                  className="hidden text-right whitespace-nowrap @md:table-cell"
+                >
                   <Timestamp
                     value={run.completedAt ?? run.plannedFor ?? run.createdAt}
                     format="relative"

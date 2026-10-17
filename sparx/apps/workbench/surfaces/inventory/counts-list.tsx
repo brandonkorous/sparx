@@ -36,9 +36,9 @@ import {
   Card,
   NativeSelect,
   SearchInput,
-  Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ClipboardCheck, ClipboardList, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -207,17 +207,23 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                   </span>
                 </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
+                <td
+                  data-label="Counted"
+                  className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell"
+                >
                   {count.countedLineCount}/{count.lineCount}
                 </td>
                 {/* Not `tabular-nums`: this cell is a number most of the time
                     and a short phrase when nothing has a cost to value it
                     with. `differenceLabel` reads the UNITS before the money, so
                     a count that moved 372 garments no longer reports $0.00. */}
-                <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+                <td
+                  data-label="Difference"
+                  className="hidden text-right whitespace-nowrap @xl:table-cell"
+                >
                   {differenceLabel(count)}
                 </td>
-                <td className="hidden whitespace-nowrap @3xl:table-cell">
+                <td data-label="Started" className="hidden whitespace-nowrap @3xl:table-cell">
                   <Timestamp value={count.createdAt} format="relative" />
                 </td>
                 <td>

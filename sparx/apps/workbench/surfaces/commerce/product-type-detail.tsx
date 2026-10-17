@@ -556,7 +556,10 @@ function MetaForm({
   };
 
   return (
-    <FormSection title="About this type" description="What you call it, and the id products use.">
+    <FormSection
+      title="About this type"
+      description="What you call it, and the permanent name products use behind the scenes."
+    >
       <div className="grid gap-4 @lg:grid-cols-2">
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -593,7 +596,7 @@ function MetaForm({
       </div>
 
       <Field>
-        <FieldLabel>Id</FieldLabel>
+        <FieldLabel>Reference name</FieldLabel>
         <FieldControl
           render={
             <Input
@@ -613,8 +616,8 @@ function MetaForm({
         />
         <FieldDescription>
           {editableKey
-            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
-            : 'The internal name for this type. It is fixed once the type is created.'}
+            ? 'A short permanent name used behind the scenes, in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
+            : 'The permanent reference name for this type. It is fixed once the type is created.'}
         </FieldDescription>
       </Field>
 
@@ -678,12 +681,20 @@ function FieldsSection({
   // she chose — inflecting a tenant's own word is what issue 794 took out
   // of the compatibility lists, and the plural field above exists exactly
   // so this sentence never has to guess (issue 798).
-  const belonging = draft.pluralName.trim() || draft.name.trim() || 'these products';
+  // "every one of your these products" when the plural was blank, and "your
+  // Wheel" when only the name was set (sparx persona issue 320).
+  const plural = draft.pluralName.trim();
+  const single = draft.name.trim();
+  const belonging = plural
+    ? `each of your ${plural}`
+    : single
+      ? `each ${single}`
+      : 'each product of this kind';
 
   return (
     <FormSection
       title="Attributes"
-      description={`The extra details every one of your ${belonging} holds. Drag to reorder, or use the arrows.`}
+      description={`The extra details ${belonging} holds. Drag to reorder, or use the arrows.`}
     >
       <FieldBuilder
         fields={draft.fields}
@@ -895,7 +906,6 @@ function FieldRow({
               <ChevronRight className="size-4 shrink-0" aria-hidden />
             )}
             <span className="text-base font-semibold">{label}</span>
-            {field.key ? <span className="font-mono text-sm">{field.key}</span> : null}
             <Badge variant="soft" size="sm">
               {FIELD_TYPE_META[field.type].label}
             </Badge>

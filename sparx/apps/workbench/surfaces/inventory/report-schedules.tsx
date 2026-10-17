@@ -28,11 +28,11 @@ import {
   Badge,
   Button,
   EmptyState,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarClock, Plus, Send } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -215,10 +215,10 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden whitespace-nowrap @lg:table-cell">
                   {cadenceSentence(schedule)}
                 </td>
-                <td className="hidden max-w-48 truncate @xl:table-cell">
+                <td data-label="Who gets it" className="hidden max-w-48 truncate @xl:table-cell">
                   {schedule.recipients.join(', ')}
                 </td>
-                <td className="whitespace-nowrap">
+                <td data-label="Next" className="whitespace-nowrap">
                   {schedule.pausedByFailures ? (
                     <Badge color="danger" variant="soft" size="sm">
                       Stopped after {schedule.consecutiveFailures} failures
@@ -233,7 +233,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Text className="text-sm">Not scheduled</Text>
                   )}
                 </td>
-                <td className="text-right whitespace-nowrap">
+                <td data-label="Last time" className="text-right whitespace-nowrap">
                   {schedule.lastRunAt && schedule.lastRunStatus ? (
                     <Badge
                       color={deliveryStatusTone(

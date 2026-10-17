@@ -47,7 +47,7 @@ function WebhookRow({ webhook, onOpen }: { webhook: WebhookSubscription; onOpen:
         <span className="block max-w-72 truncate font-mono text-sm">{webhook.url}</span>
       </td>
       <td className="hidden max-w-64 truncate @xl:table-cell">{eventsSummary(webhook.events)}</td>
-      <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
+      <td className="hidden text-sm whitespace-nowrap @4xl:table-cell" data-label="Set up">
         {formatDateTime(webhook.createdAt)}
       </td>
       <td>

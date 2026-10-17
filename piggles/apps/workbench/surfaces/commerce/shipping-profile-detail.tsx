@@ -389,7 +389,7 @@ function ProfileEditor({
                 }
               />
               <FieldDescription>
-                For oversized or palletised items that go by freight rather than ordinary post.
+                For oversized or palletized items that go by freight rather than ordinary post.
               </FieldDescription>
             </Field>
 

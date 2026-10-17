@@ -12,7 +12,8 @@
 // why, and can still move or remove it; it never runs the report.
 
 import { useMemo } from 'react';
-import { Alert, Badge, Button, Card, Select, Table, Text } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button, Card, Select, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
 import { Lock, Maximize2, Pencil, X } from 'lucide-react';
 
@@ -227,7 +228,7 @@ function LiveReportWidget({
               {data.rows.slice(0, 8).map((row, index) => (
                 <tr key={index}>
                   {data.columns.map((column, at) => (
-                    <td key={column.key}>
+                    <td data-label={column.label} key={column.key}>
                       {data.grouped && at === 0
                         ? groupText(row[column.key], naming)
                         : formatCell(row[column.key], {

@@ -8,9 +8,11 @@
 // thing you'd return to is exactly why a payout is a pane and not a modal.
 
 import { useEffect } from 'react';
-import { Badge, Button, Card, EmptyState, Heading, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Banknote } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayout, type PayoutSale } from './payouts-data';
@@ -25,7 +27,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = usePayout(id);
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = usePayout(id);
 
   useEffect(() => {
     if (data) ctx.setTitle(`Deposit · ${formatDate(data.arrivalDate)}`);
@@ -57,22 +59,18 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<Banknote className="size-6" aria-hidden />}
-            title="Could not load this deposit"
-            description="Something went wrong reaching the server. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              error={error}
+              noun="deposit"
+              icon={<Banknote className="size-6" aria-hidden />}
+              title="Could not load this deposit"
+              description="Something went wrong reaching the server. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
             Loading deposit…
@@ -144,7 +142,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         <td className="hidden whitespace-nowrap @lg:table-cell">
                           {channelLabel(sale.channel, sale.source)}
                         </td>
-                        <td className="text-right font-medium tabular-nums">
+                        <td className="text-right font-medium tabular-nums" data-label="Amount">
                           {formatMoney(sale.amount, sale.currency)}
                         </td>
                       </tr>

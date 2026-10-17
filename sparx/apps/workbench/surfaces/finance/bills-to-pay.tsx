@@ -44,10 +44,10 @@ import {
   FilterItem,
   Heading,
   Progress,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CheckCircle2, Check, ReceiptText } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -159,7 +159,7 @@ function BillRow({
           </Badge>
         ) : null}
       </td>
-      <td className="text-right font-medium tabular-nums">
+      <td className="text-right font-medium tabular-nums" data-label="Amount">
         {formatCents(bill.amountCents, bill.currency)}
       </td>
       <td className="text-right">
@@ -377,6 +377,18 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
               icon={<CheckCircle2 className="size-6" aria-hidden />}
               title="Nothing outstanding"
               description="Every cost you have recorded is marked as paid. When you record one that is not yet settled, it will appear here: sorted by how late it is."
+              // The way to that, here, rather than a sentence about it (sparx persona issue 303).
+              actions={
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={() => {
+                    ctx.open('finance.expense.detail', { id: 'new' }, { target: 'tab' });
+                  }}
+                >
+                  Record a cost
+                </Button>
+              }
             />
           </div>
         ) : (

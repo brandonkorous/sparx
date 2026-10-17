@@ -18,10 +18,12 @@
 import { useState } from 'react';
 import { useBusinessZone } from '../../lib/business-timezone';
 import { useQuery, useQueryClient } from '@wizeworks/query';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, FileText, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ArSummary } from './ar-summary';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -29,6 +31,7 @@ import { api } from '../../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   describeDue,
+  owedOn,
   formatMoney,
   normalizeDocument,
   documentRowState,
@@ -311,9 +314,13 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             title="Could not load invoices"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -346,7 +353,12 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((doc) => {
-                const due = describeDue(doc.dueAt, doc.overdueDays, businessZone);
+                const due = describeDue(
+                  doc.dueAt,
+                  doc.overdueDays,
+                  businessZone,
+                  !doc.priceOffer && owedOn(doc) <= 0
+                );
                 // A quote or estimate is a price offered, not a bill: its payment
                 // status is `unpaid` from birth, and "Owed" beside an accepted
                 // quote said the money was owed twice, once on the quote and once
@@ -383,6 +395,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {doc.billedToName ?? doc.billTo?.name ?? '—'}
                     </td>
                     <td
+                      data-label="Due"
                       className={[
                         'hidden text-sm @2xl:table-cell',
                         due.tone === 'danger'
@@ -412,10 +425,14 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
                         ) : null}
                       </div>
                     </td>
-                    <td className="hidden text-right tabular-nums @3xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @3xl:table-cell"
+                      data-label="Total"
+                    >
                       {formatMoney(doc.total, doc.currency)}
                     </td>
                     <td
+                      data-label="Balance"
                       className={[
                         'text-right tabular-nums',
                         doc.balance > 0 ? 'font-medium' : '',

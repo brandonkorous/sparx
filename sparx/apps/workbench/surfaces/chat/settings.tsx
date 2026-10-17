@@ -179,7 +179,7 @@ function HoursEditor({
                   <Input
                     type="time"
                     color="module"
-                    className="max-w-32 tabular-nums"
+                    className="max-w-36 tabular-nums"
                     value={window.open}
                     disabled={disabled}
                     aria-label={`${day.label} opening time`}
@@ -193,7 +193,7 @@ function HoursEditor({
                   <Input
                     type="time"
                     color="module"
-                    className="max-w-32 tabular-nums"
+                    className="max-w-36 tabular-nums"
                     value={window.close}
                     disabled={disabled}
                     aria-label={`${day.label} closing time`}

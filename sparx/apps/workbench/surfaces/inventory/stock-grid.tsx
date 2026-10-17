@@ -38,10 +38,10 @@ import {
   EmptyState,
   Input,
   NativeSelect,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Grid3x3, Save, Undo2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { DownloadButton } from '../../components/download-button';
@@ -392,7 +392,8 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
             }
           />
         ) : (
-          <Table size="sm" hover>
+          // An editable grid: a paste fills down one column, so the columns must line up; it scrolls sideways instead.
+          <Table size="sm" hover stack={false}>
             <thead>
               <tr>
                 <th className="w-8">

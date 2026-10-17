@@ -8,18 +8,12 @@
 // so it earns a compact table, sorted with the ones still running at the top.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  SearchInput,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, NativeSelect, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Repeat } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -120,10 +114,14 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Repeat className="size-6" aria-hidden />}
             title="Could not load your repeating bookings"
             description="Something went wrong reaching the server. Try refreshing in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-base" role="status">
@@ -191,7 +189,10 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <div className="font-medium">{series.serviceName ?? 'A service'}</div>
                       <div className="text-sm">{humanizeRrule(series.rrule)}</div>
                     </td>
-                    <td className="hidden text-right align-top font-mono text-sm tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right align-top font-mono text-sm tabular-nums @xl:table-cell"
+                      data-label="Still to come"
+                    >
                       {series.upcomingBookings}
                     </td>
                     <td className="text-right align-top">

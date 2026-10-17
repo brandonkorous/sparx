@@ -30,11 +30,11 @@ import {
   FieldLabel,
   Input,
   Select,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
 
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -55,6 +55,7 @@ import {
   useReport,
   useReportFields,
   usePreview,
+  useHoldsAny,
   useUpdateReport,
   type ConditionGroup,
   type ConditionLeaf,
@@ -332,7 +333,7 @@ function ResultView({
           {result.rows.map((row, index) => (
             <tr key={index}>
               {result.columns.map((column, at) => (
-                <td key={column.key}>
+                <td data-label={column.label} key={column.key}>
                   {result.grouped && at === 0
                     ? groupText(row[column.key], naming)
                     : formatCell(row[column.key], { kind: column.kind, currency: result.currency })}
@@ -400,6 +401,8 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 
   const preview = usePreview(definition);
+  const narrowed = definition.filters.conditions.length > 0 || draft.rangeKind !== 'all';
+  const holdsAny = useHoldsAny(draft.objectKey, narrowed && preview.data?.rows.length === 0);
 
   // Keep the chosen shape honest as the definition changes: adding a breakdown
   // to a "single number" report, or a second measure to a pie chart, makes the
@@ -945,7 +948,8 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 objectKey={draft.objectKey}
                 groupField={draft.groupByField || undefined}
                 empty={emptyAnswer({
-                  narrowed: definition.filters.conditions.length > 0 || draft.rangeKind !== 'all',
+                  narrowed,
+                  holdsAny: holdsAny.data,
                   labelPlural: object?.labelPlural ?? 'records',
                 })}
               />

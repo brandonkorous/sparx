@@ -22,9 +22,9 @@ import {
   FilterItem,
   Heading,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Database, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -41,6 +41,7 @@ import {
 // a loaded map is a real zero and a missing map is an unknown — and `?.get()`
 // flattens the two into one blank cell. See the module's own note.
 import { entriesElsewhereLabel, entriesHereLabel } from './content-type-usage-words';
+import { REFERENCE_HELP, REFERENCE_LABEL } from './reference-word';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 const KIND_FILTERS = [
@@ -263,7 +264,11 @@ function TypeGroup({ title, description, types, counts, emptyHint, onOpen }: Typ
           <thead>
             <tr>
               <th>Name</th>
-              <th className="hidden @xl:table-cell">Key</th>
+              {/* "Reference", the word the editor and Tags and topics use for the same
+                  code (Piggles issue 389, ported for sparx persona issue 299). */}
+              <th className="hidden @xl:table-cell" title={REFERENCE_HELP}>
+                {REFERENCE_LABEL}
+              </th>
               <th className="hidden @2xl:table-cell">Entries</th>
             </tr>
           </thead>
@@ -306,7 +311,10 @@ function TypeGroup({ title, description, types, counts, emptyHint, onOpen }: Typ
                       </span>
                     ) : null}
                   </td>
-                  <td className="hidden font-mono text-sm whitespace-nowrap @xl:table-cell">
+                  <td
+                    className="hidden font-mono text-sm whitespace-nowrap @xl:table-cell"
+                    data-label={REFERENCE_LABEL}
+                  >
                     {type.key}
                   </td>
                   <td className="hidden text-sm @2xl:table-cell">

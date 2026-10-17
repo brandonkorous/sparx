@@ -62,6 +62,7 @@ import { DayInput } from '../../components/day-input';
 import { dayCountLabel } from './purchase-orders-data';
 import { useBusinessZone } from '../../lib/business-timezone';
 import { daysUntilDue } from '../../lib/console/days';
+import { useLateOrderListened } from './late-order-listeners';
 
 interface Props {
   purchaseOrderId: string;
@@ -221,6 +222,7 @@ function HeldForApproval({ purchaseOrderId, purchaseOrderNumber, ctx }: Props) {
 /* ── A new promised date ────────────────────────────────────────────────── */
 
 function Reschedule({ purchaseOrderId, expectedArrivalAt, lateAlertedAt }: Props) {
+  const heard = useLateOrderListened();
   const reschedule = useRescheduleArrival();
   const toast = useToast();
 
@@ -280,30 +282,33 @@ function Reschedule({ purchaseOrderId, expectedArrivalAt, lateAlertedAt }: Props
         <Alert color="danger" variant="soft">
           <AlertContent>
             <AlertTitle>This order is past its date</AlertTitle>
-            <AlertDescription>
-              {/* "It has been flagged once" was printed here unconditionally,
+            {/* Only when a webhook is listening: otherwise nobody hears (issue 304). */}
+            {heard ? (
+              <AlertDescription>
+                {/* "It has been flagged once" was printed here unconditionally,
                   over a field the pane never read. And "flagged" is what the
                   code calls it: nobody in the business is emailed or notified,
                   so the words must not imply it. Same phrasing as the Overdue
                   deliveries list, which is the other place this fact appears. */}
-              {lateAlertedAt === null ? (
-                <>
-                  Nothing has been passed to your other software about it yet: that happens once, on
-                  the nightly check.
-                </>
-              ) : (
-                <>
-                  {/* Relative, not absolute. `absolute` is "6:10 PM" on the day it
+                {lateAlertedAt === null ? (
+                  <>
+                    Nothing has been passed to your other software about it yet: that happens once,
+                    on the nightly check.
+                  </>
+                ) : (
+                  <>
+                    {/* Relative, not absolute. `absolute` is "6:10 PM" on the day it
                       happened and "Sep 12" after that, so no single preposition
                       fits both; "3 hours ago" and "6 days ago" both read as
                       English. The exact moment is on the hover tooltip. */}
-                  It was passed to your other software once,{' '}
-                  <Timestamp value={lateAlertedAt} format="relative" />.
-                </>
-              )}{' '}
-              Recording a new date starts the clock again, so a second broken promise is heard
-              rather than lost in the first one.
-            </AlertDescription>
+                    It was passed to your other software once,{' '}
+                    <Timestamp value={lateAlertedAt} format="relative" />.
+                  </>
+                )}{' '}
+                Recording a new date starts the clock again, so a second broken promise is heard
+                rather than lost in the first one.
+              </AlertDescription>
+            ) : null}
           </AlertContent>
         </Alert>
       ) : null}

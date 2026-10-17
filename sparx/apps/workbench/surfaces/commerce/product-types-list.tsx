@@ -24,9 +24,9 @@ import {
   FilterItem,
   Heading,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Shapes } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -315,7 +315,10 @@ function TypeGroup({ title, description, types, emptyHint, onOpen }: TypeGroupPr
                 <td className="hidden text-sm whitespace-nowrap @sm:table-cell">
                   {attributeLabel(type)}
                 </td>
-                <td className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell">
+                <td
+                  data-label="Id"
+                  className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell"
+                >
                   {type.key}
                 </td>
               </tr>

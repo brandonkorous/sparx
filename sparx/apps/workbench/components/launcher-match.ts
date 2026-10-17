@@ -21,6 +21,10 @@ export interface Entry {
   keywords?: string[];
   /** Whose module this belongs to, so the row's glyph can wear that module's hue. */
   module?: WorkbenchModule;
+  /** A record that supports another (a photo). It ranks below every record that
+   *  is the thing itself, so a part number opens the part, not its picture
+   *  (sparx persona issue 292). */
+  supporting?: boolean;
   run: (mods: { shiftKey?: boolean; altKey?: boolean }) => void;
 }
 
@@ -266,7 +270,12 @@ export function rankRecords(entries: Entry[], query: string): Entry[] {
   if (!q) return entries;
   return entries
     .map((entry, index) => ({ entry, index, rank: recordRank(entry, q) }))
-    .sort((a, b) => b.rank - a.rank || a.index - b.index)
+    .sort(
+      (a, b) =>
+        Number(a.entry.supporting ?? false) - Number(b.entry.supporting ?? false) ||
+        b.rank - a.rank ||
+        a.index - b.index
+    )
     .map((row) => row.entry);
 }
 

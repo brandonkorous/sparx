@@ -42,12 +42,12 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Ban, Banknote, PlusCircle, Send, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
@@ -467,7 +467,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                         <span className="truncate font-mono text-sm">{line.sku}</span>
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Going back">
                       <Input
                         size="sm"
                         color="module"
@@ -496,7 +496,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                         }}
                       />
                     </td>
-                    <td>
+                    <td data-label="Paid each">
                       <MoneyTextInput
                         size="sm"
                         color="module"
@@ -794,11 +794,13 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     </span>
                   </span>
                 </td>
-                <td className="text-right tabular-nums">{line.quantity}</td>
-                <td className="text-right tabular-nums">
+                <td className="text-right tabular-nums" data-label="Quantity">
+                  {line.quantity}
+                </td>
+                <td className="text-right tabular-nums" data-label="Paid each">
                   {formatCents(line.unitCostCents, data.currency)}
                 </td>
-                <td className="text-right tabular-nums">
+                <td className="text-right tabular-nums" data-label="Worth">
                   {formatCents(line.lineTotalCents, data.currency)}
                 </td>
               </tr>

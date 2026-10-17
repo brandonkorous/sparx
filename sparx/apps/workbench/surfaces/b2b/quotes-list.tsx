@@ -9,7 +9,8 @@
 // because a quote IS a billing document under the hood.
 
 import { useState } from 'react';
-import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FileText, Plus, X } from 'lucide-react';
 import { B2B_QUOTE_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -287,8 +288,13 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="block truncate text-sm">{asker}</span>
                       ) : null}
                     </td>
-                    <td className="hidden @2xl:table-cell">{formatDate(quote.validUntil)}</td>
-                    <td className="hidden text-right font-medium tabular-nums @xl:table-cell">
+                    <td className="hidden @2xl:table-cell" data-label="Valid until">
+                      {formatDate(quote.validUntil)}
+                    </td>
+                    <td
+                      className="hidden text-right font-medium tabular-nums @xl:table-cell"
+                      data-label="Total"
+                    >
                       {formatMoney(quote.total, quote.currency)}
                     </td>
                     <td className="text-right">

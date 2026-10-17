@@ -90,6 +90,21 @@ function pick<T>(list: readonly T[]): T {
   return list[Math.floor(Math.random() * list.length)]!;
 }
 
+/**
+ * Whether a slug is still the placeholder this file made. Setup offers the
+ * owner's own name in its place, and must never swap out one they chose
+ * (sparx persona issue 295). Also matches the collision fallback's extra
+ * `-xxxx` in provision-tenant.ts.
+ */
+export function isFriendlySlug(slug: string): boolean {
+  const match = /^([a-z]+)-([a-z]+)-(\d{4})(?:-[a-z0-9]{1,4})?$/.exec(slug);
+  if (!match) return false;
+  return (
+    (ADJECTIVES as readonly string[]).includes(match[1]!) &&
+    (NOUNS as readonly string[]).includes(match[2]!)
+  );
+}
+
 /** A single candidate slug. Not guaranteed unique — see generateUniqueTenantSlug. */
 export function randomFriendlySlug(): string {
   const num = Math.floor(Math.random() * 9000) + 1000; // 1000–9999

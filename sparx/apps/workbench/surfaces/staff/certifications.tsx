@@ -25,9 +25,9 @@ import {
   Filter,
   FilterItem,
   Heading,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { AlertTriangle, ShieldCheck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -237,7 +237,10 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
                             ) : null}
                           </td>
                           <td className="max-w-40 truncate">{cert.staffMemberName}</td>
-                          <td className="hidden text-sm whitespace-nowrap @lg:table-cell">
+                          <td
+                            className="hidden text-sm whitespace-nowrap @lg:table-cell"
+                            data-label="Expires"
+                          >
                             {cert.expiresOn ? formatDate(cert.expiresOn) : 'Never'}
                           </td>
                           <td className="text-right">

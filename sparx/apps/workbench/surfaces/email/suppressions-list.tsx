@@ -27,11 +27,11 @@ import {
   Card,
   EmptyState,
   SearchInput,
-  Table,
   Text,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, ShieldOff, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -259,7 +259,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
                       <td className="hidden @xl:table-cell">
                         <Text className="text-sm">{sourceLabel(row.source)}</Text>
                       </td>
-                      <td className="hidden whitespace-nowrap @md:table-cell">
+                      <td className="hidden whitespace-nowrap @md:table-cell" data-label="Added">
                         <Text className="text-sm">{formatDate(row.createdAt)}</Text>
                       </td>
                       <td className="text-right">

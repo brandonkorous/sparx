@@ -54,7 +54,9 @@ export function SiteBrand({
   const showName = mode === 'name' || mode === 'both';
 
   return (
-    <Link href="/" className={className ?? 'wordmark inline-flex items-center gap-2.5'}>
+    // `shrink-0` in the default: in a crowded bar the mark is the one thing that must
+    // keep its size (sparx persona issue 291, where a phone header squeezed it to 0px).
+    <Link href="/" className={className ?? 'wordmark inline-flex shrink-0 items-center gap-2.5'}>
       {showLogo ? (
         <>
           {/* Both logos ship; CSS picks. The theme can flip client-side, so choosing in

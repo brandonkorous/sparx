@@ -46,11 +46,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CircleAlert, Lightbulb, Sigma, Wand2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
@@ -338,18 +338,30 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 <tr>
                   <td>Last 7 days</td>
-                  <td className="text-right tabular-nums">{data.velocity.units7}</td>
-                  <td className="text-right tabular-nums">{rate(data.velocity.perDay7)}</td>
+                  <td data-label="Sold" className="text-right tabular-nums">
+                    {data.velocity.units7}
+                  </td>
+                  <td data-label="A day" className="text-right tabular-nums">
+                    {rate(data.velocity.perDay7)}
+                  </td>
                 </tr>
                 <tr>
                   <td>Last 30 days</td>
-                  <td className="text-right tabular-nums">{data.velocity.units30}</td>
-                  <td className="text-right tabular-nums">{rate(data.velocity.perDay30)}</td>
+                  <td data-label="Sold" className="text-right tabular-nums">
+                    {data.velocity.units30}
+                  </td>
+                  <td data-label="A day" className="text-right tabular-nums">
+                    {rate(data.velocity.perDay30)}
+                  </td>
                 </tr>
                 <tr>
                   <td>Last 90 days</td>
-                  <td className="text-right tabular-nums">{data.velocity.units90}</td>
-                  <td className="text-right tabular-nums">{rate(data.velocity.perDay90)}</td>
+                  <td data-label="Sold" className="text-right tabular-nums">
+                    {data.velocity.units90}
+                  </td>
+                  <td data-label="A day" className="text-right tabular-nums">
+                    {rate(data.velocity.perDay90)}
+                  </td>
                 </tr>
               </tbody>
             </Table>

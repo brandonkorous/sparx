@@ -7,7 +7,8 @@
 // tasks and offered none, so "send Renée the pricing sheet" could only be filed
 // against a person or nothing (sparx persona issue 115).
 
-import { Badge, Button, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -87,7 +88,9 @@ export function DealTasks({
                   <td className="min-w-0">
                     <span className="block truncate font-medium">{task.title}</span>
                   </td>
-                  <td className="hidden text-sm @md:table-cell">{dueDay(task.dueAt)}</td>
+                  <td data-label="Due" className="hidden text-sm @md:table-cell">
+                    {dueDay(task.dueAt)}
+                  </td>
                   <td>
                     <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                       {meta.label}

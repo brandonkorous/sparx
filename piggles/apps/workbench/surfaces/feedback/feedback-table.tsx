@@ -48,8 +48,12 @@ function FeedbackRow(props: {
           ) : null}
         </div>
       </td>
-      <td className="text-sm whitespace-nowrap">{describeAgo(submission.createdAt)}</td>
-      <td className="text-sm whitespace-nowrap">{replies === 0 ? '—' : replies}</td>
+      <td className="text-sm whitespace-nowrap" data-label="Sent">
+        {describeAgo(submission.createdAt)}
+      </td>
+      <td className="text-sm whitespace-nowrap" data-label="Replies">
+        {replies === 0 ? '—' : replies}
+      </td>
       <td className="text-right">
         <FeedbackStatusBadge status={submission.status} />
       </td>

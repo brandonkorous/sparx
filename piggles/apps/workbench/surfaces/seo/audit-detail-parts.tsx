@@ -1,13 +1,8 @@
 'use client';
 
-// The read-only pieces one page's scorecard is drawn from: the big number, the
-// four category bars, and one check row.
-//
-// Split out of `audit-detail.tsx` under RULE #0.5 when the pane gained a way to
-// act on what it reports. They are presentation with no data access and no
-// navigation — the surface owns both — which is what makes them safe to lift out
-// whole rather than to divide the pane between two files that each know a little
-// about the other.
+// The read-only pieces one page's scorecard is drawn from: the big number, the four category bars,
+// and one check row. Pure presentation with no data access or navigation (the surface owns both),
+// which is what makes them safe to lift out of `audit-detail.tsx` whole under RULE #0.5.
 
 import { Badge, Text } from '@wizeworks/silicaui-react';
 import {
@@ -21,7 +16,7 @@ import {
   type Tone,
 } from './data';
 
-/** A proportion as one of a fixed set of literal width classes — an inline
+/** A proportion as one of a fixed set of literal width classes: an inline
  *  `style={{ width }}` is banned, and on a short bar a 5% step is a pixel or two,
  *  below the threshold of noticing. */
 const BAR_WIDTH = [
@@ -56,7 +51,7 @@ function barWidthClass(fraction: number): string {
 
 /* ── Score header ────────────────────────────────────────────────────────── */
 
-// Literal per-tone ink classes — a `text-${tone}` template is invisible to the
+// Literal per-tone ink classes: a `text-${tone}` template is invisible to the
 // Tailwind compiler, so the color is spelled out.
 const SCORE_INK: Record<Tone, string> = {
   success: 'text-success',
@@ -75,7 +70,7 @@ export function ScoreCard({ card }: { card: Scorecard }) {
         </span>
         <Text className="text-sm">out of 100</Text>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
         <Badge color={tone} variant="soft" size="sm" className="self-start">
           {gradeLabel(card.grade)}
         </Badge>
@@ -120,7 +115,7 @@ export function CheckRow({ check }: { check: AuditCheck }) {
         <Badge color={checkTone(check.status)} variant="soft" size="sm">
           {checkStatusLabel(check.status)}
         </Badge>
-        <Text className="min-w-0 flex-1 font-medium">{check.label}</Text>
+        <Text className="min-w-0 flex-1 basis-48 font-medium">{check.label}</Text>
         {check.value ? <Text className="shrink-0 font-mono text-sm">{check.value}</Text> : null}
       </div>
       {check.tip ? <Text className="text-sm">{check.tip}</Text> : null}

@@ -27,11 +27,11 @@ import {
   Card,
   NativeSelect,
   SearchInput,
-  Table,
   ToggleGroup,
   ToggleGroupItem,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Briefcase, EyeOff, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -249,10 +249,16 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden whitespace-nowrap @lg:table-cell">
                   {bookingTypeLabel(service.bookingType)}
                 </td>
-                <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
+                <td
+                  className="hidden whitespace-nowrap tabular-nums @xl:table-cell"
+                  data-label="Length"
+                >
                   {formatDuration(service.durationMinutes)}
                 </td>
-                <td className="hidden whitespace-nowrap tabular-nums @xl:table-cell">
+                <td
+                  className="hidden whitespace-nowrap tabular-nums @xl:table-cell"
+                  data-label="Price"
+                >
                   {servicePriceLabel(service)}
                 </td>
                 <td>

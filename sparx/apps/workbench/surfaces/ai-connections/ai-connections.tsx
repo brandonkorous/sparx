@@ -577,7 +577,7 @@ function ConnectionRow({
 }) {
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-3 rounded-lg border p-3">
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
         <Text className="font-semibold">{connection.clientName ?? 'A connected AI app'}</Text>
         <Text className="text-sm">
           Can reach {summariseScopes(connection.scopes, catalog)} · Connected{' '}
@@ -828,7 +828,7 @@ function KeyRow({
   const state = apiKeyState(apiKey);
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-3 rounded-lg border p-3">
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
         <div className="flex flex-wrap items-center gap-2">
           <Text className="font-semibold">{apiKey.name}</Text>
           <Badge color={state.tone} variant="soft" size="sm">
@@ -1112,7 +1112,7 @@ function ApiKeysSection({
             }}
           >
             <Plus className="size-4" aria-hidden />
-            Create your first key
+            Create key
           </Button>
         </div>
       ) : (

@@ -41,11 +41,11 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Check, Download, Link2, LogIn, LogOut, Plug, Save, Trash2, Upload } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -660,7 +660,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
                 {result.rows.slice(0, 25).map((row) => (
                   <tr key={row.line}>
                     <td className="tabular-nums">{row.line}</td>
-                    <td className="whitespace-nowrap">
+                    <td className="whitespace-nowrap" data-label="Date">
                       {row.error ? (
                         <Badge color="danger" variant="soft" size="sm">
                           {row.error}
@@ -670,7 +670,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
                       )}
                     </td>
                     <td className="max-w-56 truncate">{row.description}</td>
-                    <td className="text-right tabular-nums">
+                    <td className="text-right tabular-nums" data-label="Amount">
                       {row.amountCents === null ? '—' : formatCents(row.amountCents)}
                     </td>
                   </tr>
@@ -972,7 +972,7 @@ function MappingTable({ connectionId }: { connectionId: string }) {
                     {category.name}
                   </Badge>
                 </td>
-                <td>
+                <td data-label="Their account code">
                   <Input
                     color="module"
                     size="sm"

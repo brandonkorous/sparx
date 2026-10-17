@@ -40,11 +40,11 @@ import {
   Input,
   NativeSelect,
   Switch,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarClock, CalendarPlus, CirclePlus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -178,7 +178,7 @@ export function PreordersSurface({ ctx }: { ctx: SurfaceContext }) {
                   ) : null}
                 </span>
               </td>
-              <td className="whitespace-nowrap">
+              <td data-label="Ships" className="whitespace-nowrap">
                 {/* "To be confirmed" is a real answer and reads as one. A blank
                     cell here would look like a bug and an invented date would be
                     a promise nobody made.
@@ -196,7 +196,7 @@ export function PreordersSurface({ ctx }: { ctx: SurfaceContext }) {
                   </Badge>
                 )}
               </td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td data-label="Committed" className="text-right whitespace-nowrap tabular-nums">
                 {row.soldQuantity}
                 {/* Only when capped. `remaining` is null for an uncapped run and
                     there is no honest number for "no limit". */}
@@ -204,7 +204,7 @@ export function PreordersSurface({ ctx }: { ctx: SurfaceContext }) {
                   <span className="text-sm"> · {row.remaining} left</span>
                 ) : null}
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td data-label="Window" className="hidden whitespace-nowrap @lg:table-cell">
                 {row.startsAt ? formatDay(row.startsAt) : 'Now'}
                 {' → '}
                 {row.endsAt ? formatDay(row.endsAt) : 'open-ended'}
@@ -440,7 +440,7 @@ function PreorderEditor({
             <Field>
               <FieldLabel>What you are taking orders for</FieldLabel>
               <div className="flex flex-wrap items-center gap-2">
-                <Text className="min-w-0 flex-1 text-base">
+                <Text className="min-w-0 flex-1 basis-48 text-base">
                   {picked.productTitle}
                   {versionOf(picked) ? ` · ${versionOf(picked)}` : ''}
                 </Text>

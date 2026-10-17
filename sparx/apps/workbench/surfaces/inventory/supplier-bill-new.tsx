@@ -35,10 +35,10 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FormSection } from '../../components/form-section';
 import { PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { afterCommit } from '../../lib/defer';
@@ -379,8 +379,10 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                             ) : null}
                           </span>
                         </td>
-                        <td className="text-right tabular-nums">{line.receivedQuantity}</td>
-                        <td>
+                        <td className="text-right tabular-nums" data-label="Arrived">
+                          {line.receivedQuantity}
+                        </td>
+                        <td data-label="Billed">
                           <Input
                             size="sm"
                             color="module"
@@ -402,7 +404,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                             }}
                           />
                         </td>
-                        <td>
+                        <td data-label="Each">
                           <MoneyTextInput
                             size="sm"
                             color="module"

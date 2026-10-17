@@ -30,10 +30,10 @@ import {
   Heading,
   Input,
   Select,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Clock } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
@@ -44,7 +44,6 @@ import { api } from '../../lib/api/client';
 import { useMutation, useQueryClient } from '@wizeworks/query';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  describeHours,
   priorityLabel,
   priorityTone,
   ticketErrorMessage,
@@ -54,6 +53,7 @@ import {
   type SlaPolicy,
   type TicketPriority,
 } from './tickets-data';
+import { describeHours } from './business-hours-words';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -461,7 +461,7 @@ function PolicyEditor({
                   {draft.days.map((day, index) => (
                     <tr key={DAYS[index]}>
                       <td className="font-medium">{DAYS[index]}</td>
-                      <td>
+                      <td data-label="Open">
                         <Checkbox
                           color="module"
                           aria-label={`Open on ${DAYS[index] ?? 'this day'}`}
@@ -471,7 +471,7 @@ function PolicyEditor({
                           }}
                         />
                       </td>
-                      <td>
+                      <td data-label="From">
                         <Input
                           size="sm"
                           color="module"
@@ -484,7 +484,7 @@ function PolicyEditor({
                           }}
                         />
                       </td>
-                      <td>
+                      <td data-label="To">
                         <Input
                           size="sm"
                           color="module"
@@ -557,7 +557,7 @@ function PolicyEditor({
                           {priorityLabel(priority)}
                         </Badge>
                       </td>
-                      <td>
+                      <td data-label="Reply within">
                         <Input
                           size="sm"
                           color="module"
@@ -572,7 +572,7 @@ function PolicyEditor({
                         />
                         <WorkingTime raw={draft.targets[priority].firstResponse} />
                       </td>
-                      <td>
+                      <td data-label="Sorted within">
                         <Input
                           size="sm"
                           color="module"

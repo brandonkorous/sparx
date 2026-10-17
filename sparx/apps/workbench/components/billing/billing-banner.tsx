@@ -37,7 +37,7 @@ export function BillingBanner() {
     <div className="px-2 pt-2">
       <Alert color={notice.tone} variant="soft">
         <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 basis-48">
             <span className="font-medium">{notice.title}</span>{' '}
             <span className="text-sm">{notice.body}</span>
           </div>

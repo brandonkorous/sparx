@@ -6,7 +6,7 @@
 **Surface:** the automation integration tests; the dev database
 **Filed:** 2026-10-06
 **Fixed:** 2026-10-06
-**Confirmed by:** P01, 2026-10-06
+**Confirmed by:** the dev database, 2026-10-17 (Gillett's automation runs)
 **Blocked on:** —
 
 ## What happened
@@ -43,6 +43,8 @@ Test, proved red:
 ## Confirmed by
 
 Ran the automation and automation-actions suites against the dev database after the change (153 and 148 tests). No new run appeared on Gillett (`automation_runs` with an `occurredAt` ahead of its `started_at`: none since 17:44 UTC Oct 6).
+
+The dev database, 2026-10-17: Gillett has 85 automation runs since 18:00 UTC Oct 6, the newest at 01:51 UTC Oct 17, and none was made for a later moment than it started. The only two that ever were are the Oct 6 runs this issue is about.
 
 ## Rating effect
 

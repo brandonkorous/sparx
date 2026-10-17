@@ -19,14 +19,8 @@
 // list endpoint carries no translation join.
 
 import { useState } from 'react';
-import {
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Card, EmptyState, Filter, FilterItem, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Languages } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';

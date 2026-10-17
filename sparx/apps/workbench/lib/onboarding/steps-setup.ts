@@ -7,7 +7,9 @@
 // each takes the cache-invalidation callback the hook in api.ts supplies.
 
 import { api } from '../api/client';
+import { isNotFound } from '../api-error';
 import type { OnboardingPatch, OnboardingState, SlugAvailability } from './types';
+import { planTemplateInstall, type InstallSummary, type SetupTemplateState } from './template-plan';
 
 export type Done = () => void;
 
@@ -32,31 +34,38 @@ export interface TemplateChoice {
   sampleData: boolean;
 }
 
-/** Reselecting the same template keeps the existing install (idempotent);
- *  switching resets the old draft first so no orphan install is stranded.
+/** Remove an install the setup is replacing: its pages, products and design go
+ *  with it. One that is already gone is what was wanted; any other failure stops
+ *  the step, because installing over it would be refused or leave both designs. */
+async function removeInstall(installId: string): Promise<void> {
+  try {
+    await api.delete(`/v1/blueprints/installs/${encodeURIComponent(installId)}`);
+  } catch (error) {
+    if (!isNotFound(error)) throw error;
+  }
+}
+
+/** Reselecting the same template keeps the existing install (idempotent), and so
+ *  does choosing a design that is already installed with the same answer;
+ *  switching removes the old draft first so no orphan install is stranded.
  *  Changing only the examples answer is a switch too — the answer is fixed at
- *  install time, so the old draft has to go for the new one to mean anything. */
+ *  install time, so the old draft has to go for the new one to mean anything.
+ *  The rule is `planTemplateInstall` (sparx persona issue 294). */
 export async function selectTemplate(
   choice: TemplateChoice,
   done: Done
 ): Promise<{ installId: string }> {
-  const state = await api.get<{
-    blueprintKey: string | null;
-    installId: string | null;
-    sampleData?: boolean;
-  }>('/v1/tenant/onboarding');
-  const sameDesign = state.blueprintKey === choice.key && state.installId !== null;
-  const sameAnswer = (state.sampleData ?? true) === choice.sampleData;
+  const [state, { installs }] = await Promise.all([
+    api.get<SetupTemplateState>('/v1/tenant/onboarding'),
+    api.get<{ installs: InstallSummary[] }>('/v1/blueprints/installs'),
+  ]);
+  const plan = planTemplateInstall(state, installs, choice);
 
   let installId: string;
-  if (sameDesign && sameAnswer && state.installId) {
-    installId = state.installId;
+  if (plan.kind === 'keep') {
+    installId = plan.installId;
   } else {
-    if (state.installId) {
-      await api
-        .post(`/v1/blueprints/installs/${encodeURIComponent(state.installId)}/reset`)
-        .catch(() => undefined);
-    }
+    if (plan.remove) await removeInstall(plan.remove);
     const res = await api.post<{ install_id: string }>(
       `/v1/blueprints/${encodeURIComponent(choice.key)}/install`,
       { sample_data: choice.sampleData }
@@ -78,11 +87,7 @@ export async function selectTemplate(
  *  does NOT touch the Builder flag (whatever the Modules step saved stands). */
 export async function startFromScratch(done: Done): Promise<void> {
   const state = await api.get<{ installId: string | null }>('/v1/tenant/onboarding');
-  if (state.installId) {
-    await api
-      .post(`/v1/blueprints/installs/${encodeURIComponent(state.installId)}/reset`)
-      .catch(() => undefined);
-  }
+  if (state.installId) await removeInstall(state.installId);
   await patchOnboarding({
     blueprintKey: null,
     installId: null,

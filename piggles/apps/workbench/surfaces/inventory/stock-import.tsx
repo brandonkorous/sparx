@@ -297,7 +297,8 @@ function MappingStep({
 
       {preview.sampleRows.length > 0 ? (
         <div className="overflow-x-auto">
-          <Table size="sm">
+          {/* The file as it reads in the spreadsheet, so its columns stay lined up; it scrolls sideways instead. */}
+          <Table size="sm" stack={false}>
             <thead>
               <tr>
                 {preview.headers.map((header) => (

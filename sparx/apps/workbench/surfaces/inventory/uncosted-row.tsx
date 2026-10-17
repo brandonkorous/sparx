@@ -44,16 +44,19 @@ export function UncostedRow({
           <span className="truncate font-mono text-sm">{item.sku ?? 'No code'}</span>
         </span>
       </td>
-      <td className="text-right whitespace-nowrap tabular-nums">
+      <td data-label="You hold" className="text-right whitespace-nowrap tabular-nums">
         {plural(item.onHand, 'unit', 'units')}
       </td>
       {/* The selling price is the single most useful anchor when somebody is
           trying to remember what they paid, and it is the one figure they have
           already entered. It earns its column. */}
-      <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
+      <td
+        data-label="Sells for"
+        className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell"
+      >
         {item.priceCents === null ? '—' : formatCents(item.priceCents)}
       </td>
-      <td className="w-40">
+      <td data-label="Cost to you" className="w-40">
         <Input
           color="module"
           size="sm"
@@ -73,7 +76,10 @@ export function UncostedRow({
           }}
         />
       </td>
-      <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+      <td
+        data-label="Worth in total"
+        className="hidden text-right whitespace-nowrap @xl:table-cell"
+      >
         <Text as="span" className="text-sm">
           <Extended costCents={valid ? parsed : null} onHand={item.onHand} />
         </Text>

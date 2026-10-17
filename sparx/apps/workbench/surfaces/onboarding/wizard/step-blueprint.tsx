@@ -92,7 +92,7 @@ export function StepBlueprint({
   return (
     <div className="flex max-w-3xl flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="max-w-xs min-w-0 flex-1">
+        <div className="max-w-xs min-w-0 flex-1 basis-48">
           <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}

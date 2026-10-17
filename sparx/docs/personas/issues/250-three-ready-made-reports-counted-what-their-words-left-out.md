@@ -1,12 +1,12 @@
 # 250 — Three ready-made reports counted what their own words left out
 
-**Status:** open
+**Status:** fixed
 **Severity:** major
 **Found by:** P01 · Gillett Diesel Service · confirming issue 247 (Customers › Build a report, as Doty)
 **Surface:** the reports sparx ships, for every business, in both consoles
 **Filed:** 2026-10-13
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-13
+**Confirmed by:** sparx as Doty, 2026-10-14
 **Blocked on:** —
 
 ## What happened
@@ -61,9 +61,10 @@ rolled back on the dev database: "ready-made reports brought in line with their 
 
 ## Confirmed by
 
-Not yet on screen. The dev database still holds the old rows: migrations are applied by
-the user or the pipeline, not by me. This stays open until the migration is applied and
-"Where your deals are" no longer lists Lost.
+sparx as Doty, after migration `20270530000035_ready_made_reports_count_what_they_say`
+was applied: the "Monday numbers" board's "Where your deals are" lists First call (2,
+$61,250.50), Trial order, Visited their yard and Proposal sent. Lost is gone. The same
+card showed the same four rows to Mike.
 
 ## Rating effect
 

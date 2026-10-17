@@ -17,10 +17,10 @@ import {
   FieldControl,
   FieldLabel,
   Select,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { faEnvelope, faPrint } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';

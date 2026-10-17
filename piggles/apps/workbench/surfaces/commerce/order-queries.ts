@@ -76,6 +76,8 @@ export function useOrder(id: string) {
   return useQuery({
     queryKey: [...ORDERS_KEY, id],
     queryFn: () => api.get<Order>(`/v1/orders/${id}`).then(normalizeOrder),
+    // The pack bench can open on a box alone, with no order named.
+    enabled: id !== '',
   });
 }
 

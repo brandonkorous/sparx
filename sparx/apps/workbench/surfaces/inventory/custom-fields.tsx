@@ -43,11 +43,11 @@ import {
   Input,
   NativeSelect,
   Switch,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Columns3, Plus, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -381,7 +381,7 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
                 {field.helpText ? <span className="truncate text-sm">{field.helpText}</span> : null}
               </span>
             </td>
-            <td className="whitespace-nowrap">
+            <td data-label="Kind" className="whitespace-nowrap">
               <Badge color="module" variant="soft" size="sm">
                 {CUSTOM_FIELD_TYPE_LABELS[field.type]}
               </Badge>
@@ -389,11 +389,14 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
                 <Text className="text-sm">{field.options.join(', ')}</Text>
               ) : null}
             </td>
-            <td className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell">
+            <td
+              data-label="Stored as"
+              className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell"
+            >
               cf_{field.key}
             </td>
             {HAS_EDITABLE_LIST[entity] ? (
-              <td className="text-center">
+              <td data-label="In the grid" className="text-center">
                 <Switch
                   color="module"
                   aria-label={`Show ${field.label} in the stock grid`}

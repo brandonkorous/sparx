@@ -47,7 +47,7 @@ function RowSummary({ variant, label, draft, isOpen, isDirty, panelId, onToggle 
         className="size-4 shrink-0"
         aria-hidden
       />
-      <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
+      <span className="min-w-0 flex-1 basis-48 truncate font-medium">{label}</span>
       <span className="tabular-nums">{formatCents(cents(draft.price), variant.currency)}</span>
       {draft.core !== null && draft.core > 0 ? (
         <span className="tabular-nums">

@@ -10,7 +10,8 @@
 // always exactly one server answer.
 
 import { useState } from 'react';
-import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, Filter, FilterItem } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ShoppingCart } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -161,8 +162,10 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="max-w-48 truncate">
                       {cartShopperName(row.customer, row.contact)}
                     </td>
-                    <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
-                    <td className="hidden text-sm @2xl:table-cell">
+                    <td data-label="Items" className="text-right tabular-nums @lg:text-left">
+                      {row.itemCount}
+                    </td>
+                    <td data-label="Last active" className="hidden text-sm @2xl:table-cell">
                       {formatDateTime(row.updatedAt)}
                     </td>
                     <td className="hidden @xl:table-cell">
@@ -170,7 +173,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {state.label}
                       </Badge>
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td data-label="Value" className="text-right font-medium tabular-nums">
                       {formatMoney(row.totalCents / 100, row.currency)}
                     </td>
                   </tr>

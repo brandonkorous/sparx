@@ -1,15 +1,8 @@
 'use client';
 
-// Publish — what is waiting to go live, what to look at first, and the way back.
-//
-// The whole-site counterpart to the Publish button in each builder. Those are the
-// day-to-day act: fix the footer, publish the footer. This is the other one — "put
-// everything I've been working on live" — and the one place a site can be put back.
-//
-// It leads with WHAT IS WAITING, because that is the question someone opening this
-// actually has. The check is offered, not run: it walks every page, and running it
-// unasked would make opening this pane expensive for someone who only wanted to see
-// whether anything was outstanding.
+// Publish: what is waiting to go live, what to look at first, and the way back. The whole-site
+// counterpart to each builder's Publish, and the one place a site can be put back. It leads with WHAT
+// IS WAITING; the check is offered, not run, because it walks every page and would make opening costly.
 
 import { useState } from 'react';
 import { Alert, Button, useToast } from '@wizeworks/silicaui-react';
@@ -30,8 +23,9 @@ import { waitingLine } from './publish-words';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useSiteIsDark } from '../../lib/billing/site-live';
 
-export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
-  const state = usePublishState();
+type PageLink = NonNullable<PublishState['unpublishedPageList']>[number];
+
+function usePublishFlow() {
   const publish = usePublishSite();
   const check = useSiteCheck();
   const toast = useToast();
@@ -48,10 +42,8 @@ export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
     void publish
       .mutateAsync()
       .then((result) => {
-        // A count nobody sent must never be rendered as one. The route now returns
-        // `pages`, but a toast is the wrong place to find out it stopped: if the
-        // number is ever absent, say the true thing without it rather than print
-        // "undefined pages are live" over a publish that actually worked.
+        // A count nobody sent must never be rendered as one: if `pages` is ever absent, say the
+        // true thing without it rather than "undefined pages are live" over a publish that worked.
         const count = typeof result.pages === 'number' ? result.pages : null;
         toast.add({
           title:
@@ -66,6 +58,13 @@ export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
       })
       .catch(() => toast.add({ title: 'Your site could not be published', type: 'error' }));
   };
+
+  return { publish, check, report, runCheck, goLive };
+}
+
+export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
+  const state = usePublishState();
+  const { publish, check, report, runCheck, goLive } = usePublishFlow();
 
   if (state.isPending) return <PaneWaiting label="Checking what is live…" />;
 
@@ -86,6 +85,38 @@ export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 }
 
+function WaitingPages({
+  pages,
+  onOpenPage,
+}: {
+  pages: PageLink[];
+  onOpenPage: (pageId: string) => void;
+}) {
+  return (
+    <ul className="mt-3 flex flex-wrap gap-2">
+      {pages.map((page) => (
+        <li key={page.id}>
+          <Button
+            size="sm"
+            variant="soft"
+            color="module"
+            onClick={() => {
+              onOpenPage(page.id);
+            }}
+          >
+            {page.name}
+            {page.slug ? (
+              <span className="ms-1 font-mono">
+                {page.slug.startsWith('/') ? page.slug : `/${page.slug}`}
+              </span>
+            ) : null}
+          </Button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** What is outstanding, and the one button that resolves it. */
 function Waiting({
   state,
@@ -100,12 +131,12 @@ function Waiting({
 }) {
   const pages = state?.unpublishedPageList ?? [];
   // Every sentence on this pane is written about VISITORS, and a suspended site
-  // serves an overlay rather than its pages — so there are none to speak of.
+  // serves an overlay rather than its pages, so there are none to speak of.
   const siteIsDark = useSiteIsDark();
   return (
     <section className="bg-base-100 rounded-lg p-3 shadow-sm">
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-base-content min-w-0 flex-1">
+        <p className="text-base-content min-w-0 flex-1 basis-48">
           {state ? waitingLine(state, siteIsDark) : 'We could not check what is live right now.'}
         </p>
         <Button color="primary" disabled={publishing || !state?.hasUnpublished} onClick={onPublish}>
@@ -113,33 +144,9 @@ function Waiting({
           {publishing ? 'Publishing…' : 'Publish everything'}
         </Button>
       </div>
-      {/* WHICH pages, not only how many. "13 pages have changes" went to an owner
-          who had edited five, and Publish everything was the only thing on offer:
-          publish all thirteen unseen, or none (persona issue 939). Each opens, so
-          she can look before she publishes. */}
-      {pages.length > 0 ? (
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {pages.map((page) => (
-            <li key={page.id}>
-              <Button
-                size="sm"
-                variant="soft"
-                color="module"
-                onClick={() => {
-                  onOpenPage(page.id);
-                }}
-              >
-                {page.name}
-                {page.slug ? (
-                  <span className="ms-1 font-mono">
-                    {page.slug.startsWith('/') ? page.slug : `/${page.slug}`}
-                  </span>
-                ) : null}
-              </Button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      {/* WHICH pages, not only how many: "13 pages have changes" left an owner who had edited five
+          to publish all unseen, or none (persona issue 939). Each opens, so she can look first. */}
+      {pages.length > 0 ? <WaitingPages pages={pages} onOpenPage={onOpenPage} /> : null}
       {state && !state.hasUnpublished ? (
         <Alert color="success" variant="soft" className="mt-3">
           There is nothing waiting. Anything you change from here will need publishing again.

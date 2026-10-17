@@ -82,6 +82,9 @@ export type ToolPolicySet = z.infer<typeof ToolPolicySetSchema>;
  *  exposure (default-on unless a row disables it). */
 export interface ToolPolicyDto {
   name: string;
+  /** What the owner reads: a short title in their own words (tool-titles.ts,
+   *  sparx persona issue 297). `description` is written for the AI. */
+  title: string;
   description: string;
   scope: string;
   /** The module a tool's scope maps to (gated separately), or null for platform tools. */

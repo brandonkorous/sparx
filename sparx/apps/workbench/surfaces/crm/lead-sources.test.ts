@@ -43,12 +43,23 @@ describe('splitting where new customers came from', () => {
     const view = splitLeadSources(DEVI);
     expect(view.observed[0]).toEqual({
       source: 'storefront',
-      label: 'Storefront',
+      label: 'Your website',
       count: 4,
       sharePct: 50,
     });
     const total = view.observed.reduce((sum, row) => sum + row.sharePct, 0);
     expect(Math.round(total)).toBe(100);
+  });
+
+  it('names each way in in the console words, not the API words (issue 265)', () => {
+    // The API sent "Storefront", "Admin" and "B2B portal" while every other
+    // screen calls the same orders "Your website", "Added by hand" and
+    // "Wholesale portal". Doty read "Admin 4 · 80%" on Gillett's reports.
+    expect(splitLeadSources(DEVI).observed.map((row) => row.label)).toEqual([
+      'Your website',
+      'Added by hand',
+      'Wholesale portal',
+    ]);
   });
 
   it('measures the tallest bar against the answered ones too', () => {

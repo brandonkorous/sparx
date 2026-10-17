@@ -518,5 +518,5 @@ export function isNotFound(error: unknown): boolean {
 }
 
 export function plural(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
+  return `${count.toLocaleString('en-US')} ${count === 1 ? one : many}`;
 }

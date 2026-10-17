@@ -586,7 +586,7 @@ function ImageDetails({
       description={`Number ${String(index + 1)} of ${String(total)} in the gallery.`}
     >
       <div className="flex flex-wrap items-center gap-3">
-        <Text className="min-w-0 flex-1 truncate text-sm">
+        <Text className="min-w-0 flex-1 basis-48 truncate text-sm">
           {asset?.filename ?? 'Photo'}
           {asset?.width && asset.height
             ? ` · ${String(asset.width)} × ${String(asset.height)}`

@@ -109,7 +109,9 @@ export async function summary(
     pageviews,
     sessions: Number(r.sessions),
     signups: Number(r.signups),
-    pagesPerVisit: visitors > 0 ? +(pageviews / visitors).toFixed(2) : 0,
+    // Per VISIT, as the tile says: it divided by people, so six people making
+    // fifteen visits read 5.33 pages a visit instead of 2.13 (sparx persona issue 314).
+    pagesPerVisit: Number(r.sessions) > 0 ? +(pageviews / Number(r.sessions)).toFixed(2) : 0,
     topReferrerHost: top?.referrer_host ?? null,
     topReferrerVisits: top ? Number(top.visits) : 0,
   };
@@ -415,12 +417,21 @@ export async function sources(
   from: Date,
   toExclusive: Date
 ): Promise<SourceRow[]> {
+  // One visit, one source: the one it arrived from (its first page). This counted
+  // PEOPLE per source and called them visits, so the breakdown read 8 under a
+  // Visits figure of 15 on the same dashboard; and a visit touches more than one
+  // source, so counting visits per source would not add up either (sparx persona
+  // issue 314). Counted this way the parts sum to the Visits figure.
   const rows = await tx.$queryRaw<RawSource[]>`
-    SELECT source, COUNT(DISTINCT visitor_hash)::int AS visits
-    FROM site_analytics_events
-    WHERE property_id = ${propertyId}::uuid
-      AND type = 'pageview'
-      AND created_at >= ${from} AND created_at < ${toExclusive}
+    SELECT source, COUNT(*)::int AS visits
+    FROM (
+      SELECT DISTINCT ON (session_hash) source
+      FROM site_analytics_events
+      WHERE property_id = ${propertyId}::uuid
+        AND type = 'pageview' AND session_hash IS NOT NULL
+        AND created_at >= ${from} AND created_at < ${toExclusive}
+      ORDER BY session_hash, created_at
+    ) arrivals
     GROUP BY source ORDER BY visits DESC
   `;
   return rows.map((r) => ({ source: r.source, visits: Number(r.visits) }));
@@ -445,14 +456,19 @@ export async function emailCampaigns(
   from: Date,
   toExclusive: Date
 ): Promise<EmailCampaignRow[]> {
+  // The email row of `sources`, one level deeper, so it is counted the same way:
+  // visits, each under the email it arrived from.
   const rows = await tx.$queryRaw<RawEmailCampaign[]>`
-    SELECT campaign, COUNT(DISTINCT visitor_hash)::int AS visits
-    FROM site_analytics_events
-    WHERE property_id = ${propertyId}::uuid
-      AND type = 'pageview'
-      AND source = 'email'
-      AND campaign IS NOT NULL
-      AND created_at >= ${from} AND created_at < ${toExclusive}
+    SELECT campaign, COUNT(*)::int AS visits
+    FROM (
+      SELECT DISTINCT ON (session_hash) source, campaign
+      FROM site_analytics_events
+      WHERE property_id = ${propertyId}::uuid
+        AND type = 'pageview' AND session_hash IS NOT NULL
+        AND created_at >= ${from} AND created_at < ${toExclusive}
+      ORDER BY session_hash, created_at
+    ) arrivals
+    WHERE source = 'email' AND campaign IS NOT NULL
     GROUP BY campaign ORDER BY visits DESC
   `;
   return rows.map((r) => ({ campaign: r.campaign ?? 'Email', visits: Number(r.visits) }));

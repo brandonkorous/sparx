@@ -146,7 +146,7 @@ export function CollectionsTable({
             }}
           >
             <td className="max-w-64 truncate font-medium">{row.name}</td>
-            <td className="hidden @lg:table-cell">
+            <td data-label="How it fills" className="hidden @lg:table-cell">
               {row.type === 'rules' ? 'Automatic' : 'Hand-picked'}
             </td>
             <td>
@@ -162,10 +162,13 @@ export function CollectionsTable({
                 </Text>
               )}
             </td>
-            <td className="text-right tabular-nums">
+            <td data-label="Products" className="text-right tabular-nums">
               <GroupCount row={row} />
             </td>
-            <td className="hidden text-right text-sm tabular-nums @2xl:table-cell">
+            <td
+              data-label="Updated"
+              className="hidden text-right text-sm tabular-nums @2xl:table-cell"
+            >
               {formatUpdated(row.updatedAt)}
             </td>
           </tr>

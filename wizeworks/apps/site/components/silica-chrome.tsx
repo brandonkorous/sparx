@@ -39,6 +39,7 @@ import {
 } from '@wizeworks/silica-catalog';
 
 import { attrProps } from './silica-attrs';
+import { hostWrapperClass } from './host-wrapper';
 
 /** Mounts the real interactive component for a pinned functional core (docs/122) —
  *  keyed by the host node's `component`. The route supplies this (closing over its own
@@ -161,7 +162,8 @@ function walk(node: WalkNode | string, key: React.Key, ctx: WalkContext): React.
     // wrapper (the storefront registry is the source of truth for what's live).
     const mounted = ctx.renderHost?.(node as unknown as HostNode) ?? null;
     const hostProps: Record<string, unknown> = { key, ...metaProps(node) };
-    if (node.class) hostProps.className = node.class;
+    const wrapperClass = hostWrapperClass(node);
+    if (wrapperClass) hostProps.className = wrapperClass;
     return React.createElement('div', hostProps, mounted);
   }
   if (node.kind === 'component') {

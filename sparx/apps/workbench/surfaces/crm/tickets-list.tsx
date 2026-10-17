@@ -15,18 +15,12 @@
 // reason.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { LifeBuoy, Plus } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { SavedViewsMenu, viewFilterHas, viewFilterValue, viewFilters } from './saved-views-menu';
@@ -97,7 +91,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
     setPriority(nextPriority === '' ? 'all' : (nextPriority as TicketPriority));
   };
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTickets({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useTickets({
     q: search,
     // "Late" and "unassigned" are still questions about OPEN requests — a
     // resolved one cannot be late any more, and nobody needs to pick it up.
@@ -231,21 +225,14 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<LifeBuoy className="size-6" aria-hidden />}
             title="Could not load the support queue"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -341,10 +328,10 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="text-sm">On track</span>
                       )}
                     </td>
-                    <td className="hidden text-sm @lg:table-cell">
+                    <td data-label="Stage" className="hidden text-sm @lg:table-cell">
                       {row.ticket.stage?.name ?? '—'}
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">
+                    <td data-label="Owner" className="hidden text-sm @2xl:table-cell">
                       {row.ticket.assignedTo?.name ?? row.ticket.assignedTo?.email ?? 'Nobody yet'}
                     </td>
                   </tr>

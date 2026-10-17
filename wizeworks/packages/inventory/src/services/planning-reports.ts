@@ -31,7 +31,7 @@ import { withTenant } from '@wizeworks/db';
 import type { ServiceContext } from '../errors';
 
 import { DEFAULT_LEAD_TIME_DAYS } from './lead-times';
-import { loadPlanningPolicy } from './planning-policy';
+import { DEFAULT_PLANNING_POLICY, loadPlanningPolicy } from './planning-policy';
 
 const DAY_MS = 86_400_000;
 
@@ -274,7 +274,7 @@ function toRiskRow(r: RiskSqlRow, now: Date): StockoutRiskRow {
  * the rate, where the lead time came from, what cover that leaves, and what
  * falls out of it. A number nobody can check is a number people override.
  */
-function explainRisk(input: {
+export function explainRisk(input: {
   available: number;
   onOrder: number;
   velocity: number | null;
@@ -296,12 +296,31 @@ function explainRisk(input: {
       : `about one every ${Math.max(2, Math.round(1 / input.velocity))} days`;
   const inbound = input.onOrder > 0 ? ` plus ${input.onOrder} already on the way` : '';
   const lead = leadTimePhrase(input.leadTimeDays, input.leadTimeSource);
-  const cover = input.cover === null ? 'no measurable cover' : `${Math.round(input.cover)} days`;
+  // Below zero is stock already sold that was not in: "Already 1 short", never
+  // "-1 left"; and nothing in hand has no "cover" to speak of (issue 277).
+  const stock =
+    input.available > 0
+      ? `${input.available} left${inbound}`
+      : input.available === 0
+        ? `None left${inbound}`
+        : `Already ${-input.available} short${inbound}`;
+  const hasCover = input.available > 0 || input.onOrder > 0;
+  const days = input.cover === null ? null : Math.round(input.cover);
+  const cover =
+    days === null
+      ? 'no measurable cover'
+      : days < 1
+        ? 'under a day'
+        : days === 1
+          ? '1 day'
+          : `${days} days`;
 
   if (input.unitsAtRisk <= 0) {
-    return `Selling ${rate}. ${input.available} left${inbound} is ${cover} of cover, and ${lead}, so a replacement lands before it runs out.`;
+    return `Selling ${rate}. ${stock} is ${cover} of cover, and ${lead}, so a replacement lands before it runs out.`;
   }
-  return `Selling ${rate}. ${input.available} left${inbound} is only ${cover} of cover, and ${lead}, so about ${input.unitsAtRisk} orders would have nothing to come from.`;
+  const orders = input.unitsAtRisk === 1 ? '1 order' : `${input.unitsAtRisk} orders`;
+  const stockAndCover = hasCover ? `${stock} is only ${cover} of cover,` : `${stock},`;
+  return `Selling ${rate}. ${stockAndCover} and ${lead}, so about ${orders} would have nothing to come from.`;
 }
 
 function leadTimePhrase(days: number, source: string): string {
@@ -730,8 +749,9 @@ export async function holdingCostReport(
 
     return {
       annualRatePct: rate,
-      usingDefaultRate: !policy.configured,
-      itemsWithoutCost: rows.filter((r) => !r.costKnown).length,
+      // The rate is what this screen states, so ask about the rate (issue 279).
+      usingDefaultRate: rate === DEFAULT_PLANNING_POLICY.holdingCostRatePct,
+      itemsWithoutCost: uncostedItemCount(rows),
       totalValueCents,
       annualHoldingCostCents: holdingCostCents(totalValueCents, rate),
       monthlyHoldingCostCents: holdingCostCents(totalValueCents, rate, 30),
@@ -754,4 +774,12 @@ export async function holdingCostReport(
 function round1(n: number | null): number | null {
   if (n === null || !Number.isFinite(n)) return null;
   return Math.round(n * 10) / 10;
+}
+
+/** Items with no cost price, each counted once however many places it is kept.
+ *  Cost to keep says "items": 677 stock lines were 560 items (issue 275). */
+export function uncostedItemCount(
+  rows: readonly { variantId: string; costKnown: boolean }[]
+): number {
+  return new Set(rows.filter((r) => !r.costKnown).map((r) => r.variantId)).size;
 }

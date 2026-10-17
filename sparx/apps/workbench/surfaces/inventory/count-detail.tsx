@@ -43,12 +43,12 @@ import {
   Input,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import {
   ClipboardCheck,
@@ -509,12 +509,15 @@ function LinesCard({
                 </td>
 
                 {blind ? null : (
-                  <td className="hidden text-right tabular-nums @md:table-cell">
+                  <td
+                    data-label="We think"
+                    className="hidden text-right tabular-nums @md:table-cell"
+                  >
                     {line.expectedQuantity ?? '—'}
                   </td>
                 )}
 
-                <td className="text-right">
+                <td data-label="Counted" className="text-right">
                   {editable ? (
                     <Input
                       color="module"
@@ -539,7 +542,7 @@ function LinesCard({
                 </td>
 
                 {blind ? null : (
-                  <td>
+                  <td data-label={posted ? 'Correction' : 'Difference'}>
                     {posted ? (
                       line.appliedDelta === null || line.appliedDelta === 0 ? (
                         <Badge color="neutral" variant="soft" size="sm">

@@ -6,7 +6,7 @@
 **Surface:** workbench › Move in › Shopify › a stock (inventory) export (both consoles)
 **Filed:** 2026-10-06
 **Fixed:** 2026-10-06
-**Confirmed by:** P01, 2026-10-06, his own file run through the shared reader
+**Confirmed by:** sparx as Doty, 2026-10-17 (Move in › Shopify, his real file, not imported)
 **Blocked on:** —
 
 ## What happened
@@ -40,6 +40,8 @@ Test: `migration/src/left-behind.test.ts`, "Shopify's own stock export". The old
 ## Confirmed by
 
 His real file through the same reader both consoles run, 2026-10-06 (numbers above). Not re-imported on screen: his stock is already in, and a second import of counts would overwrite act 4's received purchase order.
+
+sparx as Doty, 2026-10-17: Move in › Move from Shopify, his own `shopify-inventory-export.csv` dropped in. It reads "This is a Shopify stock levels export" ("it has the Handle and SKU columns and 3 of 3 columns only Shopify writes") and "Stock levels 1,366 of 1,368 ready". The two Bosch Fuel Rail rows are named, not dropped: "Row 310: This stock level has no SKU." and "Row 311", SKU in capitals. Left behind and listed: Available, Incoming, Unavailable, Committed. Not imported, not practice-run: his counts are already in.
 
 ## Rating effect
 

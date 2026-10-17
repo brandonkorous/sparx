@@ -18,19 +18,13 @@
 // because nothing FORBIDS a hundred.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FileText, Plus } from 'lucide-react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { useSites } from '../sites/data';
@@ -161,24 +155,17 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load your templates"
             description={templateErrorMessage(
               error,
               'Something went wrong reaching the server. Your invoices are unaffected and keep printing as they do now.'
             )}
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <PaneWaiting label="Loading templates…" />
@@ -256,7 +243,9 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {standing.label}
                       </Badge>
                     </td>
-                    <td className="hidden @2xl:table-cell">{publishedOn(template.publishedAt)}</td>
+                    <td className="hidden @2xl:table-cell" data-label="Published">
+                      {publishedOn(template.publishedAt)}
+                    </td>
                   </tr>
                 );
               })}

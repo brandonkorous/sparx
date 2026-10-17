@@ -43,11 +43,11 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Textarea,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { loadFailureWords } from '../../lib/api-error';
 import { useConfirm } from '../../lib/confirm';
 import { ClipboardList, Coins, PackageCheck, PackageX, Plus, Printer, Trash2 } from 'lucide-react';
@@ -551,8 +551,10 @@ function BookDelivery({
                               </span>
                             </span>
                           </td>
-                          <td className="text-right tabular-nums">{row.outstanding}</td>
-                          <td>
+                          <td data-label="Outstanding" className="text-right tabular-nums">
+                            {row.outstanding}
+                          </td>
+                          <td data-label="Received now">
                             <Input
                               color="module"
                               size="sm"
@@ -567,7 +569,7 @@ function BookDelivery({
                               }}
                             />
                           </td>
-                          <td className="hidden @lg:table-cell">
+                          <td data-label="Batch / lot" className="hidden @lg:table-cell">
                             <Input
                               color="module"
                               size="sm"
@@ -583,7 +585,7 @@ function BookDelivery({
                               }}
                             />
                           </td>
-                          <td className="hidden @md:table-cell">
+                          <td data-label="Damaged" className="hidden @md:table-cell">
                             <Input
                               color="module"
                               size="sm"
@@ -984,7 +986,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
                 <td className="hidden text-sm @lg:table-cell">
                   {basisLabel(charge.allocationBasis)}
                 </td>
-                <td className="text-right font-medium tabular-nums">
+                <td data-label="Amount" className="text-right font-medium tabular-nums">
                   {formatCents(charge.amountCents, receipt.currency)}
                 </td>
                 <td>
@@ -1279,14 +1281,17 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                       </td>
                       {/* Both readings when the delivery was counted in packs:
                           "3 CS · 36" says what was counted AND what landed. */}
-                      <td className="text-right font-medium tabular-nums">
+                      <td data-label="Units" className="text-right font-medium tabular-nums">
                         {describeQuantityShort({
                           baseQuantity: line.quantityReceived,
                           uomCode: line.uomCode,
                           unitsPerUom: line.unitsPerUom,
                         })}
                       </td>
-                      <td className="hidden text-right tabular-nums @md:table-cell">
+                      <td
+                        data-label="Goods, each"
+                        className="hidden text-right tabular-nums @md:table-cell"
+                      >
                         {formatCents(line.unitCostCents, data.currency)}
                       </td>
                       {/* PER UNIT, because the columns either side of it are per
@@ -1296,7 +1301,10 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                           that cannot be added (issue 502). The line's total is
                           still said underneath whenever more than one unit
                           landed. */}
-                      <td className="hidden text-right tabular-nums @lg:table-cell">
+                      <td
+                        data-label="Plus getting it here"
+                        className="hidden text-right tabular-nums @lg:table-cell"
+                      >
                         {line.allocatedChargeCents > 0 && line.quantityReceived > 0 ? (
                           <span className="flex flex-col items-end gap-0.5">
                             <span className="inline-flex items-center gap-1.5">
@@ -1323,7 +1331,10 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                       {/* The number that matters. Bold because it is the one an
                           owner should be pricing off, and it is not the one the
                           supplier's invoice showed them. */}
-                      <td className="text-right font-semibold tabular-nums">
+                      <td
+                        data-label="Really cost, each"
+                        className="text-right font-semibold tabular-nums"
+                      >
                         {line.landedUnitCostCents === null
                           ? formatCents(line.unitCostCents, data.currency)
                           : formatCents(line.landedUnitCostCents, data.baseCurrency)}

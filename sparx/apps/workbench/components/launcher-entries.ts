@@ -171,6 +171,7 @@ export function useRecordEntries(
         // today, so this fallback is a trap rather than a path.
         group: route.entityLabel ?? resolveTitle(surface, {}),
         label: hit.title || 'Untitled',
+        supporting: hit.entityType === 'media',
         subtitle: hit.subtitle,
         icon: surface.icon,
         module: surface.module,

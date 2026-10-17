@@ -59,6 +59,7 @@ import {
   useAiSummary,
   useAiTimeseries,
   useAiTopTools,
+  useToolPolicies,
   type AiActivityItem,
   type AiTopTool,
 } from './data';
@@ -140,10 +141,12 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open(surface, {}, { target: targetFor(event) });
   };
 
-  // A connected app reports the raw tool name (e.g. `publish_silica_site`); show a
-  // short, humanised label. The tool-policy DESCRIPTIONS are full developer
-  // paragraphs — fine on the Permissions screen, unreadable in a compact row here.
-  const labelFor = (tool: string): string => humanizeTool(tool);
+  // A connected app reports the raw tool name (e.g. `publish_silica_site`); show the
+  // same owner-word title the Permissions screen does (sparx persona issue 297), and
+  // a humanised name only for a tool no longer in the catalog.
+  const policies = useToolPolicies();
+  const titles = new Map((policies.data ?? []).map((p) => [p.name, p.title]));
+  const labelFor = (tool: string): string => titles.get(tool) ?? humanizeTool(tool);
 
   const points = timeseries.data?.points ?? [];
   const hasVolume = (timeseries.data?.totals.requests ?? 0) > 0;

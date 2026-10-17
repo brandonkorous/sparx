@@ -15,10 +15,10 @@ import {
   Button,
   Card,
   NativeSelect,
-  Table,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { EyeOff, Plus, Users } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';

@@ -13,7 +13,8 @@
 // owns a shop, not a pricing engine.
 
 import { useState } from 'react';
-import { Badge, Button, Card, SearchInput, Select, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Tag } from 'lucide-react';
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
@@ -189,7 +190,10 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Text>
                     </td>
                     <td className="hidden @lg:table-cell">{audienceSummary(row)}</td>
-                    <td className="hidden font-mono text-sm whitespace-nowrap @xl:table-cell">
+                    <td
+                      data-label="Currency"
+                      className="hidden font-mono text-sm whitespace-nowrap @xl:table-cell"
+                    >
                       {row.currency}
                     </td>
                     <td className="hidden text-right tabular-nums @md:table-cell">

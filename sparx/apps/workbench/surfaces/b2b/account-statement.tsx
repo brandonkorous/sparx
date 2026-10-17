@@ -17,10 +17,10 @@ import {
   FieldControl,
   FieldLabel,
   Select,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Mail, Printer } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { openServerHtml } from '../../lib/api/html-artifact';
@@ -289,18 +289,24 @@ function StatementBody({ statement }: { statement: AccountStatement }) {
             <td />
             <td />
             <td />
-            <td className="text-right tabular-nums">{money(statement.openingCents)}</td>
+            <td className="text-right tabular-nums" data-label="Balance">
+              {money(statement.openingCents)}
+            </td>
           </tr>
           {statement.rows.map((row, index) => (
             <tr key={`${row.documentId}-${row.kind}-${String(index)}`}>
               <td className="whitespace-nowrap">{statementDay(row.at)}</td>
               <td>{row.description}</td>
-              <td className="whitespace-nowrap">{row.documentNumber ?? ''}</td>
-              <td className="font-medium whitespace-nowrap">{row.poNumber ?? ''}</td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td className="whitespace-nowrap" data-label="Invoice">
+                {row.documentNumber ?? ''}
+              </td>
+              <td className="font-medium whitespace-nowrap" data-label="Their PO number">
+                {row.poNumber ?? ''}
+              </td>
+              <td className="text-right whitespace-nowrap tabular-nums" data-label="Amount">
                 {row.creditCents > 0 ? `-${money(row.creditCents)}` : money(row.chargeCents)}
               </td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td className="text-right whitespace-nowrap tabular-nums" data-label="Balance">
                 {money(row.balanceCents)}
               </td>
             </tr>
@@ -318,7 +324,7 @@ function StatementBody({ statement }: { statement: AccountStatement }) {
             <td />
             <td />
             <td />
-            <td className="text-right whitespace-nowrap tabular-nums">
+            <td className="text-right whitespace-nowrap tabular-nums" data-label="Balance">
               {money(statement.closingCents)}
             </td>
           </tr>
@@ -338,7 +344,7 @@ function StatementBody({ statement }: { statement: AccountStatement }) {
                   key={item.documentId}
                   className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-1 border-b pb-2 last:border-b-0 last:pb-0"
                 >
-                  <span className="min-w-0 flex-1">
+                  <span className="min-w-0 flex-1 basis-48">
                     <span className="block font-medium">
                       {item.number ?? 'Invoice'}
                       {item.poNumber ? `, their PO ${item.poNumber}` : ''}

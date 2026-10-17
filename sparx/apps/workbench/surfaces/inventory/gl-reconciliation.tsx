@@ -36,11 +36,11 @@ import {
   FieldLabel,
   Heading,
   Input,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Scale } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { CalendarDate, calendarDateText } from '../../components/calendar-date';
@@ -265,10 +265,13 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
                             <Text className="text-sm">{line.description}</Text>
                           </span>
                         </td>
-                        <td className="hidden whitespace-nowrap @lg:table-cell">
+                        <td
+                          data-label="Covering"
+                          className="hidden whitespace-nowrap @lg:table-cell"
+                        >
                           <Text className="text-sm">{line.reference ?? '—'}</Text>
                         </td>
-                        <td className="text-right whitespace-nowrap">
+                        <td data-label="Amount" className="text-right whitespace-nowrap">
                           {line.amountCents === null ? (
                             <Badge color={lineTone(line)} variant="soft" size="sm">
                               Not known
@@ -386,7 +389,9 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
                       <td className="whitespace-nowrap">
                         <CalendarDate value={snapshot.asOf} />
                       </td>
-                      <td className="max-w-40 truncate">{snapshot.accountName}</td>
+                      <td data-label="Account" className="max-w-40 truncate">
+                        {snapshot.accountName}
+                      </td>
                       <td className="hidden @md:table-cell">
                         <Badge
                           color={snapshot.source === 'manual' ? 'neutral' : 'success'}
@@ -400,7 +405,7 @@ export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
                               : 'Read from QuickBooks'}
                         </Badge>
                       </td>
-                      <td className="text-right font-medium tabular-nums">
+                      <td data-label="Balance" className="text-right font-medium tabular-nums">
                         {formatCents(snapshot.balanceCents, snapshot.currency)}
                       </td>
                     </tr>

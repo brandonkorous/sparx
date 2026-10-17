@@ -19,16 +19,16 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   Filter,
   FilterItem,
   SearchInput,
-  Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Layers, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -106,14 +106,15 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCollectionsPage({
-    q: search,
-    type: type === 'all' ? undefined : (type as CollectionType),
-    sortBy: sort.key,
-    order: sort.dir,
-    take,
-    skip,
-  });
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } =
+    useCollectionsPage({
+      q: search,
+      type: type === 'all' ? undefined : (type as CollectionType),
+      sortBy: sort.key,
+      order: sort.dir,
+      take,
+      skip,
+    });
 
   const rows = data?.items ?? [];
   const total = data?.total;
@@ -236,9 +237,13 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             title="Could not load your collections"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -287,7 +292,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <td className="max-w-64 truncate font-medium">{row.name}</td>
-                  <td className="hidden @lg:table-cell">
+                  <td data-label="How it fills" className="hidden @lg:table-cell">
                     {row.type === 'rules' ? 'Automatic' : 'Hand-picked'}
                   </td>
                   <td>
@@ -301,10 +306,13 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Badge>
                     )}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Products" className="text-right tabular-nums">
                     <GroupCount count={row.productCount} hidden={row.hiddenProductCount} />
                   </td>
-                  <td className="hidden text-right text-sm tabular-nums @2xl:table-cell">
+                  <td
+                    data-label="Updated"
+                    className="hidden text-right text-sm tabular-nums @2xl:table-cell"
+                  >
                     {formatUpdated(row.updatedAt)}
                   </td>
                 </tr>

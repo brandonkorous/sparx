@@ -43,6 +43,7 @@ import { StoryExtras, storyPlanItems, storyTotals } from '../story/story-summary
 import { StepModules } from './step-modules';
 import { StepBlueprint, SCRATCH, GOLDEN_BLUEPRINT_KEY } from './step-blueprint';
 import { StepWorkspace, type SlugCheck } from './step-workspace';
+import { addressAfterNameChange } from './address-follow';
 import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
 import { StepLaunch } from './step-launch';
@@ -245,6 +246,12 @@ function WizardInner({
   const slug = story.name;
   const setSlug = model.dispatch.setName;
   const [siteName, setSiteName] = useState(initial.siteName);
+  // The address follows the name while it is still the placeholder (issue 295).
+  function changeCompanyName(next: string) {
+    const address = addressAfterNameChange(slug, companyName, next);
+    setCompanyName(next);
+    if (address !== null) setSlug(address);
+  }
   const [slugCheck, setSlugCheck] = useState<SlugCheck>({ status: 'idle' });
   const [attemptedWorkspace, setAttemptedWorkspace] = useState(false);
 
@@ -431,7 +438,7 @@ function WizardInner({
           companyName={companyName}
           slug={slug}
           siteName={siteName}
-          onCompany={setCompanyName}
+          onCompany={changeCompanyName}
           onSlug={setSlug}
           onSite={setSiteName}
           check={slugCheck}

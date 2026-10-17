@@ -8,7 +8,8 @@ import { followBusinessLabel } from './setup-data';
 
 describe('followBusinessLabel', () => {
   it('names the business zone it follows', () => {
-    expect(followBusinessLabel('America/Denver')).toBe('Same as your business (America/Denver)');
+    // In words, not the raw zone name (issue 286).
+    expect(followBusinessLabel('America/Denver')).toBe('Same as your business (Mountain time)');
   });
 
   it('says when the business has no zone either, and while it loads', () => {

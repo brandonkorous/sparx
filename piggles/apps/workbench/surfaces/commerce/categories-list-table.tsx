@@ -142,7 +142,7 @@ function CategoryRow({
           </Badge>
         ) : null}
       </td>
-      <td className="text-right tabular-nums">
+      <td data-label="Products" className="text-right tabular-nums">
         <ProductCount category={category} />
       </td>
     </tr>

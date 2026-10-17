@@ -270,3 +270,13 @@ describe('the fix-first line', () => {
     expect(computeFixFirst(card.checks)).toMatch(/Every page needs a title/);
   });
 });
+
+describe('a tip read on its own (issue 287)', () => {
+  // The share-picture tip read "We make one for you in your colors" in the "Fix this
+  // first" box, where no check title says what "one" is.
+  it('names the share picture it is about', () => {
+    const tip = checkTip('og-image', { status: 'warn' } as never) ?? '';
+    expect(tip).toMatch(/picture/);
+    expect(tip).not.toMatch(/^We make one/);
+  });
+});

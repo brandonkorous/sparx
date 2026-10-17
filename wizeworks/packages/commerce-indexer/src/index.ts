@@ -10,6 +10,7 @@ import { ensureSchemas, ensureSynonyms } from '@wizeworks/search';
 
 import { env } from './env.js';
 import { handleEvent, type CommerceEventEnvelope } from './handler.js';
+import { fillNewKinds } from './new-kinds.js';
 
 export const DURABLE = 'commerce-indexer';
 export const EVENTS = [
@@ -89,6 +90,10 @@ function parseEvent(raw: unknown): CommerceEventEnvelope | null {
  * admin API key that a search-only key will not have, and a process that
  * refuses to start over that would take the other eleven handlers down with it.
  * Upserts still work when the collections already exist.
+ *
+ * Then, in the background, it fills in any kind of record a tenant has rows of
+ * and no search entries for (./new-kinds.ts), so a kind new in this release
+ * finds the records that already existed.
  */
 export async function boot(logger: Logger): Promise<void> {
   if (!env.ENSURE_SCHEMAS_ON_BOOT) return;
@@ -104,7 +109,14 @@ export async function boot(logger: Logger): Promise<void> {
     }
   } catch (err) {
     logger.error({ err }, 'failed to ensure typesense schemas; continuing');
+    return;
   }
+  // Not awaited: it walks every tenant, and the other handlers must not wait
+  // for it. It never throws past its own catch.
+  void fillNewKinds(logger).then(
+    (summary) => logger.info(summary, 'search kinds new to the index filled in'),
+    (err: unknown) => logger.error({ err }, 'failed to fill in new search kinds; continuing')
+  );
 }
 
 export function createSubscription(logger: Logger): WorkerSubscription {

@@ -40,10 +40,10 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Ruler, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -361,7 +361,7 @@ export function UnitsListSurface() {
                           ) : null}
                         </span>
                       </td>
-                      <td className="hidden text-right @md:table-cell">
+                      <td className="hidden text-right @md:table-cell" data-label="Used on">
                         {unit.usageCount === 0 ? (
                           <Text as="span" className="text-sm">
                             Nothing yet

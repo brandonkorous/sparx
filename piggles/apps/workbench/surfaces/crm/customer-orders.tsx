@@ -186,14 +186,18 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                       }}
                     >
                       <td className="font-mono text-sm">{row.orderNumber}</td>
-                      <td className="hidden @md:table-cell">{customerName(row.customer)}</td>
-                      <td className="hidden text-sm @lg:table-cell">{formatDate(row.placedAt)}</td>
+                      <td data-label="Customer" className="hidden @md:table-cell">
+                        {customerName(row.customer)}
+                      </td>
+                      <td data-label="Placed" className="hidden text-sm @lg:table-cell">
+                        {formatDate(row.placedAt)}
+                      </td>
                       <td>
                         <Badge color={state.tone} variant="soft" size="sm">
                           {state.label}
                         </Badge>
                       </td>
-                      <td className="text-right font-mono text-sm tabular-nums">
+                      <td data-label="Total" className="text-right font-mono text-sm tabular-nums">
                         {formatMoney(row.total, row.currency)}
                       </td>
                     </tr>

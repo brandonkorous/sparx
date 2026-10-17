@@ -13,58 +13,24 @@
 // new tab — the only place a card is ever edited.
 
 import { useEffect, useState } from 'react';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Heading,
-  Table,
-  Text,
-} from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button, Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ApiError } from '@wizeworks/api-client';
 import { buildPath } from '@wizeworks/links';
 import { CreditCard, ExternalLink } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { useBill, useBillingPortal, useBillingCheckout, type Bill } from './bill-data';
-import { formatMoney, formatDate } from './format';
+import { useBill, useBillingPortal, useBillingCheckout } from './bill-data';
+import { formatMoney } from './format';
+import { planState, renewalLine } from './subscription-words';
 import { moduleBillLabel } from '../modules/data';
 import { ManagersOnlyNotice } from '../../components/managers-only';
 import { useManageRights } from '../../lib/manage-rights';
 
-/** How the subscription is doing, in words + color. */
-function planState(bill: Bill): {
-  label: string;
-  tone: 'success' | 'warning' | 'error' | 'info' | 'neutral';
-} {
-  if (bill.planType === 'enterprise') return { label: 'Custom plan', tone: 'info' };
-  const status = bill.subscriptionStatus;
-  if (status === 'trialing') return { label: 'Free trial', tone: 'info' };
-  if (status === 'active') return { label: 'Active', tone: 'success' };
-  if (status === 'past_due' || status === 'unpaid') return { label: 'Payment due', tone: 'error' };
-  if (status === 'canceled') return { label: 'Canceled', tone: 'neutral' };
-  if (bill.cancelAtPeriodEnd) return { label: 'Ends soon', tone: 'warning' };
-  if (bill.planModules.length > 0) return { label: 'Active', tone: 'success' };
-  return { label: 'No paid plan', tone: 'neutral' };
-}
-
-function renewalLine(bill: Bill): string | null {
-  if (bill.subscriptionStatus === 'trialing' && bill.trialEndsAt) {
-    return `Free trial ends ${formatDate(bill.trialEndsAt)}`;
-  }
-  if (bill.currentPeriodEnd) {
-    return bill.cancelAtPeriodEnd
-      ? `Your plan ends ${formatDate(bill.currentPeriodEnd)}`
-      : `Renews ${formatDate(bill.currentPeriodEnd)}`;
-  }
-  return null;
-}
-
 export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: bill, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBill();
+  const { data: bill, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useBill();
   const portal = useBillingPortal();
   const checkout = useBillingCheckout();
   const rights = useManageRights();
@@ -124,6 +90,13 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  const enterprise = bill?.planType === 'enterprise';
+  // A custom plan's subscription is made by the sparx team. Before it exists,
+  // self-serve checkout would start a list-price plan beside the agreement, so the
+  // button is not offered; once it exists, the portal opens for the card and
+  // invoices as for anyone (docs/92 §10).
+  const selfServeSetup = !(enterprise && !bill?.billingActive);
+  const lapsed = bill?.billing.phase === 'grace' || bill?.billing.phase === 'suspended';
   const state = bill ? planState(bill) : null;
   const renewal = bill ? renewalLine(bill) : null;
   const intervalNote = bill?.billingInterval === 'annual' ? 'billed yearly' : 'per month';
@@ -147,22 +120,17 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
-            icon={<CreditCard className="size-6" aria-hidden />}
-            title="Could not load your bill"
-            description="Something went wrong reaching the server. Your subscription is unaffected. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              error={error}
+              icon={<CreditCard className="size-6" aria-hidden />}
+              title="Could not load your bill"
+              description="Something went wrong reaching the server. Your subscription is unaffected. Try again in a moment."
+              onRetry={() => {
+                void refetch();
+              }}
+            />
+          </Card>
         ) : isPending || !bill || !state ? (
           <p className="p-4 text-sm" role="status">
             Loading…
@@ -209,35 +177,46 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
             {/* The headline charge — the statement's total, up top. */}
             <Card className="p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <Text className="text-sm">What you pay sparx</Text>
-                  <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
-                    {formatMoney(bill.planTotalCents / 100)}
-                    <span className="ml-1 text-base font-normal">{intervalNote}</span>
-                  </Heading>
-                  {renewal ? <Text className="mt-1 text-sm">{renewal}</Text> : null}
-                </div>
+                {/* A custom plan's price is in its agreement, not in this list, so
+                    the list total is never printed as what the business pays
+                    (sparx persona issue 288). */}
+                {enterprise ? (
+                  <div>
+                    <Heading level={2} className="text-2xl font-semibold">
+                      Your plan is agreed with the sparx team
+                    </Heading>
+                    <Text className="mt-1">
+                      What you pay, and how, is set in your agreement. Your account contact arranges
+                      any change.
+                    </Text>
+                  </div>
+                ) : (
+                  <div>
+                    <Text className="text-sm">What you pay sparx</Text>
+                    <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
+                      {formatMoney(bill.planTotalCents / 100)}
+                      <span className="ml-1 text-base font-normal">{intervalNote}</span>
+                    </Heading>
+                    {renewal ? <Text className="mt-1 text-sm">{renewal}</Text> : null}
+                  </div>
+                )}
                 <Badge color={state.tone} variant="soft">
                   {state.label}
                 </Badge>
               </div>
             </Card>
 
-            {bill.planType === 'enterprise' ? (
-              <Alert color="info">
-                <Text>
-                  You’re on a custom plan arranged with the sparx team. The breakdown below is for
-                  reference: any changes go through your account contact rather than self-serve.
-                </Text>
-              </Alert>
-            ) : null}
-
             {/* The itemised breakdown — which modules make up the charge. */}
             <Card className="overflow-hidden">
               <header className="border-base-300 border-b px-4 py-3">
                 <Heading level={3} className="text-base font-semibold">
-                  What makes up your bill
+                  {enterprise ? 'The features you use, at list price' : 'What makes up your bill'}
                 </Heading>
+                {enterprise ? (
+                  <Text className="mt-1 text-sm">
+                    For reference. Your agreement sets what you pay for them.
+                  </Text>
+                ) : null}
               </header>
               {bill.planModules.length === 0 ? (
                 <div className="p-4">
@@ -263,7 +242,10 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                             <div className="font-medium">{label.name}</div>
                             {label.blurb ? <div className="text-sm">{label.blurb}</div> : null}
                           </td>
-                          <td className="text-right whitespace-nowrap tabular-nums">
+                          <td
+                            className="text-right whitespace-nowrap tabular-nums"
+                            data-label="Price"
+                          >
                             {formatMoney(m.monthlyCents / 100)}/mo
                           </td>
                         </tr>
@@ -272,8 +254,8 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                   </tbody>
                   <tfoot>
                     <tr className="border-base-300 border-t font-medium">
-                      <td>Total</td>
-                      <td className="text-right whitespace-nowrap tabular-nums">
+                      <td>{enterprise ? 'List price in all' : 'Total'}</td>
+                      <td className="text-right whitespace-nowrap tabular-nums" data-label="Price">
                         {formatMoney(bill.planTotalCents / 100)}/mo
                       </td>
                     </tr>
@@ -290,11 +272,15 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               <Text className="mt-1">
                 {bill.card
                   ? `${bill.card.brand.replace(/\b\w/g, (ch) => ch.toUpperCase())} ending ${bill.card.last4} · expires ${String(bill.card.expMonth).padStart(2, '0')}/${String(bill.card.expYear).slice(-2)}`
-                  : rights.known && !rights.canManage
-                    ? 'No card on file yet.'
-                    : inSetup
-                      ? 'No card on file yet. Set up billing to add your card and keep your plan active when the free trial ends.'
-                      : 'No card on file yet. Add one to keep your plan active.'}
+                  : !selfServeSetup
+                    ? 'No card on file. Your account contact arranges how you pay.'
+                    : rights.known && !rights.canManage
+                      ? 'No card on file yet.'
+                      : lapsed
+                        ? 'No card on file. Add one to switch your paused features back on.'
+                        : inSetup
+                          ? 'No card on file yet. Set up billing to add your card and keep your plan active when the free trial ends.'
+                          : 'No card on file yet. Add one to keep your plan active.'}
               </Text>
 
               {actionError ? (
@@ -306,7 +292,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               {/* Only an owner or an admin may add a card or change the plan: the
                   server refuses everybody else, so they are told so here instead of
                   being refused after (sparx persona issue 168). */}
-              {rights.known && !rights.canManage ? (
+              {!selfServeSetup ? null : rights.known && !rights.canManage ? (
                 <div className="mt-4">
                   <ManagersOnlyNotice
                     title="An owner or an admin looks after the bill"
@@ -324,7 +310,9 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                     >
                       <ExternalLink className="size-4" aria-hidden />
                       {inSetup
-                        ? 'Set up billing'
+                        ? lapsed
+                          ? 'Add payment method'
+                          : 'Set up billing'
                         : bill.card
                           ? 'Manage billing & card'
                           : 'Add a card'}

@@ -71,6 +71,9 @@ import {
   type PackageDetail,
 } from './picking-data';
 import { ActionLabel } from '../../components/action-label';
+import { useOrder } from '../commerce/order-queries';
+import { whatCanShipNow } from '../commerce/order-ship-gate';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -88,6 +91,12 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const boxes = usePackages({ ...(orderId ? { orderId } : {}), take: 50 });
   const create = useCreatePackage();
+  // Whether anything on this order may be sent at all, by the rule the server
+  // refuses a box with (sparx issue 058): held for approval, canceled, refunded,
+  // or every line waiting for an old part. Said before the press, so the bench
+  // never invites a box it is about to refuse (sparx persona issue 293).
+  const order = useOrder(orderId);
+  const refusal = order.data ? whatCanShipNow(order.data).refusal : null;
 
   // The box to work in: the one that was asked for, else the open one, else
   // nothing yet. Resolved in an effect rather than during render because it
@@ -105,8 +114,35 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
           icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
           title="Pick an order to pack"
           description="Open the pack bench from a finished walk or from an order, and it knows what is meant to be in the box."
+          actions={
+            // The way to an order, rather than only a sentence about it.
+            <Button
+              color="module-commerce"
+              onClick={(event) => {
+                ctx.open('commerce.orders.list', {}, { target: targetFor(event) });
+              }}
+            >
+              Go to orders
+            </Button>
+          }
         />
       </div>
+    );
+  }
+
+  // An order this business does not have, or one that could not be reached, has
+  // nothing to pack: a box on it would be refused (sparx persona issue 293).
+  if (orderId && order.isError) {
+    return (
+      <PaneLoadError
+        error={order.error}
+        noun="order"
+        title="Could not load this order"
+        description="This is a problem reaching the server. The order itself is unaffected. Nothing has been changed or lost."
+        onRetry={() => {
+          void order.refetch();
+        }}
+      />
     );
   }
 
@@ -161,7 +197,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
           color="module-inventory"
           variant="outline"
           className="ml-auto"
-          disabled={create.isPending || !orderId}
+          disabled={create.isPending || !orderId || refusal !== null}
           onClick={startBox}
         >
           <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -180,6 +216,27 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
 
         {activeId ? (
           <ActiveBox packageId={activeId} ctx={ctx} />
+        ) : refusal ? (
+          <Alert color="warning">
+            <AlertContent>
+              <AlertTitle>Not ready to pack</AlertTitle>
+              <AlertDescription>{refusal}</AlertDescription>
+              <AlertActions>
+                <Button
+                  color="module-commerce"
+                  onClick={(event) => {
+                    ctx.open(
+                      'commerce.order.detail',
+                      { id: orderId },
+                      { target: targetFor(event) }
+                    );
+                  }}
+                >
+                  Open the order
+                </Button>
+              </AlertActions>
+            </AlertContent>
+          </Alert>
         ) : (
           <Alert color="info">
             <AlertContent>

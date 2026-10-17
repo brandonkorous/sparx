@@ -11,10 +11,12 @@
 // are writing down something they already keep on a sticky note.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Boxes, Plus } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { isModuleDisabled, useObjectTypes, type CrmObjectType } from './object-types-data';
 import { ListFooter } from '../../components/list-footer';
@@ -89,21 +91,14 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             description="Record types appear once the customers module is switched on. They are the kinds of things you keep track of (customers, companies, deals) and the extra details you record on each."
           />
         ) : isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Boxes className="size-6" aria-hidden />}
             title="Could not load your record types"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -168,7 +163,10 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {row.kind === 'builtin' ? 'Comes with sparx' : 'Yours'}
                       </Badge>
                     </td>
-                    <td className="text-right font-mono text-sm tabular-nums">
+                    <td
+                      data-label="Extra details"
+                      className="text-right font-mono text-sm tabular-nums"
+                    >
                       {count === 0 ? '—' : count}
                     </td>
                     <td className="hidden text-sm @lg:table-cell">{row.description ?? '—'}</td>

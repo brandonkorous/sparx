@@ -247,7 +247,7 @@ function PartnerRow({
       <Avatar size="sm" color="neutral" alt={name}>
         {partnerInitials(person)}
       </Avatar>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col">
         <div className="flex flex-wrap items-center gap-2">
           <span className="truncate font-medium">{name}</span>
           <Badge color={state.tone} variant="soft" size="sm">

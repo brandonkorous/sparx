@@ -34,10 +34,10 @@ import {
   FieldLabel,
   FieldStatus,
   Input,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Receipt } from 'lucide-react';
 import { useMutation, useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
@@ -286,7 +286,7 @@ export function ReceiptBillPanel({
                   <span className="truncate font-mono text-sm">{line.sku ?? 'No code'}</span>
                 </span>
               </td>
-              <td className="text-right tabular-nums">
+              <td data-label="Billed" className="text-right tabular-nums">
                 <Input
                   color="module"
                   size="sm"
@@ -299,7 +299,7 @@ export function ReceiptBillPanel({
                   }}
                 />
               </td>
-              <td className="hidden text-right tabular-nums @md:table-cell">
+              <td data-label="Each" className="hidden text-right tabular-nums @md:table-cell">
                 <MoneyTextInput
                   color="module"
                   size="sm"
@@ -311,7 +311,7 @@ export function ReceiptBillPanel({
                   }}
                 />
               </td>
-              <td className="text-right font-medium tabular-nums">
+              <td data-label="Amount" className="text-right font-medium tabular-nums">
                 {formatCents(line.amountCents, data.currency)}
               </td>
             </tr>

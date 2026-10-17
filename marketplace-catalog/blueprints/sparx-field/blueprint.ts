@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-field',
-  version: '1.5.3',
+  version: '1.5.4',
   name: 'Field',
   summary:
     'A complete starter in the Field look, tuned for farming, landscaping, and outdoor contracting: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',

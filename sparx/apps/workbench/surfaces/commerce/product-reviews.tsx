@@ -572,9 +572,6 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : (
             <>
               <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  {scope.product.title}
-                </Heading>
                 <div className="flex flex-wrap items-center gap-2">
                   <Rating
                     value={Math.round(scope.product.averageRating ?? 0)}

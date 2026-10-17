@@ -973,7 +973,7 @@ function StatsGrid({
   return (
     <div className="grid gap-3 @sm:grid-cols-2 @xl:grid-cols-3">
       <StatBlock
-        label="Delivered"
+        label={delivered.label}
         value={delivered.value.toLocaleString()}
         hint={delivered.hint}
         tone={delivered.tone}

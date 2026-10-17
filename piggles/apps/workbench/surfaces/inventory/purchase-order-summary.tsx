@@ -5,6 +5,7 @@ import { Alert, AlertContent, AlertDescription, AlertTitle, Text } from '@wizewo
 import { formatMoment, type purchaseOrderState } from './purchase-orders-data';
 import { emailedLine } from './purchase-order-email-words';
 import type { PurchaseOrderPane } from './use-purchase-order-detail';
+import { lateWords } from './po-late-words';
 
 type OrderState = ReturnType<typeof purchaseOrderState> | null;
 
@@ -44,15 +45,18 @@ export function PlacedAlert({
 }) {
   const { detail, editable } = pane;
   if (!detail || editable) return null;
+  // Late is said here, on the order, not only on the overdue list (issue 280).
+  const late = lateWords(detail);
   return (
-    <Alert color={state?.tone ?? 'info'} variant="soft">
+    <Alert color={late ? 'warning' : (state?.tone ?? 'info')} variant="soft">
       <AlertContent>
         <AlertTitle>
           {outstanding > 0
-            ? `${String(outstanding)} of ${String(detail.quantityOrdered)} units still to come`
+            ? `${String(outstanding)} of ${String(detail.quantityOrdered)} ${detail.quantityOrdered === 1 ? 'unit' : 'units'} still to come`
             : 'Everything ordered has been received'}
         </AlertTitle>
         <AlertDescription>
+          {late ? `${late} ` : ''}
           {state?.detail}
           {emailable ? ` ${emailedLine(detail, formatMoment)}` : ''}
         </AlertDescription>

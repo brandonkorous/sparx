@@ -176,7 +176,8 @@ function ProductRow({
       {showSupplier ? (
         <td className="hidden max-w-40 truncate @lg:table-cell">{product.supplierName}</td>
       ) : null}
-      <td className="hidden text-right tabular-nums @xl:table-cell">
+      {/* At every width: what the supplier charges is why this list is opened. */}
+      <td className="text-right tabular-nums" data-label="Cost">
         {formatCents(product.costPriceCents)}
       </td>
       <td>
@@ -434,7 +435,7 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </th>
                 {header('title', 'Product')}
                 {showSupplierColumn ? <th className="hidden @lg:table-cell">Supplier</th> : null}
-                {header('costPriceCents', 'Cost', 'hidden text-right @xl:table-cell')}
+                {header('costPriceCents', 'Cost', 'text-right')}
                 <th>State</th>
                 <th className="text-right">
                   <span className="sr-only">Actions</span>

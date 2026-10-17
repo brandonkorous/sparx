@@ -12,14 +12,8 @@
 // until now nothing in the product let them do.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  Table,
-  ToggleGroup,
-  ToggleGroupItem,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, ToggleGroup, ToggleGroupItem } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { EyeOff, MapPin, Plus } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -29,6 +23,7 @@ import { formatAddress, useLocations, type BusinessLocation } from './setup-data
 import { RowOpenHint } from '../../components/row-open-hint';
 import { useBusinessZone } from '../../lib/business-timezone';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { zoneWords } from '../../lib/wall-clock';
 
 const DETAIL_KEY = 'scheduling.locations.detail';
 
@@ -164,8 +159,12 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </td>
                 <td className="hidden whitespace-nowrap @xl:table-cell">{filed}</td>
                 <td className="hidden whitespace-nowrap @lg:table-cell">
-                  {location.timezone ??
-                    (businessZone ? `${businessZone}, from your business` : 'Not set')}
+                  {/* In words, as Piggles says it: never "America/Denver" (issue 286). */}
+                  {location.timezone
+                    ? zoneWords(location.timezone)
+                    : businessZone
+                      ? `${zoneWords(businessZone)}, from your business`
+                      : 'Not set'}
                 </td>
                 <td>
                   <Badge color={location.isActive ? 'success' : 'neutral'} variant="soft" size="sm">

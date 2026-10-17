@@ -19,6 +19,7 @@ import {
   paneLoadReason,
   type PaneLoadReason,
 } from '../lib/api-error';
+import { GoneWayOut } from './gone-way-out';
 import { hasStateArt, StateArt } from './state-art';
 
 interface PaneLoadErrorProps {
@@ -77,6 +78,8 @@ export function PaneLoadError(props: PaneLoadErrorProps) {
   // A retry against a deleted record, or a door this account may not open, fails
   // every time. A button that cannot work is worse than no button.
   const retry = missing || refused ? undefined : onRetry;
+  // A gone record with no way out of its own gets its list (issue 267).
+  const wayOut = actions ?? (missing ? <GoneWayOut /> : undefined);
   // A refusal is about access, which is trust: plain and calm, no character.
   const branded = hasStateArt() && !refused;
   const words = shownWords(props, resolved);
@@ -97,7 +100,7 @@ export function PaneLoadError(props: PaneLoadErrorProps) {
         title={words.title}
         description={words.description}
         actions={
-          retry || actions ? (
+          retry || wayOut ? (
             <>
               {retry ? (
                 // `module`, not `error`: coloring recovery as danger says the safe
@@ -106,7 +109,7 @@ export function PaneLoadError(props: PaneLoadErrorProps) {
                   {retryLabel}
                 </Button>
               ) : null}
-              {actions}
+              {wayOut}
             </>
           ) : undefined
         }

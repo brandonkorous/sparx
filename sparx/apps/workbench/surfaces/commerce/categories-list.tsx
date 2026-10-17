@@ -19,18 +19,12 @@
 // hierarchy stays legible however it is ordered.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Table,
-  Tooltip,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Tooltip } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Plus, Tags } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { flattenCategories, useCategoryTree, type CategoryChoice } from './categories-data';
@@ -76,7 +70,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<{ key: CatSortKey; dir: SortDir } | null>(null);
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCategoryTree();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useCategoryTree();
 
   const all = useMemo(() => flattenCategories(data), [data]);
 
@@ -188,9 +182,13 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             title="Could not load your categories"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -251,7 +249,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Badge>
                     ) : null}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Products" className="text-right tabular-nums">
                     <AisleCount
                       count={category.productCount}
                       hidden={category.hiddenProductCount}

@@ -40,14 +40,15 @@ import {
   Input,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { CalendarPlus, Hourglass, Plus, Send, UserMinus, X } from 'lucide-react';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { afterPaneChange } from '../../lib/defer';
@@ -217,10 +218,14 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Hourglass className="size-6" aria-hidden />}
             title="Could not load the waiting list"
             description="Something went wrong reaching the server. Try refreshing in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-base" role="status">
@@ -434,14 +439,17 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
           <div className="text-sm @xl:hidden">{entry.serviceName ?? 'A service'}</div>
         </td>
         <td className="hidden align-top @xl:table-cell">{entry.serviceName ?? 'A service'}</td>
-        <td className="hidden align-top text-sm @2xl:table-cell">
+        <td
+          className="hidden align-top text-sm @2xl:table-cell"
+          data-label="Window they would take"
+        >
           <div>{formatWhen(entry.desiredFrom, zone)}</div>
           <div>to {formatWhen(entry.desiredTo, zone)}</div>
           {entry.status === 'offered' && entry.offerExpiresAt ? (
             <div>Offer open until {formatWhen(entry.offerExpiresAt, zone)}</div>
           ) : null}
         </td>
-        <td className="hidden align-top text-sm @4xl:table-cell">
+        <td className="hidden align-top text-sm @4xl:table-cell" data-label="Waiting since">
           {formatDay(entry.createdAt, zone)}
         </td>
         <td className="align-top">

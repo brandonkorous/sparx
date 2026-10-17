@@ -104,6 +104,7 @@ import {
 } from './data';
 import { useGenerateBarcodes, useVariantBarcodes } from './scan-data';
 import { productCopyWith } from '../../lib/product';
+import { soldOutBody } from './sold-out-words';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -1087,7 +1088,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
             out.length === levels.length
               ? 'Nothing left to sell'
               : `${plural(out.length, 'location has', 'locations have')} nothing left`,
-          body: 'Your website shows it as sold out and will not take an order for it. It comes back on sale by itself the moment you count some in.',
+          body: soldOutBody(out),
         }
       : low.length > 0
         ? {

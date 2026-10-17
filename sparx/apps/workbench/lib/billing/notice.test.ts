@@ -35,3 +35,16 @@ describe('the billing banner', () => {
     }
   });
 });
+
+describe('the countdown, said as a day (issue 272)', () => {
+  it('says tomorrow for a trial that ends tomorrow, 25 hours away', () => {
+    const now = new Date('2026-10-14T18:00:00Z');
+    const billing = {
+      phase: 'trialing',
+      daysLeft: 2,
+      trialEndsAt: '2026-10-15T19:00:00Z',
+      suspendsAt: null,
+    } as const;
+    expect(billingNotice(billing, true, now)?.title).toBe('Your free trial ends tomorrow');
+  });
+});

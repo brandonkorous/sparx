@@ -50,13 +50,13 @@ function SubscriptionRow({
           ) : null}
         </div>
       </td>
-      <td className="hidden text-sm @lg:table-cell">
+      <td data-label="Next delivery" className="hidden text-sm @lg:table-cell">
         {sub.nextOccurrenceAt ? formatDate(sub.nextOccurrenceAt) : '—'}
       </td>
       <td className="hidden text-sm @xl:table-cell">
         {sub.itemCount === 1 ? '1 product' : `${String(sub.itemCount)} products`}
       </td>
-      <td className="text-right font-medium tabular-nums">
+      <td data-label="Per month" className="text-right font-medium tabular-nums">
         {formatCents(sub.monthlyRecurringRevenueCents, sub.currency)}
       </td>
     </tr>

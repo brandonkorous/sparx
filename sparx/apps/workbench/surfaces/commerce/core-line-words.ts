@@ -19,7 +19,7 @@ export type CoreMove = 'receive' | 'keep' | 'release';
 export type CoreTone = 'success' | 'warning' | 'info';
 
 export function plural(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
+  return `${count.toLocaleString('en-US')} ${count === 1 ? one : many}`;
 }
 
 /** The moves this line offers, in the order the buttons are drawn. */

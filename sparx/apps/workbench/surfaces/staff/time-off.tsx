@@ -31,11 +31,11 @@ import {
   FilterItem,
   Heading,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarOff, CheckCircle2, Plus, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -333,7 +333,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
                             <div className="truncate text-sm">{request.reason}</div>
                           ) : null}
                         </td>
-                        <td className="text-sm whitespace-nowrap">
+                        <td className="text-sm whitespace-nowrap" data-label="When">
                           {formatMoment(request.startsAt)}
                           {days > 1 ? ` · ${String(days)} days` : ' · 1 day'}
                         </td>

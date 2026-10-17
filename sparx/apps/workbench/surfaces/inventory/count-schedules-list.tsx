@@ -35,11 +35,11 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarClock, ClipboardCheck, Play, PlusCircle } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -154,11 +154,11 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <thead>
           <tr>
             <th>Schedule</th>
-            <th className="hidden whitespace-nowrap @lg:table-cell">Covers</th>
-            <th className="hidden whitespace-nowrap @xl:table-cell">How often</th>
-            <th className="hidden text-right whitespace-nowrap @2xl:table-cell">Per run</th>
-            <th className="hidden whitespace-nowrap @md:table-cell">Next</th>
-            <th className="hidden whitespace-nowrap @md:table-cell">State</th>
+            <th className="hidden whitespace-nowrap @4xl:table-cell">Covers</th>
+            <th className="hidden whitespace-nowrap @4xl:table-cell">How often</th>
+            <th className="hidden text-right whitespace-nowrap @5xl:table-cell">Per run</th>
+            <th className="hidden whitespace-nowrap @lg:table-cell">Next</th>
+            <th className="hidden whitespace-nowrap @lg:table-cell">State</th>
             <th className="w-0" />
           </tr>
         </thead>
@@ -180,17 +180,21 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(row.id, event);
                 }}
               >
-                <td className="w-full max-w-0 min-w-56">
+                <td className="w-full max-w-0 min-w-40">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{row.name}</span>
                     <span className="truncate text-sm">
                       {row.warehouseName ?? row.warehouseCode}
                       {row.isBlind ? ' · blind count' : ' · shows the expected figure'}
                     </span>
-                    <span className="truncate text-sm @xl:hidden">
-                      {cadenceLabel(row.cadence, row.intervalDays)}
+                    {/* Covers and How often come back here below @4xl, where
+                        their columns are hidden. */}
+                    <span className="truncate text-sm @4xl:hidden">
+                      {cadenceLabel(row.cadence, row.intervalDays)} · covers{' '}
+                      {row.abcClass ? abcLabel(row.abcClass) : 'everything'}
+                      {row.zoneName ? ` in ${row.zoneName}` : ''}
                     </span>
-                    {/* Below @md the Next and State columns are gone, so they
+                    {/* Below @lg the Next and State columns are gone, so they
                         come back here. They were two always-on
                         `whitespace-nowrap` cells beside a give-cell, and with
                         the Count now button they left the schedule's NAME 100px
@@ -198,7 +202,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                         "Main W...". Worse, the notice above the table says to
                         press "Count now" on a row, and at that width the button
                         it names was off the right-hand edge. */}
-                    <span className="mt-1 flex flex-wrap items-center gap-2 text-sm @md:hidden">
+                    <span className="mt-1 flex flex-wrap items-center gap-2 text-sm @lg:hidden">
                       <Badge color={state.tone} variant="soft" size="sm">
                         {state.label}
                       </Badge>
@@ -206,7 +210,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                   </span>
                 </td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">
+                <td data-label="Covers" className="hidden whitespace-nowrap @4xl:table-cell">
                   {row.abcClass ? (
                     <Badge color={abcTone(row.abcClass)} variant="soft" size="sm">
                       {abcLabel(row.abcClass)}
@@ -216,16 +220,16 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   )}
                   {row.zoneName ? <span className="block text-sm">{row.zoneName}</span> : null}
                 </td>
-                <td className="hidden whitespace-nowrap @xl:table-cell">
+                <td data-label="How often" className="hidden whitespace-nowrap @4xl:table-cell">
                   {cadenceLabel(row.cadence, row.intervalDays)}
                 </td>
-                <td className="hidden text-right tabular-nums @2xl:table-cell">
+                <td data-label="Per run" className="hidden text-right tabular-nums @5xl:table-cell">
                   {row.maxItemsPerRun}
                 </td>
-                <td className="hidden whitespace-nowrap @md:table-cell">
+                <td data-label="Next" className="hidden whitespace-nowrap @lg:table-cell">
                   <Timestamp value={row.nextRunAt} format="relative" />
                 </td>
-                <td className="hidden whitespace-nowrap @md:table-cell">
+                <td className="hidden whitespace-nowrap @lg:table-cell">
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}
                   </Badge>

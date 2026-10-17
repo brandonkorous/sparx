@@ -731,7 +731,8 @@ export function formatCents(cents: number, currency = 'USD'): string {
 }
 
 export function plural(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
+  // Thousands as people write them: "3,721 units", not "3721 units" (issue 302).
+  return `${count.toLocaleString('en-US')} ${count === 1 ? one : many}`;
 }
 
 /** How a location is named on screen. The code is what is printed on the shelf

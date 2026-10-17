@@ -18,7 +18,8 @@
 // could never fill. [[feedback_screen_over_a_function_nobody_calls]]
 
 import { useState } from 'react';
-import { Badge, Button, Card, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Filter, FilterItem } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Repeat2 } from 'lucide-react';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -81,7 +82,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // ONE object, two places: the toolbar button and the empty state's invitation,
   // so the label cannot drift between the two ways in.
   const startOne = {
-    label: 'Start a subscription',
+    label: 'Start a repeat order',
     onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
       ctx.open('commerce.subscription.new', {}, { target: targetFor(event) });
     },
@@ -117,7 +118,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Start a subscription: hold Shift to open alongside, Alt for a new window"
+            title="Start a repeat order: hold Shift to open alongside, Alt for a new window"
             onClick={startOne.onClick}
           >
             <Plus className="size-4" aria-hidden />
@@ -163,7 +164,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
               icon: <Repeat2 className="size-6" aria-hidden />,
               title: 'No repeat orders yet',
               description:
-                'A repeat order sends a customer the same things again and again — a candle every month, a box every quarter — and bills them each time. Set one up when somebody asks for it, and it runs itself from then on.',
+                'A repeat order sends a customer the same things again and again (a candle every month, a box every quarter) and bills them each time. Set one up when somebody asks for it, and it runs itself from then on.',
               action: startOne,
             }}
           />
@@ -215,13 +216,13 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         ) : null}
                       </div>
                     </td>
-                    <td className="hidden text-sm @lg:table-cell">
+                    <td data-label="Next delivery" className="hidden text-sm @lg:table-cell">
                       {sub.nextOccurrenceAt ? formatDate(sub.nextOccurrenceAt) : '—'}
                     </td>
                     <td className="hidden text-sm @xl:table-cell">
                       {sub.itemCount === 1 ? '1 product' : `${String(sub.itemCount)} products`}
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td data-label="Per month" className="text-right font-medium tabular-nums">
                       {formatCents(sub.monthlyRecurringRevenueCents, sub.currency)}
                     </td>
                   </tr>

@@ -10,10 +10,12 @@
 // the list down the page on every visit for the sake of an action taken once,
 // and duplicated the empty state directly underneath itself.
 
-import { Badge, Button, Card, EmptyState, Table, useToast } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Mailbox, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -137,21 +139,14 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
               description="Connecting a mailbox puts the emails you exchange with a customer onto their record, so anyone on your team can see the conversation."
             />
           ) : isError ? (
-            <EmptyState
+            <PaneLoadError
+              error={error}
               icon={<Mailbox className="size-6" aria-hidden />}
               title="Could not load your mailboxes"
               description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <p className="p-4 text-sm" role="status">

@@ -1044,7 +1044,7 @@ function AddTermForm({
       }}
     >
       <div className="flex flex-wrap items-end gap-2">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-48">
           <Input
             color="module"
             size="sm"

@@ -66,10 +66,15 @@ function RuleRow({ row, onOpen }: { row: PoApprovalRule; onOpen: OpenRule }) {
           <span className="truncate text-sm">{ruleScopeLabel(row)}</span>
         </span>
       </td>
-      <td className="text-right whitespace-nowrap tabular-nums">
+      <td
+        data-label={row.minAmountCents === 0 ? undefined : 'Holds from'}
+        className="text-right whitespace-nowrap tabular-nums"
+      >
         {row.minAmountCents === 0 ? 'Every order' : formatCents(row.minAmountCents)}
       </td>
-      <td className="hidden whitespace-nowrap @lg:table-cell">{approverLabel(row)}</td>
+      <td data-label="Signed off by" className="hidden whitespace-nowrap @lg:table-cell">
+        {approverLabel(row)}
+      </td>
       <td className="whitespace-nowrap">
         <Badge color={row.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
           {row.isActive ? 'In force' : 'Switched off'}

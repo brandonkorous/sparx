@@ -36,13 +36,13 @@ function AgingRow({
           {agingBucketLabel(bucket.bucket)}
         </Badge>
       </td>
-      <td className="text-right font-medium whitespace-nowrap tabular-nums">
+      <td data-label="Value held" className="text-right font-medium whitespace-nowrap tabular-nums">
         {formatCents(bucket.costCents, currency)}
       </td>
-      <td className="hidden text-right tabular-nums @lg:table-cell">
+      <td data-label="Units" className="hidden text-right tabular-nums @lg:table-cell">
         {NUMBER.format(bucket.units)}
       </td>
-      <td className="hidden @xl:table-cell">
+      <td data-label="Share" className="hidden @xl:table-cell">
         <div className="bg-base-200 h-2 w-full max-w-40 overflow-hidden rounded-full">
           <div className={`bg-module h-full rounded-full ${barWidthClass(share)}`} />
         </div>
@@ -126,11 +126,13 @@ function DeadStockRow({
           <span className="truncate font-mono text-sm">{item.sku ?? 'No code'}</span>
         </span>
       </td>
-      <td className="hidden max-w-40 truncate @lg:table-cell">{item.warehouseCode}</td>
-      <td className="text-right font-medium whitespace-nowrap tabular-nums">
+      <td data-label="Where" className="hidden max-w-40 truncate @lg:table-cell">
+        {item.warehouseCode}
+      </td>
+      <td data-label="Value" className="text-right font-medium whitespace-nowrap tabular-nums">
         {formatCents(item.costCents, currency)}
       </td>
-      <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+      <td data-label="Last sold" className="hidden text-right whitespace-nowrap @xl:table-cell">
         {item.lastSaleAt ? <Timestamp value={item.lastSaleAt} format="relative" /> : 'Never'}
       </td>
     </tr>

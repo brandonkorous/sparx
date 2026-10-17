@@ -41,7 +41,9 @@ function PriceListRowView({
         </Text>
       </td>
       <td className="hidden @lg:table-cell">{audienceSummary(row)}</td>
-      <td className="hidden font-mono text-sm @xl:table-cell">{row.currency}</td>
+      <td data-label="Currency" className="hidden font-mono text-sm @xl:table-cell">
+        {row.currency}
+      </td>
       <td className="hidden text-right tabular-nums @md:table-cell">
         {row.entryCount === 1 ? '1 price' : `${String(row.entryCount)} prices`}
       </td>

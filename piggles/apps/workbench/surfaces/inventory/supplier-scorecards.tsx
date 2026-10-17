@@ -54,6 +54,7 @@ import {
   onTimeTone,
   priceVarianceTone,
   rateOrUnknown,
+  useLatePurchaseOrders,
   useRecomputeScorecards,
   useSupplierScorecards,
 } from './supplier-performance-data';
@@ -89,6 +90,14 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   const rows = report.data?.items ?? [];
+  // What is late RIGHT NOW. The grade counts deliveries only, so a supplier whose
+  // orders are overdue and still missing read "A · 100" beside them (sparx
+  // persona issue 306). The grade stays as measured; the row says what it leaves out.
+  const late = useLatePurchaseOrders();
+  const lateBySupplier = new Map<string, number>();
+  for (const order of late.data?.items ?? []) {
+    lateBySupplier.set(order.supplierId, (lateBySupplier.get(order.supplierId) ?? 0) + 1);
+  }
   const measuredAt = report.data?.measuredAt ?? null;
   const unscored = report.data?.unscored ?? 0;
 
@@ -196,7 +205,15 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
             >
               <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate">{row.supplierName ?? 'Unnamed supplier'}</span>
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="truncate">{row.supplierName ?? 'Unnamed supplier'}</span>
+                    {lateBySupplier.get(row.supplierId) ? (
+                      <Badge color="warning" variant="soft" size="sm" className="shrink-0">
+                        {plural(lateBySupplier.get(row.supplierId) ?? 0, 'order', 'orders')} late
+                        now
+                      </Badge>
+                    ) : null}
+                  </span>
                   <span className="truncate text-sm">
                     <span className="font-mono">{row.supplierCode ?? '—'}</span>
                     {' · '}

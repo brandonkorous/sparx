@@ -79,7 +79,9 @@ function DashboardSkeleton() {
 }
 
 export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
-  const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
+  // `key` is the address's name for it; a pane saved before that holds `id`.
+  const named = ctx.params.key ?? ctx.params.id;
+  const id = typeof named === 'string' ? named : '';
   const [preset, setPreset] = useState<RangePreset>('30');
   const [grain, setGrain] = useState<Grain>('day');
   const range = useMemo(() => {

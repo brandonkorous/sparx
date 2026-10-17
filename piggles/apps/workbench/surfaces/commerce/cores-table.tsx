@@ -38,7 +38,7 @@ function PartCell({ row }: { row: CoreOwed }) {
 
 function AgeCell({ row }: { row: CoreOwed }) {
   return (
-    <td>
+    <td data-label="Out for">
       <Badge
         color={ageTone(row.daysOut)}
         variant="soft"
@@ -77,15 +77,17 @@ function CoreRow({
         {row.orderNumber}
         <span className="block font-sans text-sm @lg:hidden">{row.customerName}</span>
       </td>
-      <td className="hidden max-w-48 truncate @lg:table-cell">
+      <td data-label="Customer" className="hidden max-w-48 truncate @lg:table-cell">
         {row.customerName}
         {row.companyName ? <span className="block text-sm">{row.companyName}</span> : null}
       </td>
       <PartCell row={row} />
-      <td className="text-right tabular-nums">
+      <td data-label="Owed" className="text-right tabular-nums">
         {row.coresOwed} of {row.quantity}
       </td>
-      <td className="hidden text-right tabular-nums @xl:table-cell">{depositBackText(row)}</td>
+      <td data-label="Deposit" className="hidden text-right tabular-nums @xl:table-cell">
+        {depositBackText(row)}
+      </td>
       <AgeCell row={row} />
       <td className="hidden @3xl:table-cell">
         <span className="flex flex-wrap justify-end gap-1">

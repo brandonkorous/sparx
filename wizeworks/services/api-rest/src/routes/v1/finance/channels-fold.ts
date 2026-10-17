@@ -85,7 +85,11 @@ export function foldChannels(orders: FoldableOrder[]): {
     const b = buckets.get(key) ?? {
       key,
       channel: o.channel,
-      source: o.source,
+      // Only a marketplace bucket is keyed by its source. Any other bucket kept its
+      // FIRST order's source, and the report named it after that order: the
+      // wholesale portal's row read "Made from Q-000006" because one of its orders
+      // came from that quote (sparx persona issue 301).
+      source: o.channel === 'marketplace' ? o.source : null,
       orders: 0,
       gross: 0,
       net: 0,

@@ -81,7 +81,12 @@ function AuthorRow({
           </span>
         </span>
       </td>
-      <td className="hidden max-w-72 truncate font-mono text-sm @xl:table-cell">/{author.slug}</td>
+      <td
+        className="hidden max-w-72 truncate font-mono text-sm @xl:table-cell"
+        data-label="Web address"
+      >
+        /{author.slug}
+      </td>
     </tr>
   );
 }

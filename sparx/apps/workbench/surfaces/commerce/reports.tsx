@@ -264,7 +264,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                             key={product.productId}
                             className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0"
                           >
-                            <span className="min-w-0 flex-1 font-medium">
+                            <span className="min-w-0 flex-1 basis-48 font-medium">
                               {product.productTitle}
                             </span>
                             <Text as="span" className="shrink-0 text-sm tabular-nums">
@@ -316,7 +316,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                             key={row.channel}
                             className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0"
                           >
-                            <span className="min-w-0 flex-1 font-medium">
+                            <span className="min-w-0 flex-1 basis-48 font-medium">
                               {channelLabel(row.channel)}
                             </span>
                             <Badge color="neutral" variant="soft" size="sm">

@@ -8,18 +8,12 @@
 // an overdue open task reads red without anyone hunting for it.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ListChecks, Plus } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -50,7 +44,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | TaskStatus>('open');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTasks({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useTasks({
     q: search,
     status: status === 'all' ? undefined : status,
   });
@@ -139,21 +133,14 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<ListChecks className="size-6" aria-hidden />}
             title="Could not load your tasks"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -213,7 +200,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {meta.label}
                       </Badge>
                     </td>
-                    <td className="text-right">
+                    <td data-label="Due" className="text-right">
                       {overdue ? (
                         <Badge color="danger" variant="soft" size="sm">
                           {shortDate(row.dueAt)}
@@ -222,7 +209,9 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="text-sm">{shortDate(row.dueAt)}</span>
                       )}
                     </td>
-                    <td className="hidden text-sm @lg:table-cell">{subject ?? '—'}</td>
+                    <td data-label="For" className="hidden text-sm @lg:table-cell">
+                      {subject ?? '—'}
+                    </td>
                   </tr>
                 );
               })}

@@ -23,10 +23,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { MessageCircle, Sparkles, UserRound } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -393,8 +393,10 @@ export function ChatOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="truncate">{agent.name}</span>
                       </span>
                     </td>
-                    <td className="text-right tabular-nums">{formatCount(agent.handled)}</td>
-                    <td className="text-right tabular-nums">
+                    <td className="text-right tabular-nums" data-label="Handled">
+                      {formatCount(agent.handled)}
+                    </td>
+                    <td className="text-right tabular-nums" data-label="Avg reply">
                       {formatDuration(agent.avgResponseSeconds)}
                     </td>
                   </tr>

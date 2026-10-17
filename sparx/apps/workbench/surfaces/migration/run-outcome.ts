@@ -41,9 +41,19 @@ export function nothingIsNew({ imported, updated }: Landed): boolean {
  * Anything else does, and the all-updates case says so in words rather than
  * leaving a person to work it out from two numbers.
  */
-export function landedBreakdown(landed: Landed, dryRun: boolean): string | null {
+export function landedBreakdown(
+  landed: Landed,
+  dryRun: boolean,
+  /** Every row is a person (customers). Products are things, not "somebody" (issue 284). */
+  people: boolean
+): string | null {
   if (landed.updated === 0) return null;
   if (landed.imported === 0) {
+    if (!people) {
+      return dryRun
+        ? 'none of them new: every one is already here'
+        : 'none of them new: every one was already here';
+    }
     return dryRun
       ? 'none of them new: every one is somebody you already have'
       : 'none of them new: every one was somebody you already had';
@@ -64,7 +74,12 @@ export interface RunHeadline {
  * failed, but a bulk overwrite of records she already has is not the thing she pressed
  * the button for, and on a practice run it is the moment to stop.
  */
-export function runHeadline(run: { status: string; dryRun: boolean }, landed: Landed): RunHeadline {
+export function runHeadline(
+  run: { status: string; dryRun: boolean },
+  landed: Landed,
+  /** Every row is a person (customers); see `landedBreakdown`. */
+  people: boolean
+): RunHeadline {
   if (run.status === 'running') {
     // A practice run must not claim to be moving anything WHILE it runs — that is
     // the one sentence a nervous person is watching for, and it was not true.
@@ -93,6 +108,19 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
 
   if (nothingIsNew(landed)) {
     const count = landed.updated.toLocaleString();
+    if (!people) {
+      return run.dryRun
+        ? {
+            tone: 'warning',
+            title: 'Nothing in this file is new',
+            description: `All ${count} are already here. Doing this for real replaces them with whatever this file says, including anything you have changed here since the file was made.`,
+          }
+        : {
+            tone: 'warning',
+            title: 'Nothing in this file was new',
+            description: `All ${count} were already here. They now match this file.`,
+          };
+    }
     return run.dryRun
       ? {
           tone: 'warning',

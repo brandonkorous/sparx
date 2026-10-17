@@ -49,11 +49,11 @@ import {
   FieldLabel,
   Input,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FileSpreadsheet, Undo2, Upload } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -244,7 +244,7 @@ function MappingStep({
                     <span className="text-sm">{match.hint}</span>
                   </span>
                 </td>
-                <td>
+                <td data-label="Your column">
                   <NativeSelect
                     color="module"
                     size="sm"
@@ -295,7 +295,8 @@ function MappingStep({
 
       {preview.sampleRows.length > 0 ? (
         <div className="overflow-x-auto">
-          <Table size="sm">
+          {/* The file as it reads in the spreadsheet, so its columns stay lined up; it scrolls sideways instead. */}
+          <Table size="sm" stack={false}>
             <thead>
               <tr>
                 {preview.headers.map((header) => (
@@ -378,8 +379,12 @@ function PlanTable({
             {errors.slice(0, 50).map((row) => (
               <Fragment key={`error-${row.line}`}>
                 <tr>
-                  <td className="tabular-nums">{row.line}</td>
-                  <td className="font-mono text-sm whitespace-nowrap">{row.sku ?? '—'}</td>
+                  <td className="tabular-nums" data-label="Row">
+                    {row.line}
+                  </td>
+                  <td className="font-mono text-sm whitespace-nowrap" data-label="Code">
+                    {row.sku ?? '—'}
+                  </td>
                   <td>
                     <Text className="text-danger text-sm">{row.error}</Text>
                     {row.name ? <Text className="text-sm">{row.name}</Text> : null}
@@ -489,17 +494,29 @@ function PlanTable({
           <tbody>
             {changes.slice(0, 200).map((row) => (
               <tr key={`change-${row.line}`}>
-                <td className="tabular-nums">{row.line}</td>
-                <td className="font-mono text-sm whitespace-nowrap">{row.sku ?? '—'}</td>
-                <td className="text-right tabular-nums">{row.currentOnHand ?? '—'}</td>
-                <td className="text-right font-medium tabular-nums">{row.newOnHand ?? '—'}</td>
-                <td className="text-right">
+                <td className="tabular-nums" data-label="Row">
+                  {row.line}
+                </td>
+                <td className="font-mono text-sm whitespace-nowrap" data-label="Code">
+                  {row.sku ?? '—'}
+                </td>
+                <td className="text-right tabular-nums" data-label="Now">
+                  {row.currentOnHand ?? '—'}
+                </td>
+                <td className="text-right font-medium tabular-nums" data-label="Becomes">
+                  {row.newOnHand ?? '—'}
+                </td>
+                <td className="text-right" data-label="Change">
                   <Badge color={row.delta > 0 ? 'success' : 'warning'} variant="soft" size="sm">
                     {row.delta > 0 ? '+' : ''}
                     {formatCount(row.delta)}
                   </Badge>
                 </td>
-                {anyNotes ? <td className="text-sm">{row.note ?? ''}</td> : null}
+                {anyNotes ? (
+                  <td className="text-sm" data-label="Why">
+                    {row.note ?? ''}
+                  </td>
+                ) : null}
               </tr>
             ))}
           </tbody>
@@ -1146,17 +1163,20 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                           {importStatusLabel(batch)}
                         </Badge>
                       </td>
-                      <td className="hidden text-right tabular-nums @md:table-cell">
+                      <td
+                        className="hidden text-right tabular-nums @md:table-cell"
+                        data-label="Rows"
+                      >
                         {batch.status === 'applied'
                           ? formatCount(batch.rowsApplied)
                           : formatCount(batch.rowsTotal)}
                       </td>
-                      <td className="text-right tabular-nums">
+                      <td className="text-right tabular-nums" data-label="Units">
                         {/* A thrown-away file moved nothing; its plan's count beside
                             "Thrown away" read as stock that had moved (issue 068). */}
                         {formatCount(batch.status === 'discarded' ? 0 : batch.unitsChanged)}
                       </td>
-                      <td className="text-right whitespace-nowrap">
+                      <td className="text-right whitespace-nowrap" data-label="When">
                         <Timestamp value={batch.appliedAt ?? batch.createdAt} format="relative" />
                       </td>
                       <td className="text-right whitespace-nowrap">

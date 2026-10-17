@@ -81,7 +81,7 @@ function SlotRow({
 }) {
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-3 border-b py-3 last:border-b-0">
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
         <Text as="span" className="font-medium">
           {WEEKDAY_NAMES[slot.weekday]}s at {formatMinuteOfDay(slot.minuteOfDay)}
         </Text>
@@ -236,7 +236,7 @@ function AddSlot({
       </Field>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-start gap-2">
+        <div className="flex min-w-0 flex-1 basis-48 items-start gap-2">
           <Text className="text-sm">
             Fill this time automatically from posts marked &ldquo;run this again&rdquo;. It never
             replaces something you already planned, and with approval on it still waits for you.
@@ -283,7 +283,7 @@ function HashtagSetRow({
 }) {
   return (
     <div className="border-base-300 flex flex-wrap items-start gap-3 border-b py-3 last:border-b-0">
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
         <Text as="span" className="font-medium">
           {set.name}
         </Text>

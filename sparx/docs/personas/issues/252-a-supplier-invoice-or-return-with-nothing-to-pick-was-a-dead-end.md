@@ -6,7 +6,7 @@
 **Surface:** Stock › Enter an invoice, and Stock › Send something back, sparx console and Piggles
 **Filed:** 2026-10-13
 **Fixed:** 2026-10-13
-**Confirmed by:** Piggles as Thistle & Rye (sparx: tests only), 2026-10-13
+**Confirmed by:** Piggles as Thistle & Rye, 2026-10-13; sparx as Ines Varga (Quiet Bench Repair, a new business), 2026-10-17
 **Blocked on:** —
 
 ## What happened
@@ -62,8 +62,8 @@ red then green.
 - Piggles, Marisol (Thistle & Rye has no supplier and no order): the invoice form shows
   "No order to enter an invoice against yet"; "New order" opened a new order form. The
   return form shows "No suppliers yet" with "Add a supplier".
-- sparx: not seen on screen. Every sparx business I can sign in as already has suppliers
-  and placed orders; the code is the same shape and its test is green.
+
+sparx, 2026-10-17, as Ines Varga in Quiet Bench Repair, a business signed up for this check with no supplier and no order. Enter a supplier's invoice: "No order to enter an invoice against yet" with "New order". Send something back to a supplier: "No suppliers yet. A return goes back to a supplier, so add the supplier first." with "Add a supplier".
 
 ## Rating effect
 

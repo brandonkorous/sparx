@@ -19,8 +19,8 @@ import {
   Button,
   Card,
   SearchInput,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Webhook } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -222,7 +222,10 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-64 truncate @xl:table-cell">
                       {eventsSummary(webhook.events)}
                     </td>
-                    <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
+                    <td
+                      className="hidden text-sm whitespace-nowrap @4xl:table-cell"
+                      data-label="Added"
+                    >
                       {formatDateTime(webhook.createdAt)}
                     </td>
                     <td>

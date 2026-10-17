@@ -917,10 +917,18 @@ async function assertEnoughAvailable(
   if (available < params.quantity) {
     const variant = await tx.productVariant.findFirst({
       where: { id: params.variantId },
-      select: { sku: true },
+      select: { sku: true, product: { select: { title: true } } },
     });
+    // The part's name first: a code alone ("Not enough 4062328") sent the owner
+    // off to look it up (sparx persona issue 317).
+    const title = variant?.product?.title?.trim();
+    const named = title
+      ? variant?.sku
+        ? `${title} (${variant.sku})`
+        : title
+      : (variant?.sku ?? 'stock');
     throw new InventoryConflictError(
-      `Not enough ${variant?.sku ?? 'stock'} to commit to this run: it needs ${String(params.quantity)} and ${String(available)} ${available === 1 ? 'is' : 'are'} free here.${spokenFor(level)}`,
+      `Not enough ${named} to commit to this run: it needs ${String(params.quantity)} and ${String(available)} ${available === 1 ? 'is' : 'are'} free here.${spokenFor(level)}`,
       'quantity'
     );
   }

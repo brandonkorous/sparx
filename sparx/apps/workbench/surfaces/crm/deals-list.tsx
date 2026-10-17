@@ -36,15 +36,16 @@ import {
   FieldLabel,
   SearchInput,
   Select,
-  Table,
   Textarea,
   ToggleGroup,
   ToggleGroupItem,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Columns3, List, Plus, Target } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
@@ -197,7 +198,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
         state: state === 'all' ? undefined : state,
       };
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDeals(params);
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useDeals(params);
   const moveDeal = useMoveDealToStage();
 
   const rows = useMemo(() => data?.items ?? [], [data]);
@@ -399,21 +400,14 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-hidden">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Target className="size-6" aria-hidden />}
             title="Could not load your deals"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending || (isBoard && pipelinesPending) ? (
           <p className="p-4 text-sm" role="status">
@@ -506,10 +500,12 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
                           {row.stage?.name ?? meta.label}
                         </Badge>
                       </td>
-                      <td className="text-right font-mono text-sm tabular-nums">
+                      <td data-label="Value" className="text-right font-mono text-sm tabular-nums">
                         {formatMoney(row.value, row.currency)}
                       </td>
-                      <td className="hidden text-sm @lg:table-cell">{customer ?? '—'}</td>
+                      <td data-label="For" className="hidden text-sm @lg:table-cell">
+                        {customer ?? '—'}
+                      </td>
                     </tr>
                   );
                 })}

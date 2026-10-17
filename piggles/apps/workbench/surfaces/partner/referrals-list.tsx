@@ -27,7 +27,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useReferrals, type PartnerReferral } from './data';
 import { commissionEarningLabel, formatDate, referralState } from './format';
-import { PartnerLoadError, PartnerLoading } from './gate';
+import { NotAPartner, PartnerLoadError, PartnerLoading, isNotAPartner } from './gate';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -100,10 +100,13 @@ function ReferralRow({ referral }: { referral: PartnerReferral }) {
       <td className="align-top font-medium">
         {referral.referredOrgName ?? productCopy('partner.referrals.unnamed', 'A sparx account')}
       </td>
-      <td className="hidden align-top whitespace-nowrap @lg:table-cell">
+      <td className="hidden align-top whitespace-nowrap @lg:table-cell" data-label="Signed up">
         {formatDate(referral.signupAt)}
       </td>
-      <td className="hidden align-top whitespace-nowrap tabular-nums @xl:table-cell">
+      <td
+        className="hidden align-top whitespace-nowrap tabular-nums @xl:table-cell"
+        data-label="You earn"
+      >
         {commissionEarningLabel(referral.commissionRate, referral.commissionType)}
       </td>
       <td className="align-top">
@@ -118,6 +121,9 @@ function ReferralRow({ referral }: { referral: PartnerReferral }) {
 export function ReferralsListSurface(_props: { ctx: SurfaceContext }) {
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch, error } = useReferrals();
   const referrals = data?.referrals ?? [];
+
+  // Outside the partner program: its page alone, not a count over a refusal (issue 307).
+  if (isError && isNotAPartner(error)) return <NotAPartner section="Referrals" />;
 
   return (
     <div className={PANE_SHELL}>

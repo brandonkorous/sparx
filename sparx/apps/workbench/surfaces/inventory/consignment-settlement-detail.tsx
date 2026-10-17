@@ -22,15 +22,16 @@ import {
   Badge,
   Button,
   EmptyState,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CheckCheck, RefreshCw, ReceiptText, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { afterCommit } from '../../lib/defer';
 import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -49,7 +50,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isLoading, isError } = useConsignmentSettlement(id);
+  const { data, isLoading, isError, error, refetch } = useConsignmentSettlement(id);
   const refresh = useRefreshSettlement(id);
   const close = useCloseSettlement(id);
   const pay = useMarkSettlementPaid(id);
@@ -71,10 +72,17 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
   if (isError || !data) {
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
+        {/* The shared screen reads the answer: gone, refused, or not reached
+            (sparx persona issue 315). */}
+        <PaneLoadError
+          error={error}
+          noun="settlement"
           icon={<ReceiptText className="size-6" aria-hidden />}
           title="Could not load that settlement"
-          description="It may have been canceled, or the server is unreachable."
+          description="This is a problem reaching the server. The settlement itself is unaffected."
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </div>
     );
@@ -310,14 +318,19 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
                         />
                       </span>
                     </td>
-                    <td className="hidden max-w-[12rem] truncate @lg:table-cell">
+                    <td
+                      data-label="Location"
+                      className="hidden max-w-[12rem] truncate @lg:table-cell"
+                    >
                       {line.warehouseName ?? '—'}
                     </td>
-                    <td className="text-right tabular-nums">{line.unitsSold}</td>
-                    <td className="text-right tabular-nums">
+                    <td data-label="Units" className="text-right tabular-nums">
+                      {line.unitsSold}
+                    </td>
+                    <td data-label="Agreed cost" className="text-right tabular-nums">
                       {formatCents(line.unitCostCents, data.currency)}
                     </td>
-                    <td className="text-right tabular-nums">
+                    <td data-label="Amount" className="text-right tabular-nums">
                       {formatCents(line.amountCents, data.currency)}
                     </td>
                   </tr>

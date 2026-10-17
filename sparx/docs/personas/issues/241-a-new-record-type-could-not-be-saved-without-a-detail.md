@@ -6,7 +6,7 @@
 **Surface:** Customers › Record types › New record type (and saving any record type with no extra details), sparx console and Piggles
 **Filed:** 2026-10-13
 **Fixed:** 2026-10-13
-**Confirmed by:** Piggles as The Marrow Review, 2026-10-13
+**Confirmed by:** Piggles as The Marrow Review, 2026-10-13; sparx as Doty, 2026-10-17
 **Blocked on:** —
 
 ## What happened
@@ -73,6 +73,8 @@ and a "Review copies" pane opened on the saved type. The database row: key `revi
 
 Saving it opened a second tab and left the filled "new" form open. That is a separate
 defect, filed as issue 242.
+
+sparx as Doty, 2026-10-17: Customers › Record types › New record type, "Test check 241" ("Test check 241s" filled in), no details, Save. It saved ("Saved just now"; the pane moved to `/crm/record-types/testcheck241`, `property_schema` `{"fields": []}`). It was put away and its row deleted after (no records on it).
 
 ## Rating effect
 

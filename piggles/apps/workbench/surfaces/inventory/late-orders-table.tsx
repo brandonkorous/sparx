@@ -10,10 +10,12 @@ import { formatDay, formatMoment } from './purchase-orders-data';
 import { latenessTone, type LatePurchaseOrder } from './supplier-performance-data';
 import { useBusinessZone } from '../../lib/business-timezone';
 import { daysPastDue } from '../../lib/console/days';
+import { useLateOrderListened } from './late-order-listeners';
 
 type OpenOrder = (id: string, event: { shiftKey: boolean; altKey: boolean }) => void;
 
 function LateOrderCell({ row }: { row: LatePurchaseOrder }) {
+  const heard = useLateOrderListened();
   return (
     <td className="w-full max-w-0 min-w-56">
       <span className="flex min-w-0 flex-col">
@@ -29,9 +31,11 @@ function LateOrderCell({ row }: { row: LatePurchaseOrder }) {
             : 'against their usual delivery time'}
           {/* The late-order event's only consumer is the webhooks under Tell other
               software; nobody is emailed, so say exactly that, both ways. */}
-          {row.alertedAt === null
-            ? ' · not passed to your other software yet'
-            : ' · passed to your other software'}
+          {heard
+            ? row.alertedAt === null
+              ? ' · not passed to your other software yet'
+              : ' · passed to your other software'
+            : null}
         </span>
       </span>
     </td>
@@ -62,18 +66,22 @@ function LateOrderRow({
       }}
     >
       <LateOrderCell row={row} />
-      <td className="whitespace-nowrap">
+      <td data-label="Overdue by" className="whitespace-nowrap">
         <Badge color={latenessTone(days)} variant="soft" size="sm">
           {plural(days, 'day', 'days')}
         </Badge>
       </td>
-      <td className="hidden whitespace-nowrap @lg:table-cell">
+      <td data-label="Was due" className="hidden whitespace-nowrap @lg:table-cell">
         {/* The date a buyer quotes down the phone. An order's date is a DAY; one
             worked out from a lead time is an instant; each gets its own formatter. */}
         {row.dueSource === 'expected_arrival' ? formatDay(row.dueAt) : formatMoment(row.dueAt)}
       </td>
-      <td className="hidden text-right tabular-nums @xl:table-cell">{row.unitsOutstanding}</td>
-      <td className="text-right tabular-nums">{formatCents(row.valueOutstandingCents)}</td>
+      <td data-label="Still to come" className="hidden text-right tabular-nums @xl:table-cell">
+        {row.unitsOutstanding}
+      </td>
+      <td data-label="Value" className="text-right tabular-nums">
+        {formatCents(row.valueOutstandingCents)}
+      </td>
     </tr>
   );
 }

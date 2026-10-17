@@ -170,12 +170,12 @@ function LineRow({
       </td>
 
       {blind ? null : (
-        <td className="hidden text-right tabular-nums @md:table-cell">
+        <td data-label="We think" className="hidden text-right tabular-nums @md:table-cell">
           {line.expectedQuantity ?? '—'}
         </td>
       )}
 
-      <td className="text-right">
+      <td data-label="Counted" className="text-right">
         {editable ? (
           <Input
             color="module"
@@ -200,7 +200,7 @@ function LineRow({
       </td>
 
       {blind ? null : (
-        <td>
+        <td data-label={posted ? 'Correction' : 'Difference'}>
           {posted ? (
             <AppliedBadge delta={line.appliedDelta} />
           ) : (

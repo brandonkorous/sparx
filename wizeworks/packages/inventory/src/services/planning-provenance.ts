@@ -251,7 +251,7 @@ export async function planningProvenance(
 }
 
 /** Each input, said the way an owner reads it, with an honest confidence. */
-function describeInputs(params: {
+export function describeInputs(params: {
   velocity: DemandVelocityRow | null;
   leadTimeDays: number | null;
   leadTimeStdDev: number;
@@ -288,8 +288,10 @@ function describeInputs(params: {
     inputs.push({
       key: 'demand',
       label: 'How fast it sells',
-      value: `${v.forecastPerDay} a day`,
-      source: `Measured over the last ${windowLabel(v.forecastBasis)}: ${v.units90} sold in 90 days across ${v.daysWithDemand} days`,
+      // Two decimals and one window per clause (issue 278): "0.7143 a day" and
+      // "5 sold in 90 days across 1 days" read as machine output.
+      value: `${round2(v.forecastPerDay)} a day`,
+      source: `Worked out from the last ${windowLabel(v.forecastBasis)} (${windowUnits(v)} sold). ${v.units90} sold in the last 90 days, on ${v.daysWithDemand} ${v.daysWithDemand === 1 ? 'day' : 'days'}.`,
       confidence: v.historyDays < 30 ? 'thin' : 'measured',
       ...(v.historyDays < 30
         ? {
@@ -336,7 +338,9 @@ function describeInputs(params: {
         v.seasonalityIndex === null
           ? 'A year of history is needed before the same period last year means anything'
           : 'The same period last year, against that year’s average',
-      confidence: v.seasonalityIndex === null ? 'missing' : 'measured',
+      // Under a year the sum assumes an average month: an assumption, like a
+      // standard lead time, not a missing input (issue 278).
+      confidence: v.seasonalityIndex === null ? 'assumed' : 'measured',
       ...(v.seasonalityIndex === null
         ? { caveat: 'The reorder point is worked out as if every month were average.' }
         : {}),
@@ -460,7 +464,7 @@ function describeWorkings(params: {
 
 /** The verdict is the WEAKEST input, not the average of them. A perfect demand
  *  measurement against a guessed lead time produces a guessed reorder point. */
-function worstConfidence(inputs: PlanningInput[]): InputConfidence {
+export function worstConfidence(inputs: PlanningInput[]): InputConfidence {
   const order: InputConfidence[] = ['missing', 'assumed', 'thin', 'measured'];
   for (const level of order) {
     if (inputs.some((i) => i.confidence === level)) return level;
@@ -481,11 +485,18 @@ function improvements(inputs: PlanningInput[]): string[] {
         'Link a supplier and record deliveries against purchase orders: a measured lead time is the single biggest improvement to this number.'
       );
     }
-    if (i.key === 'seasonality' && i.confidence === 'missing') {
+    if (i.key === 'seasonality' && i.confidence === 'assumed') {
       out.push('After a year of trading, this will start allowing for busy and quiet seasons.');
     }
   }
   return out;
+}
+
+/** Units sold in the window the rate was worked out over. */
+function windowUnits(v: DemandVelocityRow): number {
+  if (v.forecastBasis === '7d') return v.units7;
+  if (v.forecastBasis === '90d') return v.units90;
+  return v.units30;
 }
 
 function windowLabel(basis: string): string {

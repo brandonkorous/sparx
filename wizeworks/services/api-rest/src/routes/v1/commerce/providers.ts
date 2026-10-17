@@ -17,6 +17,8 @@ import {
   requireCommerceModule,
   toCommerceContext,
 } from '../../../lib/commerce-context.js';
+import { tenantPlatformBrand } from '../../../lib/tenant-brand.js';
+import { fillDeep } from '../../../lib/fill-platform-deep.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const SlugParam = z.object({ slug: z.string().min(1).max(128) });
@@ -45,10 +47,14 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const q = request.query as Record<string, string | undefined>;
+    const brand = await tenantPlatformBrand(requireAuth(request).tenantId);
     return ok(
-      await providerService.listAvailable({
-        ...(q?.kind ? { kind: q.kind as never } : {}),
-      })
+      fillDeep(
+        await providerService.listAvailable({
+          ...(q?.kind ? { kind: q.kind as never } : {}),
+        }),
+        brand
+      )
     );
   });
 
@@ -69,7 +75,8 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const { slug } = SlugParam.parse(request.params);
-    return ok(await providerService.getMetadata(slug));
+    const brand = await tenantPlatformBrand(requireAuth(request).tenantId);
+    return ok(fillDeep(await providerService.getMetadata(slug), brand));
   });
 
   app.post('/v1/commerce/providers/install', async (request, reply) => {

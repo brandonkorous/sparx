@@ -23,15 +23,16 @@ import {
   FilterItem,
   Rating,
   SearchInput,
-  Table,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { ArrowDown, ArrowUp, Check, EyeOff, ListChecks, MessageSquare, Trash2 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, reviewState } from './products-data';
@@ -387,21 +388,14 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<MessageSquare className="size-6" aria-hidden />}
             title="Could not load the reviews"
             description="Something went wrong reaching the server. Nothing customers wrote has been lost. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -494,10 +488,13 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="truncate text-sm">{preview(row)}</span>
                       </div>
                     </td>
-                    <td className="hidden max-w-40 truncate text-sm @lg:table-cell">
+                    <td
+                      data-label="Product"
+                      className="hidden max-w-40 truncate text-sm @lg:table-cell"
+                    >
                       {row.productTitle ?? '—'}
                     </td>
-                    <td className="hidden max-w-40 text-sm @xl:table-cell">
+                    <td data-label="By" className="hidden max-w-40 text-sm @xl:table-cell">
                       <div className="flex min-w-0 flex-col">
                         <span className="truncate">
                           {customerLabel(row.customer, row.displayName)}
@@ -519,7 +516,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {state.label}
                       </Badge>
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">
+                    <td data-label="Date" className="hidden text-sm @2xl:table-cell">
                       <Timestamp value={row.createdAt} format="relative" />
                     </td>
                     <td

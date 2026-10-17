@@ -9,7 +9,12 @@
 // api-mcp itself (wizeworks/services/api-mcp/src/domain-tools.ts) rather than a package.
 //
 // Drift guard: if a module adds a tool, it appears here automatically (same import).
-// The api-mcp domain tools are the one manual mirror — kept tiny + co-documented.
+// The tools that live inside api-mcp itself (domains, and the handful in
+// LOCAL_TOOLS below) are mirrored by hand, and api-mcp's
+// `tool-catalog-parity.test.ts` fails when the two name lists differ. Before it,
+// this file had quietly lost media, content, social, wholesale and campaign tools
+// and every api-mcp-local one: about a hundred tools an AI app could call and the
+// Permissions screen could not switch off (sparx persona issue 297).
 
 import { crmMcpTools, invoicingMcpTools } from '@wizeworks/crm';
 import { commerceMcpTools } from '@wizeworks/commerce';
@@ -20,6 +25,11 @@ import { emailMcpTools } from '@wizeworks/email-platform';
 import { searchMcpTools } from '@wizeworks/search';
 import { automationMcpTools } from '@wizeworks/automation';
 import { schedulingMcpTools } from '@wizeworks/scheduling';
+import { mediaMcpTools } from '@wizeworks/media/mcp';
+import { cmsMcpTools } from '@wizeworks/cms/mcp';
+import { socialMcpTools } from '@wizeworks/social/mcp';
+import { b2bMcpTools } from '@wizeworks/b2b/mcp';
+import { funnelsMcpTools } from '@wizeworks/funnels/mcp';
 
 /** The shared shape across every module's tool definition (api-mcp's AnyMcpTool,
  *  narrowed to the metadata the catalog needs — scope is a plain string). */
@@ -67,6 +77,66 @@ const DOMAIN_TOOLS: RawMcpTool[] = [
   },
 ];
 
+// Mirror of the tools defined inside api-mcp (purchase-order-tools.ts,
+// b2b-price-tools.ts, b2b-approval-tools.ts, scheduling-ending-tools.ts,
+// search-admin-tools.ts). Names and scopes must match; the parity test checks.
+const LOCAL_TOOLS: RawMcpTool[] = [
+  {
+    name: 'email_purchase_order',
+    description: 'Email a purchase order to its supplier.',
+    scope: 'write:inventory',
+    confirmation: true,
+  },
+  {
+    name: 'resolve_b2b_price',
+    description: 'Work out the price a wholesale account pays for a product, and why.',
+    scope: 'read:b2b',
+    confirmation: false,
+  },
+  {
+    name: 'approve_b2b_order',
+    description: 'Approve a wholesale order held for sign-off.',
+    scope: 'write:b2b',
+    confirmation: true,
+  },
+  {
+    name: 'reject_b2b_order',
+    description: 'Turn down a wholesale order held for sign-off.',
+    scope: 'write:b2b',
+    confirmation: true,
+  },
+  {
+    name: 'cancel_booking',
+    description: "Cancel a booking, applying the service's booking rules to any card or deposit.",
+    scope: 'write:scheduling',
+    confirmation: true,
+  },
+  {
+    name: 'no_show_booking',
+    description: "Mark a booking as a no-show, applying the service's no-show fee.",
+    scope: 'write:scheduling',
+    confirmation: true,
+  },
+  {
+    name: 'complete_booking',
+    description: 'Mark a booking as completed.',
+    scope: 'write:scheduling',
+    confirmation: true,
+  },
+  {
+    name: 'cancel_booking_series',
+    description: 'Cancel the rest of a repeating booking.',
+    scope: 'write:scheduling',
+    confirmation: true,
+  },
+  {
+    name: 'rebuild_search_index',
+    description: 'Rebuild the search index for this business.',
+    scope: 'write:search',
+    confirmation: true,
+  },
+];
+
 const MODULE_TOOL_ARRAYS = [
   crmMcpTools,
   commerceMcpTools,
@@ -78,6 +148,11 @@ const MODULE_TOOL_ARRAYS = [
   automationMcpTools,
   invoicingMcpTools,
   schedulingMcpTools,
+  mediaMcpTools,
+  cmsMcpTools,
+  socialMcpTools,
+  b2bMcpTools,
+  funnelsMcpTools,
 ] as unknown as RawMcpTool[][];
 
 /** Map a tool scope (`read:crm`, `write:commerce_bulk`, …) to the module slug it
@@ -92,6 +167,10 @@ function moduleForScope(scope: string): string | null {
   if (resource.startsWith('builder')) return 'builder';
   if (resource.startsWith('invoicing')) return 'invoicing';
   if (resource.startsWith('scheduling')) return 'scheduling';
+  if (resource.startsWith('b2b')) return 'b2b';
+  if (resource.startsWith('cms')) return 'cms';
+  if (resource.startsWith('social')) return 'social';
+  if (resource.startsWith('funnels')) return 'funnels';
   // search, automations, domains — platform-level, no per-module gate.
   return null;
 }
@@ -107,7 +186,11 @@ function toEntry(t: RawMcpTool): ToolCatalogEntry {
 }
 
 /** Every MCP tool, in a stable order (by module, then name) for the policy UI. */
-export const TOOL_CATALOG: ToolCatalogEntry[] = [...MODULE_TOOL_ARRAYS.flat(), ...DOMAIN_TOOLS]
+export const TOOL_CATALOG: ToolCatalogEntry[] = [
+  ...MODULE_TOOL_ARRAYS.flat(),
+  ...DOMAIN_TOOLS,
+  ...LOCAL_TOOLS,
+]
   .map(toEntry)
   .sort((a, b) => {
     const am = a.module ?? 'zzz';

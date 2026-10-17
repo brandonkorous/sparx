@@ -46,11 +46,11 @@ import {
   Heading,
   Input,
   Switch,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FileText, Pencil, Plus, Undo2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -285,7 +285,7 @@ export function TemplatesListSurface() {
                 actions: (
                   <Button color="module" onClick={startNew}>
                     <Plus className="size-4" aria-hidden />
-                    Write your first template
+                    New template
                   </Button>
                 ),
               }}
@@ -345,7 +345,7 @@ export function TemplatesListSurface() {
                             {template.subject}
                           </Text>
                         </td>
-                        <td className="hidden @lg:table-cell">
+                        <td data-label="Sent" className="hidden @lg:table-cell">
                           <Text as="span">{template.sendCount}</Text>
                         </td>
                         <td>

@@ -35,6 +35,20 @@ import {
 const SENT = '2026-08-26T09:20:07.947Z';
 const sent = { accepted: 23, delivered: 0 };
 
+describe('the title on the first tile (issue 270)', () => {
+  // "Delivered 6" over "Nothing has come back since to confirm they landed": the
+  // title said delivered while nothing had confirmed it.
+  it('says Sent until a delivery is confirmed', () => {
+    const later = new Date('2026-09-15T09:20:07.947Z');
+    expect(deliveredTile({ accepted: 6, delivered: 0 }, SENT, later).label).toBe('Sent');
+    expect(deliveredTile({ accepted: 0, delivered: 0 }, null, later).label).toBe('Sent');
+  });
+
+  it('says Delivered once the receiving server confirms it', () => {
+    expect(deliveredTile({ accepted: 6, delivered: 4 }, SENT).label).toBe('Delivered');
+  });
+});
+
 describe('the Delivered tile', () => {
   it('stops promising confirmations once they are plainly not coming', () => {
     const twentyDaysLater = new Date('2026-09-15T09:20:07.947Z');

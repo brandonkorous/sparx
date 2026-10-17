@@ -133,7 +133,9 @@ export function HoursSection({
                 return (
                   <tr key={entry.id}>
                     <td className="whitespace-nowrap">{formatDate(entry.workedOn)}</td>
-                    <td className="tabular-nums">{formatMinutes(entry.minutes)}</td>
+                    <td className="tabular-nums" data-label="Hours">
+                      {formatMinutes(entry.minutes)}
+                    </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">
                         {state.label}

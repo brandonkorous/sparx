@@ -11,6 +11,7 @@
 //   active / exempt        → nothing
 
 import type { BillingPhaseView } from '../../surfaces/finance/bill-data';
+import { calendarDaysLeft, staysWords, whenWords } from './days-left';
 
 /** Threshold (days left) below which the trial heads-up banner appears. */
 const HEADS_UP_DAYS = 7;
@@ -45,8 +46,8 @@ function dayWord(n: number): string {
 }
 
 /** The topbar chip for the current phase, or null. */
-export function billingChip(billing: BillingPhaseView): BillingChip | null {
-  const days = billing.daysLeft ?? 0;
+export function billingChip(billing: BillingPhaseView, now: Date = new Date()): BillingChip | null {
+  const days = calendarDaysLeft(billing, now) ?? 0;
   switch (billing.phase) {
     case 'trialing':
       return {
@@ -71,10 +72,18 @@ export function billingChip(billing: BillingPhaseView): BillingChip | null {
  * an Editor, was offered "Add payment method" and refused on the page it opened
  * (sparx persona issue 168).
  */
-export function billingNotice(billing: BillingPhaseView, canPay = true): BillingNotice | null {
-  const notice = ownersNotice(billing);
+export function billingNotice(
+  billing: BillingPhaseView,
+  canPay = true,
+  now: Date = new Date()
+): BillingNotice | null {
+  const notice = ownersNotice(billing, now);
   if (!notice || canPay) return notice;
-  return { ...notice, body: TEAM_BODY[notice.level](billing.daysLeft ?? 0), ctaLabel: null };
+  return {
+    ...notice,
+    body: TEAM_BODY[notice.level](calendarDaysLeft(billing, now) ?? 0),
+    ctaLabel: null,
+  };
 }
 
 /** What the rest of the team reads instead of the owner's call to action. */
@@ -84,13 +93,14 @@ const TEAM_BODY: Record<BillingNotice['level'], (days: number) => string> = {
   'trial-ending': () =>
     'Ask an owner or an admin to add a payment method, so nothing switches off when the trial ends.',
   grace: (days) =>
-    `Your public site stays live for ${days} more ${dayWord(days)}. An owner or an admin can add a payment method to switch everything back on.`,
+    `Your public site stays live ${staysWords(days)}. An owner or an admin can add a payment method to switch everything back on.`,
   suspended: () =>
     'An owner or an admin can add a payment method to bring your site and features back. Nothing has been deleted.',
 };
 
-function ownersNotice(billing: BillingPhaseView): BillingNotice | null {
-  const days = billing.daysLeft ?? 0;
+function ownersNotice(billing: BillingPhaseView, now: Date): BillingNotice | null {
+  // Counted on the calendar: 25 hours left is "tomorrow", not "2 days" (issue 272).
+  const days = calendarDaysLeft(billing, now) ?? 0;
 
   switch (billing.phase) {
     case 'trialing': {
@@ -108,7 +118,7 @@ function ownersNotice(billing: BillingPhaseView): BillingNotice | null {
       return {
         level: 'trial-ending',
         tone: 'warning',
-        title: `Your free trial ends in ${days} ${dayWord(days)}`,
+        title: `Your free trial ends ${whenWords(days)}`,
         body: 'Add a payment method now so nothing switches off when the trial ends.',
         ctaLabel: 'Add payment method',
         dismissible: false,
@@ -119,7 +129,7 @@ function ownersNotice(billing: BillingPhaseView): BillingNotice | null {
         level: 'grace',
         tone: 'warning',
         title: 'Your trial has ended: paid features are paused',
-        body: `Your public site stays live for ${days} more ${dayWord(days)}. Add a payment method to switch everything back on.`,
+        body: `Your public site stays live ${staysWords(days)}. Add a payment method to switch everything back on.`,
         ctaLabel: 'Add payment method',
         dismissible: false,
       };

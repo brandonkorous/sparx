@@ -13,7 +13,8 @@
 // "are they coming back" are the same glance. A row opens the real booking pane,
 // because a booking has one home and this is a lens onto it.
 
-import { Badge, Table } from '@wizeworks/silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarCheck } from 'lucide-react';
 
 import { ModuleScope } from '../../components/module-scope';
@@ -44,7 +45,7 @@ export function CustomerBookingsTab({
   ctx: SurfaceContext;
   customerId: string;
 }) {
-  const { data, isPending, isError } = useBookings({
+  const { data, isPending, isError, error, refetch } = useBookings({
     customerId,
     order: 'desc',
     take: SHOWN,
@@ -60,6 +61,10 @@ export function CustomerBookingsTab({
       <RelatedCard
         isPending={isPending}
         isError={isError}
+        error={error}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={rows.length === 0}
         icon={<CalendarCheck className="size-6" aria-hidden />}
         emptyTitle="Never booked in"
@@ -95,7 +100,7 @@ export function CustomerBookingsTab({
                     <div className="text-sm">{formatClock(booking.startAt, booking.timezone)}</div>
                   </td>
                   <td className="align-top">{booking.service.name}</td>
-                  <td className="hidden align-top @lg:table-cell">
+                  <td data-label="With" className="hidden align-top @lg:table-cell">
                     {bookingResourceLabel(booking)}
                   </td>
                   <td className="text-right align-top">

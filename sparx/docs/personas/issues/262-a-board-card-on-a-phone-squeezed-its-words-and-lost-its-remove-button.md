@@ -1,12 +1,12 @@
 # 262 — A board card on a phone squeezed its words and lost its remove button
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P01 · Gillett Diesel Service · rating pass (crm.dashboard.detail at 360px)
 **Surface:** Customers › Boards › any board, sparx console and Piggles
 **Filed:** 2026-10-13
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-13
+**Confirmed by:** sparx as Doty, 2026-10-16
 **Blocked on:** —
 
 ## What happened
@@ -54,7 +54,10 @@ Tests: `surfaces/crm/report-widget-header.test.ts` in both consoles, red then gr
 
 ## Confirmed by
 
-—
+sparx as Doty, "Monday numbers" in a 360px frame: "Where your deals are" and its
+description take the card's full width in five lines; Half, rename, open and remove (×)
+sit on their own line under them, all on screen; the table's four columns fit (Stage,
+Deals, Total value). Piggles: not checked on screen.
 
 ## Rating effect
 

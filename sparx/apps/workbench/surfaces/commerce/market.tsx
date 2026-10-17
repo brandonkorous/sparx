@@ -122,7 +122,7 @@ function ProductRow({
   return (
     <div className="border-base-300 flex flex-col gap-2 border-b pb-3 last:border-b-0 last:pb-0">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <label className="flex min-w-0 flex-1 items-start gap-2">
+        <label className="flex min-w-0 flex-1 basis-48 items-start gap-2">
           <Checkbox
             color="module"
             className="mt-1"

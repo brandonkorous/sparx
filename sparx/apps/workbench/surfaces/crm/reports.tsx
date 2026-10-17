@@ -22,7 +22,6 @@ import {
   Card,
   CardBody,
   ClickableCard,
-  EmptyState,
   Heading,
   Select,
   Text,
@@ -32,6 +31,7 @@ import { ArrowUpRight, BarChart3 } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { notKnownNote, splitLeadSources } from './lead-sources';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { useTeamRoster } from '../../lib/api/team';
 import { usePipelines } from './pipelines-data';
@@ -333,21 +333,14 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
           {/* KPI strip */}
           {snapshot.isError ? (
-            <EmptyState
+            <PaneLoadError
+              error={snapshot.error}
               icon={<BarChart3 className="size-6" aria-hidden />}
               title="Could not load your figures"
               description="Something went wrong reaching the server. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void snapshot.refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void snapshot.refetch();
+              }}
             />
           ) : (
             <div className="grid grid-cols-2 gap-3 @md:grid-cols-3 @2xl:grid-cols-4">
@@ -527,7 +520,7 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                       key={row.repId ?? 'unassigned'}
                       className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2"
                     >
-                      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                      <span className="min-w-0 flex-1 basis-48 truncate text-sm font-medium">
                         {row.repId ? (repName.get(row.repId) ?? 'A team member') : 'Unassigned'}
                       </span>
                       <Badge color="success" variant="soft" size="sm">

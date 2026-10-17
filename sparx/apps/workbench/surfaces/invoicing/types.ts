@@ -394,7 +394,10 @@ export function describeDue(
   /** The business's own zone, from `useBusinessZone()`. The server counts on the
    *  same one, so this is what keeps the invoice list and the chase list saying
    *  the same number about the same invoice. */
-  timeZone?: string | null
+  timeZone?: string | null,
+  /** Nothing is owed on it any more. A paid invoice is not late; it shows its
+   *  date (issue 283). */
+  settled = false
 ): { label: string; tone: 'danger' | 'warning' | 'muted'; title: string } {
   // NOT "no payment terms set". A due date arrives from the payer's terms only
   // when the document is ADVANCED into a payable stage, so an invoice raised
@@ -411,6 +414,7 @@ export function describeDue(
 
   const due = new Date(dueAt);
   const title = due.toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
+  if (settled) return { label: title, tone: 'muted', title: `Was due ${title}. Nothing is owed.` };
 
   // CALENDAR DAYS, not elapsed milliseconds — `daysPastDue` is the console's one
   // rule for this and the reasoning is in `lib/console/days.ts`. The old

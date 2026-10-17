@@ -17,7 +17,8 @@
 // report only whichever ACME orders happen to be in hand.
 
 import { useState } from 'react';
-import { Badge, Button, Card, NativeSelect, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, NativeSelect, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ClipboardList, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -36,6 +37,7 @@ import {
 } from './purchase-orders-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { ActionLabel } from '../../components/action-label';
+import { lateBadge } from './po-late-words';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -158,17 +160,18 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <thead>
           <tr>
             <th>Order</th>
-            <th className="hidden @lg:table-cell">Supplier</th>
+            <th className="hidden @3xl:table-cell">Supplier</th>
             <th className="text-right whitespace-nowrap">Total</th>
-            <th className="hidden text-right whitespace-nowrap @xl:table-cell">Still due</th>
-            <th className="hidden @2xl:table-cell">Expected</th>
-            <th>State</th>
+            <th className="hidden text-right whitespace-nowrap @5xl:table-cell">Still due</th>
+            <th className="hidden @4xl:table-cell">Expected</th>
+            <th className="hidden @md:table-cell">State</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((po) => {
             const state = purchaseOrderState(po);
             const outstanding = outstandingUnits(po);
+            const late = lateBadge(po);
             return (
               <tr
                 key={po.id}
@@ -184,35 +187,60 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(po, event);
                 }}
               >
-                <td className="w-full max-w-0 min-w-56">
+                <td className="w-full max-w-0 min-w-40 @lg:min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-mono font-medium">{po.number}</span>
                     {/* Below @lg the supplier column is gone, so it rides here —
                         an order without a supplier is not an answer. */}
-                    <span className="truncate text-sm @lg:hidden">
+                    <span className="truncate text-sm @3xl:hidden">
                       {po.supplierName ?? 'No supplier'}
                     </span>
                     {po.reference ? (
                       <span className="truncate text-sm">Ref {po.reference}</span>
                     ) : null}
+                    {/* Below @md the State column is gone, so it rides here. */}
+                    <span className="mt-1 flex flex-wrap gap-1 @md:hidden">
+                      <Badge color={state.tone} variant="soft" size="sm">
+                        {state.label}
+                      </Badge>
+                      {late ? (
+                        <Badge color="warning" variant="soft" size="sm">
+                          {late}
+                        </Badge>
+                      ) : null}
+                    </span>
                   </span>
                 </td>
-                <td className="hidden max-w-48 truncate @lg:table-cell">
+                <td className="hidden max-w-48 truncate @3xl:table-cell">
                   {po.supplierName ?? '—'}
                 </td>
-                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                <td
+                  data-label="Total"
+                  className="text-right font-medium whitespace-nowrap tabular-nums"
+                >
                   {formatCents(po.totalCents, po.currency)}
                 </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
+                <td
+                  data-label="Still due"
+                  className="hidden text-right whitespace-nowrap tabular-nums @5xl:table-cell"
+                >
                   {outstanding > 0 ? outstanding : '—'}
                 </td>
-                <td className="hidden whitespace-nowrap @2xl:table-cell">
+                <td data-label="Expected" className="hidden whitespace-nowrap @4xl:table-cell">
                   {po.expectedArrivalAt ? formatDay(po.expectedArrivalAt) : '—'}
                 </td>
-                <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
-                  </Badge>
+                <td className="hidden @md:table-cell">
+                  <span className="flex flex-wrap gap-1">
+                    <Badge color={state.tone} variant="soft" size="sm">
+                      {state.label}
+                    </Badge>
+                    {/* Late is said on the row too, not only on the order (issue 280). */}
+                    {late ? (
+                      <Badge color="warning" variant="soft" size="sm">
+                        {late}
+                      </Badge>
+                    ) : null}
+                  </span>
                 </td>
               </tr>
             );

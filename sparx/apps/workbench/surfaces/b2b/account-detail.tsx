@@ -1024,7 +1024,7 @@ function ContactRow({
   };
   return (
     <li className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 border-b pb-3 last:border-b-0 last:pb-0">
-      <span className="min-w-0 flex-1">
+      <span className="min-w-0 flex-1 basis-48">
         <span className="block font-medium">{contactName(contact)}</span>
         {contact.customer.email ? (
           <Text as="span" className="block text-sm">

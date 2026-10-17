@@ -267,12 +267,9 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
               </Text>
             </div>
           ) : (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {zone?.name}
-              </Heading>
-              <Text className="text-sm">{coverageSummary(draft.countries)}</Text>
-            </div>
+            // Opens on where it covers; the name is the box below and the tab, not
+            // a heading too (issue 282).
+            <Text className="text-sm">{coverageSummary(draft.countries)}</Text>
           )}
 
           <SaveFailure title="Could not save this region" message={failure} />

@@ -212,3 +212,30 @@ describe('a phrase some screens answer whole', () => {
     expect(labels).toEqual(['Planning settings']);
   });
 });
+
+describe('a photo ranks below the record it shows (sparx persona issue 292)', () => {
+  it('opens the part, not its picture, when the part number is typed', () => {
+    // Gillett's photos are named for the part on them. Typing 4062328 put
+    // "4062328_1.png" first: its name starts with what was typed, and the O-ring's
+    // name holds no number at all.
+    const ranked = rankRecords(
+      [
+        {
+          ...record('4062328_1.png', 'Media', 'Cummins Fuel Injection Crossover Tube O-Ring'),
+          supporting: true,
+        },
+        record('Cummins Fuel Injection Crossover Tube O-Ring', 'Products', 'Cummins'),
+      ],
+      '4062328'
+    );
+    expect(ranked.map((row) => row.group)).toEqual(['Products', 'Media']);
+  });
+
+  it('still finds a photo first when only photos match', () => {
+    const ranked = rankRecords(
+      [{ ...record('4062328_1.png', 'Media'), supporting: true }],
+      '4062328_1'
+    );
+    expect(ranked.map((row) => row.label)).toEqual(['4062328_1.png']);
+  });
+});

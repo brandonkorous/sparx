@@ -27,19 +27,13 @@
 // way.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Building2, Plus } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu';
@@ -109,7 +103,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
     setStatus(nextStatus === '' ? 'all' : (nextStatus as CompanyStatus));
   };
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccounts({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAccounts({
     q: search,
     status: status === 'all' ? undefined : status,
   });
@@ -198,21 +192,14 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Building2 className="size-6" aria-hidden />}
             title="Could not load your companies"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -275,19 +262,24 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td className="font-medium">{row.companyName}</td>
-                    <td className="text-right tabular-nums">{people}</td>
+                    <td data-label="People" className="text-right tabular-nums">
+                      {people}
+                    </td>
                     {tradeEnabled ? (
                       <>
                         {/* `tabular-nums` keeps the figures in a column; the
                             monospace that used to be here turned "no more on terms"
                             into something that reads like a terminal. */}
-                        <td className="text-right text-sm tabular-nums">
+                        <td data-label="Credit used" className="text-right text-sm tabular-nums">
                           <span className="block">{credit.amount}</span>
                           {credit.note === null ? null : (
                             <span className="block">{credit.note}</span>
                           )}
                         </td>
-                        <td className="hidden text-right font-mono text-sm tabular-nums @md:table-cell">
+                        <td
+                          data-label="Discount"
+                          className="hidden text-right font-mono text-sm tabular-nums @md:table-cell"
+                        >
                           {discount > 0 ? `${String(discount)}%` : '—'}
                         </td>
                         <td className="hidden text-sm @xl:table-cell">

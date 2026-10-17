@@ -15,6 +15,7 @@ import { Award, Lock, ServerCrash } from 'lucide-react';
 import { PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { ApiError } from '@wizeworks/api-client';
+import { JoinPartnerProgram } from './join';
 
 /** A centred message that fills the pane — for the states where there is no list
  *  or form to show. Always inside a PANE_SHELL so the chrome matches a loaded
@@ -55,6 +56,14 @@ export function isForbidden(error: unknown): boolean {
   return error instanceof ApiError && error.status === 403;
 }
 
+/** The server's refusal for a business outside the partner program, told apart
+ *  by its reason rather than its sentence (api-rest lib/partners/not-a-partner.ts). */
+export function isNotAPartner(error: unknown): boolean {
+  if (!(error instanceof ApiError) || error.status !== 403) return false;
+  const details = error.details as { reason?: unknown } | null | undefined;
+  return details?.reason === 'not_a_partner';
+}
+
 /** The shape a list surface renders when its own read fails. Distinguishes a
  *  refusal (403 — not a partner, or the acting member lacks partner access) from a
  *  real fault. On a 403 the server sends the exact reason ("This account is not a
@@ -69,6 +78,12 @@ export function PartnerLoadError({
   onRetry: () => void;
   error: unknown;
 }) {
+  // Not in the partner program at all: the program's own page, the one Commissions
+  // and Tier show, rather than "isn't available" over the server's sentence
+  // (sparx persona issue 307).
+  if (isNotAPartner(error)) {
+    return <NotAPartner section={`${section.charAt(0).toUpperCase()}${section.slice(1)}`} />;
+  }
   if (isForbidden(error)) {
     const reason =
       error instanceof ApiError && error.message.trim().length > 0 ? error.message : null;
@@ -105,7 +120,8 @@ export function NotAPartner({ section }: { section: string }) {
     <PartnerMessage
       icon={<Award className="size-6" aria-hidden />}
       title="This account isn’t a sparx partner"
-      description={`${section} is part of the partner program, for agencies and consultants who bring clients onto sparx. An owner or admin can apply to join from your account settings; once sparx approves it, this section fills in.`}
+      description={`${section} is part of the partner program, for agencies and consultants who bring clients onto sparx. An owner or admin can apply here, and sparx reviews each application.`}
+      actions={<JoinPartnerProgram />}
     />
   );
 }

@@ -28,6 +28,7 @@ import {
   ENTITIES_COLLECTION,
   ORDERS_COLLECTION,
   PRODUCTS_COLLECTION,
+  type EntityProjector,
   type UniversalSearchDocument,
 } from '@wizeworks/search';
 import type { Logger as PinoLogger } from 'pino';
@@ -209,7 +210,7 @@ async function reindexOne(
   return { indexed, errors };
 }
 
-interface ReindexCtx {
+export interface ReindexCtx {
   tenantId: string;
   userId?: string;
 }
@@ -235,22 +236,54 @@ async function reindexEntities(
   let errors = 0;
   for (const projector of REGISTRY.values()) {
     const ids = await projector.listIdsForTenant(ctx);
-    for (const idBatch of chunk(ids, PROJECT_CHUNK)) {
-      const projected = await Promise.all(idBatch.map((id) => projector.project(ctx, id)));
-      const docs = projected.filter((d): d is UniversalSearchDocument => d !== null);
-      const res = await bulkUpsertEntities(docs);
-      indexed += res.successCount;
-      errors += res.errors.length;
-      // A row indexed as one kind clears any entry it still has as another.
-      // Without this a rebuild that keeps old entries (the search box's "Put
-      // them back") would leave every quote ALSO filed under "Invoices", where
-      // it was indexed before quotes had their own kind (issue 086).
-      if (!dropStale) await clearOtherKinds(ctx.tenantId, docs);
-    }
+    const out = await indexKind(ctx, projector, ids, !dropStale, logger);
+    indexed += out.indexed;
+    errors += out.errors;
     logger.info(
       { tenantId: ctx.tenantId, entityType: projector.entityType, total: ids.length, runId },
       'reindex: entity type done'
     );
+  }
+  return { indexed, errors };
+}
+
+const UNREADABLE = Symbol('unreadable');
+
+/** Project and upsert one kind's records for one tenant. Shared by the full
+ *  rebuild and the boot pass that fills in a kind new to search (./new-kinds.ts). */
+export async function indexKind(
+  ctx: ReindexCtx,
+  projector: EntityProjector,
+  ids: readonly string[],
+  keptOldEntries: boolean,
+  logger: Pick<PinoLogger, 'warn'>
+): Promise<{ indexed: number; errors: number }> {
+  let indexed = 0;
+  let errors = 0;
+  for (const idBatch of chunk([...ids], PROJECT_CHUNK)) {
+    // One row that cannot be read is counted, not thrown. Measured 2026-10-14:
+    // five pages whose site belonged to another tenant threw on read, and the
+    // throw took every other kind of that tenant's rebuild with it.
+    const projected = await Promise.all(
+      idBatch.map((id) =>
+        projector.project(ctx, id).catch((err: unknown) => {
+          const kind = projector.entityType;
+          logger.warn({ tenantId: ctx.tenantId, kind, id, err }, 'reindex: row unreadable');
+          return UNREADABLE;
+        })
+      )
+    );
+    const docs = projected.filter(
+      (d): d is UniversalSearchDocument => d !== null && d !== UNREADABLE
+    );
+    const res = await bulkUpsertEntities(docs);
+    indexed += res.successCount;
+    errors += res.errors.length + projected.filter((d) => d === UNREADABLE).length;
+    // A row indexed as one kind clears any entry it still has as another.
+    // Without this a rebuild that keeps old entries (the search box's "Put
+    // them back") would leave every quote ALSO filed under "Invoices", where
+    // it was indexed before quotes had their own kind (issue 086).
+    if (keptOldEntries) await clearOtherKinds(ctx.tenantId, docs);
   }
   return { indexed, errors };
 }

@@ -207,3 +207,11 @@ describe('what the top figure covers', () => {
     expect(lines.find((line) => line.kind === 'sparx_value')?.reference).toBe('1 unit on hand');
   });
 });
+
+describe('counts in the reconciliation lines', () => {
+  it('print thousands the way people write them', () => {
+    // "29 of 3721 units on hand" on Gillett's screen (sparx persona issue 302).
+    expect(count(3721, 'unit', 'units')).toBe('3,721 units');
+    expect(count(1, 'unit', 'units')).toBe('1 unit');
+  });
+});

@@ -31,7 +31,7 @@ function money(cents: number, currency: string): string {
 }
 
 export function plural(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
+  return `${count.toLocaleString('en-US')} ${count === 1 ? one : many}`;
 }
 
 /** The row as the server suggested it: the part at its old-part-first price, the
