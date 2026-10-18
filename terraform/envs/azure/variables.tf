@@ -158,6 +158,24 @@ variable "node_size" {
   default     = "Standard_D4ads_v7"
 }
 
+variable "system_node_size" {
+  description = <<-EOT
+    The SYSTEM pool's VM (kube-system add-ons only, since the 2026-10-18 split):
+    Standard_D2ads_v7, 2 vCPU / 8 GiB, ~$83/mo. AKS needs at least 2 vCPU and
+    4 GiB for a system pool. Not burstable, for the cold-start reason in the
+    node_size description. Its local disk is half the D4's, so the OS disk
+    below is 110 GiB — change the two together.
+  EOT
+  type        = string
+  default     = "Standard_D2ads_v7"
+}
+
+variable "system_node_os_disk_gb" {
+  description = "Ephemeral OS disk of the system pool: the whole local disk of system_node_size (D2ads_v7 = 110 GiB)."
+  type        = number
+  default     = 110
+}
+
 variable "postgres_sku" {
   description = <<-EOT
     Burstable B1ms (1 vCore / 2 GiB, ~$12/mo). Burstable is fine HERE, unlike the

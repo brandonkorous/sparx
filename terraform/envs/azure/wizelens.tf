@@ -16,8 +16,9 @@
 #   azure.extensions   WizeLens Cloud's migrations contain no CREATE EXTENSION,
 #                      checked 2026-10-17 against js/packages/cloud/src/db and
 #                      src/auth in the WizeLens repo, Better Auth tables included.
-#   storage account    WizeLens Cloud keeps everything in Postgres. The marketing
-#                      site is static files inside its own image.
+#   storage account    None for the app: the marketing site is static files in
+#                      its own image. ClickHouse BACKUPS have one, in
+#                      wizelens-clickhouse.tf (added 2026-10-18).
 #   Azure OpenAI       WizeLens gives the customer's own AI agent scoped read
 #                      access; the service itself calls no model (checked
 #                      2026-10-17: no model client in js/packages/cloud).

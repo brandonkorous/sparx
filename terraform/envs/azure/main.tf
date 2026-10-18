@@ -190,10 +190,26 @@ resource "azurerm_kubernetes_cluster" "main" {
   # unattended control-plane upgrade is not something it should discover on its
   # own; upgrades here are a deliberate act.
 
+  # SPLIT INTO TWO POOLS on 2026-10-18 (the owner's call, after weighing the
+  # "one bigger node" reasoning below): this default pool is now SYSTEM-only,
+  # small, and tainted CriticalAddonsOnly; every app, worker, Typesense and the
+  # WizeLens ClickHouse run on the `user` pool further down. What it buys: an
+  # app's memory spike can no longer starve CoreDNS, kube-proxy or the CSI
+  # drivers, and the user pool can be resized (node_size) or upgraded on its
+  # own. What it costs, honestly: one more VM (~$83/mo) and a second AKS memory
+  # reservation and DaemonSet tax — the points in the node_size description
+  # still hold; they were judged worth paying for the isolation.
+  #
+  # APPLYING THIS MOVES EVERY POD ONCE (the default pool rotates through
+  # temporary_name_for_rotation, then the taint keeps apps off it). Production
+  # downtime of a few minutes: apply in a quiet window, with the owner's OK.
   default_node_pool {
     name       = "system"
-    vm_size    = var.node_size
+    vm_size    = var.system_node_size
     node_count = 1
+
+    # Only CoreDNS, metrics-server, CSI and the other kube-system add-ons.
+    only_critical_addons_enabled = true
 
     # Ephemeral OS disk: the OS lives on the VM's own local NVMe instead of a
     # billed managed disk. Free, and much faster for container image pulls, which
@@ -220,7 +236,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     # placed then stopped scheduling with a message about a taint, which reads
     # like an affinity bug and is really a full disk. Leave the headroom.
     os_disk_type    = "Ephemeral"
-    os_disk_size_gb = 220
+    os_disk_size_gb = var.system_node_os_disk_gb
 
     # Changing os_disk_size_gb (or vm_size) on the DEFAULT pool is ForceNew. Left
     # to itself the provider would destroy and recreate the whole CLUSTER; with a
@@ -278,6 +294,36 @@ resource "azurerm_kubernetes_cluster" "main" {
   #   - no Azure Monitor / Container Insights: it is billed per GB ingested and
   #     would be a meaningful fraction of this budget. `kubectl logs` is enough
   #     until it isn't.
+}
+
+# ---------------------------------------------------------------------------
+# The USER pool: everything that is not a kube-system add-on. Sized and shaped
+# like the single node it replaces (the node_size description has the why), so
+# the apps see the same capacity they had, plus what the add-ons used to take.
+# ---------------------------------------------------------------------------
+resource "azurerm_kubernetes_cluster_node_pool" "user" {
+  name                  = "user"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
+  mode                  = "User"
+  vm_size               = var.node_size
+  node_count            = 1
+
+  # The same reasoning as the default pool above: ephemeral OS on the SKU's
+  # whole local disk (D4ads_v7 = 220 GiB), free and fast for image pulls.
+  os_disk_type    = "Ephemeral"
+  os_disk_size_gb = 220
+
+  vnet_subnet_id = azurerm_subnet.aks.id
+  max_pods       = 110
+
+  # Changing vm_size or the OS disk replaces a user pool; there is no rotation
+  # name for these. A size change is therefore: add a second pool, drain this
+  # one, remove it — never an in-place edit during business hours.
+  upgrade_settings {
+    max_surge = "1"
+  }
+
+  tags = local.tags
 }
 
 # ---------------------------------------------------------------------------
