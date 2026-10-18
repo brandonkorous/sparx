@@ -31,7 +31,7 @@ An owner reading why a step ran or stopped needs words, not the engine’s names
 
 ## The fix
 
-`GATE_WORDS` names the four checks the engine records ("Your account is active", "Automations are not paused", "The part of sparx it uses is switched on", "The address it sends to is allowed"). An unknown one reads its name with spaces. The heading is "Safety checks".
+`GATE_WORDS` names the four checks the engine records ("Your account is active", "Automations are not paused", "The part of your account it uses is switched on", "The address it sends to is allowed"). An unknown one reads its name with spaces. The heading is "Safety checks".
 
 No test: words on the page.
 
@@ -39,7 +39,7 @@ ESLint and the workbench `tsc` run out of memory on this machine: not checked.
 
 ## Confirmed by
 
-sparx as Doty, 2026-10-17. The run of "Wholesale order waiting: ask their approvers" reads "Safety checks / Allowed / Your account is active / Allowed / Automations are not paused / Allowed / The part of sparx it uses is switched on".
+sparx as Doty, 2026-10-17. The run of "Wholesale order waiting: ask their approvers" reads "Safety checks / Allowed / Your account is active / Allowed / Automations are not paused / Allowed / The part of your account it uses is switched on".
 
 Not checked: Piggles on screen.
 

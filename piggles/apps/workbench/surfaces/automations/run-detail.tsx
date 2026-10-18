@@ -62,7 +62,7 @@ function gateDecisionTone(decision: string): Tone {
 const GATE_WORDS: Record<string, string> = {
   'tenant-active': 'Your account is active',
   'kill-switch': 'Automations are not paused',
-  'module-active': 'The part of sparx it uses is switched on',
+  'module-active': 'The part of your account it uses is switched on',
   'webhook-egress': 'The address it sends to is allowed',
 };
 
