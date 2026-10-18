@@ -10,7 +10,12 @@ import { Button, Input } from '@wizeworks/silicaui-react';
 import { Section, SectionHeader, Display, Spark } from '@/components/marketing/primitives';
 import { fetchCategory, signUpHref } from '@/lib/marketplace';
 import { getCategory, type MarketplaceCategory } from '@/lib/marketplace-registry';
-import { canonicalQueryString, type BrowseParams } from '@/lib/browse-params';
+import {
+  MAX_FACET_SELECTIONS,
+  canonicalQueryString,
+  countFacetSelections,
+  type BrowseParams,
+} from '@/lib/browse-params';
 import { ListingCard } from '../_components/listing-card';
 import { FacetBar } from '../_components/facet-bar';
 import { ComponentPreviewStyles } from '../_components/component-preview-styles';
@@ -84,6 +89,11 @@ export default async function CategoryBrowsePage({
 
   const current = normalize(await searchParams);
 
+  // Past the cap is not a view the facet bar can produce, only a URL a crawler
+  // assembled. Answer it before anything is fetched, so it costs no catalog read
+  // (see MAX_FACET_SELECTIONS for the flood this stops).
+  if (countFacetSelections(cat.id, current) > MAX_FACET_SELECTIONS) notFound();
+
   // One logical query, one URL. Any other spelling of the same selection (facet
   // values in click order, keys in arrival order) redirects here rather than
   // rendering — otherwise each spelling is its own page-cache entry AND its own
@@ -140,7 +150,7 @@ export default async function CategoryBrowsePage({
         </div>
 
         {/* Facets */}
-        <FacetBar category={cat} facetCounts={page.facets} current={current} />
+        <FacetBar categoryId={cat.id} facetCounts={page.facets} current={current} />
 
         {/* Preview theme picker — re-themes every component preview on this page
             (light/dark + any of the 20 themes), affecting only the previews. */}

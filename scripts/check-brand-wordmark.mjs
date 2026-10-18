@@ -111,11 +111,16 @@ const drifted = [];
 
 for (const brand of BRANDS) {
   const art = readArt(brand);
-  const line = new RegExp('^' + brand.envVar + "='(.*)'$", 'm');
+  // The value is matched RAW and written UNQUOTED. Kustomize's env parser keeps
+  // quotes as part of the value (dotenv strips them; kustomize does not), so the
+  // single-quoted line this used to write and read deployed as `'{…}'`, which is
+  // not JSON — and the badge quietly fell back to plain type on every tenant site
+  // while this check, which stripped the quotes before comparing, printed OK.
+  const line = new RegExp('^' + brand.envVar + '=(.*)$', 'm');
   const found = line.exec(cfg);
 
   if (update) {
-    const replacement = brand.envVar + "='" + art + "'";
+    const replacement = brand.envVar + '=' + art;
     cfg = found ? cfg.replace(line, replacement) : cfg.trimEnd() + '\n' + replacement + '\n';
     continue;
   }
@@ -123,6 +128,11 @@ for (const brand of BRANDS) {
   if (!found) {
     drifted.push(brand.envVar + ' is absent from ' + CONFIGMAP + ' — the badge would set the');
     drifted.push('  brand name as plain type instead of drawing its logo.');
+    continue;
+  }
+  if (/^['"]|['"]$/.test(found[1])) {
+    drifted.push(brand.envVar + ' is wrapped in quotes. Kustomize keeps them, so the');
+    drifted.push('  deployed value is not JSON and the badge falls back to plain type.');
     continue;
   }
   if (found[1] !== art) {
