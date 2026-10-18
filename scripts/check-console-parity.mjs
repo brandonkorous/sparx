@@ -441,6 +441,12 @@ const EXCEPTIONS = [
     why: 'Piggles-specific compositions over silicaui.',
   },
   { axis: 'deps', only: 'piggles', path: '@piggles/config', why: 'Piggles runtime configuration.' },
+  {
+    axis: 'deps',
+    only: 'sparx',
+    path: '@wizeworks/client-ip',
+    why: 'the password sign-up action (components/auth/sign-up-action.ts) resolves the address on the legal-acceptance record with it. sparx creates accounts inside the workbench; Piggles creates them on its account app, which depends on @wizeworks/client-ip for the same record (piggles/apps/account/app/signup/actions.ts).',
+  },
   { axis: 'deps', only: 'piggles', path: '@piggles/auth-handoff', why: 'see lib/session.' },
   {
     axis: 'deps',
